@@ -7,6 +7,10 @@ import { Aprovacoes } from "./features/aprovacoes/Aprovacoes";
 import { Fabrica } from "./features/fabrica/Fabrica";
 import { Studio } from "./features/studio/Studio";
 import { Visibilidade } from "./features/visibilidade/Visibilidade";
+import { Mapa } from "./features/mapa/Mapa";
+import { Login } from "./features/login/Login";
+import { DesignSystem } from "./features/design-system/DesignSystem";
+import { Onboarding } from "./features/onboarding/Onboarding";
 
 export default function App() {
   return (
@@ -35,7 +39,7 @@ export default function App() {
       <Route path="/dados" component={() => <div class="p-6 text-[var(--text-body)]">Dados — em construção</div>} />
       <Route path="/projetos" component={() => <div class="p-6 text-[var(--text-body)]">Projetos — em construção</div>} />
       <Route path="/ideias" component={() => <div class="p-6 text-[var(--text-body)]">Ideias — em construção</div>} />
-      <Route path="/mapa" component={() => <div class="p-6 text-[var(--text-body)]">Mapa — em construção</div>} />
+      <Route path="/mapa" component={Mapa} />
       <Route path="/mission-control" component={() => <div class="p-6 text-[var(--text-body)]">Mission Control — em construção</div>} />
       <Route path="/roadmap" component={() => <div class="p-6 text-[var(--text-body)]">Roadmap — em construção</div>} />
       <Route path="/reference" component={() => <div class="p-6 text-[var(--text-body)]">Reference — em construção</div>} />
@@ -49,9 +53,9 @@ export default function App() {
       <Route path="/plataformas" component={() => <div class="p-6 text-[var(--text-body)]">Plataformas — em construção</div>} />
       <Route path="/comunicacoes" component={() => <div class="p-6 text-[var(--text-body)]">Comunicações — em construção</div>} />
       <Route path="/biblioteca" component={() => <div class="p-6 text-[var(--text-body)]">Biblioteca — em construção</div>} />
-      <Route path="/login" component={() => <div class="p-6 text-[var(--text-body)]">Login — em construção</div>} />
-      <Route path="/design-system" component={() => <div class="p-6 text-[var(--text-body)]">Design System — em construção</div>} />
-      <Route path="/onboarding" component={() => <div class="p-6 text-[var(--text-body)]">Onboarding — em construção</div>} />
+      <Route path="/login" component={Login} />
+      <Route path="/design-system" component={DesignSystem} />
+      <Route path="/onboarding" component={Onboarding} />
       <Route path="/*404" component={() => <div class="p-6 text-[var(--text-body)]">Rota não encontrada</div>} />
     </Router>
   );
