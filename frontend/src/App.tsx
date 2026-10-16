@@ -1,14 +1,17 @@
 import { Router, Route } from "@solidjs/router";
 import { Shell } from "./app/Shell";
 import { Home } from "./features/home/Home";
+import { Execucoes } from "./features/execucoes/Execucoes";
+import { Tasks } from "./features/tasks/Tasks";
+import { Aprovacoes } from "./features/aprovacoes/Aprovacoes";
 
 export default function App() {
   return (
     <Router root={Shell}>
       <Route path="/" component={Home} />
-      <Route path="/execucoes" component={() => <div class="p-6 text-[var(--text-body)]">Execuções — em construção</div>} />
-      <Route path="/tasks" component={() => <div class="p-6 text-[var(--text-body)]">Tasks — em construção</div>} />
-      <Route path="/aprovacoes" component={() => <div class="p-6 text-[var(--text-body)]">Aprovações — em construção</div>} />
+      <Route path="/execucoes" component={Execucoes} />
+      <Route path="/tasks" component={Tasks} />
+      <Route path="/aprovacoes" component={Aprovacoes} />
       <Route path="/bloqueios" component={() => <div class="p-6 text-[var(--text-body)]">Bloqueios — em construção</div>} />
       <Route path="/agentes" component={() => <div class="p-6 text-[var(--text-body)]">Agentes — em construção</div>} />
       <Route path="/alteracoes" component={() => <div class="p-6 text-[var(--text-body)]">Alterações — em construção</div>} />
