@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conteudo YouTube"
+  short_description: "Crie roteiros e pacotes nativos para YouTube"
+  default_prompt: "Use $conteudo-youtube para criar um pacote nativo de Shorts ou video longo."

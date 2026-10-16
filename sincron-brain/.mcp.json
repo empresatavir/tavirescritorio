@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "sincron-brain": {
+      "command": "sincron-brain",
+      "args": [
+        "serve"
+      ],
+      "env": {
+        "SINCRON_BRAIN_VAULT": "C:\\Users\\carlo\\Downloads\\Projetos a Estudar\\AgenciaIA\\SincronBrain\\memory"
+      }
+    }
+  }
+}

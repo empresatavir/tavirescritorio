@@ -1,0 +1,4 @@
+interface:
+  display_name: "Scrapling TAVIR"
+  short_description: "Pesquisa web controlada com Scrapling completo"
+  default_prompt: "Use $scrapling-tavir para coletar e analisar uma fonte web publica no laboratorio controlado."

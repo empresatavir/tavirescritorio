@@ -1,0 +1,136 @@
+{
+  "$schema": "brand-design-tokens/v1",
+  "brand": "TAVIR",
+  "source": ".agents/brand-identity.md",
+  "generated": "2026-07-17",
+  "note": "Tokens F4 da identidade TAVIR. Estrutura DTCG-like, pronta para tradução em CSS variables, Tailwind ou tema de proposta.",
+  "color": {
+    "primitive": {
+      "ink-950": { "$value": "#0B1220", "$type": "color" },
+      "ink-800": { "$value": "#172033", "$type": "color" },
+      "slate-600": { "$value": "#5E6878", "$type": "color" },
+      "slate-300": { "$value": "#B7C0CC", "$type": "color" },
+      "cloud-100": { "$value": "#E7EBE6", "$type": "color" },
+      "cloud-50": { "$value": "#F4F6F2", "$type": "color" },
+      "white": { "$value": "#FFFFFF", "$type": "color" },
+      "lime-400": { "$value": "#B7F34A", "$type": "color" },
+      "lime-500": { "$value": "#9FDA2F", "$type": "color" },
+      "teal-500": { "$value": "#1BC5BD", "$type": "color" },
+      "teal-700": { "$value": "#0B7774", "$type": "color" },
+      "red-500": { "$value": "#E55252", "$type": "color" },
+      "amber-500": { "$value": "#D99124", "$type": "color" }
+    },
+    "semantic": {
+      "background-primary": { "$value": "{color.primitive.cloud-50}", "$type": "color" },
+      "background-inverse": { "$value": "{color.primitive.ink-950}", "$type": "color" },
+      "surface-primary": { "$value": "{color.primitive.white}", "$type": "color" },
+      "surface-secondary": { "$value": "{color.primitive.cloud-100}", "$type": "color" },
+      "text-primary": { "$value": "{color.primitive.ink-950}", "$type": "color" },
+      "text-secondary": { "$value": "{color.primitive.slate-600}", "$type": "color" },
+      "text-inverse": { "$value": "{color.primitive.white}", "$type": "color" },
+      "action-primary": { "$value": "{color.primitive.lime-400}", "$type": "color" },
+      "action-primary-hover": { "$value": "{color.primitive.lime-500}", "$type": "color" },
+      "action-text": { "$value": "{color.primitive.ink-950}", "$type": "color" },
+      "informative": { "$value": "{color.primitive.teal-500}", "$type": "color" },
+      "success": { "$value": "{color.primitive.teal-700}", "$type": "color" },
+      "warning": { "$value": "{color.primitive.amber-500}", "$type": "color" },
+      "danger": { "$value": "{color.primitive.red-500}", "$type": "color" },
+      "border-default": { "$value": "{color.primitive.slate-300}", "$type": "color" },
+      "focus-ring": { "$value": "{color.primitive.teal-500}", "$type": "color" }
+    },
+    "contrast": {
+      "ink-on-cloud": "17.22:1",
+      "white-on-ink": "18.72:1",
+      "ink-on-lime": "14.21:1",
+      "ink-on-teal": "8.71:1",
+      "slate-on-cloud": "5.18:1"
+    }
+  },
+  "typography": {
+    "family": {
+      "primary": { "$value": ["Instrument Sans", "Inter", "system-ui", "sans-serif"], "$type": "fontFamily" },
+      "data": { "$value": ["IBM Plex Mono", "ui-monospace", "monospace"], "$type": "fontFamily" }
+    },
+    "weight": {
+      "regular": { "$value": 400, "$type": "fontWeight" },
+      "medium": { "$value": 500, "$type": "fontWeight" },
+      "semibold": { "$value": 600, "$type": "fontWeight" },
+      "bold": { "$value": 700, "$type": "fontWeight" }
+    },
+    "size": {
+      "xs": { "$value": "0.75rem", "$type": "dimension" },
+      "sm": { "$value": "0.875rem", "$type": "dimension" },
+      "base": { "$value": "1rem", "$type": "dimension" },
+      "lg": { "$value": "1.125rem", "$type": "dimension" },
+      "xl": { "$value": "1.5rem", "$type": "dimension" },
+      "2xl": { "$value": "clamp(2rem, 3.5vw, 3.25rem)", "$type": "custom" },
+      "3xl": { "$value": "clamp(2.5rem, 5vw, 4.5rem)", "$type": "custom" },
+      "display": { "$value": "clamp(3rem, 7vw, 6.5rem)", "$type": "custom" }
+    },
+    "lineHeight": {
+      "tight": { "$value": 0.96, "$type": "number" },
+      "heading": { "$value": 1.08, "$type": "number" },
+      "body": { "$value": 1.55, "$type": "number" }
+    },
+    "tracking": {
+      "tight": { "$value": "-0.03em", "$type": "dimension" },
+      "normal": { "$value": "0em", "$type": "dimension" },
+      "label": { "$value": "0.04em", "$type": "dimension" }
+    }
+  },
+  "spacing": {
+    "0": { "$value": "0px", "$type": "dimension" },
+    "1": { "$value": "4px", "$type": "dimension" },
+    "2": { "$value": "8px", "$type": "dimension" },
+    "3": { "$value": "12px", "$type": "dimension" },
+    "4": { "$value": "16px", "$type": "dimension" },
+    "6": { "$value": "24px", "$type": "dimension" },
+    "8": { "$value": "32px", "$type": "dimension" },
+    "12": { "$value": "48px", "$type": "dimension" },
+    "16": { "$value": "64px", "$type": "dimension" },
+    "24": { "$value": "96px", "$type": "dimension" }
+  },
+  "shape": {
+    "radius-none": { "$value": "0px", "$type": "dimension" },
+    "radius-sm": { "$value": "4px", "$type": "dimension" },
+    "radius-md": { "$value": "8px", "$type": "dimension" },
+    "radius-lg": { "$value": "12px", "$type": "dimension" },
+    "border-thin": { "$value": "1px", "$type": "dimension" },
+    "border-strong": { "$value": "2px", "$type": "dimension" },
+    "rule": "Evitar pills como forma padrão. Radius máximo de 12px em superfícies; botão pode usar 8px."
+  },
+  "layout": {
+    "content-max": { "$value": "1200px", "$type": "dimension" },
+    "text-max": { "$value": "72ch", "$type": "dimension" },
+    "grid-columns": { "$value": 12, "$type": "number" },
+    "gutter": { "$value": "clamp(16px, 3vw, 32px)", "$type": "custom" },
+    "section-y": { "$value": "clamp(64px, 10vw, 144px)", "$type": "custom" }
+  },
+  "motion": {
+    "duration-fast": { "$value": "120ms", "$type": "duration" },
+    "duration-normal": { "$value": "220ms", "$type": "duration" },
+    "duration-slow": { "$value": "420ms", "$type": "duration" },
+    "easing-standard": { "$value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "$type": "cubicBezier" },
+    "rule": "Movimento explica entrada, convergência ou saída. Desabilitar deslocamentos não essenciais com prefers-reduced-motion."
+  },
+  "component": {
+    "button-primary": {
+      "background": "{color.semantic.action-primary}",
+      "foreground": "{color.semantic.action-text}",
+      "radius": "{shape.radius-md}",
+      "height": "48px",
+      "padding-inline": "24px"
+    },
+    "card": {
+      "background": "{color.semantic.surface-primary}",
+      "border": "{color.semantic.border-default}",
+      "radius": "{shape.radius-lg}",
+      "padding": "24px"
+    },
+    "focus": {
+      "color": "{color.semantic.focus-ring}",
+      "width": "2px",
+      "offset": "3px"
+    }
+  }
+}

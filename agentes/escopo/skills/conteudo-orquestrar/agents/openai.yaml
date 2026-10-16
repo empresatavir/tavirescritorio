@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conteudo Orquestrar"
+  short_description: "Coordene ciclos editoriais multicanal"
+  default_prompt: "Use $conteudo-orquestrar para planejar um ciclo editorial com canais separados."

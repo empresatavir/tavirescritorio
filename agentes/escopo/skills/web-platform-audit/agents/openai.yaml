@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auditoria de Sites e Plataformas"
+  short_description: "Audita sites p�blicos e plataformas logadas"
+  default_prompt: "Use $web-platform-audit para auditar este site ou plataforma e gerar relat�rios Markdown e HTML."

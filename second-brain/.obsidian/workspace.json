@@ -1,0 +1,223 @@
+{
+  "main": {
+    "id": "0e45f05daedba128",
+    "type": "split",
+    "children": [
+      {
+        "id": "ddc3812cc50d4687",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ec3f019e69432386",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Visualização em gráfico"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "2fdc4d20ed8fef8e",
+    "type": "split",
+    "children": [
+      {
+        "id": "2f67384ca1b22d8b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0ccab10d54ff8342",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de arquivos"
+            }
+          },
+          {
+            "id": "edcecd95bc50e2b9",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Procurar"
+            }
+          },
+          {
+            "id": "3503c2809ae431ac",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "3dc29c3584ead09d",
+    "type": "split",
+    "children": [
+      {
+        "id": "90c3d902717a9e98",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2c073f7247567217",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "knowledge/_INDEX.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Links inversos para _INDEX"
+            }
+          },
+          {
+            "id": "2cd4319fc02dc6eb",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "knowledge/_INDEX.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Links de saída para _INDEX"
+            }
+          },
+          {
+            "id": "f5ff9a33d4cb4933",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "26eeed8fe25befff",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas as propriedades"
+            }
+          },
+          {
+            "id": "9a6b4cbdf77292d5",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "knowledge/_INDEX.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Sumário de _INDEX"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir a troca rápida": false,
+      "graph:Abrir visualização em gráfico": false,
+      "canvas:Criar novo canvas": false,
+      "daily-notes:Abrir a nota de hoje": false,
+      "templates:Inserir modelo": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Criar nova base": false
+    }
+  },
+  "active": "ec3f019e69432386",
+  "lastOpenFiles": [
+    "fabrica-canais/dashboard/node_modules/express-rate-limit/license.md",
+    "escritorioNovo/storage/fabrica.sqlite-wal",
+    "escritorioNovo/storage/fabrica.sqlite-shm",
+    "escritorio/office.db-wal",
+    "escritorio/office.db-shm",
+    "escritorio/jobs.json.bak.17912.37024.tmp",
+    "escritorio/jobs.json.bak.17912.28268.tmp",
+    "escritorio/jobs.json.17912.20292.tmp",
+    "escritorio/jobs.json.bak.17912.34512.tmp",
+    "escritorio/jobs.json.bak.17912.28544.tmp",
+    "escritorio/jobs.json.bak.17912.40120.tmp",
+    "SincronBrain/memory/business-context/consolidado-marca-tavir-naming-e-infraestrutura.md",
+    "projetos_tavir/prj-1791845870560/docs/09-build-apk.md",
+    "escritorioNovo/storage/artifacts/8866d93f-276f-4a6d-b7cd-1ee164f1d476/draft.md",
+    "SincronBrain/memory/technical-context/padrao-de-lifecycle-para-playback-assinc-4d01e52e.md",
+    "SincronBrain/memory/technical-context/contexto-consolidado-do-turno-guardar-a-62ae28e9.md",
+    "SincronBrain/memory/technical-context/contexto-consolidado-do-turno-guardar-c-d0a89f39.md",
+    "SincronBrain/memory/technical-context/contexto-consolidado-do-turno-registrar-fb220043.md",
+    "SincronBrain/memory/technical-context/no-escritorio-tavir-o-teste-de-conectiv-f7976804.md",
+    "SincronBrain/memory/technical-context/contexto-consolidado-do-turno-decisao-e-3bad2338.md",
+    "SincronBrain/memory/technical-context/contexto-consolidado-do-turno-marco-ope-426cde53.md",
+    "SincronBrain/memory/projects/content-intelligence-os-ci-os-foi-comp-648c1b5d.md",
+    "SincronBrain/memory/projects/contexto-consolidado-do-turno-registrar-1f861661.md",
+    "SincronBrain/memory/projects/contexto-consolidado-do-turno-registrar-c345434b.md",
+    "SincronBrain/memory/projects/contexto-consolidado-do-turno-preservar-7c144fc0.md",
+    "SincronBrain/memory/projects/contexto-consolidado-do-turno-registrar-118284c7.md",
+    "SincronBrain/memory/projects/contexto-consolidado-do-turno-continuid-557a60c4.md",
+    "SincronBrain/memory/projects/contexto-consolidado-do-turno-continuid-b4722b9d.md",
+    "SincronBrain/memory/projects/contexto-consolidado-do-turno-continuid-5359ebd2.md",
+    "SincronBrain/memory/projects/decisao-do-carlos-para-o-docuflow-sessio-63f7783b.md",
+    "SincronBrain/memory/projects/decisao-do-carlos-para-o-docuflow-a-pre-fa47b350.md",
+    "SincronBrain/memory/projects/decisao-reutilizavel-do-docuflow-ao-com-a7c5a731.md",
+    "escritorioNovo/storage/artifacts/80a69b11-66b5-4bff-9c33-a0ecd8aa9d95/draft.md",
+    "projetos_tavir/prj-1791845870560/qa/evidencias/07-qa-backend-report.md",
+    "projetos_tavir/prj-1791845870560/docs/07-qa-backend-report.md",
+    "projetos_tavir/prj-1791845870560/qa/evidencias/08-security_report.md"
+  ]
+}

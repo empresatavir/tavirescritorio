@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conteudo Instagram"
+  short_description: "Crie pacotes nativos para Instagram"
+  default_prompt: "Use $conteudo-instagram para criar um pacote editorial nativo de Instagram."

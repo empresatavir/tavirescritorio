@@ -1,0 +1,4 @@
+interface:
+  display_name: "Inteligência de YouTube"
+  short_description: "Extrai insights acionáveis de vídeos de negócios"
+  default_prompt: "Use $youtube-business-intelligence para analisar este vídeo do YouTube e transformar o conteúdo em insights acionáveis para a TAVIR."

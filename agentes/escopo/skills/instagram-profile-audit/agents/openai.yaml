@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auditoria de Perfil do Instagram"
+  short_description: "Coleta e analisa perfis do Instagram"
+  default_prompt: "Use $instagram-profile-audit para baixar e auditar este perfil do Instagram, gerando relatórios Markdown e HTML."

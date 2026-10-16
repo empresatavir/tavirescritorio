@@ -1,0 +1,4 @@
+interface:
+  display_name: "Segurança Web"
+  short_description: "Blindagem proporcional de aplicações web"
+  default_prompt: "Use $web-security para construir ou auditar esta aplicação com controles proporcionais ao risco e um gate de deploy baseado em evidências."

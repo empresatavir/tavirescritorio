@@ -1,0 +1,6 @@
+interface:
+  display_name: "Portless TAVIR"
+  short_description: "Runtime local web estável e seguro"
+  default_prompt: "Use $portless-tavir para iniciar e validar este projeto web em uma URL local estável."
+policy:
+  allow_implicit_invocation: true

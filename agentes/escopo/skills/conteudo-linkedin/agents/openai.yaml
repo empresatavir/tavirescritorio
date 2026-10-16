@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conteudo LinkedIn"
+  short_description: "Crie conteudo B2B nativo para LinkedIn"
+  default_prompt: "Use $conteudo-linkedin para criar conteudo B2B nativo de LinkedIn."

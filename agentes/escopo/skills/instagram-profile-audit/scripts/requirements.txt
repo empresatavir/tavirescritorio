@@ -1,0 +1,3 @@
+gallery-dl>=1.30
+Markdown>=3.6
+Pillow>=10.0

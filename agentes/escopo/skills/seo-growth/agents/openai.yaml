@@ -1,0 +1,4 @@
+interface:
+  display_name: "SEO & Growth"
+  short_description: "SEO técnico, conteúdo e distribuição orgânica"
+  default_prompt: "Use $seo-growth para planejar, implementar ou auditar SEO com critérios verificáveis e plano de crescimento."
