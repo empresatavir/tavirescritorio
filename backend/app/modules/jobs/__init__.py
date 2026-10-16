@@ -1,0 +1,1 @@
+"""Jobs module — runner, repository and API for job lifecycle."""

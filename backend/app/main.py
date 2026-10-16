@@ -6,12 +6,14 @@ import sys
 
 from app.api.v1.agents import router as agents_router
 from app.api.v1.projects import router as projects_router
+from app.api.v1.jobs import router as jobs_router
 
 app = FastAPI(title="TAVIR Escritório API", version="0.1.0")
 
 # Register API routers
 app.include_router(agents_router)
 app.include_router(projects_router)
+app.include_router(jobs_router)
 
 # Health endpoint
 @app.get("/api/v1/health")
