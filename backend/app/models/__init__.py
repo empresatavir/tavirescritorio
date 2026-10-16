@@ -7,6 +7,7 @@ from app.models.job import Job
 from app.models.approval import Approval
 from app.models.artifact import Artifact
 from app.models.event import Event
+from app.models.template import EngineeringTemplate
 
 __all__ = [
     "Base",
@@ -17,4 +18,5 @@ __all__ = [
     "Approval",
     "Artifact",
     "Event",
+    "EngineeringTemplate",
 ]

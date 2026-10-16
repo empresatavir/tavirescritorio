@@ -1,0 +1,1 @@
+"""Factory module — engineering templates repository and API."""
