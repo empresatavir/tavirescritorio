@@ -26,3 +26,8 @@ class JobRepository:
                 stmt = stmt.where(Event.created_at > cursor_event.created_at)
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
+
+    async def list_all(self, limit: int = 50) -> list[Job]:
+        stmt = select(Job).order_by(Job.created_at.desc()).limit(limit)
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())

@@ -1,0 +1,8 @@
+# TAVIR Escritório — Cursor Rules & Project Knowledge
+
+- **SVG Rule:** NEVER commit or inject SVGs with `<metadata>` or `c2pa` manifests. They corrupt the HTML DOM when injected via innerHTML. Keep SVGs clean with just paths.
+- **Icon Sizing:** When using `<TvIcon />`, pass valid CSS size values or let `toCssSize` handle numbers to ensure units (`px`) are always present.
+- **Tailwind & Design System:** Tailwind v4 runs through `@tailwindcss/vite`. Universal resets must stay in `@layer base` in `src/index.css`. Preflight is disabled to protect Design System tokens.
+- **Themes:** Always use semantic tokens (`var(--text-primary)`, `var(--text-secondary)`, `var(--surface-0)`) instead of hardcoded white/cloud text in generic views.
+- **Port 5173:** The SolidJS frontend runs on port 5173. Before starting the server, ensure old processes on 5173 are killed with `parar_escritorio.bat`.
+- **Windows Batch Scripts:** All `.bat` files MUST use CRLF (`\r\n`) and UTF-8 (`chcp 65001`).

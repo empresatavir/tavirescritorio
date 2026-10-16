@@ -1,0 +1,14 @@
+:root{
+  --radius-sm:8px;
+  --radius-md:14px;
+  --radius-lg:18px;
+  --radius-pill:999px;
+
+  --shadow-elevated:0 26px 74px rgba(0,0,0,.34);
+  --shadow-card:0 8px 24px rgba(0,0,0,.2);
+
+  --stroke-icon:1.9px; /* icon stroke weight, 24px grid */
+  --ease-standard:cubic-bezier(.2,.7,.2,1); /* @kind other */
+  --duration-fast:120ms; /* @kind other */
+  --duration-standard:180ms; /* @kind other */
+}

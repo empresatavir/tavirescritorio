@@ -1,0 +1,17 @@
+:root{
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:16px;
+  --space-5:20px;
+  --space-6:24px;
+  --space-8:32px;
+  --space-10:40px;
+  --space-12:48px;
+  --space-16:64px;
+
+  /* logo protection unit: X = stroke width of the main vertical stem */
+  --logo-x:8px;
+  --logo-clear-wordmark:calc(var(--logo-x) * 4);
+  --logo-clear-symbol:calc(var(--logo-x) * 3);
+}

@@ -13,8 +13,8 @@ export interface Agent {
   status: string;
   skills: string | null;
   model_provider: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Project {
@@ -24,8 +24,8 @@ export interface Project {
   client: string | null;
   status: string;
   description: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Job {
@@ -37,8 +37,8 @@ export interface Job {
   status: string;
   workspace_path: string | null;
   error_message: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface JobEvent {
@@ -60,6 +60,73 @@ export interface CreateJobRequest {
   timeout?: number;
 }
 
+export interface EngineeringTemplate {
+  id: string;
+  name: string;
+  category: string;
+  mode: string;
+  stages: any[];
+  owner_role: string;
+  gate_required: boolean;
+  created_at?: string;
+}
+
+export interface Persona {
+  id: string;
+  name: string;
+  niche: string;
+  description: string | null;
+}
+
+export interface Profile {
+  id: string;
+  persona_id: string;
+  name: string;
+  social_handle: string | null;
+  tone: string | null;
+}
+
+export interface Piece {
+  id: string;
+  profile_id: string;
+  project_id: string | null;
+  title: string;
+  stage: string;
+  content: string | null;
+  published: boolean;
+}
+
+export interface Workflow {
+  id: string;
+  name: string;
+  process_type: string;
+  stages: any[];
+}
+
+export interface Idea {
+  id: string;
+  title: string;
+  category: string;
+  status: string;
+  priority: string;
+}
+
+export interface IntegrationCheck {
+  id: string;
+  service_name: string;
+  status: string;
+  last_check_at: string;
+  evidence: string | null;
+}
+
+export interface KnowledgeEntry {
+  id: string;
+  title: string;
+  source_file: string | null;
+  domain: string;
+  summary: string | null;
+}
+
 async function fetchJson<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: { "Content-Type": "application/json" },
@@ -73,6 +140,9 @@ async function fetchJson<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  // Health
+  health: () => fetchJson<{ status: string; version: string }>("/api/v1/health"),
+
   // Agents
   listAgents: () => fetchJson<Agent[]>("/api/v1/agents/"),
 
@@ -80,17 +150,31 @@ export const api = {
   listProjects: () => fetchJson<Project[]>("/api/v1/projects/"),
 
   // Jobs
+  listJobs: () => fetchJson<Job[]>("/api/v1/jobs/"),
   createJob: (req: CreateJobRequest) =>
     fetchJson<Job>("/api/v1/jobs/", {
       method: "POST",
       body: JSON.stringify(req),
     }),
-
   getJob: (jobId: string) => fetchJson<Job>(`/api/v1/jobs/${jobId}`),
+
+  // Factory
+  listTemplates: () => fetchJson<EngineeringTemplate[]>("/api/v1/factory/templates"),
+
+  // Studio
+  listPersonas: () => fetchJson<Persona[]>("/api/v1/studio/personas"),
+  listProfiles: () => fetchJson<Profile[]>("/api/v1/studio/profiles"),
+  listPieces: () => fetchJson<Piece[]>("/api/v1/studio/pieces"),
+
+  // Visibility & Knowledge
+  listWorkflows: () => fetchJson<Workflow[]>("/api/v1/workflows"),
+  listIdeas: () => fetchJson<Idea[]>("/api/v1/ideas"),
+  listIntegrations: () => fetchJson<IntegrationCheck[]>("/api/v1/integrations"),
+  searchKnowledge: (query?: string) =>
+    fetchJson<KnowledgeEntry[]>(`/api/v1/knowledge${query ? `?q=${encodeURIComponent(query)}` : ""}`),
 
   /**
    * Subscribe to job events via SSE.
-   * Returns an AbortController so the caller can stop the stream.
    */
   subscribeJobEvents(
     jobId: string,
@@ -120,7 +204,6 @@ export const api = {
       source.onerror = () => {
         source.close();
         if (!controller.signal.aborted) {
-          // Reconnect after 2s
           setTimeout(() => {
             if (!controller.signal.aborted) connect();
           }, 2000);

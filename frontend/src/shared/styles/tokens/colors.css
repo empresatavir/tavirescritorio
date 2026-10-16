@@ -1,0 +1,105 @@
+:root{
+  /* base palette */
+  --ink:#0B1220;
+  --lime:#B7F34A;
+  --teal:#1BC5BD;
+  --cloud:#F4F6F2;
+  --slate:#5E6878;
+  --lime-ink:#25360a; /* text-on-lime */
+  --teal-ink:#063b38; /* text-on-teal */
+  --teal-deep:#0B6C67; /* teal darkened for text on light surfaces (5.3:1 on Nuvem) */
+
+  /* structural ink surface — identical in BOTH themes.
+     This is the defining move of the light theme: headers, hero blocks and
+     highlight panels stay Tinta Profunda, so Lima and Teal keep their original
+     contrast instead of being darkened. */
+  --surface-ink:var(--ink);
+  --on-ink:var(--cloud);
+  --on-ink-muted:#aeb7c4;
+  --on-ink-accent:var(--lime);
+  --on-ink-flow:var(--teal);
+
+  /* surfaces (dark, default) */
+  --surface-0:var(--ink);
+  --surface-1:#121c30;
+  --surface-2:#0f1729;
+  --line:rgba(244,246,242,.16);
+  --line-strong:rgba(244,246,242,.34);
+
+  /* text (dark surface) */
+  --text-primary:var(--cloud);
+  --text-secondary:#cbd3de;
+  --text-muted:#aeb7c4;
+
+  /* semantic status — success is brand-native teal (teal = state/flow);
+     warning + danger have no counterpart in the TAVIR palette and are derived
+     in oklch to sit harmonically alongside Lima. See readme "Intentional additions". */
+  --success:var(--teal);
+  --success-ink:var(--teal-ink);
+  --success-subtle:rgba(27,197,189,.14);
+  --warning:oklch(.80 .155 78);
+  --warning-ink:oklch(.30 .07 78);
+  --warning-subtle:oklch(.80 .155 78 / .16);
+  --danger:oklch(.635 .185 27);
+  --danger-ink:oklch(.98 .01 27);
+  --danger-subtle:oklch(.635 .185 27 / .16);
+
+  /* semantic */
+  --action:var(--lime);
+  --action-text:var(--lime-ink);
+  /* filled-control pair (primary button, checked checkbox/switch).
+     Dark: Lima fill, ink label. Light: Tinta fill, Lima label — Lima on a light
+     background is only 1.15:1 and cannot carry a filled edge on its own. */
+  --action-bg:var(--lime);
+  --action-fg:var(--lime-ink);
+  --action-bg-hover:#a6e236;
+  --action-subtle:rgba(183,243,74,.14);
+  --action-subtle-line:rgba(183,243,74,.32);
+  --action-subtle-text:var(--lime);
+
+  --flow:var(--teal);
+  --flow-text:var(--teal-ink);
+  --flow-subtle:rgba(27,197,189,.14);
+  --flow-subtle-line:rgba(27,197,189,.32);
+  --flow-subtle-text:var(--teal);
+
+  --border-default:var(--line);
+  --border-strong:var(--line-strong);
+  --focus-ring:var(--lime);
+}
+/* NOTE: a custom property substitutes its var() at the element where it is
+   DECLARED. Any alias below of the form `--x: var(--y)` where `--y` is
+   re-declared in this scope MUST be re-declared here too — overriding `--y`
+   alone does not retroactively change an alias already resolved on :root. */
+[data-theme="light"]{
+  --surface-0:var(--cloud);
+  --surface-1:#ffffff;
+  --surface-2:#ffffff;
+  --line:rgba(11,18,32,.14);
+  --line-strong:rgba(11,18,32,.32);
+  --border-default:rgba(11,18,32,.14);
+  --border-strong:rgba(11,18,32,.32);
+  --text-primary:var(--ink);
+  --text-secondary:#3a4557;
+  --text-muted:#5E6878;
+
+  --action-bg:var(--ink);
+  --action-fg:var(--lime);
+  --action-bg-hover:#182339;
+  --action-subtle:var(--ink);
+  --action-subtle-line:var(--ink);
+  --action-subtle-text:var(--lime);
+
+  --flow:var(--teal-deep);
+  --flow-text:var(--cloud);
+  --flow-subtle:rgba(11,108,103,.10);
+  --flow-subtle-line:rgba(11,108,103,.30);
+  --flow-subtle-text:var(--teal-deep);
+
+  --success:var(--teal-deep);
+  --success-ink:var(--cloud);
+  --success-subtle:rgba(11,108,103,.10);
+  --danger:oklch(.52 .18 27);
+  --warning:oklch(.52 .12 78);
+  --focus-ring:var(--ink);
+}

@@ -1,10 +1,14 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 @import "./shared/styles/design-tokens.css";
 
-/* Font Faces — Self-hosted OFL */
+/* Font Faces — 100% Self-hosted OFL */
 @font-face {
   font-family: "Instrument Sans";
   src: url("./shared/fonts/InstrumentSans-VariableFont_wdth,wght.ttf") format("truetype");
   font-weight: 400 700;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -12,6 +16,7 @@
   font-family: "IBM Plex Mono";
   src: url("./shared/fonts/IBMPlexMono-Regular.ttf") format("truetype");
   font-weight: 400;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -19,6 +24,7 @@
   font-family: "IBM Plex Mono";
   src: url("./shared/fonts/IBMPlexMono-Medium.ttf") format("truetype");
   font-weight: 500;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -26,32 +32,51 @@
   font-family: "IBM Plex Mono";
   src: url("./shared/fonts/IBMPlexMono-SemiBold.ttf") format("truetype");
   font-weight: 600;
+  font-style: normal;
   font-display: swap;
 }
 
 /* Base Reset & Defaults */
-*, *::before, *::after {
-  box-sizing: border-box;
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
   margin: 0;
-  padding: 0;
-}
-
-html {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-body {
+  background-color: var(--surface-0);
+  color: var(--text-primary);
   font-family: var(--font-body);
   font-size: var(--text-body);
   line-height: var(--leading-normal);
-  color: var(--text-primary);
-  background-color: var(--bg-primary);
-  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
 }
 
-/* Scrollbar Styling */
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+a {
+  color: var(--flow);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+a:hover {
+  color: #7fe3dc;
+}
+
+/* Scrollbar Styling — Identical to Reference */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -62,17 +87,17 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-primary);
-  border-radius: var(--radius-pill);
+  background: var(--line);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--surface-slate);
+  background: var(--line-strong);
 }
 
 /* Focus Visible */
 :focus-visible {
-  outline: 2px solid var(--accent-teal);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
@@ -80,4 +105,30 @@ body {
 ::selection {
   background: rgba(183, 243, 74, 0.3);
   color: var(--text-primary);
+}
+
+input, textarea, button, select {
+  font-family: inherit;
+}
+
+/* TV Icon & SVG Isolation */
+.tv-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.tv-icon-wrapper svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+metadata {
+  display: none !important;
 }

@@ -65,3 +65,4 @@ htmlcov/
 
 # Build artifacts
 *.log
+backend/workspaces/

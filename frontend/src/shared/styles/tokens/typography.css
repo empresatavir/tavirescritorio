@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --font-body:"Instrument Sans","Arial",sans-serif;
+  --font-head:"Instrument Sans","Arial",sans-serif;
+  --font-mono:"IBM Plex Mono","Consolas",monospace;
+
+  /* type scale (digital px, from brand hierarchy table) */
+  --text-title:60px;      /* Título */
+  --text-h1:32px;         /* Cabeçalho */
+  --text-h2:24px;         /* Subtítulo */
+  --text-h3:16px;         /* Cabeçalho de seção */
+  --text-h4:12px;         /* Subcabeçalho */
+  --text-body:16px;       /* Corpo */
+  --text-quote:15px;      /* Citação */
+  --text-label:11px;      /* legenda/métrica/status, mono */
+
+  --weight-regular:400;
+  --weight-medium:500;
+  --weight-semibold:600;
+  --weight-bold:700;
+
+  --leading-tight:1.02;
+  --leading-snug:1.25;
+  --leading-normal:1.55;
+
+  --tracking-tight:-.04em;
+  --tracking-label:.14em;
+}

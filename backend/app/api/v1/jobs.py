@@ -51,6 +51,12 @@ async def create_job(req: CreateJobRequest, session: AsyncSession = Depends(get_
     return job
 
 
+@router.get("/", response_model=list[JobResponse])
+async def list_jobs(session: AsyncSession = Depends(get_session)):
+    repo = JobRepository(session)
+    return await repo.list_all()
+
+
 @router.get("/{job_id}", response_model=JobResponse)
 async def get_job(job_id: str, session: AsyncSession = Depends(get_session)):
     repo = JobRepository(session)

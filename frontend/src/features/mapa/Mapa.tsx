@@ -100,7 +100,7 @@ export function Mapa() {
   });
 
   return (
-    <div class="flex h-full flex-col gap-6">
+    <div class="flex h-full flex-col gap-4 overflow-hidden p-6">
       <div>
         <h1 class="text-[var(--text-h2)] font-bold tracking-[var(--tracking-tight)] text-[var(--text-primary)]">
           Mapa Operacional

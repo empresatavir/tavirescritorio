@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "frontend-dev",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd /d C:\\Users\\carlo\\Downloads\\Projetos a Estudar\\tavirescritorio\\frontend && npm run dev"],
+      "port": 5173,
+      "url": "http://localhost:5173"
+    }
+  ]
+}

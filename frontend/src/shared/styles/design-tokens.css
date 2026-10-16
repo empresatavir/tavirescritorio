@@ -1,28 +1,74 @@
-/* TAVIR Design System Tokens — Fonte: _ds_manifest.json + readme.md */
+/* TAVIR Design System — Tokens Oficiais (Fonte da Verdade) */
 
 :root {
-  /* Colors — Dark Theme (default) */
-  --ink-primary: #0B1220;
-  --accent-lima: #B7F34A;
-  --accent-teal: #1BC5BD;
-  --surface-cloud: #F4F6F2;
-  --surface-slate: #5E6878;
+  /* Base Palette */
+  --ink: #0B1220;
+  --lime: #B7F34A;
+  --teal: #1BC5BD;
+  --cloud: #F4F6F2;
+  --slate: #5E6878;
+  --lime-ink: #25360a; /* text-on-lime */
+  --teal-ink: #063b38; /* text-on-teal */
+  --teal-deep: #0B6C67; /* teal darkened for text on light surfaces (5.3:1 on Nuvem) */
 
-  /* Semantic Tokens — Dark */
-  --bg-primary: var(--ink-primary);
-  --bg-secondary: #111827;
-  --bg-hover: #1a2236;
-  --bg-active: rgba(183, 243, 74, 0.12);
-  --text-primary: var(--surface-cloud);
-  --text-secondary: #9ca3af;
-  --text-muted: var(--surface-slate);
-  --border-primary: rgba(244, 246, 242, 0.14);
+  /* Structural Ink Surface — identical in BOTH themes (light hybrid) */
+  --surface-ink: var(--ink);
+  --on-ink: var(--cloud);
+  --on-ink-muted: #aeb7c4;
+  --on-ink-accent: var(--lime);
+  --on-ink-flow: var(--teal);
 
-  /* Typography */
-  --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --font-head: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  /* Surfaces (dark, default) */
+  --surface-0: var(--ink);
+  --surface-1: #121c30;
+  --surface-2: #0f1729;
+  --line: rgba(244, 246, 242, 0.16);
+  --line-strong: rgba(244, 246, 242, 0.34);
 
+  /* Text (dark surface) */
+  --text-primary: var(--cloud);
+  --text-secondary: #cbd3de;
+  --text-muted: #aeb7c4;
+
+  /* Semantic Status */
+  --success: var(--teal);
+  --success-ink: var(--teal-ink);
+  --success-subtle: rgba(27, 197, 189, 0.14);
+  --warning: oklch(0.80 0.155 78);
+  --warning-ink: oklch(0.30 0.07 78);
+  --warning-subtle: oklch(0.80 0.155 78 / 0.16);
+  --danger: oklch(0.635 0.185 27);
+  --danger-ink: oklch(0.98 0.01 27);
+  --danger-subtle: oklch(0.635 0.185 27 / 0.16);
+
+  /* Semantic Actions */
+  --action: var(--lime);
+  --action-text: var(--lime-ink);
+  --action-bg: var(--lime);
+  --action-fg: var(--lime-ink);
+  --action-bg-hover: #a6e236;
+  --action-subtle: rgba(183, 243, 74, 0.14);
+  --action-subtle-line: rgba(183, 243, 74, 0.32);
+  --action-subtle-text: var(--lime);
+
+  /* Flow */
+  --flow: var(--teal);
+  --flow-text: var(--teal-ink);
+  --flow-subtle: rgba(27, 197, 189, 0.14);
+  --flow-subtle-line: rgba(27, 197, 189, 0.32);
+  --flow-subtle-text: var(--teal);
+
+  /* Borders & Focus */
+  --border-default: var(--line);
+  --border-strong: var(--line-strong);
+  --focus-ring: var(--lime);
+
+  /* Typography Scale */
+  --font-body: "Instrument Sans", Arial, -apple-system, sans-serif;
+  --font-head: "Instrument Sans", Arial, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", Consolas, monospace;
+
+  --text-title: 60px;
   --text-h1: 32px;
   --text-h2: 24px;
   --text-h3: 16px;
@@ -43,7 +89,7 @@
   --tracking-tight: -0.04em;
   --tracking-label: 0.14em;
 
-  /* Spacing (4px base) */
+  /* Spacing Scale (4px base) */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -54,6 +100,10 @@
   --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
+
+  --logo-x: 8px;
+  --logo-clear-wordmark: calc(var(--logo-x) * 4);
+  --logo-clear-symbol: calc(var(--logo-x) * 3);
 
   /* Radii */
   --radius-sm: 8px;
@@ -68,16 +118,52 @@
   --ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
   --duration-fast: 120ms;
   --duration-standard: 180ms;
+
+  /* Aliases for backwards compatibility */
+  --ink-primary: var(--ink);
+  --accent-lima: var(--lime);
+  --accent-teal: var(--teal);
+  --surface-cloud: var(--cloud);
+  --surface-slate: var(--slate);
+  --bg-primary: var(--surface-0);
+  --bg-secondary: var(--surface-1);
+  --border-primary: var(--border-default);
 }
 
-/* Light Theme Override — Hybrid Structural */
+/* Light Theme — Híbrido Estrutural */
 [data-theme="light"] {
-  --bg-primary: var(--surface-cloud);
-  --bg-secondary: #ffffff;
-  --bg-hover: #e8ebe6;
-  --bg-active: rgba(11, 18, 32, 0.08);
-  --text-primary: var(--ink-primary);
-  --text-secondary: #4b5563;
-  --text-muted: var(--surface-slate);
-  --border-primary: rgba(11, 18, 32, 0.14);
+  --surface-0: var(--cloud);
+  --surface-1: #ffffff;
+  --surface-2: #ffffff;
+  --line: rgba(11, 18, 32, 0.14);
+  --line-strong: rgba(11, 18, 32, 0.32);
+  --border-default: rgba(11, 18, 32, 0.14);
+  --border-strong: rgba(11, 18, 32, 0.32);
+  --text-primary: var(--ink);
+  --text-secondary: #3a4557;
+  --text-muted: #5E6878;
+
+  --action-bg: var(--ink);
+  --action-fg: var(--lime);
+  --action-bg-hover: #182339;
+  --action-subtle: var(--ink);
+  --action-subtle-line: var(--ink);
+  --action-subtle-text: var(--lime);
+
+  --flow: var(--teal-deep);
+  --flow-text: var(--cloud);
+  --flow-subtle: rgba(11, 108, 103, 0.10);
+  --flow-subtle-line: rgba(11, 108, 103, 0.30);
+  --flow-subtle-text: var(--teal-deep);
+
+  --success: var(--teal-deep);
+  --success-ink: var(--cloud);
+  --success-subtle: rgba(11, 108, 103, 0.10);
+  --danger: oklch(0.52 0.18 27);
+  --warning: oklch(0.52 0.12 78);
+  --focus-ring: var(--ink);
+
+  --bg-primary: var(--surface-0);
+  --bg-secondary: var(--surface-1);
+  --border-primary: var(--border-default);
 }
