@@ -11,6 +11,10 @@ from app.models.template import EngineeringTemplate
 from app.models.persona import Persona
 from app.models.profile import Profile
 from app.models.piece import Piece
+from app.models.workflow import Workflow
+from app.models.idea import Idea
+from app.models.integration_check import IntegrationCheck
+from app.models.knowledge_entry import KnowledgeEntry
 
 __all__ = [
     "Base",
@@ -25,4 +29,8 @@ __all__ = [
     "Persona",
     "Profile",
     "Piece",
+    "Workflow",
+    "Idea",
+    "IntegrationCheck",
+    "KnowledgeEntry",
 ]
