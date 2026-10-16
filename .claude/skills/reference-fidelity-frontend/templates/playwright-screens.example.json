@@ -1,0 +1,77 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "deviceScaleFactor": 1,
+    "isMobile": false
+  },
+  "locale": "pt-BR",
+  "timezoneId": "America/Sao_Paulo",
+  "colorScheme": "light",
+  "timeoutMs": 15000,
+  "semanticInventory": true,
+  "includeFieldValues": false,
+  "fullPage": false,
+  "sides": {
+    "reference": {
+      "url": "../reference/index.html"
+    },
+    "candidate": {
+      "url": "http://127.0.0.1:4173"
+    }
+  },
+  "output": {
+    "reference": "reference",
+    "candidate": "actual",
+    "report": "report",
+    "semantics": "semantics"
+  },
+  "comparison": {
+    "enabled": true,
+    "threshold": 12,
+    "python": "python3"
+  },
+  "screens": [
+    {
+      "id": "home",
+      "reference": {
+        "actions": []
+      },
+      "candidate": {
+        "actions": []
+      }
+    },
+    {
+      "id": "tasks",
+      "reference": {
+        "actions": [
+          { "type": "click", "role": "button", "name": "Tasks" },
+          { "type": "assertVisible", "role": "heading", "name": "Tasks" }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          { "type": "click", "role": "button", "name": "Tasks" },
+          { "type": "assertVisible", "role": "heading", "name": "Tasks" }
+        ]
+      }
+    },
+    {
+      "id": "task-detail",
+      "reference": {
+        "actions": [
+          { "type": "click", "role": "button", "name": "Tasks" },
+          { "type": "click", "role": "link", "name": "Abrir tarefa" },
+          { "type": "assertVisible", "selector": "[data-screen='task-detail']" }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          { "type": "click", "role": "button", "name": "Tasks" },
+          { "type": "click", "role": "link", "name": "Abrir tarefa" },
+          { "type": "assertVisible", "selector": "[data-screen='task-detail']" }
+        ]
+      }
+    }
+  ]
+}

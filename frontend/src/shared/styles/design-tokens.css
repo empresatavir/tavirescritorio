@@ -1,0 +1,83 @@
+/* TAVIR Design System Tokens — Fonte: _ds_manifest.json + readme.md */
+
+:root {
+  /* Colors — Dark Theme (default) */
+  --ink-primary: #0B1220;
+  --accent-lima: #B7F34A;
+  --accent-teal: #1BC5BD;
+  --surface-cloud: #F4F6F2;
+  --surface-slate: #5E6878;
+
+  /* Semantic Tokens — Dark */
+  --bg-primary: var(--ink-primary);
+  --bg-secondary: #111827;
+  --bg-hover: #1a2236;
+  --bg-active: rgba(183, 243, 74, 0.12);
+  --text-primary: var(--surface-cloud);
+  --text-secondary: #9ca3af;
+  --text-muted: var(--surface-slate);
+  --border-primary: rgba(244, 246, 242, 0.14);
+
+  /* Typography */
+  --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-head: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --text-h1: 32px;
+  --text-h2: 24px;
+  --text-h3: 16px;
+  --text-h4: 12px;
+  --text-body: 16px;
+  --text-quote: 15px;
+  --text-label: 11px;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --leading-tight: 1.02;
+  --leading-snug: 1.25;
+  --leading-normal: 1.55;
+
+  --tracking-tight: -0.04em;
+  --tracking-label: 0.14em;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+
+  /* Effects */
+  --shadow-elevated: 0 26px 74px rgba(0, 0, 0, 0.34);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --stroke-icon: 1.9px;
+  --ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-standard: 180ms;
+}
+
+/* Light Theme Override — Hybrid Structural */
+[data-theme="light"] {
+  --bg-primary: var(--surface-cloud);
+  --bg-secondary: #ffffff;
+  --bg-hover: #e8ebe6;
+  --bg-active: rgba(11, 18, 32, 0.08);
+  --text-primary: var(--ink-primary);
+  --text-secondary: #4b5563;
+  --text-muted: var(--surface-slate);
+  --border-primary: rgba(11, 18, 32, 0.14);
+}
