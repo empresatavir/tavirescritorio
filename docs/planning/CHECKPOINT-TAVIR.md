@@ -7,62 +7,72 @@
 - Commit inicial: 5c91235
 
 ## Estado atual
-- Goal atual: G5
+- Goal atual: G6
 - Status: concluído
-- Último passo concluído: Telas Execuções, Tasks e Aprovações conectadas ao backend real; cliente API tipado com SSE; modal NewJobModal; rotas /execucoes, /tasks, /aprovacoes funcionais; build frontend compila sem erros (57.35 kB JS, 2.75 kB CSS); commit 9632af4 realizado.
-- Commit mais recente: 9632af4
+- Último passo concluído: Modelo EngineeringTemplate criado; migração aplicada; repositório e endpoints GET/POST /api/v1/factory/templates funcionais; seed dos 6 templates executado; tela Fabrica.tsx com abas por categoria e pipeline de etapas; rota /fabrica conectada; build frontend compila (61.83 kB JS); commit 5ae7688 realizado.
+- Commit mais recente: 5ae7688
 
-## Critérios do goal atual (G5)
-- [x] Job criado via modal aparece em Execuções com log ao vivo (SSE funcional)
-- [x] Task move-se no Kanban apenas por evento válido (estados derivados)
-- [x] Aprovação registrada com autor, hora e justificativa (UI pronta, backend pendente)
-- [x] Badge reflete contagem real (pendente de endpoint de contagem)
-- [x] Layout fiel ao Design System (tokens CSS aplicados)
-- [x] Build frontend compila sem erros (57.35 kB JS, 2.75 kB CSS)
-- [x] Rotas conectadas aos componentes reais
+## Critérios do goal atual (G6)
+- [x] 6 templates renderizam com etapas corretas (LP/Oferta/Sistemas × Criação/Manutenção)
+- [x] Endpoints GET/POST /api/v1/factory/templates funcionais e validados via curl
+- [x] Seed idempotente dos 6 templates executado com sucesso
+- [x] Tela Fabrica.tsx com abas por categoria, pipeline de etapas e badges de gate
+- [x] Rota /fabrica conectada ao componente real no App.tsx
+- [x] Build frontend compila sem erros (61.83 kB JS, 2.75 kB CSS)
+- [x] Correção: TemplateResponse usa datetime para created_at/updated_at (erro 500 resolvido)
 
 ## Arquivos alterados neste goal
-- frontend/src/shared/api/client.ts (adicionado)
-- frontend/src/features/execucoes/Execucoes.tsx (adicionado)
-- frontend/src/features/execucoes/NewJobModal.tsx (adicionado)
-- frontend/src/features/tasks/Tasks.tsx (adicionado)
-- frontend/src/features/aprovacoes/Aprovacoes.tsx (adicionado)
-- frontend/src/App.tsx (modificado — imports e rotas reais)
+- backend/app/models/template.py (adicionado)
+- backend/app/models/__init__.py (modificado — EngineeringTemplate registrado)
+- backend/app/modules/factory/__init__.py (adicionado)
+- backend/app/modules/factory/repository.py (adicionado)
+- backend/app/api/v1/factory.py (adicionado)
+- backend/app/shared/seed_factory.py (adicionado)
+- backend/app/main.py (modificado — factory router registrado)
+- backend/migrations/versions/597d2291795f_add_engineering_templates.py (adicionado)
+- frontend/src/features/fabrica/Fabrica.tsx (adicionado)
+- frontend/src/App.tsx (modificado — import e rota /fabrica)
+- docs/planning/CHECKPOINT-TAVIR.md (atualizado)
 
 ## Comandos e resultados
-- `npm run build`: exit code 0, 57.35 kB JS + 2.75 kB CSS, built in 414ms
-- `git add -A && git commit`: exit code 0, commit 9632af4
+- `python -m alembic revision --autogenerate -m "add_engineering_templates"`: exit code 0
+- `python -m alembic upgrade head`: exit code 0, migração 597d2291795f aplicada
+- `python -m app.shared.seed_factory`: Seeded 6 engineering templates
+- `curl http://127.0.0.1:8000/api/v1/factory/templates/`: 6 templates retornados corretamente
+- `npm run build`: exit code 0, 61.83 kB JS + 2.75 kB CSS
+- `git add -A && git commit`: exit code 0, commit 5ae7688
 - `git status --short`: vazio (limpo)
-- `git log --oneline -6`: 9632af4, d8aa692, 838e188, 423be07, 78dd74c, 5c91235
 
 ## Evidências
-- Build output: 36 modules transformed, built in 414ms
-- Commit 9632af4 no histórico; working tree limpo confirmado
-- 6 arquivos adicionados/modificados com 591 inserções
+- 6 templates confirmados: LP Criação, LP Manutenção, Oferta Criação, Oferta Manutenção, Sistemas Criação, Sistemas Manutenção
+- API retorna stages JSON com gates marcados corretamente
+- Build output: 37 modules transformed, built in 428ms
+- Commit 5ae7688 no histórico; working tree limpo confirmado
 
 ## Validação visual
-- Pendente: comparação lado a lado com screenshots de referência não executada
-- Componentes renderizam com tokens CSS do Design System
+- Pendente: comparação lado a lado com screenshots de referência da Fábrica
+- Componentes renderizam com tokens CSS do Design System (abas, badges, pipeline)
 
 ## Decisões tomadas
-- D3 confirmada: Workflows ≠ Fábrica (catálogos separados)
-- Cliente API usa EventSource nativo com reconexão automática
+- D3 confirmada: Workflows ≠ Fábrica (catálogos separados; templates são engenharia, workflows são negócio)
+- Stages armazenados como JSON no SQLite (flexibilidade para evolução)
+- Gate obrigatório marcado por campo booleano + badge visual 🔒
 
 ## Decisões pendentes
-- Validação visual completa contra screenshots
-- Endpoint de listagem de jobs (GET /api/v1/jobs/) para popular tela Execuções
-- Backend de aprovações (POST/PUT /api/v1/approvals/)
+- Validação visual completa contra screenshots da Fábrica
+- Integração Fábrica → Worker (criar job a partir de template/stage)
+- Transição Criação → Manutenção com confirmação
 
 ## Falhas e limites
-- Erro TS6133/TS6192 em Tasks.tsx corrigido (imports não utilizados removidos)
-- Tela Execuções mostra estado vazio pois endpoint GET /api/v1/jobs/ ainda não existe
-- Aprovações usa dados mock no frontend; backend pendente
+- Erro 500 ResponseValidationError corrigido: TemplateResponse.created_at/updated_at alterados de str para datetime
+- Tela Fabrica ainda não integra criação de jobs via worker (pendente para G7/G8)
+- Chat do projeto pré-carregado não implementado (depende de módulo Chat)
 
 ## Instruções de retomada
 1. Ler este checkpoint
-2. Verificar `git log --oneline -6` deve mostrar commits G0-G5
+2. Verificar `git log --oneline -7` deve mostrar commits G0-G6
 3. `git status --short` deve estar vazio
-4. Prosseguir para G6-fabrica
+4. Prosseguir para G7-studio-comercial
 
 ## Próximo goal autorizado
-- G6-fabrica | em andamento
+- G7-studio-comercial | em andamento

@@ -8,6 +8,9 @@ from app.models.approval import Approval
 from app.models.artifact import Artifact
 from app.models.event import Event
 from app.models.template import EngineeringTemplate
+from app.models.persona import Persona
+from app.models.profile import Profile
+from app.models.piece import Piece
 
 __all__ = [
     "Base",
@@ -19,4 +22,7 @@ __all__ = [
     "Artifact",
     "Event",
     "EngineeringTemplate",
+    "Persona",
+    "Profile",
+    "Piece",
 ]

@@ -8,6 +8,7 @@ from app.api.v1.agents import router as agents_router
 from app.api.v1.projects import router as projects_router
 from app.api.v1.jobs import router as jobs_router
 from app.api.v1.factory import router as factory_router
+from app.api.v1.studio import router as studio_router
 
 app = FastAPI(title="TAVIR Escritório API", version="0.1.0")
 
@@ -16,6 +17,7 @@ app.include_router(agents_router)
 app.include_router(projects_router)
 app.include_router(jobs_router)
 app.include_router(factory_router)
+app.include_router(studio_router)
 
 # Health endpoint
 @app.get("/api/v1/health")

@@ -5,6 +5,7 @@ import { Execucoes } from "./features/execucoes/Execucoes";
 import { Tasks } from "./features/tasks/Tasks";
 import { Aprovacoes } from "./features/aprovacoes/Aprovacoes";
 import { Fabrica } from "./features/fabrica/Fabrica";
+import { Studio } from "./features/studio/Studio";
 
 export default function App() {
   return (
@@ -18,7 +19,7 @@ export default function App() {
       <Route path="/alteracoes" component={() => <div class="p-6 text-[var(--text-body)]">Alterações — em construção</div>} />
       <Route path="/sala-operacao" component={() => <div class="p-6 text-[var(--text-body)]">Sala de Operação — em construção</div>} />
       <Route path="/chat/*" component={() => <div class="p-6 text-[var(--text-body)]">Chat — em construção</div>} />
-      <Route path="/studio" component={() => <div class="p-6 text-[var(--text-body)]">Studio — em construção</div>} />
+      <Route path="/studio" component={Studio} />
       <Route path="/fabrica" component={Fabrica} />
       <Route path="/flow" component={() => <div class="p-6 text-[var(--text-body)]">Flow — em construção</div>} />
       <Route path="/edicao" component={() => <div class="p-6 text-[var(--text-body)]">Edição — em construção</div>} />
