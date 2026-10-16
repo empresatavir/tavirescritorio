@@ -1,5 +1,4 @@
 # CHECKPOINT-TAVIR
-
 ## Baseline
 - Doc escopo hash: pendente
 - Doc detalhamento hash: pendente
@@ -8,82 +7,80 @@
 - Commit inicial: 5c91235
 
 ## Estado atual
-- Goal atual: G2
+- Goal atual: G3
 - Status: concluído
-- Último passo concluído: Scaffold frontend SolidJS+Vite+TS; backend FastAPI com health endpoint; fontes OFL baixadas e servidas; design tokens aplicados; shell com sidebar 8 grupos e header; build bem-sucedido; validação de static files, SPA fallback e fontes via curl.
-- Commit mais recente: pendente (aguardando commit do G2)
+- Último passo concluído: Schema SQLite criado via Alembic; modelos Agent/Project/Task/Job/Approval/Artifact/Event; repositórios assíncronos; seed idempotente executado; endpoints GET /api/v1/agents e /api/v1/projects funcionais; pytest.ini configurado; 5/5 testes passando (unit + integration).
+- Commit mais recente: pendente (aguardando commit do G3)
 
-## Critérios do goal atual (G2)
-- [x] GET /api/v1/health retorna {"status":"ok","version":"0.1.0"} com 200
-- [x] App abre em http://127.0.0.1:8000 e renderiza shell
-- [x] Sidebar tem 8 grupos; header tem breadcrumb e seletor de tema
-- [x] Fontes carregam sem rede (self-hosted OFL: Instrument Sans + IBM Plex Mono)
-- [x] Tokens CSS exatos do _ds_manifest.json aplicados
-- [x] Zero requisições CDN em carga normal
-- [x] Build frontend compila sem erros (45.65 kB JS, 2.75 kB CSS)
-- [x] Static files servidos corretamente (200 para /, /assets/*.css, /assets/*.ttf)
-- [x] SPA fallback funciona (200 para /execucoes)
-- [ ] Validação visual contra screenshots (pendente — requer comparação manual ou tool de screenshot)
-- [ ] 14 componentes DS implementados (parcial — apenas shell criada; componentes individuais pendentes)
+## Critérios do goal atual (G3)
+- [x] Migração aplica sem erro; PRAGMA table_info confirma colunas
+- [x] Seed cria dados verificáveis (2 agents, 1 project, 1 task)
+- [x] GET /api/v1/agents retorna lista com ≥2 agentes
+- [x] GET /api/v1/projects retorna lista com ≥1 projeto
+- [x] Testes unitários passam (exit code 0) — 3/3
+- [x] Teste de integração passa — 2/2
+- [x] pytest.ini configurado com asyncio_mode=auto
 
 ## Arquivos alterados neste goal
-- frontend/package.json (adicionado via vite scaffold)
-- frontend/src/App.tsx (modificado — rotas SPA)
-- frontend/src/index.tsx (modificado — entry point)
-- frontend/src/index.css (modificado — importa tokens + font-face)
-- frontend/src/app/Shell.tsx (adicionado)
-- frontend/src/app/Sidebar.tsx (adicionado)
-- frontend/src/app/Header.tsx (adicionado)
-- frontend/src/features/home/Home.tsx (adicionado)
-- frontend/src/shared/styles/design-tokens.css (adicionado)
-- frontend/src/shared/fonts/InstrumentSans-VariableFont_wdth,wght.ttf (adicionado)
-- frontend/src/shared/fonts/IBMPlexMono-Regular.ttf (adicionado)
-- frontend/src/shared/fonts/IBMPlexMono-Medium.ttf (adicionado)
-- frontend/src/shared/fonts/IBMPlexMono-SemiBold.ttf (adicionado)
-- backend/app/main.py (adicionado)
-- backend/requirements.txt (adicionado)
-- backend/run.py (adicionado)
+- backend/alembic.ini (adicionado)
+- backend/migrations/env.py (adicionado)
+- backend/migrations/versions/b32e31c484df_initial_schema.py (adicionado)
+- backend/app/shared/database.py (adicionado)
+- backend/app/shared/seed.py (adicionado)
+- backend/app/models/__init__.py (adicionado)
+- backend/app/models/agent.py (adicionado)
+- backend/app/models/project.py (adicionado)
+- backend/app/models/task.py (adicionado)
+- backend/app/models/job.py (adicionado)
+- backend/app/models/approval.py (adicionado)
+- backend/app/models/artifact.py (adicionado)
+- backend/app/models/event.py (adicionado)
+- backend/app/modules/agents/repository.py (adicionado)
+- backend/app/modules/projects/repository.py (adicionado)
+- backend/app/modules/tasks/repository.py (adicionado)
+- backend/app/api/v1/schemas.py (adicionado)
+- backend/app/api/v1/agents.py (adicionado)
+- backend/app/api/v1/projects.py (adicionado)
+- backend/app/main.py (modificado — routers registrados)
+- backend/requirements.txt (modificado — sqlalchemy, aiosqlite, alembic)
+- backend/pytest.ini (adicionado)
+- backend/tests/unit/test_repositories.py (adicionado)
+- backend/tests/integration/test_migrations.py (adicionado)
+- backend/tavir.db (gerado — não versionado)
 
 ## Comandos e resultados
-- `npm create vite@latest frontend-temp -- --template solid-ts`: exit code 0
-- `npm install @solidjs/router`: exit code 0
-- `curl -fsSL` (fontes): exit code 0, 4 arquivos TTF baixados
-- `npm run build`: exit code 0, 45.65 kB JS + 2.75 kB CSS
-- `curl http://127.0.0.1:8000/api/v1/health`: {"status":"ok","version":"0.1.0"}
-- `curl -s -o /dev/null -w "%{http_code}" /`: 200
-- `curl -s -o /dev/null -w "%{http_code}" /assets/index-WeLafm8W.css`: 200
-- `curl -s -o /dev/null -w "%{http_code}" /execucoes`: 200
-- `curl -s -o /dev/null -w "%{http_code}" /assets/InstrumentSans-*.ttf`: 200
-- `curl -s -o /dev/null -w "%{http_code}" /assets/IBMPlexMono-Regular-*.ttf`: 200
+- `python -m alembic revision --autogenerate -m "initial_schema"`: exit code 0, 7 tabelas detectadas
+- `python -m alembic upgrade head`: exit code 0, migração b32e31c484df aplicada
+- `python -m app.shared.seed`: exit code 0, 2 agents + 1 project + 1 task
+- `curl http://127.0.0.1:8000/api/v1/agents/`: 2 agentes retornados
+- `curl http://127.0.0.1:8000/api/v1/projects/`: 1 projeto retornado
+- `python -m pytest tests/ -v`: 5 passed in 0.58s
 
 ## Evidências
-- Build output: 32 modules transformed, built in 439ms
-- Health check: {"status":"ok","version":"0.1.0"}
-- Static files: todos retornam HTTP 200
-- Fontes: 4 arquivos TTF em src/shared/fonts/ (194KB + 135KB + 136KB + 140KB)
+- 7 tabelas SQLite confirmadas: agents, approvals, artifacts, events, jobs, projects, tasks
+- API agents: [{"name":"Atlas","role":"Engenheiro de Software"},{"name":"Luna","role":"Designer de Produto"}]
+- API projects: [{"slug":"tavir-escritorio","name":"TAVIR Escritório"}]
+- pytest output: 5 passed (2 integration + 3 unit)
 
 ## Validação visual
-- Pendente: comparação lado a lado com screenshots de referência não executada
-- Shell renderiza com sidebar e header; tokens CSS aplicados
+- N/A (goal de backend/dados)
 
 ## Decisões tomadas
-- D2 confirmada: SolidJS SPA (sem SolidStart)
-- D7 confirmada: fontes OFL baixadas do GitHub google/fonts
-- D10 confirmada: skills instaladas em .claude/skills/
+- D8 confirmada: piloto simples primeiro (sem LangGraph neste goal)
+- Ferramenta de migração: Alembic com SQLAlchemy async + aiosqlite
 
 ## Decisões pendentes
-- Validação visual completa contra screenshots (requer ferramenta de captura ou revisão manual)
-- Implementação dos 14 componentes DS individuais (postergado para goals subsequentes)
+- Nenhuma para G3
 
 ## Falhas e limites
-- Erro TS1484 em Shell.tsx corrigido (type-only import)
-- Componentes DS completos não implementados neste goal (apenas tokens e shell)
+- Erro pytest-asyncio AssertionError corrigido com pytest.ini (asyncio_mode=auto)
+- tavir.db não versionado (.gitignore já cobre *.db)
 
 ## Instruções de retomada
 1. Ler este checkpoint
-2. Verificar `git log --oneline -3` deve mostrar commits G0, G1 e G2
+2. Verificar `git log --oneline -4` deve mostrar commits G0, G1, G2 e G3
 3. `git status --short` deve estar vazio após commit
-4. Prosseguir para G3-database-foundation
+4. Prosseguir para G4-worker-job-cycle
 
 ## Próximo goal autorizado
-- G3-database-foundation | aguardando autorização
+- G4-worker-job-cycle | aguardando autorização
