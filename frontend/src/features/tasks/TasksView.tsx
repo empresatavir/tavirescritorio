@@ -1,5 +1,13 @@
-import { createSignal, For, Show } from "solid-js";
-import { tasks, setTasks, selectedTaskId, setSelectedTaskId, setSelectedJobId, setCurrentScreenId, showToast } from "../../state/store";
+import { createSignal, createEffect, onCleanup, For, Show } from "solid-js";
+import {
+  tasks,
+  selectedTaskId,
+  setSelectedTaskId,
+  setSelectedJobId,
+  setCurrentScreenId,
+  syncTasks,
+  moveTaskPersistent,
+} from "../../state/store";
 import { TvIcon } from "../../shared/components/TvIcon";
 
 export function TasksView() {
@@ -10,6 +18,14 @@ export function TasksView() {
     done: "",
   });
   const [expanded, setExpanded] = createSignal(false);
+
+  createEffect(() => {
+    syncTasks();
+    const timer = setInterval(() => {
+      syncTasks();
+    }, 4000);
+    onCleanup(() => clearInterval(timer));
+  });
 
   const selectedTask = () => tasks().find((t) => t.id === selectedTaskId());
 
@@ -32,15 +48,7 @@ export function TasksView() {
   };
 
   const moveTask = (taskId: string, newStatus: "pending" | "in_progress" | "done") => {
-    setTasks((prev) =>
-      prev.map((t) => {
-        if (t.id === taskId) {
-          return { ...t, status: newStatus };
-        }
-        return t;
-      })
-    );
-    showToast(`Task movida para ${newStatus === "done" ? "Concluído" : newStatus === "in_progress" ? "Em andamento" : "Pendente"}`);
+    moveTaskPersistent(taskId, newStatus);
   };
 
   const priorityMeta = (prio: string) => {

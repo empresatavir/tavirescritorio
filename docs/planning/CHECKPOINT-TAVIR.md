@@ -5,10 +5,11 @@
 - Branch: master
 
 ## Estado atual
-- Goal atual: /goal finalizado com fidelidade visual absoluta ao Layout Moderno
+- Goal atual: Backend Fase 2 — Agentes & Comunicação (Catálogo dos 47 Agentes + Editor de Almas Operacionais + Chat com Persistência + Organograma)
 - Status: 100% Concluído
-- Backend: FastAPI + SQLite + SQLAlchemy async + aiosqlite (8/8 testes passando)
-- Frontend: SolidJS SPA + Vite + TypeScript (build 100% limpo, 0 erros)
+- Backend: FastAPI + SQLite + SQLAlchemy async + aiosqlite (18/18 testes passando no pytest)
+- Migrações Alembic: 6 migrações aplicadas (até f2a3b4c5d6e7)
+- Frontend: SolidJS SPA + Vite + TypeScript (build 100% limpo, 0 erros, conectado via client.ts e store reativa)
 - Shell: 3 colunas (56px Rail + 212px SubNav + 52px Header)
 - 40+ Rotas ativas e integradas: ZERO placeholders "em construção"
 

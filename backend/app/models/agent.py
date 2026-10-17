@@ -1,5 +1,4 @@
-"""Agent model — roster entity for TAVIR agents."""
-from sqlalchemy import String, Text, DateTime, func
+from sqlalchemy import String, Text, DateTime, Integer, Float, func
 from sqlalchemy.orm import Mapped, mapped_column
 from app.shared.database import Base
 
@@ -14,6 +13,12 @@ class Agent(Base):
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
     skills: Mapped[str | None] = mapped_column(Text, nullable=True)
     model_provider: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    soul_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    total_jobs: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    total_cost: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
+    avatar_color: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    initials: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    last_run: Mapped[str | None] = mapped_column(String(50), nullable=True)
     last_activity_at: Mapped[str | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[str] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

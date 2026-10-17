@@ -355,6 +355,7 @@ export const [selectedApprovalId, setSelectedApprovalId] = createSignal<string |
 
 export const [agents, setAgents] = createSignal<RosterAgent[]>(INITIAL_AGENTS);
 export const [selectedAgentId, setSelectedAgentId] = createSignal<string | null>(null);
+export const [activeChatAgentId, setActiveChatAgentId] = createSignal<string | null>(null);
 
 export const [capturedNotes, setCapturedNotes] = createSignal<string[]>([]);
 
@@ -375,6 +376,8 @@ export function showToast(message: string, title?: string, tone?: any) {
     setToastMessage(null);
   }, 3500);
 }
+
+export const [cockpitData, setCockpitData] = createSignal<any | null>(null);
 
 // Fetch live jobs from backend and merge
 export async function syncLiveJobs() {
@@ -411,4 +414,172 @@ export async function syncLiveJobs() {
   } catch (err) {
     console.warn("Could not sync live jobs:", err);
   }
+}
+
+// Fetch live tasks from backend and merge
+export async function syncTasks() {
+  try {
+    const backendTasks = await api.listTasks();
+    if (backendTasks && backendTasks.length > 0) {
+      const curAgents = agents();
+      const mappedTasks: UiTask[] = backendTasks.map((t) => {
+        const ag = curAgents.find((a) => a.id === t.assignee_agent_id);
+        return {
+          id: t.id,
+          seq: t.seq || 0,
+          title: t.title,
+          status: t.status === "in_progress" ? "in_progress" : t.status === "done" ? "done" : "pending",
+          assignee: ag ? ag.name : "Agente",
+          priority: (t.priority as any) || "normal",
+          sector: t.sector || "Operação",
+          escalation: t.escalation || undefined,
+          handoffs: Array.isArray(t.handoffs) ? t.handoffs : t.handoffs ? [String(t.handoffs)] : undefined,
+          gates: Array.isArray(t.gates) ? t.gates : t.gates ? [String(t.gates)] : undefined,
+          activeJobId: t.active_job_id || undefined,
+          tags: Array.isArray(t.tags) ? t.tags : t.tags ? [String(t.tags)] : [],
+          description: t.description || undefined,
+        };
+      });
+      setTasks(mappedTasks);
+    }
+  } catch (err) {
+    console.warn("Could not sync tasks:", err);
+  }
+}
+
+// Fetch live approvals from backend and merge
+export async function syncApprovals() {
+  try {
+    const backendApprovals = await api.listApprovals();
+    if (backendApprovals && backendApprovals.length > 0) {
+      const curAgents = agents();
+      const mappedApprovals: UiApproval[] = backendApprovals.map((a) => {
+        const ag = curAgents.find((ag) => ag.id === a.requester_agent_id);
+        return {
+          id: a.id,
+          title: a.title || `Aprovação ${a.id}`,
+          agentId: a.requester_agent_id || "ag-01",
+          agentName: ag ? ag.name : "Agente",
+          type: (a.type as any) || "authorization",
+          status: (a.status as any) || "pending",
+          requestedAt: a.created_at ? new Date(a.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "—",
+          description: a.description || "",
+          impact: (a.impact as any) || "medium",
+          taskId: a.task_id || undefined,
+          reason: a.reason || undefined,
+          onApproveText: a.on_approve_text || undefined,
+          onRejectText: a.on_reject_text || undefined,
+        };
+      });
+      setApprovals(mappedApprovals);
+    }
+  } catch (err) {
+    console.warn("Could not sync approvals:", err);
+  }
+}
+
+// Fetch live cockpit summary from backend
+export async function syncCockpit() {
+  try {
+    const summary = await api.getCockpitSummary();
+    if (summary) {
+      setCockpitData(summary);
+    }
+  } catch (err) {
+    console.warn("Could not sync cockpit:", err);
+  }
+}
+
+// Persistent task status move
+export async function moveTaskPersistent(taskId: string, newStatus: "pending" | "in_progress" | "done") {
+  // Optimistic update
+  setTasks((prev) =>
+    prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
+  );
+  try {
+    await api.updateTaskStatus(taskId, newStatus);
+    showToast(`Task movida para ${newStatus === "done" ? "Concluído" : newStatus === "in_progress" ? "Em andamento" : "Pendente"}`);
+    syncCockpit();
+  } catch (err) {
+    console.error("Failed to persist task status:", err);
+    showToast("Erro ao sincronizar com banco de dados", "Atenção", "error");
+    syncTasks(); // rollback
+  }
+}
+
+// Persistent approval decision
+export async function decideApprovalPersistent(
+  approvalId: string,
+  decision: "approve" | "reject",
+  justification?: string
+) {
+  const newStatus = decision === "approve" ? "approved" : "rejected";
+  // Optimistic update
+  setApprovals((prev) =>
+    prev.map((a) => (a.id === approvalId ? { ...a, status: newStatus } : a))
+  );
+  try {
+    await api.decideApproval(approvalId, decision, justification);
+    showToast(
+      decision === "approve" ? `Aprovação ${approvalId} confirmada` : `Aprovação ${approvalId} rejeitada`,
+      "Decisão registrada",
+      decision === "approve" ? "success" : "warning"
+    );
+    syncCockpit();
+  } catch (err) {
+    console.error("Failed to persist approval decision:", err);
+    showToast("Erro ao registrar decisão no banco", "Atenção", "error");
+    syncApprovals(); // rollback
+  }
+}
+
+// Fetch live agents from backend SQLite
+export async function syncAgents() {
+  try {
+    const backendAgents = await api.listAgents();
+    if (backendAgents && backendAgents.length > 0) {
+      const mapped: RosterAgent[] = backendAgents.map((a) => ({
+        id: a.id,
+        name: a.name,
+        role: a.role,
+        sector: a.sector,
+        status: (a.status as any) || "idle",
+        lastRun: a.last_run || "agora",
+        totalJobs: a.total_jobs ?? 0,
+        totalCost: a.total_cost ?? 0,
+        model: a.model_provider || "claude-sonnet-4",
+        avatarColor: a.avatar_color || "#1BC5BD",
+        initials: a.initials || a.name.slice(0, 2).toUpperCase(),
+        soulText: a.soul_text || undefined,
+      }));
+      setAgents(mapped);
+    }
+  } catch (err) {
+    console.warn("Could not sync agents:", err);
+  }
+}
+
+// Persist agent soul markdown in backend SQLite
+export async function saveAgentSoulPersistent(agentId: string, soulText: string): Promise<boolean> {
+  // Optimistic update
+  setAgents((prev) =>
+    prev.map((a) => (a.id === agentId ? { ...a, soulText } : a))
+  );
+  try {
+    await api.updateAgentSoul(agentId, soulText);
+    showToast("Alma operacional persistida com sucesso no SQLite", "Agentes", "success");
+    return true;
+  } catch (err) {
+    console.error("Failed to persist agent soul:", err);
+    showToast("Erro ao persistir alma do agente no banco", "Erro", "error");
+    syncAgents(); // rollback from backend
+    return false;
+  }
+}
+
+// Open or switch to agent chat
+export function openAgentChat(agentId: string) {
+  setActiveChatAgentId(agentId);
+  setCurrentDomainId("chat");
+  setCurrentScreenId("chat");
 }

@@ -11,10 +11,16 @@ class AgentResponse(BaseModel):
     status: str
     skills: str | None = None
     model_provider: str | None = None
+    soul_text: str | None = None
+    total_jobs: int = 0
+    total_cost: float = 0.0
+    avatar_color: str | None = None
+    initials: str | None = None
+    last_run: str | None = None
     created_at: datetime
     updated_at: datetime
 
-    model_config = {"from_attributes": True}
+    model_config = {"from_attributes": True, "protected_namespaces": ()}
 
 
 class ProjectResponse(BaseModel):

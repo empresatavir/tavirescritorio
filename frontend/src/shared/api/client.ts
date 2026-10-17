@@ -13,8 +13,42 @@ export interface Agent {
   status: string;
   skills: string | null;
   model_provider: string | null;
+  soul_text?: string | null;
+  total_jobs?: number;
+  total_cost?: number;
+  avatar_color?: string | null;
+  initials?: string | null;
+  last_run?: string | null;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface ApiChatMessage {
+  id: string;
+  conversation_id: string;
+  role: "user" | "assistant";
+  text: string;
+  meta?: string | null;
+  created_at: string;
+}
+
+export interface ApiChatConversation {
+  id: string;
+  agent_id: string;
+  title: string;
+  settings?: Record<string, any> | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ApiChatConversationDetail {
+  conversation: ApiChatConversation;
+  messages: ApiChatMessage[];
+}
+
+export interface SendMessageResponse {
+  user_message: ApiChatMessage;
+  assistant_message: ApiChatMessage;
 }
 
 export interface Project {
@@ -127,6 +161,88 @@ export interface KnowledgeEntry {
   summary: string | null;
 }
 
+export interface ApiTask {
+  id: string;
+  seq?: number | null;
+  project_id: string;
+  title: string;
+  description?: string | null;
+  status: string;
+  priority: string;
+  assignee_agent_id?: string | null;
+  sector?: string | null;
+  escalation?: string | null;
+  handoffs?: any;
+  gates?: any;
+  tags?: any;
+  active_job_id?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ApiApproval {
+  id: string;
+  title?: string | null;
+  type?: string | null;
+  job_id?: string | null;
+  task_id?: string | null;
+  requester_agent_id?: string | null;
+  status: string;
+  impact?: string | null;
+  reason?: string | null;
+  description?: string | null;
+  on_approve_text?: string | null;
+  on_reject_text?: string | null;
+  decided_by?: string | null;
+  justification?: string | null;
+  decided_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CockpitSummary {
+  kpis: {
+    active_cards_count: number;
+    escalated_count: number;
+    running_jobs_count: number;
+  };
+  summary_text: string;
+  running_jobs: Array<{
+    id: string;
+    title: string;
+    agentName: string;
+    model: string;
+    progress: number;
+    taskId?: string;
+  }>;
+  escalated_tasks: Array<{
+    seq: string;
+    title: string;
+    to: string;
+    reason: string;
+    action?: string;
+    actionTarget?: string;
+    taskId: string;
+  }>;
+  active_tasks: Array<{
+    seq: string;
+    title: string;
+    assignee: string;
+    handoff: string;
+    jobLabel: string;
+    jobColor: string;
+    taskId: string;
+  }>;
+  needs: Array<{
+    icon: string;
+    color: string;
+    label: string;
+    detail: string;
+    count: string;
+    path: string;
+  }>;
+}
+
 async function fetchJson<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: { "Content-Type": "application/json" },
@@ -143,8 +259,97 @@ export const api = {
   // Health
   health: () => fetchJson<{ status: string; version: string }>("/api/v1/health"),
 
+  // Cockpit
+  getCockpitSummary: () => fetchJson<CockpitSummary>("/api/v1/cockpit/summary"),
+
+  // Tasks
+  listTasks: (query?: { status?: string; priority?: string }) => {
+    const params = new URLSearchParams();
+    if (query?.status) params.set("status", query.status);
+    if (query?.priority) params.set("priority", query.priority);
+    const qs = params.toString();
+    return fetchJson<ApiTask[]>(`/api/v1/tasks/${qs ? `?${qs}` : ""}`);
+  },
+  updateTaskStatus: (taskId: string, status: string) =>
+    fetchJson<ApiTask>(`/api/v1/tasks/${taskId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }),
+  createTask: (data: any) =>
+    fetchJson<ApiTask>("/api/v1/tasks/", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  // Approvals
+  listApprovals: (query?: { status?: string; impact?: string }) => {
+    const params = new URLSearchParams();
+    if (query?.status) params.set("status", query.status);
+    if (query?.impact) params.set("impact", query.impact);
+    const qs = params.toString();
+    return fetchJson<ApiApproval[]>(`/api/v1/approvals/${qs ? `?${qs}` : ""}`);
+  },
+  decideApproval: (
+    approvalId: string,
+    decision: string,
+    justification?: string,
+    decidedBy: string = "CEO"
+  ) =>
+    fetchJson<ApiApproval>(`/api/v1/approvals/${approvalId}/decide`, {
+      method: "POST",
+      body: JSON.stringify({
+        decision,
+        justification,
+        decided_by: decidedBy,
+      }),
+    }),
+
   // Agents
-  listAgents: () => fetchJson<Agent[]>("/api/v1/agents/"),
+  listAgents: (query?: { sector?: string; q?: string; status?: string }) => {
+    const params = new URLSearchParams();
+    if (query?.sector) params.set("sector", query.sector);
+    if (query?.q) params.set("q", query.q);
+    if (query?.status) params.set("status", query.status);
+    const qs = params.toString();
+    return fetchJson<Agent[]>(`/api/v1/agents/${qs ? `?${qs}` : ""}`);
+  },
+  getAgent: (agentId: string) => fetchJson<Agent>(`/api/v1/agents/${agentId}`),
+  getAgentSoul: (agentId: string) =>
+    fetchJson<{ agent_id: string; soul_text: string | null }>(`/api/v1/agents/${agentId}/soul`),
+  updateAgentSoul: (agentId: string, soul_text: string) =>
+    fetchJson<{ agent_id: string; soul_text: string }>(`/api/v1/agents/${agentId}/soul`, {
+      method: "PUT",
+      body: JSON.stringify({ soul_text }),
+    }),
+
+  // Chat
+  listChatConversations: (agentId?: string) => {
+    const params = new URLSearchParams();
+    if (agentId) params.set("agent_id", agentId);
+    const qs = params.toString();
+    return fetchJson<ApiChatConversation[]>(`/api/v1/chat/conversations${qs ? `?${qs}` : ""}`);
+  },
+  getChatConversation: (convId: string) =>
+    fetchJson<ApiChatConversationDetail>(`/api/v1/chat/conversations/${convId}`),
+  createChatConversation: (agentId: string, title: string, settings?: Record<string, any>) =>
+    fetchJson<ApiChatConversation>("/api/v1/chat/conversations", {
+      method: "POST",
+      body: JSON.stringify({ agent_id: agentId, title, settings }),
+    }),
+  updateChatSettings: (convId: string, settings: Record<string, any>) =>
+    fetchJson<ApiChatConversation>(`/api/v1/chat/conversations/${convId}/settings`, {
+      method: "PATCH",
+      body: JSON.stringify({ settings }),
+    }),
+  sendChatMessage: (convId: string, text: string) =>
+    fetchJson<SendMessageResponse>(`/api/v1/chat/conversations/${convId}/messages`, {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    }),
+  deleteChatConversation: (convId: string) =>
+    fetchJson<void>(`/api/v1/chat/conversations/${convId}`, {
+      method: "DELETE",
+    }),
 
   // Projects
   listProjects: () => fetchJson<Project[]>("/api/v1/projects/"),
@@ -157,6 +362,10 @@ export const api = {
       body: JSON.stringify(req),
     }),
   getJob: (jobId: string) => fetchJson<Job>(`/api/v1/jobs/${jobId}`),
+  retryJob: (jobId: string) =>
+    fetchJson<Job>(`/api/v1/jobs/${jobId}/retry`, { method: "POST" }),
+  cancelJob: (jobId: string) =>
+    fetchJson<Job>(`/api/v1/jobs/${jobId}/cancel`, { method: "POST" }),
 
   // Factory
   listTemplates: () => fetchJson<EngineeringTemplate[]>("/api/v1/factory/templates"),
@@ -172,6 +381,22 @@ export const api = {
   listIntegrations: () => fetchJson<IntegrationCheck[]>("/api/v1/integrations"),
   searchKnowledge: (query?: string) =>
     fetchJson<KnowledgeEntry[]>(`/api/v1/knowledge${query ? `?q=${encodeURIComponent(query)}` : ""}`),
+
+  // Services Management
+  listServicesStatus: () => fetchJson<any[]>("/api/v1/services/status"),
+  getServiceLogs: (serviceId: string, lines?: number, errorsOnly?: boolean) => {
+    const params = new URLSearchParams();
+    if (lines) params.set("lines", String(lines));
+    if (errorsOnly) params.set("errors_only", "true");
+    const qs = params.toString();
+    return fetchJson<{ service_id: string; lines: string[]; total: number; returned: number; errors_only: boolean; file: string }>(`/api/v1/services/${serviceId}/logs${qs ? `?${qs}` : ""}`);
+  },
+  startService: (serviceId: string) =>
+    fetchJson<{ message: string; pid: number; port: number; status: string }>(`/api/v1/services/${serviceId}/start`, { method: "POST" }),
+  stopService: (serviceId: string) =>
+    fetchJson<{ message: string; pid: number | null }>(`/api/v1/services/${serviceId}/stop`, { method: "POST" }),
+  restartService: (serviceId: string) =>
+    fetchJson<{ message: string; stop: any; start: any }>(`/api/v1/services/${serviceId}/restart`, { method: "POST" }),
 
   /**
    * Subscribe to job events via SSE.

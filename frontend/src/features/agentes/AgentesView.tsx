@@ -1,5 +1,13 @@
-import { createSignal, createMemo, For, Show } from "solid-js";
-import { agents, setAgents, type RosterAgent, showToast, setModalOpen, setCurrentDomainId, setCurrentScreenId } from "../../state/store";
+import { createSignal, createMemo, onMount, For, Show } from "solid-js";
+import {
+  agents,
+  syncAgents,
+  saveAgentSoulPersistent,
+  openAgentChat,
+  type RosterAgent,
+  setModalOpen,
+} from "../../state/store";
+import { api } from "../../shared/api/client";
 import { TvIcon } from "../../shared/components/TvIcon";
 import { useNavigate } from "@solidjs/router";
 
@@ -9,6 +17,11 @@ export function AgentesView() {
   const [selectedSector, setSelectedSector] = createSignal<string>("Todos");
   const [selectedAgentForSoul, setSelectedAgentForSoul] = createSignal<RosterAgent | null>(null);
   const [soulDraft, setSoulDraft] = createSignal<string>("");
+  const [savingSoul, setSavingSoul] = createSignal<boolean>(false);
+
+  onMount(() => {
+    syncAgents();
+  });
 
   const sectors = createMemo(() => {
     const list = Array.from(new Set(agents().map((a) => a.sector)));
@@ -43,27 +56,40 @@ export function AgentesView() {
     }
   };
 
-  const handleOpenSoul = (ag: RosterAgent) => {
+  const handleOpenSoul = async (ag: RosterAgent) => {
     setSelectedAgentForSoul(ag);
-    setSoulDraft(
-      ag.soulText ||
+    if (ag.soulText) {
+      setSoulDraft(ag.soulText);
+    } else {
+      try {
+        const res = await api.getAgentSoul(ag.id);
+        if (res.soul_text) {
+          setSoulDraft(res.soul_text);
+          return;
+        }
+      } catch {
+        // fallback to default template
+      }
+      setSoulDraft(
         `# Propósito\nAtuar como ${ag.role} no setor ${ag.sector} com autonomia supervisionada.\n\n# Como trabalha\n- Executa jobs respeitando o teto de gastos estipulado\n- Valida critérios de aceite contra o planejamento de teste\n- Registra handoffs formais entre etapas\n\n# Nunca faz\n- Não publica sem aprovação de gates humanos\n- Não altera escopo de outros setores sem alinhamento\n\n# Tom de voz\nEstruturado, objetivo e operacional.\n\n# Escala para\nOrquestrador e CEO.`
-    );
+      );
+    }
   };
 
-  const handleSaveSoul = () => {
+  const handleSaveSoul = async () => {
     const ag = selectedAgentForSoul();
-    if (!ag) return;
-    setAgents((prev) =>
-      prev.map((a) => (a.id === ag.id ? { ...a, soulText: soulDraft() } : a))
-    );
-    showToast(`Alma operacional de ${ag.name} salva com sucesso`, "Agentes", "success");
-    setSelectedAgentForSoul(null);
+    if (!ag || savingSoul()) return;
+    setSavingSoul(true);
+    try {
+      await saveAgentSoulPersistent(ag.id, soulDraft());
+      setSelectedAgentForSoul(null);
+    } finally {
+      setSavingSoul(false);
+    }
   };
 
-  const handleOpenChat = (_ag: RosterAgent) => {
-    setCurrentDomainId("chat");
-    setCurrentScreenId("chat");
+  const handleOpenChat = (ag: RosterAgent) => {
+    openAgentChat(ag.id);
     navigate("/chat");
   };
 
@@ -347,9 +373,20 @@ export function AgentesView() {
                 <button
                   type="button"
                   onClick={handleSaveSoul}
-                  style={{ height: "34px", padding: "0 18px", "border-radius": "999px", border: "none", background: "var(--lime, #B7F34A)", color: "var(--ink-panel, #25360a)", "font-weight": "600", cursor: "pointer" }}
+                  disabled={savingSoul()}
+                  style={{
+                    height: "34px",
+                    padding: "0 18px",
+                    "border-radius": "999px",
+                    border: "none",
+                    background: "var(--lime, #B7F34A)",
+                    color: "var(--ink-panel, #25360a)",
+                    "font-weight": "600",
+                    cursor: savingSoul() ? "not-allowed" : "pointer",
+                    opacity: savingSoul() ? 0.6 : 1,
+                  }}
                 >
-                  Salvar Alma Operacional
+                  {savingSoul() ? "Salvando..." : "Salvar Alma Operacional"}
                 </button>
               </div>
             </div>

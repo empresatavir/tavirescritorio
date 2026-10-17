@@ -120,3 +120,27 @@ class JobRunner:
         )
         self.session.add(event)
         await self.session.flush()
+
+    async def retry_job(self, job_id: str) -> Job:
+        job = await self.session.get(Job, job_id)
+        if not job:
+            raise ValueError(f"Job {job_id} not found")
+        old_status = job.status
+        job.status = "queued"
+        job.error_message = None
+        job.updated_at = datetime.now(timezone.utc)
+        await self._log_event(job.id, old_status, "queued", "operator", "job_retried", "Job re-enfileirado pelo operador")
+        await self.session.flush()
+        return job
+
+    async def cancel_job(self, job_id: str) -> Job:
+        job = await self.session.get(Job, job_id)
+        if not job:
+            raise ValueError(f"Job {job_id} not found")
+        old_status = job.status
+        job.status = "failed"
+        job.error_message = "Job cancelado pelo operador"
+        job.updated_at = datetime.now(timezone.utc)
+        await self._log_event(job.id, old_status, "failed", "operator", "job_cancelled", "Job cancelado pelo operador")
+        await self.session.flush()
+        return job
