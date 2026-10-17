@@ -1,6 +1,7 @@
-import { createSignal, createMemo, For, Show } from "solid-js";
+import { createSignal, createMemo, createEffect, onCleanup, For, Show } from "solid-js";
 import { TvIcon } from "../../shared/components/TvIcon";
 import { showToast } from "../../state/store";
+import { api } from "../../shared/api/client";
 
 interface IntegrationItem {
   id: string;
@@ -194,12 +195,70 @@ const INT_GROUPS = [
   ["todo", "Falta ligar", "catálogo de integrações ainda sem credencial"],
 ];
 
+interface ManagedService {
+  id: string;
+  name: string;
+  port: number;
+  status: "online" | "offline" | "starting" | "orphan";
+  pid: number | null;
+  port_active: boolean;
+  has_log_errors: boolean;
+}
+
 export function IntegracoesView() {
   const [integrations, setIntegrations] = createSignal<IntegrationItem[]>(INITIAL_INTEGRATIONS);
   const [selectedIntId, setSelectedIntId] = createSignal<string | null>(null);
   const [testEngineId, setTestEngineId] = createSignal<string | null>(null);
   const [testing, setTesting] = createSignal<boolean>(false);
   const [testLog, setTestLog] = createSignal<string[]>([]);
+
+  // Services management state
+  const [services, setServices] = createSignal<ManagedService[]>([]);
+  const [serviceActionLoading, setServiceActionLoading] = createSignal<string | null>(null);
+  const [logViewerServiceId, setLogViewerServiceId] = createSignal<string | null>(null);
+  const [logLines, setLogLines] = createSignal<string[]>([]);
+  const [logErrorsOnly, setLogErrorsOnly] = createSignal(false);
+
+  const fetchServicesStatus = async () => {
+    try {
+      const data = await api.listServicesStatus();
+      if (data) setServices(data);
+    } catch (err) {
+      console.warn("Could not fetch services status:", err);
+    }
+  };
+
+  createEffect(() => {
+    fetchServicesStatus();
+    const timer = setInterval(fetchServicesStatus, 5000);
+    onCleanup(() => clearInterval(timer));
+  });
+
+  const handleServiceAction = async (serviceId: string, action: "start" | "stop" | "restart") => {
+    setServiceActionLoading(serviceId);
+    try {
+      if (action === "start") await api.startService(serviceId);
+      else if (action === "stop") await api.stopService(serviceId);
+      else if (action === "restart") await api.restartService(serviceId);
+      showToast(`Serviço ${action === "start" ? "iniciado" : action === "stop" ? "parado" : "reiniciado"} com sucesso`, serviceId, "success");
+      await fetchServicesStatus();
+    } catch (err) {
+      showToast(`Erro ao ${action} serviço: ${err}`, serviceId, "error");
+    } finally {
+      setServiceActionLoading(null);
+    }
+  };
+
+  const handleViewLogs = async (serviceId: string, errorsOnly?: boolean) => {
+    setLogViewerServiceId(serviceId);
+    setLogErrorsOnly(errorsOnly ?? false);
+    try {
+      const data = await api.getServiceLogs(serviceId, 200, errorsOnly);
+      setLogLines(data?.lines || []);
+    } catch (err) {
+      setLogLines([`Erro ao carregar logs: ${err}`]);
+    }
+  };
 
   const connectedCount = createMemo(
     () => integrations().filter((i) => i.connected && i.group !== "local").length
@@ -434,7 +493,118 @@ export function IntegracoesView() {
             );
           }}
         </For>
+
+        {/* Seção: Serviços Gerenciados */}
+        <section>
+          <div style={{ display: "flex", "align-items": "baseline", gap: "10px", "margin-bottom": "10px" }}>
+            <h2 style={{ margin: "0", "font-size": "14px", "font-weight": "600" }}>Serviços Gerenciados</h2>
+            <span style={{ "font-size": "12px", color: "var(--text-muted, #aeb7c4)" }}>backend · frontend · controle operacional</span>
+          </div>
+
+          <div style={{ display: "grid", "grid-template-columns": "repeat(auto-fill, minmax(320px, 1fr))", gap: "10px" }}>
+            <For each={services()}>
+              {(svc) => {
+                const statusColor = () =>
+                  svc.status === "online" ? "var(--teal, #1BC5BD)" :
+                  svc.status === "starting" ? "oklch(.80 .155 78)" :
+                  "oklch(.635 .185 27)";
+                const statusLabel = () =>
+                  svc.status === "online" ? "Online" :
+                  svc.status === "starting" ? "Iniciando" :
+                  svc.status === "orphan" ? "Órfão" : "Offline";
+                const isLoading = () => serviceActionLoading() === svc.id;
+
+                return (
+                  <div style={{
+                    display: "flex", "flex-direction": "column", gap: "12px", padding: "14px",
+                    border: "1px solid var(--border-subtle, rgba(244,246,242,.12))",
+                    "border-radius": "14px", background: "var(--surface-2, #121c30)",
+                  }}>
+                    <div style={{ display: "flex", gap: "12px", "align-items": "center" }}>
+                      <div style={{
+                        width: "40px", height: "40px", flex: "none", "border-radius": "12px",
+                        background: "#ffffff", display: "flex", "align-items": "center", "justify-content": "center",
+                      }}>
+                        <TvIcon name={svc.id === "backend" ? "terminal" : "zap"} style={{ width: "20px", height: "20px", color: "#0B1220" }} />
+                      </div>
+                      <div style={{ flex: "1", "min-width": "0" }}>
+                        <div style={{ "font-weight": "600", "font-size": "14px" }}>{svc.name}</div>
+                        <div style={{ "font-size": "12px", color: "var(--text-secondary, #cbd3de)", "margin-top": "2px" }}>
+                          Porta {svc.port} · PID {svc.pid ?? "—"}
+                        </div>
+                        <div style={{ display: "flex", "align-items": "center", gap: "6px", "margin-top": "6px", "font-size": "11px", color: statusColor() }}>
+                          <span style={{ width: "6px", height: "6px", "border-radius": "50%", background: statusColor() }}></span>
+                          {statusLabel()}
+                          <Show when={svc.has_log_errors}>
+                            <span style={{ color: "oklch(.635 .185 27)", "font-weight": "600" }}>· erros no log</span>
+                          </Show>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", "align-items": "center", gap: "6px", "flex-wrap": "wrap", "padding-top": "10px", "border-top": "1px solid rgba(244,246,242,.10)" }}>
+                      <button type="button" disabled={isLoading()} onClick={() => handleViewLogs(svc.id)} style={{
+                        height: "28px", padding: "0 10px", "border-radius": "999px",
+                        border: "1px solid var(--border-light, rgba(244,246,242,.34))",
+                        background: "transparent", color: "var(--text-primary, #F4F6F2)",
+                        cursor: "pointer", "font-size": "12px", "font-weight": "500",
+                      }}>Ver Logs</button>
+
+                      <Show when={svc.status === "offline"}>
+                        <button type="button" disabled={isLoading()} onClick={() => handleServiceAction(svc.id, "start")} style={{
+                          height: "28px", padding: "0 12px", "border-radius": "999px", cursor: "pointer",
+                          "font-size": "12px", "font-weight": "500", border: "none",
+                          background: "var(--lime, #B7F34A)", color: "var(--ink-panel, #25360a)",
+                        }}>{isLoading() ? "…" : "Iniciar"}</button>
+                      </Show>
+
+                      <Show when={svc.status === "online" || svc.status === "orphan"}>
+                        <button type="button" disabled={isLoading()} onClick={() => handleServiceAction(svc.id, "stop")} style={{
+                          height: "28px", padding: "0 12px", "border-radius": "999px", cursor: "pointer",
+                          "font-size": "12px", "font-weight": "500",
+                          border: "1px solid oklch(.635 .185 27)", background: "transparent",
+                          color: "oklch(.635 .185 27)",
+                        }}>{isLoading() ? "…" : "Parar"}</button>
+                        <button type="button" disabled={isLoading()} onClick={() => handleServiceAction(svc.id, "restart")} style={{
+                          height: "28px", padding: "0 12px", "border-radius": "999px", cursor: "pointer",
+                          "font-size": "12px", "font-weight": "500",
+                          border: "1px solid var(--border-light, rgba(244,246,242,.34))",
+                          background: "transparent", color: "var(--text-primary, #F4F6F2)",
+                        }}>{isLoading() ? "…" : "Reiniciar"}</button>
+                      </Show>
+                    </div>
+                  </div>
+                );
+              }}
+            </For>
+          </div>
+        </section>
       </div>
+
+      {/* Modal Logs do Serviço */}
+      <Show when={logViewerServiceId()}>
+        <div style={{ position: "fixed", inset: "0", background: "rgba(7,12,22,.62)", display: "flex", "align-items": "center", "justify-content": "center", "z-index": "100" }}>
+          <div style={{ width: "700px", "max-width": "calc(100% - 32px)", "max-height": "80vh", background: "var(--surface-1, #0f1729)", border: "1px solid var(--border-light, rgba(244,246,242,.34))", "border-radius": "18px", padding: "20px", display: "flex", "flex-direction": "column", gap: "12px" }}>
+            <div style={{ display: "flex", "align-items": "center", gap: "10px" }}>
+              <span style={{ "font-size": "16px", "font-weight": "600", flex: "1" }}>Logs — {logViewerServiceId()}</span>
+              <label style={{ display: "flex", "align-items": "center", gap: "4px", "font-size": "12px", color: "var(--text-secondary)", cursor: "pointer" }}>
+                <input type="checkbox" checked={logErrorsOnly()} onChange={(e) => { setLogErrorsOnly(e.currentTarget.checked); handleViewLogs(logViewerServiceId()!, e.currentTarget.checked); }} />
+                Apenas erros
+              </label>
+              <button type="button" onClick={() => handleViewLogs(logViewerServiceId()!, logErrorsOnly())} style={{ border: "none", background: "transparent", color: "var(--teal)", cursor: "pointer", "font-size": "12px" }}>↻ Atualizar</button>
+              <button type="button" onClick={() => setLogViewerServiceId(null)} style={{ border: "none", background: "transparent", color: "var(--text-muted)", cursor: "pointer" }}>Esc</button>
+            </div>
+            <div style={{ flex: "1", "min-height": "200px", "max-height": "60vh", "overflow-y": "auto", padding: "10px 12px", "border-radius": "8px", background: "var(--surface-0)", "font-family": "var(--font-mono)", "font-size": "11px", color: "var(--text-secondary, #cbd3de)", "line-height": "1.6", "white-space": "pre-wrap", "word-break": "break-all" }}>
+              <Show when={logLines().length > 0} fallback={<span style={{ color: "var(--text-muted)" }}>Nenhuma linha de log encontrada.</span>}>
+                <For each={logLines()}>{(l) => <div>{l}</div>}</For>
+              </Show>
+            </div>
+            <div style={{ display: "flex", "justify-content": "flex-end" }}>
+              <button type="button" onClick={() => setLogViewerServiceId(null)} style={{ height: "32px", padding: "0 14px", "border-radius": "999px", border: "1px solid var(--border-subtle)", background: "transparent", color: "var(--text-primary)", cursor: "pointer" }}>Fechar</button>
+            </div>
+          </div>
+        </div>
+      </Show>
 
       {/* Modal Detalhes */}
       <Show when={selectedInt()}>

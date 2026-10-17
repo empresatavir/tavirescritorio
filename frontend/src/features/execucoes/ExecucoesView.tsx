@@ -1,5 +1,5 @@
 import { createSignal, createEffect, onCleanup, For, Show } from "solid-js";
-import { jobs, selectedJobId, setSelectedJobId, setSelectedTaskId, setCurrentScreenId, syncLiveJobs } from "../../state/store";
+import { jobs, selectedJobId, setSelectedJobId, setSelectedTaskId, setCurrentScreenId, syncLiveJobs, showToast } from "../../state/store";
 import { api, type JobEvent } from "../../shared/api/client";
 import { TvIcon } from "../../shared/components/TvIcon";
 
@@ -346,33 +346,98 @@ export function ExecucoesView() {
                     {j().agentName} · iniciado {j().startedAt}
                   </div>
 
-                  {j().taskId && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedTaskId(j().taskId!);
-                        setCurrentScreenId("tasks");
-                      }}
-                      style={{
-                        "margin-top": "10px",
-                        display: "flex",
-                        "align-items": "center",
-                        gap: "8px",
-                        height: "30px",
-                        padding: "0 12px",
-                        "border-radius": "var(--radius-pill)",
-                        border: "1px solid rgba(27,197,189,.45)",
-                        background: "rgba(27,197,189,.08)",
-                        color: "#F4F6F2",
-                        cursor: "pointer",
-                        "font-size": "12px",
-                      }}
-                    >
-                      <span style={{ "font-family": "var(--font-mono)", "font-size": "10px", color: "#aeb7c4", "text-transform": "uppercase" }}>Task</span>
-                      <span style={{ "font-family": "var(--font-mono)", color: "var(--teal)", "font-weight": 500 }}>{j().taskId}</span>
-                      <span style={{ color: "var(--teal)" }}>→</span>
-                    </button>
-                  )}
+                  <div style={{ display: "flex", gap: "8px", "margin-top": "10px", "flex-wrap": "wrap" }}>
+                    {j().taskId && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedTaskId(j().taskId!);
+                          setCurrentScreenId("tasks");
+                        }}
+                        style={{
+                          display: "flex",
+                          "align-items": "center",
+                          gap: "8px",
+                          height: "30px",
+                          padding: "0 12px",
+                          "border-radius": "var(--radius-pill)",
+                          border: "1px solid rgba(27,197,189,.45)",
+                          background: "rgba(27,197,189,.08)",
+                          color: "#F4F6F2",
+                          cursor: "pointer",
+                          "font-size": "12px",
+                        }}
+                      >
+                        <span style={{ "font-family": "var(--font-mono)", "font-size": "10px", color: "#aeb7c4", "text-transform": "uppercase" }}>Task</span>
+                        <span style={{ "font-family": "var(--font-mono)", color: "var(--teal)", "font-weight": 500 }}>{j().taskId}</span>
+                        <span style={{ color: "var(--teal)" }}>→</span>
+                      </button>
+                    )}
+
+                    {j().status === "failed" && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await api.retryJob(j().id);
+                            showToast("Job re-enfileirado com sucesso", "Retry", "success");
+                            syncLiveJobs();
+                          } catch {
+                            showToast("Erro ao tentar re-enfileirar job", "Erro", "error");
+                          }
+                        }}
+                        style={{
+                          display: "flex",
+                          "align-items": "center",
+                          gap: "6px",
+                          height: "30px",
+                          padding: "0 12px",
+                          "border-radius": "var(--radius-pill)",
+                          border: "1px solid rgba(183,243,74,.4)",
+                          background: "rgba(183,243,74,.12)",
+                          color: "var(--lime)",
+                          cursor: "pointer",
+                          "font-size": "12px",
+                          "font-weight": 500,
+                        }}
+                      >
+                        <TvIcon name="refresh-cw" width="12" height="12" />
+                        <span>Tentar novamente</span>
+                      </button>
+                    )}
+
+                    {(j().status === "running" || j().status === "queued") && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await api.cancelJob(j().id);
+                            showToast("Job cancelado", "Cancelamento", "warning");
+                            syncLiveJobs();
+                          } catch {
+                            showToast("Erro ao cancelar job", "Erro", "error");
+                          }
+                        }}
+                        style={{
+                          display: "flex",
+                          "align-items": "center",
+                          gap: "6px",
+                          height: "30px",
+                          padding: "0 12px",
+                          "border-radius": "var(--radius-pill)",
+                          border: "1px solid rgba(239,68,68,.4)",
+                          background: "rgba(239,68,68,.12)",
+                          color: "#f87171",
+                          cursor: "pointer",
+                          "font-size": "12px",
+                          "font-weight": 500,
+                        }}
+                      >
+                        <TvIcon name="circle-x" width="12" height="12" />
+                        <span>Cancelar job</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Conteúdo com Scroll */}

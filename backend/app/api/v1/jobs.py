@@ -109,6 +109,28 @@ async def stream_events(job_id: str):
     )
 
 
+@router.post("/{job_id}/retry", response_model=JobResponse)
+async def retry_job(job_id: str, session: AsyncSession = Depends(get_session)):
+    runner = JobRunner(session)
+    try:
+        job = await runner.retry_job(job_id)
+        await session.commit()
+        return job
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.post("/{job_id}/cancel", response_model=JobResponse)
+async def cancel_job(job_id: str, session: AsyncSession = Depends(get_session)):
+    runner = JobRunner(session)
+    try:
+        job = await runner.cancel_job(job_id)
+        await session.commit()
+        return job
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
 async def _run_job_background(job_id: str, command: str, timeout: int):
     """Background task to execute a job outside the request lifecycle."""
     async with async_session() as session:

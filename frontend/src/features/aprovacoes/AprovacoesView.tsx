@@ -1,14 +1,14 @@
-import { createSignal, createMemo, For, Show } from "solid-js";
+import { createSignal, createMemo, createEffect, onCleanup, For, Show } from "solid-js";
 import {
   approvals,
-  setApprovals,
   selectedApprovalId,
   setSelectedApprovalId,
   tasks,
   setSelectedTaskId,
   setCurrentDomainId,
   setCurrentScreenId,
-  showToast,
+  syncApprovals,
+  decideApprovalPersistent,
   type UiApproval,
 } from "../../state/store";
 import { TvIcon } from "../../shared/components/TvIcon";
@@ -17,6 +17,14 @@ import { useNavigate } from "@solidjs/router";
 export function AprovacoesView() {
   const navigate = useNavigate();
   const [tabFilter, setTabFilter] = createSignal<"all" | "urgent" | "gates">("all");
+
+  createEffect(() => {
+    syncApprovals();
+    const timer = setInterval(() => {
+      syncApprovals();
+    }, 4000);
+    onCleanup(() => clearInterval(timer));
+  });
 
   // Filtered approvals list
   const filteredApprovals = createMemo(() => {
@@ -84,17 +92,11 @@ export function AprovacoesView() {
   };
 
   const handleApprove = (id: string) => {
-    setApprovals((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, status: "approved" } : a))
-    );
-    showToast(`Aprovação ${id} confirmada com sucesso`, "Decisão registrada", "success");
+    decideApprovalPersistent(id, "approve", "Aprovado via cockpit de operações");
   };
 
   const handleReject = (id: string) => {
-    setApprovals((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, status: "rejected" } : a))
-    );
-    showToast(`Aprovação ${id} rejeitada`, "Decisão registrada", "warning");
+    decideApprovalPersistent(id, "reject", "Rejeitado via cockpit de operações");
   };
 
   const handleGoTask = (taskId: string) => {

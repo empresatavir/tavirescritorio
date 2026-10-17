@@ -1,5 +1,13 @@
-import { createSignal, createMemo, For, Show } from "solid-js";
-import { agents, type RosterAgent, showToast } from "../../state/store";
+import { createSignal, createMemo, onMount, For, Show } from "solid-js";
+import {
+  agents,
+  syncAgents,
+  activeChatAgentId,
+  setActiveChatAgentId,
+  type RosterAgent,
+  showToast,
+} from "../../state/store";
+import { api } from "../../shared/api/client";
 import { TvIcon } from "../../shared/components/TvIcon";
 
 interface ChatMessage {
@@ -93,6 +101,13 @@ const INITIAL_CONVERSATIONS: ChatConversation[] = [
   },
 ];
 
+const formatAt = (iso?: string | null): string => {
+  if (!iso || Number.isNaN(Date.parse(iso))) {
+    return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  }
+  return new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+};
+
 export function ChatView() {
   const [conversations, setConversations] = createSignal<ChatConversation[]>(INITIAL_CONVERSATIONS);
   const [selectedConvId, setSelectedConvId] = createSignal<string>("cv-1");
@@ -101,6 +116,113 @@ export function ChatView() {
   const [settingsOpen, setSettingsOpen] = createSignal<boolean>(false);
   const [inputMessage, setInputMessage] = createSignal<string>("");
   const [isTyping, setIsTyping] = createSignal<boolean>(false);
+
+  // Sync conversations from backend SQLite
+  const loadConversationMessages = async (convId: string) => {
+    try {
+      const detail = await api.getChatConversation(convId);
+      if (detail && detail.messages) {
+        const msgs: ChatMessage[] = detail.messages.map((m) => ({
+          id: m.id,
+          role: m.role as "user" | "assistant",
+          text: m.text,
+          at: formatAt(m.created_at),
+          meta: m.meta || undefined,
+        }));
+        setConversations((prev) =>
+          prev.map((c) => (c.id === convId ? { ...c, messages: msgs } : c))
+        );
+      }
+    } catch (err) {
+      console.warn("Could not load messages for conversation:", convId, err);
+    }
+  };
+
+  const syncConversations = async () => {
+    try {
+      await syncAgents();
+      const list = await api.listChatConversations();
+      if (list && list.length > 0) {
+        const mapped: ChatConversation[] = list.map((c) => {
+          const s = c.settings || {};
+          return {
+            id: c.id,
+            agentId: c.agent_id,
+            title: c.title,
+            updatedAt: formatAt(c.updated_at),
+            messages: [],
+            settings: {
+              model: s.model || "claude-sonnet-4",
+              effort: s.effort || "médio",
+              time: s.time || "2 min",
+              tokens: s.tokens || "1024",
+              insp: typeof s.insp === "number" ? s.insp : 30,
+              memory: typeof s.memory === "boolean" ? s.memory : true,
+              vault: typeof s.vault === "boolean" ? s.vault : true,
+              tasks: typeof s.tasks === "boolean" ? s.tasks : true,
+            },
+          };
+        });
+        setConversations(mapped);
+
+        // Check if an agent was requested via store
+        const targetAgent = activeChatAgentId();
+        if (targetAgent) {
+          const existing = mapped.find((x) => x.agentId === targetAgent);
+          if (existing) {
+            setSelectedConvId(existing.id);
+            await loadConversationMessages(existing.id);
+          } else {
+            const ag = agents().find((a) => a.id === targetAgent) || agents()[0];
+            await createConversationForAgent(ag);
+          }
+          setActiveChatAgentId(null);
+        } else {
+          const initialId = mapped[0].id;
+          setSelectedConvId(initialId);
+          await loadConversationMessages(initialId);
+        }
+      } else {
+        // Fallback: load initial messages if backend empty
+        await loadConversationMessages(selectedConvId());
+      }
+    } catch (err) {
+      console.warn("Could not sync conversations from API:", err);
+    }
+  };
+
+  onMount(() => {
+    syncConversations();
+  });
+
+  const createConversationForAgent = async (ag: RosterAgent) => {
+    try {
+      const defaultSettings = {
+        model: ag.model || "claude-sonnet-4",
+        effort: "médio",
+        time: "2 min",
+        tokens: "1024",
+        insp: 30,
+        memory: true,
+        vault: true,
+        tasks: true,
+      };
+      const created = await api.createChatConversation(ag.id, `Conversa com ${ag.name}`, defaultSettings);
+      const newConvItem: ChatConversation = {
+        id: created.id,
+        agentId: created.agent_id,
+        title: created.title,
+        updatedAt: "agora",
+        settings: (created.settings as any) || defaultSettings,
+        messages: [],
+      };
+      setConversations((prev) => [newConvItem, ...prev]);
+      setSelectedConvId(created.id);
+    } catch (err) {
+      console.error("Failed to create conversation:", err);
+      showToast("Erro ao criar conversa no banco", "Chat", "error");
+    }
+  };
 
   const currentConv = createMemo(() => {
     return conversations().find((c) => c.id === selectedConvId()) || conversations()[0];
@@ -122,39 +244,24 @@ export function ChatView() {
     );
   });
 
-  const handleSelectConv = (id: string) => {
+  const handleSelectConv = async (id: string) => {
     setSelectedConvId(id);
     setPickOpen(false);
+    await loadConversationMessages(id);
   };
 
-  const handleNewChat = () => {
-    const ag = agents()[0];
-    const newId = `cv-${Date.now()}`;
-    const newConvItem: ChatConversation = {
-      id: newId,
-      agentId: ag.id,
-      title: "Nova conversa",
-      updatedAt: "agora",
-      settings: {
-        model: ag.model || "claude-sonnet-4",
-        effort: "médio",
-        time: "2 min",
-        tokens: "1024",
-        insp: 30,
-        memory: true,
-        vault: true,
-        tasks: true,
-      },
-      messages: [],
-    };
-    setConversations((prev) => [newConvItem, ...prev]);
-    setSelectedConvId(newId);
+  const handleNewChat = async () => {
+    const ag = agents()[0] || { id: "ag-01", name: "Arquiteto", model: "claude-sonnet-4" };
+    await createConversationForAgent(ag as RosterAgent);
   };
 
-  const handleSelectAgent = (ag: RosterAgent) => {
+  const handleSelectAgent = async (ag: RosterAgent) => {
+    const conv = currentConv();
+    if (!conv) return;
+
     setConversations((prev) =>
       prev.map((c) => {
-        if (c.id === currentConv().id) {
+        if (c.id === conv.id) {
           return {
             ...c,
             agentId: ag.id,
@@ -165,20 +272,34 @@ export function ChatView() {
       })
     );
     setPickOpen(false);
+
+    try {
+      await api.updateChatSettings(conv.id, {
+        ...conv.settings,
+        model: ag.model,
+      });
+    } catch (err) {
+      console.warn("Could not update agent on conversation:", err);
+    }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     const text = inputMessage().trim();
     if (!text || isTyping()) return;
 
-    const convId = currentConv().id;
+    const conv = currentConv();
+    if (!conv) return;
+    const convId = conv.id;
+
+    const tempUserMsgId = `temp-${Date.now()}`;
     const userMsg: ChatMessage = {
-      id: `msg-${Date.now()}`,
+      id: tempUserMsgId,
       role: "user",
       text,
       at: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
     };
 
+    // Optimistic update
     setConversations((prev) =>
       prev.map((c) => {
         if (c.id === convId) {
@@ -196,17 +317,45 @@ export function ChatView() {
     setInputMessage("");
     setIsTyping(true);
 
-    // Simulate Agent response
-    setTimeout(() => {
+    try {
+      const res = await api.sendChatMessage(convId, text);
+      if (res && res.assistant_message) {
+        const replyMsg: ChatMessage = {
+          id: res.assistant_message.id,
+          role: "assistant",
+          text: res.assistant_message.text,
+          at: formatAt(res.assistant_message.created_at),
+          meta: res.assistant_message.meta || undefined,
+        };
+
+        setConversations((prev) =>
+          prev.map((c) => {
+            if (c.id === convId) {
+              const updatedMsgs = c.messages.map((m) =>
+                m.id === tempUserMsgId
+                  ? { ...m, id: res.user_message.id, at: formatAt(res.user_message.created_at) }
+                  : m
+              );
+              return {
+                ...c,
+                messages: [...updatedMsgs, replyMsg],
+              };
+            }
+            return c;
+          })
+        );
+      }
+    } catch (err) {
+      console.error("Failed to send chat message to API:", err);
+      // Fallback local response if backend failed or offline
       const ag = currentAgent();
       const replyMsg: ChatMessage = {
         id: `msg-reply-${Date.now()}`,
         role: "assistant",
         text: `Entendido. Registrei a solicitação no contexto de ${ag.role} (${ag.sector}). Vou processar a resposta mantendo os critérios do checklist e reportar os próximos passos.`,
         at: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
-        meta: `${currentConv().settings.model} · esforço ${currentConv().settings.effort} · inspiração ${currentConv().settings.insp}`,
+        meta: `${conv.settings.model} · esforço ${conv.settings.effort} · inspiração ${conv.settings.insp}`,
       };
-
       setConversations((prev) =>
         prev.map((c) => {
           if (c.id === convId) {
@@ -218,22 +367,35 @@ export function ChatView() {
           return c;
         })
       );
+    } finally {
       setIsTyping(false);
-    }, 1200);
+      const el = document.getElementById("chat-scroll");
+      if (el) el.scrollTop = el.scrollHeight;
+    }
   };
 
-  const updateSetting = <K extends keyof ChatConversation["settings"]>(
+  const updateSetting = async <K extends keyof ChatConversation["settings"]>(
     key: K,
     val: ChatConversation["settings"][K]
   ) => {
+    const conv = currentConv();
+    if (!conv) return;
+
+    const nextSettings = { ...conv.settings, [key]: val };
     setConversations((prev) =>
       prev.map((c) => {
-        if (c.id === currentConv().id) {
-          return { ...c, settings: { ...c.settings, [key]: val } };
+        if (c.id === conv.id) {
+          return { ...c, settings: nextSettings };
         }
         return c;
       })
     );
+
+    try {
+      await api.updateChatSettings(conv.id, nextSettings);
+    } catch (err) {
+      console.warn("Could not persist conversation settings:", err);
+    }
   };
 
   return (

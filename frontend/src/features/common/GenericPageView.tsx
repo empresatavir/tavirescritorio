@@ -1,5 +1,16 @@
-import { createMemo, For, Show } from "solid-js";
-import { tasks, jobs, capturedNotes, setSelectedTaskId, setCurrentDomainId, setCurrentScreenId, setSelectedApprovalId, showToast } from "../../state/store";
+import { createMemo, onMount, For, Show } from "solid-js";
+import {
+  tasks,
+  jobs,
+  agents,
+  syncAgents,
+  capturedNotes,
+  setSelectedTaskId,
+  setCurrentDomainId,
+  setCurrentScreenId,
+  setSelectedApprovalId,
+  showToast,
+} from "../../state/store";
 import { useNavigate } from "@solidjs/router";
 
 interface MetricItem {
@@ -53,6 +64,12 @@ interface Props {
 
 export function GenericPageView(props: Props) {
   const navigate = useNavigate();
+
+  onMount(() => {
+    if (props.pageId === "org") {
+      syncAgents();
+    }
+  });
 
   const pageData = createMemo<PageData>(() => {
     const id = props.pageId;
@@ -293,48 +310,48 @@ export function GenericPageView(props: Props) {
           ],
         };
 
-      case "org":
+      case "org": {
+        const curAgents = agents();
+        // Agrupar agentes carregados por setor
+        const sectorMap: Record<string, typeof curAgents> = {};
+        for (const ag of curAgents) {
+          const sec = ag.sector || "Geral";
+          if (!sectorMap[sec]) sectorMap[sec] = [];
+          sectorMap[sec].push(ag);
+        }
+        const sectorNames = Object.keys(sectorMap);
+        const stages = sectorNames.map((sec, idx) => {
+          const secAg = sectorMap[sec];
+          return {
+            n: String(idx + 1).padStart(2, "0"),
+            label: sec,
+            count: String(secAg.length),
+            color: TL,
+            items: secAg.map((a) => ({
+              title: a.name,
+              meta: `${a.role} · ${a.model}`,
+              color: a.status === "busy" ? TL : a.status === "error" ? DG : a.status === "offline" ? MU : SL,
+            })),
+          };
+        });
+
         return {
           title: "Org Chart",
           sub: "Agentes carregados, agrupados por setor. Clique abre a ficha no roster.",
           source: "roster · setores",
-          metrics: [{ label: "Agentes carregados", value: "12 de 47" }, { label: "Setores", value: "11" }],
+          metrics: [
+            { label: "Agentes carregados", value: `${curAgents.length} de 47` },
+            { label: "Setores ativos", value: String(sectorNames.length) },
+          ],
           blocks: [
             {
               isStages: true,
-              title: "Setores",
-              stages: [
-                {
-                  n: "01",
-                  label: "Estratégia",
-                  count: "2",
-                  color: TL,
-                  items: [
-                    { title: "Arquiteto", meta: "Ocupado · claude-sonnet-4", color: TL },
-                    { title: "Analista", meta: "Ocioso · gpt-4o", color: SL },
-                  ],
-                },
-                {
-                  n: "02",
-                  label: "Conteúdo",
-                  count: "2",
-                  color: TL,
-                  items: [
-                    { title: "Redator", meta: "Ocupado · claude-sonnet-4", color: TL },
-                    { title: "Designer", meta: "Ocioso · dall-e-3", color: SL },
-                  ],
-                },
-                {
-                  n: "03",
-                  label: "Engenharia",
-                  count: "1",
-                  color: TL,
-                  items: [{ title: "Deployer", meta: "Offline · gpt-4o", color: MU }],
-                },
-              ],
+              title: "Setores & Agentes",
+              stages,
             },
           ],
         };
+      }
 
       case "memory":
         return {
