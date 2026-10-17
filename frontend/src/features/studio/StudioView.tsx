@@ -1,6 +1,7 @@
-import { createSignal, createMemo, For, Show } from "solid-js";
+import { createSignal, createMemo, For, Show, onMount } from "solid-js";
 import { TvIcon } from "../../shared/components/TvIcon";
 import { showToast } from "../../state/store";
+import { api } from "../../shared/api/client";
 
 interface ContentProfile {
   id: string;
@@ -215,6 +216,7 @@ const STAGES = [
 ];
 
 export function StudioView() {
+  const [profiles, setProfiles] = createSignal<ContentProfile[]>(PROFILES);
   const [pieces, setPieces] = createSignal<ContentPiece[]>(INITIAL_PIECES);
   const [selectedProfileId, setSelectedProfileId] = createSignal<string | null>("pf-datavir");
   const [activeTab, setActiveTab] = createSignal<"pipe" | "visual" | "learning">("pipe");
@@ -224,10 +226,60 @@ export function StudioView() {
   const [newIdeaText, setNewIdeaText] = createSignal<string>("");
   const [adjustText, setAdjustText] = createSignal<string>("");
 
+  onMount(async () => {
+    try {
+      const [fetchedProfiles, fetchedPieces] = await Promise.all([
+        api.listStudioProfiles().catch(() => []),
+        api.listStudioPieces().catch(() => []),
+      ]);
+
+      if (fetchedProfiles && fetchedProfiles.length > 0) {
+        setProfiles(
+          fetchedProfiles.map((p) => ({
+            id: p.id,
+            name: p.name,
+            niche: p.niche || "",
+            audience: p.audience || "",
+            tone: p.tone || "",
+            context: p.context || "",
+            color: p.color || "#B7F34A",
+            initials: p.initials || "TV",
+            nets: (p.networks || []).map((n: any) => ({
+              net: n.net || "ig",
+              handle: n.handle || "@tavir",
+              logo: n.logo || "assets/logos/instagram.svg",
+            })),
+          }))
+        );
+      }
+
+      if (fetchedPieces && fetchedPieces.length > 0) {
+        setPieces(
+          fetchedPieces.map((p) => ({
+            num: p.num || p.id,
+            pf: p.profile_id || "pf-datavir",
+            net: (p.net as any) || "ig",
+            stage: p.stage as any,
+            title: p.title,
+            needs: p.needs,
+            published: p.stage === "done",
+            script: p.script || "",
+            caption: p.caption || "",
+            tags: p.tags || "",
+            images: p.images || [],
+            timeline: p.timeline || [],
+          }))
+        );
+      }
+    } catch (err) {
+      console.warn("Studio: operando com dados locais", err);
+    }
+  });
+
   const currentProfile = createMemo(() => {
     const id = selectedProfileId();
     if (!id) return null;
-    return PROFILES.find((p) => p.id === id) || null;
+    return profiles().find((p) => p.id === id) || null;
   });
 
   const selectedPiece = createMemo(() => {
@@ -247,13 +299,16 @@ export function StudioView() {
     return list;
   });
 
-  const handleAdvancePiece = (num: string) => {
+  const handleAdvancePiece = async (num: string) => {
+    const order: ContentPiece["stage"][] = ["idea", "pauta", "prod", "review", "pub", "done"];
+    const piece = pieces().find((p) => p.num === num);
+    if (!piece) return;
+    const currIdx = order.indexOf(piece.stage);
+    const nextStage = currIdx < order.length - 1 ? order[currIdx + 1] : piece.stage;
+
     setPieces((prev) =>
       prev.map((p) => {
         if (p.num === num) {
-          const order: ContentPiece["stage"][] = ["idea", "pauta", "prod", "review", "pub", "done"];
-          const currIdx = order.indexOf(p.stage);
-          const nextStage = currIdx < order.length - 1 ? order[currIdx + 1] : p.stage;
           return {
             ...p,
             stage: nextStage,
@@ -268,16 +323,22 @@ export function StudioView() {
       })
     );
     showToast(`Peça ${num} avançada no fluxo`, "Tavir Studio", "success");
+
+    try {
+      await api.updatePieceStage(num, nextStage);
+    } catch (err) {
+      console.warn("Studio: erro ao sincronizar avanço de etapa:", err);
+    }
   };
 
-  const handleCreateIdea = () => {
+  const handleCreateIdea = async () => {
     const text = newIdeaText().trim();
     const pid = selectedProfileId();
     if (!text || !pid) return;
 
-    const newNum = `ST-${String(pieces().length + 30).padStart(3, "0")}`;
+    const tempNum = `ST-${String(pieces().length + 31).padStart(3, "0")}`;
     const newPiece: ContentPiece = {
-      num: newNum,
+      num: tempNum,
       pf: pid,
       net: "ig",
       stage: "idea",
@@ -289,10 +350,34 @@ export function StudioView() {
     setPieces((prev) => [newPiece, ...prev]);
     setNewIdeaText("");
     setNewIdeaOpen(false);
-    showToast(`Ideia ${newNum} enviada ao Oráculo`, "Nova produção", "success");
+    showToast(`Ideia ${tempNum} enviada ao Oráculo`, "Nova produção", "success");
+
+    try {
+      const created = await api.createStudioPiece({
+        profile_id: pid,
+        title: text,
+        net: "ig",
+        stage: "idea",
+      });
+      if (created) {
+        setPieces((prev) =>
+          prev.map((p) =>
+            p.num === tempNum
+              ? {
+                  ...p,
+                  num: created.num || created.id,
+                  stage: created.stage as any,
+                }
+              : p
+          )
+        );
+      }
+    } catch (err) {
+      console.warn("Studio: erro ao persistir nova ideia:", err);
+    }
   };
 
-  const handleSendAdjust = () => {
+  const handleSendAdjust = async () => {
     const adj = adjustText().trim();
     const p = selectedPiece();
     if (!adj || !p) return;
@@ -314,6 +399,37 @@ export function StudioView() {
     setAdjustText("");
     setSelectedPieceNum(null);
     showToast("Ajuste enviado para a esteira de produção", "Tavir Studio", "info");
+
+    try {
+      await api.updatePieceStage(p.num, "prod");
+    } catch (err) {
+      console.warn("Studio: erro ao persistir ajuste:", err);
+    }
+  };
+
+  const handlePublishPiece = async (num: string) => {
+    setPieces((prev) =>
+      prev.map((item) =>
+        item.num === num
+          ? {
+              ...item,
+              stage: "done",
+              published: true,
+              timeline: [
+                [new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }), "Publicador", "Peça publicada com sucesso"],
+                ...item.timeline,
+              ],
+            }
+          : item
+      )
+    );
+    showToast(`Peça ${num} publicada com sucesso`, "Tavir Studio", "success");
+
+    try {
+      await api.publishPiece(num);
+    } catch (err) {
+      console.warn("Studio: erro ao persistir publicação:", err);
+    }
   };
 
   return (
@@ -343,7 +459,7 @@ export function StudioView() {
           </div>
 
           <div style={{ display: "grid", "grid-template-columns": "repeat(auto-fill, minmax(320px, 1fr))", gap: "14px" }}>
-            <For each={PROFILES}>
+            <For each={profiles()}>
               {(pf) => {
                 const active = pieces().filter((p) => p.pf === pf.id && p.stage !== "done").length;
                 const need = pieces().filter((p) => p.pf === pf.id && p.needs).length;
@@ -743,14 +859,25 @@ export function StudioView() {
                 {/* Ações de aprovação */}
                 <div style={{ padding: "14px", "border-radius": "14px", border: "1px solid var(--border-subtle, rgba(244,246,242,.12))", background: "var(--surface-2, #121c30)", display: "flex", "flex-direction": "column", gap: "10px" }}>
                   <span style={{ "font-weight": "600" }}>Fluxo de trabalho</span>
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <button
-                      type="button"
-                      onClick={() => handleAdvancePiece(p().num)}
-                      style={{ height: "34px", padding: "0 16px", "border-radius": "999px", border: "none", background: "var(--lime, #B7F34A)", color: "var(--ink-panel, #25360a)", "font-weight": "600", cursor: "pointer" }}
-                    >
-                      Aprovar e avançar etapa
-                    </button>
+                  <div style={{ display: "flex", gap: "8px", "flex-wrap": "wrap" }}>
+                    <Show when={p().stage !== "done"}>
+                      <button
+                        type="button"
+                        onClick={() => handleAdvancePiece(p().num)}
+                        style={{ height: "34px", padding: "0 16px", "border-radius": "999px", border: "none", background: "var(--lime, #B7F34A)", color: "var(--ink-panel, #25360a)", "font-weight": "600", cursor: "pointer" }}
+                      >
+                        Aprovar e avançar etapa
+                      </button>
+                    </Show>
+                    <Show when={p().stage === "pub" || (p().stage === "review" && !p().published)}>
+                      <button
+                        type="button"
+                        onClick={() => handlePublishPiece(p().num)}
+                        style={{ height: "34px", padding: "0 16px", "border-radius": "999px", border: "none", background: "var(--teal, #1BC5BD)", color: "var(--ink, #0B1220)", "font-weight": "600", cursor: "pointer" }}
+                      >
+                        Publicar agora
+                      </button>
+                    </Show>
                   </div>
                 </div>
 

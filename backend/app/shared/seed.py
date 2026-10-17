@@ -1,6 +1,7 @@
 """Idempotent seed script for TAVIR initial data — 47 agents, projects, tasks, jobs, approvals, chat."""
 import asyncio
 import uuid
+from datetime import datetime
 from sqlalchemy import select
 from app.shared.database import async_session
 from app.models.agent import Agent
@@ -11,6 +12,10 @@ from app.models.approval import Approval
 from app.models.event import Event
 from app.models.chat_conversation import ChatConversation
 from app.models.chat_message import ChatMessage
+from app.models.template import EngineeringTemplate
+from app.models.persona import Persona
+from app.models.profile import Profile
+from app.models.piece import Piece
 
 # Full 47 Agents roster across 11 sectors
 ROSTER_AGENTS_47 = [
@@ -314,6 +319,184 @@ async def seed():
                         )
         await session.commit()
         print("Chat conversations and messages seeded successfully")
+
+        # 7. Seed engineering templates (6 esteiras da Fábrica)
+        esteiras_data = [
+            ("lp-c", "TAVIR Fábrica · LPs · Criação", "lp", "c", "Esteira completa para criar Landing Page nova", ["Dora Descoberta", "Marina + Yuri · Prova Visual", "Comercial TAVIR", "Enzo Extrator", "Bianca Estrategista", "Diego Desenvolvedor", "QA E2E", "Nina SEO", "Auditor Seg/LGPD", "Dante Documentação"], [
+                "Gate 0 · Demanda e briefing", "Requisitos verificáveis", "Aprovação dos requisitos",
+                "Prova visual · tokens e esqueleto", "Aprovação da prova visual", "Orçamento, deploy e contrato",
+                "Gate de contratação", "Fase 1 · Extração técnica", "Gate Fase 1", "Fase 2 · Estratégia e plano",
+                "Gate Fase 2", "Fase 3 · Construção", "QA independente", "SEO", "Segurança e LGPD", "Documentação e handoff"
+            ], "Diego Desenvolvedor", 1),
+            ("lp-m", "TAVIR Fábrica · LPs · Manutenção", "lp", "m", "Esteira para diagnosticar, alterar e evoluir LP existente", ["Dora Descoberta", "Enzo Extrator", "Bianca Estrategista", "Marina + Yuri", "Diego Desenvolvedor", "QA E2E", "Nina SEO", "Dante Documentação"], [
+                "Gate 0 · Pedido de manutenção", "Diagnóstico, baseline e impacto", "Inventário da LP existente",
+                "Plano de alteração e rollback", "Prova visual condicional", "Aprovação do plano",
+                "Implementação controlada", "QA independente e regressão", "SEO de manutenção", "Segurança e LGPD", "Aprovação final"
+            ], "Diego Desenvolvedor", 2),
+            ("of-c", "TAVIR Fábrica · Ofertas · Criação", "of", "c", "Esteira interna para criar nova oferta", ["Dora Descoberta", "Gael Growth", "Priscila Preços", "Jussara Jurídico", "QA de Oferta", "Dante Documentação"], [
+                "Gate 0 · Demanda", "Público e dor", "Promessa e pacote", "Viabilidade e preço", "Gate orçável", "Claims e contrato", "Piloto de mesa", "Aprovação final"
+            ], "Gael Growth", 3),
+            ("of-m", "TAVIR Fábrica · Ofertas · Manutenção", "of", "m", "Esteira para revisar oferta existente", ["Dora Descoberta", "Gael Growth", "Priscila Preços", "QA de Oferta", "Dante Documentação"], [
+                "Gate 0 · Revisão", "Baseline atual", "Revisão mecanismo", "Revisão preço", "Versionamento", "Aprovação final"
+            ], "Gael Growth", 4),
+            ("sy-c", "TAVIR Fábrica · Sistemas · Criação", "sy", "c", "Esteira para criar sistemas, SaaS, CRMs e APIs", ["Dora Descoberta", "Ari Arquiteto", "Marina + Yuri", "Diego Sistemas", "QA de Sistemas", "Auditor Seg/LGPD", "Dante Documentação"], [
+                "Gate 0 · Demanda", "Requisitos verificáveis", "Aprovação requisitos", "Arquitetura e dados",
+                "Prova visual e onboarding", "Gate de contratação", "Construção e integração", "QA independente E2E",
+                "Segurança e LGPD", "Documentação e handoff"
+            ], "Ari Arquiteto", 5),
+            ("sy-m", "TAVIR Fábrica · Sistemas · Manutenção", "sy", "m", "Esteira para manter e evoluir sistemas em produção", ["Dora Descoberta", "Ari Arquiteto", "Diego Sistemas", "QA de Sistemas", "Auditor Seg/LGPD", "Dante Documentação"], [
+                "Gate 0 · Demanda de manutenção", "Diagnóstico e impacto", "Plano de alteração e rollback",
+                "Aprovação técnica", "Implementação controlada", "QA e regressão", "Hardening", "Aprovação e deploy"
+            ], "Ari Arquiteto", 6),
+        ]
+        for t_id, name, cat, mode, desc, mesas, stages, owner, sort_o in esteiras_data:
+            existing_tpl = await session.get(EngineeringTemplate, t_id)
+            if not existing_tpl:
+                session.add(
+                    EngineeringTemplate(
+                        id=t_id,
+                        name=name,
+                        category=cat,
+                        mode=mode,
+                        description=desc,
+                        mesas=mesas,
+                        stages=stages,
+                        owner_role=owner,
+                        sort_order=sort_o,
+                        gate_required=True,
+                    )
+                )
+            else:
+                existing_tpl.mesas = mesas
+                existing_tpl.stages = stages
+        await session.commit()
+        print("Engineering templates seeded successfully")
+
+        # 8. Seed factory projects
+        factory_projs = [
+            ("fp-1", "lp-advocacia", "LP Nicho Advocacia", "Nicho Advocacia", "lp-c", 4, 16, "running", "github.com/empresatavir/lp-advocacia", "netlify · travada", "SolidJS + Tailwind + Vite", "Converter sócios de escritórios de advocacia", ["Headline + Hero", "Grid de dores e soluções", "Prova social e casos", "Formulário"]),
+            ("fp-2", "saas-gestao-contabil", "SaaS Gestão Contábil", "ContabHub", "sy-c", 2, 10, "paused", "github.com/empresatavir/contabhub-api", "railway · travada", "FastAPI + PostgreSQL + SolidJS", "Automatizar conciliação fiscal", ["Autenticação Gov.br", "Leitura XML NFe", "Cálculo DAS", "Dashboard"]),
+            ("fp-3", "mentoria-ia-executivos", "Oferta Mentoria IA Executivos", "TAVIR Educação", "of-c", 5, 8, "running", None, "hubspot · crm", "Documento Comercial + Funil", "Turma fechada para 15 CTOs", ["Ementa 8 encontros", "Modelo de precificação", "Contrato e SLA"]),
+        ]
+        for p_id, slug, name, comp, t_code, s_done, s_tot, status, repo, dep, stack, goal, scope in factory_projs:
+            existing_fp = await session.get(Project, p_id)
+            if not existing_fp:
+                session.add(
+                    Project(
+                        id=p_id,
+                        slug=slug,
+                        name=name,
+                        client=comp,
+                        company=comp,
+                        template_code=t_code,
+                        stages_done=s_done,
+                        total_stages=s_tot,
+                        status=status,
+                        repo_url=repo,
+                        deploy_target=dep,
+                        stack=stack,
+                        goal=goal,
+                        scope_items=scope,
+                        pendencies=[{"id": "pnd-1", "kind": "decision", "title": "Headline acima do limite", "from": "Revisor", "text": "Headline tem 68 caracteres (máx 60).", "fix": "Revisor ajusta headline."}] if status == "paused" else [],
+                        kanban_cards=[{"title": "Briefing e personas", "column": "done", "mesa": "Dora Descoberta"}, {"title": "Prova visual", "column": "doing", "mesa": "Marina + Yuri"}],
+                        files=[{"kind": "html", "name": "index.html", "mesa": "Marina + Yuri"}],
+                        keys={"SUPABASE_URL": "ok"} if repo else {},
+                        event_log=[["28/09 09:00", "Operação", "Projeto inicializado na esteira"]],
+                    )
+                )
+            else:
+                existing_fp.template_code = t_code
+                existing_fp.company = comp
+                existing_fp.stages_done = s_done
+                existing_fp.total_stages = s_tot
+        await session.commit()
+        print("Factory projects seeded successfully")
+
+        # 9. Seed studio personas & profiles
+        studio_profiles = [
+            ("pf-datavir", "Datavir", "Dados e BI para pequenas e médias empresas", "Donos e gestores de PMEs", "didático e direto", "Consultoria de dados da TAVIR.", "#B7F34A", "DV", [
+                {"net": "li", "handle": "Datavir", "logo": "assets/logos/linkedin.svg"},
+                {"net": "ig", "handle": "@datavir", "logo": "assets/logos/instagram.svg"},
+            ]),
+            ("pf-canal", "Canal IA na Prática", "IA aplicada ao trabalho", "Profissionais que querem usar IA", "curioso e prático", "Canal de episódios semanais com demonstrações.", "#1BC5BD", "IA", [
+                {"net": "yt", "handle": "IA na Prática", "logo": "assets/logos/youtube.svg"},
+                {"net": "tt", "handle": "@ianapratica", "logo": "assets/logos/tiktok.svg"},
+                {"net": "ig", "handle": "@ianapratica", "logo": "assets/logos/instagram.svg"},
+            ]),
+            ("pf-tavir", "TAVIR", "Operação com agentes de IA", "Empresas que automatizam com controle", "confiante e transparente", "Marca institucional da TAVIR.", "#F4F6F2", "TV", [
+                {"net": "ig", "handle": "@tavir", "logo": "assets/logos/instagram.svg"},
+                {"net": "li", "handle": "TAVIR", "logo": "assets/logos/linkedin.svg"},
+            ]),
+        ]
+        for pf_id, name, niche, aud, tone, ctx, color, inits, nets in studio_profiles:
+            existing_pf = await session.get(Profile, pf_id)
+            if not existing_pf:
+                session.add(
+                    Profile(
+                        id=pf_id,
+                        name=name,
+                        niche=niche,
+                        audience=aud,
+                        tone=tone,
+                        context=ctx,
+                        color=color,
+                        initials=inits,
+                        networks=nets,
+                        platform="multi",
+                        status="active",
+                    )
+                )
+            else:
+                existing_pf.color = color
+                existing_pf.initials = inits
+                existing_pf.networks = nets
+                existing_pf.niche = niche
+                existing_pf.audience = aud
+                existing_pf.context = ctx
+        await session.commit()
+        print("Studio profiles seeded successfully")
+
+        # 10. Seed studio pieces
+        studio_pieces = [
+            ("pc-01", "ST-031", "pf-datavir", "li", "review", "Por que sua PME ainda decide no escuro", 'Abertura com a pergunta "quantas decisões tiveram dado por trás?".', 'Quantas decisões desta semana tiveram dado por trás?', "#dados #bi #pme", False),
+            ("pc-02", "ST-032", "pf-datavir", "ig", "pauta", "3 planilhas que deveriam ser dashboard", "Carrossel de 5 slides mostrando antes e depois.", "Se você ainda gasta 4 horas por semana copiando dados...", "#dashboard #automacao", True),
+            ("pc-03", "ST-033", "pf-canal", "yt", "prod", "Como criar um agente que analisa PDF em 5 min", "Tutorial passo a passo usando modelo local e parser.", "Neste vídeo vamos montar um agente do zero.", "#ia #python #tutorial", False),
+            ("pc-04", "ST-034", "pf-canal", "tt", "pub", "O erro mais comum ao usar prompts longos", "Vídeo de 60 segundos com hook nos primeiros 3 segundos.", "Pare de colar o texto todo no prompt!", "#shorts #produtividade", False),
+            ("pc-05", "ST-035", "pf-tavir", "li", "done", "Como orquestramos 47 agentes de IA no mesmo escritório", "Artigo institucional detalhando o TAVIR Escritório.", "Construímos uma operação autônoma supervisionada por humanos.", "#tavir #agentes #ia", False),
+            ("pc-06", "ST-036", "pf-tavir", "ig", "idea", "Humanos no controle: o papel do CEO na operação autônoma", "Infográfico visual comparando automação cega vs supervisionada.", "IA sem supervisão é risco. IA com supervisão é alavancagem.", "#lideranca #governanca", False),
+        ]
+        for pc_id, num, pf_id, net, stage, title, script, caption, tags, needs in studio_pieces:
+            existing_pc = await session.get(Piece, pc_id)
+            if not existing_pc:
+                session.add(
+                    Piece(
+                        id=pc_id,
+                        num=num,
+                        profile_id=pf_id,
+                        net=net,
+                        stage=stage,
+                        title=title,
+                        script=script,
+                        caption=caption,
+                        tags=tags,
+                        needs=needs,
+                        content_type="post",
+                        images=["Imagem 1200x628"] if net == "li" else ["Imagem 1080x1350"] if net == "ig" else ["Thumbnail 1920x1080"],
+                        timeline=[[datetime.now().strftime("%d/%m %H:%M"), "Operação", "Peça inicializada no Studio"]],
+                        status="published" if stage == "done" else "draft",
+                        published_url=f"https://tavir.io/content/{num}" if stage == "done" else None,
+                    )
+                )
+            else:
+                existing_pc.num = num
+                existing_pc.net = net
+                existing_pc.stage = stage
+                existing_pc.needs = needs
+                existing_pc.script = script
+                existing_pc.caption = caption
+                existing_pc.tags = tags
+        await session.commit()
+        print("Studio pieces seeded successfully")
 
 if __name__ == "__main__":
     asyncio.run(seed())

@@ -99,35 +99,99 @@ export interface EngineeringTemplate {
   name: string;
   category: string;
   mode: string;
-  stages: any[];
-  owner_role: string;
+  stages: string[];
+  mesas?: string[];
+  owner_role?: string | null;
   gate_required: boolean;
+  sort_order?: number;
   created_at?: string;
+}
+
+export interface FactoryProject {
+  id: string;
+  slug: string;
+  name: string;
+  client?: string | null;
+  company?: string | null;
+  template_code?: string | null;
+  stages_done: number;
+  total_stages: number;
+  status: "running" | "paused" | "done";
+  repo_url?: string | null;
+  deploy_target?: string | null;
+  stack?: string | null;
+  goal?: string | null;
+  audience?: string | null;
+  scope_items?: string[] | null;
+  pendencies?: Array<{
+    id: string;
+    kind: "auth" | "error" | "decision";
+    title: string;
+    from: string;
+    text: string;
+    cause?: string;
+    fix?: string;
+    options?: string[];
+  }> | null;
+  kanban_cards?: Array<{
+    title: string;
+    column: "backlog" | "doing" | "review" | "done";
+    mesa: string;
+  }> | null;
+  files?: Array<{
+    kind: "img" | "html" | "text";
+    name: string;
+    mesa: string;
+  }> | null;
+  keys?: Record<string, string> | null;
+  event_log?: Array<[string, string, string]> | null;
 }
 
 export interface Persona {
   id: string;
   name: string;
-  niche: string;
-  description: string | null;
+  archetype?: string | null;
+  pain_points?: string | null;
+  goals?: string | null;
+  demographics?: string | null;
+  status?: string;
 }
 
-export interface Profile {
+export interface StudioProfile {
   id: string;
-  persona_id: string;
+  persona_id?: string | null;
   name: string;
-  social_handle: string | null;
-  tone: string | null;
+  platform?: string | null;
+  niche?: string | null;
+  audience?: string | null;
+  tone?: string | null;
+  context?: string | null;
+  color?: string | null;
+  initials?: string | null;
+  networks?: Array<{ net: "ig" | "yt" | "tt" | "li"; handle: string; logo: string }> | null;
+  guidelines?: string | null;
+  status?: string;
 }
 
-export interface Piece {
+export interface StudioPiece {
   id: string;
-  profile_id: string;
-  project_id: string | null;
+  num?: string | null;
+  profile_id?: string | null;
+  project_id?: string | null;
   title: string;
-  stage: string;
-  content: string | null;
-  published: boolean;
+  content_type?: string;
+  net?: "ig" | "yt" | "tt" | "li" | null;
+  stage: "idea" | "pauta" | "prod" | "review" | "pub" | "done";
+  needs: boolean;
+  body?: string | null;
+  script?: string | null;
+  caption?: string | null;
+  tags?: string | null;
+  images?: string[] | null;
+  timeline?: Array<[string, string, string]> | null;
+  status?: string;
+  published_url?: string | null;
+  published_at?: string | null;
 }
 
 export interface Workflow {
@@ -369,11 +433,56 @@ export const api = {
 
   // Factory
   listTemplates: () => fetchJson<EngineeringTemplate[]>("/api/v1/factory/templates"),
+  getTemplate: (code: string) => fetchJson<EngineeringTemplate>(`/api/v1/factory/templates/${code}`),
+  listFactoryProjects: () => fetchJson<FactoryProject[]>("/api/v1/factory/projects"),
+  getFactoryProject: (id: string) => fetchJson<FactoryProject>(`/api/v1/factory/projects/${id}`),
+  createFactoryProject: (data: any) =>
+    fetchJson<FactoryProject>("/api/v1/factory/projects", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateProjectStage: (id: string, stagesDone: number) =>
+    fetchJson<FactoryProject>(`/api/v1/factory/projects/${id}/stage`, {
+      method: "PATCH",
+      body: JSON.stringify({ stages_done: stagesDone }),
+    }),
+  resolveProjectPendency: (id: string, pendencyId: string, note?: string) =>
+    fetchJson<FactoryProject>(`/api/v1/factory/projects/${id}/resolve-pendency`, {
+      method: "POST",
+      body: JSON.stringify({ pendency_id: pendencyId, note }),
+    }),
 
   // Studio
   listPersonas: () => fetchJson<Persona[]>("/api/v1/studio/personas"),
-  listProfiles: () => fetchJson<Profile[]>("/api/v1/studio/profiles"),
-  listPieces: () => fetchJson<Piece[]>("/api/v1/studio/pieces"),
+  listStudioProfiles: () => fetchJson<StudioProfile[]>("/api/v1/studio/profiles"),
+  listStudioPieces: (query?: { profile_id?: string; stage?: string; net?: string }) => {
+    const params = new URLSearchParams();
+    if (query?.profile_id) params.set("profile_id", query.profile_id);
+    if (query?.stage) params.set("stage", query.stage);
+    if (query?.net) params.set("net", query.net);
+    const qs = params.toString();
+    return fetchJson<StudioPiece[]>(`/api/v1/studio/pieces${qs ? `?${qs}` : ""}`);
+  },
+  createStudioPiece: (data: any) =>
+    fetchJson<StudioPiece>("/api/v1/studio/pieces", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updatePieceStage: (id: string, stage: string) =>
+    fetchJson<StudioPiece>(`/api/v1/studio/pieces/${id}/stage`, {
+      method: "PATCH",
+      body: JSON.stringify({ stage }),
+    }),
+  updatePieceContent: (id: string, data: any) =>
+    fetchJson<StudioPiece>(`/api/v1/studio/pieces/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  publishPiece: (id: string, url?: string) =>
+    fetchJson<StudioPiece>(`/api/v1/studio/pieces/${id}/publish`, {
+      method: "POST",
+      body: JSON.stringify({ url }),
+    }),
 
   // Visibility & Knowledge
   listWorkflows: () => fetchJson<Workflow[]>("/api/v1/workflows"),

@@ -5,10 +5,10 @@
 - Branch: master
 
 ## Estado atual
-- Goal atual: Backend Fase 2 — Agentes & Comunicação (Catálogo dos 47 Agentes + Editor de Almas Operacionais + Chat com Persistência + Organograma)
+- Goal atual: Backend Fase 3 — Módulos de Produção (Tavir Fábrica & Tavir Studio)
 - Status: 100% Concluído
-- Backend: FastAPI + SQLite + SQLAlchemy async + aiosqlite (18/18 testes passando no pytest)
-- Migrações Alembic: 6 migrações aplicadas (até f2a3b4c5d6e7)
+- Backend: FastAPI + SQLite + SQLAlchemy async + aiosqlite (22/22 testes passando no pytest)
+- Migrações Alembic: 7 migrações aplicadas (até a3b4c5d6e7f8)
 - Frontend: SolidJS SPA + Vite + TypeScript (build 100% limpo, 0 erros, conectado via client.ts e store reativa)
 - Shell: 3 colunas (56px Rail + 212px SubNav + 52px Header)
 - 40+ Rotas ativas e integradas: ZERO placeholders "em construção"
@@ -52,7 +52,7 @@
    - Resultado: Sucesso (exit code 0), 794 módulos transformados, 0 erros de compilação TypeScript, chunks PixiJS devidamente particionados em lazy bundle.
 2. **Backend Unit & Integration Tests**:
    - Comando: `python -m pytest tests/ -v` na pasta `backend/`
-   - Resultado: 8 passed em 2.72s (100% de sucesso).
+   - Resultado: 22 passed (100% de sucesso). Inclui suíte de integração e unitária da Fábrica e Studio.
 3. **Visual QA via Browser Subagent**:
    - Navegação automatizada no browser com gravação de sessão em vídeo (.webp) e screenshots:
      - `sala_operacao_initial`: 3 colunas, shell, KPIs e seções operacionais verificadas.

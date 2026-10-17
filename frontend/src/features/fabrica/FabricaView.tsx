@@ -1,6 +1,7 @@
-import { createSignal, createMemo, For, Show } from "solid-js";
+import { createSignal, createMemo, For, Show, onMount } from "solid-js";
 import { TvIcon } from "../../shared/components/TvIcon";
 import { showToast } from "../../state/store";
+import { api } from "../../shared/api/client";
 
 interface FabProject {
   id: string;
@@ -278,6 +279,17 @@ export function FabricaView() {
   const [chatOpen, setChatOpen] = createSignal<boolean>(false);
   const [chatInput, setChatInput] = createChatInput();
 
+  onMount(async () => {
+    try {
+      const data = await api.listFactoryProjects();
+      if (data && data.length > 0) {
+        setProjects(data as unknown as FabProject[]);
+      }
+    } catch (err) {
+      console.warn("Fábrica: operando com dados locais", err);
+    }
+  });
+
   function createChatInput() {
     return createSignal("");
   }
@@ -294,18 +306,19 @@ export function FabricaView() {
     return projects().find((p) => p.id === id) || null;
   });
 
-  const handleSimulateStage = () => {
+  const handleSimulateStage = async () => {
     const pj = currentProject();
     if (!pj) return;
     if (pj.stagesDone < pj.totalStages) {
+      const nextStage = pj.stagesDone + 1;
       setProjects((prev) =>
         prev.map((p) =>
           p.id === pj.id
             ? {
                 ...p,
-                stagesDone: p.stagesDone + 1,
+                stagesDone: nextStage,
                 log: [
-                  [new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }), "Orquestrador", `Etapa ${p.stagesDone + 1} concluída com sucesso`],
+                  [new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }), "Orquestrador", `Etapa ${nextStage} concluída com sucesso`],
                   ...p.log,
                 ],
               }
@@ -313,16 +326,34 @@ export function FabricaView() {
         )
       );
       showToast("Etapa simulada e avançada no pipeline", "Fábrica", "success");
+
+      try {
+        const updated = await api.updateProjectStage(pj.id, nextStage);
+        if (updated) {
+          setProjects((prev) => prev.map((p) => (p.id === pj.id ? (updated as unknown as FabProject) : p)));
+        }
+      } catch (err) {
+        console.warn("Fábrica: erro na sincronização remota", err);
+      }
     }
   };
 
-  const handleResolvePend = (projId: string, pendId: string) => {
+  const handleResolvePend = async (projId: string, pendId: string) => {
     setProjects((prev) =>
       prev.map((p) =>
         p.id === projId ? { ...p, pend: p.pend.filter((x) => x.id !== pendId) } : p
       )
     );
     showToast("Pendência resolvida", "Autorização confirmada", "success");
+
+    try {
+      const updated = await api.resolveProjectPendency(projId, pendId, "Autorizado pelo CEO");
+      if (updated) {
+        setProjects((prev) => prev.map((p) => (p.id === projId ? (updated as unknown as FabProject) : p)));
+      }
+    } catch (err) {
+      console.warn("Fábrica: erro na sincronização remota", err);
+    }
   };
 
   return (
