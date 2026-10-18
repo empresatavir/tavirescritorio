@@ -2,18 +2,19 @@
 ## Baseline
 - Doc escopo hash: verificado (C:\Users\carlo\.claude\plans\quero-que-voc-produza-curried-peach.md)
 - Design System e Layout Moderno: FIDELIDADE ABSOLUTA (C:\Users\carlo\Downloads\Referencias\novo\Layout Moderno\Modernização do layout Tavir Escritório\TAVIR Escritorio standalone-src.dc.html)
-- Branch: feat/fase-5-visibilidade-conhecimento-workflows
+- Branch: feat/fase-6-mapa-social-utilitarias
 
 ## Estado atual
-- Goal atual: Fase 5 — Visibilidade, Conhecimento, Workflows e Integrações (Goal G8)
+- Goal atual: Fase 6 — Mapa Habblaud, Social, Plataformas, Login, Onboarding e Utilitárias Finais (Goal G9)
 - Status: 100% Concluído
 - Backend: FastAPI + SQLite + SQLAlchemy async + aiosqlite (30/30 testes passando no pytest)
-- Acervo do Vault: 187 páginas reais de `absorcao-conteudo/` indexadas no SQLite com busca semântica, metadados e tags
-- 6 Workflows de Negócio Canônicos (Decisão D3): isolados da Fábrica com etapas, agentes e gates humanos protegidos
-- Doctor Operacional: radar de saúde ponderado em 6 dimensões (Engenharia, Conhecimento, Comercial, Marketing & Studio, Governança & QA, Fábrica & Templates) com score geral (89-93%) e evidências em tempo real
-- Analytics & Finanças: telemetria consolidada por modelo (Claude Sonnet 53%, Opus 27%, GPT-4o 15%, DALL-E 3 5%) reconciliada com faturamento em BRL
-- Catálogo de Skills: mapeamento operacional cobrindo os 57 agentes canônicos
-- Frontend: SolidJS SPA + Vite + TypeScript (build 100% limpo, 0 erros TypeScript, conectado via client.ts e store reativa)
+- Frontend: SolidJS SPA + Vite + TypeScript (build 100% limpo, 0 erros TypeScript)
+- Mapa: Ponto de Conexão Habblaud (Decisão D6) demarcado com selo transparente de "Implementação Posterior", ficha técnica de arquitetura, 6 zonas da agência e atalhos operacionais
+- Social & Distribuição: Painel de esteira Instagram/DarkFlow com canais sandbox, posts agendados e criativos
+- Plataformas & Contratos: Matriz das 6 APIs externas com scopes, status de homologação e compliance DF-SEC-005
+- Comunicações & Mensageria: Central com Telegram Bot, Resend e WhatsApp integrada com alertas
+- Autenticação & Sessão: Login loopback com chave dev, sessão ativa e navegação direta via avatar do CEO no Rail
+- Onboarding Guiado: Tour em 5 etapas com persistência local e badges operacionais
 - Shell: 3 colunas (56px Rail + 212px SubNav + 52px Header)
 
 ## Critérios e Decisões Atendidas (D1–D10)
@@ -48,24 +49,27 @@
 | `/skills` | `GenericPageView.tsx` | Catálogo operacional de habilidades com descrição técnica, arquivos de origem e os 57 agentes cobertos. |
 | `/integracoes` | `IntegracoesView.tsx` | Grupos estruturados, teste de health check em tempo real medindo latência em ms, gestão de serviços locais e logs. |
 | `/agentes` & `/org-chart` | `AgentesView.tsx` / `GenericPageView.tsx` | Tabela dos 57 agentes com status dots, setor, modelo, custos e editor de alma operacional; Org Chart agrupado por setor. |
-| `/mapa` | `Mapa.tsx` | Editor visual do escritório com lazy-loading de PixiJS 8, fallback acessível e ponto de conexão D6 para Habblaud. |
-| `/login` | `Login.tsx` | Autenticação local em loopback com sessão armazenada em localStorage (expiração 24h). |
-| `/onboarding` | `Onboarding.tsx` | Tour em 5 etapas explicando arquitetura, agentes e jobs, com tracking local. |
+| `/mapa` | `Mapa.tsx` | Ponto de conexão arquitetural Habblaud (Decisão D6) com selo de implementação posterior, ficha técnica, 6 zonas demarcadas e atalhos operacionais. |
+| `/social` | `GenericPageView.tsx` | Esteira de distribuição Instagram/DarkFlow, posts agendados, criativos do Studio e status de canais sandbox. |
+| `/plataformas` | `GenericPageView.tsx` | Matriz de contratos e scopes de 6 APIs externas (Meta, YouTube, Resend, Telegram, TikTok, LinkedIn) com status de homologação e compliance DF-SEC-005. |
+| `/comunicacoes` | `GenericPageView.tsx` | Central de mensageria com Telegram Bot (@TavirBot), Resend E-mail (tavir.com.br), WhatsApp e histórico de alertas. |
+| `/login` | `Login.tsx` | Autenticação local em loopback com chave dev (`tavir-local-2024`), indicador 127.0.0.1, show/hide password, persistência de sessão e logout. |
+| `/onboarding` | `Onboarding.tsx` | Tour guiado em 5 etapas com persistência no LocalStorage, barra de progresso e destaques de comando. |
 | `/design-system` | `DesignSystem.tsx` | Showcase interativo demonstrando todos os 14 componentes atômicos e paleta de cores completa. |
 
 ## Evidências de Testes & Validação
 1. **Frontend Production Build**:
    - Comando: `npm run build` na pasta `frontend/`
-   - Resultado: Sucesso (exit code 0), 797 módulos transformados, 0 erros TypeScript, chunks lazy-loaded particionados.
+   - Resultado: Sucesso (exit code 0), 84 módulos transformados, 0 erros TypeScript, chunks particionados em 2.62s.
 2. **Backend Unit & Integration Tests**:
    - Comando: `python -m pytest tests/ -v` na pasta `backend/`
-   - Resultado: 30 passed (100% de sucesso). Inclui suíte completa de visibilidade, conhecimento, workflows, doctor e analytics.
-3. **Visual QA via Browser Subagent**:
-   - Gravação de sessão em vídeo (.webp) e screenshots das telas da Fase 5:
-     - `cerebro_view`: 187 páginas indexadas no Vault e grafo operacional.
-     - `article_modal`: leitura do artigo de Ancoragem com citação de Daniel Kahneman (*Thinking Fast and Slow*).
-     - `workflows_view`: 6 processos de negócio canônicos com etapas e gates humanos.
-     - `doctor_view`: radar de saúde nas 6 dimensões com score de 89% e telemetria SQLite.
-     - `biblioteca_view`: catálogo do Vault em 9 domínios ativos.
-     - `analytics_view`: telemetria de custos por modelo e evolução diária nos últimos 14 dias.
-     - `skills_view`: catálogo de habilidades cobrindo os 57 agentes.
+   - Resultado: 30 passed (100% de sucesso). Inclui suíte completa de agentes, chat, cockpit, tasks, approvals, factory, studio, proposals, visibilidade, conhecimento, workflows, doctor e analytics.
+3. **Visual QA via Browser Subagent (Fase 6)**:
+   - Gravação de sessão em vídeo (.webp) e screenshots das telas da Fase 6:
+     - `fase6_mapa_habblaud`: arquitetura desacoplada do Habblaud Engine com selo de implementação posterior e grid das 6 zonas.
+     - `fase6_social`: painel de distribuição Instagram/DarkFlow com canais sandbox e posts agendados.
+     - `fase6_plataformas`: matriz de 6 provedores externos com scopes e status de homologação.
+     - `fase6_comunicacoes`: central de mensageria com canais ativos e telemetria de alertas.
+     - `fase6_login`: tela de autenticação local com preenchimento dev e painel de sessão ativa.
+     - `fase6_onboarding`: tour guiado em 5 etapas com progresso interativo.
+     - `fase6_design_system`: showcase completo dos componentes do Design System TAVIR.

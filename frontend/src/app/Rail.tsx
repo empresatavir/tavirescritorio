@@ -115,9 +115,12 @@ export function Rail() {
         {theme() === "dark" ? "☀️" : "🌙"}
       </button>
 
-      {/* CEO Profile Pill */}
-      <div
-        title="Carlos · CEO"
+      {/* CEO Profile Pill / Login */}
+      <button
+        type="button"
+        title="Carlos · CEO (Clique para gerenciar sessão)"
+        aria-label="Gerenciar sessão do operador"
+        onClick={() => navigate("/login")}
         style={{
           width: "32px",
           height: "32px",
@@ -130,11 +133,20 @@ export function Rail() {
           "font-size": "11px",
           "font-weight": 600,
           color: "#cbd3de",
-          cursor: "default",
+          cursor: "pointer",
+          transition: "transform 0.15s ease, border-color 0.15s ease",
+        }}
+        onMouseEnter={(e) => {
+          (e.currentTarget as HTMLElement).style.borderColor = "var(--lime, #B7F34A)";
+          (e.currentTarget as HTMLElement).style.transform = "scale(1.05)";
+        }}
+        onMouseLeave={(e) => {
+          (e.currentTarget as HTMLElement).style.borderColor = "rgba(244,246,242,.34)";
+          (e.currentTarget as HTMLElement).style.transform = "scale(1)";
         }}
       >
         CH
-      </div>
+      </button>
     </nav>
   );
 }

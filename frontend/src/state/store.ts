@@ -381,28 +381,29 @@ export async function syncLiveJobs() {
       const curAgents = agents();
       const agentMap = new Map(curAgents.map((a) => [a.id, a]));
 
-      // Group by task_id: show only the latest job per task to avoid flooding the list
-      // Standalone jobs (no task_id) are kept as-is
-      const latestByTask = new Map<string, typeof backendJobs[0]>();
-      const standalone: typeof backendJobs = [];
+      // Group by task_id to show only the latest job per task.
+      // Normalizes key to handle potential whitespace issues.
+      const latestByGroup = new Map<string, typeof backendJobs[0]>();
 
       for (const bj of backendJobs) {
-        if (bj.task_id) {
-          const existing = latestByTask.get(bj.task_id);
-          if (!existing || (bj.created_at && (!existing.created_at || bj.created_at > existing.created_at))) {
-            latestByTask.set(bj.task_id, bj);
-          }
-        } else {
-          standalone.push(bj);
+        // Strictly group by task_id if available.
+        // If task_id is missing, we cannot reliably group by task, so use ID (distinct).
+        // Note: We do NOT fallback to bj.title for grouping because raw API titles may vary.
+        const rawKey = bj.task_id ? String(bj.task_id).trim() : bj.id;
+        const existing = latestByGroup.get(rawKey);
+
+        if (!existing || (bj.created_at && (!existing.created_at || bj.created_at > existing.created_at))) {
+          latestByGroup.set(rawKey, bj);
         }
       }
 
-      // Combine latest-per-task + standalone, then dedup by ID
-      const combined = [...latestByTask.values(), ...standalone];
+      const uniqueJobsArray = Array.from(latestByGroup.values());
+      // Final dedup by ID just in case
       const uniqueJobs = new Map<string, typeof backendJobs[0]>();
-      for (const bj of combined) {
+      for (const bj of uniqueJobsArray) {
         uniqueJobs.set(bj.id, bj);
       }
+
 
       const mappedJobs: UiJob[] = Array.from(uniqueJobs.values()).map((bj) => {
         const linkedTask = bj.task_id ? taskMap.get(bj.task_id) : undefined;
