@@ -124,20 +124,9 @@ export interface RosterAgent {
   soulText?: string;
 }
 
-export const INITIAL_AGENTS: RosterAgent[] = [
-  { id: "ag-01", name: "Arquiteto", role: "Planejamento Estratégico", sector: "Estratégia", status: "busy", lastRun: "2 min", totalJobs: 342, totalCost: 127.4, model: "claude-sonnet-4", avatarColor: "#B7F34A", initials: "AR" },
-  { id: "ag-02", name: "Pesquisador", role: "Coleta & Análise", sector: "Conhecimento", status: "idle", lastRun: "15 min", totalJobs: 518, totalCost: 89.2, model: "gpt-4o", avatarColor: "#f59e0b", initials: "PE" },
-  { id: "ag-03", name: "Redator", role: "Copywriting & Conteúdo", sector: "Conteúdo", status: "busy", lastRun: "1 min", totalJobs: 891, totalCost: 203.5, model: "claude-sonnet-4", avatarColor: "#3b82f6", initials: "RE" },
-  { id: "ag-04", name: "Designer", role: "Design Visual", sector: "Design", status: "idle", lastRun: "32 min", totalJobs: 214, totalCost: 156.8, model: "dall-e-3", avatarColor: "#ec4899", initials: "DE" },
-  { id: "ag-05", name: "Revisor", role: "QA & Aprovação", sector: "Qualidade", status: "busy", lastRun: "3 min", totalJobs: 445, totalCost: 98.3, model: "claude-sonnet-4", avatarColor: "#8b5cf6", initials: "RV" },
-  { id: "ag-06", name: "Deployer", role: "Publicação & Release", sector: "Engenharia", status: "offline", lastRun: "2 h", totalJobs: 178, totalCost: 45.6, model: "gpt-4o", avatarColor: "#06b6d4", initials: "DP" },
-  { id: "ag-07", name: "Analista", role: "Métricas & Analytics", sector: "Estratégia", status: "idle", lastRun: "45 min", totalJobs: 267, totalCost: 112.7, model: "gpt-4o", avatarColor: "#f97316", initials: "AN" },
-  { id: "ag-08", name: "Orquestrador", role: "Coordenação de Agentes", sector: "Operação", status: "busy", lastRun: "agora", totalJobs: 1203, totalCost: 340.9, model: "claude-opus-4", avatarColor: "#ef4444", initials: "OR" },
-  { id: "ag-09", name: "Social Media", role: "Instagram & LinkedIn", sector: "Social", status: "idle", lastRun: "1 h", totalJobs: 156, totalCost: 67.4, model: "gpt-4o", avatarColor: "#14b8a6", initials: "SM" },
-  { id: "ag-10", name: "Finanças", role: "Controle Orçamentário", sector: "Finanças", status: "error", lastRun: "3 h", totalJobs: 89, totalCost: 23.1, model: "gpt-4o", avatarColor: "#84cc16", initials: "FI" },
-  { id: "ag-11", name: "Comercial", role: "Propostas & Funil", sector: "Comercial", status: "idle", lastRun: "20 min", totalJobs: 134, totalCost: 78.5, model: "claude-sonnet-4", avatarColor: "#a855f7", initials: "CO" },
-  { id: "ag-12", name: "Documentador", role: "Docs & Manuais", sector: "Documentação", status: "busy", lastRun: "5 min", totalJobs: 312, totalCost: 95.2, model: "claude-sonnet-4", avatarColor: "#6366f1", initials: "DO" },
-];
+import { REAL_AGENTS, REAL_TASKS } from "./real_data";
+
+export const INITIAL_AGENTS: RosterAgent[] = REAL_AGENTS;
 
 export interface UiJob {
   id: string;
@@ -296,20 +285,7 @@ export interface UiTask {
   description?: string;
 }
 
-export const INITIAL_TASKS: UiTask[] = [
-  { id: "task-01", seq: 1, title: "Relatório de custos Q3 — revisão final", status: "in_progress", assignee: "Analista", priority: "high", sector: "Estratégia", escalation: "Arquiteto", handoffs: ["Redator → Revisor"], gates: ["Aprovação CEO"], activeJobId: "job-001", tags: ["financeiro", "relatório"], description: "Revisar o relatório de custos do 3º trimestre antes do envio à diretoria." },
-  { id: "task-02", seq: 2, title: "Conteúdo LP Nicho Advocacia", status: "in_progress", assignee: "Redator", priority: "normal", sector: "Conteúdo", handoffs: ["Redator → Revisor → Deployer"], gates: ["QA Revisor"], activeJobId: "job-002", tags: ["lp", "copy"], description: "Produzir o texto completo da landing do nicho de advocacia: headline, dores, prova social e CTA." },
-  { id: "task-03", seq: 3, title: 'Capítulo "Frameworks de Crescimento"', status: "in_progress", assignee: "Redator", priority: "high", sector: "Conteúdo", escalation: "Arquiteto", handoffs: ["Redator → Revisor"], gates: ["Aprovação Editorial"], activeJobId: "job-003", tags: ["livro", "ia-livros"], description: "Escrever o capítulo do livro IA Livros com base em 3 fontes do vault." },
-  { id: "task-04", seq: 4, title: "Otimização SEO landing principal", status: "pending", assignee: "Orquestrador", priority: "normal", sector: "Engenharia", tags: ["seo", "landing"], description: "Aplicar recomendações de SEO técnico na landing principal." },
-  { id: "task-05", seq: 5, title: "Criativos Instagram — 5 variações", status: "pending", assignee: "Social Media", priority: "low", sector: "Social", tags: ["instagram", "criativos"], description: "Gerar 5 variações de criativo para o post da semana no Instagram." },
-  { id: "task-06", seq: 6, title: "Auditoria de segurança API", status: "done", assignee: "Revisor", priority: "critical", sector: "Engenharia", handoffs: ["Revisor → Deployer"], gates: ["Aprovado"], tags: ["segurança", "audit"], description: "Varredura de segurança nos 12 endpoints públicos da API." },
-  { id: "task-07", seq: 7, title: "Deploy landing Meridian", status: "pending", assignee: "Deployer", priority: "high", sector: "Engenharia", escalation: "Orquestrador", gates: ["Requer SUPABASE_URL"], tags: ["deploy", "bug"], description: "Publicar a landing do cliente Meridian Capital na conta travada do projeto." },
-  { id: "task-08", seq: 8, title: "Indexar novas páginas no vault", status: "done", assignee: "Pesquisador", priority: "normal", sector: "Conhecimento", tags: ["vault", "indexação"], description: "Indexar 8 novas páginas no vault do Cérebro." },
-  { id: "task-09", seq: 9, title: "Roadmap Q4 — IA Livros", status: "pending", assignee: "Arquiteto", priority: "critical", sector: "Estratégia", escalation: "CEO", gates: ["Aprovação CEO"], activeJobId: "job-009", tags: ["roadmap", "planejamento"], description: "Consolidar o roadmap do 4º trimestre da iniciativa IA Livros." },
-  { id: "task-10", seq: 10, title: "Proposta comercial — cliente Atlas", status: "pending", assignee: "Comercial", priority: "high", sector: "Comercial", tags: ["proposta", "vendas"], description: "Montar a proposta comercial da Atlas Holdings." },
-  { id: "task-11", seq: 11, title: "Documentação API v2", status: "in_progress", assignee: "Documentador", priority: "normal", sector: "Documentação", tags: ["docs", "api"], description: "Documentar os endpoints da API v2 no padrão OpenAPI." },
-  { id: "task-12", seq: 12, title: "Análise de funil — setembro", status: "done", assignee: "Analista", priority: "normal", sector: "Comercial", tags: ["funil", "analytics"], description: "Analisar o funil de setembro e apontar as 3 maiores quedas de conversão." },
-];
+export const INITIAL_TASKS: UiTask[] = REAL_TASKS;
 
 export interface UiApproval {
   id: string;

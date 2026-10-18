@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/v1/tasks", tags=["tasks"])
 
 
 class CreateTaskRequest(BaseModel):
-    project_id: str
+    project_id: str = "tavir-core"
     title: str
     description: str | None = None
     status: str = "pending"

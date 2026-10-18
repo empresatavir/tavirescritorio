@@ -30,7 +30,15 @@ class TaskRepository:
     async def get_by_id(self, task_id: str) -> Task | None:
         return await self.session.get(Task, task_id)
 
+    async def get_next_seq(self) -> int:
+        from sqlalchemy import func
+        res = await self.session.execute(select(func.max(Task.seq)))
+        max_seq = res.scalar() or 0
+        return max_seq + 1
+
     async def create(self, task: Task) -> Task:
+        if task.seq is None:
+            task.seq = await self.get_next_seq()
         self.session.add(task)
         await self.session.flush()
         return task
