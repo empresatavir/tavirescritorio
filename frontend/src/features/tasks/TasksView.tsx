@@ -7,6 +7,7 @@ import {
   setCurrentScreenId,
   syncTasks,
   syncLiveJobs,
+  syncCockpit,
   moveTaskPersistent,
   showToast,
   type UiTask,
@@ -102,10 +103,12 @@ export function TasksView() {
   }) => {
     try {
       // 1. Cria job de orquestração com Paula PM
-      await api.createJob({
+      const createdJob = await api.createJob({
         task_id: payload.taskId,
         project_id: "tavir-core",
         agent_id: "pm-projetos",
+        model_name: payload.modelName,
+        effort: payload.effortLabel,
         command: `echo '[Paula PM · ${payload.modelName}] Planejando e orquestrando Task #${payload.taskSeq} (Esforço: ${payload.effortLabel})'`,
         timeout: payload.effortLevel === 4 ? 600 : payload.effortLevel === 3 ? 360 : 180,
       });
@@ -113,9 +116,15 @@ export function TasksView() {
       // 2. Transiciona status da task para "in_progress"
       await api.updateTaskStatus(payload.taskId, "in_progress");
 
-      // 3. Sincroniza estado da aplicação
+      // 3. Define o job ativo criado como selecionado para monitoramento imediato
+      if (createdJob && createdJob.id) {
+        setSelectedJobId(createdJob.id);
+      }
+
+      // 4. Sincroniza estado da aplicação e cockpit em tempo real
       await syncTasks();
       await syncLiveJobs();
+      await syncCockpit();
 
       setPlanModalOpen(false);
       showToast(

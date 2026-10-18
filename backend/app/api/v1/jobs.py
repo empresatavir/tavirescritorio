@@ -20,6 +20,11 @@ class CreateJobRequest(BaseModel):
     agent_id: str | None = None
     command: str = "echo hello"
     timeout: int = 30
+    model_name: str | None = None
+    effort: str | None = None
+    model_provider: str | None = None
+
+    model_config = {"protected_namespaces": ()}
 
 
 class JobResponse(BaseModel):
@@ -28,13 +33,19 @@ class JobResponse(BaseModel):
     project_id: str | None = None
     agent_id: str | None = None
     origin: str
+    model_provider: str | None = None
+    model_name: str | None = None
+    effort: str | None = None
     status: str
     workspace_path: str | None = None
     error_message: str | None = None
     created_at: datetime
     updated_at: datetime
 
-    model_config = {"from_attributes": True}
+    model_config = {"from_attributes": True, "protected_namespaces": ()}
+
+
+_background_job_tasks: set[asyncio.Task] = set()
 
 
 @router.post("/", response_model=JobResponse, status_code=201)
@@ -45,10 +56,27 @@ async def create_job(req: CreateJobRequest, session: AsyncSession = Depends(get_
         project_id=req.project_id,
         agent_id=req.agent_id,
         command=req.command,
+        model_name=req.model_name,
+        effort=req.effort,
+        model_provider=req.model_provider,
     )
+    if req.task_id:
+        from app.models.task import Task
+        from datetime import timezone
+        task = await session.get(Task, req.task_id)
+        if task:
+            task.active_job_id = job.id
+            task.status = "in_progress"
+            task.updated_at = datetime.now(timezone.utc)
+            session.add(task)
+
     await session.commit()
-    # Fire-and-forget execution in background
-    asyncio.create_task(_run_job_background(job.id, req.command, req.timeout))
+    await session.refresh(job)
+
+    # Fire-and-forget execution in background with strong reference to prevent GC cancellation
+    t = asyncio.create_task(_run_job_background(job.id, req.command, req.timeout))
+    _background_job_tasks.add(t)
+    t.add_done_callback(_background_job_tasks.discard)
     return job
 
 
@@ -72,7 +100,7 @@ async def stream_events(job_id: str):
     """SSE endpoint streaming job events with cursor-based reconnection."""
 
     async def event_generator():
-        last_event_id: str | None = None
+        seen_event_ids: set[str] = set()
         while True:
             async with async_session() as session:
                 repo = JobRepository(session)
@@ -82,8 +110,11 @@ async def stream_events(job_id: str):
                     yield f"data: {json.dumps({'error': 'Job not found'})}\n\n"
                     break
 
-                events = await repo.list_events(job_id, after_event_id=last_event_id)
+                events = await repo.list_events(job_id)
                 for event in events:
+                    if event.id in seen_event_ids:
+                        continue
+                    seen_event_ids.add(event.id)
                     data = {
                         "id": event.id,
                         "event_type": event.event_type,
@@ -95,13 +126,12 @@ async def stream_events(job_id: str):
                         "created_at": str(event.created_at),
                     }
                     yield f"id: {event.id}\ndata: {json.dumps(data)}\n\n"
-                    last_event_id = event.id
 
-                # If job reached terminal state, stop streaming
+                # If job reached terminal state, stop streaming after emitting all events
                 if job.status in ("succeeded", "failed"):
                     break
 
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.5)
 
     return StreamingResponse(
         event_generator(),
@@ -139,7 +169,8 @@ async def _run_job_background(job_id: str, command: str, timeout: int):
         try:
             await runner.run(job_id, command, timeout=timeout)
             await session.commit()
-        except Exception as e:
+        except BaseException as e:
             await session.rollback()
             # Log but don't crash the background task
+            print(f"[JobRunner] Background error for {job_id}: {e}")
             print(f"[JobRunner] Background error for {job_id}: {e}")

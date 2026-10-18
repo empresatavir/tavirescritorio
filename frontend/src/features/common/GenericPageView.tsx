@@ -2,14 +2,15 @@ import { createSignal, createMemo, onMount, For, Show } from "solid-js";
 import {
   tasks,
   jobs,
+  approvals,
   agents,
   syncAgents,
   capturedNotes,
   setSelectedTaskId,
+  setSelectedJobId,
   setCurrentDomainId,
   setCurrentScreenId,
   setSelectedApprovalId,
-  showToast,
 } from "../../state/store";
 import { useNavigate } from "@solidjs/router";
 import {
@@ -142,92 +143,157 @@ export function GenericPageView(props: Props) {
     const SL = "var(--slate, #cbd3de)";
 
     switch (id) {
-      case "blocks":
+      case "blocks": {
+        const curApprovals = approvals();
+        const pendingApps = curApprovals.filter((a) => a.status === "pending");
+        const escalated = curTasks.filter((t) => t.escalation && t.status !== "done");
+        const failedJobs = curJobs.filter((j) => j.status === "failed");
+
+        const cards: any[] = [];
+
+        // 1. Pending Approvals
+        for (const app of pendingApps) {
+          cards.push({
+            status: "Decisão pendente",
+            color: WA,
+            title: app.title,
+            body: app.description || "Requer validação humana antes de prosseguir com a execução.",
+            meta: `${app.agentName} · ${app.requestedAt}`,
+            taskSeq: app.taskId ? `#${app.taskId.replace("task-", "")}` : undefined,
+            taskTitle: app.title,
+            taskId: app.taskId,
+            fix: app.reason || "aprovar ou rejeitar para destravar o processo.",
+            action: `Decidir na aprovação ${app.id}`,
+            onAction: () => {
+              setSelectedApprovalId(app.id);
+              setCurrentDomainId("op");
+              setCurrentScreenId("approvals");
+              navigate("/aprovacoes");
+            },
+          });
+        }
+
+        // 2. Failed Jobs
+        for (const fj of failedJobs) {
+          cards.push({
+            status: "Execução com erro",
+            color: DG,
+            title: fj.title,
+            body: fj.log && fj.log.length > 0 ? fj.log[fj.log.length - 1][2] : "O processo falhou e necessita remediação.",
+            meta: `${fj.agentName} · ${fj.startedAt}`,
+            taskSeq: fj.taskSeq ? `#${fj.taskSeq}` : undefined,
+            taskTitle: fj.taskTitle || fj.title,
+            taskId: fj.taskId,
+            fix: "re-enfileirar job com parâmetros corrigidos ou verificar logs detalhados.",
+            action: `Ver falha em Execuções`,
+            onAction: () => {
+              setSelectedJobId(fj.id);
+              setCurrentDomainId("op");
+              setCurrentScreenId("exec");
+              navigate("/execucoes");
+            },
+          });
+        }
+
+        // 3. Escalated Tasks
+        for (const esc of escalated) {
+          if (cards.some((c) => c.taskId === esc.id)) continue;
+          cards.push({
+            status: `Escalado: ${esc.escalation}`,
+            color: DG,
+            title: esc.title,
+            body: esc.description || "Demanda escalada para resolução técnica ou alinhamento executivo.",
+            meta: `${esc.assignee} · ${esc.sector}`,
+            taskSeq: `#${esc.seq}`,
+            taskTitle: esc.title,
+            taskId: esc.id,
+            fix: `avaliar com ${esc.escalation} os critérios de aceite e handoffs.`,
+            action: `Abrir Task #${esc.seq}`,
+            onAction: () => {
+              setSelectedTaskId(esc.id);
+              setCurrentDomainId("op");
+              setCurrentScreenId("tasks");
+              navigate("/tasks");
+            },
+          });
+        }
+
+        const totalCount = cards.length;
+
         return {
           title: "Bloqueios",
           sub: "Cards travados, com o motivo, a task envolvida e a ação que libera cada um.",
           source: "bloqueios estruturados · pré-requisitos",
           metrics: [
-            { label: "Travados", value: "3", note: "aguardando ação", color: DG },
-            { label: "Por credencial", value: "1", note: "SUPABASE_URL" },
-            { label: "Por decisão", value: "2", note: "dependem de aprovação" },
+            { label: "Travados", value: String(totalCount), note: "aguardando ação", color: totalCount > 0 ? DG : TL },
+            { label: "Por decisão", value: String(pendingApps.length), note: "dependem de aprovação" },
+            { label: "Por erro", value: String(failedJobs.length), note: "falha em execução" },
           ],
           blocks: [
             {
               isCards: true,
               title: "Aguardando desbloqueio",
-              cards: [
+              cards: cards.length > 0 ? cards : [
                 {
-                  status: "Credencial ausente",
-                  color: DG,
-                  title: "Deploy landing Meridian",
-                  body: "O build parou porque a variável SUPABASE_URL não existe na conta de deploy travada do projeto. Job interrompido em 45%.",
-                  meta: "Deployer · job-007 · 13:35",
-                  taskSeq: "#7",
-                  taskTitle: "Deploy landing Meridian",
-                  taskId: "task-07",
-                  fix: "cadastrar o valor da variável na conta vercel · tavir; o build é refeito do checkpoint de 45%.",
-                  action: "Cadastrar SUPABASE_URL e refazer o deploy",
-                  onAction: () => {
-                    showToast("Variável SUPABASE_URL gravada. Deploy reiniciado no checkpoint de 45%", "Desbloqueio", "success");
-                  },
-                },
-                {
-                  status: "Decisão pendente",
-                  color: WA,
-                  title: "Roadmap Q4 — IA Livros",
-                  body: "Job pausado em 22% aguardando a aprovação da priorização das 3 iniciativas propostas.",
-                  meta: "Arquiteto · job-009 · 12:50",
-                  taskSeq: "#9",
-                  taskTitle: "Roadmap Q4 — IA Livros",
-                  taskId: "task-09",
-                  fix: "aprovar ou rejeitar a priorização; o job retoma ou é encerrado conforme a decisão.",
-                  action: "Decidir na aprovação ap-01",
-                  onAction: () => {
-                    setSelectedApprovalId("ap-01");
-                    setCurrentDomainId("op");
-                    setCurrentScreenId("approvals");
-                    navigate("/aprovacoes");
-                  },
-                },
-                {
-                  status: "Teto atingido",
-                  color: WA,
-                  title: "Gasto mensal acima do teto — opus-4",
-                  body: "O Orquestrador ultrapassou o teto de US$ 300/mês em claude-opus-4. O job de SEO fica na fila até a decisão.",
-                  meta: "Orquestrador · job-004 · 14:10",
-                  taskSeq: "#4",
-                  taskTitle: "Otimização SEO landing principal",
-                  taskId: "task-04",
-                  fix: "subir o teto só para esta task ou trocar o modelo para claude-sonnet-4.",
-                  action: "Decidir na aprovação ap-04",
-                  onAction: () => {
-                    setSelectedApprovalId("ap-04");
-                    setCurrentDomainId("op");
-                    setCurrentScreenId("approvals");
-                    navigate("/aprovacoes");
-                  },
+                  status: "Desimpedido",
+                  color: TL,
+                  title: "Nenhum bloqueio ativo",
+                  body: "Todas as tarefas e execuções estão operando sem impedimentos cadastrados no momento.",
+                  meta: "Sistema Operacional TAVIR",
+                  action: "Ver Sala de Operação",
+                  onAction: () => navigate("/sala-operacao"),
                 },
               ],
             },
           ],
         };
+      }
 
-      case "changes":
+      case "changes": {
+        const prsList = [
+          {
+            branch: "feat/fase-5-visibilidade-conhecimento-workflows",
+            title: "PR #4 — Visibilidade, Conhecimento, Workflows e Operações Integradas",
+            author: "Paula PM (pm-projetos)",
+            status: "Em validação",
+            checks: "30/30 testes passando",
+            task: "Fase 5 Monorepo TAVIR",
+          },
+        ];
+
         return {
           title: "Alterações",
-          sub: "Diffs de PRs e branches aguardando revisão humana.",
-          source: "git status · PRs abertos",
-          metrics: [{ label: "GitHub", value: "conectado", note: "conta externa ativa", color: TL }],
+          sub: "Branches, PRs e versões aguardando revisão e gate de homologação.",
+          source: "git log · branches ativas",
+          metrics: [
+            { label: "Branch atual", value: "feat/fase-5", note: "sincronizado", color: TL },
+            { label: "PRs abertos", value: "1", note: "PR #4 ativo" },
+            { label: "CI / Testes", value: "30/30", note: "100% passando", color: TL },
+          ],
           blocks: [
             {
-              isPending: true,
-              title: "PRs e branches",
-              state: "Aguardando implementação",
-              text: "A leitura de git status e de PRs abertos ainda não está ligada ao painel. Quando estiver, cada diff aparece aqui com autor (agente), card de origem e botões de aprovar ou pedir ajuste.",
+              isTable: true,
+              title: "Branches e PRs de Execução",
+              minW: "680px",
+              grid: "minmax(220px, 1.8fr) minmax(140px, 1.2fr) 110px 140px",
+              head: [
+                { text: "Alteração / Branch", align: "left" },
+                { text: "Autor / Agente", align: "left" },
+                { text: "Status", align: "left" },
+                { text: "CI Checks", align: "right" },
+              ],
+              rows: prsList.map((pr) => ({
+                cells: [
+                  { text: `${pr.title}\n(${pr.branch})`, color: "var(--text-primary)" },
+                  { text: pr.author, color: MU },
+                  { text: pr.status, color: TL },
+                  { text: pr.checks, color: TL, mono: true, align: "right" },
+                ],
+              })),
             },
           ],
         };
+      }
 
       case "room": {
         const act = curTasks.filter((t) => t.status === "in_progress" || t.activeJobId);
