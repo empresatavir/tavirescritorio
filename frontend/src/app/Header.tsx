@@ -57,6 +57,7 @@ export function Header() {
       {/* Global Command Palette Search Bar */}
       <button
         type="button"
+        aria-label="Buscar em Tasks, Cérebro, Dados (Ctrl K)"
         onClick={() => setPaletteOpen(true)}
         style={{
           display: "flex",
@@ -99,6 +100,7 @@ export function Header() {
       {/* Primary Lime CTA Button: Iniciar job */}
       <button
         type="button"
+        aria-label="Iniciar novo job operacional"
         onClick={() => setModalOpen(true)}
         style={{
           display: "flex",

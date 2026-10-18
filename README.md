@@ -33,16 +33,16 @@ O inicializador realiza automaticamente:
 2. Detecção automática de ambiente virtual (`.venv` ou `venv`), se houver;
 3. Instalação de dependências do frontend (`npm install`) caso `node_modules` não exista;
 4. Execução de migrações automáticas do banco SQLite (`alembic upgrade head`) caso `tavir.db` não exista;
-5. Inicialização do Backend FastAPI na porta `8000` em janela própria;
-6. Inicialização do Frontend SolidJS SPA na porta `5173` em janela própria;
-7. Verificação de saúde e abertura automática do navegador em `http://localhost:5173/`;
+5. Inicialização do Backend FastAPI na porta `9001` em janela própria;
+6. Inicialização do Frontend SolidJS SPA na porta `9002` em janela própria;
+7. Verificação de saúde e abertura automática do navegador em `http://localhost:9002/`;
 8. Menu interativo no terminal para reabrir abas, testar ou encerrar os serviços.
 
 ### 2. Parar os Serviços
 Dê duplo clique em:
 - **`parar_escritorio.bat`**
 
-Encerra com segurança e em um clique todos os processos ativos vinculados às portas `8000` (Backend) e `5173` (Frontend).
+Encerra com segurança e em um clique todos os processos ativos vinculados às portas `9001` (Backend) e `9002` (Frontend).
 
 ### 3. Executar Testes e Validação
 Dê duplo clique em:
@@ -54,6 +54,6 @@ Roda a suíte completa de testes unitários/integração do backend (`pytest`) e
 
 ## URLs dos Serviços
 
-- **Painel Operacional (Frontend):** `http://localhost:5173/`
-- **Swagger API Docs (Backend):** `http://127.0.0.1:8000/docs`
-- **OpenAPI JSON:** `http://127.0.0.1:8000/openapi.json`
+- **Painel Operacional (Frontend):** `http://localhost:9002/`
+- **Swagger API Docs (Backend):** `http://127.0.0.1:9001/docs`
+- **OpenAPI JSON:** `http://127.0.0.1:9001/openapi.json`

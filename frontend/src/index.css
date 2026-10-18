@@ -101,6 +101,16 @@ a:hover {
   outline-offset: 2px;
 }
 
+/* Accessibility — Prefers Reduced Motion (WCAG 2.1 AA) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Selection */
 ::selection {
   background: rgba(183, 243, 74, 0.3);

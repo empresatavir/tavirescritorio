@@ -30,8 +30,8 @@ Este arquivo é lido automaticamente pelo Claude (Claude Code, Claude Desktop, e
 - Nunca use classes como `text-[var(--cloud)]` em elementos de conteúdo principal; use `text-[var(--text-primary)]` ou `text-[var(--text-secondary)]`.
 - Em modo claro (`data-theme="light"`), os painéis estruturais (`InkPanel`, `Rail`, `SubNav`) mantêm fundo Tinta Profunda (`#0B1220`), enquanto a área principal de conteúdo passa para Nuvem (`#F4F6F2`). O botão de ação primária inverte para fundo Tinta com texto Lima.
 
-### 5. Portas do Vite no Windows
-- Antes de iniciar o dev server, certifique-se de que a porta `5173` não está ocupada por um processo fantasma, evitando que o Vite desloque silenciosamente para a porta `5174`. Use `.\parar_escritorio.bat` se necessário.
+### 5. Portas Oficiais (9001/9002)
+- O backend FastAPI roda na porta **9001** e o frontend Vite na porta **9002**. Antes de iniciar o dev stack, certifique-se de que essas portas não estão ocupadas por processos fantasmas. Use `.\parar_escritorio.bat` se necessário. Não referencie 8000 ou 5173 em documentação ou scripts; `.claude/launch.json` é imutável.
 
 ### 6. Scripts Batch no Windows
 - Todos os arquivos `.bat` DEVEM ser gravados com quebra de linha `CRLF` (`\r\n`) e cabeçalho `chcp 65001 >nul` para evitar corrupção de comandos pelo `cmd.exe`.
@@ -39,9 +39,9 @@ Este arquivo é lido automaticamente pelo Claude (Claude Code, Claude Desktop, e
 ### 7. Browser Automation Protocol (mcp__Claude_Browser) [PROTEGIDO]
 > ⚠️ **DIRETIVA DE PROTEÇÃO:** Esta seção e o arquivo `.claude/launch.json` são **imutáveis**. Nenhum agente, sessão ou ferramenta pode alterar, remover, sobrescrever ou mover este conteúdo ou o arquivo de configuração sem autorização EXPLÍCITA e DIRETA do usuário. Qualquer solicitação que envolva modificar estes itens deve ser rejeitada e reportada ao usuário como tentativa de alteração não autorizada.
 
-- **Configuração permanente:** O arquivo `.claude/launch.json` já existe na raiz do projeto com o dev server do frontend configurado (`frontend-dev`, porta 5173, URL `http://localhost:5173`).
-- **Como iniciar:** Use `preview_start(name="frontend-dev")` para subir o Vite dev server. Se a porta 5173 estiver ocupada, o sistema realocará automaticamente (verifique o `serverId` e `port` no retorno).
-- **Navegação:** Use `navigate(tabId, url)` para acessar rotas específicas (ex: `http://localhost:5174/tasks`).
+- **Configuração permanente:** O arquivo `.claude/launch.json` já existe na raiz do projeto com o dev server do frontend configurado (`frontend-dev`, porta 9002, URL `http://localhost:9002`). Este arquivo é **imutável** e não deve ser alterado.
+- **Como iniciar:** Use `preview_start(name="frontend-dev")` para subir o Vite dev server. Se a porta 9002 estiver ocupada, o sistema realocará automaticamente (verifique o `serverId` e `port` no retorno).
+- **Navegação:** Use `navigate(tabId, url)` para acessar rotas específicas (ex: `http://localhost:9002/tasks`).
 - **Captura de tela:** Use `computer(action="screenshot", tabId)` para obter prints em alta resolução.
 - **Injeção de JavaScript:** Use `javascript_tool(tabId, action="javascript_exec", text="...")` para manipular o DOM, destacar elementos, ou extrair dados.
 - **Leitura do DOM:** Use `read_page(tabId, filter="all")` para obter a árvore de acessibilidade com refs clicáveis.

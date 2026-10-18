@@ -1,39 +1,43 @@
-# Plano integrado: OMP + GhostCLI + TAVIR Escritório
+# Plano: GhostCLI + Cline + TAVIR Escritório
 
-**Status:** planejamento; nenhuma alteração de código foi feita nesta etapa.
+**Status:** Fase 1 concluída (limpeza OMP + alinhamento de portas). Agente de desenvolvimento migrado para Cline.
 
-## Faz sentido integrar os três?
+## Decisão consolidada
 
-Sim, desde que cada um tenha uma responsabilidade clara. O OMP é um agente de programação que roda na máquina do desenvolvedor e trabalha no repositório. O GhostCLI é o gateway de modelos. O TAVIR é a aplicação local que usa esses modelos pelo backend. O Claude Code continua sendo outro cliente de desenvolvimento que você já configurou para o mesmo gateway.
-
-Assim, OMP e Claude Code podem usar GhostCLI enquanto você desenvolve o TAVIR; e o chat do próprio TAVIR pode usar GhostCLI quando o escritório estiver em uso. São dois clientes independentes do gateway, não uma cadeia em que o OMP precisa ficar rodando dentro do TAVIR. A documentação do OMP permite cadastrar provedores customizados OpenAI-compatible em `models.yml`; o GhostCLI publica o endpoint OpenAI Chat Completions `/v1/chat/completions` e informa suporte a tool calling. Portanto, o protocolo é compatível em princípio. [1] [2]
+- **OMP:** descontinuado. O arquivo `abrir_omp_tavir.bat` foi esvaziado/removido.
+- **GhostCLI:** permanece como gateway oficial do chat do TAVIR (`backend/app/modules/chat/service.py`) para interações leves no produto.
+- **Cline:** assume o papel de agente de desenvolvimento e engenharia padrão. Diferente do Cursor SDK (que exigiria adaptador backend e API externa), o Cline opera nativamente no ambiente de desenvolvimento com acesso direto a arquivos, terminal e contexto do repositório, sem camadas intermediárias.
+- **Portas oficiais:** API em `9001`, Vite em `9002`. Documentação alinhada. `.claude/launch.json` mantido intacto.
 
 ```text
-Desenvolvimento:
-OMP (na máquina, no repositório TAVIR) ──┐
-Claude Code (já instalado) ──────────────┼──> GhostCLI ──> modelo selecionado
-                                        │
-Uso do produto:                         │
-TAVIR UI → FastAPI local → adaptador/SDK┘
-                      → GhostCLI → FastAPI → histórico SQLite → UI
+Arquitetura atual:
+Desenvolvimento: Cline (agente nativo) → Repo TAVIR
+Produto:       TAVIR UI → FastAPI (9001) → GhostCLI → Modelo
+               ↘ SQLite/SSE → UI
 ```
 
-O que **não** vem automaticamente dessa configuração é o TAVIR abrir, controlar ou acompanhar sessões do OMP. Se essa for a intenção futura — por exemplo, apertar “Iniciar job” no TAVIR para o OMP alterar código — será necessário um adaptador de execução separado, com isolamento do repositório, permissões e aprovações. O SDK do GhostCLI, sozinho, apenas fornece acesso ao modelo; não inicia o OMP nem executa ferramentas locais do TAVIR.
+A integração via "Cursor SDK" foi **descartada** em favor do uso direto do Cline, eliminando a necessidade de `CursorAgentRunner`, credenciais de API de IDE ou processos externos de agenting.
 
-## Estado observado do projeto
+## Estado atual do projeto
 
-O chat do backend já chama o GhostCLI via HTTPX em `backend/app/modules/chat/service.py`, usando `GHOSTCLI_API_KEY` e `GHOSTCLI_BASE_URL`, cujo padrão atual é `https://ghostcli.cloud/v1`. Ele envia a instrução/persona do agente e até dez mensagens recentes. Portanto, o uso de GhostCLI no runtime do chat já tem uma base; falta endurecer a configuração e o tratamento de falhas.
+- O chat do backend chama GhostCLI via HTTPX em `backend/app/modules/chat/service.py`, usando `GHOSTCLI_API_KEY` e `GHOSTCLI_BASE_URL` (padrão `https://ghostcli.cloud/v1`). Esse caminho permanece ativo e é o único gateway de modelos do produto.
+- O seletor de modelos no frontend deve refletir apenas IDs válidos na conta GhostCLI; listas estáticas validadas são preferíveis a descoberta automática em `/v1/models`.
+- O desenvolvimento do repositório agora ocorre via **Cline**. Não há mais configuração de OMP ou Cursor SDK como clientes de desenvolvimento ou executores acionados pela UI.
 
-O seletor em `frontend/src/features/chat/ChatView.tsx` ainda contém IDs como `claude-opus-4`, `claude-sonnet-4`, `gpt-4o` e `dall-e-3`. Eles devem ser comparados com o catálogo habilitado na sua conta GhostCLI antes de serem apresentados como modelos disponíveis. A documentação atual do OMP e do GhostCLI descreve endpoints e modelos, mas não devemos presumir que o gateway exponha descoberta compatível em `/v1/models`; começar com uma lista estática validada. [1] [2]
+## Etapas canceladas (histórico)
 
-## Plano por etapas
+As etapas abaixo faziam parte do plano original e foram **canceladas**. Elas permanecem registradas apenas para contexto histórico e NÃO devem ser executadas.
 
-### 1. Configurar OMP como cliente de desenvolvimento
+- ~~Configurar OMP como cliente de desenvolvimento (`~/.omp/agent/models.yml`)~~ — cancelado.
+- ~~Usar OMP/Cursor SDK como executor acionado pelo TAVIR~~ — cancelado; substituído pelo uso direto do Cline.
 
-- Cadastrar GhostCLI como provedor OpenAI-compatible no arquivo de modelos do OMP (`~/.omp/agent/models.yml`), com `baseUrl: https://ghostcli.cloud/v1`, `api: openai-completions`, `authHeader: true` e os IDs de modelos realmente disponíveis na sua conta. O OMP permite referenciar a chave por nome de variável de ambiente em `apiKey`; não colocar a chave literal no YAML nem no repositório. [1]
-- Definir a variável de chave no processo que inicia o OMP. A autenticação do Claude Code não é automaticamente herdada pelo OMP ou pelo backend FastAPI. A documentação do GhostCLI aceita `Authorization: Bearer` e `x-api-key`; a configuração explícita `authHeader: true` usa Bearer. [2]
-- Iniciar o OMP dentro da raiz do TAVIR e usar o `AGENTS.md` do projeto como regras de trabalho. Na primeira rodada, manter aprovações restritivas no OMP; não habilitar modo `yolo`. O OMP opera com permissões locais e suas aprovações controlam ações de ferramentas. [3]
-- Validar com uma tarefa pequena e reversível: leitura de arquivos, proposta de alteração, revisão do diff e build/testes. Não pedir ao OMP para alterar configuração protegida do Claude Code.
+## Estratégia de Agenting (Pós-Fase 1)
+
+Com a decisão de adotar o **Cline** como agente nativo, a complexidade de integrar um SDK externo (como o Cursor SDK) foi eliminada.
+
+- **Chat do Produto:** permanece no GhostCLI para interações leves e síncronas na UI do TAVIR.
+- **Engenharia e Desenvolvimento:** tarefas complexas, refatorações e implementação de features são delegadas diretamente ao Cline neste ambiente. O Cline possui acesso contextual ao repositório, terminal e ferramentas de edição, operando sem a necessidade de adaptadores backend (`CursorAgentRunner`) ou credenciais de API de IDE.
+- **Vantagem:** elimina a latência de adaptação, a gestão de chaves extras e a manutenção de um runner de agente dentro do FastAPI. A aprovação humana e o versionamento continuam sendo feitos via Git e fluxos de trabalho padrão do Cline.ível: leitura de arquivos, proposta de alteração, revisão do diff e build/testes. Não pedir ao OMP para alterar configuração protegida do Claude Code.
 
 **Aceite:** OMP seleciona um modelo GhostCLI e conclui uma tarefa de teste sem expor a chave nem executar ações sem aprovação.
 

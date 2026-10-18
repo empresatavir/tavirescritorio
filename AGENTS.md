@@ -1,6 +1,6 @@
 # Diretrizes Universais de Engenharia & Conhecimento Consolidado — TAVIR Escritório
 
-Este arquivo é a fonte primária de conhecimento operacional e regras técnicas para **QUALQUER motor de IA** (Claude, Gemini, Cursor, Copilot, ChatGPT ou agentes autônomos) atuando no repositório `tavirescritorio`.
+Este arquivo é a fonte primária de conhecimento operacional e regras técnicas para **QUALQUER motor de IA** (Cline, Claude, Gemini, Copilot, ChatGPT ou agentes autônomos) atuando no repositório `tavirescritorio`. O **Cline** é o agente de desenvolvimento padrão deste projeto.
 
 ---
 
@@ -45,15 +45,16 @@ Este arquivo é a fonte primária de conhecimento operacional e regras técnicas
 
 ---
 
-## 5. Gerenciamento de Processos e Portas no Windows (Port Drift 5173 vs 5174)
+## 5. Gerenciamento de Processos e Portas no Windows (Port Drift)
 
-- **Causa Raiz:** Iniciar o Vite sem encerrar a instância anterior faz o Vite subir na porta `5174`, enquanto o usuário e o navegador continuam apontando para a porta `5173`, gerando diagnósticos falsos de bugs já corrigidos.
+- **Causa Raiz:** Iniciar o Vite ou FastAPI sem encerrar a instância anterior faz o serviço subir em porta alternativa, enquanto o usuário e o navegador continuam apontando para a porta oficial, gerando diagnósticos falsos de bugs já corrigidos.
 - **Diretriz Obrigatória:**
-  1. Utilize sempre os scripts batch padronizados na raiz:
+  1. As portas oficiais são **9001** (FastAPI) e **9002** (Vite). Não utilize 8000 ou 5173 em documentação, scripts ou configurações (exceto `.claude/launch.json`, que é imutável).
+  2. Utilize sempre os scripts batch padronizados na raiz:
      - `iniciar_escritorio.bat` (ou `run.bat`): inicialização inteligente com checagem de portas e saúde.
-     - `parar_escritorio.bat`: encerra com segurança processos nas portas 8000 e 5173 via PowerShell.
+     - `parar_escritorio.bat`: encerra com segurança processos nas portas 9001 e 9002 via PowerShell.
      - `testar_escritorio.bat`: roda pytest (backend) e `npm run build` (frontend).
-  2. Scripts batch no Windows DEVEM possuir quebras de linha `CRLF` (`\r\n`) e cabeçalho `chcp 65001 >nul` (UTF-8). Salvar `.bat` com `LF` puro corrompe o parser do `cmd.exe`.
+  3. Scripts batch no Windows DEVEM possuir quebras de linha `CRLF` (`\r\n`) e cabeçalho `chcp 65001 >nul` (UTF-8). Salvar `.bat` com `LF` puro corrompe o parser do `cmd.exe`.
 
 ---
 
