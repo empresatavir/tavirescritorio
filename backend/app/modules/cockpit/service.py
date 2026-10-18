@@ -31,7 +31,7 @@ class CockpitService:
         all_approvals = list(appr_res.scalars().all())
 
         # Calculate KPIs
-        running_jobs_list = [j for j in all_jobs if j.status == "running"]
+        running_jobs_list = [j for j in all_jobs if j.status in ("running", "preflight", "queued")]
         active_tasks_list = [t for t in all_tasks if t.status == "in_progress" or t.active_job_id]
         escalated_tasks_list = [t for t in all_tasks if t.escalation and t.status != "done"]
         failed_jobs_list = [j for j in all_jobs if j.status == "failed"]
@@ -41,12 +41,19 @@ class CockpitService:
         running_jobs_ui = []
         for j in running_jobs_list:
             ag = agents.get(j.agent_id) if j.agent_id else None
+            linked_task = next((t for t in all_tasks if t.id == j.task_id), None)
+            if linked_task:
+                job_title = f"Task #{linked_task.seq}: {linked_task.title}" if linked_task.seq else linked_task.title
+            else:
+                job_title = f"Execução {j.id[:8]}"
+
+            prog = 65 if j.status == "running" else (25 if j.status == "preflight" else 10)
             running_jobs_ui.append({
                 "id": j.id,
-                "title": f"Execução {j.id[:8]}",
-                "agentName": ag.name if ag else "Agente Operacional",
+                "title": job_title,
+                "agentName": ag.name if ag else (j.agent_id or "Paula PM"),
                 "model": j.model_name or "claude-sonnet-4",
-                "progress": 65,  # Calculated or default active progress
+                "progress": prog,
                 "taskId": j.task_id or "",
             })
 
@@ -75,11 +82,17 @@ class CockpitService:
                 handoff_str = t.handoffs if isinstance(t.handoffs, str) else " → ".join(t.handoffs)
 
             linked_job = jobs_map.get(t.active_job_id) if t.active_job_id else None
+            if not linked_job:
+                linked_job = next((j for j in all_jobs if j.task_id == t.id), None)
+
             job_label = "Em andamento"
             job_color = "var(--teal)"
             if linked_job:
-                if linked_job.status == "running":
-                    job_label = "Rodando · 67%"
+                if linked_job.status in ("running", "preflight"):
+                    job_label = "Rodando · 65%"
+                    job_color = "var(--teal)"
+                elif linked_job.status == "succeeded":
+                    job_label = "Planejado · 100%"
                     job_color = "var(--teal)"
                 elif linked_job.status == "failed":
                     job_label = "Falhou"
@@ -91,7 +104,7 @@ class CockpitService:
             active_tasks_ui.append({
                 "seq": f"#{t.seq}" if t.seq else f"#{t.id[:4]}",
                 "title": t.title,
-                "assignee": ag.name if ag else "Agente",
+                "assignee": ag.name if ag else "Paula PM",
                 "handoff": handoff_str or "sem handoff",
                 "jobLabel": job_label,
                 "jobColor": job_color,

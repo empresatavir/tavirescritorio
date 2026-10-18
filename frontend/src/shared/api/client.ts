@@ -68,6 +68,9 @@ export interface Job {
   project_id: string | null;
   agent_id: string | null;
   origin: string;
+  model_provider?: string | null;
+  model_name?: string | null;
+  effort?: string | null;
   status: string;
   workspace_path: string | null;
   error_message: string | null;
@@ -90,6 +93,9 @@ export interface CreateJobRequest {
   task_id?: string | null;
   project_id?: string | null;
   agent_id?: string | null;
+  model_name?: string | null;
+  effort?: string | null;
+  model_provider?: string | null;
   command?: string;
   timeout?: number;
 }

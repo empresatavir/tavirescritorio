@@ -1,9 +1,9 @@
 import { createMemo, createEffect, onCleanup, For, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { TvIcon } from "../../shared/components/TvIcon";
-import { cockpitData, syncCockpit } from "../../state/store";
+import { cockpitData, syncCockpit, setSelectedJobId } from "../../state/store";
 
-interface RunningJob {
+export interface RunningJob {
   id: string;
   title: string;
   agentName: string;
@@ -12,7 +12,7 @@ interface RunningJob {
   taskId?: string;
 }
 
-interface EscalatedTask {
+export interface EscalatedTask {
   seq: string;
   title: string;
   to: string;
@@ -22,7 +22,7 @@ interface EscalatedTask {
   taskId: string;
 }
 
-interface ActiveTask {
+export interface ActiveTask {
   seq: string;
   title: string;
   assignee: string;
@@ -32,7 +32,7 @@ interface ActiveTask {
   taskId: string;
 }
 
-interface NeedItem {
+export interface NeedItem {
   icon: string;
   color: string;
   label: string;
@@ -48,43 +48,14 @@ export function SalaOperacaoView() {
     syncCockpit();
     const timer = setInterval(() => {
       syncCockpit();
-    }, 3000);
+    }, 2500);
     onCleanup(() => clearInterval(timer));
   });
 
-  const defaultRunningJobs: RunningJob[] = [
-    { id: "job-001", title: "Gerar relatório de custos Q3", agentName: "Analista", model: "gpt-4o", progress: 67, taskId: "task-01" },
-    { id: "job-002", title: "Revisar conteúdo LP Nicho Advocacia", agentName: "Revisor", model: "claude-sonnet-4", progress: 34, taskId: "task-02" },
-    { id: "job-003", title: "Sintetizar capítulo \"Frameworks de Crescimento\"", agentName: "Redator", model: "claude-sonnet-4", progress: 89, taskId: "task-03" },
-  ];
-
-  const defaultEscalatedTasks: EscalatedTask[] = [
-    { seq: "#9", title: "Roadmap Q4 — IA Livros", to: "CEO", reason: "aprovação ap-01 pendente", action: "Decidir", actionTarget: "/aprovacoes", taskId: "task-09" },
-    { seq: "#7", title: "Deploy landing Meridian", to: "Orquestrador", reason: "configuração / credencial", action: "Ver falha", actionTarget: "/execucoes", taskId: "task-07" },
-    { seq: "#1", title: "Relatório de custos Q3 — revisão final", to: "Arquiteto", reason: "gate: Aprovação CEO", taskId: "task-01" },
-    { seq: "#3", title: "Capítulo \"Frameworks de Crescimento\"", to: "Arquiteto", reason: "gate: Aprovação Editorial", taskId: "task-03" },
-  ];
-
-  const defaultActiveTasks: ActiveTask[] = [
-    { seq: "#1", title: "Relatório de custos Q3 — revisão final", assignee: "Analista", handoff: "Redator → Revisor", jobLabel: "Rodando · 67%", jobColor: "var(--teal)", taskId: "task-01" },
-    { seq: "#2", title: "Conteúdo LP Nicho Advocacia", assignee: "Redator", handoff: "Redator → Revisor → Deployer", jobLabel: "Rodando · 34%", jobColor: "var(--teal)", taskId: "task-02" },
-    { seq: "#3", title: "Capítulo \"Frameworks de Crescimento\"", assignee: "Redator", handoff: "Redator → Revisor", jobLabel: "Rodando · 89%", jobColor: "var(--teal)", taskId: "task-03" },
-    { seq: "#11", title: "Documentação API v2", assignee: "Documentador", handoff: "sem handoff", jobLabel: "Falhou · 58%", jobColor: "oklch(0.635 0.185 27)", taskId: "task-11" },
-  ];
-
-  const defaultNeeds: NeedItem[] = [
-    { icon: "shield-check", color: "oklch(0.80 0.155 78)", label: "Aprovações pendentes", detail: "Roadmap Q4 IA Livros — aprovar priorização", count: "5", path: "/aprovacoes" },
-    { icon: "circle-x", color: "oklch(0.635 0.185 27)", label: "Execuções com falha", detail: "configuração / credencial · comunicação com o agente", count: "4", path: "/execucoes" },
-    { icon: "octagon-alert", color: "oklch(0.635 0.185 27)", label: "Bloqueios", detail: "credencial ausente · decisões pendentes", count: "3", path: "/bloqueios" },
-    { icon: "file-signature", color: "oklch(0.80 0.155 78)", label: "Propostas pendentes", detail: "Atlas Holdings · Bluepeak Studio", count: "2", path: "/propostas" },
-    { icon: "factory", color: "oklch(0.80 0.155 78)", label: "Pendências da Tavir Fábrica", detail: "Landing Meridian Capital · Portal Atlas", count: "4", path: "/fabrica" },
-    { icon: "sparkles", color: "oklch(0.80 0.155 78)", label: "Aprovações do Tavir Studio", detail: "Datavir · Por que sua PME ainda decide no escuro", count: "2", path: "/studio" },
-  ];
-
-  const runningJobs = createMemo(() => cockpitData()?.running_jobs ?? defaultRunningJobs);
-  const escalatedTasks = createMemo(() => cockpitData()?.escalated_tasks ?? defaultEscalatedTasks);
-  const activeTasks = createMemo(() => cockpitData()?.active_tasks ?? defaultActiveTasks);
-  const needs = createMemo(() => cockpitData()?.needs ?? defaultNeeds);
+  const runningJobs = createMemo(() => cockpitData()?.running_jobs ?? []);
+  const escalatedTasks = createMemo(() => cockpitData()?.escalated_tasks ?? []);
+  const activeTasks = createMemo(() => cockpitData()?.active_tasks ?? []);
+  const needs = createMemo(() => cockpitData()?.needs ?? []);
 
   const summary = createMemo(() => {
     if (cockpitData()?.summary_text) return cockpitData().summary_text;
@@ -189,7 +160,10 @@ export function SalaOperacaoView() {
                   <div
                     role="button"
                     tabIndex={0}
-                    onClick={() => navigate("/execucoes")}
+                    onClick={() => {
+                      setSelectedJobId(rj.id);
+                      navigate("/execucoes");
+                    }}
                     class="grid cursor-pointer grid-cols-[1fr_120px] items-center gap-3.5 border-b border-[rgba(244,246,242,.10)] p-3 px-4 transition-colors hover:bg-[#141f35]"
                   >
                     <div class="min-w-0">

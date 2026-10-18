@@ -141,14 +141,16 @@ export interface UiJob {
   cost: number;
   ceiling: number;
   taskId?: string;
+  taskSeq?: number;
+  taskTitle?: string;
   log: Array<[string, "info" | "warn" | "error" | "success", string]>;
 }
 
 export const INITIAL_JOBS: UiJob[] = [
   {
     id: "job-001",
-    title: "Gerar relatório de custos Q3",
-    agentName: "Analista",
+    title: "Task #1: Provinha — desenvolver provador virtual infantil",
+    agentName: "growth",
     status: "running",
     priority: "high",
     progress: 67,
@@ -157,18 +159,19 @@ export const INITIAL_JOBS: UiJob[] = [
     effort: "médio",
     cost: 2.4,
     ceiling: 5,
+    taskId: "task-01",
+    taskSeq: 1,
+    taskTitle: "Provinha — desenvolver provador virtual infantil",
     log: [
       ["14:32", "info", "Job iniciado — coletando dados de job_runs"],
-      ["14:33", "info", "Agregando custos por modelo (12 modelos)"],
-      ["14:34", "info", "Calculando taxa de escalonamento (30 dias)"],
-      ["14:35", "warn", "2 jobs sem checkpoint — estimando custo"],
-      ["14:35", "info", "Gerando sparklines por setor"],
+      ["14:33", "info", "Agregando custos por modelo"],
+      ["14:35", "info", "Em processamento ativo"],
     ],
   },
   {
     id: "job-002",
-    title: "Revisar conteúdo LP Nicho Advocacia",
-    agentName: "Revisor",
+    title: "Task #2: Conteúdo LP Nicho Advocacia",
+    agentName: "qa-e2e",
     status: "running",
     priority: "normal",
     progress: 34,
@@ -177,16 +180,18 @@ export const INITIAL_JOBS: UiJob[] = [
     effort: "baixo",
     cost: 0.8,
     ceiling: 2,
+    taskId: "task-02",
+    taskSeq: 2,
+    taskTitle: "Conteúdo LP Nicho Advocacia",
     log: [
-      ["14:28", "info", "Carregando rascunho do Redator"],
-      ["14:29", "info", "Verificando tom de voz e guidelines"],
-      ["14:30", "warn", "Headline acima do limite de caracteres"],
+      ["14:28", "info", "Carregando rascunho de copywriting"],
+      ["14:29", "info", "Verificando tom de voz e diretrizes"],
     ],
   },
   {
     id: "job-003",
-    title: 'Sintetizar capítulo "Frameworks de Crescimento"',
-    agentName: "Redator",
+    title: 'Task #3: Capítulo "Frameworks de Crescimento"',
+    agentName: "escritor",
     status: "running",
     priority: "high",
     progress: 89,
@@ -195,17 +200,18 @@ export const INITIAL_JOBS: UiJob[] = [
     effort: "alto",
     cost: 5.2,
     ceiling: 8,
+    taskId: "task-03",
+    taskSeq: 3,
+    taskTitle: 'Capítulo "Frameworks de Crescimento"',
     log: [
-      ["14:15", "info", "Lendo 3 fontes do vault (132 páginas indexadas)"],
-      ["14:18", "success", "Estrutura do capítulo aprovada pelo Arquiteto"],
-      ["14:22", "info", 'Escrevendo seção 4/5: "Loops de Retenção"'],
-      ["14:30", "info", 'Escrevendo seção 5/5: "Métricas de Cohort"'],
+      ["14:15", "info", "Lendo fontes indexadas"],
+      ["14:22", "info", "Escrevendo seções"],
     ],
   },
   {
     id: "job-004",
-    title: "Otimizar SEO — landing principal",
-    agentName: "Orquestrador",
+    title: "Task #4: Otimizar SEO — landing principal",
+    agentName: "pm-projetos",
     status: "queued",
     priority: "normal",
     progress: 0,
@@ -214,12 +220,15 @@ export const INITIAL_JOBS: UiJob[] = [
     effort: "médio",
     cost: 0,
     ceiling: 6,
+    taskId: "task-04",
+    taskSeq: 4,
+    taskTitle: "Otimizar SEO — landing principal",
     log: [["—", "info", "Aguardando slot livre"]],
   },
   {
     id: "job-005",
-    title: "Gerar variações de criativos Instagram",
-    agentName: "Social Media",
+    title: "Task #5: Gerar variações de criativos Instagram",
+    agentName: "social-media",
     status: "queued",
     priority: "low",
     progress: 0,
@@ -228,12 +237,15 @@ export const INITIAL_JOBS: UiJob[] = [
     effort: "baixo",
     cost: 0,
     ceiling: 2,
+    taskId: "task-05",
+    taskSeq: 5,
+    taskTitle: "Gerar variações de criativos Instagram",
     log: [["—", "info", "Aguardando slot livre"]],
   },
   {
     id: "job-006",
-    title: "Auditoria de segurança — API endpoints",
-    agentName: "Revisor",
+    title: "Task #6: Auditoria de segurança — API endpoints",
+    agentName: "qa-e2e",
     status: "completed",
     priority: "critical",
     progress: 100,
@@ -242,17 +254,18 @@ export const INITIAL_JOBS: UiJob[] = [
     effort: "alto",
     cost: 8.7,
     ceiling: 10,
+    taskId: "task-06",
+    taskSeq: 6,
+    taskTitle: "Auditoria de segurança — API endpoints",
     log: [
       ["13:50", "info", "Iniciando varredura de endpoints"],
-      ["13:55", "success", "12 endpoints verificados — 0 vulnerabilidades críticas"],
-      ["13:58", "warn", "2 recomendações de hardening"],
-      ["14:00", "success", "Job concluído — relatório salvo no vault"],
+      ["14:00", "success", "Job concluído — relatório salvo"],
     ],
   },
   {
     id: "job-007",
-    title: "Deploy landing — cliente Meridian",
-    agentName: "Deployer",
+    title: "Task #7: Deploy landing — cliente Meridian",
+    agentName: "devops",
     status: "failed",
     priority: "high",
     progress: 45,
@@ -261,6 +274,9 @@ export const INITIAL_JOBS: UiJob[] = [
     effort: "médio",
     cost: 1.2,
     ceiling: 3,
+    taskId: "task-07",
+    taskSeq: 7,
+    taskTitle: "Deploy landing — cliente Meridian",
     log: [
       ["13:30", "info", "Build iniciado"],
       ["13:35", "error", "Erro: variável de ambiente SUPABASE_URL ausente"],
@@ -355,38 +371,102 @@ export function showToast(message: string, title?: string, tone?: any) {
 
 export const [cockpitData, setCockpitData] = createSignal<any | null>(null);
 
-// Fetch live jobs from backend and merge
+// Fetch live jobs from backend and link with tasks
 export async function syncLiveJobs() {
   try {
     const backendJobs = await api.listJobs();
     if (backendJobs && backendJobs.length > 0) {
-      setJobs((prev) => {
-        const merged = [...prev];
-        for (const bj of backendJobs) {
-          const idx = merged.findIndex((j) => j.id === bj.id);
-          const mapped: UiJob = {
-            id: bj.id,
-            title: `Job ${bj.id.slice(0, 8)} (${bj.origin || "API"})`,
-            agentName: bj.agent_id || "Worker",
-            status: bj.status === "running" || bj.status === "queued" || bj.status === "completed" || bj.status === "failed" || bj.status === "paused" ? bj.status : "queued",
-            priority: "normal",
-            progress: bj.status === "succeeded" ? 100 : bj.status === "running" ? 50 : 0,
-            startedAt: bj.created_at ? new Date(bj.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "—",
-            model: "claude-sonnet-4",
-            effort: "médio",
-            cost: 0.15,
-            ceiling: 2.0,
-            taskId: bj.task_id || undefined,
-            log: [["agora", bj.status === "failed" ? "error" : "info", `Status: ${bj.status}`]],
-          };
-          if (idx >= 0) {
-            merged[idx] = { ...merged[idx], ...mapped };
-          } else {
-            merged.unshift(mapped);
+      const curTasks = tasks();
+      const taskMap = new Map(curTasks.map((t) => [t.id, t]));
+      const curAgents = agents();
+      const agentMap = new Map(curAgents.map((a) => [a.id, a]));
+
+      // Group by task_id: show only the latest job per task to avoid flooding the list
+      // Standalone jobs (no task_id) are kept as-is
+      const latestByTask = new Map<string, typeof backendJobs[0]>();
+      const standalone: typeof backendJobs = [];
+
+      for (const bj of backendJobs) {
+        if (bj.task_id) {
+          const existing = latestByTask.get(bj.task_id);
+          if (!existing || (bj.created_at && (!existing.created_at || bj.created_at > existing.created_at))) {
+            latestByTask.set(bj.task_id, bj);
           }
+        } else {
+          standalone.push(bj);
         }
-        return merged;
+      }
+
+      // Combine latest-per-task + standalone, then dedup by ID
+      const combined = [...latestByTask.values(), ...standalone];
+      const uniqueJobs = new Map<string, typeof backendJobs[0]>();
+      for (const bj of combined) {
+        uniqueJobs.set(bj.id, bj);
+      }
+
+      const mappedJobs: UiJob[] = Array.from(uniqueJobs.values()).map((bj) => {
+        const linkedTask = bj.task_id ? taskMap.get(bj.task_id) : undefined;
+        const taskSeq = linkedTask?.seq;
+        const taskTitle = linkedTask?.title;
+        const ag = bj.agent_id ? agentMap.get(bj.agent_id) : undefined;
+
+        let uiStatus: "running" | "queued" | "completed" | "failed" | "paused" = "queued";
+        if (bj.status === "succeeded" || bj.status === "completed") {
+          uiStatus = "completed";
+        } else if (bj.status === "running" || bj.status === "preflight") {
+          uiStatus = "running";
+        } else if (bj.status === "failed") {
+          uiStatus = "failed";
+        } else if (bj.status === "paused") {
+          uiStatus = "paused";
+        }
+
+        // Add execution timestamp to differentiate multiple runs of same task
+        const execTime = bj.created_at
+          ? new Date(bj.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+          : "";
+        const jobTitle = taskTitle
+          ? (taskSeq ? `Task #${taskSeq}: ${taskTitle} (${execTime})` : `${taskTitle} (${execTime})`)
+          : `Job ${bj.id.slice(0, 8)} (${bj.origin || "manual"})`;
+
+        const progress =
+          uiStatus === "completed" ? 100 : uiStatus === "running" ? 65 : uiStatus === "failed" ? 45 : 0;
+
+        const priorityValue = linkedTask?.priority;
+        const priority: "critical" | "high" | "normal" | "low" =
+          priorityValue === "critical" || priorityValue === "high" || priorityValue === "normal" || priorityValue === "low"
+            ? priorityValue
+            : "normal";
+
+        return {
+          id: bj.id,
+          title: jobTitle,
+          agentName: ag ? ag.name : (bj.agent_id || "Paula PM"),
+          status: uiStatus,
+          priority,
+          progress,
+          startedAt: execTime || "—",
+          model: bj.model_name || "Fable",
+          effort: bj.effort || "Máximo",
+          cost: 0.15,
+          ceiling: 2.0,
+          taskId: bj.task_id || undefined,
+          taskSeq,
+          taskTitle,
+          log: [
+            [
+              "agora",
+              uiStatus === "failed" ? "error" : uiStatus === "completed" ? "success" : "info",
+              `Status: ${bj.status}`,
+            ],
+          ],
+        };
       });
+
+      setJobs(mappedJobs);
+    } else {
+      // If backend returns empty, clear jobs to avoid showing stale mocks
+      setJobs([]);
     }
   } catch (err) {
     console.warn("Could not sync live jobs:", err);

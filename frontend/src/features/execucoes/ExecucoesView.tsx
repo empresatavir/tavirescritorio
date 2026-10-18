@@ -1,5 +1,5 @@
 import { createSignal, createEffect, onCleanup, For, Show } from "solid-js";
-import { jobs, selectedJobId, setSelectedJobId, setSelectedTaskId, setCurrentScreenId, syncLiveJobs, showToast } from "../../state/store";
+import { jobs, setJobs, selectedJobId, setSelectedJobId, setSelectedTaskId, setCurrentScreenId, syncLiveJobs, showToast } from "../../state/store";
 import { api, type JobEvent } from "../../shared/api/client";
 import { TvIcon } from "../../shared/components/TvIcon";
 
@@ -28,11 +28,39 @@ export function ExecucoesView() {
       j.id,
       (event: JobEvent) => {
         if (!event || !event.created_at || Number.isNaN(Date.parse(event.created_at))) return;
-        const time = new Date(event.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+        const time = new Date(event.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
         const type: "info" | "warn" | "error" | "success" =
-          event.event_type === "failed" ? "error" : event.event_type === "succeeded" ? "success" : "info";
+          event.event_type === "failed" || event.new_state === "failed"
+            ? "error"
+            : event.event_type === "succeeded" || event.new_state === "succeeded"
+            ? "success"
+            : "info";
         const text = `${event.action || event.event_type}: ${event.details || event.new_state || ""}`;
-        setLiveEvents((prev) => [...prev, [time, type, text]]);
+        setLiveEvents((prev) => {
+          if (prev.some((p) => p[2] === text && p[0] === time)) return prev;
+          return [...prev, [time, type, text]];
+        });
+
+        // Update job status in real-time when state changes occur
+        if (event.new_state && j.id === selectedJobId()) {
+          const newUiStatus = event.new_state === "succeeded" || event.new_state === "completed"
+            ? "completed" as const
+            : event.new_state === "running" || event.new_state === "preflight"
+            ? "running" as const
+            : event.new_state === "failed"
+            ? "failed" as const
+            : event.new_state === "queued"
+            ? "queued" as const
+            : null;
+
+          if (newUiStatus) {
+            setJobs((prev) => prev.map((job) =>
+              job.id === j.id
+                ? { ...job, status: newUiStatus, progress: newUiStatus === "completed" ? 100 : newUiStatus === "running" ? 65 : newUiStatus === "failed" ? 45 : 0 }
+                : job
+            ));
+          }
+        }
       },
       (_err) => {
         // SSE error handled silently in UI
@@ -85,7 +113,7 @@ export function ExecucoesView() {
     const j = selectedJob();
     if (!j) return [];
     if (liveEvents().length > 0) {
-      return [...j.log, ...liveEvents()];
+      return liveEvents();
     }
     return j.log;
   };
@@ -222,11 +250,12 @@ export function ExecucoesView() {
                     <div style={{ "min-width": 0 }}>
                       <div
                         style={{
-                          "font-weight": 500,
+                          "font-weight": 600,
                           overflow: "hidden",
                           "text-overflow": "ellipsis",
                           "white-space": "nowrap",
                           color: "var(--text-primary)",
+                          "font-size": "13px",
                         }}
                       >
                         {j.title}
@@ -239,6 +268,7 @@ export function ExecucoesView() {
                           display: "flex",
                           "align-items": "center",
                           gap: "6px",
+                          "flex-wrap": "wrap",
                         }}
                       >
                         {j.taskId && (
@@ -248,6 +278,7 @@ export function ExecucoesView() {
                               setSelectedTaskId(j.taskId!);
                               setCurrentScreenId("tasks");
                             }}
+                            title={j.taskTitle || j.taskId}
                             style={{
                               display: "inline-flex",
                               "align-items": "center",
@@ -259,9 +290,10 @@ export function ExecucoesView() {
                               "font-family": "var(--font-mono)",
                               "font-size": "10px",
                               "font-weight": 600,
+                              cursor: "pointer",
                             }}
                           >
-                            {j.taskId}
+                            {j.taskSeq ? `Task #${j.taskSeq}` : j.taskId}
                           </span>
                         )}
                         <span>{j.agentName}</span>
@@ -368,8 +400,12 @@ export function ExecucoesView() {
                           "font-size": "12px",
                         }}
                       >
-                        <span style={{ "font-family": "var(--font-mono)", "font-size": "10px", color: "#aeb7c4", "text-transform": "uppercase" }}>Task</span>
-                        <span style={{ "font-family": "var(--font-mono)", color: "var(--teal)", "font-weight": 500 }}>{j().taskId}</span>
+                        <span style={{ "font-family": "var(--font-mono)", "font-size": "10px", color: "var(--teal)", "text-transform": "uppercase", "font-weight": 600 }}>
+                          {j().taskSeq ? `Task #${j().taskSeq}` : "Task"}
+                        </span>
+                        <span style={{ "font-family": "var(--font-mono)", color: "var(--teal)", "font-weight": 500 }}>
+                          {j().taskTitle ? (j().taskTitle!.length > 28 ? `${j().taskTitle!.slice(0, 28)}...` : j().taskTitle) : j().taskId}
+                        </span>
                         <span style={{ color: "var(--teal)" }}>→</span>
                       </button>
                     )}
