@@ -6,9 +6,15 @@ import {
   setSelectedJobId,
   setCurrentScreenId,
   syncTasks,
+  syncLiveJobs,
   moveTaskPersistent,
+  showToast,
+  type UiTask,
 } from "../../state/store";
 import { TvIcon } from "../../shared/components/TvIcon";
+import { api } from "../../shared/api/client";
+import { CreateTaskModal } from "./CreateTaskModal";
+import { PlanTaskModal } from "./PlanTaskModal";
 
 export function TasksView() {
   const [globalQ, setGlobalQ] = createSignal("");
@@ -18,6 +24,13 @@ export function TasksView() {
     done: "",
   });
   const [expanded, setExpanded] = createSignal(false);
+
+  // Modal Nova Task (Cadastro simplificado)
+  const [newTaskOpen, setNewTaskOpen] = createSignal(false);
+
+  // Modal de Planejamento de Task (Com orquestradora Paula PM e IA)
+  const [planModalOpen, setPlanModalOpen] = createSignal(false);
+  const [taskToPlan, setTaskToPlan] = createSignal<UiTask | null>(null);
 
   createEffect(() => {
     syncTasks();
@@ -64,6 +77,103 @@ export function TasksView() {
     }
   };
 
+  const nextTaskId = () => {
+    const list = tasks();
+    if (!list.length) return 1;
+    const maxSeq = Math.max(...list.map((t) => t.seq || 0));
+    return maxSeq + 1;
+  };
+
+  // Abre modal de planejamento para a task selecionada
+  const handleOpenPlanModal = (task: UiTask) => {
+    setTaskToPlan(task);
+    setPlanModalOpen(true);
+  };
+
+  // Executa o planejamento da task no backend
+  const handleExecutePlan = async (payload: {
+    taskId: string;
+    taskSeq: number;
+    aiModel: string;
+    modelName: string;
+    effortLevel: number;
+    effortLabel: string;
+    orchestrator: string;
+  }) => {
+    try {
+      // 1. Cria job de orquestração com Paula PM
+      await api.createJob({
+        task_id: payload.taskId,
+        project_id: "tavir-core",
+        agent_id: "pm-projetos",
+        command: `echo '[Paula PM · ${payload.modelName}] Planejando e orquestrando Task #${payload.taskSeq} (Esforço: ${payload.effortLabel})'`,
+        timeout: payload.effortLevel === 4 ? 600 : payload.effortLevel === 3 ? 360 : 180,
+      });
+
+      // 2. Transiciona status da task para "in_progress"
+      await api.updateTaskStatus(payload.taskId, "in_progress");
+
+      // 3. Sincroniza estado da aplicação
+      await syncTasks();
+      await syncLiveJobs();
+
+      setPlanModalOpen(false);
+      showToast(
+        `Planejamento da Task #${payload.taskSeq} iniciado com Paula PM (${payload.modelName} · Esforço ${payload.effortLabel})!`,
+        "Planejamento",
+        "success"
+      );
+    } catch (err) {
+      console.error("Erro ao iniciar planejamento:", err);
+      showToast("Erro ao iniciar planejamento da tarefa", "Erro", "error");
+    }
+  };
+
+  // Cadastro simplificado (5 campos essenciais)
+  const handleCreateTaskFromModal = async (payload: {
+    id: number;
+    title: string;
+    description: string;
+    priority: "Baixa" | "Normal" | "Alta" | "baixa" | "normal" | "alta";
+    sector: string;
+    file: string | null;
+  }) => {
+    try {
+      const prioMap: Record<string, string> = {
+        Baixa: "low",
+        baixa: "low",
+        Normal: "normal",
+        normal: "normal",
+        Alta: "high",
+        alta: "high",
+      };
+
+      const tags: string[] = [];
+      if (payload.file) {
+        tags.push(`file:${payload.file}`);
+      }
+
+      await api.createTask({
+        project_id: "tavir-core",
+        seq: payload.id,
+        title: payload.title,
+        description: payload.description || null,
+        priority: prioMap[payload.priority] || "normal",
+        assignee_agent_id: "pm-projetos",
+        sector: payload.sector || "Estratégia",
+        status: "pending",
+        tags,
+      });
+
+      await syncTasks();
+      setNewTaskOpen(false);
+      showToast(`Task #${payload.id} cadastrada com sucesso!`, "Kanban", "success");
+    } catch (err) {
+      console.error("Erro ao criar task:", err);
+      showToast("Erro ao criar task no banco de dados", "Erro", "error");
+    }
+  };
+
   return (
     <div
       style={{
@@ -75,7 +185,7 @@ export function TasksView() {
         overflow: "hidden",
       }}
     >
-      {/* Header com resumo e busca global */}
+      {/* Header com resumo, busca global e botão Nova Task */}
       <div
         style={{
           padding: "20px 24px 16px",
@@ -94,24 +204,48 @@ export function TasksView() {
           </p>
         </div>
 
-        <input
-          type="text"
-          value={globalQ()}
-          onInput={(e) => setGlobalQ(e.currentTarget.value)}
-          placeholder="Buscar #ID, título ou descrição"
-          style={{
-            width: "300px",
-            "max-width": "100%",
-            height: "32px",
-            padding: "0 14px",
-            "border-radius": "var(--radius-pill)",
-            border: "1px solid rgba(244,246,242,.16)",
-            background: "var(--surface-0)",
-            color: "var(--text-primary)",
-            "font-size": "13px",
-            outline: "none",
-          }}
-        />
+        <div style={{ display: "flex", "align-items": "center", gap: "10px" }}>
+          <input
+            type="text"
+            value={globalQ()}
+            onInput={(e) => setGlobalQ(e.currentTarget.value)}
+            placeholder="Buscar #ID, título ou descrição"
+            style={{
+              width: "280px",
+              "max-width": "100%",
+              height: "34px",
+              padding: "0 14px",
+              "border-radius": "var(--radius-pill)",
+              border: "1px solid rgba(244,246,242,.16)",
+              background: "var(--surface-0)",
+              color: "var(--text-primary)",
+              "font-size": "13px",
+              outline: "none",
+            }}
+          />
+
+          <button
+            type="button"
+            onClick={() => setNewTaskOpen(true)}
+            style={{
+              display: "inline-flex",
+              "align-items": "center",
+              gap: "8px",
+              height: "34px",
+              padding: "0 16px",
+              "border-radius": "var(--radius-pill)",
+              border: "none",
+              background: "var(--lime, #B7F34A)",
+              color: "var(--ink-panel, #25360a)",
+              "font-size": "13px",
+              "font-weight": 600,
+              cursor: "pointer",
+            }}
+          >
+            <TvIcon name="plus" style={{ width: "14px", height: "14px" }} />
+            Nova task
+          </button>
+        </div>
       </div>
 
       {/* 3 Colunas Kanban */}
@@ -368,6 +502,28 @@ export function TasksView() {
                   <span style={{ flex: 1 }} />
                   <button
                     type="button"
+                    onClick={() => handleOpenPlanModal(t())}
+                    style={{
+                      height: "28px",
+                      padding: "0 12px",
+                      "border-radius": "var(--radius-pill)",
+                      border: "none",
+                      background: "var(--lime, #B7F34A)",
+                      color: "#0B1220",
+                      "font-weight": 600,
+                      cursor: "pointer",
+                      "font-size": "12px",
+                      display: "flex",
+                      "align-items": "center",
+                      gap: "6px",
+                      "box-shadow": "0 0 12px rgba(183, 243, 74, 0.35)",
+                    }}
+                  >
+                    <TvIcon name="sparkles" width="13" height="13" />
+                    Planejar
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => setExpanded(!expanded())}
                     style={{
                       height: "28px",
@@ -471,11 +627,11 @@ export function TasksView() {
                     </div>
                   </div>
 
-                  {/* 01 · Planejamento de Teste */}
+                  {/* 01 · Planejamento & Orquestração */}
                   <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
                     <div style={{ display: "flex", "align-items": "center", gap: "8px" }}>
                       <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", "font-weight": 500, "letter-spacing": "0.14em", "text-transform": "uppercase", color: "#aeb7c4" }}>
-                        01 · Planejamento de Teste
+                        01 · Planejamento & Orquestração
                       </span>
                       <span style={{ flex: 1 }} />
                       <span style={{ "font-size": "12px", color: "#cbd3de" }}>Paula · Product Manager</span>
@@ -483,7 +639,7 @@ export function TasksView() {
 
                     <div
                       style={{
-                        padding: "14px",
+                        padding: "16px",
                         "border-radius": "14px",
                         border: "1px solid rgba(244,246,242,.12)",
                         background: "#121c30",
@@ -492,11 +648,38 @@ export function TasksView() {
                         gap: "12px",
                       }}
                     >
-                      <div>
-                        <div style={{ "font-size": "11px", color: "#aeb7c4", "margin-bottom": "4px" }}>Critério de aceite</div>
-                        <div style={{ "font-size": "13px", "line-height": 1.5, color: "var(--text-primary)" }}>
-                          Critérios verificáveis cumpridos sem regressão de código ou quebra de tokens.
+                      <div style={{ display: "flex", "align-items": "center", "justify-content": "space-between", "flex-wrap": "wrap", gap: "10px" }}>
+                        <div>
+                          <div style={{ "font-size": "13px", "font-weight": 600, color: "var(--text-primary)" }}>
+                            Orquestração com Paula PM
+                          </div>
+                          <div style={{ "font-size": "12px", color: "#aeb7c4", "margin-top": "2px" }}>
+                            Paula recebe a demanda, estrutura a quebra técnica e despacha para os agentes especializados.
+                          </div>
                         </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleOpenPlanModal(t())}
+                          style={{
+                            height: "32px",
+                            padding: "0 16px",
+                            "border-radius": "var(--radius-pill)",
+                            border: "none",
+                            background: "var(--lime, #B7F34A)",
+                            color: "#0B1220",
+                            "font-weight": 600,
+                            "font-size": "12px",
+                            cursor: "pointer",
+                            display: "flex",
+                            "align-items": "center",
+                            gap: "6px",
+                            "box-shadow": "0 0 16px rgba(183, 243, 74, 0.35)",
+                          }}
+                        >
+                          <TvIcon name="sparkles" width="14" height="14" />
+                          Planejar
+                        </button>
                       </div>
 
                       <div
@@ -509,16 +692,16 @@ export function TasksView() {
                         }}
                       >
                         <div>
-                          <div style={{ "font-size": "10px", color: "#aeb7c4" }}>Motor</div>
-                          <div style={{ "font-size": "12px", "font-weight": 500 }}>Anthropic</div>
+                          <div style={{ "font-size": "10px", color: "#aeb7c4" }}>Agente</div>
+                          <div style={{ "font-size": "12px", "font-weight": 500 }}>Paula (PM)</div>
                         </div>
                         <div>
-                          <div style={{ "font-size": "10px", color: "#aeb7c4" }}>Modelo</div>
-                          <div style={{ "font-family": "var(--font-mono)", "font-size": "11px" }}>claude-sonnet-4</div>
+                          <div style={{ "font-size": "10px", color: "#aeb7c4" }}>Modelo Padrão</div>
+                          <div style={{ "font-family": "var(--font-mono)", "font-size": "11px", color: "var(--teal)" }}>Fable</div>
                         </div>
                         <div>
-                          <div style={{ "font-size": "10px", color: "#aeb7c4" }}>Esforço</div>
-                          <div style={{ "font-size": "12px", "font-weight": 500 }}>médio</div>
+                          <div style={{ "font-size": "10px", color: "#aeb7c4" }}>Poder / Esforço</div>
+                          <div style={{ "font-size": "12px", "font-weight": 500, color: "var(--lime)" }}>Máximo (~600s)</div>
                         </div>
                       </div>
                     </div>
@@ -563,6 +746,22 @@ export function TasksView() {
           );
         }}
       </Show>
+
+      {/* Modal: Nova Task (Cadastro Simplificado - 5 campos) */}
+      <CreateTaskModal
+        taskId={nextTaskId()}
+        isOpen={newTaskOpen()}
+        onClose={() => setNewTaskOpen(false)}
+        onCreate={handleCreateTaskFromModal}
+      />
+
+      {/* Modal: Início / Planejamento da Task (Fable + Esforço Máximo com Paula PM) */}
+      <PlanTaskModal
+        task={taskToPlan()}
+        isOpen={planModalOpen()}
+        onClose={() => setPlanModalOpen(false)}
+        onConfirmPlan={handleExecutePlan}
+      />
     </div>
   );
 }

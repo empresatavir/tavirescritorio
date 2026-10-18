@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/v1/tasks", tags=["tasks"])
 
 
 class CreateTaskRequest(BaseModel):
-    project_id: str
+    project_id: str = "tavir-core"
     title: str
     description: str | None = None
     status: str = "pending"
@@ -72,10 +72,11 @@ async def list_tasks(
     status: str | None = Query(None),
     priority: str | None = Query(None),
     project_id: str | None = Query(None),
+    updated_since: datetime | None = Query(None),
     session: AsyncSession = Depends(get_session),
 ):
     repo = TaskRepository(session)
-    return await repo.list_all(status=status, priority=priority, project_id=project_id)
+    return await repo.list_all(status=status, priority=priority, project_id=project_id, updated_since=updated_since)
 
 
 @router.post("/", response_model=TaskResponse, status_code=201)

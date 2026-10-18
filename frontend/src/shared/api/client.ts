@@ -99,35 +99,99 @@ export interface EngineeringTemplate {
   name: string;
   category: string;
   mode: string;
-  stages: any[];
-  owner_role: string;
+  stages: string[];
+  mesas?: string[];
+  owner_role?: string | null;
   gate_required: boolean;
+  sort_order?: number;
   created_at?: string;
+}
+
+export interface FactoryProject {
+  id: string;
+  slug: string;
+  name: string;
+  client?: string | null;
+  company?: string | null;
+  template_code?: string | null;
+  stages_done: number;
+  total_stages: number;
+  status: "running" | "paused" | "done";
+  repo_url?: string | null;
+  deploy_target?: string | null;
+  stack?: string | null;
+  goal?: string | null;
+  audience?: string | null;
+  scope_items?: string[] | null;
+  pendencies?: Array<{
+    id: string;
+    kind: "auth" | "error" | "decision";
+    title: string;
+    from: string;
+    text: string;
+    cause?: string;
+    fix?: string;
+    options?: string[];
+  }> | null;
+  kanban_cards?: Array<{
+    title: string;
+    column: "backlog" | "doing" | "review" | "done";
+    mesa: string;
+  }> | null;
+  files?: Array<{
+    kind: "img" | "html" | "text";
+    name: string;
+    mesa: string;
+  }> | null;
+  keys?: Record<string, string> | null;
+  event_log?: Array<[string, string, string]> | null;
 }
 
 export interface Persona {
   id: string;
   name: string;
-  niche: string;
-  description: string | null;
+  archetype?: string | null;
+  pain_points?: string | null;
+  goals?: string | null;
+  demographics?: string | null;
+  status?: string;
 }
 
-export interface Profile {
+export interface StudioProfile {
   id: string;
-  persona_id: string;
+  persona_id?: string | null;
   name: string;
-  social_handle: string | null;
-  tone: string | null;
+  platform?: string | null;
+  niche?: string | null;
+  audience?: string | null;
+  tone?: string | null;
+  context?: string | null;
+  color?: string | null;
+  initials?: string | null;
+  networks?: Array<{ net: "ig" | "yt" | "tt" | "li"; handle: string; logo: string }> | null;
+  guidelines?: string | null;
+  status?: string;
 }
 
-export interface Piece {
+export interface StudioPiece {
   id: string;
-  profile_id: string;
-  project_id: string | null;
+  num?: string | null;
+  profile_id?: string | null;
+  project_id?: string | null;
   title: string;
-  stage: string;
-  content: string | null;
-  published: boolean;
+  content_type?: string;
+  net?: "ig" | "yt" | "tt" | "li" | null;
+  stage: "idea" | "pauta" | "prod" | "review" | "pub" | "done";
+  needs: boolean;
+  body?: string | null;
+  script?: string | null;
+  caption?: string | null;
+  tags?: string | null;
+  images?: string[] | null;
+  timeline?: Array<[string, string, string]> | null;
+  status?: string;
+  published_url?: string | null;
+  published_at?: string | null;
 }
 
 export interface Workflow {
@@ -243,6 +307,51 @@ export interface CockpitSummary {
   }>;
 }
 
+export interface ProposalItem {
+  desc: string;
+  value: number;
+}
+
+export interface ProposalChange {
+  at: string;
+  target: string;
+  agent: string;
+  text: string;
+  status: string;
+}
+
+export interface ProposalSendInfo {
+  link: string;
+  sentTo: string;
+  sentAt: string;
+  opened: string;
+  accept: ["signed", string, string] | ["refused", string, string] | ["pending"];
+}
+
+export interface Proposal {
+  id: string;
+  num: string;
+  client: string;
+  stage: "progress" | "pending" | "done";
+  status: string;
+  tone: "work" | "wait" | "ok" | "lost";
+  version: number;
+  value: number | null;
+  validity: string;
+  deadline: string;
+  task_id?: string | null;
+  taskId?: string | null;
+  summary: string;
+  scope: string;
+  items: ProposalItem[];
+  collected: [string, string][];
+  changes: ProposalChange[];
+  timeline: [string, string, string][];
+  send_info?: ProposalSendInfo | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
 async function fetchJson<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: { "Content-Type": "application/json" },
@@ -263,10 +372,11 @@ export const api = {
   getCockpitSummary: () => fetchJson<CockpitSummary>("/api/v1/cockpit/summary"),
 
   // Tasks
-  listTasks: (query?: { status?: string; priority?: string }) => {
+  listTasks: (query?: { status?: string; priority?: string; updated_since?: string }) => {
     const params = new URLSearchParams();
     if (query?.status) params.set("status", query.status);
     if (query?.priority) params.set("priority", query.priority);
+    if (query?.updated_since) params.set("updated_since", query.updated_since);
     const qs = params.toString();
     return fetchJson<ApiTask[]>(`/api/v1/tasks/${qs ? `?${qs}` : ""}`);
   },
@@ -369,11 +479,56 @@ export const api = {
 
   // Factory
   listTemplates: () => fetchJson<EngineeringTemplate[]>("/api/v1/factory/templates"),
+  getTemplate: (code: string) => fetchJson<EngineeringTemplate>(`/api/v1/factory/templates/${code}`),
+  listFactoryProjects: () => fetchJson<FactoryProject[]>("/api/v1/factory/projects"),
+  getFactoryProject: (id: string) => fetchJson<FactoryProject>(`/api/v1/factory/projects/${id}`),
+  createFactoryProject: (data: any) =>
+    fetchJson<FactoryProject>("/api/v1/factory/projects", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateProjectStage: (id: string, stagesDone: number) =>
+    fetchJson<FactoryProject>(`/api/v1/factory/projects/${id}/stage`, {
+      method: "PATCH",
+      body: JSON.stringify({ stages_done: stagesDone }),
+    }),
+  resolveProjectPendency: (id: string, pendencyId: string, note?: string) =>
+    fetchJson<FactoryProject>(`/api/v1/factory/projects/${id}/resolve-pendency`, {
+      method: "POST",
+      body: JSON.stringify({ pendency_id: pendencyId, note }),
+    }),
 
   // Studio
   listPersonas: () => fetchJson<Persona[]>("/api/v1/studio/personas"),
-  listProfiles: () => fetchJson<Profile[]>("/api/v1/studio/profiles"),
-  listPieces: () => fetchJson<Piece[]>("/api/v1/studio/pieces"),
+  listStudioProfiles: () => fetchJson<StudioProfile[]>("/api/v1/studio/profiles"),
+  listStudioPieces: (query?: { profile_id?: string; stage?: string; net?: string }) => {
+    const params = new URLSearchParams();
+    if (query?.profile_id) params.set("profile_id", query.profile_id);
+    if (query?.stage) params.set("stage", query.stage);
+    if (query?.net) params.set("net", query.net);
+    const qs = params.toString();
+    return fetchJson<StudioPiece[]>(`/api/v1/studio/pieces${qs ? `?${qs}` : ""}`);
+  },
+  createStudioPiece: (data: any) =>
+    fetchJson<StudioPiece>("/api/v1/studio/pieces", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updatePieceStage: (id: string, stage: string) =>
+    fetchJson<StudioPiece>(`/api/v1/studio/pieces/${id}/stage`, {
+      method: "PATCH",
+      body: JSON.stringify({ stage }),
+    }),
+  updatePieceContent: (id: string, data: any) =>
+    fetchJson<StudioPiece>(`/api/v1/studio/pieces/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  publishPiece: (id: string, url?: string) =>
+    fetchJson<StudioPiece>(`/api/v1/studio/pieces/${id}/publish`, {
+      method: "POST",
+      body: JSON.stringify({ url }),
+    }),
 
   // Visibility & Knowledge
   listWorkflows: () => fetchJson<Workflow[]>("/api/v1/workflows"),
@@ -381,6 +536,41 @@ export const api = {
   listIntegrations: () => fetchJson<IntegrationCheck[]>("/api/v1/integrations"),
   searchKnowledge: (query?: string) =>
     fetchJson<KnowledgeEntry[]>(`/api/v1/knowledge${query ? `?q=${encodeURIComponent(query)}` : ""}`),
+
+  // Commercial & Proposals
+  listProposals: (query?: { client?: string; stage?: string }) => {
+    const params = new URLSearchParams();
+    if (query?.client) params.set("client", query.client);
+    if (query?.stage) params.set("stage", query.stage);
+    const qs = params.toString();
+    return fetchJson<Proposal[]>(`/api/v1/proposals${qs ? `?${qs}` : ""}`);
+  },
+  getProposal: (id: string) => fetchJson<Proposal>(`/api/v1/proposals/${id}`),
+  createProposal: (data: Partial<Proposal>) =>
+    fetchJson<Proposal>("/api/v1/proposals", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateProposal: (id: string, data: Partial<Proposal>) =>
+    fetchJson<Proposal>(`/api/v1/proposals/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  requestProposalChange: (id: string, data: { target: string; agent: string; text: string }) =>
+    fetchJson<Proposal>(`/api/v1/proposals/${id}/change`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  sendProposal: (id: string, sentTo: string) =>
+    fetchJson<Proposal>(`/api/v1/proposals/${id}/send`, {
+      method: "POST",
+      body: JSON.stringify({ sent_to: sentTo }),
+    }),
+  acceptProposal: (id: string, data: { signer_name: string; accepted?: boolean }) =>
+    fetchJson<Proposal>(`/api/v1/proposals/${id}/accept`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 
   // Services Management
   listServicesStatus: () => fetchJson<any[]>("/api/v1/services/status"),

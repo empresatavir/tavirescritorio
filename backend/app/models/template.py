@@ -13,6 +13,7 @@ class EngineeringTemplate(Base):
     mode: Mapped[str] = mapped_column(String(20), nullable=False)  # criacao, manutencao
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     stages: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # Ordered list of stage defs
+    mesas: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # List of responsible operational desks
     owner_role: Mapped[str | None] = mapped_column(String(100), nullable=True)
     default_commands: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     gate_required: Mapped[bool] = mapped_column(default=False)

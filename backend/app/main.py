@@ -16,6 +16,7 @@ from app.api.v1.approvals import router as approvals_router
 from app.api.v1.cockpit import router as cockpit_router
 from app.api.v1.chat import router as chat_router
 from app.api.v1.services import router as services_router
+from app.api.v1.proposals import router as proposals_router
 
 app = FastAPI(title="TAVIR Escritório API", version="0.1.0")
 
@@ -39,6 +40,7 @@ app.include_router(approvals_router)
 app.include_router(cockpit_router)
 app.include_router(chat_router)
 app.include_router(services_router)
+app.include_router(proposals_router)
 
 # Health endpoint
 @app.get("/api/v1/health")
@@ -52,6 +54,9 @@ if frontend_dist.exists():
 
     @app.get("/{full_path:path}")
     async def serve_spa(full_path: str):
+        if full_path.startswith("api/"):
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="API endpoint not found")
         # Try to serve the exact file first
         file_path = frontend_dist / full_path
         if file_path.is_file():

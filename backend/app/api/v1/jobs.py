@@ -3,6 +3,7 @@ import asyncio
 import json
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
+from datetime import datetime
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,8 +31,8 @@ class JobResponse(BaseModel):
     status: str
     workspace_path: str | None = None
     error_message: str | None = None
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
 
     model_config = {"from_attributes": True}
 
