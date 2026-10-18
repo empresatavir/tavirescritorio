@@ -2,20 +2,17 @@
 ## Baseline
 - Doc escopo hash: verificado (C:\Users\carlo\.claude\plans\quero-que-voc-produza-curried-peach.md)
 - Design System e Layout Moderno: FIDELIDADE ABSOLUTA (C:\Users\carlo\Downloads\Referencias\novo\Layout Moderno\Modernização do layout Tavir Escritório\TAVIR Escritorio standalone-src.dc.html)
-- Branch: feat/fase-6-mapa-social-utilitarias
+- Branch: feat/fase-7-hardening-aceite-final
 
 ## Estado atual
-- Goal atual: Fase 6 — Mapa Habblaud, Social, Plataformas, Login, Onboarding e Utilitárias Finais (Goal G9)
-- Status: 100% Concluído
-- Backend: FastAPI + SQLite + SQLAlchemy async + aiosqlite (30/30 testes passando no pytest)
+- Goal atual: Fase 7 — Hardening, Regressão Completa, Acessibilidade e Aceite Final (Goal G10)
+- Status: 100% Concluído — PROJETO TOTALMENTE FINALIZADO (Fases 1 a 7)
+- Backend: FastAPI + SQLite + SQLAlchemy async + aiosqlite (34/34 testes passando no pytest)
 - Frontend: SolidJS SPA + Vite + TypeScript (build 100% limpo, 0 erros TypeScript)
-- Mapa: Ponto de Conexão Habblaud (Decisão D6) demarcado com selo transparente de "Implementação Posterior", ficha técnica de arquitetura, 6 zonas da agência e atalhos operacionais
-- Social & Distribuição: Painel de esteira Instagram/DarkFlow com canais sandbox, posts agendados e criativos
-- Plataformas & Contratos: Matriz das 6 APIs externas com scopes, status de homologação e compliance DF-SEC-005
-- Comunicações & Mensageria: Central com Telegram Bot, Resend e WhatsApp integrada com alertas
-- Autenticação & Sessão: Login loopback com chave dev, sessão ativa e navegação direta via avatar do CEO no Rail
-- Onboarding Guiado: Tour em 5 etapas com persistência local e badges operacionais
-- Shell: 3 colunas (56px Rail + 212px SubNav + 52px Header)
+- Integridade de Dados & Resiliência: Zero violações de chave estrangeira (`PRAGMA foreign_key_check`), integridade física 100% OK, e rotina de backup/restore atômico via SQLite Online Backup API (`scripts/backup_restore.py` e `backup_escritorio.bat`)
+- Acessibilidade (WCAG 2.1 AA): Suporte nativo a `prefers-reduced-motion`, `:focus-visible` universal e rótulos ARIA completos no Shell e componentes
+- Arquitetura & Governança: `ARCHITECTURE.md` atualizado com catálogo de domínios e 6 ADRs formalizados em `docs/adr/` (ADR-001 a ADR-006)
+- Shell & Fidelidade Visual: 3 colunas canônicas (56px Rail + 212px SubNav + 52px Header) com fidelidade absoluta ao Design System
 
 ## Critérios e Decisões Atendidas (D1–D10)
 - [x] **D1 - 40 rotas aceitas**: Todas as rotas do catálogo estão ativas e navegáveis via Rail, SubNav e Command Palette.
@@ -60,16 +57,22 @@
 ## Evidências de Testes & Validação
 1. **Frontend Production Build**:
    - Comando: `npm run build` na pasta `frontend/`
-   - Resultado: Sucesso (exit code 0), 84 módulos transformados, 0 erros TypeScript, chunks particionados em 2.62s.
-2. **Backend Unit & Integration Tests**:
+   - Resultado: Sucesso (exit code 0), 84 módulos transformados, 0 erros TypeScript, chunks particionados em 3.63s.
+2. **Backend Unit, Integration & Hardening Tests**:
    - Comando: `python -m pytest tests/ -v` na pasta `backend/`
-   - Resultado: 30 passed (100% de sucesso). Inclui suíte completa de agentes, chat, cockpit, tasks, approvals, factory, studio, proposals, visibilidade, conhecimento, workflows, doctor e analytics.
-3. **Visual QA via Browser Subagent (Fase 6)**:
-   - Gravação de sessão em vídeo (.webp) e screenshots das telas da Fase 6:
-     - `fase6_mapa_habblaud`: arquitetura desacoplada do Habblaud Engine com selo de implementação posterior e grid das 6 zonas.
-     - `fase6_social`: painel de distribuição Instagram/DarkFlow com canais sandbox e posts agendados.
-     - `fase6_plataformas`: matriz de 6 provedores externos com scopes e status de homologação.
-     - `fase6_comunicacoes`: central de mensageria com canais ativos e telemetria de alertas.
-     - `fase6_login`: tela de autenticação local com preenchimento dev e painel de sessão ativa.
-     - `fase6_onboarding`: tour guiado em 5 etapas com progresso interativo.
-     - `fase6_design_system`: showcase completo dos componentes do Design System TAVIR.
+   - Resultado: 34 passed (100% de sucesso). Inclui agentes, chat, cockpit, tasks, approvals, factory, studio, proposals, visibilidade, conhecimento, workflows, doctor, analytics, integridade de dados SQLite, ciclo de backup/restore e degradação graciosa.
+3. **Rotina de Backup & Integridade Relacional**:
+   - Comando: `backup_escritorio.bat --no-pause` ou `python scripts/backup_restore.py --verify`
+   - Resultado: Integridade física `PRAGMA integrity_check` = OK; Violações FK `PRAGMA foreign_key_check` = 0; Backup atômico validado em `db/backups/`.
+4. **Visual QA & Regressão E2E via Browser Subagent (Fase 7)**:
+   - Gravação de sessão em vídeo (.webp) e screenshots de regressão cobrindo as 10 principais telas:
+     - `sala_operacao_1792334436709.png`: cockpit operacional com métricas e cards de ação.
+     - `execucoes_1792334449577.png`: painel de execuções com logs ao vivo e SSE streaming.
+     - `tasks_kanban_1792334477793.png`: kanban real com 77 tarefas nas 3 colunas e drawer lateral.
+     - `aprovacoes_1792334507555.png`: painel de governança e autorizações com auditoria.
+     - `fabrica_1792334534592.png`: catálogo das 6 esteiras de engenharia da Fábrica.
+     - `studio_1792334561582.png`: esteira de 6 etapas de produção editorial do Creative Studio.
+     - `propostas_1792334589831.png`: pipeline comercial com propostas e paper preview A4.
+     - `cerebro_1792334620975.png`: acervo de 187 páginas indexadas do Vault e grafo operacional.
+     - `doctor_1792334655199.png`: radar de saúde operacional ponderado em 6 dimensões.
+     - `mapa_1792334691675.png`: painel de arquitetura do Habblaud Engine com selo de implementação posterior.

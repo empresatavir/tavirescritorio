@@ -326,6 +326,7 @@ def import_agents(conn: sqlite3.Connection):
     for old_id, new_id in LEGACY_AGENT_MAP.items():
         cur.execute("UPDATE jobs SET agent_id = ? WHERE agent_id = ?", (new_id, old_id))
         cur.execute("UPDATE approvals SET requester_agent_id = ? WHERE requester_agent_id = ?", (new_id, old_id))
+        cur.execute("UPDATE chat_conversations SET agent_id = ? WHERE agent_id = ?", (new_id, old_id))
 
     # Remove agentes legados/sintéticos que não fazem parte do catálogo real
     placeholders = ",".join("?" for _ in all_ids)
@@ -390,6 +391,13 @@ def import_tasks(conn: sqlite3.Connection, agent_name_map: dict):
                 assignee_id = m_esc.group(1).strip()
             else:
                 assignee_id = "pm-projetos"
+
+        # Mapeia papéis humanos/genéricos para IDs de agentes canônicos
+        ROLE_MAP = {"chefe": "pm-projetos", "tecnico": "tech-lead", "diretor": "diretor-comercial"}
+        if assignee_id in ROLE_MAP:
+            assignee_id = ROLE_MAP[assignee_id]
+        if agent_name_map and assignee_id not in agent_name_map:
+            assignee_id = "pm-projetos"
 
         # Prioridade
         if t["num"] in [83, 82, 80, 78] or any(k in title.lower() for k in ["urgente", "segurança", "bloqueio"]):
