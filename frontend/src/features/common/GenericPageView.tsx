@@ -984,30 +984,93 @@ export function GenericPageView(props: Props) {
 
       case "social":
         return {
-          title: "Social",
-          sub: "Instagram: cadência, posts e saúde da conexão.",
-          source: "adapter fake · simulação",
+          title: "Redes Sociais & Distribuição",
+          sub: "Esteira de publicação, cadência e status das integrações sociais (Instagram / DarkFlow).",
+          source: "tavir-social · adapter sandbox",
           metrics: [
-            { label: "Conexão", value: "simulação", note: "adapter real não ligado", color: WA },
-            { label: "Cadência", value: "semanal", note: "segunda 9h · 36 execuções" },
+            { label: "Conexão Meta", value: "Sandbox", note: "App Review em andamento", color: WA },
+            { label: "Cadência", value: "3x / semana", note: "Ter / Qui / Sáb às 10h", color: TL },
+            { label: "DarkFlow Engine", value: "Ativo", note: "Porta 8765 / 5174", color: TL },
+            { label: "Fila de Peças", value: "12 prontas", note: "Studio Editorial", color: "var(--lime)" },
           ],
           blocks: [
             {
               isCards: true,
-              title: "Fila",
+              title: "Fila de Publicações & Criativos Prontos",
               cards: [
+                {
+                  status: "Agendado",
+                  color: TL,
+                  title: "Framework de Ancoragem e Decisão de Preços (4:5)",
+                  body: "Carrossel com 5 slides sintetizando as lições de Daniel Kahneman aplicadas à precificação de serviços.",
+                  meta: "Studio Editorial · Perfil TAVIR Oficial",
+                  action: "Ver no Studio",
+                  onAction: () => {
+                    navigate("/studio");
+                  },
+                },
+                {
+                  status: "Pronto",
+                  color: "var(--lime)",
+                  title: "A Revolução dos Agentes Autônomos de IA (9:16)",
+                  body: "Vídeo vertical renderizado pelo DarkFlow demonstrando a orquestração de 57 agentes em tarefas de alta escala.",
+                  meta: "Canal IA na Prática · DarkFlow",
+                  action: "Ver Execuções",
+                  onAction: () => {
+                    navigate("/execucoes");
+                  },
+                },
                 {
                   status: "Pendente",
                   color: WA,
-                  title: "Criativos Instagram — 5 variações",
-                  body: "Aguardando slot livre na fila de jobs.",
-                  meta: "Social Media · job-005",
-                  action: "Ver job",
+                  title: "Grand Slam Offer — Equação de Valor de Alex Hormozi",
+                  body: "Peça informativa para LinkedIn e Instagram sobre estruturação de ofertas irresistíveis.",
+                  meta: "Editorial · Studio",
+                  action: "Abrir no Studio",
                   onAction: () => {
-                    setCurrentDomainId("op");
-                    setCurrentScreenId("exec");
-                    navigate("/execucoes");
+                    navigate("/studio");
                   },
+                },
+              ],
+            },
+            {
+              isTable: true,
+              title: "Status de Conexão com Plataformas de Distribuição",
+              minW: "520px",
+              grid: "minmax(160px, 1.5fr) minmax(160px, 1.5fr) 140px",
+              head: [
+                { text: "Canal / Plataforma", align: "left" },
+                { text: "Ambiente / Protocolo", align: "left" },
+                { text: "Status", align: "right" },
+              ],
+              rows: [
+                {
+                  cells: [
+                    { text: "Instagram Business", color: "var(--text-primary)" },
+                    { text: "Meta Graph API v19.0", mono: true, color: SL },
+                    { text: "Sandbox / Homologação", mono: true, align: "right", color: WA },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "DarkFlow Remote", color: "var(--text-primary)" },
+                    { text: "HTTP 127.0.0.1:8765 / Deep Link", mono: true, color: SL },
+                    { text: "Conectado", mono: true, align: "right", color: TL },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "YouTube Shorts", color: "var(--text-primary)" },
+                    { text: "YouTube Data API v3", mono: true, color: SL },
+                    { text: "Pronto", mono: true, align: "right", color: TL },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "TikTok Creator", color: "var(--text-primary)" },
+                    { text: "Content Posting API", mono: true, color: SL },
+                    { text: "Aguardando Token", mono: true, align: "right", color: MU },
+                  ],
                 },
               ],
             },
@@ -1016,24 +1079,69 @@ export function GenericPageView(props: Props) {
 
       case "platforms":
         return {
-          title: "Plataformas",
-          sub: "LinkedIn, YouTube e demais: contrato visual e pendências por plataforma.",
-          source: "mockup contratual",
-          metrics: [],
+          title: "Plataformas Externas & APIs",
+          sub: "Matriz técnica de contratos, scopes requeridos e status de homologação de APIs externas.",
+          source: "contratos D5 · governança",
+          metrics: [
+            { label: "APIs Homologadas", value: "3 de 6", color: TL },
+            { label: "Scopes Aprovados", value: "12 scopes", color: SL },
+            { label: "Segurança", value: "DF-SEC-005", note: "tokens cifrados", color: TL },
+            { label: "Ambiente", value: "Local-First", note: "127.0.0.1 loopback", color: "var(--lime)" },
+          ],
           blocks: [
             {
               isTable: true,
-              title: "Plataformas",
-              minW: "460px",
-              grid: "minmax(160px, 1fr) minmax(160px, 1fr) 140px",
+              title: "Matriz Contratual de Integrações Externas",
+              minW: "640px",
+              grid: "minmax(180px, 1.2fr) minmax(220px, 2fr) 140px",
               head: [
-                { text: "Plataforma", align: "left" },
-                { text: "Contrato visual", align: "left" },
-                { text: "Conexão", align: "right" },
+                { text: "Plataforma / Serviço", align: "left" },
+                { text: "Scopes & Permissões Requeridas", align: "left" },
+                { text: "Status de Liberação", align: "right" },
               ],
               rows: [
-                { cells: [{ text: "LinkedIn" }, { text: "pendente", mono: true, color: WA }, { text: "sem credencial", mono: true, align: "right", color: MU }] },
-                { cells: [{ text: "YouTube" }, { text: "pendente", mono: true, color: WA }, { text: "sem credencial", mono: true, align: "right", color: MU }] },
+                {
+                  cells: [
+                    { text: "Meta / Instagram Graph API", color: "var(--text-primary)" },
+                    { text: "instagram_basic, instagram_content_publish", mono: true, color: SL },
+                    { text: "Em Homologação", mono: true, align: "right", color: WA },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "YouTube Data API v3", color: "var(--text-primary)" },
+                    { text: "youtube.upload, youtube.readonly", mono: true, color: SL },
+                    { text: "Ativo", mono: true, align: "right", color: TL },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "Resend E-mail Engine", color: "var(--text-primary)" },
+                    { text: "emails.send (domínio tavir.com.br)", mono: true, color: SL },
+                    { text: "Homologado", mono: true, align: "right", color: TL },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "Telegram Bot API", color: "var(--text-primary)" },
+                    { text: "bot_token, webhook_updates", mono: true, color: SL },
+                    { text: "Ativo (@TavirBot)", mono: true, align: "right", color: TL },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "TikTok Content Posting", color: "var(--text-primary)" },
+                    { text: "video.upload, user.info.basic", mono: true, color: SL },
+                    { text: "Aguardando Dev App", mono: true, align: "right", color: MU },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "LinkedIn Community Management", color: "var(--text-primary)" },
+                    { text: "w_member_social, r_liteprofile", mono: true, color: SL },
+                    { text: "Pendente Review", mono: true, align: "right", color: MU },
+                  ],
+                },
               ],
             },
           ],
@@ -1041,20 +1149,76 @@ export function GenericPageView(props: Props) {
 
       case "comms":
         return {
-          title: "Comunicações",
-          sub: "Caixa de entrada unificada de e-mail, WhatsApp e Slack.",
-          source: "futura integração",
+          title: "Comunicações & Mensageria",
+          sub: "Central unificada de canais operacionais: Telegram Bot, WhatsApp Business e E-mail (Resend).",
+          source: "tavir-comms · mensageria",
           metrics: [
-            { label: "Slack", value: "conectado", note: "só alertas de saída", color: TL },
-            { label: "E-mail", value: "sem fonte", color: MU },
-            { label: "WhatsApp", value: "sem fonte", color: MU },
+            { label: "Telegram Bot", value: "Conectado", note: "@TavirBot", color: TL },
+            { label: "Resend E-mail", value: "Verificado", note: "tavir.com.br", color: TL },
+            { label: "WhatsApp", value: "Planejado", note: "Cloud API", color: MU },
+            { label: "Disparos Realizados", value: "142", note: "alertas e propostas", color: "var(--lime)" },
           ],
           blocks: [
             {
-              isPending: true,
-              title: "Caixa de entrada",
-              state: "Pendente · sem fonte real",
-              text: "Nenhuma mensagem é exibida até que as fontes de e-mail e WhatsApp estejam ligadas. O Slack hoje só envia alertas e não alimenta esta caixa.",
+              isTable: true,
+              title: "Canais de Comunicação Operacional",
+              minW: "520px",
+              grid: "minmax(160px, 1.2fr) minmax(200px, 1.8fr) 130px",
+              head: [
+                { text: "Canal", align: "left" },
+                { text: "Função / Destino", align: "left" },
+                { text: "Status", align: "right" },
+              ],
+              rows: [
+                {
+                  cells: [
+                    { text: "Telegram (@TavirBot)", color: "var(--text-primary)" },
+                    { text: "Alertas críticos de jobs, aprovações e escalações", color: SL },
+                    { text: "Ativo", mono: true, align: "right", color: TL },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "Resend Transacional", color: "var(--text-primary)" },
+                    { text: "Envio de propostas comerciais e termos de aceite", color: SL },
+                    { text: "Ativo", mono: true, align: "right", color: TL },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "Webhook Interno", color: "var(--text-primary)" },
+                    { text: "Telemetria de saúde e diagnósticos do Doctor", color: SL },
+                    { text: "Ativo", mono: true, align: "right", color: TL },
+                  ],
+                },
+                {
+                  cells: [
+                    { text: "WhatsApp Business API", color: "var(--text-primary)" },
+                    { text: "Atendimento direto e onboarding de novos clientes", color: SL },
+                    { text: "Pendente", mono: true, align: "right", color: MU },
+                  ],
+                },
+              ],
+            },
+            {
+              isCards: true,
+              title: "Últimas Mensagens & Alertas do Sistema",
+              cards: [
+                {
+                  status: "Enviado",
+                  color: TL,
+                  title: "Alerta de Planejamento Concluído — Task #68",
+                  body: "Job de planejamento finalizado com sucesso pela Paula PM com Anthropic Claude 3.5 Sonnet.",
+                  meta: "Telegram @TavirBot · há 25 min",
+                },
+                {
+                  status: "Enviado",
+                  color: TL,
+                  title: "Proposta Comercial Emitida — Ref #001",
+                  body: "Link único de aceite digital enviado via e-mail corporativo para validação do cliente.",
+                  meta: "Resend API · propostas@tavir.com.br",
+                },
+              ],
             },
           ],
         };
@@ -1104,32 +1268,40 @@ export function GenericPageView(props: Props) {
 
       case "flow":
         return {
-          title: "Tavir Flow",
-          sub: "Módulo a definir.",
-          source: "módulo",
-          metrics: [],
+          title: "TAVIR Flow",
+          sub: "Motor de automação de esteiras e pipelines de conteúdo multimídia.",
+          source: "manifesto · módulo v2",
+          metrics: [
+            { label: "Status", value: "Em Desenvolvimento", color: WA },
+            { label: "Arquitetura", value: "Node/Python Bridge", color: SL },
+            { label: "Dependências", value: "Fábrica & Studio", color: TL },
+          ],
           blocks: [
             {
               isPending: true,
-              title: "Módulo",
-              state: "Ainda não desenvolvido",
-              text: "O escopo do Tavir Flow ainda não foi definido.",
+              title: "Manifesto do Módulo TAVIR Flow",
+              state: "Em Desenvolvimento · Fase de Arquitetura",
+              text: "O TAVIR Flow conectará pipelines de automação para orquestrar etapas assíncronas entre o Studio e o DarkFlow. O módulo opera em conformidade com as regras de isolamento e governança do monorepo.",
             },
           ],
         };
 
       case "edicao":
         return {
-          title: "Tavir Edição",
-          sub: "Edição de vídeo e postagem automática.",
-          source: "módulo",
-          metrics: [],
+          title: "TAVIR Edição",
+          sub: "Pós-produção de vídeo, sincronização de legendas e renderização automatizada.",
+          source: "manifesto · módulo v2",
+          metrics: [
+            { label: "Status", value: "Em Desenvolvimento", color: WA },
+            { label: "Motor de Render", value: "DarkFlow Bridge", color: TL },
+            { label: "Formatos", value: "Shorts, Reels, 16:9", color: SL },
+          ],
           blocks: [
             {
               isPending: true,
-              title: "Módulo",
-              state: "Ainda não desenvolvido",
-              text: "O Tavir Edição está no menu, mas a tela ainda não foi criada. A integração com outro módulo será avaliada depois.",
+              title: "Manifesto do Módulo TAVIR Edição",
+              state: "Em Desenvolvimento · Integração DarkFlow",
+              text: "O TAVIR Edição fornece a interface de revisão de cortes, legendas automáticas geradas por Whisper e aplicação de branding kit antes da publicação final.",
             },
           ],
         };

@@ -630,7 +630,11 @@ export const api = {
       body: JSON.stringify(data),
     }),
   listIntegrations: () => fetchJson<IntegrationCheck[]>("/api/v1/integrations"),
-  runIntegrationChecks: () => fetchJson<{ message: string; results: any[] }>("/api/v1/integrations/check", { method: "POST" }),
+  runIntegrationChecks: () =>
+    fetchJson<{ status: string; total_checked: number; results: any[] }>("/api/v1/integrations/check", {
+      method: "POST",
+    }),
+  getGhostCliStatus: () => fetchJson<{ integration: string; status: string; latency_ms: number | null; last_check: string | null; error: string | null }>("/api/v1/integrations/ghostcli/status"),
   searchKnowledge: (query?: string, domain?: string, limit?: number) => {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
@@ -678,6 +682,8 @@ export const api = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+  // Models
+  listModels: () => fetchJson<{ models: Array<{ id: string; name: string }> }>("/api/v1/models"),
 
   // Services Management
   listServicesStatus: () => fetchJson<any[]>("/api/v1/services/status"),

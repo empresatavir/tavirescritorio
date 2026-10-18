@@ -1,5 +1,5 @@
 import { createSignal, createEffect, onCleanup, For, Show } from "solid-js";
-import { jobs, setJobs, selectedJobId, setSelectedJobId, setSelectedTaskId, setCurrentScreenId, syncLiveJobs, showToast } from "../../state/store";
+import { jobs, setJobs, selectedJobId, setSelectedJobId, setSelectedTaskId, setCurrentScreenId, syncLiveJobs, showToast, type UiJob } from "../../state/store";
 import { api, type JobEvent } from "../../shared/api/client";
 import { TvIcon } from "../../shared/components/TvIcon";
 
@@ -70,16 +70,41 @@ export function ExecucoesView() {
     onCleanup(() => controller.abort());
   });
 
-  const filteredJobs = () => {
-    const f = filter();
-    if (f === "all") return jobs();
-    return jobs().filter((j) => j.status === f);
-  };
+ const filteredJobs = () => {
+ const f = filter();
+ const allJobs = jobs();
 
-  const runningCount = () => jobs().filter((j) => j.status === "running").length;
-  const queuedCount = () => jobs().filter((j) => j.status === "queued").length;
-  const failedCount = () => jobs().filter((j) => j.status === "failed").length;
-  const doneCount = () => jobs().filter((j) => j.status === "completed").length;
+ // Defensive deduplication: keep only the latest job per title to avoid visual flooding
+ const uniqueByTitle = new Map<string, UiJob>();
+ for (const j of allJobs) {
+ const existing = uniqueByTitle.get(j.title);
+ if (!existing || (j.startedAt && existing.startedAt && j.startedAt > existing.startedAt)) {
+ uniqueByTitle.set(j.title, j);
+ }
+ }
+ const dedupedJobs = Array.from(uniqueByTitle.values());
+
+ if (f === "all") return dedupedJobs;
+ return dedupedJobs.filter((j) => j.status === f);
+ };
+
+ // Helper to get deduplicated jobs for counters
+ const getDedupedJobs = () => {
+ const allJobs = jobs();
+ const uniqueByTitle = new Map<string, UiJob>();
+ for (const j of allJobs) {
+ const existing = uniqueByTitle.get(j.title);
+ if (!existing || (j.startedAt && existing.startedAt && j.startedAt > existing.startedAt)) {
+ uniqueByTitle.set(j.title, j);
+ }
+ }
+ return Array.from(uniqueByTitle.values());
+ };
+
+ const runningCount = () => getDedupedJobs().filter((j) => j.status === "running").length;
+ const queuedCount = () => getDedupedJobs().filter((j) => j.status === "queued").length;
+ const failedCount = () => getDedupedJobs().filter((j) => j.status === "failed").length;
+ const doneCount = () => getDedupedJobs().filter((j) => j.status === "completed").length;
 
   const statusMeta = (st: string) => {
     switch (st) {

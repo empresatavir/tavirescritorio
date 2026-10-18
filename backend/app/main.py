@@ -17,6 +17,8 @@ from app.api.v1.cockpit import router as cockpit_router
 from app.api.v1.chat import router as chat_router
 from app.api.v1.services import router as services_router
 from app.api.v1.proposals import router as proposals_router
+from app.api.v1.models import router as models_router
+from app.api.v1.integrations import router as integrations_router
 
 app = FastAPI(title="TAVIR Escritório API", version="0.1.0")
 
@@ -41,6 +43,8 @@ app.include_router(cockpit_router)
 app.include_router(chat_router)
 app.include_router(services_router)
 app.include_router(proposals_router)
+app.include_router(models_router)
+app.include_router(integrations_router)
 
 # Health endpoint
 @app.get("/api/v1/health")

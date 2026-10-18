@@ -1,38 +1,54 @@
 import { createSignal, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
+import { TvIcon } from "../../shared/components";
 
 /**
- * G9 — Onboarding tour with local completion tracking.
- * Single-user: marks completion in localStorage, never blocks re-entry.
+ * G9 — Onboarding Tour Interativo com persistência local de conclusão.
+ * Permite navegar os 5 passos conceituais e operacionais do TAVIR Escritório.
  */
 
 const ONBOARDING_KEY = "tavir_onboarding_complete";
 
 const STEPS = [
   {
+    icon: "zap",
+    badge: "FUNDAÇÃO LOCAL-FIRST",
     title: "Bem-vindo ao TAVIR Escritório",
     description:
-      "Painel operacional local para orquestrar agentes, jobs e conteúdo editorial. Tudo roda em 127.0.0.1 sem dependências externas.",
+      "O TAVIR Escritório é um painel operacional completo para orquestrar 57 agentes especializados de IA, tarefas complexas e conteúdo de marca em um ambiente estritamente local (127.0.0.1) com total privacidade de dados.",
+    highlight: "Zero dependências em nuvem obrigatórias • Banco SQLite auditável • Alta performance",
   },
   {
-    title: "Navegação",
+    icon: "layers",
+    badge: "ARQUITETURA DE 3 COLUNAS",
+    title: "Navegação Estruturada & Domínios",
     description:
-      "A sidebar agrupa módulos por domínio: Operação, Studio, Fábrica, Visibilidade, Utilitários. Cada rota carrega dados reais do backend SQLite.",
+      "A interface adota a proporção canônica: Rail (56px) para troca de domínios, SubNav (212px) para exploração de telas e seções, e Main Content (header 52px + scroll independente) com Command Palette (Ctrl+K).",
+    highlight: "Domínios: Operação, Studio, Fábrica, Visibilidade, Conhecimento, Tática e Comercial",
   },
   {
-    title: "Jobs & Execuções",
+    icon: "terminal",
+    badge: "ORQUESTRAÇÃO & SSE",
+    title: "Ciclo de Jobs & Log ao Vivo",
     description:
-      "Crie jobs via modal (Motor → Modelo → Esforço → Teto), acompanhe execução ao vivo via SSE, e aprove gates antes de ações irreversíveis.",
+      "Todo planejamento é orquestrado pela Paula PM. As etapas são executadas de forma cadenciada, transmitindo eventos em tempo real via Server-Sent Events (SSE) com logs detalhados e rastreabilidade total de tarefas.",
+    highlight: "Transparência total passo a passo • Gates humanos antes de ações irreversíveis",
   },
   {
-    title: "Fábrica & Templates",
+    icon: "cpu",
+    badge: "PRODUÇÃO & ENGENHARIA",
+    title: "Fábrica de Software & Studio Editorial",
     description:
-      "6 templates de engenharia (LP/Oferta/Sistemas × Criação/Manutenção) com etapas, owners e artefatos vinculados a jobs reais.",
+      "A Fábrica disponibiliza 6 esteiras canônicas (LPs, Ofertas e Sistemas em Criação ou Manutenção). O Studio automatiza a geração de carrosséis, peças de feed (4:5) e vídeos verticais (9:16) sincronizados com o DarkFlow.",
+    highlight: "Formatos prontos para Instagram, YouTube e TikTok • Respeito estrito aos Brand Kits",
   },
   {
-    title: "Visibilidade & Conhecimento",
+    icon: "database",
+    badge: "INTELIGÊNCIA & RAG",
+    title: "Cérebro & Gestão do Conhecimento",
     description:
-      "Workflows de negócio, fila de ideias, saúde de integrações e base de conhecimento indexada com busca textual.",
+      "A base de conhecimento reúne 187 referências indexadas no Vault local, com busca semântica, citações de pensadores como Kahneman e Hormozi, telemetria de custos de IA e diagnósticos contínuos no Doctor.",
+    highlight: "Telemetria de tokens em tempo real • Reconciliação financeira • Grafo operacional",
   },
 ];
 
@@ -44,6 +60,10 @@ export function markOnboardingComplete(): void {
   localStorage.setItem(ONBOARDING_KEY, "true");
 }
 
+export function resetOnboarding(): void {
+  localStorage.removeItem(ONBOARDING_KEY);
+}
+
 export function Onboarding() {
   const navigate = useNavigate();
   const [step, setStep] = createSignal(0);
@@ -53,54 +73,81 @@ export function Onboarding() {
       setStep(step() + 1);
     } else {
       markOnboardingComplete();
-      navigate("/");
+      navigate("/sala-operacao");
     }
   };
 
   const handleSkip = () => {
     markOnboardingComplete();
-    navigate("/");
+    navigate("/sala-operacao");
   };
 
+  const current = () => STEPS[step()];
+
   return (
-    <div class="flex h-full items-center justify-center">
-      <div class="w-full max-w-lg rounded-[var(--radius-lg)] border border-[var(--border-primary)] bg-[var(--bg-secondary)] p-8">
-        {/* Progress */}
-        <div class="mb-6 flex items-center gap-2">
+    <div class="flex h-full w-full items-center justify-center overflow-y-auto bg-[var(--surface-0)] p-6">
+      <div class="relative w-full max-w-xl overflow-hidden rounded-2xl border border-[rgba(244,246,242,.15)] bg-[#0f1729] p-8 shadow-2xl">
+        {/* Glow background */}
+        <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-[rgba(183,243,74,0.04)] blur-3xl pointer-events-none" />
+        <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-[rgba(27,197,189,0.04)] blur-3xl pointer-events-none" />
+
+        {/* Progress Bar */}
+        <div class="relative z-10 mb-8 flex items-center gap-2">
           {STEPS.map((_, i) => (
             <div
-              class={`h-1 flex-1 rounded-full transition-colors duration-[var(--duration-fast)] ${
-                i <= step() ? "bg-[var(--accent-lima)]" : "bg-[var(--bg-hover)]"
-              }`}
+              class="h-1.5 flex-1 rounded-full transition-all duration-300"
+              style={{
+                background:
+                  i <= step()
+                    ? "var(--lime, #B7F34A)"
+                    : "rgba(244,246,242,0.1)",
+              }}
             />
           ))}
         </div>
 
-        {/* Content */}
-        <div class="min-h-[120px]">
-          <h2 class="text-lg font-bold tracking-[var(--tracking-tight)] text-[var(--text-primary)]">
-            {STEPS[step()].title}
-          </h2>
-          <p class="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
-            {STEPS[step()].description}
+        {/* Step Content */}
+        <div class="relative z-10 flex flex-col gap-4">
+          <div class="flex items-center gap-3">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[rgba(244,246,242,.15)] bg-[#131c31] text-[var(--lime)] shadow-inner">
+              <TvIcon name={current().icon} width={22} height={22} />
+            </div>
+            <div>
+              <span class="rounded bg-[#070d18] px-2 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--teal,#1BC5BD)]">
+                {current().badge}
+              </span>
+              <h2 class="mt-1 text-lg font-bold text-[var(--cloud)]">
+                {current().title}
+              </h2>
+            </div>
+          </div>
+
+          <p class="text-xs leading-relaxed text-[var(--t2,#cbd3de)]">
+            {current().description}
           </p>
+
+          <div class="rounded-xl border border-[rgba(244,246,242,.08)] bg-[#070d18] p-3.5">
+            <p class="text-[10px] font-mono uppercase text-[var(--muted,#aeb7c4)]">Destaque Operacional</p>
+            <p class="mt-1 text-xs font-semibold text-[var(--cloud)]">{current().highlight}</p>
+          </div>
         </div>
 
-        {/* Actions */}
-        <div class="mt-8 flex items-center justify-between">
+        {/* Action Controls */}
+        <div class="relative z-10 mt-8 flex items-center justify-between border-t border-[rgba(244,246,242,.08)] pt-5">
           <button
             type="button"
             onClick={handleSkip}
-            class="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            class="text-xs font-medium text-[var(--muted,#aeb7c4)] transition-colors hover:text-[var(--cloud)]"
           >
-            Pular tour
+            Pular Onboarding
           </button>
-          <div class="flex items-center gap-3">
+
+          <div class="flex items-center gap-2.5">
             <Show when={step() > 0}>
               <button
                 type="button"
                 onClick={() => setStep(step() - 1)}
-                class="rounded-[var(--radius-sm)] border border-[var(--border-primary)] px-4 py-2 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-hover)]"
+                class="rounded-lg border border-[rgba(244,246,242,.15)] bg-transparent px-4 py-2 text-xs font-medium text-[var(--cloud)] transition-colors hover:bg-[rgba(244,246,242,.05)]"
               >
                 Voltar
               </button>
@@ -108,15 +155,17 @@ export function Onboarding() {
             <button
               type="button"
               onClick={handleNext}
-              class="rounded-[var(--radius-sm)] bg-[var(--accent-lima)] px-4 py-2 text-xs font-semibold text-[#0B1220] hover:opacity-90"
+              class="flex items-center gap-1.5 rounded-lg bg-[var(--lime)] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#0B1220] transition-opacity hover:opacity-90"
             >
-              {step() === STEPS.length - 1 ? "Começar" : "Próximo"}
+              <span>{step() === STEPS.length - 1 ? "Começar a Operar" : "Próximo"}</span>
+              <TvIcon name="arrow-right" width={14} height={14} />
             </button>
           </div>
         </div>
 
-        <p class="mt-6 text-center text-[10px] text-[var(--text-muted)]">
-          Passo {step() + 1} de {STEPS.length}
+        {/* Counter */}
+        <p class="mt-4 text-center text-[10px] font-mono text-[var(--muted,#aeb7c4)]">
+          Etapa {step() + 1} de {STEPS.length}
         </p>
       </div>
     </div>
