@@ -38,7 +38,8 @@ async def test_agents_api_roster_and_soul():
 
 
 @pytest.mark.asyncio
-async def test_chat_api_conversations_and_messages():
+async def test_chat_api_conversations_and_messages(monkeypatch):
+    monkeypatch.setattr("app.modules.chat.service.GHOSTCLI_API_KEY", "")
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # 1. List conversations
@@ -49,7 +50,24 @@ async def test_chat_api_conversations_and_messages():
 
         conv_id = conversations[0]["id"]
 
-        # 2. Get conversation with messages
+        # 2. Update settings
+        patch_resp = await client.patch(
+            f"/api/v1/chat/conversations/{conv_id}/settings",
+            json={"settings": {"insp": 45, "effort": "alto"}}
+        )
+        assert patch_resp.status_code == 200
+        assert patch_resp.json()["settings"]["insp"] == 45
+
+        # 3. Send message
+        msg_resp = await client.post(
+            f"/api/v1/chat/conversations/{conv_id}/messages",
+            json={"text": "Qual o status do deploy atual?"}
+        )
+        assert msg_resp.status_code == 200
+        msg_data = msg_resp.json()
+        assert msg_data["user_message"]["text"] == "Qual o status do deploy atual?"
+
+        # 4. Get conversation with messages
         detail_resp = await client.get(f"/api/v1/chat/conversations/{conv_id}")
         assert detail_resp.status_code == 200
         detail = detail_resp.json()

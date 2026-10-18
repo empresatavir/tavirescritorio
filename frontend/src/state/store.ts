@@ -368,7 +368,7 @@ export async function syncLiveJobs() {
             id: bj.id,
             title: `Job ${bj.id.slice(0, 8)} (${bj.origin || "API"})`,
             agentName: bj.agent_id || "Worker",
-            status: bj.status as any,
+            status: bj.status === "running" || bj.status === "queued" || bj.status === "completed" || bj.status === "failed" || bj.status === "paused" ? bj.status : "queued",
             priority: "normal",
             progress: bj.status === "succeeded" ? 100 : bj.status === "running" ? 50 : 0,
             startedAt: bj.created_at ? new Date(bj.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "—",
@@ -376,6 +376,7 @@ export async function syncLiveJobs() {
             effort: "médio",
             cost: 0.15,
             ceiling: 2.0,
+            taskId: bj.task_id || undefined,
             log: [["agora", bj.status === "failed" ? "error" : "info", `Status: ${bj.status}`]],
           };
           if (idx >= 0) {
