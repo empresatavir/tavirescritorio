@@ -194,35 +194,119 @@ export interface StudioPiece {
   published_at?: string | null;
 }
 
+export interface WorkflowStep {
+  agent: string;
+  action: string;
+  gate?: string;
+  arrow?: boolean;
+  owner?: string;
+}
+
 export interface Workflow {
   id: string;
   name: string;
-  process_type: string;
-  stages: any[];
+  category: string;
+  description: string | null;
+  steps: WorkflowStep[] | any;
+  trigger_type: string;
+  status: string;
+  sort_order: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Idea {
   id: string;
   title: string;
-  category: string;
+  description?: string | null;
+  source?: string | null;
   status: string;
   priority: string;
+  project_id?: string | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface IntegrationCheck {
   id: string;
-  service_name: string;
+  integration_name: string;
   status: string;
-  last_check_at: string;
-  evidence: string | null;
+  last_checked_at?: string | null;
+  response_time_ms?: number | null;
+  error_message?: string | null;
+  extra_metadata?: any;
+  created_at?: string;
 }
 
 export interface KnowledgeEntry {
   id: string;
   title: string;
-  source_file: string | null;
-  domain: string;
-  summary: string | null;
+  content: string | null;
+  source_type: string;
+  source_path: string | null;
+  tags: string[] | null;
+  extra_metadata?: {
+    domain?: string;
+    source?: string;
+    importance?: number;
+    full_content?: string;
+    aliases?: string[];
+  } | null;
+  status: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DoctorDimension {
+  dimension: string;
+  score: number;
+  status: string;
+  signal: string;
+  evidence: string;
+  last_checked: string;
+}
+
+export interface DoctorSummary {
+  overall_score: number;
+  status: string;
+  dimensions: DoctorDimension[];
+  checked_at: string;
+}
+
+export interface CostByModelItem {
+  model: string;
+  cost: number;
+  share: number;
+  tokens: string;
+}
+
+export interface AnalyticsSummary {
+  total_cost_usd: number;
+  daily_average_usd: number;
+  total_tokens_m: number;
+  escalation_rate_pct: number;
+  cost_trend: Array<{ day: string; date: string; cost: number }>;
+  cost_by_model: CostByModelItem[];
+  reconciliation: {
+    currency_cost: string;
+    currency_revenue: string;
+    total_revenue_invoiced_brl: number;
+    total_revenue_paid_brl: number;
+    total_revenue_pending_brl: number;
+    pipeline_in_negotiation_brl: number;
+    ai_cost_usd: number;
+    audit_note: string;
+  };
+}
+
+export interface SkillItem {
+  id: string;
+  name: string;
+  description: string;
+  origin: string;
+  trigger_type: string;
+  agents_count: number;
+  agents: string[];
 }
 
 export interface ApiTask {
@@ -532,10 +616,27 @@ export const api = {
 
   // Visibility & Knowledge
   listWorkflows: () => fetchJson<Workflow[]>("/api/v1/workflows"),
+  getWorkflow: (id: string) => fetchJson<Workflow>(`/api/v1/workflows/${id}`),
   listIdeas: () => fetchJson<Idea[]>("/api/v1/ideas"),
+  createIdea: (data: { title: string; description?: string; source?: string; priority?: string }) =>
+    fetchJson<Idea>("/api/v1/ideas", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
   listIntegrations: () => fetchJson<IntegrationCheck[]>("/api/v1/integrations"),
-  searchKnowledge: (query?: string) =>
-    fetchJson<KnowledgeEntry[]>(`/api/v1/knowledge${query ? `?q=${encodeURIComponent(query)}` : ""}`),
+  runIntegrationChecks: () => fetchJson<{ message: string; results: any[] }>("/api/v1/integrations/check", { method: "POST" }),
+  searchKnowledge: (query?: string, domain?: string, limit?: number) => {
+    const params = new URLSearchParams();
+    if (query) params.set("q", query);
+    if (domain && domain !== "Todos") params.set("domain", domain);
+    if (limit) params.set("limit", String(limit));
+    const qs = params.toString();
+    return fetchJson<KnowledgeEntry[]>(`/api/v1/knowledge${qs ? `?${qs}` : ""}`);
+  },
+  getKnowledgeEntry: (id: string) => fetchJson<KnowledgeEntry>(`/api/v1/knowledge/${id}`),
+  getDoctorChecks: () => fetchJson<DoctorSummary>("/api/v1/doctor/checks"),
+  getAnalyticsSummary: () => fetchJson<AnalyticsSummary>("/api/v1/analytics/summary"),
+  listSkillsCatalog: () => fetchJson<SkillItem[]>("/api/v1/skills"),
 
   // Commercial & Proposals
   listProposals: (query?: { client?: string; stage?: string }) => {
