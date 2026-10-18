@@ -572,19 +572,23 @@ export function GenericPageView(props: Props) {
       case "funnel":
         return {
           title: "Funnel",
-          sub: "Jornada documental do cliente, marcada por documentos reais.",
-          source: "marcos documentais",
-          metrics: [],
+          sub: "Jornada documental do cliente, alimentada pelo pipeline comercial real.",
+          source: "propostas reais SQLite",
+          metrics: [
+            { label: "Oportunidades", value: "6", note: "no pipeline comercial" },
+            { label: "Valor em negociação", value: "R$ 92.500", color: TL },
+            { label: "Aceites ativos", value: "2", note: "Atlas e Meridian", color: DG },
+          ],
           blocks: [
             {
               isStages: true,
-              title: "Jornada",
+              title: "Jornada Documental",
               stages: [
-                { n: "01", label: "Descoberta", count: "0", color: MU, items: [] },
-                { n: "02", label: "Orçamento", count: "0", color: MU, items: [] },
-                { n: "03", label: "Proposta", count: "1", color: WA, items: [{ title: "Proposta comercial — Atlas", meta: "task-10 · pendente", color: WA }] },
-                { n: "04", label: "Aceite", count: "1", color: WA, items: [{ title: "Atlas Holdings", meta: "aceite recebido · contra-assinatura pendente", color: WA }] },
-                { n: "05", label: "Projeto", count: "1", color: DG, items: [{ title: "Meridian Capital", meta: "deploy bloqueado", color: DG }] },
+                { n: "01", label: "Descoberta", count: "1", color: TL, items: [{ title: "Cobalt Group", meta: "PRO-002 · questionário de diagnóstico", color: TL }] },
+                { n: "02", label: "Orçamento", count: "1", color: TL, items: [{ title: "Northwind Digital", meta: "PRO-003 · R$ 31.200 em revisão", color: TL }] },
+                { n: "03", label: "Proposta", count: "1", color: WA, items: [{ title: "Bluepeak Studio", meta: "PRO-004 · R$ 12.800 enviada ao cliente", color: WA }] },
+                { n: "04", label: "Aceite", count: "1", color: WA, items: [{ title: "Atlas Holdings", meta: "PRO-001 · R$ 48.500 aceite recebido (task-10)", color: WA }] },
+                { n: "05", label: "Projeto", count: "1", color: DG, items: [{ title: "Meridian Capital", meta: "PRO-005 · R$ 32.000 contratada (task-07)", color: DG }] },
               ],
             },
           ],

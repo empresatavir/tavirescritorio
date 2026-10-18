@@ -17,6 +17,7 @@ from app.models.integration_check import IntegrationCheck
 from app.models.knowledge_entry import KnowledgeEntry
 from app.models.chat_conversation import ChatConversation
 from app.models.chat_message import ChatMessage
+from app.models.proposal import Proposal
 
 __all__ = [
     "Base",
@@ -37,4 +38,5 @@ __all__ = [
     "KnowledgeEntry",
     "ChatConversation",
     "ChatMessage",
+    "Proposal",
 ]

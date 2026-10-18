@@ -392,21 +392,28 @@ export async function syncLiveJobs() {
   }
 }
 
-// Fetch live tasks from backend and merge
+// Delta sync: fetch only tasks updated since last sync
+let _lastTaskSync: string | undefined = undefined;
+
 export async function syncTasks() {
   try {
-    const backendTasks = await api.listTasks();
+    const backendTasks = await api.listTasks(
+      _lastTaskSync ? { updated_since: _lastTaskSync } : undefined
+    );
     if (backendTasks && backendTasks.length > 0) {
       const curAgents = agents();
-      const mappedTasks: UiTask[] = backendTasks.map((t) => {
+      const curTasks = tasks();
+      const taskMap = new Map(curTasks.map((t) => [t.id, t]));
+
+      for (const t of backendTasks) {
         const ag = curAgents.find((a) => a.id === t.assignee_agent_id);
-        return {
+        const mapped: UiTask = {
           id: t.id,
           seq: t.seq || 0,
           title: t.title,
           status: t.status === "in_progress" ? "in_progress" : t.status === "done" ? "done" : "pending",
           assignee: ag ? ag.name : "Agente",
-          priority: (t.priority as any) || "normal",
+          priority: t.priority === "critical" || t.priority === "high" || t.priority === "normal" || t.priority === "low" ? t.priority : "normal",
           sector: t.sector || "Operação",
           escalation: t.escalation || undefined,
           handoffs: Array.isArray(t.handoffs) ? t.handoffs : t.handoffs ? [String(t.handoffs)] : undefined,
@@ -415,8 +422,17 @@ export async function syncTasks() {
           tags: Array.isArray(t.tags) ? t.tags : t.tags ? [String(t.tags)] : [],
           description: t.description || undefined,
         };
-      });
-      setTasks(mappedTasks);
+        taskMap.set(t.id, mapped);
+      }
+
+      setTasks(Array.from(taskMap.values()));
+      // Update watermark to latest updated_at from response
+      const maxUpdated = backendTasks.reduce((max, t) => {
+        return t.updated_at > max ? t.updated_at : max;
+      }, _lastTaskSync || "");
+      if (maxUpdated) _lastTaskSync = maxUpdated;
+    } else if (!_lastTaskSync) {
+      // First sync returned empty — nothing to do
     }
   } catch (err) {
     console.warn("Could not sync tasks:", err);

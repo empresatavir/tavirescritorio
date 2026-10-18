@@ -432,6 +432,38 @@ export function StudioView() {
     }
   };
 
+  const handleTriggerAgentJob = async (num: string, agentId: string, agentName: string, actionDesc: string) => {
+    const p = pieces().find((x) => x.num === num);
+    if (!p) return;
+
+    const timeStr = new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    setPieces((prev) =>
+      prev.map((item) =>
+        item.num === num
+          ? {
+              ...item,
+              stage: item.stage === "idea" ? "pauta" : item.stage === "pauta" ? "prod" : item.stage,
+              timeline: [
+                [timeStr, agentName, `Job disparado: ${actionDesc}`],
+                ...item.timeline,
+              ],
+            }
+          : item
+      )
+    );
+
+    showToast(`Job disparado para ${agentName}!`, "Creative Studio", "success");
+
+    try {
+      await api.createJob({
+        agent_id: agentId,
+        command: `${actionDesc} para a peça ${num}: ${p.title}`,
+      });
+    } catch (err) {
+      console.warn("Studio: erro ao disparar job de agente:", err);
+    }
+  };
+
   return (
     <div
       data-screen-label="Tavir Studio"
@@ -878,6 +910,37 @@ export function StudioView() {
                         Publicar agora
                       </button>
                     </Show>
+                  </div>
+                </div>
+
+                {/* Ações com Agentes Canônicos */}
+                <div style={{ padding: "14px", "border-radius": "14px", border: "1px solid var(--border-subtle, rgba(244,246,242,.12))", background: "var(--surface-2, #121c30)", display: "flex", "flex-direction": "column", gap: "10px" }}>
+                  <div style={{ display: "flex", "align-items": "center", "justify-content": "space-between" }}>
+                    <span style={{ "font-weight": "600" }}>Disparar Agente Canônico</span>
+                    <span style={{ "font-size": "11px", color: "var(--teal)" }}>Motor TAVIR</span>
+                  </div>
+                  <div style={{ display: "flex", gap: "8px", "flex-wrap": "wrap" }}>
+                    <button
+                      type="button"
+                      onClick={() => handleTriggerAgentJob(p().num, "rafael-roteiro", "Rafael Roteiro", "Criar roteiro detalhado e copy")}
+                      style={{ height: "30px", padding: "0 12px", "border-radius": "999px", border: "1px solid var(--border-light, rgba(244,246,242,.2))", background: "transparent", color: "var(--text-primary)", cursor: "pointer", "font-size": "12px" }}
+                    >
+                      Roteiro · Rafael Roteiro
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleTriggerAgentJob(p().num, "adriano-arte", "Adriano Arte", "Gerar direção de arte e templates")}
+                      style={{ height: "30px", padding: "0 12px", "border-radius": "999px", border: "1px solid var(--border-light, rgba(244,246,242,.2))", background: "transparent", color: "var(--text-primary)", cursor: "pointer", "font-size": "12px" }}
+                    >
+                      Arte · Adriano Arte
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleTriggerAgentJob(p().num, "nara-narracao", "Nara Narração", "Gerar locução do script")}
+                      style={{ height: "30px", padding: "0 12px", "border-radius": "999px", border: "1px solid var(--border-light, rgba(244,246,242,.2))", background: "transparent", color: "var(--text-primary)", cursor: "pointer", "font-size": "12px" }}
+                    >
+                      Narração · Nara Narração
+                    </button>
                   </div>
                 </div>
 

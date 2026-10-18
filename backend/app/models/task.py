@@ -1,4 +1,5 @@
 """Task model — kanban entity for TAVIR."""
+from datetime import datetime
 from sqlalchemy import String, Text, DateTime, ForeignKey, Integer, JSON, func
 from sqlalchemy.orm import Mapped, mapped_column
 from typing import Any
@@ -22,9 +23,9 @@ class Task(Base):
     gates: Mapped[Any | None] = mapped_column(JSON, nullable=True)
     tags: Mapped[Any | None] = mapped_column(JSON, nullable=True)
     active_job_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
-    created_at: Mapped[str] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
-    updated_at: Mapped[str] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
     )

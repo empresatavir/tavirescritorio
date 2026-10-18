@@ -307,6 +307,51 @@ export interface CockpitSummary {
   }>;
 }
 
+export interface ProposalItem {
+  desc: string;
+  value: number;
+}
+
+export interface ProposalChange {
+  at: string;
+  target: string;
+  agent: string;
+  text: string;
+  status: string;
+}
+
+export interface ProposalSendInfo {
+  link: string;
+  sentTo: string;
+  sentAt: string;
+  opened: string;
+  accept: ["signed", string, string] | ["refused", string, string] | ["pending"];
+}
+
+export interface Proposal {
+  id: string;
+  num: string;
+  client: string;
+  stage: "progress" | "pending" | "done";
+  status: string;
+  tone: "work" | "wait" | "ok" | "lost";
+  version: number;
+  value: number | null;
+  validity: string;
+  deadline: string;
+  task_id?: string | null;
+  taskId?: string | null;
+  summary: string;
+  scope: string;
+  items: ProposalItem[];
+  collected: [string, string][];
+  changes: ProposalChange[];
+  timeline: [string, string, string][];
+  send_info?: ProposalSendInfo | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
 async function fetchJson<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: { "Content-Type": "application/json" },
@@ -327,10 +372,11 @@ export const api = {
   getCockpitSummary: () => fetchJson<CockpitSummary>("/api/v1/cockpit/summary"),
 
   // Tasks
-  listTasks: (query?: { status?: string; priority?: string }) => {
+  listTasks: (query?: { status?: string; priority?: string; updated_since?: string }) => {
     const params = new URLSearchParams();
     if (query?.status) params.set("status", query.status);
     if (query?.priority) params.set("priority", query.priority);
+    if (query?.updated_since) params.set("updated_since", query.updated_since);
     const qs = params.toString();
     return fetchJson<ApiTask[]>(`/api/v1/tasks/${qs ? `?${qs}` : ""}`);
   },
@@ -490,6 +536,41 @@ export const api = {
   listIntegrations: () => fetchJson<IntegrationCheck[]>("/api/v1/integrations"),
   searchKnowledge: (query?: string) =>
     fetchJson<KnowledgeEntry[]>(`/api/v1/knowledge${query ? `?q=${encodeURIComponent(query)}` : ""}`),
+
+  // Commercial & Proposals
+  listProposals: (query?: { client?: string; stage?: string }) => {
+    const params = new URLSearchParams();
+    if (query?.client) params.set("client", query.client);
+    if (query?.stage) params.set("stage", query.stage);
+    const qs = params.toString();
+    return fetchJson<Proposal[]>(`/api/v1/proposals${qs ? `?${qs}` : ""}`);
+  },
+  getProposal: (id: string) => fetchJson<Proposal>(`/api/v1/proposals/${id}`),
+  createProposal: (data: Partial<Proposal>) =>
+    fetchJson<Proposal>("/api/v1/proposals", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateProposal: (id: string, data: Partial<Proposal>) =>
+    fetchJson<Proposal>(`/api/v1/proposals/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  requestProposalChange: (id: string, data: { target: string; agent: string; text: string }) =>
+    fetchJson<Proposal>(`/api/v1/proposals/${id}/change`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  sendProposal: (id: string, sentTo: string) =>
+    fetchJson<Proposal>(`/api/v1/proposals/${id}/send`, {
+      method: "POST",
+      body: JSON.stringify({ sent_to: sentTo }),
+    }),
+  acceptProposal: (id: string, data: { signer_name: string; accepted?: boolean }) =>
+    fetchJson<Proposal>(`/api/v1/proposals/${id}/accept`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 
   // Services Management
   listServicesStatus: () => fetchJson<any[]>("/api/v1/services/status"),

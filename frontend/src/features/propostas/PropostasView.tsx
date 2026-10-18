@@ -1,47 +1,15 @@
 import { createSignal, createMemo, For, Show, onMount, onCleanup } from "solid-js";
 import { TvIcon } from "../../shared/components/TvIcon";
 import { showToast } from "../../state/store";
+import {
+  api,
+  type Proposal,
+  type ProposalItem,
+  type ProposalChange,
+  type ProposalSendInfo,
+} from "../../shared/api/client";
 
-export interface ProposalItem {
-  desc: string;
-  value: number;
-}
-
-export interface ProposalChange {
-  at: string;
-  target: string;
-  agent: string;
-  text: string;
-  status: string;
-}
-
-export interface Proposal {
-  id: string;
-  num: string;
-  client: string;
-  stage: "progress" | "pending" | "done";
-  status: string;
-  tone: "work" | "wait" | "ok" | "lost";
-  version: number;
-  value: number | null;
-  validity: string;
-  deadline: string;
-  taskId?: string;
-  summary: string;
-  scope: string;
-  items: ProposalItem[];
-  collected: [string, string][];
-  changes: ProposalChange[];
-  timeline: [string, string, string][];
-}
-
-interface ProposalSendInfo {
-  link: string;
-  sentTo: string;
-  sentAt: string;
-  opened: string;
-  accept: ["signed", string, string] | ["refused", string, string] | ["pending"];
-}
+export type { Proposal, ProposalItem, ProposalChange, ProposalSendInfo };
 
 const PROP_BASE = "https://propostas.tavir.com.br/p/";
 
@@ -265,6 +233,7 @@ export function PropostasView() {
   const [chgText, setChgText] = createSignal("");
   const [chgTried, setChgTried] = createSignal(false);
   const [newPropOpen, setNewPropOpen] = createSignal(false);
+  const [sendEmail, setSendEmail] = createSignal("");
 
   // New proposal form state
   const [newClient, setNewClient] = createSignal("");
@@ -286,7 +255,21 @@ export function PropostasView() {
     }
   };
 
-  onMount(() => window.addEventListener("keydown", handleKeyDown));
+  const loadProposals = async () => {
+    try {
+      const live = await api.listProposals();
+      if (live && live.length > 0) {
+        setProposals(live);
+      }
+    } catch (err) {
+      console.warn("Propostas: operando com dados locais/cache", err);
+    }
+  };
+
+  onMount(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    loadProposals();
+  });
   onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
 
   const filteredProposals = createMemo(() => {
@@ -309,14 +292,14 @@ export function PropostasView() {
       const cards = list
         .filter((p) => p.stage === id)
         .map((p) => {
-          const openChanges = p.changes.filter((c) => c.status === "Com o agente").length;
+          const openChanges = (p.changes || []).filter((c) => c.status === "Com o agente").length;
           return {
             raw: p,
             num: p.num,
             version: "v" + p.version,
             client: p.client,
             status: p.status,
-            statusColor: P_TONE[p.tone],
+            statusColor: P_TONE[p.tone as keyof typeof P_TONE] || "var(--teal)",
             value: brl(p.value),
             valueColor: p.value == null ? "#aeb7c4" : "#F4F6F2",
             validity: p.validity && p.validity !== "—" ? "válida até " + p.validity : "",
@@ -334,7 +317,7 @@ export function PropostasView() {
     return proposals().find((p) => p.id === id) || null;
   });
 
-  const sendChange = () => {
+  const sendChange = async () => {
     setChgTried(true);
     const text = chgText().trim();
     if (!text) return;
@@ -358,8 +341,8 @@ export function PropostasView() {
         if (p.id === sp.id) {
           return {
             ...p,
-            changes: [newChange, ...p.changes],
-            timeline: [[timeStr, "Você", `Alteração de ${targetDef[0].toLowerCase()} solicitada`], ...p.timeline],
+            changes: [newChange, ...(p.changes || [])],
+            timeline: [[timeStr, "Você", `Alteração de ${targetDef[0].toLowerCase()} solicitada`], ...(p.timeline || [])],
           };
         }
         return p;
@@ -369,9 +352,22 @@ export function PropostasView() {
     setChgText("");
     setChgTried(false);
     showToast(`Alteração enviada ao ${targetDef[1]}`);
+
+    try {
+      const updated = await api.requestProposalChange(sp.id, {
+        target: targetDef[0],
+        agent: targetDef[1],
+        text,
+      });
+      if (updated) {
+        setProposals((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+      }
+    } catch (err) {
+      console.warn("Erro ao sincronizar alteração com o backend:", err);
+    }
   };
 
-  const handleCreateProposal = (e: Event) => {
+  const handleCreateProposal = async (e: Event) => {
     e.preventDefault();
     const client = newClient().trim();
     if (!client) return;
@@ -380,7 +376,7 @@ export function PropostasView() {
     const nextNum = "PRO-" + String(proposals().length + 1).padStart(3, "0");
     const valNum = parseFloat(newValue().replace(/[^\d.,]/g, "").replace(",", ".")) || null;
 
-    const newP: Proposal = {
+    const payload: Partial<Proposal> = {
       id: nextId,
       num: nextNum,
       client,
@@ -399,13 +395,52 @@ export function PropostasView() {
       timeline: [["Hoje", "Você", "Proposta registrada no painel"]],
     };
 
-    setProposals([newP, ...proposals()]);
+    setProposals([payload as Proposal, ...proposals()]);
     setNewPropOpen(false);
     setNewClient("");
     setNewSummary("");
     setNewScope("");
     setNewValue("");
     showToast(`Proposta ${nextNum} criada com sucesso`);
+
+    try {
+      const created = await api.createProposal(payload);
+      if (created) {
+        setProposals((prev) => [created, ...prev.filter((p) => p.id !== nextId && p.id !== created.id)]);
+      }
+    } catch (err) {
+      console.warn("Erro ao persistir proposta no backend:", err);
+    }
+  };
+
+  const handleSendProposal = async (propId: string) => {
+    const email = sendEmail().trim();
+    if (!email) {
+      showToast("Informe o e-mail do cliente para envio");
+      return;
+    }
+    try {
+      const updated = await api.sendProposal(propId, email);
+      if (updated) {
+        setProposals((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+        showToast("Proposta enviada ao cliente com link rastreável!");
+        setSendEmail("");
+      }
+    } catch (err) {
+      showToast("Erro ao enviar proposta");
+    }
+  };
+
+  const handleAcceptProposal = async (propId: string, signerName = "Carlos (CEO TAVIR)") => {
+    try {
+      const updated = await api.acceptProposal(propId, { signer_name: signerName, accepted: true });
+      if (updated) {
+        setProposals((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
+        showToast("Aceite e contra-assinatura registrados com sucesso!");
+      }
+    } catch (err) {
+      showToast("Erro ao registrar aceite/contra-assinatura");
+    }
   };
 
   const copyProposalLink = (url: string) => {
@@ -507,9 +542,9 @@ export function PropostasView() {
       {/* DETAIL MODAL */}
       <Show when={selectedProposal()}>
         {(prop) => {
-          const sendInfo = () => PROP_SEND[prop().id];
+          const sendInfo = () => prop().send_info || PROP_SEND[prop().id];
           const hasLink = () => !!sendInfo();
-          const linkUrl = () => (hasLink() ? PROP_BASE + sendInfo()!.link : "");
+          const linkUrl = () => (hasLink() ? (sendInfo()!.link.startsWith("http") ? sendInfo()!.link : PROP_BASE + sendInfo()!.link) : "");
           const linkBar = () => linkUrl() || "prévia interna · link ainda não gerado";
           const accept = () => (hasLink() ? sendInfo()!.accept : (["pending"] as const));
           const isSigned = () => accept()[0] === "signed";
@@ -566,8 +601,8 @@ export function PropostasView() {
                 {/* Dialog Body 2 Columns */}
                 <div class="flex flex-1 flex-col gap-6 overflow-y-auto p-7 pb-8">
                   <div>
-                    <div class="flex items-center gap-1.5 text-xs" style={{ color: P_TONE[prop().tone] }}>
-                      <span class="h-1.5 w-1.5 rounded-full" style={{ background: P_TONE[prop().tone] }} />
+                    <div class="flex items-center gap-1.5 text-xs" style={{ color: P_TONE[prop().tone as keyof typeof P_TONE] || "var(--teal)" }}>
+                      <span class="h-1.5 w-1.5 rounded-full" style={{ background: P_TONE[prop().tone as keyof typeof P_TONE] || "var(--teal)" }} />
                       {prop().status}
                     </div>
                     <h2 class="m-0 mt-1.5 text-2xl font-semibold tracking-tight text-[var(--cloud)]">
@@ -603,7 +638,7 @@ export function PropostasView() {
                             {brl(prop().value)}
                           </div>
                         </div>
-                        <div class="border-b border-[rgba(244,246,242,.12)] p-3">
+                        <div class="border-b border-r border-[rgba(244,246,242,.12)] p-3">
                           <div class="text-[11px] text-[var(--muted,#aeb7c4)]">Prazo de execução</div>
                           <div class="mt-1 text-xs font-medium text-[var(--cloud)]">{prop().deadline}</div>
                         </div>
@@ -679,13 +714,13 @@ export function PropostasView() {
                       </div>
 
                       {/* Task vinculada */}
-                      <Show when={prop().taskId}>
+                      <Show when={prop().task_id || (prop() as any).taskId}>
                         <div class="flex items-center gap-2">
                           <span class="font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--muted,#aeb7c4)]">
                             Task vinculada
                           </span>
                           <span class="font-mono text-xs font-medium text-[var(--teal)]">
-                            #{prop().taskId}
+                            #{prop().task_id || (prop() as any).taskId}
                           </span>
                         </div>
                       </Show>
@@ -701,8 +736,24 @@ export function PropostasView() {
                         <Show
                           when={hasLink()}
                           fallback={
-                            <div class="text-xs leading-relaxed text-[var(--muted,#aeb7c4)]">
-                              O link é gerado no modelo TAVIR quando o agente Comercial envia a proposta ao cliente.
+                            <div class="flex flex-col gap-2.5">
+                              <div class="text-xs leading-relaxed text-[var(--muted,#aeb7c4)]">
+                                O link é gerado no modelo TAVIR quando o agente Comercial envia a proposta ao cliente.
+                              </div>
+                              <div class="flex flex-wrap items-center gap-2">
+                                <input
+                                  value={sendEmail()}
+                                  onInput={(e) => setSendEmail(e.currentTarget.value)}
+                                  placeholder="E-mail do cliente para envio"
+                                  class="h-8 flex-1 min-w-[200px] rounded-lg border border-[rgba(244,246,242,.16)] bg-[#0B1220] px-3 text-xs text-[var(--cloud)] outline-none focus:border-[var(--teal)]"
+                                />
+                                <button
+                                  onClick={() => handleSendProposal(prop().id)}
+                                  class="flex h-8 items-center gap-1.5 rounded-full border-none bg-[var(--teal)] px-3.5 text-xs font-semibold text-[#0B1220] hover:opacity-90"
+                                >
+                                  Gerar link & Enviar
+                                </button>
+                              </div>
                             </div>
                           }
                         >
@@ -738,6 +789,21 @@ export function PropostasView() {
                               <span class="h-1.5 w-1.5 rounded-full" style={{ background: acceptColor() }} />
                               Aceite eletrônico · {acceptLabel()}
                             </span>
+                          </div>
+                        </Show>
+
+                        {/* Botão de contra-assinatura quando pendente */}
+                        <Show when={prop().status.includes("contra-assinatura") || (prop().stage === "pending" && isAwaiting())}>
+                          <div class="mt-2 flex flex-col gap-2 rounded-lg border border-[rgba(27,197,189,.2)] bg-[rgba(27,197,189,.06)] p-3">
+                            <div class="text-xs text-[var(--cloud)]">
+                              Aprovação local pendente para início dos trabalhos operacionais.
+                            </div>
+                            <button
+                              onClick={() => handleAcceptProposal(prop().id, "Carlos (CEO TAVIR)")}
+                              class="flex h-8 self-start items-center gap-1.5 rounded-full border-none bg-[var(--lime)] px-4 text-xs font-semibold text-[#25360a] hover:opacity-90"
+                            >
+                              Contra-assinar e Concluir Proposta
+                            </button>
                           </div>
                         </Show>
 

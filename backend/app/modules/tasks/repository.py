@@ -1,4 +1,5 @@
 """Task repository — async CRUD and status management for tasks table."""
+from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any
@@ -14,6 +15,7 @@ class TaskRepository:
         status: str | None = None,
         priority: str | None = None,
         project_id: str | None = None,
+        updated_since: datetime | None = None,
     ) -> list[Task]:
         query = select(Task)
         if status:
@@ -22,6 +24,8 @@ class TaskRepository:
             query = query.where(Task.priority == priority)
         if project_id:
             query = query.where(Task.project_id == project_id)
+        if updated_since:
+            query = query.where(Task.updated_at > updated_since)
 
         query = query.order_by(Task.seq.asc().nullslast(), Task.created_at.desc())
         result = await self.session.execute(query)
