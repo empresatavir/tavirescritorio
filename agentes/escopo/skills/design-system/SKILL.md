@@ -22,6 +22,13 @@ Token architecture, component specifications, systematic design, slide generatio
 - Tailwind theme configuration
 - **Slide/presentation generation**
 
+## Related canons (TAVIR)
+
+- Visual refs (Dribbble → Reference Card): `visual-reference-absorb` + `WEB_REFERENCE_STANDARD`
+- Marketing anti-slop: `design-taste-frontend`
+- Component path: `ui-styling` — shadcn **or** [Radix Themes](https://github.com/radix-ui/themes) (never both; never ship factory defaults)
+- App architecture when tokens become a product codebase: `frontend-engineering-canon`
+
 ## Token Architecture
 
 Load: `references/token-architecture.md`

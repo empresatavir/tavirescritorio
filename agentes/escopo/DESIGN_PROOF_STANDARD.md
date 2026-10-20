@@ -3,8 +3,10 @@
 > Regra pétrea da TAVIR: **prova visual é peça de venda, não troféu de entrega.**
 > Ela nasce depois dos requisitos aprovados e ANTES do orçamento fechar — nunca
 > depois da construção. Fontes irmãs: `.agents/SITE_DELIVERY_STANDARD.md` (gate de
-> saída: SEO + segurança), `.agents/WEB_REFERENCE_STANDARD.md` (extração de
-> referências), `.agents/PROJECT_STANDARD.md` (contexto vivo).
+> saída: SEO + segurança), `WEB_REFERENCE_STANDARD.md` (Dribbble/Awwwards → Reference
+> Card), `.agents/PROJECT_STANDARD.md` (contexto vivo). Skills: `visual-reference-absorb`,
+> `design-taste-frontend`, `ui-ux-pro-max`, `frontend-engineering-canon` (quando a prova
+> virar app).
 
 ## 1. Por que este padrão existe
 
@@ -123,6 +125,13 @@ empresas/<empresa>/projetos/<tipo>/<projeto>/NN-prova-visual/
 - **→ Auditor Seg/LGPD:** protótipo é estático e **nunca** recebe dado real de cliente,
   formulário funcional, credencial ou integração viva. É maquete. Se precisar simular
   formulário, o envio é inerte.
+
+## 6.1 Referências visuais (Dribbble e afins)
+
+No Nível 2 (e em qualquer redesign visual), Yuri produz `referencias.md` com Reference
+Card antes de pixelar o protótipo — protocolo em `WEB_REFERENCE_STANDARD.md` e skill
+`visual-reference-absorb`. Referência alimenta direção; não autoriza copiar asset nem
+prometer WebGL/scroll cinema sem parecer do CTO.
 
 ## 7. Regras invioláveis
 
