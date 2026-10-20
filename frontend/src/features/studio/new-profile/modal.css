@@ -12,7 +12,7 @@
   inset: 0;
   border: none;
   background: rgba(7, 13, 24, 0.72);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
   cursor: pointer;
 }
 

@@ -98,7 +98,7 @@ export function VisualStudioPanel(props: {
 
       <div class="stu-card">
         <div class="stu-card-head">
-          <h2 style={{ margin: 0, "font-size": "16px" }}>
+          <h2 class="stu-card-title">
             {piece()?.title
               ? `Pacote final · “${piece()!.title}”`
               : `Prévia · ${NET_META[net()].label}`}

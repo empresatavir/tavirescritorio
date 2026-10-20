@@ -73,12 +73,23 @@
 .stu-dash-btn-primary {
   background: var(--action-bg, var(--lime, #b7f34a));
   color: var(--action-fg, #0b1220);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.stu-dash-btn-primary:hover {
+  filter: brightness(1.05);
 }
 
 .stu-dash-btn-secondary {
   background: transparent;
   color: var(--text-primary, #f4f6f2);
   border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.16));
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.stu-dash-btn-secondary:hover {
+  border-color: color-mix(in oklab, var(--lime, #b7f34a) 35%, transparent);
+  background: rgba(244, 246, 242, 0.04);
 }
 
 .stu-dash-kpis {
