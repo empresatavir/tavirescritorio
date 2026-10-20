@@ -1,16 +1,18 @@
-import { createSignal, createMemo, onMount, For, Show } from "solid-js";
+import { createSignal, createMemo, createEffect, onMount, onCleanup, For, Show } from "solid-js";
 import {
   tasks,
   jobs,
   approvals,
   agents,
   syncAgents,
+  syncApprovals,
+  syncTasks,
+  decideApprovalPersistent,
   capturedNotes,
-  setSelectedTaskId,
   setSelectedJobId,
+  setSelectedApprovalId,
   setCurrentDomainId,
   setCurrentScreenId,
-  setSelectedApprovalId,
 } from "../../state/store";
 import { useNavigate } from "@solidjs/router";
 import {
@@ -21,7 +23,18 @@ import {
   type AnalyticsSummary,
   type SkillItem,
   type Idea,
+  type ProjectItem,
 } from "../../shared/api/client";
+import { CreateProjectModal } from "../projetos/CreateProjectModal";
+import { TvIcon } from "../../shared/components/TvIcon";
+
+function previewText(raw: string | undefined, max = 120): string {
+  const one = String(raw || "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!one) return "";
+  return one.length > max ? `${one.slice(0, max).trimEnd()}…` : one;
+}
 
 interface MetricItem {
   label: string;
@@ -81,10 +94,36 @@ export function GenericPageView(props: Props) {
   const [analyticsData, setAnalyticsData] = createSignal<AnalyticsSummary | null>(null);
   const [skillsList, setSkillsList] = createSignal<SkillItem[]>([]);
   const [ideasList, setIdeasList] = createSignal<Idea[]>([]);
+  const [projectsList, setProjectsList] = createSignal<ProjectItem[]>([]);
+  const [isProjectModalOpen, setIsProjectModalOpen] = createSignal(false);
+  const [blockDetail, setBlockDetail] = createSignal<any | null>(null);
+
+  createEffect(() => {
+    if (!blockDetail()) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setBlockDetail(null);
+    };
+    window.addEventListener("keydown", onKey);
+    onCleanup(() => window.removeEventListener("keydown", onKey));
+  });
+
+  const fetchProjects = async () => {
+    try {
+      const data = await api.listProjects();
+      if (data && data.length) setProjectsList(data);
+    } catch (e) {
+      console.warn("Could not load projects", e);
+    }
+  };
 
   onMount(async () => {
-    if (props.pageId === "org") {
+    if (props.pageId === "blocks" || props.pageId === "changes") {
+      await syncApprovals();
+      await syncTasks();
+    } else if (props.pageId === "org") {
       syncAgents();
+    } else if (props.pageId === "projects") {
+      fetchProjects();
     } else if (props.pageId === "workflows") {
       try {
         const data = await api.listWorkflows();
@@ -147,45 +186,75 @@ export function GenericPageView(props: Props) {
         const curApprovals = approvals();
         const pendingApps = curApprovals.filter((a) => a.status === "pending");
         const escalated = curTasks.filter((t) => t.escalation && t.status !== "done");
+        const awaiting = curTasks.filter(
+          (t) => t.awaitingApproval && t.status !== "done" && !pendingApps.some((a) => a.taskId === t.id)
+        );
         const failedJobs = curJobs.filter((j) => j.status === "failed");
 
         const cards: any[] = [];
 
-        // 1. Pending Approvals
+        // 1. Pending Approvals — card compacto; decisão no drawer
         for (const app of pendingApps) {
+          const linked = curTasks.find((t) => t.id === app.taskId);
+          const fullDetail = [
+            app.description || "Requer validação humana antes de prosseguir.",
+            app.reason ? `Motivo: ${app.reason}` : "",
+            linked?.description ? `Descrição da task:\n${linked.description}` : "",
+            app.onApproveText ? `Se aprovar: ${app.onApproveText}` : "",
+            app.onRejectText ? `Se rejeitar: ${app.onRejectText}` : "",
+          ]
+            .filter(Boolean)
+            .join("\n\n");
           cards.push({
-            status: "Decisão pendente",
+            status: app.type === "alteracao" || app.id.startsWith("ap-alt") ? "Homologação" : "Decisão pendente",
             color: WA,
             title: app.title,
-            body: app.description || "Requer validação humana antes de prosseguir com a execução.",
+            body: previewText(app.description || app.reason || "Requer validação humana.", 110),
             meta: `${app.agentName} · ${app.requestedAt}`,
-            taskSeq: app.taskId ? `#${app.taskId.replace("task-", "")}` : undefined,
-            taskTitle: app.title,
+            taskSeq: linked ? `#${linked.seq}` : undefined,
+            taskTitle: linked?.title,
             taskId: app.taskId,
-            fix: app.reason || "aprovar ou rejeitar para destravar o processo.",
-            action: `Decidir na aprovação ${app.id}`,
-            onAction: () => {
-              setSelectedApprovalId(app.id);
-              setCurrentDomainId("op");
-              setCurrentScreenId("approvals");
-              navigate("/aprovacoes");
-            },
+            approvalId: app.id,
+            fullDetail,
+            fix: "Aprove ou rejeite no painel de detalhe.",
+            canDecide: true,
+            stayOnPage: true,
+          });
+        }
+
+        // 1b. Tasks com awaitingApproval sem approval listada
+        for (const t of awaiting) {
+          cards.push({
+            status: "Aguardando aprovação",
+            color: DG,
+            title: t.title,
+            body: previewText(t.description || "Card em Em execução aguardando gate humano.", 110),
+            meta: `${t.assignee} · ${t.sector}`,
+            taskSeq: `#${t.seq}`,
+            taskTitle: t.title,
+            taskId: t.id,
+            fullDetail: t.description || "Card em Em execução aguardando gate humano.",
+            fix: "Quando houver gate vinculado, a decisão aparece no detalhe.",
+            stayOnPage: true,
           });
         }
 
         // 2. Failed Jobs
         for (const fj of failedJobs) {
+          const lastLog =
+            fj.log && fj.log.length > 0 ? fj.log[fj.log.length - 1][2] : "O processo falhou e necessita remediação.";
           cards.push({
             status: "Execução com erro",
             color: DG,
             title: fj.title,
-            body: fj.log && fj.log.length > 0 ? fj.log[fj.log.length - 1][2] : "O processo falhou e necessita remediação.",
+            body: previewText(lastLog, 110),
             meta: `${fj.agentName} · ${fj.startedAt}`,
             taskSeq: fj.taskSeq ? `#${fj.taskSeq}` : undefined,
             taskTitle: fj.taskTitle || fj.title,
             taskId: fj.taskId,
-            fix: "re-enfileirar job com parâmetros corrigidos ou verificar logs detalhados.",
-            action: `Ver falha em Execuções`,
+            fullDetail: lastLog,
+            fix: "Re-enfileirar o job ou inspecionar logs em Execuções.",
+            action: "Abrir em Execuções",
             onAction: () => {
               setSelectedJobId(fj.id);
               setCurrentDomainId("op");
@@ -195,26 +264,27 @@ export function GenericPageView(props: Props) {
           });
         }
 
-        // 3. Escalated Tasks
+        // 3. Escalated Tasks — status curto; texto longo só no drawer
         for (const esc of escalated) {
           if (cards.some((c) => c.taskId === esc.id)) continue;
+          const escShort = previewText(esc.escalation, 48) || "CEO";
           cards.push({
-            status: `Escalado: ${esc.escalation}`,
+            status: `Escalado · ${escShort}`,
             color: DG,
             title: esc.title,
-            body: esc.description || "Demanda escalada para resolução técnica ou alinhamento executivo.",
+            body: previewText(esc.description || esc.escalation || "Demanda escalada.", 110),
             meta: `${esc.assignee} · ${esc.sector}`,
             taskSeq: `#${esc.seq}`,
             taskTitle: esc.title,
             taskId: esc.id,
-            fix: `avaliar com ${esc.escalation} os critérios de aceite e handoffs.`,
-            action: `Abrir Task #${esc.seq}`,
-            onAction: () => {
-              setSelectedTaskId(esc.id);
-              setCurrentDomainId("op");
-              setCurrentScreenId("tasks");
-              navigate("/tasks");
-            },
+            fullDetail: [
+              esc.description || "",
+              esc.escalation ? `Escalação:\n${esc.escalation}` : "",
+            ]
+              .filter(Boolean)
+              .join("\n\n"),
+            fix: `Avaliar com ${escShort} os critérios de aceite e handoffs.`,
+            stayOnPage: true,
           });
         }
 
@@ -250,46 +320,87 @@ export function GenericPageView(props: Props) {
       }
 
       case "changes": {
-        const prsList = [
-          {
-            branch: "feat/fase-5-visibilidade-conhecimento-workflows",
-            title: "PR #4 — Visibilidade, Conhecimento, Workflows e Operações Integradas",
-            author: "Paula PM (pm-projetos)",
-            status: "Em validação",
-            checks: "30/30 testes passando",
-            task: "Fase 5 Monorepo TAVIR",
-          },
-        ];
+        const curApprovals = approvals();
+        const altApps = curApprovals.filter((a) => a.type === "alteracao" || a.id.startsWith("ap-alt"));
+        const pendingAlt = altApps.filter((a) => a.status === "pending");
+
+        const dynamicRows =
+          altApps.length > 0
+            ? altApps.map((app) => ({
+                cells: [
+                  {
+                    text: `${app.title}\n(${app.reason || "aguardando homologação"})`,
+                    color: "var(--text-primary)",
+                  },
+                  { text: app.agentName, color: MU },
+                  {
+                    text: app.status === "pending" ? "Aguardando Gate" : app.status === "approved" ? "Homologado" : "Rejeitado",
+                    color: app.status === "pending" ? WA : app.status === "approved" ? TL : DG,
+                  },
+                  {
+                    text: app.status === "pending" ? "Abrir gate →" : app.status === "approved" ? "OK" : "—",
+                    color: app.status === "pending" ? TL : MU,
+                    mono: true,
+                    align: "right" as const,
+                  },
+                ],
+                onRowClick: () => {
+                  setSelectedApprovalId(app.id);
+                  setCurrentDomainId("op");
+                  setCurrentScreenId("approvals");
+                  navigate("/aprovacoes");
+                },
+              }))
+            : [
+                {
+                  cells: [
+                    {
+                      text: "Nenhuma solicitação de alteração\n(conclusões com kan_done aparecerão aqui)",
+                      color: MU,
+                    },
+                    { text: "—", color: MU },
+                    { text: "Em dia", color: TL },
+                    { text: "—", color: MU, mono: true, align: "right" as const },
+                  ],
+                },
+              ];
 
         return {
           title: "Alterações",
-          sub: "Branches, PRs e versões aguardando revisão e gate de homologação.",
-          source: "git log · branches ativas",
+          sub: "Gates de homologação pós-conclusão (proibido merge direto em main sem aprovação).",
+          source: "approvals type=alteracao · Tasks done",
           metrics: [
-            { label: "Branch atual", value: "feat/fase-5", note: "sincronizado", color: TL },
-            { label: "PRs abertos", value: "1", note: "PR #4 ativo" },
-            { label: "CI / Testes", value: "30/30", note: "100% passando", color: TL },
+            {
+              label: "Gates pendentes",
+              value: String(pendingAlt.length),
+              note: "aguardando homologação",
+              color: pendingAlt.length > 0 ? WA : TL,
+            },
+            {
+              label: "Homologadas",
+              value: String(altApps.filter((a) => a.status === "approved").length),
+              note: "aprovadas",
+              color: TL,
+            },
+            {
+              label: "Total",
+              value: String(altApps.length),
+              note: "histórico de alterações",
+            },
           ],
           blocks: [
             {
               isTable: true,
-              title: "Branches e PRs de Execução",
+              title: "Solicitações de Alteração",
               minW: "680px",
               grid: "minmax(220px, 1.8fr) minmax(140px, 1.2fr) 110px 140px",
               head: [
-                { text: "Alteração / Branch", align: "left" },
+                { text: "Alteração", align: "left" },
                 { text: "Autor / Agente", align: "left" },
                 { text: "Status", align: "left" },
-                { text: "CI Checks", align: "right" },
+                { text: "Ação", align: "right" },
               ],
-              rows: prsList.map((pr) => ({
-                cells: [
-                  { text: `${pr.title}\n(${pr.branch})`, color: "var(--text-primary)" },
-                  { text: pr.author, color: MU },
-                  { text: pr.status, color: TL },
-                  { text: pr.checks, color: TL, mono: true, align: "right" },
-                ],
-              })),
+              rows: dynamicRows,
             },
           ],
         };
@@ -1306,6 +1417,65 @@ export function GenericPageView(props: Props) {
           ],
         };
 
+      case "projects": {
+        const projs = projectsList();
+        const doraTrack = projs.filter((p) => p.template_code === "ideacao-dora");
+        const execTrack = projs.filter((p) => p.template_code !== "ideacao-dora");
+
+        const cards = projs.map((p) => {
+          const isDora = p.template_code === "ideacao-dora";
+          return {
+            status: isDora ? "Esteira Dora · Ideação" : "Esteira Execução Direta",
+            color: isDora ? TL : "var(--lime, #B7F34A)",
+            title: p.name,
+            body: p.description || (p.company ? `Cliente: ${p.company}` : "Iniciativa cadastrada no TAVIR"),
+            meta: `${p.company || "TAVIR Interno"} · Etapas: ${p.stages_done}/${p.total_stages} · Stack: ${p.stack || "FE / BE / DB"}`,
+            action: "Ver na Fábrica",
+            onAction: () => navigate("/fabrica"),
+          };
+        });
+
+        const displayCards = cards.length > 0 ? cards : [
+          {
+            status: "Esteira Execução Direta",
+            color: "var(--lime, #B7F34A)",
+            title: "TAVIR Escritório V2",
+            body: "Reengenharia do Sistema Operacional de Orquestração de Agentes e Kanban.",
+            meta: "TAVIR Interno · Etapas: 3/4 · Stack: FE: Solid.js · BE: FastAPI · DB: SQLite WAL",
+            action: "Ver na Fábrica",
+            onAction: () => navigate("/fabrica"),
+          },
+          {
+            status: "Esteira Dora · Ideação",
+            color: TL,
+            title: "App Provinha — Provador Virtual",
+            body: "Plataforma de provador virtual infantil para marcas de vestuário.",
+            meta: "Meridian Labs · Etapas: 2/6 · Stack: FE: React Native · BE: Python · DB: PostgreSQL",
+            action: "Ver na Fábrica",
+            onAction: () => navigate("/fabrica"),
+          },
+        ];
+
+        return {
+          title: "Projetos",
+          sub: "Iniciativas técnicas e de produto em andamento, organizadas por esteira e stack (FE, BE e DB separados).",
+          source: "catálogo de projetos · SQLite",
+          metrics: [
+            { label: "Total Projetos", value: String(Math.max(projs.length, 2)), note: "iniciativas cadastradas" },
+            { label: "Esteira Dora", value: String(Math.max(doraTrack.length, 1)), note: "ideação & produto", color: TL },
+            { label: "Execução Direta", value: String(Math.max(execTrack.length, 1)), note: "engenharia & QA", color: "var(--lime)" },
+          ],
+          blocks: [
+            {
+              isCards: true,
+              title: "Projetos em Andamento",
+              hint: "cada projeto define seus 3 eixos de stack e a esteira de desenvolvimento associada",
+              cards: displayCards,
+            },
+          ],
+        };
+      }
+
       default:
         return {
           title: id.toUpperCase(),
@@ -1324,6 +1494,8 @@ export function GenericPageView(props: Props) {
     }
   });
 
+  const isBlocks = () => props.pageId === "blocks";
+
   return (
     <div
       data-screen-label={pageData().title}
@@ -1333,9 +1505,20 @@ export function GenericPageView(props: Props) {
         "overflow-x": "hidden",
         background: "var(--surface-0, #0B1220)",
         color: "var(--text-primary, #F4F6F2)",
+        position: "relative",
       }}
     >
-      <div style={{ "max-width": "1200px", padding: "24px 24px 48px", display: "flex", "flex-direction": "column", gap: "28px" }}>
+      <div
+        style={{
+          "max-width": isBlocks() ? "none" : "1200px",
+          width: "100%",
+          padding: "24px 24px 48px",
+          display: "flex",
+          "flex-direction": "column",
+          gap: "28px",
+          "box-sizing": "border-box",
+        }}
+      >
         {/* Header */}
         <div style={{ display: "flex", "align-items": "flex-end", gap: "16px", "flex-wrap": "wrap" }}>
           <div style={{ flex: "1", "min-width": "240px" }}>
@@ -1346,6 +1529,29 @@ export function GenericPageView(props: Props) {
               {pageData().sub}
             </p>
           </div>
+          <Show when={props.pageId === "projects"}>
+            <button
+              type="button"
+              onClick={() => setIsProjectModalOpen(true)}
+              style={{
+                display: "inline-flex",
+                "align-items": "center",
+                gap: "8px",
+                height: "32px",
+                padding: "0 14px",
+                "border-radius": "999px",
+                background: "var(--lime, #B7F34A)",
+                color: "#0B1220",
+                "font-size": "12px",
+                "font-weight": "600",
+                cursor: "pointer",
+                border: "none",
+              }}
+            >
+              <TvIcon name="plus" width="13" height="13" />
+              <span>Novo Projeto</span>
+            </button>
+          </Show>
           <span
             style={{
               "font-family": "var(--font-mono)",
@@ -1424,10 +1630,29 @@ export function GenericPageView(props: Props) {
                     </div>
                     <For each={b.rows}>
                       {(r) => (
-                        <div style={{ display: "grid", "grid-template-columns": b.grid, gap: "12px", "align-items": "center", padding: "11px 16px", "border-top": "1px solid var(--border-subtle, rgba(244,246,242,.10))" }}>
+                        <div
+                          role={r.onRowClick ? "button" : undefined}
+                          tabIndex={r.onRowClick ? 0 : undefined}
+                          onClick={() => r.onRowClick?.()}
+                          onKeyDown={(e) => {
+                            if (r.onRowClick && (e.key === "Enter" || e.key === " ")) {
+                              e.preventDefault();
+                              r.onRowClick();
+                            }
+                          }}
+                          style={{
+                            display: "grid",
+                            "grid-template-columns": b.grid,
+                            gap: "12px",
+                            "align-items": "center",
+                            padding: "11px 16px",
+                            "border-top": "1px solid var(--border-subtle, rgba(244,246,242,.10))",
+                            cursor: r.onRowClick ? "pointer" : undefined,
+                          }}
+                        >
                           <For each={r.cells}>
                             {(c: TableCell) => (
-                              <span style={{ "min-width": "0", overflow: "hidden", "text-overflow": "ellipsis", "font-size": c.size || (c.mono ? "12px" : "13px"), "font-family": c.mono ? "var(--font-mono)" : "inherit", color: c.color || "var(--text-primary)", "text-align": c.align || "left" }}>
+                              <span style={{ "min-width": "0", overflow: "hidden", "text-overflow": "ellipsis", "font-size": c.size || (c.mono ? "12px" : "13px"), "font-family": c.mono ? "var(--font-mono)" : "inherit", color: c.color || "var(--text-primary)", "text-align": c.align || "left", "white-space": "pre-line" }}>
                                 {c.text}
                               </span>
                             )}
@@ -1512,57 +1737,124 @@ export function GenericPageView(props: Props) {
 
               {/* Cards Grid */}
               <Show when={b.isCards && b.cards}>
-                <div style={{ display: "grid", "grid-template-columns": "repeat(auto-fill, minmax(300px, 1fr))", gap: "10px" }}>
+                <div
+                  style={{
+                    display: "grid",
+                    "grid-template-columns": isBlocks()
+                      ? "repeat(auto-fill, minmax(280px, 1fr))"
+                      : "repeat(auto-fill, minmax(300px, 1fr))",
+                    gap: "10px",
+                    "align-items": "start",
+                  }}
+                >
                   <For each={b.cards}>
                     {(cd) => (
-                      <article style={{ display: "flex", "flex-direction": "column", gap: "8px", padding: "16px", border: "1px solid var(--border-subtle, rgba(244,246,242,.12))", "border-radius": "14px", background: "var(--surface-1, #0f1729)" }}>
-                        <div style={{ display: "flex", "align-items": "center", gap: "8px" }}>
-                          <span style={{ width: "7px", height: "7px", "border-radius": "50%", background: cd.color }}></span>
-                          <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", "letter-spacing": "0.08em", "text-transform": "uppercase", color: cd.color }}>{cd.status}</span>
-                        </div>
-                        <div style={{ "font-weight": "600", "font-size": "14px", "line-height": "1.35" }}>{cd.title}</div>
-                        <div style={{ color: "var(--text-secondary, #cbd3de)", "line-height": "1.5", "font-size": "13px" }}>{cd.body}</div>
-
-                        <Show when={cd.taskId}>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedTaskId(cd.taskId);
-                              setCurrentDomainId("op");
-                              setCurrentScreenId("tasks");
-                              navigate("/tasks");
+                      <article
+                        style={{
+                          display: "flex",
+                          "flex-direction": "column",
+                          gap: "8px",
+                          padding: "14px 16px",
+                          border: "1px solid var(--border-subtle, rgba(244,246,242,.12))",
+                          "border-radius": "14px",
+                          background: "var(--surface-1, #0f1729)",
+                          "min-height": 0,
+                        }}
+                      >
+                        <div style={{ display: "flex", "align-items": "center", gap: "8px", "min-width": 0 }}>
+                          <span style={{ width: "7px", height: "7px", "border-radius": "50%", background: cd.color, flex: "none" }}></span>
+                          <span
+                            style={{
+                              "font-family": "var(--font-mono)",
+                              "font-size": "11px",
+                              "letter-spacing": "0.08em",
+                              "text-transform": "uppercase",
+                              color: cd.color,
+                              overflow: "hidden",
+                              "text-overflow": "ellipsis",
+                              "white-space": "nowrap",
                             }}
+                          >
+                            {cd.status}
+                          </span>
+                        </div>
+                        <div
+                          style={{
+                            "font-weight": "600",
+                            "font-size": "14px",
+                            "line-height": "1.35",
+                            display: "-webkit-box",
+                            "-webkit-line-clamp": "2",
+                            "-webkit-box-orient": "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {cd.title}
+                        </div>
+                        <Show when={cd.body}>
+                          <div
+                            style={{
+                              color: "var(--text-secondary, #cbd3de)",
+                              "line-height": "1.45",
+                              "font-size": "12px",
+                              display: "-webkit-box",
+                              "-webkit-line-clamp": "2",
+                              "-webkit-box-orient": "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
+                            {cd.body}
+                          </div>
+                        </Show>
+
+                        <Show when={cd.taskSeq || cd.taskTitle}>
+                          <div
                             style={{
                               "align-self": "flex-start",
                               display: "flex",
                               "align-items": "center",
                               gap: "8px",
-                              height: "30px",
-                              padding: "0 12px",
+                              height: "26px",
+                              padding: "0 10px",
                               "border-radius": "999px",
                               border: "1px solid rgba(27,197,189,.45)",
                               background: "rgba(27,197,189,.08)",
                               color: "var(--text-primary)",
-                              cursor: "pointer",
-                              "font-size": "12px",
+                              "font-size": "11px",
+                              "max-width": "100%",
+                              "min-width": 0,
                             }}
                           >
-                            <span style={{ "font-family": "var(--font-mono)", "font-size": "10px", "text-transform": "uppercase", color: "var(--text-muted)" }}>Task</span>
-                            <span style={{ "font-family": "var(--font-mono)", "font-weight": "500", color: "var(--teal, #1BC5BD)" }}>{cd.taskSeq}</span>
+                            <span style={{ "font-family": "var(--font-mono)", "font-size": "10px", "text-transform": "uppercase", color: "var(--text-muted)", flex: "none" }}>Task</span>
+                            <Show when={cd.taskSeq}>
+                              <span style={{ "font-family": "var(--font-mono)", "font-weight": "500", color: "var(--teal, #1BC5BD)", flex: "none" }}>{cd.taskSeq}</span>
+                            </Show>
                             <span style={{ overflow: "hidden", "text-overflow": "ellipsis", "white-space": "nowrap" }}>{cd.taskTitle}</span>
-                            <span>→</span>
-                          </button>
-                        </Show>
-
-                        <Show when={cd.fix}>
-                          <div style={{ "font-size": "12px", color: "var(--text-muted)", "line-height": "1.4" }}>
-                            Como resolver: {cd.fix}
                           </div>
                         </Show>
 
-                        <div style={{ display: "flex", "align-items": "center", gap: "10px", "margin-top": "4px" }}>
-                          <span style={{ "font-size": "12px", color: "var(--text-muted)", flex: "1" }}>{cd.meta}</span>
-                          <Show when={cd.action}>
+                        <div style={{ display: "flex", "align-items": "center", gap: "8px", "margin-top": "auto", "padding-top": "4px", "flex-wrap": "wrap" }}>
+                          <span style={{ "font-size": "11px", color: "var(--text-muted)", flex: "1", "min-width": "80px" }}>{cd.meta}</span>
+                          <Show when={isBlocks() || cd.fullDetail}>
+                            <button
+                              type="button"
+                              onClick={() => setBlockDetail(cd)}
+                              style={{
+                                height: "28px",
+                                padding: "0 12px",
+                                "border-radius": "999px",
+                                border: "1px solid var(--border-light, rgba(244,246,242,.34))",
+                                background: "transparent",
+                                color: "var(--text-primary)",
+                                cursor: "pointer",
+                                "font-size": "12px",
+                                "font-weight": "500",
+                              }}
+                            >
+                              Ver detalhe
+                            </button>
+                          </Show>
+                          <Show when={cd.action && !cd.fullDetail}>
                             <button
                               type="button"
                               onClick={() => cd.onAction?.()}
@@ -1639,6 +1931,239 @@ export function GenericPageView(props: Props) {
           )}
         </For>
       </div>
+
+      {/* Drawer de detalhe — Bloqueios (e cards com fullDetail) */}
+      <Show when={blockDetail()}>
+        {(cd) => (
+          <>
+            <div
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(7, 12, 22, 0.55)",
+                "z-index": 40,
+              }}
+              onClick={() => setBlockDetail(null)}
+            />
+            <aside
+              role="dialog"
+              aria-label="Detalhe do bloqueio"
+              style={{
+                position: "fixed",
+                top: 0,
+                right: 0,
+                bottom: 0,
+                width: "min(440px, 100vw)",
+                background: "var(--surface-1, #0f1729)",
+                border: "none",
+                "border-left": "1px solid rgba(244,246,242,.12)",
+                "z-index": 41,
+                display: "flex",
+                "flex-direction": "column",
+                "box-shadow": "-18px 0 48px rgba(0,0,0,.45)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  "align-items": "center",
+                  gap: "10px",
+                  padding: "16px 18px",
+                  "border-bottom": "1px solid rgba(244,246,242,.10)",
+                }}
+              >
+                <span style={{ width: "8px", height: "8px", "border-radius": "50%", background: cd().color, flex: "none" }} />
+                <span
+                  style={{
+                    "font-family": "var(--font-mono)",
+                    "font-size": "11px",
+                    "letter-spacing": "0.08em",
+                    "text-transform": "uppercase",
+                    color: cd().color,
+                    flex: 1,
+                    overflow: "hidden",
+                    "text-overflow": "ellipsis",
+                    "white-space": "nowrap",
+                  }}
+                >
+                  {cd().status}
+                </span>
+                <button
+                  type="button"
+                  aria-label="Fechar"
+                  onClick={() => setBlockDetail(null)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "var(--text-muted)",
+                    cursor: "pointer",
+                    padding: "4px",
+                    display: "flex",
+                  }}
+                >
+                  <TvIcon name="circle-x" width="18" height="18" />
+                </button>
+              </div>
+
+              <div style={{ flex: 1, "overflow-y": "auto", padding: "18px 18px 24px", display: "flex", "flex-direction": "column", gap: "14px" }}>
+                <h2 style={{ margin: 0, "font-size": "17px", "font-weight": 600, "line-height": 1.35 }}>
+                  {cd().title}
+                </h2>
+
+                <Show when={cd().taskSeq || cd().taskTitle}>
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      "align-items": "center",
+                      gap: "8px",
+                      "align-self": "flex-start",
+                      height: "28px",
+                      padding: "0 12px",
+                      "border-radius": "999px",
+                      border: "1px solid rgba(27,197,189,.45)",
+                      background: "rgba(27,197,189,.08)",
+                      "font-size": "12px",
+                    }}
+                  >
+                    <span style={{ "font-family": "var(--font-mono)", "font-size": "10px", color: "var(--text-muted)", "text-transform": "uppercase" }}>
+                      Task
+                    </span>
+                    <Show when={cd().taskSeq}>
+                      <span style={{ "font-family": "var(--font-mono)", color: "var(--teal)", "font-weight": 600 }}>{cd().taskSeq}</span>
+                    </Show>
+                    <span style={{ color: "var(--text-secondary)", "max-width": "220px", overflow: "hidden", "text-overflow": "ellipsis", "white-space": "nowrap" }}>
+                      {cd().taskTitle}
+                    </span>
+                  </div>
+                </Show>
+
+                <div style={{ "font-size": "12px", color: "var(--text-muted)" }}>{cd().meta}</div>
+
+                <div
+                  style={{
+                    padding: "14px",
+                    "border-radius": "12px",
+                    background: "#070c16",
+                    border: "1px solid rgba(244,246,242,.10)",
+                    "font-size": "13px",
+                    "line-height": 1.55,
+                    color: "var(--text-secondary)",
+                    "white-space": "pre-wrap",
+                    "word-break": "break-word",
+                  }}
+                >
+                  {cd().fullDetail || cd().body || "Sem detalhe adicional."}
+                </div>
+
+                <Show when={cd().fix}>
+                  <div style={{ "font-size": "12px", color: "var(--text-muted)", "line-height": 1.45 }}>
+                    Como resolver: {cd().fix}
+                  </div>
+                </Show>
+              </div>
+
+              <div
+                style={{
+                  padding: "14px 18px",
+                  "border-top": "1px solid rgba(244,246,242,.10)",
+                  display: "flex",
+                  gap: "8px",
+                  "flex-wrap": "wrap",
+                }}
+              >
+                <Show when={cd().canDecide && cd().approvalId}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void decideApprovalPersistent(cd().approvalId, "approve", "Aprovado via Bloqueios");
+                      setBlockDetail(null);
+                    }}
+                    style={{
+                      height: "34px",
+                      padding: "0 16px",
+                      "border-radius": "999px",
+                      border: "none",
+                      background: "var(--lime, #B7F34A)",
+                      color: "var(--ink-panel, #25360a)",
+                      "font-weight": 600,
+                      "font-size": "13px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Aprovar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void decideApprovalPersistent(cd().approvalId, "reject", "Rejeitado via Bloqueios");
+                      setBlockDetail(null);
+                    }}
+                    style={{
+                      height: "34px",
+                      padding: "0 16px",
+                      "border-radius": "999px",
+                      border: "1px solid rgba(239,68,68,.45)",
+                      background: "transparent",
+                      color: "oklch(.7 .16 27)",
+                      "font-weight": 500,
+                      "font-size": "13px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Rejeitar
+                  </button>
+                </Show>
+                <Show when={cd().action && cd().onAction}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      cd().onAction?.();
+                      setBlockDetail(null);
+                    }}
+                    style={{
+                      height: "34px",
+                      padding: "0 16px",
+                      "border-radius": "999px",
+                      border: "1px solid rgba(244,246,242,.2)",
+                      background: "transparent",
+                      color: "var(--text-primary)",
+                      "font-size": "13px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {cd().action}
+                  </button>
+                </Show>
+                <span style={{ flex: 1 }} />
+                <button
+                  type="button"
+                  onClick={() => setBlockDetail(null)}
+                  style={{
+                    height: "34px",
+                    padding: "0 14px",
+                    "border-radius": "999px",
+                    border: "none",
+                    background: "rgba(244,246,242,.08)",
+                    color: "var(--text-secondary)",
+                    "font-size": "12px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Fechar · Esc
+                </button>
+              </div>
+            </aside>
+          </>
+        )}
+      </Show>
+
+      <CreateProjectModal
+        isOpen={isProjectModalOpen()}
+        onClose={() => setIsProjectModalOpen(false)}
+        onCreated={() => {
+          fetchProjects();
+        }}
+      />
     </div>
   );
 }

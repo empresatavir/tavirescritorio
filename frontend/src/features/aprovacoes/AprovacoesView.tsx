@@ -4,19 +4,15 @@ import {
   selectedApprovalId,
   setSelectedApprovalId,
   tasks,
-  setSelectedTaskId,
-  setCurrentDomainId,
-  setCurrentScreenId,
   syncApprovals,
   decideApprovalPersistent,
   type UiApproval,
 } from "../../state/store";
 import { TvIcon } from "../../shared/components/TvIcon";
-import { useNavigate } from "@solidjs/router";
 
 export function AprovacoesView() {
-  const navigate = useNavigate();
-  const [tabFilter, setTabFilter] = createSignal<"all" | "urgent" | "gates">("all");
+  const [tabFilter, setTabFilter] = createSignal<"all" | "urgent" | "gates" | "changes">("all");
+  const [taskDossierOpen, setTaskDossierOpen] = createSignal(true);
 
   createEffect(() => {
     syncApprovals();
@@ -26,6 +22,8 @@ export function AprovacoesView() {
     onCleanup(() => clearInterval(timer));
   });
 
+  const isAlteracao = (a: UiApproval) => a.type === "alteracao" || a.id.startsWith("ap-alt");
+
   // Filtered approvals list
   const filteredApprovals = createMemo(() => {
     const list = approvals();
@@ -34,14 +32,29 @@ export function AprovacoesView() {
       return list.filter((a) => a.impact === "high" && a.status === "pending");
     }
     if (tab === "gates") {
-      return list.filter((a) => a.type === "checkpoint" || a.type === "authorization");
+      return list.filter(
+        (a) => a.type === "checkpoint" || a.type === "authorization" || a.type === "review"
+      );
+    }
+    if (tab === "changes") {
+      return list.filter((a) => isAlteracao(a));
     }
     return list;
   });
 
   const pendingCount = createMemo(() => approvals().filter((a) => a.status === "pending").length);
   const urgentCount = createMemo(() => approvals().filter((a) => a.impact === "high" && a.status === "pending").length);
-  const gatesCount = createMemo(() => approvals().filter((a) => (a.type === "checkpoint" || a.type === "authorization") && a.status === "pending").length);
+  const gatesCount = createMemo(
+    () =>
+      approvals().filter(
+        (a) =>
+          a.status === "pending" &&
+          (a.type === "checkpoint" || a.type === "authorization" || a.type === "review")
+      ).length
+  );
+  const changesCount = createMemo(
+    () => approvals().filter((a) => a.status === "pending" && isAlteracao(a)).length
+  );
 
   // Selected approval
   const currentApproval = createMemo(() => {
@@ -77,6 +90,8 @@ export function AprovacoesView() {
       case "authorization": return "Autorização";
       case "checkpoint": return "Checkpoint";
       case "review": return "Revisão";
+      case "alteracao": return "Alteração";
+      default: return "Aprovação";
     }
   };
 
@@ -99,21 +114,14 @@ export function AprovacoesView() {
     decideApprovalPersistent(id, "reject", "Rejeitado via cockpit de operações");
   };
 
-  const handleGoTask = (taskId: string) => {
-    setSelectedTaskId(taskId);
-    setCurrentDomainId("op");
-    setCurrentScreenId("tasks");
-    navigate("/tasks");
-  };
-
   return (
     <div
       data-screen-label="Aprovações"
       style={{
         height: "100%",
         display: "grid",
-        "grid-template-columns": "minmax(280px, 36%) minmax(340px, 1fr)",
-        "overflow-x": "auto",
+        "grid-template-columns": "minmax(300px, 340px) minmax(0, 1fr)",
+        "overflow-x": "hidden",
         background: "var(--surface-0, #0B1220)",
         color: "var(--text-primary, #F4F6F2)",
       }}
@@ -216,6 +224,28 @@ export function AprovacoesView() {
                 {gatesCount()}
               </span>
             </button>
+            <button
+              onClick={() => setTabFilter("changes")}
+              style={{
+                height: "26px",
+                padding: "0 10px",
+                border: "none",
+                "border-radius": "999px",
+                cursor: "pointer",
+                "font-size": "12px",
+                "font-weight": "500",
+                display: "flex",
+                gap: "6px",
+                "align-items": "center",
+                background: tabFilter() === "changes" ? "var(--teal, #1BC5BD)" : "transparent",
+                color: tabFilter() === "changes" ? "var(--ink, #0B1220)" : "var(--text-muted, #aeb7c4)",
+              }}
+            >
+              Alterações
+              <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.8 }}>
+                {changesCount()}
+              </span>
+            </button>
           </div>
         </div>
 
@@ -313,16 +343,18 @@ export function AprovacoesView() {
           const t = linkedTask;
 
           return (
-            <section style={{ display: "flex", "flex-direction": "column", "min-height": "0", "min-width": "0" }}>
+            <section style={{ display: "flex", "flex-direction": "column", "min-height": "0", "min-width": "0", width: "100%" }}>
               <div
                 style={{
                   flex: "1",
                   "overflow-y": "auto",
-                  padding: "28px clamp(20px, 4vw, 40px)",
+                  padding: "24px 28px 32px",
                   display: "flex",
                   "flex-direction": "column",
-                  gap: "24px",
-                  "max-width": "760px",
+                  gap: "22px",
+                  width: "100%",
+                  "max-width": "none",
+                  "box-sizing": "border-box",
                 }}
               >
                 {/* Solicitante */}
@@ -423,18 +455,18 @@ export function AprovacoesView() {
                         <span>Prioridade: <strong style={{ color: "var(--text-secondary)" }}>{t()?.priority}</strong></span>
                       </div>
                       <div style={{ "font-size": "13px", "line-height": "1.55", color: "var(--text-secondary, #cbd3de)" }}>
-                        {t()?.description}
+                        {t()?.description || "Sem descrição."}
                       </div>
-                      <div style={{ display: "flex", gap: "8px", "margin-top": "4px" }}>
+                      <div style={{ display: "flex", gap: "8px", "margin-top": "4px", "flex-wrap": "wrap" }}>
                         <button
                           type="button"
-                          onClick={() => handleGoTask(t()!.id)}
+                          onClick={() => setTaskDossierOpen((v) => !v)}
                           style={{
                             height: "32px",
                             padding: "0 14px",
                             "border-radius": "999px",
                             border: "1px solid var(--border-light, rgba(244,246,242,.34))",
-                            background: "transparent",
+                            background: taskDossierOpen() ? "rgba(27,197,189,.12)" : "transparent",
                             color: "var(--text-primary, #F4F6F2)",
                             cursor: "pointer",
                             "font-weight": "500",
@@ -445,9 +477,48 @@ export function AprovacoesView() {
                           }}
                         >
                           <TvIcon name="maximize" style={{ width: "12px", height: "12px" }} />
-                          Abrir detalhamento da task #{t()?.seq}
+                          {taskDossierOpen() ? "Ocultar dossiê da task" : `Ver dossiê da task #${t()?.seq}`}
                         </button>
                       </div>
+                      <Show when={taskDossierOpen()}>
+                        <div
+                          style={{
+                            "margin-top": "4px",
+                            padding: "12px",
+                            "border-radius": "10px",
+                            background: "var(--surface-0, #0B1220)",
+                            border: "1px solid var(--border-subtle, rgba(244,246,242,.10))",
+                            display: "flex",
+                            "flex-direction": "column",
+                            gap: "8px",
+                            "font-size": "12px",
+                          }}
+                        >
+                          <div style={{ display: "grid", "grid-template-columns": "100px 1fr", gap: "6px 10px" }}>
+                            <span style={{ color: "var(--text-muted)" }}>Status</span>
+                            <span style={{ color: "var(--text-primary)", "font-weight": 500 }}>{t()?.status}</span>
+                            <span style={{ color: "var(--text-muted)" }}>Prioridade</span>
+                            <span style={{ color: "var(--text-primary)" }}>{t()?.priority}</span>
+                            <span style={{ color: "var(--text-muted)" }}>Setor</span>
+                            <span style={{ color: "var(--text-primary)" }}>{t()?.sector}</span>
+                            <span style={{ color: "var(--text-muted)" }}>Responsável</span>
+                            <span style={{ color: "var(--text-primary)" }}>{t()?.assignee}</span>
+                            <Show when={t()?.escalation}>
+                              <span style={{ color: "var(--text-muted)" }}>Escalação</span>
+                              <span style={{ color: "oklch(.78 .16 27)" }}>{t()?.escalation}</span>
+                            </Show>
+                            <Show when={(t()?.tags || []).length > 0}>
+                              <span style={{ color: "var(--text-muted)" }}>Tags</span>
+                              <span style={{ color: "var(--text-secondary)", "font-family": "var(--font-mono)", "font-size": "11px" }}>
+                                {(t()?.tags || []).join(" · ")}
+                              </span>
+                            </Show>
+                          </div>
+                          <p style={{ margin: 0, color: "var(--text-muted)", "font-size": "11px", "line-height": 1.45 }}>
+                            Decida aqui em Aprovações — o fluxo não muda de tela.
+                          </p>
+                        </div>
+                      </Show>
                     </div>
                   </div>
                 </Show>
@@ -515,12 +586,14 @@ export function AprovacoesView() {
               {/* Barra de ação inferior */}
               <div
                 style={{
-                  padding: "16px clamp(20px, 4vw, 40px)",
+                  padding: "16px 28px",
                   "border-top": "1px solid var(--border-subtle, rgba(244,246,242,.10))",
                   display: "flex",
                   "flex-wrap": "wrap",
                   gap: "10px",
                   "align-items": "center",
+                  width: "100%",
+                  "box-sizing": "border-box",
                 }}
               >
                 <Show when={ap().status === "pending"}>

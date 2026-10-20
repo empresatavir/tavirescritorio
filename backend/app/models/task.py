@@ -14,7 +14,9 @@ class Task(Base):
     project_id: Mapped[str] = mapped_column(String(36), ForeignKey("projects.id"), nullable=False)
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default="pending")
+    # Fluxo: to_plan → planning → planned → in_progress → done
+    # Legado "pending" é normalizado para to_plan na API.
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="to_plan")
     priority: Mapped[str] = mapped_column(String(10), nullable=False, default="medium")
     assignee_agent_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("agents.id"), nullable=True)
     sector: Mapped[str | None] = mapped_column(String(100), nullable=True)
@@ -22,6 +24,8 @@ class Task(Base):
     handoffs: Mapped[Any | None] = mapped_column(JSON, nullable=True)
     gates: Mapped[Any | None] = mapped_column(JSON, nullable=True)
     tags: Mapped[Any | None] = mapped_column(JSON, nullable=True)
+    # Lista de refs (#seq ou id) que bloqueiam início desta task
+    depends_on: Mapped[Any | None] = mapped_column(JSON, nullable=True)
     active_job_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

@@ -72,17 +72,41 @@ export function SubNav() {
 
   const getBadgeValue = (it: { id: string; badge?: string }) => {
     if (it.badge === "jobs") {
-      const runningCount = jobs().filter((j) => j.status === "running").length;
+      const uniqueByTitle = new Map<string, any>();
+      for (const j of jobs()) {
+        const existing = uniqueByTitle.get(j.title);
+        if (!existing || (j.startedAt && existing.startedAt && j.startedAt > existing.startedAt)) {
+          uniqueByTitle.set(j.title, j);
+        }
+      }
+      const runningCount = Array.from(uniqueByTitle.values()).filter((j) => j.status === "running").length;
       return runningCount > 0 ? String(runningCount) : "";
     }
     if (it.badge === "aps") {
       const pendingCount = approvals().filter((a) => a.status === "pending").length;
       return pendingCount > 0 ? String(pendingCount) : "";
     }
-    if (it.id === "tasks") {
-      return String(tasks().length);
+    if (it.badge === "tasks") {
+      // Abertas que pedem ação (exclui concluídas)
+      const openCount = tasks().filter((t) => t.status !== "done").length;
+      return openCount > 0 ? String(openCount) : "";
     }
-    return it.badge || "";
+    if (it.badge === "blocks") {
+      // Bloqueios: aguardando aprovação OU escalação ativa
+      const blocked = tasks().filter(
+        (t) =>
+          t.status !== "done" &&
+          (t.awaitingApproval || Boolean(t.escalation && String(t.escalation).trim()))
+      ).length;
+      return blocked > 0 ? String(blocked) : "";
+    }
+    if (it.badge === "changes") {
+      const changes = approvals().filter(
+        (a) => a.status === "pending" && (a.type === "alteracao" || a.id.startsWith("ap-alt"))
+      ).length;
+      return changes > 0 ? String(changes) : "";
+    }
+    return "";
   };
 
   return (

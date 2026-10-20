@@ -32,10 +32,27 @@ class CockpitService:
 
         # Calculate KPIs
         running_jobs_list = [j for j in all_jobs if j.status in ("running", "preflight", "queued")]
-        active_tasks_list = [t for t in all_tasks if t.status == "in_progress" or t.active_job_id]
-        escalated_tasks_list = [t for t in all_tasks if t.escalation and t.status != "done"]
-        failed_jobs_list = [j for j in all_jobs if j.status == "failed"]
+        active_statuses = {"to_plan", "planning", "planned", "in_progress", "pending"}
+        active_tasks_list = [
+            t for t in all_tasks
+            if t.status in active_statuses or (t.active_job_id and t.status != "done")
+        ]
         pending_approvals_list = [a for a in all_approvals if a.status == "pending"]
+        approval_task_ids = {a.task_id for a in pending_approvals_list if a.task_id}
+        # Bloqueios / escalados: escalação textual OU aprovação pendente vinculada
+        escalated_tasks_list = [
+            t for t in all_tasks
+            if t.status != "done"
+            and (
+                (t.escalation and str(t.escalation).strip())
+                or t.id in approval_task_ids
+            )
+        ]
+        alteracao_pending = [
+            a for a in pending_approvals_list
+            if (a.type or "") == "alteracao" or str(a.id).startswith("ap-alt")
+        ]
+        failed_jobs_list = [j for j in all_jobs if j.status == "failed"]
 
         # Format running jobs for UI
         running_jobs_ui = []
@@ -138,12 +155,12 @@ class CockpitService:
                 "path": "/bloqueios",
             },
             {
-                "icon": "file-signature",
+                "icon": "git-pull-request",
                 "color": "oklch(0.80 0.155 78)",
-                "label": "Propostas pendentes",
-                "detail": "propostas comerciais em andamento",
-                "count": "2",
-                "path": "/propostas",
+                "label": "Alterações pendentes",
+                "detail": f"{len(alteracao_pending)} homologações aguardando decisão",
+                "count": str(len(alteracao_pending)),
+                "path": "/alteracoes",
             },
         ]
 
@@ -152,10 +169,19 @@ class CockpitService:
                 "active_cards_count": len(active_tasks_list),
                 "escalated_count": len(escalated_tasks_list),
                 "running_jobs_count": len(running_jobs_list),
+                "pending_approvals_count": len(pending_approvals_list),
+                "pending_changes_count": len(alteracao_pending),
             },
             "summary_text": f"{len(active_tasks_list)} cards ativos · {len(escalated_tasks_list)} escalados · {len(running_jobs_list)} jobs rodando",
             "running_jobs": running_jobs_ui,
             "escalated_tasks": escalated_tasks_ui,
             "active_tasks": active_tasks_ui,
             "needs": needs,
+            "badge_counts": {
+                "tasks_open": len([t for t in all_tasks if t.status not in ("done",)]),
+                "blocks": len(escalated_tasks_list),
+                "approvals": len(pending_approvals_list),
+                "changes": len(alteracao_pending),
+                "jobs_running": len(running_jobs_list),
+            },
         }
