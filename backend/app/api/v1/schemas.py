@@ -1,4 +1,4 @@
-"""Pydantic schemas for TAVIR API responses."""
+from typing import Any
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -28,6 +28,15 @@ class ProjectResponse(BaseModel):
     slug: str
     name: str
     client: str | None = None
+    company: str | None = None
+    template_code: str | None = None
+    stages_done: int = 0
+    total_stages: int = 0
+    repo_url: str | None = None
+    local_path: str | None = None
+    deploy_target: str | None = None
+    stack: str | None = None
+    files: Any = None
     status: str
     description: str | None = None
     created_at: datetime

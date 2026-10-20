@@ -320,63 +320,43 @@ async def seed():
         await session.commit()
         print("Chat conversations and messages seeded successfully")
 
-        # 7. Seed engineering templates (6 esteiras da Fábrica)
-        esteiras_data = [
-            ("lp-c", "TAVIR Fábrica · LPs · Criação", "lp", "c", "Esteira completa para criar Landing Page nova", ["Dora Descoberta", "Marina + Yuri · Prova Visual", "Comercial TAVIR", "Enzo Extrator", "Bianca Estrategista", "Diego Desenvolvedor", "QA E2E", "Nina SEO", "Auditor Seg/LGPD", "Dante Documentação"], [
-                "Gate 0 · Demanda e briefing", "Requisitos verificáveis", "Aprovação dos requisitos",
-                "Prova visual · tokens e esqueleto", "Aprovação da prova visual", "Orçamento, deploy e contrato",
-                "Gate de contratação", "Fase 1 · Extração técnica", "Gate Fase 1", "Fase 2 · Estratégia e plano",
-                "Gate Fase 2", "Fase 3 · Construção", "QA independente", "SEO", "Segurança e LGPD", "Documentação e handoff"
-            ], "Diego Desenvolvedor", 1),
-            ("lp-m", "TAVIR Fábrica · LPs · Manutenção", "lp", "m", "Esteira para diagnosticar, alterar e evoluir LP existente", ["Dora Descoberta", "Enzo Extrator", "Bianca Estrategista", "Marina + Yuri", "Diego Desenvolvedor", "QA E2E", "Nina SEO", "Dante Documentação"], [
-                "Gate 0 · Pedido de manutenção", "Diagnóstico, baseline e impacto", "Inventário da LP existente",
-                "Plano de alteração e rollback", "Prova visual condicional", "Aprovação do plano",
-                "Implementação controlada", "QA independente e regressão", "SEO de manutenção", "Segurança e LGPD", "Aprovação final"
-            ], "Diego Desenvolvedor", 2),
-            ("of-c", "TAVIR Fábrica · Ofertas · Criação", "of", "c", "Esteira interna para criar nova oferta", ["Dora Descoberta", "Gael Growth", "Priscila Preços", "Jussara Jurídico", "QA de Oferta", "Dante Documentação"], [
-                "Gate 0 · Demanda", "Público e dor", "Promessa e pacote", "Viabilidade e preço", "Gate orçável", "Claims e contrato", "Piloto de mesa", "Aprovação final"
-            ], "Gael Growth", 3),
-            ("of-m", "TAVIR Fábrica · Ofertas · Manutenção", "of", "m", "Esteira para revisar oferta existente", ["Dora Descoberta", "Gael Growth", "Priscila Preços", "QA de Oferta", "Dante Documentação"], [
-                "Gate 0 · Revisão", "Baseline atual", "Revisão mecanismo", "Revisão preço", "Versionamento", "Aprovação final"
-            ], "Gael Growth", 4),
-            ("sy-c", "TAVIR Fábrica · Sistemas · Criação", "sy", "c", "Esteira para criar sistemas, SaaS, CRMs e APIs", ["Dora Descoberta", "Ari Arquiteto", "Marina + Yuri", "Diego Sistemas", "QA de Sistemas", "Auditor Seg/LGPD", "Dante Documentação"], [
-                "Gate 0 · Demanda", "Requisitos verificáveis", "Aprovação requisitos", "Arquitetura e dados",
-                "Prova visual e onboarding", "Gate de contratação", "Construção e integração", "QA independente E2E",
-                "Segurança e LGPD", "Documentação e handoff"
-            ], "Ari Arquiteto", 5),
-            ("sy-m", "TAVIR Fábrica · Sistemas · Manutenção", "sy", "m", "Esteira para manter e evoluir sistemas em produção", ["Dora Descoberta", "Ari Arquiteto", "Diego Sistemas", "QA de Sistemas", "Auditor Seg/LGPD", "Dante Documentação"], [
-                "Gate 0 · Demanda de manutenção", "Diagnóstico e impacto", "Plano de alteração e rollback",
-                "Aprovação técnica", "Implementação controlada", "QA e regressão", "Hardening", "Aprovação e deploy"
-            ], "Ari Arquiteto", 6),
-        ]
-        for t_id, name, cat, mode, desc, mesas, stages, owner, sort_o in esteiras_data:
+        # 7. Seed engineering templates (6 esteiras canônicas V1 — ver factory/esteiras.py)
+        from app.modules.factory.esteiras import ESTEIRAS
+
+        for t_id, esteira in ESTEIRAS.items():
             existing_tpl = await session.get(EngineeringTemplate, t_id)
+            # Persistimos defs estruturadas (lista de dicts) — B0
+            stages_payload = esteira["stages"]
             if not existing_tpl:
                 session.add(
                     EngineeringTemplate(
                         id=t_id,
-                        name=name,
-                        category=cat,
-                        mode=mode,
-                        description=desc,
-                        mesas=mesas,
-                        stages=stages,
-                        owner_role=owner,
-                        sort_order=sort_o,
+                        name=esteira["name"],
+                        category=esteira["category"],
+                        mode=esteira["mode"],
+                        description=esteira["description"],
+                        mesas=esteira["mesas"],
+                        stages=stages_payload,
+                        owner_role=esteira["owner_role"],
+                        sort_order=esteira["sort_order"],
                         gate_required=True,
                     )
                 )
             else:
-                existing_tpl.mesas = mesas
-                existing_tpl.stages = stages
+                existing_tpl.name = esteira["name"]
+                existing_tpl.description = esteira["description"]
+                existing_tpl.mesas = esteira["mesas"]
+                existing_tpl.stages = stages_payload
+                existing_tpl.owner_role = esteira["owner_role"]
+                existing_tpl.sort_order = esteira["sort_order"]
         await session.commit()
         print("Engineering templates seeded successfully")
 
         # 8. Seed factory projects
         factory_projs = [
-            ("fp-1", "lp-advocacia", "LP Nicho Advocacia", "Nicho Advocacia", "lp-c", 4, 16, "running", "github.com/empresatavir/lp-advocacia", "netlify · travada", "SolidJS + Tailwind + Vite", "Converter sócios de escritórios de advocacia", ["Headline + Hero", "Grid de dores e soluções", "Prova social e casos", "Formulário"]),
-            ("fp-2", "saas-gestao-contabil", "SaaS Gestão Contábil", "ContabHub", "sy-c", 2, 10, "paused", "github.com/empresatavir/contabhub-api", "railway · travada", "FastAPI + PostgreSQL + SolidJS", "Automatizar conciliação fiscal", ["Autenticação Gov.br", "Leitura XML NFe", "Cálculo DAS", "Dashboard"]),
-            ("fp-3", "mentoria-ia-executivos", "Oferta Mentoria IA Executivos", "TAVIR Educação", "of-c", 5, 8, "running", None, "hubspot · crm", "Documento Comercial + Funil", "Turma fechada para 15 CTOs", ["Ementa 8 encontros", "Modelo de precificação", "Contrato e SLA"]),
+            ("fp-1", "lp-advocacia", "LP Nicho Advocacia", "Nicho Advocacia", "lp-c", 4, 10, "running", "github.com/empresatavir/lp-advocacia", "netlify · travada", "SolidJS + Tailwind + Vite", "Converter sócios de escritórios de advocacia", ["Headline + Hero", "Grid de dores e soluções", "Prova social e casos", "Formulário"]),
+            ("fp-2", "saas-gestao-contabil", "SaaS Gestão Contábil", "ContabHub", "sy-c", 2, 12, "paused", "github.com/empresatavir/contabhub-api", "railway · travada", "FastAPI + PostgreSQL + SolidJS", "Automatizar conciliação fiscal", ["Autenticação Gov.br", "Leitura XML NFe", "Cálculo DAS", "Dashboard"]),
+            ("fp-3", "mentoria-ia-executivos", "Oferta Mentoria IA Executivos", "TAVIR Educação", "of-c", 5, 10, "running", None, "hubspot · crm", "Documento Comercial + Funil", "Turma fechada para 15 CTOs", ["Ementa 8 encontros", "Modelo de precificação", "Contrato e SLA"]),
         ]
         for p_id, slug, name, comp, t_code, s_done, s_tot, status, repo, dep, stack, goal, scope in factory_projs:
             existing_fp = await session.get(Project, p_id)
