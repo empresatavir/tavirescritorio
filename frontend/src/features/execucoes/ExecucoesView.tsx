@@ -3,6 +3,7 @@ import { jobs, setJobs, selectedJobId, setSelectedJobId, setSelectedTaskId, setC
 import { api, type JobEvent } from "../../shared/api/client";
 import { TvIcon } from "../../shared/components/TvIcon";
 import { EvidenceViewerModal } from "./EvidenceViewerModal";
+import { formatLocalTime } from "../../shared/datetime";
 
 // Helper puro de metadados de status
 function statusMeta(st: string): { label: string; color: string; bg: string } {
@@ -293,8 +294,8 @@ function JobDetailsPanel(props: {
               "font-weight": 500,
             }}
           >
-            <TvIcon name="shield-check" width="12" height="12" />
-            <span>Evidência QA / Guard</span>
+            <TvIcon name="file-search" width="12" height="12" />
+            <span>Resultado & evidências</span>
           </button>
 
           {(props.job.status === "failed" || props.job.status === "paused") && (
@@ -540,15 +541,29 @@ export function ExecucoesView() {
     const controller = api.subscribeJobEvents(
       id,
       (event: JobEvent) => {
-        if (!event || !event.created_at || Number.isNaN(Date.parse(event.created_at))) return;
-        const time = new Date(event.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+        if (!event || !event.created_at) return;
+        const time = formatLocalTime(event.created_at);
+        if (time === "—") return;
         const type: "info" | "warn" | "error" | "success" =
           event.event_type === "failed" || event.new_state === "failed"
             ? "error"
             : event.event_type === "succeeded" || event.new_state === "succeeded"
             ? "success"
             : "info";
-        const text = `${event.action || event.event_type}: ${event.details || event.new_state || ""}`;
+        const details = (event.details || "").trim();
+        const action = (event.action || "").trim();
+        let text = "";
+        if (details) {
+          // state_change já carrega a mensagem útil — não prefixar
+          text =
+            action && action !== "state_change" && !details.toLowerCase().startsWith(action.toLowerCase())
+              ? `${action}: ${details}`
+              : details;
+        } else if (action && event.new_state) {
+          text = `${action} → ${event.new_state}`;
+        } else {
+          text = action || event.event_type || event.new_state || "evento";
+        }
 
         // Inserção append direta e imutável
         setLiveEvents((prev) => {
@@ -754,30 +769,44 @@ export function ExecucoesView() {
           overflow: "hidden",
         }}
       >
-        <Show when={selectedJob() != null}>
-          <JobDetailsPanel
-            job={selectedJob()!}
-            onTaskClick={(taskId) => {
-              setSelectedTaskId(taskId);
-              setCurrentScreenId("tasks");
-            }}
-            onOpenEvidence={() => setIsEvidenceModalOpen(true)}
-            logs={combinedLogs()}
-          />
+        <Show when={activeJobId()}>
+          {(jid) => {
+            const job = () => jobs().find((j) => j.id === jid()) || selectedJob();
+            return (
+              <Show when={job()}>
+                {(j) => (
+                  <JobDetailsPanel
+                    job={j()}
+                    onTaskClick={(taskId) => {
+                      setSelectedTaskId(taskId);
+                      setCurrentScreenId("tasks");
+                    }}
+                    onOpenEvidence={() => setIsEvidenceModalOpen(true)}
+                    logs={combinedLogs()}
+                  />
+                )}
+              </Show>
+            );
+          }}
         </Show>
       </aside>
 
-      <Show when={selectedJob() != null}>
-        <EvidenceViewerModal
-          isOpen={isEvidenceModalOpen()}
-          onClose={() => setIsEvidenceModalOpen(false)}
-          jobId={selectedJob()?.id || ""}
-          jobTitle={selectedJob()?.title || ""}
-          taskSeq={selectedJob()?.taskSeq}
-          taskTitle={selectedJob()?.taskTitle}
-          fileName={`evidencias-job-${selectedJob()?.id || "unknown"}.md`}
-          guardStatus={selectedJob()?.status === "failed" ? "blocked" : "passed"}
-        />
+      <Show when={activeJobId()}>
+        {(jid) => {
+          const job = () => jobs().find((j) => j.id === jid()) || selectedJob();
+          return (
+            <EvidenceViewerModal
+              isOpen={isEvidenceModalOpen()}
+              onClose={() => setIsEvidenceModalOpen(false)}
+              jobId={jid()}
+              jobTitle={job()?.title || ""}
+              taskSeq={job()?.taskSeq}
+              taskTitle={job()?.taskTitle}
+              fileName={`evidencias-job-${jid()}.md`}
+              guardStatus={job()?.status === "failed" ? "blocked" : "passed"}
+            />
+          );
+        }}
       </Show>
     </div>
   );
