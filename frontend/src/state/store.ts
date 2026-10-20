@@ -1,5 +1,5 @@
 import { createSignal, createEffect } from "solid-js";
-import { api } from "../shared/api/client";
+import { api, parseApiError } from "../shared/api/client";
 
 export interface NavItem {
   id: string;
@@ -24,11 +24,11 @@ export const DOMAINS: Domain[] = [
     items: [
       { id: "room", label: "Sala de Operação", icon: "radio-tower" },
       { id: "exec", label: "Execuções", icon: "zap", badge: "jobs" },
-      { id: "tasks", label: "Tasks", icon: "square-kanban", badge: "12" },
+      { id: "tasks", label: "Tasks", icon: "square-kanban", badge: "tasks" },
       { id: "approvals", label: "Aprovações", icon: "shield-check", badge: "aps" },
-      { id: "blocks", label: "Bloqueios", icon: "octagon-alert" },
+      { id: "blocks", label: "Bloqueios", icon: "octagon-alert", badge: "blocks" },
       { id: "agents", label: "Agentes", icon: "bot" },
-      { id: "changes", label: "Alterações", icon: "git-pull-request" },
+      { id: "changes", label: "Alterações", icon: "git-pull-request", badge: "changes" },
     ],
   },
   {
@@ -124,7 +124,7 @@ export interface RosterAgent {
   soulText?: string;
 }
 
-import { REAL_AGENTS, REAL_TASKS } from "./real_data";
+import { REAL_AGENTS } from "./real_data";
 
 export const INITIAL_AGENTS: RosterAgent[] = REAL_AGENTS;
 
@@ -285,11 +285,13 @@ export const INITIAL_JOBS: UiJob[] = [
   },
 ];
 
+export type UiTaskStatus = "to_plan" | "planning" | "planned" | "in_progress" | "done";
+
 export interface UiTask {
   id: string;
   seq: number;
   title: string;
-  status: "pending" | "in_progress" | "done";
+  status: UiTaskStatus;
   assignee: string;
   priority: "critical" | "high" | "normal" | "low";
   sector: string;
@@ -298,17 +300,26 @@ export interface UiTask {
   gates?: string[];
   activeJobId?: string;
   tags: string[];
+  /** Refs (#seq) que bloqueiam o início desta task. */
+  dependsOn?: string[];
   description?: string;
+  createdAt?: string;
+  /** Derivado: há aprovação pendente vinculada (destaque vermelho em Em execução). */
+  awaitingApproval?: boolean;
+  /** Derivado: task concluída com gate de alteração/homologação pendente. */
+  pendingHomologation?: boolean;
+  pendingApprovalId?: string;
 }
 
-export const INITIAL_TASKS: UiTask[] = REAL_TASKS;
+/** Bootstrap vazio — a verdade vem do backend via syncTasks (sem mesclar mocks). */
+export const INITIAL_TASKS: UiTask[] = [];
 
 export interface UiApproval {
   id: string;
   title: string;
   agentId: string;
   agentName: string;
-  type: "authorization" | "checkpoint" | "review";
+  type: "authorization" | "checkpoint" | "review" | "alteracao";
   status: "pending" | "approved" | "rejected";
   requestedAt: string;
   description: string;
@@ -404,8 +415,11 @@ export async function syncLiveJobs() {
         uniqueJobs.set(bj.id, bj);
       }
 
+      const currentJobs = jobs();
+      const currentJobsMap = new Map(currentJobs.map((j) => [j.id, j]));
+      let hasAnyChange = false;
 
-      const mappedJobs: UiJob[] = Array.from(uniqueJobs.values()).map((bj) => {
+      const reconciledJobs: UiJob[] = Array.from(uniqueJobs.values()).map((bj) => {
         const linkedTask = bj.task_id ? taskMap.get(bj.task_id) : undefined;
         const taskSeq = linkedTask?.seq;
         const taskTitle = linkedTask?.title;
@@ -439,24 +453,87 @@ export async function syncLiveJobs() {
             ? priorityValue
             : "normal";
 
+        const agentName = ag ? ag.name : (bj.agent_id || "Paula PM");
+        const model = bj.model_name || "Fable";
+        const effort = bj.effort || "Máximo";
+        const cost = 0.15;
+        const ceiling = 2.0;
+        const startedAt = execTime || "—";
+        const taskId = bj.task_id || undefined;
+
+        const existing = currentJobsMap.get(bj.id);
+        if (existing) {
+          // Check if any visual or state properties changed
+          const isIdentical =
+            existing.status === uiStatus &&
+            existing.progress === progress &&
+            existing.title === jobTitle &&
+            existing.agentName === agentName &&
+            existing.priority === priority &&
+            existing.startedAt === startedAt &&
+            existing.model === model &&
+            existing.effort === effort &&
+            existing.cost === cost &&
+            existing.ceiling === ceiling &&
+            existing.taskId === taskId &&
+            existing.taskSeq === taskSeq &&
+            existing.taskTitle === taskTitle;
+
+          if (isIdentical) {
+            // Retain exact existing object reference to prevent unmounting/remounting DOM nodes in SolidJS
+            return existing;
+          }
+
+          // Properties changed - preserve accumulated log history and append transition if status changed
+          hasAnyChange = true;
+          const updatedLogs = [...existing.log];
+          if (existing.status !== uiStatus) {
+            updatedLogs.push([
+              execTime || "agora",
+              uiStatus === "failed" ? "error" : uiStatus === "completed" ? "success" : "info",
+              `Status: ${bj.status}`,
+            ]);
+          }
+
+          return {
+            ...existing,
+            title: jobTitle,
+            agentName,
+            status: uiStatus,
+            priority,
+            progress,
+            startedAt,
+            model,
+            effort,
+            cost,
+            ceiling,
+            taskId,
+            taskSeq,
+            taskTitle,
+            log: updatedLogs,
+          };
+        }
+
+        // New job entry
+        hasAnyChange = true;
         return {
           id: bj.id,
           title: jobTitle,
-          agentName: ag ? ag.name : (bj.agent_id || "Paula PM"),
+          agentName,
           status: uiStatus,
           priority,
           progress,
-          startedAt: execTime || "—",
-          model: bj.model_name || "Fable",
-          effort: bj.effort || "Máximo",
-          cost: 0.15,
-          ceiling: 2.0,
-          taskId: bj.task_id || undefined,
+          startedAt,
+          model,
+          effort,
+          cost,
+          ceiling,
+          taskId,
           taskSeq,
           taskTitle,
           log: [
             [
-              "agora",
+              execTime || "agora",
               uiStatus === "failed" ? "error" : uiStatus === "completed" ? "success" : "info",
               `Status: ${bj.status}`,
             ],
@@ -464,7 +541,15 @@ export async function syncLiveJobs() {
         };
       });
 
-      setJobs(mappedJobs);
+      // Avoid notifying signal if array contents and references are identical
+      const isArrayUnchanged =
+        !hasAnyChange &&
+        reconciledJobs.length === currentJobs.length &&
+        reconciledJobs.every((rj, idx) => rj === currentJobs[idx]);
+
+      if (!isArrayUnchanged) {
+        setJobs(reconciledJobs);
+      }
     } else {
       // If backend returns empty, clear jobs to avoid showing stale mocks
       setJobs([]);
@@ -474,79 +559,113 @@ export async function syncLiveJobs() {
   }
 }
 
-// Delta sync: fetch only tasks updated since last sync
-let _lastTaskSync: string | undefined = undefined;
+function mapApiStatus(raw: string | null | undefined): UiTaskStatus {
+  switch (raw) {
+    case "to_plan":
+    case "planning":
+    case "planned":
+    case "in_progress":
+    case "done":
+      return raw;
+    case "pending":
+    case "todo":
+      return "to_plan";
+    case "queued":
+      return "planned";
+    case "completed":
+    case "succeeded":
+      return "done";
+    default:
+      return "to_plan";
+  }
+}
 
+/** Full replace a partir do backend — evita cards fantasma de REAL_TASKS. */
 export async function syncTasks() {
   try {
-    const backendTasks = await api.listTasks(
-      _lastTaskSync ? { updated_since: _lastTaskSync } : undefined
-    );
-    if (backendTasks && backendTasks.length > 0) {
-      const curAgents = agents();
-      const curTasks = tasks();
-      const taskMap = new Map(curTasks.map((t) => [t.id, t]));
+    const backendTasks = await api.listTasks();
+    const curAgents = agents();
+    const pendingAps = approvals().filter((a) => a.status === "pending" && a.taskId);
 
-      for (const t of backendTasks) {
-        const ag = curAgents.find((a) => a.id === t.assignee_agent_id);
-        const mapped: UiTask = {
-          id: t.id,
-          seq: t.seq || 0,
-          title: t.title,
-          status: t.status === "in_progress" ? "in_progress" : t.status === "done" ? "done" : "pending",
-          assignee: ag ? ag.name : "Agente",
-          priority: t.priority === "critical" || t.priority === "high" || t.priority === "normal" || t.priority === "low" ? t.priority : "normal",
-          sector: t.sector || "Operação",
-          escalation: t.escalation || undefined,
-          handoffs: Array.isArray(t.handoffs) ? t.handoffs : t.handoffs ? [String(t.handoffs)] : undefined,
-          gates: Array.isArray(t.gates) ? t.gates : t.gates ? [String(t.gates)] : undefined,
-          activeJobId: t.active_job_id || undefined,
-          tags: Array.isArray(t.tags) ? t.tags : t.tags ? [String(t.tags)] : [],
-          description: t.description || undefined,
-        };
-        taskMap.set(t.id, mapped);
+    const mapped: UiTask[] = (backendTasks || []).map((t) => {
+      const ag = curAgents.find((a) => a.id === t.assignee_agent_id);
+      const linkedAp = pendingAps.find((a) => a.taskId === t.id);
+      const status = mapApiStatus(t.status);
+      const tags = Array.isArray(t.tags) ? t.tags.map(String) : t.tags ? [String(t.tags)] : [];
+      let dependsOn: string[] = [];
+      if (Array.isArray(t.depends_on) && t.depends_on.length) {
+        dependsOn = t.depends_on.map((d) => String(d).replace(/^#/, ""));
+      } else {
+        dependsOn = tags
+          .filter((tag) => tag.startsWith("depends:#"))
+          .map((tag) => tag.slice("depends:#".length));
       }
+      const isAlteracao =
+        Boolean(linkedAp) &&
+        (linkedAp!.type === "alteracao" || String(linkedAp!.id).startsWith("ap-alt"));
+      // Vermelho em Em execução: gate humano mid-flight (Opção A)
+      const awaitingApproval =
+        Boolean(linkedAp) && (status === "in_progress" || status === "planning");
+      return {
+        id: t.id,
+        seq: t.seq || 0,
+        title: t.title,
+        status,
+        assignee: ag ? ag.name : t.assignee_agent_id === "pm-projetos" ? "Paula PM" : "Agente",
+        priority:
+          t.priority === "critical" || t.priority === "high" || t.priority === "normal" || t.priority === "low"
+            ? t.priority
+            : t.priority === "medium"
+              ? "normal"
+              : "normal",
+        sector: t.sector || "Operação",
+        escalation: t.escalation || undefined,
+        handoffs: Array.isArray(t.handoffs) ? t.handoffs : t.handoffs ? [String(t.handoffs)] : undefined,
+        gates: Array.isArray(t.gates) ? t.gates : t.gates ? [String(t.gates)] : undefined,
+        activeJobId: t.active_job_id || undefined,
+        tags,
+        dependsOn: dependsOn.length ? dependsOn : undefined,
+        description: t.description || undefined,
+        createdAt: t.created_at || undefined,
+        awaitingApproval,
+        pendingHomologation: status === "done" && isAlteracao,
+        pendingApprovalId: linkedAp?.id,
+      };
+    });
 
-      setTasks(Array.from(taskMap.values()));
-      // Update watermark to latest updated_at from response
-      const maxUpdated = backendTasks.reduce((max, t) => {
-        return t.updated_at > max ? t.updated_at : max;
-      }, _lastTaskSync || "");
-      if (maxUpdated) _lastTaskSync = maxUpdated;
-    } else if (!_lastTaskSync) {
-      // First sync returned empty — nothing to do
-    }
+    setTasks(mapped);
   } catch (err) {
     console.warn("Could not sync tasks:", err);
   }
 }
 
-// Fetch live approvals from backend and merge
+// Fetch live approvals from backend — always replace (inclui lista vazia)
 export async function syncApprovals() {
   try {
     const backendApprovals = await api.listApprovals();
-    if (backendApprovals && backendApprovals.length > 0) {
-      const curAgents = agents();
-      const mappedApprovals: UiApproval[] = backendApprovals.map((a) => {
-        const ag = curAgents.find((ag) => ag.id === a.requester_agent_id);
-        return {
-          id: a.id,
-          title: a.title || `Aprovação ${a.id}`,
-          agentId: a.requester_agent_id || "ag-01",
-          agentName: ag ? ag.name : "Agente",
-          type: (a.type as any) || "authorization",
-          status: (a.status as any) || "pending",
-          requestedAt: a.created_at ? new Date(a.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "—",
-          description: a.description || "",
-          impact: (a.impact as any) || "medium",
-          taskId: a.task_id || undefined,
-          reason: a.reason || undefined,
-          onApproveText: a.on_approve_text || undefined,
-          onRejectText: a.on_reject_text || undefined,
-        };
-      });
-      setApprovals(mappedApprovals);
-    }
+    const list = Array.isArray(backendApprovals) ? backendApprovals : [];
+    const curAgents = agents();
+    const mappedApprovals: UiApproval[] = list.map((a) => {
+      const ag = curAgents.find((ag) => ag.id === a.requester_agent_id);
+      return {
+        id: a.id,
+        title: a.title || `Aprovação ${a.id}`,
+        agentId: a.requester_agent_id || "ag-01",
+        agentName: ag ? ag.name : "Agente",
+        type: (a.type as any) || "authorization",
+        status: (a.status as any) || "pending",
+        requestedAt: a.created_at
+          ? new Date(a.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+          : "—",
+        description: a.description || "",
+        impact: (a.impact as any) || "medium",
+        taskId: a.task_id || undefined,
+        reason: a.reason || undefined,
+        onApproveText: a.on_approve_text || undefined,
+        onRejectText: a.on_reject_text || undefined,
+      };
+    });
+    setApprovals(mappedApprovals);
   } catch (err) {
     console.warn("Could not sync approvals:", err);
   }
@@ -565,19 +684,48 @@ export async function syncCockpit() {
 }
 
 // Persistent task status move
-export async function moveTaskPersistent(taskId: string, newStatus: "pending" | "in_progress" | "done") {
-  // Optimistic update
+export async function moveTaskPersistent(taskId: string, newStatus: UiTaskStatus) {
   setTasks((prev) =>
     prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
   );
   try {
     await api.updateTaskStatus(taskId, newStatus);
-    showToast(`Task movida para ${newStatus === "done" ? "Concluído" : newStatus === "in_progress" ? "Em andamento" : "Pendente"}`);
+    const labels: Record<UiTaskStatus, string> = {
+      to_plan: "A planejar",
+      planning: "Planejando…",
+      planned: "Planejado",
+      in_progress: "Em execução",
+      done: "Concluído",
+    };
+    showToast(`Task movida para ${labels[newStatus]}`);
+    await syncApprovals();
+    await syncTasks();
     syncCockpit();
+    if (newStatus === "done") {
+      const gate = approvals().find(
+        (a) =>
+          a.status === "pending" &&
+          a.taskId === taskId &&
+          (a.type === "alteracao" || a.id.startsWith("ap-alt"))
+      );
+      if (gate) {
+        setSelectedApprovalId(gate.id);
+        showToast(
+          "Gate de alteração criado — abra Aprovações ou Alterações para homologar.",
+          "Homologação pendente",
+          "warning"
+        );
+      }
+    }
   } catch (err) {
     console.error("Failed to persist task status:", err);
-    showToast("Erro ao sincronizar com banco de dados", "Atenção", "error");
-    syncTasks(); // rollback
+    const { status, detail } = parseApiError(err);
+    showToast(
+      detail || "Erro ao sincronizar com banco de dados",
+      status === 409 ? "Bloqueio / Gate" : "Atenção",
+      "error"
+    );
+    await syncTasks();
   }
 }
 
@@ -599,11 +747,13 @@ export async function decideApprovalPersistent(
       "Decisão registrada",
       decision === "approve" ? "success" : "warning"
     );
+    await syncApprovals();
+    await syncTasks();
     syncCockpit();
   } catch (err) {
     console.error("Failed to persist approval decision:", err);
     showToast("Erro ao registrar decisão no banco", "Atenção", "error");
-    syncApprovals(); // rollback
+    await syncApprovals(); // rollback
   }
 }
 

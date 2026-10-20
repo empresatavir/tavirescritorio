@@ -89,6 +89,29 @@ export interface JobEvent {
   created_at: string;
 }
 
+export interface JobArtifact {
+  id: string;
+  name: string;
+  artifact_type: string;
+  size_bytes?: number | null;
+  path?: string;
+  qa_status?: string;
+  job_id?: string | null;
+}
+
+export interface JobArtifactContent {
+  name: string;
+  content: string;
+  truncated?: boolean;
+  job_id?: string | null;
+}
+
+export interface TaskArtifactBundle {
+  task_id: string;
+  job_id?: string | null;
+  artifacts: JobArtifact[];
+}
+
 export interface CreateJobRequest {
   task_id?: string | null;
   project_id?: string | null;
@@ -98,6 +121,8 @@ export interface CreateJobRequest {
   model_provider?: string | null;
   command?: string;
   timeout?: number;
+  /** planning | execution | manual */
+  origin?: string;
 }
 
 export interface EngineeringTemplate {
@@ -151,6 +176,94 @@ export interface FactoryProject {
   }> | null;
   keys?: Record<string, string> | null;
   event_log?: Array<[string, string, string]> | null;
+  local_path?: string | null;
+}
+
+export interface FactoryStageInstance {
+  id: string;
+  stage_def_id: string;
+  code: string;
+  title: string;
+  sort_order: number;
+  agent?: string | null;
+  agent_role?: string | null;
+  is_gate: boolean;
+  topology?: string | null;
+  status: "queued" | "running" | "awaiting_gate" | "done" | "failed" | "blocked" | "skipped";
+  expected_artifacts?: string[];
+  artifact_hash?: string | null;
+  started_at?: string | null;
+  finished_at?: string | null;
+}
+
+export interface FactoryLedgerEntry {
+  id: string;
+  at?: string;
+  kind?: string;
+  action?: string;
+  stage_def_id?: string;
+  title?: string;
+  actor?: string;
+  note?: string | null;
+}
+
+export interface FactoryRunPayload {
+  id: string;
+  project_id: string;
+  template_code: string;
+  status: string;
+  current_stage_id?: string | null;
+  workspace_path?: string | null;
+  meta?: Record<string, unknown>;
+  ledger?: FactoryLedgerEntry[];
+  stages: FactoryStageInstance[];
+  stages_done?: number;
+  total_stages?: number;
+  last_ledger?: FactoryLedgerEntry;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+export interface FactoryStageActionBody {
+  note?: string;
+  actor?: string;
+  artifact_hash?: string;
+}
+
+export interface CreateProjectPayload {
+  name: string;
+  company?: string;
+  /** Pasta raiz do workspace: interno → tavir-interno · externo → tavir-exterrno */
+  ownership: "interno" | "externo";
+  stack_frontend?: string;
+  stack_backend?: string;
+  stack_database?: string;
+  track: "zero" | "pronto";
+  context_files?: string[];
+  /** @deprecated use design_system_files */
+  design_system_file?: string;
+  design_system_files?: string[];
+  template_category?: "lp" | "of" | "sy";
+}
+
+export interface ProjectItem {
+  id: string;
+  slug: string;
+  name: string;
+  client?: string | null;
+  company?: string | null;
+  stack?: string | null;
+  template_code?: string | null;
+  stages_done: number;
+  total_stages: number;
+  status: string;
+  repo_url?: string | null;
+  local_path?: string | null;
+  deploy_target?: string | null;
+  description?: string | null;
+  files?: Record<string, any> | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Persona {
@@ -329,6 +442,7 @@ export interface ApiTask {
   handoffs?: any;
   gates?: any;
   tags?: any;
+  depends_on?: Array<string | number> | null;
   active_job_id?: string | null;
   created_at: string;
   updated_at: string;
@@ -442,6 +556,33 @@ export interface Proposal {
   updated_at?: string;
 }
 
+export class ApiError extends Error {
+  status: number;
+  detail: string;
+  constructor(status: number, detail: string) {
+    super(`API ${status}: ${detail}`);
+    this.name = "ApiError";
+    this.status = status;
+    this.detail = detail;
+  }
+}
+
+export function parseApiError(err: unknown): { status: number; detail: string } {
+  if (err instanceof ApiError) return { status: err.status, detail: err.detail };
+  const msg = err instanceof Error ? err.message : String(err);
+  const m = msg.match(/API (\d+):\s*([\s\S]*)/);
+  if (!m) return { status: 0, detail: msg };
+  let detail = m[2].trim();
+  try {
+    const j = JSON.parse(detail);
+    if (typeof j?.detail === "string") detail = j.detail;
+    else if (Array.isArray(j?.detail)) detail = j.detail.map((d: any) => d.msg || JSON.stringify(d)).join("; ");
+  } catch {
+    /* texto puro */
+  }
+  return { status: Number(m[1]), detail };
+}
+
 async function fetchJson<T>(path: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: { "Content-Type": "application/json" },
@@ -449,8 +590,16 @@ async function fetchJson<T>(path: string, options?: RequestInit): Promise<T> {
   });
   if (!response.ok) {
     const body = await response.text().catch(() => "");
-    throw new Error(`API ${response.status}: ${body || response.statusText}`);
+    let detail = body || response.statusText;
+    try {
+      const j = JSON.parse(body);
+      if (typeof j?.detail === "string") detail = j.detail;
+    } catch {
+      /* keep raw */
+    }
+    throw new ApiError(response.status, detail);
   }
+  if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
 }
 
@@ -462,11 +611,12 @@ export const api = {
   getCockpitSummary: () => fetchJson<CockpitSummary>("/api/v1/cockpit/summary"),
 
   // Tasks
-  listTasks: (query?: { status?: string; priority?: string; updated_since?: string }) => {
+  listTasks: (query?: { status?: string; priority?: string; updated_since?: string; since?: string }) => {
     const params = new URLSearchParams();
     if (query?.status) params.set("status", query.status);
     if (query?.priority) params.set("priority", query.priority);
-    if (query?.updated_since) params.set("updated_since", query.updated_since);
+    if (query?.since) params.set("since", query.since);
+    else if (query?.updated_since) params.set("since", query.updated_since);
     const qs = params.toString();
     return fetchJson<ApiTask[]>(`/api/v1/tasks/${qs ? `?${qs}` : ""}`);
   },
@@ -475,11 +625,48 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify({ status }),
     }),
+  updateTask: (
+    taskId: string,
+    data: {
+      title?: string;
+      description?: string | null;
+      status?: string;
+      priority?: string;
+      sector?: string | null;
+      tags?: any;
+      handoffs?: any;
+      gates?: any;
+    }
+  ) =>
+    fetchJson<ApiTask>(`/api/v1/tasks/${taskId}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
   createTask: (data: any) =>
     fetchJson<ApiTask>("/api/v1/tasks/", {
       method: "POST",
       body: JSON.stringify(data),
     }),
+  uploadTaskAttachment: async (taskId: string, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    const response = await fetch(`${BASE_URL}/api/v1/tasks/${taskId}/attachments`, {
+      method: "POST",
+      body: form,
+    });
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      let detail = body || response.statusText;
+      try {
+        const j = JSON.parse(body);
+        if (typeof j?.detail === "string") detail = j.detail;
+      } catch {
+        /* keep */
+      }
+      throw new ApiError(response.status, detail);
+    }
+    return response.json() as Promise<ApiTask>;
+  },
 
   // Approvals
   listApprovals: (query?: { status?: string; impact?: string }) => {
@@ -552,7 +739,12 @@ export const api = {
     }),
 
   // Projects
-  listProjects: () => fetchJson<Project[]>("/api/v1/projects/"),
+  listProjects: () => fetchJson<ProjectItem[]>("/api/v1/projects/"),
+  createProject: (payload: CreateProjectPayload) =>
+    fetchJson<ProjectItem>("/api/v1/projects/", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
 
   // Jobs
   listJobs: () => fetchJson<Job[]>("/api/v1/jobs/"),
@@ -562,10 +754,24 @@ export const api = {
       body: JSON.stringify(req),
     }),
   getJob: (jobId: string) => fetchJson<Job>(`/api/v1/jobs/${jobId}`),
+  pauseJob: (jobId: string) =>
+    fetchJson<Job>(`/api/v1/jobs/${jobId}/pause`, { method: "POST" }),
   retryJob: (jobId: string) =>
     fetchJson<Job>(`/api/v1/jobs/${jobId}/retry`, { method: "POST" }),
   cancelJob: (jobId: string) =>
     fetchJson<Job>(`/api/v1/jobs/${jobId}/cancel`, { method: "POST" }),
+  listJobArtifacts: (jobId: string) =>
+    fetchJson<JobArtifact[]>(`/api/v1/jobs/${jobId}/artifacts`),
+  getJobArtifactContent: (jobId: string, name: string) =>
+    fetchJson<JobArtifactContent>(
+      `/api/v1/jobs/${jobId}/artifacts/${encodeURIComponent(name)}/content`
+    ),
+  listTaskArtifacts: (taskId: string) =>
+    fetchJson<TaskArtifactBundle>(`/api/v1/tasks/${taskId}/artifacts`),
+  getTaskArtifactContent: (taskId: string, name: string) =>
+    fetchJson<JobArtifactContent>(
+      `/api/v1/tasks/${taskId}/artifacts/${encodeURIComponent(name)}/content`
+    ),
 
   // Factory
   listTemplates: () => fetchJson<EngineeringTemplate[]>("/api/v1/factory/templates"),
@@ -587,6 +793,35 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ pendency_id: pendencyId, note }),
     }),
+
+  getFactoryRun: (projectId: string) =>
+    fetchJson<FactoryRunPayload>(`/api/v1/factory/projects/${projectId}/run`),
+
+  authorizeFactoryStage: (projectId: string, stageDefId: string, body?: FactoryStageActionBody) =>
+    fetchJson<FactoryRunPayload>(
+      `/api/v1/factory/projects/${projectId}/stages/${encodeURIComponent(stageDefId)}/authorize`,
+      { method: "POST", body: JSON.stringify(body ?? {}) },
+    ),
+
+  completeFactoryStage: (projectId: string, stageDefId: string, body?: FactoryStageActionBody) =>
+    fetchJson<FactoryRunPayload>(
+      `/api/v1/factory/projects/${projectId}/stages/${encodeURIComponent(stageDefId)}/complete`,
+      { method: "POST", body: JSON.stringify(body ?? {}) },
+    ),
+
+  failFactoryStage: (projectId: string, stageDefId: string, body?: FactoryStageActionBody) =>
+    fetchJson<FactoryRunPayload>(
+      `/api/v1/factory/projects/${projectId}/stages/${encodeURIComponent(stageDefId)}/fail`,
+      { method: "POST", body: JSON.stringify(body ?? {}) },
+    ),
+
+  getFactoryLedger: (projectId: string) =>
+    fetchJson<{
+      project_id: string;
+      run_id: string;
+      ledger: FactoryLedgerEntry[];
+      event_log: Array<[string, string, string]>;
+    }>(`/api/v1/factory/projects/${projectId}/ledger`),
 
   // Studio
   listPersonas: () => fetchJson<Persona[]>("/api/v1/studio/personas"),
@@ -737,6 +972,75 @@ export const api = {
           }, 2000);
         }
         onError?.(new Error("SSE connection lost"));
+      };
+
+      controller.signal.addEventListener("abort", () => source.close());
+    };
+
+    connect();
+    return controller;
+  },
+
+  /**
+   * SSE da esteira da Fábrica (B2).
+   * Eventos nomeados: run.snapshot | event.appended | stage.changed | run.completed
+   * Valida occurred_at antes de formatar data no consumidor.
+   */
+  subscribeFactoryRunEvents(
+    runId: string,
+    handlers: {
+      onSnapshot?: (data: Record<string, unknown>) => void;
+      onEventAppended?: (data: Record<string, unknown>) => void;
+      onStageChanged?: (data: Record<string, unknown>) => void;
+      onRunCompleted?: (data: Record<string, unknown>) => void;
+      onError?: (error: Error) => void;
+    },
+  ): AbortController {
+    const controller = new AbortController();
+    const url = `${BASE_URL}/api/v1/factory/runs/${encodeURIComponent(runId)}/events`;
+
+    const parse = (msg: MessageEvent): Record<string, unknown> | null => {
+      try {
+        return JSON.parse(msg.data) as Record<string, unknown>;
+      } catch {
+        return null;
+      }
+    };
+
+    const connect = () => {
+      const source = new EventSource(url);
+
+      source.addEventListener("run.snapshot", (msg) => {
+        const data = parse(msg as MessageEvent);
+        if (data) handlers.onSnapshot?.(data);
+      });
+      source.addEventListener("event.appended", (msg) => {
+        const data = parse(msg as MessageEvent);
+        if (!data) return;
+        const at = data.occurred_at;
+        if (at != null && (typeof at !== "string" || Number.isNaN(Date.parse(at)))) {
+          // ignora timestamp inválido; ainda entrega o evento
+        }
+        handlers.onEventAppended?.(data);
+      });
+      source.addEventListener("stage.changed", (msg) => {
+        const data = parse(msg as MessageEvent);
+        if (data) handlers.onStageChanged?.(data);
+      });
+      source.addEventListener("run.completed", (msg) => {
+        const data = parse(msg as MessageEvent);
+        if (data) handlers.onRunCompleted?.(data);
+        source.close();
+      });
+
+      source.onerror = () => {
+        source.close();
+        if (!controller.signal.aborted) {
+          setTimeout(() => {
+            if (!controller.signal.aborted) connect();
+          }, 2000);
+        }
+        handlers.onError?.(new Error("Factory SSE connection lost"));
       };
 
       controller.signal.addEventListener("abort", () => source.close());

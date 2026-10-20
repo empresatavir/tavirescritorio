@@ -45,6 +45,20 @@ This Skill is not needed in the following situations:
 
 **Decision criteria**: If the task will change how a feature **looks, feels, moves, or is interacted with**, this Skill should be used.
 
+## Canonical engineering & visual sources (TAVIR)
+
+Pair this skill with the canons below — do not treat them as optional footnotes.
+
+| Source | When | Skill / standard |
+|--------|------|------------------|
+| [bulletproof-react](https://github.com/alan2207/bulletproof-react) | App structure, features, API layer, state, testing, security, performance | `frontend-engineering-canon` |
+| [shadcn/ui](https://github.com/shadcn-ui/ui) | Open Code (Radix **Primitives** + Tailwind); theme to brand — never ship defaults | `ui-styling` + stack `shadcn` |
+| [Radix Themes](https://github.com/radix-ui/themes) | Pre-styled React DS + `<Theme>` API; **alternative** to shadcn (not both); map accent/gray to brand | `frontend-engineering-canon` §3.C · `ui-styling` Path B |
+| [Guia do Frontend](https://github.com/arthurspk/guiadofrontend) | Ecosystem map for stack choices (anti-hype) | CTO / `frontend-engineering-canon` §4 |
+| [Dribbble](https://dribbble.com/) + Awwwards / Land-book | Visual direction for landings & brand UI — extract Reference Cards, do not plagiarize | `visual-reference-absorb` + `WEB_REFERENCE_STANDARD` |
+
+**Workflow tip:** design-system search (Step 2) → if visual ambition is high, absorb 3–7 refs → then implement. For marketing anti-slop, also load `design-taste-frontend`.
+
 ## Rule Categories by Priority
 
 *For human/AI reference: follow priority 1→10 to decide which rule category to focus on first; use `--domain <Domain>` to query details when needed. Scripts do not read this table.*

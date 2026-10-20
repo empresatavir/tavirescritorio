@@ -67,3 +67,15 @@ htmlcov/
 *.log
 backend/workspaces/
 .work/
+
+# Local agent / smoke workspaces (não versionar)
+tavir-interno/
+tavir-exterrno/
+cline_log.txt
+cline_log_*.txt
+nul
+
+# Serena local cache
+.serena/cache/
+.serena/memories/
+.serena/project.local.yml

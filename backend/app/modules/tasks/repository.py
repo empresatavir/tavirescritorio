@@ -25,6 +25,8 @@ class TaskRepository:
         if project_id:
             query = query.where(Task.project_id == project_id)
         if updated_since:
+            if updated_since.tzinfo is not None:
+                updated_since = updated_since.replace(tzinfo=None)
             query = query.where(Task.updated_at > updated_since)
 
         query = query.order_by(Task.seq.asc().nullslast(), Task.created_at.desc())

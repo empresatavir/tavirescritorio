@@ -16,6 +16,8 @@ Comprehensive skill for creating beautiful, accessible user interfaces combining
 
 - shadcn/ui: https://ui.shadcn.com/llms.txt
 - Tailwind CSS: https://tailwindcss.com/docs
+- Radix Themes: https://www.radix-ui.com/themes/docs · https://github.com/radix-ui/themes
+- Radix Primitives (unstyled): https://www.radix-ui.com/primitives
 
 ## When to Use This Skill
 
@@ -34,10 +36,11 @@ Use when:
 
 ### Component Layer: shadcn/ui
 - Pre-built accessible components via Radix UI primitives
-- Copy-paste distribution model (components live in your codebase)
+- Copy-paste / Open Code distribution (components live in your codebase — you own them)
 - TypeScript-first with full type safety
 - Composable primitives for complex UIs
 - CLI-based installation and management
+- Canonical docs: https://ui.shadcn.com/docs · https://ui.shadcn.com/llms.txt · https://github.com/shadcn-ui/ui
 
 ### Styling Layer: Tailwind CSS
 - Utility-first CSS framework
@@ -53,9 +56,30 @@ Use when:
 - Minimal text, maximum visual impact
 - Systematic patterns and refined aesthetics
 
+## TAVIR hard rules (read before `shadcn add` or Themes install)
+
+1. **Decide path first (parecer CTO):** **shadcn/ui** (Open Code + Tailwind) **ou**
+   **Radix Themes** (`@radix-ui/themes` + `<Theme>`). Never both in the same React tree.
+   See `frontend-engineering-canon` §3.
+2. **Ownership (shadcn path):** edit component source in-repo. Do not wrap defaults forever.
+3. **Never ship factory defaults.** Theme to brand (Marina / `tokens.md`) before delivery —
+   whether CSS variables (shadcn) or `accentColor` / `grayColor` / `radius` / `appearance`
+   (Themes). Default indigo/crimson Themes look or zinc shadcn look = failed handoff.
+4. **One design system per project.** Do not mix shadcn, Radix Themes, Material, Fluent, Carbon.
+5. **Do not confuse stacks:** shadcn uses **Radix Primitives** (unstyled). Radix **Themes**
+   is a separate pre-styled package. Installing Themes does not replace `npx shadcn add`.
+6. **Architecture:** feature modules per `frontend-engineering-canon`
+   ([bulletproof-react](https://github.com/alan2207/bulletproof-react)). Shared UI stays transversal.
+7. **Marketing vs product:** landings follow `design-taste-frontend` + optional
+   `visual-reference-absorb`. Component libs are for product chrome — not art direction.
+8. **Escritório TAVIR (SolidJS):** neither shadcn nor Radix Themes — native tokens only.
+9. **Themes-specific:** no `ThemePanel` in production; test light/dark; prefer Themes layout
+   primitives (`Flex`/`Grid`/`Box`) consistently if that path was chosen.
+10. **Stack map:** [Guia do Frontend](https://github.com/arthurspk/guiadofrontend) — demand first.
+
 ## Quick Start
 
-### Component + Styling Setup
+### Path A — shadcn/ui + Tailwind (TAVIR default for product)
 
 **Install shadcn/ui with Tailwind:**
 ```bash
@@ -92,6 +116,33 @@ export function Dashboard() {
   )
 }
 ```
+
+### Path B — Radix Themes (when CTO parecer chooses Theme API)
+
+```bash
+npm install @radix-ui/themes
+```
+
+```tsx
+// app root (React / Next only)
+import "@radix-ui/themes/styles.css";
+import { Theme } from "@radix-ui/themes";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="pt-BR">
+      <body>
+        <Theme accentColor="teal" grayColor="slate" radius="medium" appearance="dark">
+          {children}
+        </Theme>
+      </body>
+    </html>
+  );
+}
+```
+
+Map `accentColor` / `grayColor` / `radius` / `appearance` from Marina tokens before any screen
+work. Docs: https://www.radix-ui.com/themes/docs/theme/overview
 
 ### Alternative: Tailwind-Only Setup
 

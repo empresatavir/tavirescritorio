@@ -7,7 +7,7 @@ import { Aprovacoes } from "./features/aprovacoes/Aprovacoes";
 import { Agentes } from "./features/agentes/Agentes";
 import { Chat } from "./features/chat/Chat";
 import { Studio } from "./features/studio/Studio";
-import { Fabrica } from "./features/fabrica/Fabrica";
+import { Fabrica, FabricaProjectConsole } from "./features/fabrica/Fabrica";
 import { Integracoes } from "./features/integracoes/Integracoes";
 import { Cerebro } from "./features/cerebro/Cerebro";
 import { Mapa } from "./features/mapa/Mapa";
@@ -38,6 +38,7 @@ export default function App() {
       {/* Módulos */}
       <Route path="/studio" component={Studio} />
       <Route path="/fabrica" component={Fabrica} />
+      <Route path="/fabrica/:projectId" component={FabricaProjectConsole} />
       <Route path="/flow" component={() => <GenericPageView pageId="flow" />} />
       <Route path="/edicao" component={() => <GenericPageView pageId="edicao" />} />
 

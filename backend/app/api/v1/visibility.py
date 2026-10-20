@@ -492,6 +492,14 @@ async def list_skills_catalog(session: AsyncSession = Depends(get_session)):
             "trigger_type": "Ao capturar nova referência",
             "agents": ["Pesquisador", "Redator", "Documentador"],
         },
+        {
+            "id": "sk-06",
+            "name": "TAVIR Tool Analyzer & Avaliação de Integrações",
+            "description": "Análise profunda de ferramentas de terceiros (repositórios, sites, prints, vídeos) e geração de parecer de absorção (A/B/C/D).",
+            "origin": ".agents/skills/tavir-tool-analyzer",
+            "trigger_type": "Ao receber link, print ou vídeo de ferramenta",
+            "agents": ["Maicon", "Arquiteto", "CTO"],
+        },
     ]
 
     return [

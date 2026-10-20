@@ -38,6 +38,19 @@ If you can confidently infer from context, **do not ask**. Just declare the desi
 ### 0.D Anti-Default Discipline
 Do not default to: AI-purple gradients, centered hero over dark mesh, three equal feature cards, generic glassmorphism on everything, infinite-loop micro-animations everywhere, Inter + slate-900. These are the LLM defaults. Reach past them deliberately based on the design read.
 
+### 0.E Canonical references (TAVIR) — use with intent
+When the brief needs **external visual direction** or the page risks looking templated, run `visual-reference-absorb` first (Dribbble / Awwwards / live sites → Reference Card). Do not invent "Dribbble vibes" from memory.
+
+| Source | Role here |
+|--------|-----------|
+| Dribbble + Awwwards (via `visual-reference-absorb` + `WEB_REFERENCE_STANDARD`) | Structural inspiration: layout family, type scale, density, material, motion cues. Never copy assets. |
+| [shadcn/ui](https://ui.shadcn.com/docs) | Product primitives only when the surface needs forms/dialogs/tables. **Never ship registry defaults** — theme to brand tokens. Marketing heroes still follow this skill's anti-slop rules. |
+| [Radix Themes](https://www.radix-ui.com/themes/docs) | Optional **product** shell when CTO chose Themes over shadcn. Configure `<Theme>` to brand first. Do **not** use Themes as a substitute for art-directed landings; do not mix with shadcn. |
+| [bulletproof-react](https://github.com/alan2207/bulletproof-react) | Out of scope for pure marketing HTML. When the landing lives inside a real React/Next app, structure features per `frontend-engineering-canon`. |
+| [Guia do Frontend](https://github.com/arthurspk/guiadofrontend) | Stack/ecosystem map for CTO — not an aesthetic brief. |
+
+**Creativity rule:** Reference Cards raise the ceiling; Pre-Flight (Section 14) keeps quality. Steal structure, rewrite brand.
+
 ---
 
 ## 1. THE THREE DIALS (Core Configuration)
@@ -95,8 +108,8 @@ Once you have the design read (Section 0) and dials (Section 1), pick the right 
 | Public-sector UK service | `govuk-frontend` | Legally / regulatorily expected |
 | US public-sector / trust-first | `uswds` | Same |
 | Fast local-business / agency MVP | Bootstrap 5.3 | Boring, fast, works |
-| Modern accessible React foundation | `@radix-ui/themes` | Primitives + polished theme |
-| Modern SaaS where you own the components | shadcn/ui (`npx shadcn@latest add ...`) | You own the code, easy to customise; never ship default state |
+| Modern accessible React foundation (pre-styled DS) | `@radix-ui/themes` | Theme API + polished components; map accent/gray to brand; **not** the same as Radix Primitives; do not mix with shadcn |
+| Modern SaaS where you own the components | shadcn/ui (`npx shadcn@latest add ...`) | Open Code on Radix **Primitives** + Tailwind; never ship default state; exclusive vs Themes |
 | Tailwind-based modern SaaS / AI marketing | Tailwind v4 utilities + `dark:` variant | Default for indie + small team builds |
 
 **Honesty rule:** if the brief reads as one of the systems above, install and use the **official** package. Do not recreate its CSS by hand. Do not import a system's tokens but then override 90% of them.

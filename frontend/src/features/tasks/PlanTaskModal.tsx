@@ -1,4 +1,4 @@
-import { type Component, createSignal, createMemo, For, Show, onMount, onCleanup } from "solid-js";
+import { type Component, createSignal, createMemo, createEffect, For, Show, onMount, onCleanup } from "solid-js";
 import { type UiTask } from "../../state/store";
 
 export type EffortLevel = 0 | 1 | 2 | 3 | 4;
@@ -53,6 +53,7 @@ const EFFORT_META: Record<EffortLevel, { label: string; timeout: string; desc: s
 export interface PlanTaskModalProps {
   task: UiTask | null;
   isOpen?: boolean;
+  submitting?: boolean;
   onClose?: () => void;
   onConfirmPlan?: (payload: {
     taskId: string;
@@ -62,7 +63,7 @@ export interface PlanTaskModalProps {
     effortLevel: EffortLevel;
     effortLabel: string;
     orchestrator: string;
-  }) => void;
+  }) => void | Promise<void>;
 }
 
 export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
@@ -70,21 +71,31 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
   const [selectedModel, setSelectedModel] = createSignal<string>("fable");
   const [effort, setEffort] = createSignal<EffortLevel>(4);
   const [showEffortHelp, setShowEffortHelp] = createSignal(false);
+  const [localBusy, setLocalBusy] = createSignal(false);
 
   const currentEffortMeta = createMemo(() => EFFORT_META[effort()]);
   const activeModel = createMemo(() => AI_MODELS.find((m) => m.id === selectedModel()) || AI_MODELS[0]);
+  const busy = () => Boolean(props.submitting || localBusy());
+
+  createEffect(() => {
+    if (props.isOpen) {
+      setSelectedModel("fable");
+      setEffort(4);
+      setShowEffortHelp(false);
+    }
+  });
 
   const handleModelSelect = (model: AIModelOption) => {
     setSelectedModel(model.id);
-    // Se o usuário alternar para outro modelo, atualiza o esforço padrão daquele modelo, mas permite ajuste livre
     setEffort(model.defaultEffort);
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape" && props.onClose) {
+    if (!props.isOpen) return;
+    if (e.key === "Escape" && props.onClose && !busy()) {
       props.onClose();
     }
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && props.task) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && props.task && !busy()) {
       handleConfirm();
     }
   };
@@ -92,17 +103,22 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
   onMount(() => window.addEventListener("keydown", handleKeyDown));
   onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
 
-  const handleConfirm = () => {
-    if (!props.task) return;
-    props.onConfirmPlan?.({
-      taskId: props.task.id,
-      taskSeq: props.task.seq,
-      aiModel: selectedModel(),
-      modelName: activeModel().name,
-      effortLevel: effort(),
-      effortLabel: currentEffortMeta().label,
-      orchestrator: "Paula (Product Manager)",
-    });
+  const handleConfirm = async () => {
+    if (!props.task || busy()) return;
+    setLocalBusy(true);
+    try {
+      await props.onConfirmPlan?.({
+        taskId: props.task.id,
+        taskSeq: props.task.seq,
+        aiModel: selectedModel(),
+        modelName: activeModel().name,
+        effortLevel: effort(),
+        effortLabel: currentEffortMeta().label,
+        orchestrator: "Paula (Product Manager)",
+      });
+    } finally {
+      setLocalBusy(false);
+    }
   };
 
   return (
@@ -172,6 +188,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
 
             <button
               type="button"
+              disabled={busy()}
               onClick={() => props.onClose?.()}
               style={{
                 background: "rgba(11, 18, 32, 0.7)",
@@ -181,7 +198,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                 padding: "3px 10px",
                 "font-family": "var(--font-mono, monospace)",
                 "font-size": "11px",
-                cursor: "pointer",
+                cursor: busy() ? "wait" : "pointer",
                 outline: "none",
                 transition: "all 0.15s ease",
               }}
@@ -539,6 +556,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
           >
             <button
               type="button"
+              disabled={busy()}
               onClick={() => props.onClose?.()}
               style={{
                 background: "transparent",
@@ -548,7 +566,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                 padding: "8px 16px",
                 "font-size": "12px",
                 "font-weight": 500,
-                cursor: "pointer",
+                cursor: busy() ? "wait" : "pointer",
                 outline: "none",
                 transition: "all 0.15s ease",
               }}
@@ -562,6 +580,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
               </span>
               <button
                 type="button"
+                disabled={busy()}
                 onClick={handleConfirm}
                 style={{
                   background: "#B7F34A",
@@ -572,12 +591,13 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                   padding: "8px 20px",
                   "font-size": "12px",
                   "font-weight": 600,
-                  cursor: "pointer",
+                  cursor: busy() ? "wait" : "pointer",
+                  opacity: busy() ? 0.7 : 1,
                   outline: "none",
                   transition: "all 0.15s ease",
                 }}
               >
-                Planejar com Paula
+                {busy() ? "Iniciando…" : "Planejar com Paula"}
               </button>
             </div>
           </div>

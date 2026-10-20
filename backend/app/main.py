@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -19,8 +20,19 @@ from app.api.v1.services import router as services_router
 from app.api.v1.proposals import router as proposals_router
 from app.api.v1.models import router as models_router
 from app.api.v1.integrations import router as integrations_router
+from app.shared.database import ensure_schema_patches
 
-app = FastAPI(title="TAVIR Escritório API", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    try:
+        await ensure_schema_patches()
+    except Exception as exc:
+        print(f"[main] schema patch warning: {exc}")
+    yield
+
+
+app = FastAPI(title="TAVIR Escritório API", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

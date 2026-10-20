@@ -72,3 +72,26 @@ Este arquivo é a fonte primária de conhecimento operacional e regras técnicas
 - **Coluna 1 (Rail):** `56px` fixos, fundo `#070d18`, logo símbolo 28px, ícones 18px, seletor de tema, avatar do CEO.
 - **Coluna 2 (SubNav):** `212px` fixos, fundo `#0f1729`, wordmark TAVIR invertido 96px, categorias e subitens com ícones 15px, rodapé com status de conexões SQLite e MCP.
 - **Coluna 3 (Main):** Header `52px` fixo (`var(--surface-0)`), breadcrumb semântico, pílula de status ao vivo, busca global `Ctrl K` e botão *Iniciar job* Lima, com área de conteúdo em scroll independente.
+
+---
+
+## 8. Fluxo Operacional de Execução de Comandos (Workaround Terminal Sandbox)
+
+> [!IMPORTANT]
+> O terminal sandbox do Cline (`u_run_commands`) **não captura saída direta** de comandos — sempre retorna `"Command completion could not be observed"` com `success: false`, mesmo quando o comando executa corretamente. Este é o fluxo obrigatório para qualquer execução de git, testes, builds ou scripts.
+
+- **Causa Raiz:** O shell POSIX integrado ao sandbox não consegue observar a conclusão de processos foreground no Windows, tornando impossível confiar no `tool_result` direto de `u_run_commands`.
+- **Diretriz Obrigatória:**
+  1. **NUNCA** confie no campo `success` ou `result` retornado por `u_run_commands` para determinar se um comando funcionou.
+  2. **SEMPRE** redirecione a saída para `cline_log.txt` usando sintaxe bash/POSIX:
+     ```bash
+     cd "/c/Users/carlo/Downloads/Projetos a Estudar/tavirescritorio" && {
+       echo "=== INICIO: $(date) ==="
+       # seus comandos aqui
+       echo "=== CONCLUIDO ==="
+     } > cline_log.txt 2>&1
+     ```
+  3. Após executar via `u_run_commands` (ignorando o erro de observação), **SEMPRE** leia `cline_log.txt` via `u_read_files` para obter o resultado real.
+  4. **NÃO use** `cmd.exe /c`, `cd /d`, `chcp` ou qualquer sintaxe nativa do Windows — o sandbox roda bash/POSIX mesmo em ambiente Windows.
+  5. O script modelo `executar_git.sh` na raiz do projeto serve como template editável para execuções complexas.
+  6. Para comandos simples, execute diretamente em bash com redirecionamento inline, sem necessidade de editar arquivo.

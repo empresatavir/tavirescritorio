@@ -1,7 +1,8 @@
-import { createMemo, createEffect, onCleanup, For, Show } from "solid-js";
+import { createSignal, createMemo, createEffect, onCleanup, For, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { TvIcon } from "../../shared/components/TvIcon";
 import { cockpitData, syncCockpit, setSelectedJobId } from "../../state/store";
+import { CreateProjectModal } from "../projetos/CreateProjectModal";
 
 export interface RunningJob {
   id: string;
@@ -43,6 +44,7 @@ export interface NeedItem {
 
 export function SalaOperacaoView() {
   const navigate = useNavigate();
+  const [isProjectModalOpen, setIsProjectModalOpen] = createSignal(false);
 
   createEffect(() => {
     syncCockpit();
@@ -56,10 +58,34 @@ export function SalaOperacaoView() {
   const escalatedTasks = createMemo(() => cockpitData()?.escalated_tasks ?? []);
   const activeTasks = createMemo(() => cockpitData()?.active_tasks ?? []);
   const needs = createMemo(() => cockpitData()?.needs ?? []);
+  const kpis = createMemo(() => cockpitData()?.kpis ?? {});
 
   const summary = createMemo(() => {
     if (cockpitData()?.summary_text) return cockpitData().summary_text;
     return `${activeTasks().length} cards ativos · ${escalatedTasks().length} escalados · ${runningJobs().length} jobs rodando`;
+  });
+
+  const awaitingPlanHint = createMemo(() => {
+    const n = activeTasks().filter((t: any) => !t.jobLabel || String(t.jobLabel).includes("sem") || t.jobLabel === "Em andamento").length;
+    const pending = Number(kpis().pending_approvals_count ?? 0);
+    if (pending > 0) return `${pending} pedem aprovação humana`;
+    return n > 0 ? `${n} aguardando avanço` : "fluxo em dia";
+  });
+
+  const escalatedHint = createMemo(() => {
+    const withAp = escalatedTasks().filter((t: any) => String(t.actionTarget || "").includes("aprov")).length;
+    return withAp > 0 ? `${withAp} dependem de aprovação` : "sem gate humano aberto";
+  });
+
+  const jobsHint = createMemo(() => {
+    const failed = Number(
+      (needs().find((n: any) => String(n.label || "").toLowerCase().includes("falha")) || {}).count || 0
+    );
+    const queued = runningJobs().filter((j: any) => Number(j.progress) <= 10).length;
+    const parts: string[] = [];
+    if (queued > 0) parts.push(`${queued} na fila`);
+    if (failed > 0) parts.push(`${failed} com falha`);
+    return parts.length ? parts.join(" · ") : "sem fila crítica";
   });
 
   return (
@@ -69,11 +95,22 @@ export function SalaOperacaoView() {
     >
       <div class="flex w-full flex-col gap-5 p-6 pb-12">
         {/* Header */}
-        <div class="flex flex-wrap items-end gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="min-w-[240px] flex-1">
             <h1 class="m-0 text-xl font-semibold tracking-tight">Sala de Operação</h1>
             <p class="m-0 mt-1 text-sm text-[var(--text-secondary)]">{summary()}</p>
           </div>
+          <button
+            type="button"
+            onClick={() => setIsProjectModalOpen(true)}
+            class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#0B1220] transition-opacity hover:opacity-90 shadow-sm cursor-pointer"
+            style={{
+              background: "var(--lime, #B7F34A)",
+            }}
+          >
+            <TvIcon name="plus" width="13" height="13" />
+            <span>Novo Projeto</span>
+          </button>
         </div>
 
         {/* 3 KPI Cards */}
@@ -93,16 +130,14 @@ export function SalaOperacaoView() {
             <span class="font-mono text-3xl font-medium leading-tight text-[var(--cloud)]">
               {activeTasks().length}
             </span>
-            <span class="text-xs text-[var(--t2,#cbd3de)]">
-              5 pendentes aguardando início
-            </span>
+            <span class="text-xs text-[var(--t2,#cbd3de)]">{awaitingPlanHint()}</span>
           </button>
 
           <button
             onClick={() => navigate("/bloqueios")}
             class="flex flex-col gap-1.5 rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729] p-4 px-4.5 text-left text-[var(--cloud)] transition-colors hover:border-[oklch(0.635_0.185_27)]"
           >
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
               <span class="h-2 w-2 rounded-full bg-[oklch(0.635_0.185_27)]" />
               <span class="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--muted,#aeb7c4)]">
                 Escalados
@@ -113,9 +148,7 @@ export function SalaOperacaoView() {
             <span class="font-mono text-3xl font-medium leading-tight text-[oklch(0.635_0.185_27)]">
               {escalatedTasks().length}
             </span>
-            <span class="text-xs text-[var(--t2,#cbd3de)]">
-              1 dependem de aprovação
-            </span>
+            <span class="text-xs text-[var(--t2,#cbd3de)]">{escalatedHint()}</span>
           </button>
 
           <button
@@ -133,9 +166,7 @@ export function SalaOperacaoView() {
             <span class="font-mono text-3xl font-medium leading-tight text-[var(--teal)]">
               {runningJobs().length}
             </span>
-            <span class="text-xs text-[var(--t2,#cbd3de)]">
-              2 na fila · 4 com falha
-            </span>
+            <span class="text-xs text-[var(--t2,#cbd3de)]">{jobsHint()}</span>
           </button>
         </div>
 
@@ -317,6 +348,14 @@ export function SalaOperacaoView() {
           </section>
         </div>
       </div>
+
+      <CreateProjectModal
+        isOpen={isProjectModalOpen()}
+        onClose={() => setIsProjectModalOpen(false)}
+        onCreated={() => {
+          syncCockpit();
+        }}
+      />
     </div>
   );
 }
