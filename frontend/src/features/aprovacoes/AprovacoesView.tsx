@@ -12,38 +12,53 @@ import { TvIcon } from "../../shared/components/TvIcon";
 
 export function AprovacoesView() {
   const [tabFilter, setTabFilter] = createSignal<"all" | "urgent" | "gates" | "changes">("all");
-  const [taskDossierOpen, setTaskDossierOpen] = createSignal(true);
 
   createEffect(() => {
-    syncApprovals();
+    void syncApprovals();
     const timer = setInterval(() => {
-      syncApprovals();
-    }, 4000);
+      void syncApprovals();
+    }, 5000);
     onCleanup(() => clearInterval(timer));
   });
 
   const isAlteracao = (a: UiApproval) => a.type === "alteracao" || a.id.startsWith("ap-alt");
 
-  // Filtered approvals list
   const filteredApprovals = createMemo(() => {
     const list = approvals();
     const tab = tabFilter();
-    if (tab === "urgent") {
-      return list.filter((a) => a.impact === "high" && a.status === "pending");
-    }
+    if (tab === "urgent") return list.filter((a) => a.impact === "high" && a.status === "pending");
     if (tab === "gates") {
       return list.filter(
         (a) => a.type === "checkpoint" || a.type === "authorization" || a.type === "review"
       );
     }
-    if (tab === "changes") {
-      return list.filter((a) => isAlteracao(a));
-    }
+    if (tab === "changes") return list.filter((a) => isAlteracao(a));
     return list;
   });
 
+  // Id estável — evita remount do painel a cada poll
+  const activeApprovalId = createMemo(() => {
+    const sel = selectedApprovalId();
+    if (sel && filteredApprovals().some((a) => a.id === sel)) return sel;
+    return filteredApprovals()[0]?.id ?? null;
+  });
+
+  const currentApproval = createMemo(() => {
+    const id = activeApprovalId();
+    if (!id) return null;
+    return approvals().find((a) => a.id === id) || null;
+  });
+
+  const linkedTask = createMemo(() => {
+    const ap = currentApproval();
+    if (!ap?.taskId) return null;
+    return tasks().find((t) => t.id === ap.taskId) || null;
+  });
+
   const pendingCount = createMemo(() => approvals().filter((a) => a.status === "pending").length);
-  const urgentCount = createMemo(() => approvals().filter((a) => a.impact === "high" && a.status === "pending").length);
+  const urgentCount = createMemo(
+    () => approvals().filter((a) => a.impact === "high" && a.status === "pending").length
+  );
   const gatesCount = createMemo(
     () =>
       approvals().filter(
@@ -56,63 +71,49 @@ export function AprovacoesView() {
     () => approvals().filter((a) => a.status === "pending" && isAlteracao(a)).length
   );
 
-  // Selected approval
-  const currentApproval = createMemo(() => {
-    const id = selectedApprovalId();
-    if (id) {
-      const found = approvals().find((a) => a.id === id);
-      if (found) return found;
-    }
-    const filtered = filteredApprovals();
-    return filtered.length > 0 ? filtered[0] : null;
-  });
-
-  // Linked task if any
-  const linkedTask = createMemo(() => {
-    const ap = currentApproval();
-    if (!ap || !ap.taskId) return null;
-    return tasks().find((t) => t.id === ap.taskId) || null;
-  });
-
   const impactMeta = (impact: UiApproval["impact"]) => {
     switch (impact) {
       case "high":
-        return { label: "Alto impacto", color: "var(--ember, oklch(.635 .185 27))" };
+        return { label: "Alto impacto", color: "oklch(.635 .185 27)" };
       case "medium":
-        return { label: "Médio impacto", color: "var(--flow, oklch(.80 .155 78))" };
-      case "low":
-        return { label: "Baixo impacto", color: "var(--slate, #cbd3de)" };
+        return { label: "Médio impacto", color: "oklch(.80 .155 78)" };
+      default:
+        return { label: "Baixo impacto", color: "var(--text-muted, #aeb7c4)" };
     }
   };
 
   const typeLabel = (type: UiApproval["type"]) => {
     switch (type) {
-      case "authorization": return "Autorização";
-      case "checkpoint": return "Checkpoint";
-      case "review": return "Revisão";
-      case "alteracao": return "Alteração";
-      default: return "Aprovação";
+      case "authorization":
+        return "Autorização";
+      case "checkpoint":
+        return "Checkpoint";
+      case "review":
+        return "Revisão";
+      case "alteracao":
+        return "Alteração";
+      default:
+        return "Aprovação";
     }
   };
 
   const statusMeta = (status: UiApproval["status"]) => {
     switch (status) {
       case "pending":
-        return { label: "Pendente", color: "var(--flow, oklch(.80 .155 78))" };
+        return { label: "Pendente", color: "oklch(.80 .155 78)" };
       case "approved":
         return { label: "Aprovado", color: "var(--teal, #1BC5BD)" };
       case "rejected":
-        return { label: "Rejeitado", color: "var(--ember, oklch(.635 .185 27))" };
+        return { label: "Rejeitado", color: "oklch(.635 .185 27)" };
     }
   };
 
-  const handleApprove = (id: string) => {
-    decideApprovalPersistent(id, "approve", "Aprovado via cockpit de operações");
-  };
-
-  const handleReject = (id: string) => {
-    decideApprovalPersistent(id, "reject", "Rejeitado via cockpit de operações");
-  };
+  const tabs: Array<{ id: "all" | "urgent" | "gates" | "changes"; label: string; count: () => number }> = [
+    { id: "all", label: "Todas", count: () => approvals().length },
+    { id: "urgent", label: "Urgentes", count: urgentCount },
+    { id: "gates", label: "Gates", count: gatesCount },
+    { id: "changes", label: "Alterações", count: changesCount },
+  ];
 
   return (
     <div
@@ -120,143 +121,97 @@ export function AprovacoesView() {
       style={{
         height: "100%",
         display: "grid",
-        "grid-template-columns": "minmax(300px, 340px) minmax(0, 1fr)",
-        "overflow-x": "hidden",
-        background: "var(--surface-0, #0B1220)",
-        color: "var(--text-primary, #F4F6F2)",
+        "grid-template-columns": "minmax(300px, 360px) minmax(0, 1fr)",
+        overflow: "hidden",
+        background: "var(--surface-0)",
+        color: "var(--text-primary)",
       }}
     >
-      {/* Coluna da esquerda: Lista de Aprovações */}
+      {/* LISTA */}
       <section
         style={{
           display: "flex",
           "flex-direction": "column",
-          "min-height": "0",
-          "min-width": "0",
+          "min-height": 0,
+          "min-width": 0,
           overflow: "hidden",
-          "border-right": "1px solid var(--border-subtle, rgba(244,246,242,.10))",
+          "border-right": "1px solid rgba(244,246,242,.10)",
+          background: "var(--surface-ink, #0f1729)",
         }}
       >
         <div style={{ padding: "20px 20px 12px" }}>
-          <h1 style={{ margin: "0", "font-size": "20px", "font-weight": "600", "letter-spacing": "-0.01em" }}>
+          <h1 style={{ margin: 0, "font-size": "20px", "font-weight": 600, "letter-spacing": "-0.01em" }}>
             Aprovações
           </h1>
-          <p style={{ margin: "4px 0 12px", color: "var(--text-secondary, #cbd3de)", "font-size": "13px" }}>
-            {pendingCount()} aguardando decisão · {approvals().length - pendingCount()} resolvidas
+          <p style={{ margin: "4px 0 12px", color: "var(--text-secondary)", "font-size": "13px" }}>
+            {pendingCount()} aguardando · {approvals().length - pendingCount()} resolvidas
           </p>
 
-          {/* Tabs Filter */}
           <div
+            role="tablist"
             style={{
               display: "flex",
+              "flex-wrap": "wrap",
               gap: "2px",
               padding: "2px",
-              background: "var(--surface-2, #121c30)",
-              border: "1px solid var(--border-subtle, rgba(244,246,242,.12))",
+              background: "#121c30",
+              border: "1px solid rgba(244,246,242,.12)",
               "border-radius": "999px",
-              "max-width": "100%",
               width: "max-content",
+              "max-width": "100%",
             }}
           >
-            <button
-              onClick={() => setTabFilter("all")}
-              style={{
-                height: "26px",
-                padding: "0 10px",
-                border: "none",
-                "border-radius": "999px",
-                cursor: "pointer",
-                "font-size": "12px",
-                "font-weight": "500",
-                display: "flex",
-                gap: "6px",
-                "align-items": "center",
-                background: tabFilter() === "all" ? "var(--teal, #1BC5BD)" : "transparent",
-                color: tabFilter() === "all" ? "var(--ink, #0B1220)" : "var(--text-muted, #aeb7c4)",
+            <For each={tabs}>
+              {(tab) => {
+                const active = () => tabFilter() === tab.id;
+                return (
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={active()}
+                    onClick={() => setTabFilter(tab.id)}
+                    style={{
+                      height: "26px",
+                      padding: "0 10px",
+                      border: "none",
+                      "border-radius": "999px",
+                      cursor: "pointer",
+                      "font-size": "12px",
+                      "font-weight": 500,
+                      display: "flex",
+                      gap: "6px",
+                      "align-items": "center",
+                      background: active() ? "#17223a" : "transparent",
+                      color: active() ? "var(--text-primary)" : "var(--text-muted)",
+                    }}
+                  >
+                    <span>{tab.label}</span>
+                    <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.7 }}>
+                      {tab.count()}
+                    </span>
+                  </button>
+                );
               }}
-            >
-              Todas
-              <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.8 }}>
-                {approvals().length}
-              </span>
-            </button>
-            <button
-              onClick={() => setTabFilter("urgent")}
-              style={{
-                height: "26px",
-                padding: "0 10px",
-                border: "none",
-                "border-radius": "999px",
-                cursor: "pointer",
-                "font-size": "12px",
-                "font-weight": "500",
-                display: "flex",
-                gap: "6px",
-                "align-items": "center",
-                background: tabFilter() === "urgent" ? "var(--teal, #1BC5BD)" : "transparent",
-                color: tabFilter() === "urgent" ? "var(--ink, #0B1220)" : "var(--text-muted, #aeb7c4)",
-              }}
-            >
-              Urgentes
-              <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.8 }}>
-                {urgentCount()}
-              </span>
-            </button>
-            <button
-              onClick={() => setTabFilter("gates")}
-              style={{
-                height: "26px",
-                padding: "0 10px",
-                border: "none",
-                "border-radius": "999px",
-                cursor: "pointer",
-                "font-size": "12px",
-                "font-weight": "500",
-                display: "flex",
-                gap: "6px",
-                "align-items": "center",
-                background: tabFilter() === "gates" ? "var(--teal, #1BC5BD)" : "transparent",
-                color: tabFilter() === "gates" ? "var(--ink, #0B1220)" : "var(--text-muted, #aeb7c4)",
-              }}
-            >
-              Gates
-              <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.8 }}>
-                {gatesCount()}
-              </span>
-            </button>
-            <button
-              onClick={() => setTabFilter("changes")}
-              style={{
-                height: "26px",
-                padding: "0 10px",
-                border: "none",
-                "border-radius": "999px",
-                cursor: "pointer",
-                "font-size": "12px",
-                "font-weight": "500",
-                display: "flex",
-                gap: "6px",
-                "align-items": "center",
-                background: tabFilter() === "changes" ? "var(--teal, #1BC5BD)" : "transparent",
-                color: tabFilter() === "changes" ? "var(--ink, #0B1220)" : "var(--text-muted, #aeb7c4)",
-              }}
-            >
-              Alterações
-              <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.8 }}>
-                {changesCount()}
-              </span>
-            </button>
+            </For>
           </div>
         </div>
 
-        {/* Lista de cards de aprovação */}
-        <div style={{ flex: "1", "overflow-y": "auto", padding: "0 12px 16px", display: "flex", "flex-direction": "column", gap: "6px" }}>
+        <div
+          style={{
+            flex: 1,
+            "overflow-y": "auto",
+            padding: "0 12px 16px",
+            display: "flex",
+            "flex-direction": "column",
+            gap: "6px",
+          }}
+        >
           <For each={filteredApprovals()}>
             {(ap) => {
-              const isSelected = () => currentApproval()?.id === ap.id;
+              const selected = () => activeApprovalId() === ap.id;
               const imp = impactMeta(ap.impact);
               const st = statusMeta(ap.status);
-              const linked = tasks().find((t) => t.id === ap.taskId);
+              const linked = () => tasks().find((t) => t.id === ap.taskId);
 
               return (
                 <button
@@ -264,61 +219,85 @@ export function AprovacoesView() {
                   onClick={() => setSelectedApprovalId(ap.id)}
                   style={{
                     "text-align": "left",
-                    padding: "12px",
-                    "border-radius": "14px",
-                    border: isSelected() ? "1px solid var(--teal, #1BC5BD)" : "1px solid var(--border-subtle, rgba(244,246,242,.08))",
+                    padding: "12px 14px",
+                    "border-radius": "12px",
+                    border: selected()
+                      ? "1px solid rgba(27,197,189,.55)"
+                      : "1px solid rgba(244,246,242,.08)",
                     cursor: "pointer",
-                    color: "var(--text-primary, #F4F6F2)",
+                    color: "var(--text-primary)",
                     display: "flex",
                     "flex-direction": "column",
                     gap: "6px",
-                    background: isSelected() ? "var(--surface-2, #17223a)" : "var(--surface-1, #0f1729)",
-                    transition: "all 0.15s ease",
+                    background: selected() ? "#17223a" : "transparent",
+                    transition: "background 0.12s ease, border-color 0.12s ease",
                   }}
                 >
-                  <div style={{ display: "flex", "align-items": "center", gap: "8px", "font-size": "11px", color: "var(--text-muted, #aeb7c4)" }}>
-                    <span style={{ color: imp.color, "font-weight": "600" }}>{imp.label}</span>
+                  <div
+                    style={{
+                      display: "flex",
+                      "align-items": "center",
+                      gap: "8px",
+                      "font-size": "11px",
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    <span style={{ color: imp.color, "font-weight": 600 }}>{imp.label}</span>
                     <span>·</span>
                     <span>{typeLabel(ap.type)}</span>
-                    <span style={{ flex: "1" }}></span>
+                    <span style={{ flex: 1 }} />
                     <span style={{ "font-family": "var(--font-mono)" }}>{ap.requestedAt}</span>
                   </div>
 
-                  <div style={{ "font-weight": "500", "font-size": "13px", "line-height": "1.4" }}>
+                  <div style={{ "font-weight": 600, "font-size": "13px", "line-height": 1.4 }}>
                     {ap.title}
                   </div>
 
-                  <Show when={linked}>
-                    <div
-                      style={{
-                        display: "flex",
-                        "align-items": "center",
-                        gap: "8px",
-                        "min-width": "0",
-                        padding: "5px 8px",
-                        "border-radius": "6px",
-                        background: "var(--surface-0, #0B1220)",
-                        border: "1px solid var(--border-subtle, rgba(244,246,242,.12))",
-                        "font-size": "12px",
-                      }}
-                    >
-                      <span style={{ "font-family": "var(--font-mono)", "font-size": "10px", "letter-spacing": "0.1em", "text-transform": "uppercase", color: "var(--text-muted)", flex: "none" }}>
-                        Task
-                      </span>
-                      <span style={{ "font-family": "var(--font-mono)", "font-weight": "500", color: "var(--teal, #1BC5BD)", flex: "none" }}>
-                        #{linked?.seq}
-                      </span>
-                      <span style={{ color: "var(--text-secondary, #cbd3de)", overflow: "hidden", "text-overflow": "ellipsis", "white-space": "nowrap" }}>
-                        {linked?.title}
-                      </span>
-                    </div>
+                  <Show when={linked()}>
+                    {(lt) => (
+                      <div
+                        style={{
+                          display: "flex",
+                          "align-items": "center",
+                          gap: "6px",
+                          "font-size": "11px",
+                          "font-family": "var(--font-mono)",
+                          color: "var(--teal)",
+                          "min-width": 0,
+                        }}
+                      >
+                        <span style={{ flex: "none" }}>#{lt().seq}</span>
+                        <span
+                          style={{
+                            color: "var(--text-secondary)",
+                            overflow: "hidden",
+                            "text-overflow": "ellipsis",
+                            "white-space": "nowrap",
+                            "font-family": "inherit",
+                            "font-weight": 500,
+                          }}
+                        >
+                          {lt().title}
+                        </span>
+                      </div>
+                    )}
                   </Show>
 
-                  <div style={{ "font-size": "12px", color: "var(--text-muted, #aeb7c4)", display: "flex", "align-items": "center", gap: "6px" }}>
+                  <div
+                    style={{
+                      "font-size": "12px",
+                      color: "var(--text-muted)",
+                      display: "flex",
+                      "align-items": "center",
+                      gap: "6px",
+                    }}
+                  >
                     <span>{ap.agentName}</span>
                     <span>·</span>
-                    <span style={{ color: st.color, display: "flex", "align-items": "center", gap: "4px" }}>
-                      <span style={{ width: "6px", height: "6px", "border-radius": "50%", background: st.color }}></span>
+                    <span style={{ color: st.color, display: "inline-flex", "align-items": "center", gap: "5px" }}>
+                      <span
+                        style={{ width: "6px", height: "6px", "border-radius": "50%", background: st.color }}
+                      />
                       {st.label}
                     </span>
                   </div>
@@ -328,327 +307,390 @@ export function AprovacoesView() {
           </For>
 
           <Show when={filteredApprovals().length === 0}>
-            <div style={{ padding: "40px 0", "text-align": "center", color: "var(--text-muted, #aeb7c4)", "font-size": "13px" }}>
+            <div
+              style={{
+                padding: "48px 16px",
+                "text-align": "center",
+                color: "var(--text-muted)",
+                "font-size": "13px",
+              }}
+            >
               Nenhuma decisão nesta fila
             </div>
           </Show>
         </div>
       </section>
 
-      {/* Coluna da direita: Detalhamento da Aprovação */}
-      <Show when={currentApproval()}>
-        {(ap) => {
+      {/* DETALHE — keyed por id estável */}
+      <Show
+        when={activeApprovalId()}
+        fallback={
+          <div
+            style={{
+              display: "flex",
+              "align-items": "center",
+              "justify-content": "center",
+              color: "var(--text-muted)",
+              "font-size": "13px",
+              padding: "40px",
+            }}
+          >
+            Selecione uma aprovação na lista
+          </div>
+        }
+      >
+        {(aid) => {
+          const ap = () => approvals().find((a) => a.id === aid())!;
           const imp = () => impactMeta(ap().impact);
           const st = () => statusMeta(ap().status);
-          const t = linkedTask;
+          const t = () => {
+            const taskId = ap()?.taskId;
+            return taskId ? tasks().find((x) => x.id === taskId) || null : null;
+          };
 
           return (
-            <section style={{ display: "flex", "flex-direction": "column", "min-height": "0", "min-width": "0", width: "100%" }}>
+            <section
+              style={{
+                display: "flex",
+                "flex-direction": "column",
+                "min-height": 0,
+                "min-width": 0,
+                background: "var(--surface-0)",
+              }}
+            >
               <div
                 style={{
-                  flex: "1",
+                  flex: 1,
                   "overflow-y": "auto",
-                  padding: "24px 28px 32px",
+                  padding: "24px 28px",
                   display: "flex",
                   "flex-direction": "column",
-                  gap: "22px",
-                  width: "100%",
-                  "max-width": "none",
-                  "box-sizing": "border-box",
+                  gap: "20px",
                 }}
               >
-                {/* Solicitante */}
-                <div style={{ display: "flex", "align-items": "center", gap: "12px" }}>
-                  <div
-                    style={{
-                      width: "36px",
-                      height: "36px",
-                      "border-radius": "9px",
-                      display: "flex",
-                      "align-items": "center",
-                      "justify-content": "center",
-                      "font-size": "12px",
-                      "font-weight": "600",
-                      color: "var(--teal, #1BC5BD)",
-                      background: "rgba(27,197,189,.14)",
-                    }}
-                  >
-                    {ap().agentName.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <div style={{ "font-weight": "600", "font-size": "14px" }}>{ap().agentName}</div>
-                    <div style={{ "font-size": "12px", color: "var(--text-muted, #aeb7c4)" }}>
-                      Solicitou às {ap().requestedAt}
+                {/* Header solicitante */}
+                <div style={{ display: "flex", "align-items": "flex-start", "justify-content": "space-between", gap: "16px" }}>
+                  <div style={{ display: "flex", "align-items": "center", gap: "12px", "min-width": 0 }}>
+                    <div
+                      style={{
+                        width: "36px",
+                        height: "36px",
+                        "border-radius": "9px",
+                        display: "flex",
+                        "align-items": "center",
+                        "justify-content": "center",
+                        "font-size": "12px",
+                        "font-weight": 600,
+                        color: "var(--teal)",
+                        background: "rgba(27,197,189,.14)",
+                        flex: "none",
+                      }}
+                    >
+                      {ap().agentName.slice(0, 2).toUpperCase()}
                     </div>
+                    <div style={{ "min-width": 0 }}>
+                      <div style={{ "font-weight": 600, "font-size": "14px" }}>{ap().agentName}</div>
+                      <div style={{ "font-size": "12px", color: "var(--text-muted)" }}>
+                        Solicitou às {ap().requestedAt}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: "6px", "flex-wrap": "wrap", "justify-content": "flex-end" }}>
+                    <span
+                      style={{
+                        "font-size": "11px",
+                        "font-weight": 600,
+                        padding: "4px 10px",
+                        "border-radius": "999px",
+                        color: imp().color,
+                        background: "rgba(244,246,242,.06)",
+                        border: "1px solid rgba(244,246,242,.10)",
+                      }}
+                    >
+                      {imp().label}
+                    </span>
+                    <span
+                      style={{
+                        "font-size": "11px",
+                        "font-weight": 500,
+                        padding: "4px 10px",
+                        "border-radius": "999px",
+                        color: "var(--text-secondary)",
+                        background: "rgba(244,246,242,.04)",
+                        border: "1px solid rgba(244,246,242,.10)",
+                      }}
+                    >
+                      {typeLabel(ap().type)}
+                    </span>
                   </div>
                 </div>
 
-                {/* Título e Descrição */}
+                {/* Título */}
                 <div>
-                  <div style={{ display: "flex", gap: "8px", "font-size": "12px" }}>
-                    <span style={{ color: imp().color, "font-weight": "600" }}>{imp().label}</span>
-                    <span style={{ color: "var(--text-muted, #aeb7c4)" }}>·</span>
-                    <span style={{ color: "var(--text-secondary, #cbd3de)" }}>{typeLabel(ap().type)}</span>
-                  </div>
                   <h2
                     style={{
-                      margin: "8px 0 0",
+                      margin: 0,
                       "font-size": "22px",
-                      "font-weight": "600",
-                      "line-height": "1.3",
+                      "font-weight": 600,
+                      "line-height": 1.3,
                       "letter-spacing": "-0.01em",
-                      "text-wrap": "pretty",
                     }}
                   >
                     {ap().title}
                   </h2>
                   <p
                     style={{
-                      margin: "12px 0 0",
+                      margin: "10px 0 0",
                       "font-size": "14px",
-                      "line-height": "1.6",
-                      color: "var(--text-secondary, #cbd3de)",
-                      "text-wrap": "pretty",
+                      "line-height": 1.6,
+                      color: "var(--text-secondary)",
                     }}
                   >
                     {ap().description}
                   </p>
                 </div>
 
-                {/* Task envolvida */}
+                {/* Task — uma faixa, sem dossiê aninhado */}
                 <Show when={t()}>
-                  <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
-                    <span
-                      style={{
-                        "font-family": "var(--font-mono)",
-                        "font-size": "11px",
-                        "font-weight": "500",
-                        "letter-spacing": "0.14em",
-                        "text-transform": "uppercase",
-                        color: "var(--text-muted, #aeb7c4)",
-                      }}
-                    >
-                      Task envolvida
-                    </span>
-                    <div
-                      style={{
-                        border: "1px solid var(--border-subtle, rgba(244,246,242,.12))",
-                        "border-radius": "14px",
-                        background: "var(--surface-2, #121c30)",
-                        padding: "14px 16px",
-                        display: "flex",
-                        "flex-direction": "column",
-                        gap: "10px",
-                      }}
-                    >
-                      <div style={{ display: "flex", "align-items": "baseline", gap: "10px", "min-width": "0" }}>
-                        <span style={{ "font-family": "var(--font-mono)", "font-size": "15px", "font-weight": "500", color: "var(--teal, #1BC5BD)", flex: "none" }}>
-                          #{t()?.seq}
-                        </span>
-                        <span style={{ "font-weight": "600", "font-size": "14px", "line-height": "1.4", "text-wrap": "pretty" }}>
-                          {t()?.title}
-                        </span>
-                      </div>
-                      <div style={{ display: "flex", "flex-wrap": "wrap", gap: "6px 14px", "font-size": "12px", color: "var(--text-muted, #aeb7c4)" }}>
-                        <span>Responsável: <strong style={{ color: "var(--text-secondary)" }}>{t()?.assignee}</strong></span>
-                        <span>Setor: <strong style={{ color: "var(--text-secondary)" }}>{t()?.sector}</strong></span>
-                        <span>Prioridade: <strong style={{ color: "var(--text-secondary)" }}>{t()?.priority}</strong></span>
-                      </div>
-                      <div style={{ "font-size": "13px", "line-height": "1.55", color: "var(--text-secondary, #cbd3de)" }}>
-                        {t()?.description || "Sem descrição."}
-                      </div>
-                      <div style={{ display: "flex", gap: "8px", "margin-top": "4px", "flex-wrap": "wrap" }}>
-                        <button
-                          type="button"
-                          onClick={() => setTaskDossierOpen((v) => !v)}
-                          style={{
-                            height: "32px",
-                            padding: "0 14px",
-                            "border-radius": "999px",
-                            border: "1px solid var(--border-light, rgba(244,246,242,.34))",
-                            background: taskDossierOpen() ? "rgba(27,197,189,.12)" : "transparent",
-                            color: "var(--text-primary, #F4F6F2)",
-                            cursor: "pointer",
-                            "font-weight": "500",
-                            "font-size": "12px",
-                            display: "flex",
-                            "align-items": "center",
-                            gap: "8px",
-                          }}
-                        >
-                          <TvIcon name="maximize" style={{ width: "12px", height: "12px" }} />
-                          {taskDossierOpen() ? "Ocultar dossiê da task" : `Ver dossiê da task #${t()?.seq}`}
-                        </button>
-                      </div>
-                      <Show when={taskDossierOpen()}>
+                  {(task) => (
+                    <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
+                      <span
+                        style={{
+                          "font-family": "var(--font-mono)",
+                          "font-size": "11px",
+                          "font-weight": 500,
+                          "letter-spacing": "0.14em",
+                          "text-transform": "uppercase",
+                          color: "var(--text-muted)",
+                        }}
+                      >
+                        Task envolvida
+                      </span>
+                      <div
+                        style={{
+                          border: "1px solid rgba(244,246,242,.12)",
+                          "border-radius": "14px",
+                          background: "var(--surface-ink, #0f1729)",
+                          padding: "14px 16px",
+                          display: "grid",
+                          gap: "10px",
+                        }}
+                      >
+                        <div style={{ display: "flex", "align-items": "baseline", gap: "10px", "min-width": 0 }}>
+                          <span
+                            style={{
+                              "font-family": "var(--font-mono)",
+                              "font-size": "14px",
+                              "font-weight": 600,
+                              color: "var(--teal)",
+                              flex: "none",
+                            }}
+                          >
+                            #{task().seq}
+                          </span>
+                          <span style={{ "font-weight": 600, "font-size": "14px", "line-height": 1.4 }}>
+                            {task().title}
+                          </span>
+                        </div>
                         <div
                           style={{
-                            "margin-top": "4px",
-                            padding: "12px",
-                            "border-radius": "10px",
-                            background: "var(--surface-0, #0B1220)",
-                            border: "1px solid var(--border-subtle, rgba(244,246,242,.10))",
-                            display: "flex",
-                            "flex-direction": "column",
-                            gap: "8px",
+                            display: "grid",
+                            "grid-template-columns": "repeat(3, minmax(0, 1fr))",
+                            gap: "8px 12px",
                             "font-size": "12px",
                           }}
                         >
-                          <div style={{ display: "grid", "grid-template-columns": "100px 1fr", gap: "6px 10px" }}>
-                            <span style={{ color: "var(--text-muted)" }}>Status</span>
-                            <span style={{ color: "var(--text-primary)", "font-weight": 500 }}>{t()?.status}</span>
-                            <span style={{ color: "var(--text-muted)" }}>Prioridade</span>
-                            <span style={{ color: "var(--text-primary)" }}>{t()?.priority}</span>
-                            <span style={{ color: "var(--text-muted)" }}>Setor</span>
-                            <span style={{ color: "var(--text-primary)" }}>{t()?.sector}</span>
-                            <span style={{ color: "var(--text-muted)" }}>Responsável</span>
-                            <span style={{ color: "var(--text-primary)" }}>{t()?.assignee}</span>
-                            <Show when={t()?.escalation}>
-                              <span style={{ color: "var(--text-muted)" }}>Escalação</span>
-                              <span style={{ color: "oklch(.78 .16 27)" }}>{t()?.escalation}</span>
-                            </Show>
-                            <Show when={(t()?.tags || []).length > 0}>
-                              <span style={{ color: "var(--text-muted)" }}>Tags</span>
-                              <span style={{ color: "var(--text-secondary)", "font-family": "var(--font-mono)", "font-size": "11px" }}>
-                                {(t()?.tags || []).join(" · ")}
-                              </span>
-                            </Show>
+                          <div>
+                            <div style={{ color: "var(--text-muted)", "font-size": "10px", "margin-bottom": "2px" }}>
+                              Responsável
+                            </div>
+                            <div style={{ color: "var(--text-secondary)", "font-weight": 500 }}>{task().assignee}</div>
                           </div>
-                          <p style={{ margin: 0, color: "var(--text-muted)", "font-size": "11px", "line-height": 1.45 }}>
-                            Decida aqui em Aprovações — o fluxo não muda de tela.
-                          </p>
+                          <div>
+                            <div style={{ color: "var(--text-muted)", "font-size": "10px", "margin-bottom": "2px" }}>
+                              Setor
+                            </div>
+                            <div style={{ color: "var(--text-secondary)", "font-weight": 500 }}>{task().sector}</div>
+                          </div>
+                          <div>
+                            <div style={{ color: "var(--text-muted)", "font-size": "10px", "margin-bottom": "2px" }}>
+                              Prioridade
+                            </div>
+                            <div style={{ color: "var(--text-secondary)", "font-weight": 500 }}>{task().priority}</div>
+                          </div>
                         </div>
-                      </Show>
+                        <Show when={task().description}>
+                          <p
+                            style={{
+                              margin: 0,
+                              "font-size": "13px",
+                              "line-height": 1.55,
+                              color: "var(--text-secondary)",
+                            }}
+                          >
+                            {task().description}
+                          </p>
+                        </Show>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </Show>
 
-                {/* Contexto da aprovação */}
+                {/* Consequências */}
                 <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
                   <span
                     style={{
                       "font-family": "var(--font-mono)",
                       "font-size": "11px",
-                      "font-weight": "500",
+                      "font-weight": 500,
                       "letter-spacing": "0.14em",
                       "text-transform": "uppercase",
-                      color: "var(--text-muted, #aeb7c4)",
+                      color: "var(--text-muted)",
                     }}
                   >
-                    Contexto da aprovação
+                    Consequências
                   </span>
                   <div
                     style={{
-                      border: "1px solid var(--border-subtle, rgba(244,246,242,.12))",
-                      "border-radius": "14px",
-                      overflow: "hidden",
+                      display: "grid",
+                      "grid-template-columns": "1fr 1fr",
+                      gap: "10px",
                     }}
                   >
-                    <div style={{ display: "grid", "grid-template-columns": "120px minmax(0,1fr)", gap: "12px", padding: "12px 16px", "border-bottom": "1px solid var(--border-subtle, rgba(244,246,242,.10))" }}>
-                      <span style={{ "font-size": "12px", color: "var(--text-muted, #aeb7c4)" }}>Origem</span>
-                      <span style={{ "font-size": "13px" }}>Gate operacional · {ap().type}</span>
+                    <div
+                      style={{
+                        padding: "14px 16px",
+                        "border-radius": "14px",
+                        border: "1px solid rgba(27,197,189,.28)",
+                        background: "rgba(27,197,189,.06)",
+                      }}
+                    >
+                      <div
+                        style={{
+                          "font-size": "11px",
+                          "font-weight": 600,
+                          color: "var(--teal)",
+                          "margin-bottom": "6px",
+                          "letter-spacing": "0.04em",
+                          "text-transform": "uppercase",
+                        }}
+                      >
+                        Se aprovar
+                      </div>
+                      <div style={{ "font-size": "13px", "line-height": 1.55, color: "var(--text-secondary)" }}>
+                        {ap().onApproveText || "O fluxo segue e o job retoma a execução."}
+                      </div>
                     </div>
-                    <div style={{ display: "grid", "grid-template-columns": "120px minmax(0,1fr)", gap: "12px", padding: "12px 16px", "border-bottom": "1px solid var(--border-subtle, rgba(244,246,242,.10))" }}>
-                      <span style={{ "font-size": "12px", color: "var(--text-muted, #aeb7c4)" }}>Motivo</span>
-                      <span style={{ "font-size": "13px", "line-height": "1.55", "text-wrap": "pretty" }}>{ap().reason || ap().description}</span>
-                    </div>
-                    <div style={{ display: "grid", "grid-template-columns": "120px minmax(0,1fr)", gap: "12px", padding: "12px 16px", "border-bottom": "1px solid var(--border-subtle, rgba(244,246,242,.10))" }}>
-                      <span style={{ "font-size": "12px", color: "var(--teal, #1BC5BD)" }}>Se aprovar</span>
-                      <span style={{ "font-size": "13px", "line-height": "1.55" }}>{ap().onApproveText || "O job retoma imediatamente a execução."}</span>
-                    </div>
-                    <div style={{ display: "grid", "grid-template-columns": "120px minmax(0,1fr)", gap: "12px", padding: "12px 16px" }}>
-                      <span style={{ "font-size": "12px", color: "var(--ember, oklch(.635 .185 27))" }}>Se rejeitar</span>
-                      <span style={{ "font-size": "13px", "line-height": "1.55" }}>{ap().onRejectText || "O job é encerrado e a tarefa volta para replanejamento."}</span>
+                    <div
+                      style={{
+                        padding: "14px 16px",
+                        "border-radius": "14px",
+                        border: "1px solid oklch(.635 .185 27 / .35)",
+                        background: "oklch(.635 .185 27 / .08)",
+                      }}
+                    >
+                      <div
+                        style={{
+                          "font-size": "11px",
+                          "font-weight": 600,
+                          color: "oklch(.78 .16 27)",
+                          "margin-bottom": "6px",
+                          "letter-spacing": "0.04em",
+                          "text-transform": "uppercase",
+                        }}
+                      >
+                        Se rejeitar
+                      </div>
+                      <div style={{ "font-size": "13px", "line-height": 1.55, color: "var(--text-secondary)" }}>
+                        {ap().onRejectText || "O job encerra e a tarefa volta para replanejamento."}
+                      </div>
                     </div>
                   </div>
+                  <Show when={ap().reason}>
+                    <p style={{ margin: "4px 0 0", "font-size": "12px", color: "var(--text-muted)", "line-height": 1.5 }}>
+                      Motivo: {ap().reason}
+                    </p>
+                  </Show>
                 </div>
 
-                {/* Registro de Auditoria */}
                 <div
                   style={{
-                    border: "1px solid var(--border-subtle, rgba(244,246,242,.12))",
-                    "border-radius": "14px",
-                    padding: "14px 16px",
-                    display: "flex",
-                    "flex-direction": "column",
-                    gap: "8px",
+                    "font-family": "var(--font-mono)",
+                    "font-size": "11px",
+                    color: "var(--text-muted)",
                   }}
                 >
-                  <div style={{ "font-size": "12px", "font-weight": "600", color: "var(--text-secondary, #cbd3de)" }}>
-                    Registro de auditoria
-                  </div>
-                  <div style={{ "font-family": "var(--font-mono)", "font-size": "12px", color: "var(--text-muted, #aeb7c4)" }}>
-                    ID: {ap().id} · Criado às {ap().requestedAt} · Status: {ap().status.toUpperCase()}
-                  </div>
+                  {ap().id} · {st().label}
                 </div>
               </div>
 
-              {/* Barra de ação inferior */}
+              {/* Ações sticky */}
               <div
                 style={{
-                  padding: "16px 28px",
-                  "border-top": "1px solid var(--border-subtle, rgba(244,246,242,.10))",
+                  padding: "14px 28px",
+                  "border-top": "1px solid rgba(244,246,242,.10)",
                   display: "flex",
                   "flex-wrap": "wrap",
                   gap: "10px",
                   "align-items": "center",
-                  width: "100%",
-                  "box-sizing": "border-box",
+                  background: "var(--surface-ink, #0f1729)",
                 }}
               >
                 <Show when={ap().status === "pending"}>
                   <button
                     type="button"
-                    onClick={() => handleApprove(ap().id)}
+                    onClick={() =>
+                      decideApprovalPersistent(ap().id, "approve", "Aprovado via cockpit de operações")
+                    }
                     style={{
                       height: "36px",
                       padding: "0 18px",
                       "border-radius": "999px",
                       border: "none",
-                      background: "var(--lime, #B7F34A)",
-                      color: "var(--ink-panel, #25360a)",
-                      "font-weight": "600",
+                      background: "var(--action-bg, var(--lime, #B7F34A))",
+                      color: "var(--action-fg, #0B1220)",
+                      "font-weight": 600,
                       cursor: "pointer",
                       display: "flex",
-                      gap: "10px",
+                      gap: "8px",
                       "align-items": "center",
                       "font-size": "13px",
                     }}
                   >
                     Aprovar
-                    <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.75 }}>A</span>
+                    <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.7 }}>A</span>
                   </button>
-
                   <button
                     type="button"
-                    onClick={() => handleReject(ap().id)}
+                    onClick={() =>
+                      decideApprovalPersistent(ap().id, "reject", "Rejeitado via cockpit de operações")
+                    }
                     style={{
                       height: "36px",
                       padding: "0 18px",
                       "border-radius": "999px",
-                      border: "1px solid rgba(239, 68, 68, 0.45)",
+                      border: "1px solid oklch(.635 .185 27 / .45)",
                       background: "transparent",
-                      color: "var(--ember, oklch(.635 .185 27))",
-                      "font-weight": "500",
+                      color: "oklch(.78 .16 27)",
+                      "font-weight": 500,
                       cursor: "pointer",
                       display: "flex",
-                      gap: "10px",
+                      gap: "8px",
                       "align-items": "center",
                       "font-size": "13px",
                     }}
                   >
+                    <TvIcon name="circle-x" width="14" height="14" />
                     Rejeitar
-                    <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.75 }}>R</span>
+                    <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.7 }}>R</span>
                   </button>
-
-                  <span style={{ flex: "1" }}></span>
-                  <span style={{ "font-size": "12px", color: "var(--text-muted, #aeb7c4)", "white-space": "nowrap" }}>
-                    Decisão imediata no orquestrador
+                  <span style={{ flex: 1 }} />
+                  <span style={{ "font-size": "12px", color: "var(--text-muted)" }}>
+                    Decisão fica nesta tela
                   </span>
                 </Show>
-
                 <Show when={ap().status !== "pending"}>
-                  <span style={{ "font-weight": "500", color: st().color, "font-size": "14px" }}>
+                  <span style={{ "font-weight": 600, color: st().color, "font-size": "14px" }}>
                     Decisão registrada: {st().label}
                   </span>
                 </Show>

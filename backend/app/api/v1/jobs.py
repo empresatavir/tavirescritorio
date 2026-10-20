@@ -306,7 +306,13 @@ async def retry_job(job_id: str, session: AsyncSession = Depends(get_session)):
         job = await runner.retry_job(job_id)
         await session.commit()
         await session.refresh(job)
-        t = asyncio.create_task(_run_job_background(job.id, "echo '[Retry] Retomando execução do Job'", 60))
+        # Planning/execution ignoram o shell e rematerializam artefatos; manual usa echo stub.
+        retry_cmd = (
+            "echo retry-ok"
+            if (job.origin or "manual").lower() in ("planning", "execution")
+            else "echo '[Retry] Retomando execução do Job'"
+        )
+        t = asyncio.create_task(_run_job_background(job.id, retry_cmd, 60))
         _background_job_tasks.add(t)
         t.add_done_callback(_background_job_tasks.discard)
         return job

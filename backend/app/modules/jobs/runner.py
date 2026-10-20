@@ -143,18 +143,25 @@ class JobRunner:
             workspace_path=ws_path,
         )
         self.session.add(job)
+        origin_l = (origin or "manual").lower()
+        if origin_l == "planning":
+            created_msg = f"Job de planejamento enfileirado ({model_name or 'Fable'} · {effort or 'Máximo'})"
+        elif origin_l == "execution":
+            created_msg = f"Job de execução enfileirado ({model_name or 'Fable'} · {effort or 'Máximo'})"
+        else:
+            created_msg = f"Job instanciado na fila: {command}"
         attempt = JobAttempt(
             id=str(uuid.uuid4()),
             job_id=job.id,
             attempt_number=1,
             status="queued",
-            log_stream=f"Job instanciado na fila: {command}",
+            log_stream=created_msg,
             git_diff_stat="",
         )
         self.session.add(attempt)
-        _sync_to_office_db(job, 1, "queued", log_stream=f"Job instanciado: {command}")
+        _sync_to_office_db(job, 1, "queued", log_stream=created_msg)
         await self._log_event(
-            job.id, None, "queued", "system", "job_created", f"Job instanciado na fila: {command}"
+            job.id, None, "queued", "system", "job_created", created_msg
         )
         await self.session.flush()
         return job
@@ -164,55 +171,102 @@ class JobRunner:
         if not job:
             raise ValueError(f"Job {job_id} not found")
 
-        # Preflight
-        await self._transition(job, "preflight", details="Verificando ambiente, permissões e pré-requisitos...")
+        origin = (job.origin or "manual").lower()
+        model_label = job.model_name or "Fable"
+        effort_label = job.effort or "Máximo"
+        agent_label = job.agent_id or "pm-projetos"
+
+        await self._transition(
+            job, "preflight",
+            details="Preparando workspace e metadados do job...",
+        )
         await self.session.commit()
-        await asyncio.sleep(1.0)
 
-        # Running
-        await self._transition(job, "running", details="Job em processamento ativo.")
+        await self._transition(
+            job, "running",
+            details=(
+                f"Planejamento em andamento ({model_label} · {effort_label})"
+                if origin == "planning"
+                else f"Execução em andamento ({model_label} · {effort_label})"
+                if origin == "execution"
+                else "Job em processamento."
+            ),
+        )
         await self.session.commit()
 
-        # Step 1: Context & Agent acknowledgment if linked to a task
-        if job.task_id:
-            from app.models.task import Task
-            task = await self.session.get(Task, job.task_id)
-            task_desc = f"Task #{task.seq}: {task.title}" if task and task.seq else (task.title if task else job.task_id)
-            agent_label = job.agent_id or "pm-projetos"
-            model_label = job.model_name or "Fable"
-            effort_label = job.effort or "Máximo"
-
-            await self._log_event(
-                job.id, "running", "running", agent_label, "agent_assigned",
-                f"Paula PM assumiu o planejamento de {task_desc} ({model_label} · Esforço {effort_label})"
-            )
-            await self.session.commit()
-            await asyncio.sleep(1.2)
-
-            await self._log_event(
-                job.id, "running", "running", agent_label, "scope_analysis",
-                "Analisando escopo da demanda, dependências e critérios de aceite..."
-            )
-            await self.session.commit()
-            await asyncio.sleep(1.2)
-
-            await self._log_event(
-                job.id, "running", "running", agent_label, "matrix_handoffs",
-                "Definindo escalação técnica e matriz de handoffs para os agentes especialistas..."
-            )
-            await self.session.commit()
-            await asyncio.sleep(1.2)
-
-        # Step 2: Command execution
         workspace = Path(job.workspace_path or "")
         workspace.mkdir(parents=True, exist_ok=True)
 
         try:
+            # Planning / execution: materializa artefatos reais (sem teatro de shell/echo).
+            if origin in ("planning", "execution"):
+                from app.models.task import Task
+
+                task = await self.session.get(Task, job.task_id) if job.task_id else None
+                task_ref = (
+                    f"Task #{task.seq}: {task.title}"
+                    if task and task.seq
+                    else (task.title if task else (job.task_id or "sem task"))
+                )
+                await self._log_event(
+                    job.id, "running", "running", agent_label, "job_context",
+                    f"{agent_label} · {task_ref} · {model_label} · esforço {effort_label}",
+                )
+                await self.session.commit()
+
+                if origin == "planning":
+                    await self._log_event(
+                        job.id, "running", "running", agent_label, "plan_write",
+                        "Gerando plano.md e metadados de handoffs/gates...",
+                    )
+                    await self.session.commit()
+                    await self._materialize_plan(job, workspace)
+                    success_detail = "Planejamento concluído. Artefato plano.md registrado."
+                    stub_output = f"plan-ok:{job.id}"
+                else:
+                    await self._log_event(
+                        job.id, "running", "running", agent_label, "exec_write",
+                        "Resolvendo a demanda e gerando evidências (execucao.md / output.txt)...",
+                    )
+                    await self.session.commit()
+                    deliverable = await self._produce_deliverable(job, task)
+                    await self._materialize_execution(job, workspace, deliverable)
+                    success_detail = "Execução concluída. Resposta registrada em execucao.md."
+                    stub_output = deliverable
+
+                artifact_path = workspace / "output.txt"
+                if not artifact_path.exists():
+                    artifact_path.write_text(stub_output, encoding="utf-8")
+                    self.session.add(
+                        Artifact(
+                            id=str(uuid.uuid4()),
+                            job_id=job.id,
+                            task_id=job.task_id,
+                            name="output.txt",
+                            artifact_type="text",
+                            path=str(artifact_path),
+                            size_bytes=artifact_path.stat().st_size,
+                            qa_status="pending",
+                        )
+                    )
+
+                await self._transition(job, "succeeded", details=success_detail)
+                await self._advance_linked_task(job, success=True)
+                await self.session.commit()
+                return
+
+            # Manual: executa comando allowlisted
             cmd_name = command.split()[0] if command else ""
             if cmd_name not in ALLOWED_COMMANDS:
                 await self._fail(job, f"Command '{cmd_name}' not in allowlist: {ALLOWED_COMMANDS}")
                 await self.session.commit()
                 return
+
+            await self._log_event(
+                job.id, "running", "running", "worker", "process_start",
+                f"Executando comando: {command}",
+            )
+            await self.session.commit()
 
             proc = await asyncio.create_subprocess_shell(
                 command,
@@ -228,19 +282,23 @@ class JobRunner:
             output = (stdout or b"").decode(errors="replace").strip()
             err = (stderr or b"").decode(errors="replace").strip()
 
-            if proc.returncode == 0:
-                if output:
-                    clean_output = output.strip("'\"")
-                    await self._log_event(
-                        job.id, "running", "running", "worker", "process_output", clean_output
-                    )
-                    await self.session.commit()
-                    await asyncio.sleep(0.8)
+            if proc.returncode != 0:
+                await self._fail(job, f"Exit code {proc.returncode}: {err[:500] or 'sem stderr'}")
+                await self._advance_linked_task(job, success=False)
+                await self.session.commit()
+                return
 
-                # Create artifact from output
-                artifact_path = workspace / "output.txt"
-                artifact_path.write_text(output, encoding="utf-8")
-                artifact = Artifact(
+            if output:
+                await self._log_event(
+                    job.id, "running", "running", "worker", "process_output",
+                    output.strip("'\""),
+                )
+                await self.session.commit()
+
+            artifact_path = workspace / "output.txt"
+            artifact_path.write_text(output, encoding="utf-8")
+            self.session.add(
+                Artifact(
                     id=str(uuid.uuid4()),
                     job_id=job.id,
                     task_id=job.task_id,
@@ -250,60 +308,23 @@ class JobRunner:
                     size_bytes=artifact_path.stat().st_size,
                     qa_status="pending",
                 )
-                self.session.add(artifact)
+            )
 
-                diff_stat = ""
-                if job.workspace_path and (Path(job.workspace_path) / ".git").exists():
-                    try:
-                        from app.api.v1.jobs import _get_office_module
-                        office = _get_office_module()
-                        if office:
-                            import re
-                            m_num = re.search(r"\d+", str(job.task_id or ""))
-                            seq_num = int(m_num.group(0)) if m_num else 1
-                            prova = office.worktree_prova_diff(job.workspace_path)
-                            diff_stat = prova.get("diff_stat", "")
-                            if prova.get("mudou"):
-                                sha, err_c = office.worktree_commit_fase(
-                                    job.workspace_path, seq_num, 1, job.agent_id or "pm-projetos"
-                                )
-                                if sha:
-                                    await self._log_event(
-                                        job.id, "running", "running", "worker", "git_commit",
-                                        f"Commit intermediário na branch da task: {sha[:7]}"
-                                    )
-                    except Exception as e_wt:
-                        print(f"[JobRunner] Worktree diff/commit warning: {e_wt}")
-
-                origin = (job.origin or "manual").lower()
-                success_detail = (
-                    "Planejamento concluído. Artefato plano.md registrado."
-                    if origin == "planning"
-                    else "Execução concluída com sucesso. Artefato registrado."
-                )
-                if origin == "planning":
-                    await self._materialize_plan(job, workspace)
-                elif origin == "execution":
-                    await self._materialize_execution(job, workspace, output)
-
-                await self._transition(
-                    job, "succeeded",
-                    details=success_detail,
-                    git_diff_stat=diff_stat,
-                )
-                await self._advance_linked_task(job, success=True)
-                await self.session.commit()
-            else:
-                await self._fail(job, f"Exit code {proc.returncode}: {err[:500]}")
-                await self._advance_linked_task(job, success=False)
-                await self.session.commit()
+            await self._transition(
+                job, "succeeded",
+                details="Execução concluída com sucesso. Artefato registrado.",
+            )
+            await self._advance_linked_task(job, success=True)
+            await self.session.commit()
 
         except asyncio.TimeoutError:
             await self._fail(job, f"Timeout after {timeout}s")
             await self._advance_linked_task(job, success=False)
             await self.session.commit()
         except Exception as e:
-            await self._fail(job, str(e)[:500])
+            reason = (str(e) or "").strip() or f"{type(e).__name__}: falha na execução"
+            print(f"[JobRunner] run failed for {job_id}: {type(e).__name__}: {e!r}")
+            await self._fail(job, reason[:500])
             await self._advance_linked_task(job, success=False)
             await self.session.commit()
 
@@ -386,26 +407,119 @@ class JobRunner:
             self.session.add(task)
         await self.session.flush()
 
+    async def _produce_deliverable(self, job: Job, task) -> str:
+        """Gera a resposta real à demanda (não stub). Clima via Open-Meteo; demais via GhostCLI se disponível."""
+        import re
+        import os
+        import httpx
+
+        demand = ((task.description if task else None) or (task.title if task else "") or "").strip()
+        title = (task.title if task else "") or "Demanda"
+
+        if re.search(r"temperatur|clima|\btempo\b|weather|°c|graus", demand, re.I):
+            try:
+                # Default: São Paulo — Open-Meteo (sem API key)
+                url = (
+                    "https://api.open-meteo.com/v1/forecast"
+                    "?latitude=-23.55&longitude=-46.63"
+                    "&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m"
+                    "&daily=temperature_2m_max,temperature_2m_min"
+                    "&timezone=America%2FSao_Paulo&forecast_days=1"
+                )
+                async with httpx.AsyncClient(timeout=12.0) as client:
+                    resp = await client.get(url)
+                    resp.raise_for_status()
+                    data = resp.json()
+                cur = data.get("current") or {}
+                daily = data.get("daily") or {}
+                temp = cur.get("temperature_2m")
+                feels = cur.get("apparent_temperature")
+                hum = cur.get("relative_humidity_2m")
+                wind = cur.get("wind_speed_10m")
+                tmax = (daily.get("temperature_2m_max") or [None])[0]
+                tmin = (daily.get("temperature_2m_min") or [None])[0]
+                day = (daily.get("time") or ["hoje"])[0]
+                lines = [
+                    f"Resposta à demanda: {demand}",
+                    "",
+                    f"Local de referência: São Paulo, SP (America/Sao_Paulo)",
+                    f"Data da previsão: {day}",
+                    f"Temperatura atual: {temp} °C" if temp is not None else "Temperatura atual: indisponível",
+                    f"Sensação térmica: {feels} °C" if feels is not None else "",
+                    f"Mínima / máxima do dia: {tmin} °C / {tmax} °C" if tmin is not None else "",
+                    f"Umidade: {hum}%" if hum is not None else "",
+                    f"Vento: {wind} km/h" if wind is not None else "",
+                    "",
+                    "Fonte: Open-Meteo (open-meteo.com).",
+                ]
+                return "\n".join(l for l in lines if l is not None)
+            except Exception as exc:
+                return (
+                    f"Não foi possível obter a temperatura agora ({type(exc).__name__}: {exc}).\n"
+                    f"Demanda original: {demand}\n"
+                    "Tente novamente ou consulte um serviço meteorológico."
+                )
+
+        api_key = os.environ.get("GHOSTCLI_API_KEY", "")
+        base = os.environ.get("GHOSTCLI_BASE_URL", "https://ghostcli.cloud/v1")
+        if api_key:
+            try:
+                model = job.model_name or "claude-sonnet-5"
+                payload = {
+                    "model": model,
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": (
+                                "Você é Paula PM no TAVIR Escritório. Execute a demanda do usuário "
+                                "e entregue uma resposta objetiva em português do Brasil. "
+                                "Não invente dados que precisem de API externa sem avisar."
+                            ),
+                        },
+                        {
+                            "role": "user",
+                            "content": f"Título: {title}\n\nDemanda:\n{demand}",
+                        },
+                    ],
+                    "max_tokens": 1200,
+                }
+                async with httpx.AsyncClient(timeout=60.0) as client:
+                    resp = await client.post(
+                        f"{base}/chat/completions",
+                        json=payload,
+                        headers={
+                            "Authorization": f"Bearer {api_key}",
+                            "Content-Type": "application/json",
+                        },
+                    )
+                    resp.raise_for_status()
+                    return resp.json()["choices"][0]["message"]["content"]
+            except Exception as exc:
+                return (
+                    f"Falha ao consultar o modelo ({type(exc).__name__}: {exc}).\n\n"
+                    f"Demanda recebida:\n{demand}\n\n"
+                    "Configure GHOSTCLI_API_KEY ou rode novamente."
+                )
+
+        return (
+            f"Demanda recebida:\n{demand}\n\n"
+            "Entrega parcial: o orquestrador registrou a solicitação, mas não há gateway de IA "
+            "(GHOSTCLI_API_KEY) configurado para produzir a resposta completa. "
+            "Para demandas de clima/temperatura, a execução usa Open-Meteo automaticamente."
+        )
+
     async def _materialize_execution(self, job: Job, workspace: Path, output: str) -> None:
         """Registra evidência de execução e consome plano.md se existir."""
         from app.models.task import Task
 
         task = await self.session.get(Task, job.task_id) if job.task_id else None
         plan_path = workspace / "plano.md"
-        plan_excerpt = ""
-        if plan_path.exists():
-            try:
-                plan_excerpt = plan_path.read_text(encoding="utf-8")[:1200]
-            except Exception:
-                plan_excerpt = "(plano.md ilegível)"
-
         # Copia plano do workspace de planning se este job tem outro workspace
         if task and not plan_path.exists():
             tags = task.tags if isinstance(task.tags, list) else []
             plan_job_tag = next((t for t in tags if str(t).startswith("plan_job:")), None)
             if plan_job_tag:
                 plan_job_id = str(plan_job_tag).split(":", 1)[1]
-                # tenta achar artefato plano.md do job de planejamento
                 from sqlalchemy import select
                 stmt = select(Artifact).where(
                     Artifact.job_id == plan_job_id,
@@ -415,22 +529,22 @@ class JobRunner:
                 art = res.scalars().first()
                 if art and art.path and Path(art.path).exists():
                     try:
-                        plan_excerpt = Path(art.path).read_text(encoding="utf-8")[:1200]
                         (workspace / "plano.md").write_text(
                             Path(art.path).read_text(encoding="utf-8"), encoding="utf-8"
                         )
                     except Exception:
                         pass
 
+        demand = ((task.description if task else None) or (task.title if task else "") or "").strip()
+        answer = (output or "").strip() or "(sem saída)"
         exec_body = (
             f"# Execução — Task #{task.seq if task and task.seq else '?'}\n\n"
             f"**Job:** {job.id}\n"
             f"**Modelo:** {job.model_name or 'Fable'}\n"
             f"**Esforço:** {job.effort or 'Máximo'}\n"
             f"**Agente:** {job.agent_id or 'pm-projetos'}\n\n"
-            f"## Plano de referência\n"
-            f"{plan_excerpt or '_Nenhum plano.md encontrado; execução direta._'}\n\n"
-            f"## Saída\n```\n{output[:2000] if output else '(sem stdout)'}\n```\n"
+            f"## Demanda\n{demand or '_Sem descrição._'}\n\n"
+            f"## Resposta\n{answer}\n"
         )
         exec_path = workspace / "execucao.md"
         exec_path.write_text(exec_body, encoding="utf-8")
@@ -534,8 +648,9 @@ class JobRunner:
         await self.session.flush()
 
     async def _fail(self, job: Job, reason: str):
-        job.error_message = reason
-        await self._transition(job, "failed", details=reason)
+        msg = (reason or "").strip() or "Falha sem detalhes registrados"
+        job.error_message = msg
+        await self._transition(job, "failed", details=msg)
 
     async def _log_event(self, job_id: str, prev: str | None, new: str, actor: str, action: str, details: str | None = None):
         event = Event(
@@ -559,7 +674,10 @@ class JobRunner:
         job.status = "queued"
         job.error_message = None
         job.updated_at = datetime.now(timezone.utc)
-        await self._log_event(job.id, old_status, "queued", "operator", "job_retried", "job_retried: Job re-enfileirado pelo operador")
+        await self._log_event(
+            job.id, old_status, "queued", "operator", "job_retried",
+            "Job re-enfileirado pelo operador",
+        )
 
         from sqlalchemy import select
         stmt = select(JobAttempt).where(JobAttempt.job_id == job.id).order_by(JobAttempt.attempt_number.desc())
@@ -571,11 +689,11 @@ class JobRunner:
             job_id=job.id,
             attempt_number=next_num,
             status="queued",
-            log_stream="job_retried: Job re-enfileirado pelo operador",
+            log_stream="Job re-enfileirado pelo operador",
             git_diff_stat="",
         )
         self.session.add(new_attempt)
-        _sync_to_office_db(job, next_num, "queued", log_stream="job_retried: Job re-enfileirado pelo operador")
+        _sync_to_office_db(job, next_num, "queued", log_stream="Job re-enfileirado pelo operador")
         await self.session.flush()
         return job
 
