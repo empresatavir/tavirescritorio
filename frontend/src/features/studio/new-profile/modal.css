@@ -1,0 +1,329 @@
+.stu-modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.stu-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(7, 13, 24, 0.72);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+.stu-modal {
+  position: relative;
+  z-index: 1;
+  width: min(720px, 100%);
+  max-height: min(860px, calc(100vh - 48px));
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.14));
+  background: var(--surface-1, #0f1729);
+  color: var(--text-primary, #f4f6f2);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.stu-modal-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.1));
+}
+
+.stu-modal-step {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted, #aeb7c4);
+}
+
+.stu-modal-head h2 {
+  margin: 6px 0 0;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.stu-modal-lead {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary, #cbd3de);
+  line-height: 1.45;
+}
+
+.stu-modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.12));
+  background: transparent;
+  color: var(--text-secondary, #cbd3de);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.stu-modal-body {
+  padding: 18px 22px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.stu-modal-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 22px 18px;
+  border-top: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.1));
+}
+
+.stu-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stu-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary, #cbd3de);
+}
+
+.stu-field-full {
+  grid-column: 1 / -1;
+}
+
+.stu-field input,
+.stu-field textarea,
+.stu-field select {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.14));
+  background: var(--surface-0, #0b1220);
+  color: var(--text-primary, #f4f6f2);
+  font-size: 13px;
+  padding: 10px 12px;
+  outline: none;
+  font-family: inherit;
+}
+
+.stu-field input[type="color"] {
+  height: 40px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.stu-field textarea {
+  resize: vertical;
+  min-height: 64px;
+}
+
+.stu-btn-ghost,
+.stu-btn-solid {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.stu-btn-ghost {
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.14));
+  background: transparent;
+  color: var(--text-primary, #f4f6f2);
+}
+
+.stu-btn-solid {
+  border: none;
+  background: var(--action-bg, var(--lime, #b7f34a));
+  color: var(--action-fg, #0b1220);
+}
+
+.stu-btn-solid:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.stu-net-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stu-net-pick-card {
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.12));
+  background: var(--surface-0, #0b1220);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stu-net-pick-card.is-on {
+  border-color: color-mix(in oklab, var(--lime, #b7f34a) 45%, transparent);
+}
+
+.stu-net-pick-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text-primary, #f4f6f2);
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.stu-net-pick-toggle strong {
+  flex: 1;
+  font-size: 14px;
+}
+
+.stu-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.2));
+  display: grid;
+  place-content: center;
+  font-size: 12px;
+  color: transparent;
+  flex-shrink: 0;
+}
+
+.stu-check.is-on {
+  background: var(--lime, #b7f34a);
+  border-color: var(--lime, #b7f34a);
+  color: #0b1220;
+  font-weight: 700;
+}
+
+.stu-pick-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.stu-pick-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stu-pick-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stu-pick-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.12));
+  background: var(--surface-0, #0b1220);
+  color: var(--text-primary, #f4f6f2);
+  cursor: pointer;
+}
+
+.stu-pick-card.is-on {
+  border-color: color-mix(in oklab, var(--lime, #b7f34a) 50%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--lime, #b7f34a) 25%, transparent);
+}
+
+.stu-pick-card strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.stu-pick-card p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary, #cbd3de);
+}
+
+.stu-pick-card > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.stu-pick-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: grid;
+  place-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #0b1220;
+  flex-shrink: 0;
+}
+
+.stu-prod-summary {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed var(--border-subtle, rgba(244, 246, 242, 0.16));
+  background: rgba(244, 246, 242, 0.03);
+}
+
+.stu-prod-summary p:last-child {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-secondary, #cbd3de);
+}
+
+.stu-modal .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+[data-theme="light"] .stu-modal {
+  background: #fff;
+}
+
+[data-theme="light"] .stu-field input,
+[data-theme="light"] .stu-field textarea,
+[data-theme="light"] .stu-pick-card,
+[data-theme="light"] .stu-net-pick-card {
+  background: #f4f6f2;
+  border-color: rgba(11, 18, 32, 0.1);
+}
+
+@media (max-width: 640px) {
+  .stu-modal-grid,
+  .stu-pick-2,
+  .stu-pick-3 {
+    grid-template-columns: 1fr;
+  }
+}

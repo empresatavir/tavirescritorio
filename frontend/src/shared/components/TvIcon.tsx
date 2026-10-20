@@ -21,6 +21,7 @@ function sanitizeSvg(raw: string): string {
   return raw
     .replace(/<metadata[\s\S]*?<\/metadata>/gi, "")
     .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/\s*xmlns:c2pa="[^"]*"/gi, "")
     .replace(/<svg([^>]*?)\swidth="[^"]*"/i, '<svg$1 width="100%"')
     .replace(/<svg([^>]*?)\sheight="[^"]*"/i, '<svg$1 height="100%"');
 }
