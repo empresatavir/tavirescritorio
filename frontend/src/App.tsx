@@ -6,7 +6,7 @@ import { Tasks } from "./features/tasks/Tasks";
 import { Aprovacoes } from "./features/aprovacoes/Aprovacoes";
 import { Agentes } from "./features/agentes/Agentes";
 import { Chat } from "./features/chat/Chat";
-import { Studio } from "./features/studio/Studio";
+import { Studio, StudioWorkspace } from "./features/studio/Studio";
 import { Fabrica, FabricaProjectConsole } from "./features/fabrica/Fabrica";
 import { Integracoes } from "./features/integracoes/Integracoes";
 import { Cerebro } from "./features/cerebro/Cerebro";
@@ -37,6 +37,7 @@ export default function App() {
 
       {/* Módulos */}
       <Route path="/studio" component={Studio} />
+      <Route path="/studio/:profileId" component={StudioWorkspace} />
       <Route path="/fabrica" component={Fabrica} />
       <Route path="/fabrica/:projectId" component={FabricaProjectConsole} />
       <Route path="/flow" component={() => <GenericPageView pageId="flow" />} />

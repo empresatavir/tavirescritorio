@@ -18,7 +18,7 @@ function SlideBody(props: {
           <em style={props.accent ? { color: props.accent } : undefined}>{parts()[1]}</em>
         </Show>
       </h4>
-      <p>@{props.handle.replace("@", "")}</p>
+      <p>@{props.handle.replace(/^@/, "")}</p>
     </div>
   );
 }
@@ -42,22 +42,14 @@ function SmartphoneFrame(props: {
         <div class="stu-phone-island" aria-hidden="true" />
         <div class="stu-phone-app">
           <header class="stu-phone-app-head">
-            <div
-              class="stu-ws-avatar"
-              style={{
-                background: props.profile.color,
-                width: "28px",
-                height: "28px",
-                "font-size": "10px",
-              }}
-            >
+            <div class="stu-phone-avatar" style={{ background: props.profile.color }}>
               {props.profile.initials}
             </div>
             <div class="stu-phone-app-meta">
               <strong>
                 {props.net === "li"
                   ? props.profile.name
-                  : props.profile.handle.replace("@", "")}
+                  : props.profile.handle.replace(/^@/, "")}
               </strong>
               <span>
                 {props.net === "li"
@@ -70,6 +62,7 @@ function SmartphoneFrame(props: {
           </header>
           <div class="stu-phone-viewport">{props.children}</div>
           {props.footer}
+          <div class="stu-phone-home" aria-hidden="true" />
         </div>
       </div>
     </div>
@@ -207,24 +200,22 @@ export function DevicePreview(props: {
             <div class="stu-mock-yt-thumb">
               <strong>{props.piece?.title || "Thumbnail · prévia do episódio"}</strong>
             </div>
-            <div class="stu-mock-yt-meta">
-              <strong style={{ "font-size": "15px" }}>
-                {props.piece?.title || "Vídeo em produção"}
-              </strong>
-              <p style={{ "margin-top": "6px" }}>
+            <div class="stu-mock-yt-meta is-desktop">
+              <strong>{props.piece?.title || "Vídeo em produção"}</strong>
+              <p class="stu-yt-line">
                 {props.profile.name} · canal · {props.piece?.subtitle || "roteiro em andamento"}
               </p>
-              <p style={{ "margin-top": "10px" }}>
+              <p class="stu-yt-desc">
                 {props.piece?.caption || "Descrição e timestamps serão montados pelo squad."}
               </p>
             </div>
           </Show>
           <Show when={props.net !== "yt"}>
             <div class="stu-desktop-feed">
-              <div class="stu-phone-app-head" style={{ padding: "0 0 12px" }}>
+              <div class="stu-phone-app-head stu-desktop-author">
                 <div
-                  class="stu-ws-avatar"
-                  style={{ background: props.profile.color, width: "40px", height: "40px" }}
+                  class="stu-phone-avatar is-lg"
+                  style={{ background: props.profile.color }}
                 >
                   {props.profile.initials}
                 </div>

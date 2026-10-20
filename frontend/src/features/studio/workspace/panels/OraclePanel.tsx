@@ -69,7 +69,7 @@ export function OraclePanel(props: {
 
       <div class="stu-card">
         <div class="stu-card-head">
-          <h2 style={{ margin: 0, "font-size": "16px" }}>Radar desta semana</h2>
+          <h2 class="stu-card-title">Radar desta semana</h2>
           <span class="stu-dash-muted">14 fontes</span>
         </div>
         <div class="stu-orac-radar">
@@ -91,8 +91,8 @@ export function OraclePanel(props: {
       <div class="stu-card">
         <div class="stu-card-head">
           <div>
-            <h2 style={{ margin: 0, "font-size": "16px" }}>Instruções editoriais</h2>
-            <p style={{ margin: "6px 0 0", "font-size": "12px", color: "var(--text-muted)" }}>
+            <h2 class="stu-card-title">Instruções editoriais</h2>
+            <p class="stu-muted-line">
               Contexto aplicado em toda pauta deste perfil.
             </p>
           </div>

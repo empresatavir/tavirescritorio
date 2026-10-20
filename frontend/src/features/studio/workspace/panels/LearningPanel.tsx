@@ -74,8 +74,8 @@ export function LearningPanel(props: {
         <div class="stu-card">
           <div class="stu-card-head">
             <div>
-              <h2 style={{ margin: 0, "font-size": "16px" }}>Retenção por gancho</h2>
-              <p style={{ margin: "4px 0 0", "font-size": "12px", color: "var(--text-muted)" }}>
+              <h2 class="stu-card-title">Retenção por gancho</h2>
+              <p class="stu-muted-line">
                 Média das últimas 12 publicações
               </p>
             </div>
@@ -95,7 +95,7 @@ export function LearningPanel(props: {
 
         <div class="stu-card">
           <div class="stu-card-head">
-            <h2 style={{ margin: 0, "font-size": "16px" }}>Ângulos comprovados</h2>
+            <h2 class="stu-card-title">Ângulos comprovados</h2>
           </div>
           <ul class="stu-learn-angles">
             <For each={ANGLES}>
