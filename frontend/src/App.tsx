@@ -37,7 +37,6 @@ export default function App() {
 
       {/* Módulos */}
       <Route path="/studio" component={Studio} />
-      <Route path="/studio/:profileId" component={StudioWorkspace} />
       <Route path="/fabrica" component={Fabrica} />
       <Route path="/fabrica/:projectId" component={FabricaProjectConsole} />
       <Route path="/flow" component={() => <GenericPageView pageId="flow" />} />
