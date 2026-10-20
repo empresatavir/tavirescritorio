@@ -4,6 +4,7 @@ from app.models.agent import Agent
 from app.models.project import Project
 from app.models.task import Task
 from app.models.job import Job
+from app.models.job_attempt import JobAttempt
 from app.models.approval import Approval
 from app.models.artifact import Artifact
 from app.models.event import Event
@@ -18,6 +19,8 @@ from app.models.knowledge_entry import KnowledgeEntry
 from app.models.chat_conversation import ChatConversation
 from app.models.chat_message import ChatMessage
 from app.models.proposal import Proposal
+from app.models.factory_run import FactoryRun
+from app.models.factory_stage import FactoryStageInstance
 
 __all__ = [
     "Base",
@@ -25,6 +28,7 @@ __all__ = [
     "Project",
     "Task",
     "Job",
+    "JobAttempt",
     "Approval",
     "Artifact",
     "Event",
@@ -39,4 +43,6 @@ __all__ = [
     "ChatConversation",
     "ChatMessage",
     "Proposal",
+    "FactoryRun",
+    "FactoryStageInstance",
 ]

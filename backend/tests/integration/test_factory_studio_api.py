@@ -50,8 +50,9 @@ async def test_factory_api_templates_and_projects():
             json={
                 "name": "Novo Portal B2B",
                 "company": "Cliente Alfa",
+                "ownership": "externo",
                 "template_code": "sy-c",
-                "total_stages": 10,
+                "total_stages": 12,
                 "stack": "Next.js + FastAPI",
                 "scope_items": ["Autenticação", "Catálogo"],
             }
@@ -60,6 +61,11 @@ async def test_factory_api_templates_and_projects():
         created_p = create_resp.json()
         assert created_p["name"] == "Novo Portal B2B"
         assert created_p["template_code"] == "sy-c"
+        assert created_p["total_stages"] == 12
+        assert created_p.get("local_path")
+        run_resp = await client.get(f"/api/v1/factory/projects/{created_p['id']}/run")
+        assert run_resp.status_code == 200
+        assert len(run_resp.json()["stages"]) == 12
 
 
 @pytest.mark.asyncio
