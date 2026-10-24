@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "url_base": "http://localhost:9002/fabrica/d49fe638-14a1-4291-8692-f0c350102f60",
+    "ambiente": "preview",
+    "data": "2026-10-22T15:50:00+00:00",
+    "viewport": "1440x900",
+    "total_acoes": 12,
+    "duracao_s": 540
+  },
+  "resumo": {
+    "status": "falhou",
+    "critico": 0,
+    "alto": 3,
+    "medio": 4,
+    "baixo": 1,
+    "total_achados": 8
+  },
+  "achados": [
+    {
+      "id": "QA-001",
+      "severidade": "alto",
+      "titulo": "Validar pastas não valida a pasta",
+      "categoria": "interatividade",
+      "acao": "Clicar em Validar pastas",
+      "comportamento_ui": "O botão só repete o caminho do workspace. Ele não diz se as pastas esperadas existem.",
+      "comportamento_rede": "Nenhuma chamada de API",
+      "sugestao": "Conferir no backend as pastas esperadas da etapa e mostrar o que existe e o que falta."
+    },
+    {
+      "id": "QA-002",
+      "severidade": "alto",
+      "titulo": "Dois modelos do Cursor são recusados pelo agente local",
+      "categoria": "motores",
+      "acao": "Ler GPT-5 e Sonnet Thinking no diálogo Configurar",
+      "comportamento_ui": "Os dois modelos aparecem como escolhíveis.",
+      "comportamento_rede": "O agente local respondeu: Cannot use this model: gpt-5. O mesmo ocorreu com sonnet-4-thinking.",
+      "sugestao": "Listar só os ids que o agente local aceita, ou mapear cada rótulo para um id aceito."
+    },
+    {
+      "id": "QA-003",
+      "severidade": "alto",
+      "titulo": "O relatório da etapa atual é de uma entrega anterior",
+      "categoria": "consistência",
+      "acao": "Ler o relatório do agente na visão geral",
+      "comportamento_ui": "A etapa em execução é Implementação controlada · backend. O texto é changes/NOTES.md e o rodapé diz que o arquivo foi gerado na etapa m_code, com o modelo claude-opus-5-5.",
+      "comportamento_rede": "GET ai-settings devolve cursor, auto-smart, balanced.",
+      "sugestao": "Marcar o arquivo como entrega anterior enquanto a etapa atual ainda está em execução."
+    },
+    {
+      "id": "QA-004",
+      "severidade": "medio",
+      "titulo": "O chat abre no primeiro agente e mistura as mensagens",
+      "categoria": "interatividade",
+      "acao": "Abrir a aba Chat",
+      "comportamento_ui": "O título do fio é Dora Descoberta. As mensagens visíveis são do Diego Sistemas.",
+      "sugestao": "Abrir no agente da etapa atual e mostrar só as mensagens desse agente."
+    },
+    {
+      "id": "QA-005",
+      "severidade": "medio",
+      "titulo": "A execução automática não existe no backend",
+      "categoria": "consistência",
+      "acao": "Ler os dois interruptores e o run",
+      "comportamento_ui": "Os dois interruptores dizem desligada. Isso está certo neste navegador.",
+      "comportamento_rede": "O run não guarda esse estado. O valor fica só no localStorage.",
+      "sugestao": "Guardar ligado ou desligado no run. O interruptor não foi ligado neste teste."
+    },
+    {
+      "id": "QA-006",
+      "severidade": "medio",
+      "titulo": "A primeira pintura diz que a esteira está vazia",
+      "categoria": "interatividade",
+      "acao": "Recarregar a tela do projeto",
+      "comportamento_ui": "Por cerca de um segundo a visão geral diz que o run ainda não materializou stages. Depois as 10 etapas aparecem.",
+      "comportamento_rede": "GET /run já devolvia as 10 etapas.",
+      "sugestao": "Mostrar carregando até o pedido voltar."
+    },
+    {
+      "id": "QA-007",
+      "severidade": "medio",
+      "titulo": "O modo do Auto não chega ao agente",
+      "categoria": "motores",
+      "acao": "Selecionar Cursor e Auto em Configurar",
+      "comportamento_ui": "O terceiro campo vira Modo, com Cost, Balance e Intelligence.",
+      "comportamento_rede": "A chamada local usa só o modelo auto. O modo salvo não entra no comando.",
+      "sugestao": "Enviar o modo quando o agente local aceitar, ou tirar o campo enquanto ele não tiver efeito."
+    },
+    {
+      "id": "QA-008",
+      "severidade": "baixo",
+      "titulo": "A nota do modal tem um espaço antes do ponto",
+      "categoria": "modais",
+      "acao": "Abrir Configurar com Auto selecionado",
+      "comportamento_ui": "A nota termina com a palavra modo, um espaço e o ponto.",
+      "sugestao": "Remover o espaço antes do ponto."
+    }
+  ],
+  "caminho_feliz": {
+    "status": "parcial",
+    "acoes": 12,
+    "observacoes": "Esteira, kanban, SSE, Configurar e Pasta local conferem com o backend. Ghost Opus, Cursor Auto e Cursor Composer responderam ok. Executar, Concluir, Marcar falha, Pausar, Refazer e Autorizar não foram acionados."
+  },
+  "limitacoes": [
+    "Upload não se aplica a esta tela.",
+    "Executar, Concluir etapa, Marcar falha, Pausar, Refazer projeto, Refazer entrega e Autorizar não foram clicados, para não alterar a esteira.",
+    "O interruptor de execução automática não foi ligado.",
+    "Sonnet e Fable do Ghost não receberam uma chamada própria. Só o Opus foi sondado.",
+    "O runner genérico não enxerga os controles desta tela. Os achados vêm da passagem dirigida."
+  ],
+  "rede_total": 278,
+  "console_total": 1
+}
