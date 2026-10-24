@@ -18,7 +18,7 @@ const DEMO_ARTIFACTS = [
 
 export function PipelinePanel(props: {
   pieces: ContentPiece[];
-  onRetryError?: () => void;
+  onRetryError?: (pieceId?: string) => void;
 }) {
   const [compact, setCompact] = createSignal(false);
 
@@ -143,7 +143,11 @@ export function PipelinePanel(props: {
                     <span>7 artefatos</span>
                   </div>
                   <div class="stu-card-actions-left" style={{ "margin-top": "12px" }}>
-                    <button type="button" class="stu-btn-lg" onClick={() => props.onRetryError?.()}>
+                    <button
+                      type="button"
+                      class="stu-btn-lg"
+                      onClick={() => props.onRetryError?.(err.id)}
+                    >
                       Tentar novamente
                     </button>
                     <button type="button" class="stu-btn-sm">

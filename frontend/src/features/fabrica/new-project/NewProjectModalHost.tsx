@@ -47,7 +47,26 @@ export function NewProjectModalHost(props: NewProjectModalHostProps) {
             template_category: payload.template_category,
           };
           const created = await api.createProject(body);
-          showToast(`Projeto "${created.name}" criado`, "Fábrica", "success");
+          const skipped: string[] = [];
+          for (const file of payload.context_file_blobs || []) {
+            const safe = file.name.replace(/[\\/]/g, "-");
+            if (!/\.(md|txt|json|csv)$/i.test(safe)) {
+              skipped.push(file.name);
+              continue;
+            }
+            await api.writeFactoryArtifact(created.id, {
+              path: `context/${safe}`,
+              content: await file.text(),
+              overwrite: true,
+            });
+          }
+          showToast(
+            skipped.length
+              ? `Projeto "${created.name}" criado. A Dora não lê: ${skipped.join(", ")}. Envie .md, .txt, .json ou .csv.`
+              : `Projeto "${created.name}" criado`,
+            "Fábrica",
+            skipped.length ? "warn" : "success",
+          );
           props.onCreated?.(created);
         },
       }),

@@ -1,7 +1,7 @@
 """Factory API router — engineering templates and factory projects CRUD."""
 import asyncio
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Body, Depends, HTTPException
@@ -158,7 +158,7 @@ async def get_factory_project(project_id: str, session: AsyncSession = Depends(g
 
 @router.post("/projects", response_model=FactoryProjectResponse, status_code=201)
 async def create_factory_project(req: CreateFactoryProjectRequest, session: AsyncSession = Depends(get_session)):
-    from app.modules.factory.workspace_roots import materialize_project_workspace
+    from app.modules.factory.workspace_roots import materialize_project_workspace, slugify_project_name
     from app.modules.factory.esteiras import get_esteira
     from app.modules.factory.run_service import materialize_run_for_project
 
@@ -170,7 +170,7 @@ async def create_factory_project(req: CreateFactoryProjectRequest, session: Asyn
     esteira = get_esteira(code)
     total = esteira["total_stages"] if esteira else req.total_stages
 
-    slug = req.name.lower().replace(" ", "-") + f"-{str(uuid.uuid4())[:6]}"
+    slug = f"{slugify_project_name(req.name)}-{str(uuid.uuid4())[:6]}"
     try:
         workspace = materialize_project_workspace(ownership, slug)
     except (ValueError, OSError) as exc:
@@ -239,8 +239,548 @@ async def get_project_run(project_id: str, session: AsyncSession = Depends(get_s
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+    from app.modules.factory.run_service import align_run_to_esteira
+
+    if await align_run_to_esteira(session, run, proj):
+        await session.refresh(run)
+
     stages = await list_stages(session, run.id)
     return serialize_run(run, stages)
+
+
+@router.post("/projects/{project_id}/open-folder")
+async def open_project_folder(project_id: str, session: AsyncSession = Depends(get_session)):
+    """Abre o workspace do projeto no Explorer (Windows) / gerenciador local."""
+    from pathlib import Path
+    from app.modules.factory.workspace_roots import open_folder_in_os
+    from app.modules.factory.run_service import get_active_run, get_latest_run
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    path_str = proj.local_path
+    if not path_str:
+        run = await get_active_run(session, proj.id) or await get_latest_run(session, proj.id)
+        path_str = run.workspace_path if run else None
+    if not path_str:
+        raise HTTPException(status_code=404, detail="Projeto sem pasta local materializada")
+
+    try:
+        open_folder_in_os(Path(path_str))
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+    except OSError as exc:
+        raise HTTPException(status_code=500, detail=f"Falha ao abrir pasta: {exc}") from exc
+
+    return {"ok": True, "path": str(Path(path_str).resolve())}
+
+
+class WriteArtifactRequest(BaseModel):
+    path: str
+    content: str
+    overwrite: bool = True
+    stage_def_id: str | None = None
+
+
+@router.get("/projects/{project_id}/artifacts")
+async def list_project_artifacts(project_id: str, session: AsyncSession = Depends(get_session)):
+    """B4 — lista arquivos reais do workspace + status dos expected_artifacts da etapa atual."""
+    from app.modules.factory.artifacts import ArtifactError, expected_status, list_artifacts
+    from app.modules.factory.run_service import get_active_run, get_latest_run, list_stages
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    try:
+        files = list_artifacts(proj.local_path)
+    except ArtifactError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    expected: list[dict] = []
+    run = await get_active_run(session, proj.id) or await get_latest_run(session, proj.id)
+    if run and run.current_stage_id:
+        stages = await list_stages(session, run.id)
+        current = next((s for s in stages if s.stage_def_id == run.current_stage_id), None)
+        if current and current.expected_artifacts:
+            expected = expected_status(proj.local_path, list(current.expected_artifacts))
+
+    return {
+        "project_id": proj.id,
+        "local_path": proj.local_path,
+        "files": files,
+        "expected": expected,
+        "count": len(files),
+    }
+
+
+@router.get("/projects/{project_id}/artifacts/content")
+async def read_project_artifact(
+    project_id: str,
+    path: str,
+    session: AsyncSession = Depends(get_session),
+):
+    """B4 — lê conteúdo textual de um arquivo do workspace."""
+    from app.modules.factory.artifacts import ArtifactError, read_artifact
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+    try:
+        return read_artifact(proj.local_path, path)
+    except ArtifactError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.put("/projects/{project_id}/artifacts")
+async def write_project_artifact(
+    project_id: str,
+    req: WriteArtifactRequest,
+    session: AsyncSession = Depends(get_session),
+):
+    """B4 — grava arquivo no workspace (UTF-8) e registra no ledger do run."""
+    from app.modules.factory.artifacts import ArtifactError, write_artifact
+    from app.modules.factory.run_service import (
+        _append_ledger,
+        _append_project_event,
+        get_active_run,
+        get_latest_run,
+        list_stages,
+        serialize_run,
+    )
+    from app.modules.factory.sse_hub import factory_sse_hub
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    try:
+        written = write_artifact(
+            proj.local_path,
+            req.path,
+            req.content,
+            overwrite=req.overwrite,
+        )
+    except ArtifactError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    run = await get_active_run(session, proj.id) or await get_latest_run(session, proj.id)
+    ledger_entry = None
+    if run:
+        stages = await list_stages(session, run.id)
+        stage = None
+        if req.stage_def_id:
+            stage = next((s for s in stages if s.stage_def_id == req.stage_def_id), None)
+        if stage is None and run.current_stage_id:
+            stage = next((s for s in stages if s.stage_def_id == run.current_stage_id), None)
+        if stage is None and stages:
+            stage = stages[0]
+        if stage:
+            ledger_entry = _append_ledger(
+                run,
+                kind="artifact",
+                action="written",
+                stage=stage,
+                actor="Operador",
+                note=f"{written['path']} · sha256={written['sha256'][:12]}",
+            )
+            _append_project_event(proj, "Operador", f"Artefato gravado: {written['path']}")
+            await session.flush()
+            await factory_sse_hub.publish(
+                run.id,
+                "event.appended",
+                {
+                    "id": ledger_entry.get("id"),
+                    "run_id": run.id,
+                    "project_id": run.project_id,
+                    "kind": "artifact",
+                    "action": "written",
+                    "title": stage.title,
+                    "actor": "Operador",
+                    "note": ledger_entry.get("note"),
+                    "stage_def_id": stage.stage_def_id,
+                    "occurred_at": ledger_entry.get("at"),
+                },
+            )
+
+    run_payload = None
+    if run:
+        await session.refresh(run)
+        stages_out = await list_stages(session, run.id)
+        run_payload = serialize_run(run, stages_out)
+
+    await session.commit()
+    return {
+        "ok": True,
+        "file": written,
+        "ledger": ledger_entry,
+        "run": run_payload,
+    }
+
+
+@router.get("/projects/{project_id}/qa")
+async def get_project_qa(project_id: str, session: AsyncSession = Depends(get_session)):
+    """B5 — Completion Guard: regras + status pass/fail/wait."""
+    from app.modules.factory.qa_guard import evaluate_guard
+    from app.modules.factory.run_service import get_active_run, get_latest_run, list_stages
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    run = await get_active_run(session, proj.id) or await get_latest_run(session, proj.id)
+    stages = await list_stages(session, run.id) if run else []
+    code = (run.template_code if run else None) or proj.template_code or "lp-c"
+    report = evaluate_guard(proj.local_path, code, stages=stages)
+    report["project_id"] = proj.id
+    report["run_id"] = run.id if run else None
+    return report
+
+
+@router.get("/projects/{project_id}/roadmap")
+async def get_project_roadmap(project_id: str, session: AsyncSession = Depends(get_session)):
+    """B6 — Roadmap = projeção das stages do run."""
+    from app.modules.factory.run_service import get_active_run, get_latest_run, list_stages, serialize_stage
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    run = await get_active_run(session, proj.id) or await get_latest_run(session, proj.id)
+    if not run:
+        raise HTTPException(status_code=404, detail="Projeto sem run")
+    stages = await list_stages(session, run.id)
+    done = sum(1 for s in stages if s.status == "done")
+    total = len(stages) or 1
+    return {
+        "project_id": proj.id,
+        "run_id": run.id,
+        "template_code": run.template_code,
+        "pct": round((done / total) * 100),
+        "stages_done": done,
+        "total_stages": total,
+        "current_stage_id": run.current_stage_id,
+        "stages": [serialize_stage(s) for s in stages],
+    }
+
+
+class ChatMessageRequest(BaseModel):
+    message: str
+    agent_role: str | None = None
+    agent_name: str | None = None
+
+
+@router.get("/projects/{project_id}/chat")
+async def get_project_chat(project_id: str, session: AsyncSession = Depends(get_session)):
+    """B8 — histórico de chat escopado ao projeto."""
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+    files = dict(proj.files or {})
+    chat = list(files.get("chat") or [])
+    return {"project_id": proj.id, "messages": chat}
+
+
+@router.post("/projects/{project_id}/chat")
+async def post_project_chat(
+    project_id: str,
+    req: ChatMessageRequest,
+    session: AsyncSession = Depends(get_session),
+):
+    """B8 — mensagem isolada por project_id (persona da stage via GhostCLI)."""
+    import uuid as _uuid
+    from app.modules.factory.run_service import get_active_run, get_latest_run, list_stages
+    from app.modules.ghostcli import chat_completion
+    from app.modules.ghostcli.client import GhostCliError
+    from sqlalchemy.orm.attributes import flag_modified
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    text = (req.message or "").strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="message vazia")
+
+    run = await get_active_run(session, proj.id) or await get_latest_run(session, proj.id)
+    stages = await list_stages(session, run.id) if run else []
+    agent_name = req.agent_name
+    agent_role = req.agent_role
+    stage_title = None
+    if not agent_name and stages:
+        cur = next((s for s in stages if s.stage_def_id == (run.current_stage_id if run else None)), None)
+        if cur:
+            agent_name = cur.agent
+            agent_role = cur.agent_role or agent_role
+            stage_title = cur.title
+    agent_name = agent_name or "Orquestrador"
+    agent_role = agent_role or "orquestrador"
+
+    now = datetime.now(timezone.utc).isoformat()
+    raw_files = proj.files if isinstance(proj.files, dict) else {}
+    files = dict(raw_files)
+    chat = list(files.get("chat") or [])
+    user_msg = {
+        "id": str(_uuid.uuid4()),
+        "role": "user",
+        "text": text,
+        "agent_role": agent_role,
+        "agent_name": agent_name,
+        "at": now,
+        "project_id": proj.id,
+    }
+
+    history = []
+    for m in chat[-8:]:
+        role = "assistant" if m.get("role") in ("agent", "assistant") else "user"
+        history.append({"role": role, "content": m.get("text") or ""})
+    history.append({"role": "user", "content": text})
+
+    from app.modules.ghostcli import default_effort, default_model
+
+    run_meta = (run.meta if run else None) or {}
+    model = str(run_meta.get("model") or default_model())
+    effort = str(run_meta.get("effort") or default_effort())
+    provider = str(run_meta.get("provider") or "ghostcli")
+
+    system = (
+        f"Você é {agent_name}, atuando como {agent_role} na Fábrica TAVIR.\n"
+        f"Projeto: {proj.name} (id={proj.id}).\n"
+        f"Workspace: {proj.local_path or '—'}.\n"
+        f"Etapa atual: {stage_title or (run.current_stage_id if run else '—')}.\n"
+        f"Modelo: {model}. Esforço: {effort}.\n"
+        "Contexto isolado a este project_id. Responda em português, de forma operacional."
+    )
+
+    ghost_meta = None
+    try:
+        reply_text = await chat_completion(
+            system=system,
+            messages=history,
+            model=model,
+            effort=effort,
+            provider=provider,
+            max_tokens=1200,
+            timeout=240.0,
+        )
+        ghost_meta = f"{provider}:ok:{model}:{effort}"
+    except GhostCliError as exc:
+        reply_text = (
+            f"[{agent_name}] Não consegui falar com o GhostCLI agora ({exc}). "
+            f"Mensagem recebida no projeto {proj.name}."
+        )
+        ghost_meta = f"ghostcli:error:{exc}"
+
+    reply = {
+        "id": str(_uuid.uuid4()),
+        "role": "agent",
+        "text": reply_text,
+        "agent_role": agent_role,
+        "agent_name": agent_name,
+        "at": datetime.now(timezone.utc).isoformat(),
+        "project_id": proj.id,
+        "meta": ghost_meta,
+    }
+    chat.extend([user_msg, reply])
+    files["chat"] = chat[-200:]
+    proj.files = files
+    flag_modified(proj, "files")
+    await session.commit()
+    return {"project_id": proj.id, "messages": [user_msg, reply], "history_count": len(files["chat"])}
+
+
+class AccessUpsertRequest(BaseModel):
+    key: str
+    label: str | None = None
+    kind: str = "secret"
+    status: str = "active"  # active | missing | expiring
+    hint: str | None = None
+    value: str | None = None  # só armazena máscara; valor real não persiste em claro
+
+
+@router.get("/projects/{project_id}/access")
+async def get_project_access(project_id: str, session: AsyncSession = Depends(get_session)):
+    """B9 — metadados de acessos (sem secrets em claro)."""
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+    keys = dict(proj.keys or {})
+    items = list(keys.get("access_items") or [])
+    # nunca devolver value_plain
+    safe = []
+    for it in items:
+        safe.append(
+            {
+                "key": it.get("key"),
+                "label": it.get("label") or it.get("key"),
+                "kind": it.get("kind") or "secret",
+                "status": it.get("status") or "missing",
+                "hint": it.get("hint"),
+                "masked": it.get("masked") or "••••••",
+                "updated_at": it.get("updated_at"),
+            }
+        )
+    return {"project_id": proj.id, "items": safe}
+
+
+@router.put("/projects/{project_id}/access")
+async def upsert_project_access(
+    project_id: str,
+    req: AccessUpsertRequest,
+    session: AsyncSession = Depends(get_session),
+):
+    """B9 — upsert metadado; valor só gera máscara (não persiste plaintext)."""
+    from datetime import timezone
+    from sqlalchemy.orm.attributes import flag_modified
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    key = (req.key or "").strip()
+    if not key:
+        raise HTTPException(status_code=400, detail="key obrigatória")
+
+    keys = dict(proj.keys or {})
+    items = list(keys.get("access_items") or [])
+    masked = "••••••"
+    if req.value:
+        v = req.value.strip()
+        masked = (v[:4] + "•" * min(10, max(0, len(v) - 4))) if len(v) > 4 else "••••"
+
+    found = False
+    now = datetime.now(timezone.utc).isoformat()
+    for it in items:
+        if it.get("key") == key:
+            it["label"] = req.label or it.get("label") or key
+            it["kind"] = req.kind
+            it["status"] = req.status
+            it["hint"] = req.hint
+            it["masked"] = masked if req.value else it.get("masked") or masked
+            it["updated_at"] = now
+            # descarta plaintext se existir
+            it.pop("value_plain", None)
+            found = True
+            break
+    if not found:
+        items.append(
+            {
+                "key": key,
+                "label": req.label or key,
+                "kind": req.kind,
+                "status": req.status if req.value else "missing",
+                "hint": req.hint,
+                "masked": masked if req.value else "••••••",
+                "updated_at": now,
+            }
+        )
+    keys["access_items"] = items
+    proj.keys = keys
+    flag_modified(proj, "keys")
+    await session.commit()
+    return {"project_id": proj.id, "items": items}
+
+
+@router.post("/projects/{project_id}/access/{key}/reveal")
+async def reveal_project_access(
+    project_id: str,
+    key: str,
+    session: AsyncSession = Depends(get_session),
+):
+    """B9 — reveal auditado: só máscara + evento no ledger (sem plaintext)."""
+    from app.modules.factory.run_service import (
+        _append_ledger,
+        _append_project_event,
+        get_active_run,
+        get_latest_run,
+        list_stages,
+    )
+    from app.modules.factory.sse_hub import factory_sse_hub
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    keys = dict(proj.keys or {})
+    items = list(keys.get("access_items") or [])
+    item = next((i for i in items if i.get("key") == key), None)
+    if not item:
+        raise HTTPException(status_code=404, detail=f"Acesso '{key}' não encontrado")
+
+    run = await get_active_run(session, proj.id) or await get_latest_run(session, proj.id)
+    if run:
+        stages = await list_stages(session, run.id)
+        stage = stages[0] if stages else None
+        if stage:
+            entry = _append_ledger(
+                run,
+                kind="access",
+                action="reveal",
+                stage=stage,
+                actor="CEO local",
+                note=f"Reveal auditado · {key} (somente máscara)",
+            )
+            _append_project_event(proj, "CEO local", f"Reveal acesso: {key}")
+            await session.flush()
+            await factory_sse_hub.publish(
+                run.id,
+                "event.appended",
+                {
+                    "id": entry.get("id"),
+                    "run_id": run.id,
+                    "project_id": run.project_id,
+                    "kind": "access",
+                    "action": "reveal",
+                    "title": stage.title,
+                    "actor": "CEO local",
+                    "note": entry.get("note"),
+                    "occurred_at": entry.get("at"),
+                },
+            )
+    await session.commit()
+    return {
+        "project_id": proj.id,
+        "key": key,
+        "masked": item.get("masked") or "••••••",
+        "revealed": False,
+        "note": "v1 não persiste plaintext; reveal só audita no ledger",
+    }
 
 
 @router.get("/runs/{run_id}")
@@ -259,6 +799,12 @@ class StageActionRequest(BaseModel):
     note: str | None = None
     actor: str | None = None
     artifact_hash: str | None = None
+    model: str | None = None
+    effort: str | None = None
+
+
+class AutoSwitchRequest(BaseModel):
+    enabled: bool
 
 
 async def _load_project_and_run(session: AsyncSession, project_id: str):
@@ -337,6 +883,72 @@ async def complete_project_stage(
     return payload
 
 
+@router.post("/projects/{project_id}/stages/{stage_def_id}/execute")
+async def execute_project_stage(
+    project_id: str,
+    stage_def_id: str,
+    req: StageActionRequest = Body(default_factory=StageActionRequest),
+    session: AsyncSession = Depends(get_session),
+):
+    """B7 — executor local: materializa expected_artifacts + hash no ledger."""
+    from app.modules.factory.executor import execute_stage
+    from app.modules.factory.run_service import StageTransitionError
+
+    proj, run = await _load_project_and_run(session, project_id)
+    try:
+        payload = await execute_stage(
+            session,
+            run,
+            proj,
+            stage_def_id,
+            actor=req.actor,
+            note=req.note,
+        )
+    except StageTransitionError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    await session.commit()
+    return payload
+
+
+@router.put("/projects/{project_id}/run/auto-switch")
+async def put_auto_switch(
+    project_id: str,
+    body: AutoSwitchRequest,
+    session: AsyncSession = Depends(get_session),
+):
+    """Liga ou desliga a execução automática no run, sem avançar a esteira."""
+    from app.modules.factory.run_service import set_auto_execute
+
+    _proj, run = await _load_project_and_run(session, project_id)
+    payload = await set_auto_execute(session, run, enabled=body.enabled)
+    await session.commit()
+    return payload
+
+
+@router.post("/projects/{project_id}/run/auto")
+async def auto_execute_project_run(
+    project_id: str,
+    req: StageActionRequest = Body(default_factory=StageActionRequest),
+    session: AsyncSession = Depends(get_session),
+):
+    """Execução automática: execute+complete até o próximo gate CEO / done / falha."""
+    from app.modules.factory.executor import auto_execute_until_gate
+    from app.modules.factory.run_service import StageTransitionError
+
+    proj, run = await _load_project_and_run(session, project_id)
+    try:
+        payload = await auto_execute_until_gate(
+            session,
+            run,
+            proj,
+            actor=req.actor or "Executor automático",
+        )
+    except StageTransitionError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    await session.commit()
+    return payload
+
+
 @router.post("/projects/{project_id}/stages/{stage_def_id}/fail")
 async def fail_project_stage(
     project_id: str,
@@ -355,6 +967,135 @@ async def fail_project_stage(
             proj,
             stage_def_id,
             actor=req.actor,
+            note=req.note,
+        )
+    except StageTransitionError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    await session.commit()
+    return payload
+
+
+@router.post("/projects/{project_id}/stages/{stage_def_id}/resume")
+async def resume_project_stage(
+    project_id: str,
+    stage_def_id: str,
+    req: StageActionRequest = Body(default_factory=StageActionRequest),
+    session: AsyncSession = Depends(get_session),
+):
+    """Retoma etapa falha / run pausado (B3)."""
+    from app.modules.factory.run_service import StageTransitionError, resume_stage
+
+    proj, run = await _load_project_and_run(session, project_id)
+    try:
+        payload = await resume_stage(
+            session,
+            run,
+            proj,
+            stage_def_id,
+            actor=req.actor or "CEO local",
+            note=req.note,
+        )
+    except StageTransitionError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    await session.commit()
+    return payload
+
+
+@router.post("/projects/{project_id}/run/resume")
+async def resume_project_run(
+    project_id: str,
+    req: StageActionRequest = Body(default_factory=StageActionRequest),
+    session: AsyncSession = Depends(get_session),
+):
+    """Retoma o run pausado na etapa atual (B3)."""
+    from app.modules.factory.run_service import StageTransitionError, resume_stage
+
+    proj, run = await _load_project_and_run(session, project_id)
+    try:
+        payload = await resume_stage(
+            session,
+            run,
+            proj,
+            None,
+            actor=req.actor or "CEO local",
+            note=req.note,
+        )
+    except StageTransitionError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    await session.commit()
+    return payload
+
+
+@router.post("/projects/{project_id}/stages/{stage_def_id}/redo")
+async def redo_project_gate(
+    project_id: str,
+    stage_def_id: str,
+    req: StageActionRequest = Body(default_factory=StageActionRequest),
+    session: AsyncSession = Depends(get_session),
+):
+    """Reabre a entrega do gate com instruções, modelo e esforço."""
+    from app.modules.factory.run_service import StageTransitionError, redo_gate_delivery
+
+    proj, run = await _load_project_and_run(session, project_id)
+    try:
+        payload = await redo_gate_delivery(
+            session,
+            run,
+            proj,
+            stage_def_id,
+            actor=req.actor or "CEO local",
+            note=req.note,
+            model=req.model,
+            effort=req.effort,
+        )
+    except StageTransitionError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    await session.commit()
+    return payload
+
+
+@router.post("/projects/{project_id}/run/restart")
+async def restart_project_run(
+    project_id: str,
+    req: StageActionRequest = Body(default_factory=StageActionRequest),
+    session: AsyncSession = Depends(get_session),
+):
+    """Reinicia a esteira no Gate 0. A pasta do projeto permanece."""
+    from app.modules.factory.run_service import StageTransitionError, restart_run
+
+    proj, run = await _load_project_and_run(session, project_id)
+    try:
+        payload = await restart_run(
+            session,
+            run,
+            proj,
+            actor=req.actor or "CEO local",
+            note=req.note,
+            model=req.model,
+            effort=req.effort,
+        )
+    except StageTransitionError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    await session.commit()
+    return payload
+
+
+@router.post("/projects/{project_id}/run/pause")
+async def pause_project_run(
+    project_id: str,
+    req: StageActionRequest = Body(default_factory=StageActionRequest),
+    session: AsyncSession = Depends(get_session),
+):
+    """Pausa suave sem falhar a etapa (B3)."""
+    from app.modules.factory.run_service import StageTransitionError, pause_run
+
+    proj, run = await _load_project_and_run(session, project_id)
+    try:
+        payload = await pause_run(
+            session,
+            run,
+            proj,
+            actor=req.actor or "CEO local",
             note=req.note,
         )
     except StageTransitionError as exc:

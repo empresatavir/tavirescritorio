@@ -1,0 +1,114 @@
+.pai-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(7, 13, 24, 0.62);
+}
+
+.pai-dialog {
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.16));
+  background: var(--surface-1, #0f1729);
+  color: var(--text-primary, #f4f6f2);
+}
+
+.pai-dialog h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.pai-dialog p,
+.pai-note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary, #cbd3de);
+}
+
+.pai-dialog label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary, #cbd3de);
+}
+
+.pai-dialog select {
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.16));
+  background: var(--surface-0, #0b1220);
+  color: var(--text-primary, #f4f6f2);
+  padding: 0 10px;
+}
+
+.pai-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.pai-actions button {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.16));
+  background: transparent;
+  color: var(--text-primary, #f4f6f2);
+  cursor: pointer;
+}
+
+.pai-actions button.is-primary {
+  border: none;
+  background: var(--lime, #b7f34a);
+  color: var(--ink, #0b1220);
+  font-weight: 600;
+}
+
+.fab-dash-gear {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.16));
+  background: var(--surface-0, #0b1220);
+  color: var(--text-primary, #f4f6f2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.int-switch {
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.2));
+  background: rgba(244, 246, 242, 0.12);
+  padding: 2px;
+  cursor: pointer;
+}
+
+.int-switch.is-on {
+  background: var(--lime, #b7f34a);
+}
+
+.int-switch span {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--text-primary, #f4f6f2);
+}
+
+.int-switch.is-on span {
+  margin-left: 18px;
+  background: var(--ink, #0b1220);
+}

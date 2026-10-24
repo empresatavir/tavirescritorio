@@ -1,19 +1,19 @@
-import { For, Show, createMemo, createSignal } from "solid-js";
+import { For, Show, createMemo, createSignal, onMount } from "solid-js";
 import { useNavigate, useParams, useSearchParams } from "@solidjs/router";
 import { TvIcon } from "../../../shared/components/TvIcon";
+import { api } from "../../../shared/api/client";
 import { showToast } from "../../../state/store";
 import {
-  DEMO_DECISIONS,
-  DEMO_PIECES,
-  DEMO_PROFILES,
   NET_META,
   WORKSPACE_NAV,
   formatFollowers,
   type ContentPiece,
+  type ContentProfile,
   type DecisionCheckpoint,
   type SocialNet,
   type StudioViewId,
 } from "../demoData";
+import { mapStudioDecision, mapStudioPiece, mapStudioProfile } from "../apiMappers";
 import { NewProductionModal } from "../new-production/NewProductionModal";
 import { AjusteFinoModal, NovoAnguloModal } from "./DecisionModals";
 import { DevicePreview } from "./DeviceMockups";
@@ -23,24 +23,14 @@ import { PipelinePanel } from "./panels/PipelinePanel";
 import { VisualStudioPanel } from "./panels/VisualStudioPanel";
 import "./workspace.css";
 
-function decisionsForProfile(profileId: string): DecisionCheckpoint[] {
-  if (profileId === "pf-carlos") return DEMO_DECISIONS;
-  return [];
-}
-
 function piecesForProfile(profileId: string, all: ContentPiece[]) {
   return all.filter((p) => p.profileId === profileId);
 }
 
-function SQUAD_LABEL(id: string) {
-  const map: Record<string, string> = {
-    oraculo: "Oráculo de Pautas",
-    "ig-studio": "Instagram Studio",
-    "yt-roteirista": "YouTube Roteirista",
-    carrosseis: "Carrosséis Especializados",
-    ads: "Ads Criativos",
-  };
-  return map[id] || id;
+function defaultSquadForNet(net: SocialNet | string | undefined): string {
+  if (net === "yt") return "yt-roteirista";
+  if (net === "li") return "carrosseis";
+  return "ig-studio";
 }
 
 export function StudioWorkspace() {
@@ -48,9 +38,10 @@ export function StudioWorkspace() {
   const navigate = useNavigate();
   const [search, setSearch] = useSearchParams();
 
-  const [profiles] = createSignal(DEMO_PROFILES);
-  const [pieces, setPieces] = createSignal(DEMO_PIECES);
-  const [decisions, setDecisions] = createSignal(DEMO_DECISIONS);
+  const [profile, setProfile] = createSignal<ContentProfile | null>(null);
+  const [pieces, setPieces] = createSignal<ContentPiece[]>([]);
+  const [decisions, setDecisions] = createSignal<DecisionCheckpoint[]>([]);
+  const [loading, setLoading] = createSignal(true);
   const [prodOpen, setProdOpen] = createSignal(false);
   const [anguloOpen, setAnguloOpen] = createSignal(false);
   const [ajusteOpen, setAjusteOpen] = createSignal(false);
@@ -59,7 +50,36 @@ export function StudioWorkspace() {
   const [slide, setSlide] = createSignal(0);
 
   const profileId = () => params.profileId || "";
-  const profile = createMemo(() => profiles().find((p) => p.id === profileId()) || null);
+
+  const reload = async () => {
+    const id = profileId();
+    if (!id) return;
+    const [pf, pc, dec] = await Promise.all([
+      api.getStudioProfile(id),
+      api.listStudioPieces({ profile_id: id }),
+      api.listStudioDecisions({ profile_id: id, status: "pending" }),
+    ]);
+    setProfile(mapStudioProfile(pf));
+    setPieces(pc.map(mapStudioPiece));
+    const mapped = dec.map(mapStudioDecision);
+    setDecisions(mapped);
+    const pauta = mapped.find((d) => d.kind === "pauta");
+    if (pauta?.selectedOptionId) setSelectedOpt(pauta.selectedOptionId);
+    else if (pauta?.options?.[0]) setSelectedOpt(pauta.options[0].id);
+  };
+
+  onMount(() => {
+    void (async () => {
+      try {
+        await reload();
+      } catch (err) {
+        console.warn(err);
+        showToast("Não foi possível abrir o workspace", "Studio", "error");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  });
 
   const view = createMemo<StudioViewId>(() => {
     const v = (search.view as StudioViewId) || "dash";
@@ -69,10 +89,7 @@ export function StudioWorkspace() {
   const setView = (id: StudioViewId) => setSearch({ view: id });
 
   const profilePieces = createMemo(() => piecesForProfile(profileId(), pieces()));
-  const profileDecisions = createMemo(() => {
-    if (profileId() === "pf-carlos") return decisions();
-    return decisionsForProfile(profileId());
-  });
+  const profileDecisions = createMemo(() => decisions());
   const pendingCount = createMemo(() => profileDecisions().length);
 
   const reviewPiece = createMemo(() => {
@@ -104,16 +121,24 @@ export function StudioWorkspace() {
 
   return (
     <Show
-      when={profile()}
+      when={!loading()}
       fallback={
         <div class="stu-empty" style={{ height: "100%", border: "none" }}>
-          <h2>Perfil não encontrado</h2>
-          <button type="button" class="stu-btn-lg" onClick={() => navigate("/studio")}>
-            Voltar ao Painel do Studio
-          </button>
+          <h2>Abrindo workspace…</h2>
         </div>
       }
     >
+      <Show
+        when={profile()}
+        fallback={
+          <div class="stu-empty" style={{ height: "100%", border: "none" }}>
+            <h2>Perfil não encontrado</h2>
+            <button type="button" class="stu-btn-lg" onClick={() => navigate("/studio")}>
+              Voltar ao Painel do Studio
+            </button>
+          </div>
+        }
+      >
       {(pf) => (
         <div class="stu-ws" data-screen-label="Tavir Studio Workspace">
           <aside class="stu-ws-aside">
@@ -409,8 +434,29 @@ export function StudioWorkspace() {
                             type="button"
                             class="stu-btn-lg"
                             onClick={() => {
-                              showToast("Opção aprovada · squads seguem", "Centro de Decisões", "success");
-                              setDecisions((prev) => prev.filter((d) => d.id !== dec.id));
+                              void (async () => {
+                                try {
+                                  const net =
+                                    (dec.platformLabel || "").toLowerCase() ||
+                                    pf().nets[0]?.net ||
+                                    "ig";
+                                  await api.selectStudioDecision(
+                                    dec.id,
+                                    selectedOpt(),
+                                    defaultSquadForNet(net),
+                                  );
+                                  showToast(
+                                    "Opção aprovada · pacote gerado para revisão",
+                                    "Centro de Decisões",
+                                    "success",
+                                  );
+                                  await reload();
+                                  setView("decisions");
+                                } catch (err) {
+                                  console.warn(err);
+                                  showToast("Falha ao aprovar opção", "Studio", "error");
+                                }
+                              })();
                             }}
                           >
                             Aprovar opção
@@ -504,27 +550,43 @@ export function StudioWorkspace() {
                                 class="stu-card-actions"
                                 style={{ "border-top": "none", "padding-top": 0, "margin-top": "8px" }}
                               >
-                                <button type="button" class="stu-btn-sm">
+                                <button
+                                  type="button"
+                                  class="stu-btn-sm"
+                                  onClick={() => {
+                                    void (async () => {
+                                      try {
+                                        await api.returnStudioOracle(dec.id);
+                                        showToast("Devolvido ao Oráculo", "Revisão final", "info");
+                                        await reload();
+                                        setView("decisions");
+                                      } catch (err) {
+                                        console.warn(err);
+                                        showToast("Falha ao devolver", "Studio", "error");
+                                      }
+                                    })();
+                                  }}
+                                >
                                   Devolver ao Oráculo
                                 </button>
                                 <div class="stu-card-actions-left">
-                                  <button type="button" class="stu-btn-sm">
+                                  <button type="button" class="stu-btn-sm" onClick={() => setAjusteOpen(true)}>
                                     Solicitar ajuste
                                   </button>
                                   <button
                                     type="button"
                                     class="stu-btn-lg"
                                     onClick={() => {
-                                      const id = piece()?.id;
-                                      if (id) {
-                                        setPieces((prev) =>
-                                          prev.map((p) =>
-                                            p.id === id ? { ...p, stage: "done", needs: false } : p,
-                                          ),
-                                        );
-                                      }
-                                      setDecisions((prev) => prev.filter((d) => d.id !== dec.id));
-                                      showToast("Publicação aprovada", "Revisão final", "success");
+                                      void (async () => {
+                                        try {
+                                          await api.approveStudioPackage(dec.id);
+                                          showToast("Publicação aprovada", "Revisão final", "success");
+                                          await reload();
+                                        } catch (err) {
+                                          console.warn(err);
+                                          showToast("Falha ao aprovar", "Studio", "error");
+                                        }
+                                      })();
                                     }}
                                   >
                                     Aprovar publicação
@@ -543,15 +605,29 @@ export function StudioWorkspace() {
               <Show when={view() === "pipeline"}>
                 <PipelinePanel
                   pieces={profilePieces()}
-                  onRetryError={() => {
-                    setPieces((prev) =>
-                      prev.map((p) =>
-                        p.stage === "error" && p.profileId === profileId()
-                          ? { ...p, stage: "prod", subtitle: "Reprocessando…" }
-                          : p,
-                      ),
-                    );
-                    showToast("Render reiniciado", "Esteira", "info");
+                  onRetryError={(pieceId) => {
+                    void (async () => {
+                      try {
+                        const target =
+                          pieceId ||
+                          profilePieces().find((p) => p.stage === "error" || p.stage === "prod")?.id;
+                        if (!target) {
+                          showToast("Nenhuma peça para reprocessar", "Esteira", "info");
+                          return;
+                        }
+                        await api.produceStudioPiece(target, {
+                          squad_id: defaultSquadForNet(
+                            profilePieces().find((p) => p.id === target)?.net || pf().nets[0]?.net,
+                          ),
+                        });
+                        showToast("Squad regenerando pacote", "Esteira", "info");
+                        await reload();
+                        setView("decisions");
+                      } catch (err) {
+                        console.warn(err);
+                        showToast("Falha ao reprocessar", "Studio", "error");
+                      }
+                    })();
                   }}
                 />
               </Show>
@@ -559,9 +635,19 @@ export function StudioWorkspace() {
               <Show when={view() === "oracle"}>
                 <OraclePanel
                   profile={pf()}
+                  onProfilePatch={(next) => setProfile(next)}
                   onNovaRodada={() => {
-                    showToast("Nova rodada do Oráculo iniciada", "Mesa do Oráculo", "success");
-                    setView("decisions");
+                    void (async () => {
+                      try {
+                        await api.runStudioOracle(pf().id, { net: pf().nets[0]?.net || "ig" });
+                        showToast("Nova rodada do Oráculo iniciada", "Mesa do Oráculo", "success");
+                        await reload();
+                        setView("decisions");
+                      } catch (err) {
+                        console.warn(err);
+                        showToast("Falha ao iniciar Oráculo", "Studio", "error");
+                      }
+                    })();
                   }}
                 />
               </Show>
@@ -584,32 +670,15 @@ export function StudioWorkspace() {
 
           <NewProductionModal
             open={prodOpen()}
-            profiles={profiles()}
+            profiles={profile() ? [profile()!] : []}
             lockedProfileId={pf().id}
             onClose={() => setProdOpen(false)}
             onCreated={(draft) => {
-              const num = `ST-${String(pieces().length + 60).padStart(3, "0")}`;
-              const title =
-                draft.theme ||
-                (draft.startPointId === "autonoma"
-                  ? "Nova pauta · pesquisa autônoma"
-                  : "Nova pauta · tema manual");
-              setPieces((prev) => [
-                {
-                  id: `pc-${Date.now()}`,
-                  num,
-                  profileId: draft.profileId,
-                  net: draft.platform,
-                  stage: "idea",
-                  title,
-                  subtitle: SQUAD_LABEL(draft.squadId),
-                  squad: SQUAD_LABEL(draft.squadId),
-                },
-                ...prev,
-              ]);
               setProdOpen(false);
-              setView("pipeline");
-              showToast(`${num} criada na esteira`, "Nova produção", "success");
+              void reload().then(() => {
+                setView(draft.decisionId ? "decisions" : "pipeline");
+                showToast("Produção na esteira", "Nova produção", "success");
+              });
             }}
           />
 
@@ -618,30 +687,70 @@ export function StudioWorkspace() {
             onClose={() => setAnguloOpen(false)}
             onSubmit={(payload) => {
               setAnguloOpen(false);
-              setSelectedOpt("opt-a");
-              showToast(
-                `Oráculo regenerando · ${payload.style}${payload.seed ? ` · ${payload.seed}` : ""}`,
-                "Novo ângulo",
-                "info",
-              );
+              void (async () => {
+                try {
+                  const theme = [payload.style, payload.seed].filter(Boolean).join(" · ");
+                  await api.runStudioOracle(pf().id, {
+                    net: pf().nets[0]?.net || "ig",
+                    theme: theme || undefined,
+                  });
+                  showToast(
+                    `Oráculo regenerando · ${payload.style}${payload.seed ? ` · ${payload.seed}` : ""}`,
+                    "Novo ângulo",
+                    "info",
+                  );
+                  await reload();
+                } catch (err) {
+                  console.warn(err);
+                  showToast("Falha ao pedir novo ângulo", "Studio", "error");
+                }
+              })();
             }}
           />
 
           <AjusteFinoModal
             open={ajusteOpen()}
-            selectedTitle={selectedOptionTitle()}
+            selectedTitle={selectedOptionTitle() || reviewPiece()?.title}
             onClose={() => setAjusteOpen(false)}
             onSubmit={(payload) => {
               setAjusteOpen(false);
-              showToast(
-                `Ajuste ${payload.intensity} em ${payload.fields.join(", ")}`,
-                "Ajuste fino",
-                "success",
-              );
+              void (async () => {
+                const piece =
+                  reviewPiece() ||
+                  profilePieces().find((p) => p.stage === "review" || p.stage === "prod");
+                if (!piece) {
+                  showToast("Nenhum pacote para ajustar — aprove uma pauta antes", "Ajuste fino", "info");
+                  return;
+                }
+                try {
+                  const guidance = [
+                    `intensidade:${payload.intensity}`,
+                    `campos:${payload.fields.join(",")}`,
+                    payload.notes,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ");
+                  await api.produceStudioPiece(piece.id, {
+                    squad_id: defaultSquadForNet(piece.net),
+                    guidance,
+                  });
+                  showToast(
+                    `Ajuste ${payload.intensity} aplicado · pacote regenerado`,
+                    "Ajuste fino",
+                    "success",
+                  );
+                  await reload();
+                  setView("decisions");
+                } catch (err) {
+                  console.warn(err);
+                  showToast("Falha ao aplicar ajuste", "Studio", "error");
+                }
+              })();
             }}
           />
         </div>
       )}
+      </Show>
     </Show>
   );
 }

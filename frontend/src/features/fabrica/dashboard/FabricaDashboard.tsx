@@ -3,6 +3,7 @@ import { useNavigate } from "@solidjs/router";
 import { TvIcon } from "../../../shared/components/TvIcon";
 import { api, type FactoryProject, type ProjectItem } from "../../../shared/api/client";
 import { NewProjectModalHost } from "../new-project/NewProjectModalHost";
+import { ProjectAiDialog } from "../ProjectAiDialog";
 import "./dashboard.css";
 
 type TemplateCat = "lp" | "of" | "sy";
@@ -132,6 +133,8 @@ export function FabricaDashboard() {
   const [sortMode, setSortMode] = createSignal<SortMode>("progress");
   const [query, setQuery] = createSignal("");
   const [modalOpen, setModalOpen] = createSignal(false);
+  const [settingsId, setSettingsId] = createSignal<string | null>(null);
+  const [settingsName, setSettingsName] = createSignal("");
   const [preferredCat, setPreferredCat] = createSignal<TemplateCat | undefined>();
 
   onMount(async () => {
@@ -306,6 +309,57 @@ export function FabricaDashboard() {
           </article>
         </section>
 
+        <section class="fab-dash-section" aria-labelledby="fab-templates-heading">
+          <div class="fab-dash-section-head">
+            <h2 id="fab-templates-heading">Templates de Esteira</h2>
+            <Show when={filterCat()}>
+              <button type="button" class="fab-dash-link" on:click={() => setFilterCat(null)}>
+                Limpar filtro
+              </button>
+            </Show>
+          </div>
+          <div class="fab-dash-templates">
+            <For each={TEMPLATES}>
+              {(t) => {
+                const active = () => filterCat() === t.id;
+                const count = () => projects().filter((p) => p.cat === t.id).length;
+                return (
+                  <article
+                    class="fab-dash-card"
+                    classList={{ "is-active": active() }}
+                    data-cat={t.id}
+                  >
+                    <div class="fab-dash-card-top">
+                      <span class="fab-dash-card-icon" aria-hidden="true">
+                        <TvIcon name={t.icon} width="18" height="18" />
+                      </span>
+                      <span class="fab-dash-card-count">
+                        {count()} {count() === 1 ? "projeto" : "projetos"}
+                      </span>
+                    </div>
+                    <h3>{t.title}</h3>
+                    <p class="fab-dash-card-sub">{t.subtitle}</p>
+                    <p class="fab-dash-card-desc">{t.desc}</p>
+                    <p class="fab-dash-card-meta">{t.stagesHint}</p>
+                    <div class="fab-dash-card-actions">
+                      <button
+                        type="button"
+                        class="fab-dash-btn-ghost"
+                        on:click={() => setFilterCat(active() ? null : t.id)}
+                      >
+                        {active() ? "Remover filtro" : "Ver projetos"}
+                      </button>
+                      <button type="button" class="fab-dash-btn-solid" on:click={() => openNew(t.id)}>
+                        Usar esteira
+                      </button>
+                    </div>
+                  </article>
+                );
+              }}
+            </For>
+          </div>
+        </section>
+
         <section class="fab-dash-section" aria-labelledby="fab-actions-heading">
           <div class="fab-dash-section-head">
             <h2 id="fab-actions-heading">
@@ -406,10 +460,14 @@ export function FabricaDashboard() {
                   const pct = () => pctOf(pj);
                   const done = () => pj.status === "done" || pj.status === "completed";
                   return (
-                    <button
-                      type="button"
+                    <div
                       class="fab-dash-project"
-                      on:click={() => navigate(`/fabrica/${pj.id}`)}
+                      role="link"
+                      tabIndex={0}
+                      onClick={() => navigate(`/fabrica/${pj.id}`)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") navigate(`/fabrica/${pj.id}`);
+                      }}
                     >
                       <div class="fab-dash-project-top">
                         <ProgressRing pct={pct()} done={done()} />
@@ -418,6 +476,19 @@ export function FabricaDashboard() {
                           <span class="fab-dash-status" data-status={pj.status}>
                             {statusLabel(pj.status)}
                           </span>
+                          <button
+                            type="button"
+                            class="fab-dash-gear"
+                            aria-label={`Configurações de ${pj.name}`}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              setSettingsId(pj.id);
+                              setSettingsName(pj.name);
+                            }}
+                            onKeyDown={(event) => event.stopPropagation()}
+                          >
+                            <TvIcon name="sliders" width="14" height="14" />
+                          </button>
                         </div>
                       </div>
                       <div class="fab-dash-project-name">{pj.name}</div>
@@ -441,66 +512,20 @@ export function FabricaDashboard() {
                             : `${pj.pendingCount} pendências aguardando você`}
                         </p>
                       </Show>
-                    </button>
+                    </div>
                   );
                 }}
               </For>
             </div>
           </Show>
         </section>
-
-        <section class="fab-dash-section" aria-labelledby="fab-templates-heading">
-          <div class="fab-dash-section-head">
-            <h2 id="fab-templates-heading">Templates de Esteira</h2>
-            <Show when={filterCat()}>
-              <button type="button" class="fab-dash-link" on:click={() => setFilterCat(null)}>
-                Limpar filtro
-              </button>
-            </Show>
-          </div>
-          <div class="fab-dash-templates">
-            <For each={TEMPLATES}>
-              {(t) => {
-                const active = () => filterCat() === t.id;
-                const count = () => projects().filter((p) => p.cat === t.id).length;
-                return (
-                  <article
-                    class="fab-dash-card"
-                    classList={{ "is-active": active() }}
-                    data-cat={t.id}
-                  >
-                    <div class="fab-dash-card-top">
-                      <span class="fab-dash-card-icon" aria-hidden="true">
-                        <TvIcon name={t.icon} width="18" height="18" />
-                      </span>
-                      <span class="fab-dash-card-count">
-                        {count()} {count() === 1 ? "projeto" : "projetos"}
-                      </span>
-                    </div>
-                    <h3>{t.title}</h3>
-                    <p class="fab-dash-card-sub">{t.subtitle}</p>
-                    <p class="fab-dash-card-desc">{t.desc}</p>
-                    <p class="fab-dash-card-meta">{t.stagesHint}</p>
-                    <div class="fab-dash-card-actions">
-                      <button
-                        type="button"
-                        class="fab-dash-btn-ghost"
-                        on:click={() => setFilterCat(active() ? null : t.id)}
-                      >
-                        {active() ? "Remover filtro" : "Ver projetos"}
-                      </button>
-                      <button type="button" class="fab-dash-btn-solid" on:click={() => openNew(t.id)}>
-                        Usar esteira
-                      </button>
-                    </div>
-                  </article>
-                );
-              }}
-            </For>
-          </div>
-        </section>
       </div>
 
+      <ProjectAiDialog
+        projectId={settingsId()}
+        projectName={settingsName()}
+        onClose={() => setSettingsId(null)}
+      />
       <NewProjectModalHost
         open={modalOpen()}
         preferredCategory={preferredCat()}

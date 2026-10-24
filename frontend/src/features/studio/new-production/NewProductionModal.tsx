@@ -1,6 +1,8 @@
 import { For, Show, createEffect, createMemo, createSignal } from "solid-js";
 import { Portal } from "solid-js/web";
 import { TvIcon } from "../../../shared/components/TvIcon";
+import { api } from "../../../shared/api/client";
+import { showToast } from "../../../state/store";
 import {
   NET_META,
   SQUADS,
@@ -16,6 +18,8 @@ export interface ProductionDraft {
   squadId: string;
   startPointId: string;
   theme?: string;
+  pieceId?: string;
+  decisionId?: string;
 }
 
 interface Props {
@@ -37,6 +41,7 @@ export function NewProductionModal(props: Props) {
   const [startId, setStartId] = createSignal("autonoma");
   const [theme, setTheme] = createSignal("");
   const [squadQuery, setSquadQuery] = createSignal("");
+  const [submitting, setSubmitting] = createSignal(false);
 
   createEffect(() => {
     if (!props.open) {
@@ -120,16 +125,35 @@ export function NewProductionModal(props: Props) {
     return true;
   };
 
-  const submit = () => {
+  const submit = async () => {
     const pid = props.lockedProfileId || profileId();
-    if (!pid) return;
-    props.onCreated({
-      profileId: pid,
-      platform: platform(),
-      squadId: squadId(),
-      startPointId: startId(),
-      theme: startId() === "manual" ? theme().trim() : undefined,
-    });
+    if (!pid || submitting()) return;
+    setSubmitting(true);
+    try {
+      const themeVal = startId() === "manual" ? theme().trim() : undefined;
+      const result = await api.createStudioProduction({
+        profile_id: pid,
+        platform: platform(),
+        squad_id: squadId(),
+        start_point_id: startId(),
+        theme: themeVal,
+      });
+      props.onCreated({
+        profileId: pid,
+        platform: platform(),
+        squadId: squadId(),
+        startPointId: startId(),
+        theme: themeVal,
+        pieceId: result.piece.id,
+        decisionId: result.decision?.id,
+      });
+      showToast("Produção iniciada", "Studio", "success");
+    } catch (err) {
+      console.warn(err);
+      showToast("Falha ao iniciar produção", "Studio", "error");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -293,8 +317,13 @@ export function NewProductionModal(props: Props) {
               <Show
                 when={step() < totalSteps() - 1}
                 fallback={
-                  <button type="button" class="stu-btn-solid" disabled={!canContinue()} onClick={submit}>
-                    Iniciar squad
+                  <button
+                    type="button"
+                    class="stu-btn-solid"
+                    disabled={!canContinue() || submitting()}
+                    onClick={() => void submit()}
+                  >
+                    {submitting() ? "Iniciando…" : "Iniciar squad"}
                   </button>
                 }
               >

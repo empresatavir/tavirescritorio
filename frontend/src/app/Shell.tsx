@@ -5,6 +5,7 @@ import { Header } from "./Header";
 import { JobModal } from "./JobModal";
 import { CommandPalette } from "./CommandPalette";
 import { ToastContainer } from "./ToastContainer";
+import { AiLinkAlert } from "./AiLinkAlert";
 
 export function Shell(props: ParentProps) {
   return (
@@ -53,6 +54,7 @@ export function Shell(props: ParentProps) {
       <JobModal />
       <CommandPalette />
       <ToastContainer />
+      <AiLinkAlert />
     </div>
   );
 }

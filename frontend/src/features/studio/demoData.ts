@@ -75,6 +75,7 @@ export interface DecisionOption {
 
 export interface DecisionCheckpoint {
   id: string;
+  profileId: string;
   runId: string;
   kind: "pauta" | "revisao";
   title: string;
@@ -425,6 +426,7 @@ export const DEMO_PIECES: ContentPiece[] = [
 export const DEMO_DECISIONS: DecisionCheckpoint[] = [
   {
     id: "dec-1",
+    profileId: "pf-carlos",
     runId: "TVR-2841",
     kind: "pauta",
     title: "Escolha a próxima pauta do ciclo",
@@ -473,6 +475,7 @@ export const DEMO_DECISIONS: DecisionCheckpoint[] = [
   },
   {
     id: "dec-2",
+    profileId: "pf-carlos",
     runId: "TVR-2837",
     kind: "revisao",
     title: "Pacote final · “Sua agenda está indecisa”",

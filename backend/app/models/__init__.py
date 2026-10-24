@@ -12,9 +12,11 @@ from app.models.template import EngineeringTemplate
 from app.models.persona import Persona
 from app.models.profile import Profile
 from app.models.piece import Piece
+from app.models.studio_decision import StudioDecision
 from app.models.workflow import Workflow
 from app.models.idea import Idea
 from app.models.integration_check import IntegrationCheck
+from app.models.integration_pref import IntegrationPref
 from app.models.knowledge_entry import KnowledgeEntry
 from app.models.chat_conversation import ChatConversation
 from app.models.chat_message import ChatMessage
@@ -36,9 +38,11 @@ __all__ = [
     "Persona",
     "Profile",
     "Piece",
+    "StudioDecision",
     "Workflow",
     "Idea",
     "IntegrationCheck",
+    "IntegrationPref",
     "KnowledgeEntry",
     "ChatConversation",
     "ChatMessage",

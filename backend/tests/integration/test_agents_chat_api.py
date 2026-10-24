@@ -39,7 +39,8 @@ async def test_agents_api_roster_and_soul():
 
 @pytest.mark.asyncio
 async def test_chat_api_conversations_and_messages(monkeypatch):
-    monkeypatch.setattr("app.modules.chat.service.GHOSTCLI_API_KEY", "")
+    monkeypatch.setattr("app.modules.ghostcli.client.api_key", lambda: "")
+    monkeypatch.setattr("app.modules.chat.service.is_configured", lambda: False)
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # 1. List conversations

@@ -1,10 +1,12 @@
-import { For, Show, createMemo, createSignal } from "solid-js";
-import type { FactoryStageInstance } from "../../../../shared/api/client";
+import { For, Show, createEffect, createMemo, createSignal } from "solid-js";
+import { api, type FactoryStageInstance } from "../../../../shared/api/client";
 import { EmptyState } from "./EmptyState";
 
 export function ChatPanel(props: {
+  projectId: string;
   projectName?: string;
   stages: FactoryStageInstance[];
+  currentAgent?: string;
   onToast: (msg: string) => void;
 }) {
   const agents = createMemo(() => {
@@ -19,8 +21,53 @@ export function ChatPanel(props: {
 
   const [selected, setSelected] = createSignal<string | null>(null);
   const [draft, setDraft] = createSignal("");
+  const [messages, setMessages] = createSignal<
+    Array<{ id: string; role: string; text: string; agent_name?: string; at?: string }>
+  >([]);
 
-  const current = createMemo(() => agents().find((a) => a.name === selected()) ?? agents()[0] ?? null);
+  const current = createMemo(() => agents().find((a) => a.name === selected()) ?? null);
+  const visible = createMemo(() => {
+    const name = current()?.name;
+    if (!name) return messages();
+    return messages().filter((message) => message.agent_name === name);
+  });
+
+  const load = async () => {
+    try {
+      const res = await api.getFactoryChat(props.projectId);
+      setMessages(res.messages || []);
+    } catch {
+      /* empty */
+    }
+  };
+
+  createEffect(() => {
+    const preferred = (props.currentAgent || "").trim();
+    if (!preferred || selected() !== null) return;
+    if (agents().some((agent) => agent.name === preferred)) setSelected(preferred);
+  });
+
+  createEffect(() => {
+    void props.projectId;
+    void load();
+  });
+
+  const send = async () => {
+    const text = draft().trim();
+    if (!text) return;
+    const ag = current();
+    try {
+      const res = await api.postFactoryChat(props.projectId, {
+        message: text,
+        agent_name: ag?.name,
+        agent_role: ag?.role,
+      });
+      setDraft("");
+      setMessages((prev) => [...prev, ...(res.messages || [])]);
+    } catch (err) {
+      props.onToast(err instanceof Error ? err.message : "Falha no chat");
+    }
+  };
 
   return (
     <div class="fc-chat2">
@@ -51,26 +98,39 @@ export function ChatPanel(props: {
       <section class="fc-chat2-thread">
         <header>
           <h2>{current()?.name || "Chat"}</h2>
-          <p>{props.projectName || "Projeto"} · sem backend de mensagens ainda</p>
+          <p>{props.projectName || "Projeto"} · isolado por project_id</p>
         </header>
-        <EmptyState
-          title="Chat não conectado"
-          text="A lista de agentes reflete a esteira. Mensagens reais entram quando o canal de agente estiver ligado."
-        />
+        <div class="fc-chat2-messages" style={{ "min-height": "180px", padding: "12px" }}>
+          <Show
+            when={visible().length}
+            fallback={<EmptyState title="Sem mensagens" text="Envie a primeira mensagem do projeto." />}
+          >
+            <For each={visible()}>
+              {(m) => (
+                <article
+                  class="fc-card"
+                  style={{ "margin-bottom": "8px", "border-left": m.role === "user" ? "3px solid var(--lime)" : undefined }}
+                >
+                  <p class="fc-micro">
+                    {m.role} · {m.agent_name || "—"}
+                  </p>
+                  <p style={{ margin: "4px 0 0", "font-size": "13px" }}>{m.text}</p>
+                </article>
+              )}
+            </For>
+          </Show>
+        </div>
         <footer class="fc-chat2-compose">
           <input
             type="text"
             value={draft()}
-            placeholder="Mensagens ainda não são enviadas…"
-            disabled
+            placeholder={`Mensagem para ${current()?.name || "agente"}…`}
             onInput={(e) => setDraft(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void send();
+            }}
           />
-          <button
-            type="button"
-            class="fc-btn"
-            disabled
-            onClick={() => props.onToast("Chat de agentes ainda não está disponível.")}
-          >
+          <button type="button" class="fc-btn" onClick={() => void send()}>
             Enviar
           </button>
         </footer>

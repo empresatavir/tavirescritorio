@@ -17,14 +17,29 @@ class Base(DeclarativeBase):
 
 async def ensure_schema_patches() -> None:
     """Patches leves para SQLite sem exigir alembic em todo boot (ex.: depends_on)."""
-    # Garante tabelas novas (factory_runs / factory_stages) sem migration manual.
+    # Garante tabelas novas (factory_runs / factory_stages / studio_decisions) sem migration manual.
     import app.models  # noqa: F401 — registra metadata
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-        res = await conn.execute(text("PRAGMA table_info(tasks)"))
-        cols = {row[1] for row in res.fetchall()}
-        if "depends_on" not in cols:
-            await conn.execute(text("ALTER TABLE tasks ADD COLUMN depends_on JSON"))
+
+        async def _add_missing(table: str, column: str, ddl: str) -> None:
+            res = await conn.execute(text(f"PRAGMA table_info({table})"))
+            cols = {row[1] for row in res.fetchall()}
+            if column not in cols:
+                await conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {ddl}"))
+
+        await _add_missing("tasks", "depends_on", "depends_on JSON")
+        await _add_missing("profiles", "handle", "handle VARCHAR(100)")
+        await _add_missing("profiles", "company", "company VARCHAR(200)")
+        await _add_missing("profiles", "design_system", "design_system JSON")
+        await _add_missing("profiles", "cycle_goal", "cycle_goal INTEGER DEFAULT 12")
+        await _add_missing("profiles", "cycle_done", "cycle_done INTEGER DEFAULT 0")
+        await _add_missing("pieces", "subtitle", "subtitle VARCHAR(300)")
+        await _add_missing("pieces", "cta", "cta TEXT")
+        await _add_missing("pieces", "slides", "slides JSON")
+        await _add_missing("pieces", "progress", "progress INTEGER")
+        await _add_missing("pieces", "squad", "squad VARCHAR(100)")
+        await _add_missing("projects", "ai_settings", "ai_settings JSON")
 
 
 async def get_session() -> AsyncSession:
