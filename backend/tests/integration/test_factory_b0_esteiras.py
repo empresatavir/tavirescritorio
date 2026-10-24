@@ -10,18 +10,22 @@ async def test_esteira_definitions_counts():
     assert len(ESTEIRAS["lp-c"]["stages"]) == 12
     assert len(ESTEIRAS["lp-m"]["stages"]) == 8
     assert len(ESTEIRAS["of-c"]["stages"]) == 12
-    assert len(ESTEIRAS["sy-c"]["stages"]) == 13
-    assert len(ESTEIRAS["sy-m"]["stages"]) == 10
+    assert len(ESTEIRAS["sy-c"]["stages"]) == 15
+    assert len(ESTEIRAS["sy-m"]["stages"]) == 12
     sy_m = {s["id"]: s for s in ESTEIRAS["sy-m"]["stages"]}
     assert sy_m["m_code_be"]["agent"] == "Diego Sistemas"
     assert sy_m["m_code_fe"]["agent"] == "Dev Frontend"
     assert sy_m["m_qa_be"]["agent"] == "Tester Automatizado"
     assert sy_m["m_qa_fe"]["agent"] == "Validador Visual"
+    assert sy_m["m_qa_jornada"]["agent"] == "Validador Visual"
+    assert sy_m["m_apk"]["agent"] == "Dev Frontend"
     sy_c = {s["id"]: s for s in ESTEIRAS["sy-c"]["stages"]}
     assert sy_c["build_be"]["agent"] == "Diego Sistemas"
     assert sy_c["build_fe"]["agent"] == "Dev Frontend"
     assert sy_c["qa_be"]["agent"] == "Tester Automatizado"
     assert sy_c["qa_fe"]["agent"] == "Validador Visual"
+    assert sy_c["qa_jornada"]["agent"] == "Validador Visual"
+    assert sy_c["build_apk"]["agent"] == "Dev Frontend"
     assert ESTEIRAS["lp-c"]["stages"][7]["agent"] == "Dev Frontend"
     # Ordem canônica: Dora → Marina/Yuri → Ari → Paula → plan_gate
     ids = [s["id"] for s in ESTEIRAS["lp-c"]["stages"][:5]]

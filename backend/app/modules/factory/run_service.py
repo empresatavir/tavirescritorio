@@ -264,7 +264,7 @@ async def align_run_to_esteira(
     for index, item in enumerate(defs):
         stage = by_id.get(item["id"])
         if stage is None:
-            if not can_replace:
+            if obsolete and not can_replace:
                 continue
             status = "queued"
             started = None

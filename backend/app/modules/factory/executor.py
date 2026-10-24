@@ -226,7 +226,7 @@ async def _agent_content(
     elif stage.stage_def_id in {"build_fe", "m_code_fe", "build", "m_code"} or stage.agent_role == "dev_frontend":
         role_extra = (
             "Você é o Dev Frontend. Você implementa só o frontend.\n"
-            "Não altere o backend.\n"
+            "Não altere o backend. Se o contrato pedir APK, o cliente Flutter fica em aplicativo/ e a página web permanece.\n"
             "Grave o plano de testes da interface. Cada caso diz o passo, o esperado e o obtido.\n"
             "Leia as issues em qa/issues que tratam da interface. Corrija cada uma no código do frontend.\n"
             "Não declare o teste aprovado. Quem aprova a interface é o Validador Visual.\n"
@@ -246,6 +246,7 @@ async def _agent_content(
             "Se houver falha, descreva uma issue por falha: título, passo, esperado e obtido.\n"
             "Feche o relatório com uma linha isolada: Resultado: APROVADO ou Resultado: REPROVADO.\n"
             "Use REPROVADO quando existir qualquer falha aberta na interface.\n"
+            "A jornada de uso executa a rotina. A frase Resultado não substitui essa execução.\n"
         )
     elif stage.stage_def_id in {"m_hard", "seo_sec", "m_seo_sec"} or stage.agent_role == "sergio":
         role_extra = (
@@ -382,6 +383,12 @@ async def execute_stage(
             "Atualize a tela. Diego Sistemas faz o backend. Dev Frontend faz o frontend. "
             "Tester Automatizado valida o back. Validador Visual valida a frente."
         )
+    from app.modules.factory.intake import ContractError, ensure_contract
+
+    try:
+        await ensure_contract(session, project, stage.stage_def_id)
+    except ContractError as exc:
+        raise StageTransitionError(str(exc)) from exc
     # Alinha artifacts/is_gate com esteira canônica (cobaias / runs antigos)
     expected = _sync_stage_from_esteira(run, stage)
     redo_now = (run.meta or {}).get("redo") or {}
@@ -413,39 +420,65 @@ async def execute_stage(
     written: list[dict] = []
     ghost_notes: list[str] = []
 
-    for rel in expected:
-        raw = (rel or "").replace("\\", "/")
-        is_dir = raw.endswith("/")
-        path = raw.rstrip("/")
-        if not path:
-            continue
-        target = root / path
-        fresh = force or asked or not stage.artifact_hash or _is_stub(target)
-        if is_dir or target.is_dir():
-            if fresh:
-                for child_name in ("README.md", "app.ts", "index.ts", "main.py"):
-                    child = target / child_name
-                    if child.is_file() and (force or not stage.artifact_hash or _is_stub(child)):
-                        child.unlink()
-            parts, note = await _materialize_dir(
-                root, path, stage, project, model=model, effort=effort, provider=provider, guidance=guidance
-            )
-            written.extend(parts)
-            if note:
-                ghost_notes.append(note)
-            continue
-        if fresh and target.is_file():
-            target.unlink()
-        if not target.exists():
-            content, note = await _agent_content(
-                stage, project, path, model=model, effort=effort, provider=provider, guidance=guidance
-            )
-            if note:
-                ghost_notes.append(note)
-            info = write_artifact(project.local_path, path, content)
-            written.append(info)
-        else:
-            written.append({"path": path, "sha256": file_sha256(target), "size": target.stat().st_size})
+    from app.modules.factory.work_session import WorkSessionError, work_kind
+
+    kind = work_kind(stage.stage_def_id)
+    if kind in {"jornada", "apk"}:
+        import asyncio
+
+        common = {
+            "agent_name": stage.agent or "Agente",
+            "title": stage.title or stage.stage_def_id,
+            "expected": expected,
+        }
+        try:
+            if kind == "jornada":
+                from app.modules.factory.jornada import run_jornada_sync
+
+                result = await asyncio.to_thread(run_jornada_sync, root, stage.stage_def_id, **common)
+            else:
+                from app.modules.factory.apk_build import run_apk_sync
+
+                result = await asyncio.to_thread(run_apk_sync, root, stage.stage_def_id, **common)
+        except WorkSessionError as exc:
+            raise StageTransitionError(str(exc)) from exc
+        written.extend(result.get("files") or [])
+        if result.get("note"):
+            ghost_notes.append(str(result["note"]))
+    else:
+        for rel in expected:
+            raw = (rel or "").replace("\\", "/")
+            is_dir = raw.endswith("/")
+            path = raw.rstrip("/")
+            if not path:
+                continue
+            target = root / path
+            fresh = force or asked or not stage.artifact_hash or _is_stub(target)
+            if is_dir or target.is_dir():
+                if fresh:
+                    for child_name in ("README.md", "app.ts", "index.ts", "main.py"):
+                        child = target / child_name
+                        if child.is_file() and (force or not stage.artifact_hash or _is_stub(child)):
+                            child.unlink()
+                parts, note = await _materialize_dir(
+                    root, path, stage, project, model=model, effort=effort, provider=provider, guidance=guidance
+                )
+                written.extend(parts)
+                if note:
+                    ghost_notes.append(note)
+                continue
+            if fresh and target.is_file():
+                target.unlink()
+            if not target.exists():
+                content, note = await _agent_content(
+                    stage, project, path, model=model, effort=effort, provider=provider, guidance=guidance
+                )
+                if note:
+                    ghost_notes.append(note)
+                info = write_artifact(project.local_path, path, content)
+                written.append(info)
+            else:
+                written.append({"path": path, "sha256": file_sha256(target), "size": target.stat().st_size})
 
     if force and redo:
         from sqlalchemy.orm.attributes import flag_modified

@@ -38,6 +38,16 @@ def test_front_qa_returns_only_to_frontend():
     assert rework_target(stages, stages[3]).stage_def_id == "m_code_fe"
 
 
+def test_jornada_volta_para_o_frontend():
+    stages = [
+        _Stage("m_code_fe", 5, "build"),
+        _Stage("m_qa_fe", 7, "qa"),
+        _Stage("m_qa_jornada", 8, "qa"),
+        _Stage("m_apk", 9, "build"),
+    ]
+    assert rework_target(stages, stages[2]).stage_def_id == "m_code_fe"
+
+
 def test_issue_file_is_numbered(tmp_path: Path):
     first = write_issue(tmp_path, "qa", "Resultado: REPROVADO\n\nO botão salvar falhou.")
     second = write_issue(tmp_path, "security", "Parecer: REPROVADO\n\nSEC-001 segredo no código.")

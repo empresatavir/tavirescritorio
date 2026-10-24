@@ -7,9 +7,11 @@ from pathlib import Path
 
 BACK_QA = {"qa_be", "m_qa_be"}
 FRONT_QA = {"qa_fe", "m_qa_fe", "qa", "m_qa"}
+JORNADA_QA = {"qa_jornada", "m_qa_jornada"}
 BACK_BUILD = {"build_be", "m_code_be"}
 FRONT_BUILD = {"build_fe", "m_code_fe", "build", "m_code"}
-QA_STAGE_IDS = BACK_QA | FRONT_QA
+APK_BUILD = {"build_apk", "m_apk"}
+QA_STAGE_IDS = BACK_QA | FRONT_QA | JORNADA_QA
 SECURITY_STAGE_IDS = {"seo_sec", "m_seo_sec", "m_hard"}
 MAX_LOOPS = 3
 
@@ -32,10 +34,14 @@ def read_verdict(text: str, kind: str) -> str:
 
 
 def report_path(kind: str, stage_def_id: str = "") -> str:
+    if stage_def_id in JORNADA_QA:
+        return "qa/report-jornada.md"
     if stage_def_id in BACK_QA:
         return "qa/report-back.md"
     if stage_def_id in FRONT_QA:
         return "qa/report-front.md"
+    if stage_def_id in APK_BUILD:
+        return "qa/report-apk.md"
     return "qa/report.md" if kind == "qa" else "security.md"
 
 
@@ -43,8 +49,12 @@ def side_stage_ids(stage_def_id: str) -> set[str] | None:
     """QA de um lado devolve só a implementação daquele lado."""
     if stage_def_id in BACK_QA:
         return set(BACK_BUILD) | {stage_def_id}
+    if stage_def_id in JORNADA_QA:
+        return set(FRONT_BUILD) | set(FRONT_QA) | {stage_def_id}
     if stage_def_id in FRONT_QA:
         return set(FRONT_BUILD) | {stage_def_id}
+    if stage_def_id in APK_BUILD:
+        return set(APK_BUILD)
     return None
 
 
@@ -84,8 +94,10 @@ def rework_target(stages: list, current) -> object | None:
     pool = None
     if current.stage_def_id in BACK_QA:
         pool = BACK_BUILD
-    elif current.stage_def_id in FRONT_QA:
+    elif current.stage_def_id in FRONT_QA | JORNADA_QA:
         pool = FRONT_BUILD
+    elif current.stage_def_id in APK_BUILD:
+        pool = APK_BUILD | FRONT_BUILD
     if pool is not None:
         matches = [
             stage
