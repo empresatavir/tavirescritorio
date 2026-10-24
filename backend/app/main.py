@@ -1,4 +1,6 @@
 from contextlib import asynccontextmanager
+from urllib.parse import quote
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -20,6 +22,7 @@ from app.api.v1.services import router as services_router
 from app.api.v1.proposals import router as proposals_router
 from app.api.v1.models import router as models_router
 from app.api.v1.integrations import router as integrations_router
+from app.modules.ghostcli.notice import begin_ai_link_scope, current_ai_link_error, reset_ai_link_scope
 from app.shared.database import ensure_schema_patches
 
 
@@ -34,12 +37,44 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(title="TAVIR Escritório API", version="0.1.0", lifespan=lifespan)
 
+
+class AiLinkHeaderMiddleware:
+    """Cabeçalho X-Tavir-Ai-Link quando o motor de IA falha nesta requisição."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        token = begin_ai_link_scope()
+
+        async def send_wrapper(message):
+            if message["type"] == "http.response.start":
+                err = current_ai_link_error()
+                if err:
+                    headers = list(message.get("headers") or [])
+                    headers.append((b"x-tavir-ai-link", quote(err).encode("ascii", "ignore")))
+                    message = {**message, "headers": headers}
+            await send(message)
+
+        try:
+            await self.app(scope, receive, send_wrapper)
+        finally:
+            reset_ai_link_scope(token)
+
+
+app.add_middleware(AiLinkHeaderMiddleware)
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Tavir-Ai-Link"],
 )
 
 # Register API routers

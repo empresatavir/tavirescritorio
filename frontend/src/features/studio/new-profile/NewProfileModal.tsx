@@ -1,6 +1,9 @@
 import { For, Show, createEffect, createSignal } from "solid-js";
 import { Portal } from "solid-js/web";
 import { TvIcon } from "../../../shared/components/TvIcon";
+import { api } from "../../../shared/api/client";
+import { showToast } from "../../../state/store";
+import { mapStudioProfile, profileToCreatePayload } from "../apiMappers";
 import {
   NET_META,
   type ContentProfile,
@@ -54,6 +57,7 @@ export function NewProfileModal(props: Props) {
     visualNotes: "",
   });
   const [notes, setNotes] = createSignal("");
+  const [submitting, setSubmitting] = createSignal(false);
 
   createEffect(() => {
     if (!props.open) {
@@ -87,11 +91,11 @@ export function NewProfileModal(props: Props) {
     return true;
   };
 
-  const submit = () => {
-    const id = `pf-${Date.now().toString(36)}`;
+  const submit = async () => {
+    if (submitting()) return;
     const h = handle().trim() || `@${name().trim().toLowerCase().replace(/\s+/g, "")}`;
-    const profile: ContentProfile = {
-      id,
+    const draft: ContentProfile = {
+      id: `pf-${Date.now().toString(36)}`,
       name: name().trim(),
       handle: h.startsWith("@") ? h : `@${h}`,
       niche: niche().trim() || "Sem nicho definido",
@@ -111,9 +115,20 @@ export function NewProfileModal(props: Props) {
       cycleDone: 0,
       status: "active",
     };
-    // notes reserved for future backend context
-    void notes();
-    props.onCreated(profile);
+    setSubmitting(true);
+    try {
+      const payload = profileToCreatePayload(draft);
+      payload.context = notes().trim() || draft.audience;
+      payload.guidelines = notes().trim() || draft.designSystem.doList;
+      const created = await api.createStudioProfile(payload);
+      props.onCreated(mapStudioProfile(created));
+      showToast("Perfil criado", "Studio", "success");
+    } catch (err) {
+      console.warn(err);
+      showToast("Falha ao criar perfil", "Studio", "error");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -318,8 +333,13 @@ export function NewProfileModal(props: Props) {
               <Show
                 when={step() < 2}
                 fallback={
-                  <button type="button" class="stu-btn-solid" disabled={!canContinue()} onClick={submit}>
-                    Criar perfil
+                  <button
+                    type="button"
+                    class="stu-btn-solid"
+                    disabled={!canContinue() || submitting()}
+                    onClick={() => void submit()}
+                  >
+                    {submitting() ? "Criando…" : "Criar perfil"}
                   </button>
                 }
               >

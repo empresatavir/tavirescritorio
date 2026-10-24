@@ -1,15 +1,17 @@
-import { For, Show, createMemo, createSignal } from "solid-js";
+import { For, Show, createMemo, createSignal, onMount } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { TvIcon } from "../../../shared/components/TvIcon";
+import { api } from "../../../shared/api/client";
+import { showToast } from "../../../state/store";
 import {
-  DEMO_DECISIONS,
-  DEMO_PIECES,
-  DEMO_PROFILES,
   NET_META,
+  type ContentPiece,
   type ContentProfile,
+  type DecisionCheckpoint,
   type SocialNet,
   formatFollowers,
 } from "../demoData";
+import { mapStudioDecision, mapStudioPiece, mapStudioProfile } from "../apiMappers";
 import { NewProfileModal } from "../new-profile/NewProfileModal";
 import { NewProductionModal } from "../new-production/NewProductionModal";
 import "./dashboard.css";
@@ -49,23 +51,39 @@ function statusLabel(s: ContentProfile["status"]) {
   return "Rascunho";
 }
 
-function pendingFor(profileId: string) {
-  const decisions =
-    profileId === "pf-carlos"
-      ? DEMO_DECISIONS.length
-      : DEMO_PIECES.filter((p) => p.profileId === profileId && p.needs).length;
-  return decisions;
-}
-
 export function StudioDashboard() {
   const navigate = useNavigate();
-  const [profiles, setProfiles] = createSignal(DEMO_PROFILES);
-  const [pieces] = createSignal(DEMO_PIECES);
+  const [profiles, setProfiles] = createSignal<ContentProfile[]>([]);
+  const [pieces, setPieces] = createSignal<ContentPiece[]>([]);
+  const [decisions, setDecisions] = createSignal<DecisionCheckpoint[]>([]);
+  const [loading, setLoading] = createSignal(true);
   const [query, setQuery] = createSignal("");
   const [statusFilter, setStatusFilter] = createSignal<StatusFilter>("all");
   const [netFilter, setNetFilter] = createSignal<NetFilter>(null);
   const [profileModal, setProfileModal] = createSignal(false);
   const [prodModal, setProdModal] = createSignal(false);
+
+  const pendingFor = (profileId: string) =>
+    decisions().filter((d) => d.profileId === profileId).length ||
+    pieces().filter((p) => p.profileId === profileId && p.needs).length;
+
+  onMount(async () => {
+    try {
+      const [pf, pc, dec] = await Promise.all([
+        api.listStudioProfiles(),
+        api.listStudioPieces(),
+        api.listStudioDecisions({ status: "pending" }),
+      ]);
+      setProfiles(pf.map(mapStudioProfile));
+      setPieces(pc.map(mapStudioPiece));
+      setDecisions(dec.map(mapStudioDecision));
+    } catch (err) {
+      console.warn(err);
+      showToast("Não foi possível carregar o Studio", "Studio", "error");
+    } finally {
+      setLoading(false);
+    }
+  });
 
   const kpis = createMemo(() => {
     const list = profiles();
@@ -78,15 +96,16 @@ export function StudioDashboard() {
 
   const actions = createMemo(() => {
     const items: Array<{ id: string; title: string; profileId: string; profileName: string }> = [];
-    for (const d of DEMO_DECISIONS) {
+    for (const d of decisions()) {
+      const pf = profiles().find((x) => x.id === d.profileId);
       items.push({
         id: d.id,
         title: d.kind === "pauta" ? d.title : `Revisão · ${d.title}`,
-        profileId: "pf-carlos",
-        profileName: "Carlos Junior",
+        profileId: d.profileId,
+        profileName: pf?.name || d.profileId,
       });
     }
-    for (const p of pieces().filter((x) => x.needs && x.profileId !== "pf-carlos")) {
+    for (const p of pieces().filter((x) => x.needs && !items.some((i) => i.profileId === x.profileId && i.title === x.title))) {
       const pf = profiles().find((x) => x.id === p.profileId);
       items.push({
         id: p.id,
@@ -382,6 +401,12 @@ export function StudioDashboard() {
         </section>
       </div>
 
+      <Show when={loading()}>
+        <p class="stu-dash-muted" style={{ "text-align": "center", padding: "24px" }}>
+          Carregando Studio…
+        </p>
+      </Show>
+
       <NewProfileModal
         open={profileModal()}
         onClose={() => setProfileModal(false)}
@@ -398,7 +423,7 @@ export function StudioDashboard() {
         onClose={() => setProdModal(false)}
         onCreated={(result) => {
           setProdModal(false);
-          navigate(`/studio/${result.profileId}?view=pipeline`);
+          navigate(`/studio/${result.profileId}?view=${result.decisionId ? "decisions" : "pipeline"}`);
         }}
       />
     </div>

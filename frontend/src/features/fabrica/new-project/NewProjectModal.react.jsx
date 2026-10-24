@@ -115,6 +115,7 @@ export function NewProjectModalReact(props) {
         ownership,
         track,
         context_files: fileNames(contextFiles),
+        context_file_blobs: contextFiles,
         design_system_files: fileNames(designSystemFiles),
         stack_frontend: stackFrontend.trim() || undefined,
         stack_backend: stackBackend.trim() || undefined,

@@ -3,6 +3,8 @@
  * Base URL defaults to current origin (backend serves frontend in production).
  */
 
+import { reportAiLinkFailure } from "../../state/aiLink";
+
 const BASE_URL = import.meta.env.VITE_API_BASE || "";
 
 export interface Agent {
@@ -207,6 +209,17 @@ export interface FactoryLedgerEntry {
   note?: string | null;
 }
 
+export interface FactoryRunPendency {
+  id: string;
+  kind: "auth" | "error" | string;
+  title: string;
+  from?: string;
+  text: string;
+  cause?: string | null;
+  stage_def_id?: string;
+  action?: "authorize" | "resume" | string;
+}
+
 export interface FactoryRunPayload {
   id: string;
   project_id: string;
@@ -219,6 +232,7 @@ export interface FactoryRunPayload {
   stages: FactoryStageInstance[];
   stages_done?: number;
   total_stages?: number;
+  pendencies?: FactoryRunPendency[];
   last_ledger?: FactoryLedgerEntry;
   created_at?: string | null;
   updated_at?: string | null;
@@ -228,6 +242,8 @@ export interface FactoryStageActionBody {
   note?: string;
   actor?: string;
   artifact_hash?: string;
+  model?: string;
+  effort?: string;
 }
 
 export interface CreateProjectPayload {
@@ -280,6 +296,8 @@ export interface StudioProfile {
   id: string;
   persona_id?: string | null;
   name: string;
+  handle?: string | null;
+  company?: string | null;
   platform?: string | null;
   niche?: string | null;
   audience?: string | null;
@@ -287,7 +305,17 @@ export interface StudioProfile {
   context?: string | null;
   color?: string | null;
   initials?: string | null;
-  networks?: Array<{ net: "ig" | "yt" | "tt" | "li"; handle: string; logo: string }> | null;
+  networks?: Array<{
+    net: "ig" | "yt" | "tt" | "li";
+    handle: string;
+    url?: string;
+    followers?: number;
+    engagement?: number;
+    logo?: string;
+  }> | null;
+  design_system?: Record<string, unknown> | null;
+  cycle_goal?: number;
+  cycle_done?: number;
   guidelines?: string | null;
   status?: string;
 }
@@ -298,19 +326,58 @@ export interface StudioPiece {
   profile_id?: string | null;
   project_id?: string | null;
   title: string;
+  subtitle?: string | null;
   content_type?: string;
   net?: "ig" | "yt" | "tt" | "li" | null;
-  stage: "idea" | "pauta" | "prod" | "review" | "pub" | "done";
+  stage: "idea" | "pauta" | "prod" | "review" | "pub" | "done" | "error";
   needs: boolean;
   body?: string | null;
   script?: string | null;
   caption?: string | null;
+  cta?: string | null;
   tags?: string | null;
+  slides?: string[] | null;
   images?: string[] | null;
   timeline?: Array<[string, string, string]> | null;
+  progress?: number | null;
+  squad?: string | null;
   status?: string;
   published_url?: string | null;
   published_at?: string | null;
+}
+
+export interface StudioDecisionOption {
+  id: string;
+  label: string;
+  style: string;
+  fit: number;
+  title: string;
+  angle: string;
+  hook: string;
+  sources: string;
+  whyNow: string;
+}
+
+export interface StudioDecision {
+  id: string;
+  profile_id: string;
+  run_id: string;
+  kind: "pauta" | "revisao";
+  title: string;
+  subtitle?: string | null;
+  status: "pending" | "resolved" | "dismissed";
+  options?: StudioDecisionOption[] | null;
+  selected_option_id?: string | null;
+  piece_id?: string | null;
+  waiting_label?: string | null;
+  platform_label?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface StudioProductionResult {
+  piece: StudioPiece;
+  decision: StudioDecision | null;
 }
 
 export interface WorkflowStep {
@@ -588,6 +655,7 @@ async function fetchJson<T>(path: string, options?: RequestInit): Promise<T> {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
+  noticeAiLinkHeader(response);
   if (!response.ok) {
     const body = await response.text().catch(() => "");
     let detail = body || response.statusText;
@@ -597,10 +665,47 @@ async function fetchJson<T>(path: string, options?: RequestInit): Promise<T> {
     } catch {
       /* keep raw */
     }
+    noticeAiLinkText(detail);
     throw new ApiError(response.status, detail);
   }
   if (response.status === 204) return undefined as T;
-  return response.json() as Promise<T>;
+  const data = (await response.json()) as T;
+  noticeAiLinkPayload(data);
+  return data;
+}
+
+function noticeAiLinkHeader(response: Response) {
+  const raw = response.headers.get("X-Tavir-Ai-Link");
+  if (!raw) return;
+  try {
+    reportAiLinkFailure(decodeURIComponent(raw));
+  } catch {
+    reportAiLinkFailure(raw);
+  }
+}
+
+function noticeAiLinkText(text: string) {
+  if (/GhostCLI|GHOSTCLI_API_KEY|A IA não respondeu|A IA devolveu um documento vazio|Não consegui falar com o GhostCLI/i.test(text)) {
+    reportAiLinkFailure(text);
+  }
+}
+
+function noticeAiLinkPayload(data: unknown) {
+  if (!data || typeof data !== "object") return;
+  const messages = (data as { messages?: Array<{ text?: string; meta?: string }> }).messages;
+  if (!Array.isArray(messages)) return;
+  const last = messages[messages.length - 1];
+  if (!last) return;
+  const meta = last.meta || "";
+  const text = last.text || "";
+  if (
+    meta.startsWith("ghostcli:error") ||
+    meta === "ghostcli:unconfigured" ||
+    text.includes("[GhostCLI]") ||
+    text.includes("Não consegui falar com o GhostCLI")
+  ) {
+    reportAiLinkFailure(text || meta);
+  }
 }
 
 export const api = {
@@ -797,6 +902,54 @@ export const api = {
   getFactoryRun: (projectId: string) =>
     fetchJson<FactoryRunPayload>(`/api/v1/factory/projects/${projectId}/run`),
 
+  openFactoryWorkspace: (projectId: string) =>
+    fetchJson<{ ok: boolean; path: string }>(
+      `/api/v1/factory/projects/${projectId}/open-folder`,
+      { method: "POST", body: JSON.stringify({}) },
+    ),
+
+  listFactoryArtifacts: (projectId: string) =>
+    fetchJson<{
+      project_id: string;
+      local_path: string | null;
+      files: Array<{
+        path: string;
+        name: string;
+        size: number;
+        mime: string;
+        is_text: boolean;
+        sha256?: string | null;
+      }>;
+      expected: Array<{ path: string; present: boolean }>;
+      count: number;
+    }>(`/api/v1/factory/projects/${projectId}/artifacts`),
+
+  readFactoryArtifact: (projectId: string, path: string) =>
+    fetchJson<{
+      path: string;
+      name: string;
+      size: number;
+      mime: string;
+      is_text: boolean;
+      sha256: string;
+      content: string | null;
+    }>(
+      `/api/v1/factory/projects/${projectId}/artifacts/content?path=${encodeURIComponent(path)}`,
+    ),
+
+  writeFactoryArtifact: (
+    projectId: string,
+    body: { path: string; content: string; overwrite?: boolean; stage_def_id?: string },
+  ) =>
+    fetchJson<{
+      ok: boolean;
+      file: { path: string; name: string; size: number; sha256: string };
+      ledger?: Record<string, unknown> | null;
+    }>(`/api/v1/factory/projects/${projectId}/artifacts`, {
+      method: "PUT",
+      body: JSON.stringify(body),
+    }),
+
   authorizeFactoryStage: (projectId: string, stageDefId: string, body?: FactoryStageActionBody) =>
     fetchJson<FactoryRunPayload>(
       `/api/v1/factory/projects/${projectId}/stages/${encodeURIComponent(stageDefId)}/authorize`,
@@ -815,6 +968,150 @@ export const api = {
       { method: "POST", body: JSON.stringify(body ?? {}) },
     ),
 
+  resumeFactoryStage: (projectId: string, stageDefId: string, body?: FactoryStageActionBody) =>
+    fetchJson<FactoryRunPayload>(
+      `/api/v1/factory/projects/${projectId}/stages/${encodeURIComponent(stageDefId)}/resume`,
+      { method: "POST", body: JSON.stringify(body ?? {}) },
+    ),
+
+  resumeFactoryRun: (projectId: string, body?: FactoryStageActionBody) =>
+    fetchJson<FactoryRunPayload>(`/api/v1/factory/projects/${projectId}/run/resume`, {
+      method: "POST",
+      body: JSON.stringify(body ?? {}),
+    }),
+
+  pauseFactoryRun: (projectId: string, body?: FactoryStageActionBody) =>
+    fetchJson<FactoryRunPayload>(`/api/v1/factory/projects/${projectId}/run/pause`, {
+      method: "POST",
+      body: JSON.stringify(body ?? {}),
+    }),
+
+  redoFactoryGate: (projectId: string, stageDefId: string, body?: FactoryStageActionBody) =>
+    fetchJson<FactoryRunPayload>(
+      `/api/v1/factory/projects/${projectId}/stages/${encodeURIComponent(stageDefId)}/redo`,
+      { method: "POST", body: JSON.stringify(body ?? {}) },
+    ),
+
+  restartFactoryRun: (projectId: string, body?: FactoryStageActionBody) =>
+    fetchJson<FactoryRunPayload>(`/api/v1/factory/projects/${projectId}/run/restart`, {
+      method: "POST",
+      body: JSON.stringify(body ?? {}),
+    }),
+
+  executeFactoryStage: (projectId: string, stageDefId: string, body?: FactoryStageActionBody) =>
+    fetchJson<FactoryRunPayload & { executed_files?: unknown[]; ghostcli?: string | null }>(
+      `/api/v1/factory/projects/${projectId}/stages/${encodeURIComponent(stageDefId)}/execute`,
+      { method: "POST", body: JSON.stringify(body ?? {}) },
+    ),
+
+  setFactoryAutoSwitch: (projectId: string, enabled: boolean) =>
+    fetchJson<FactoryRunPayload>(`/api/v1/factory/projects/${projectId}/run/auto-switch`, {
+      method: "PUT",
+      body: JSON.stringify({ enabled }),
+    }),
+
+  autoExecuteFactoryRun: (projectId: string, body?: FactoryStageActionBody) =>
+    fetchJson<
+      FactoryRunPayload & {
+        auto?: { steps: unknown[]; stop_reason: string; steps_count: number };
+      }
+    >(`/api/v1/factory/projects/${projectId}/run/auto`, {
+      method: "POST",
+      body: JSON.stringify(body ?? {}),
+    }),
+
+  getFactoryQa: (projectId: string) =>
+    fetchJson<{
+      project_id: string;
+      run_id?: string | null;
+      template_code: string;
+      workspace_ok: boolean;
+      rules: Array<{
+        id: string;
+        title: string;
+        kind: string;
+        status: "pass" | "fail" | "wait" | string;
+        paths?: string[];
+      }>;
+      passed: number;
+      total: number;
+      pct: number;
+      ready_for_handoff: boolean;
+    }>(`/api/v1/factory/projects/${projectId}/qa`),
+
+  getFactoryRoadmap: (projectId: string) =>
+    fetchJson<{
+      project_id: string;
+      run_id: string;
+      template_code: string;
+      pct: number;
+      stages_done: number;
+      total_stages: number;
+      current_stage_id?: string | null;
+      stages: FactoryStageInstance[];
+    }>(`/api/v1/factory/projects/${projectId}/roadmap`),
+
+  getFactoryChat: (projectId: string) =>
+    fetchJson<{
+      project_id: string;
+      messages: Array<{
+        id: string;
+        role: string;
+        text: string;
+        agent_role?: string;
+        agent_name?: string;
+        at?: string;
+      }>;
+    }>(`/api/v1/factory/projects/${projectId}/chat`),
+
+  postFactoryChat: (
+    projectId: string,
+    body: { message: string; agent_role?: string; agent_name?: string },
+  ) =>
+    fetchJson<{
+      project_id: string;
+      messages: Array<{ id: string; role: string; text: string; agent_name?: string; at?: string }>;
+    }>(`/api/v1/factory/projects/${projectId}/chat`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+
+  getFactoryAccess: (projectId: string) =>
+    fetchJson<{
+      project_id: string;
+      items: Array<{
+        key: string;
+        label: string;
+        kind: string;
+        status: string;
+        hint?: string;
+        masked: string;
+        updated_at?: string;
+      }>;
+    }>(`/api/v1/factory/projects/${projectId}/access`),
+
+  upsertFactoryAccess: (
+    projectId: string,
+    body: {
+      key: string;
+      label?: string;
+      kind?: string;
+      status?: string;
+      hint?: string;
+      value?: string;
+    },
+  ) =>
+    fetchJson<{ project_id: string; items: unknown[] }>(
+      `/api/v1/factory/projects/${projectId}/access`,
+      { method: "PUT", body: JSON.stringify(body) },
+    ),
+
+  revealFactoryAccess: (projectId: string, key: string) =>
+    fetchJson<{ project_id: string; key: string; masked: string; revealed: boolean; note: string }>(
+      `/api/v1/factory/projects/${projectId}/access/${encodeURIComponent(key)}/reveal`,
+      { method: "POST", body: JSON.stringify({}) },
+    ),
+
   getFactoryLedger: (projectId: string) =>
     fetchJson<{
       project_id: string;
@@ -826,6 +1123,17 @@ export const api = {
   // Studio
   listPersonas: () => fetchJson<Persona[]>("/api/v1/studio/personas"),
   listStudioProfiles: () => fetchJson<StudioProfile[]>("/api/v1/studio/profiles"),
+  getStudioProfile: (id: string) => fetchJson<StudioProfile>(`/api/v1/studio/profiles/${id}`),
+  createStudioProfile: (data: Record<string, unknown>) =>
+    fetchJson<StudioProfile>("/api/v1/studio/profiles", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  patchStudioProfile: (id: string, data: Record<string, unknown>) =>
+    fetchJson<StudioProfile>(`/api/v1/studio/profiles/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
   listStudioPieces: (query?: { profile_id?: string; stage?: string; net?: string }) => {
     const params = new URLSearchParams();
     if (query?.profile_id) params.set("profile_id", query.profile_id);
@@ -854,6 +1162,60 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ url }),
     }),
+  produceStudioPiece: (
+    id: string,
+    data?: { squad_id?: string; theme?: string; guidance?: string },
+  ) =>
+    fetchJson<StudioPiece>(`/api/v1/studio/pieces/${id}/produce`, {
+      method: "POST",
+      body: JSON.stringify(data ?? {}),
+    }),
+  listStudioDecisions: (query?: { profile_id?: string; status?: string }) => {
+    const params = new URLSearchParams();
+    if (query?.profile_id) params.set("profile_id", query.profile_id);
+    if (query?.status) params.set("status", query.status);
+    const qs = params.toString();
+    return fetchJson<StudioDecision[]>(`/api/v1/studio/decisions${qs ? `?${qs}` : ""}`);
+  },
+  runStudioOracle: (
+    profileId: string,
+    data?: { net?: string; theme?: string; start_point_id?: string },
+  ) =>
+    fetchJson<StudioDecision>(`/api/v1/studio/profiles/${profileId}/oracle/runs`, {
+      method: "POST",
+      body: JSON.stringify(data ?? {}),
+    }),
+  selectStudioDecision: (id: string, optionId: string, squadId?: string) =>
+    fetchJson<StudioDecision>(`/api/v1/studio/decisions/${id}/select`, {
+      method: "POST",
+      body: JSON.stringify({ option_id: optionId, squad_id: squadId }),
+    }),
+  approveStudioPackage: (id: string) =>
+    fetchJson<StudioDecision>(`/api/v1/studio/decisions/${id}/approve-package`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
+  dismissStudioDecision: (id: string) =>
+    fetchJson<StudioDecision>(`/api/v1/studio/decisions/${id}/dismiss`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
+  returnStudioOracle: (id: string) =>
+    fetchJson<StudioDecision>(`/api/v1/studio/decisions/${id}/return-oracle`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
+  createStudioProduction: (data: {
+    profile_id: string;
+    platform: string;
+    squad_id: string;
+    start_point_id: string;
+    theme?: string;
+  }) =>
+    fetchJson<StudioProductionResult>("/api/v1/studio/productions", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 
   // Visibility & Knowledge
   listWorkflows: () => fetchJson<Workflow[]>("/api/v1/workflows"),
@@ -870,6 +1232,50 @@ export const api = {
       method: "POST",
     }),
   getGhostCliStatus: () => fetchJson<{ integration: string; status: string; latency_ms: number | null; last_check: string | null; error: string | null }>("/api/v1/integrations/ghostcli/status"),
+  getCursorIntegration: () =>
+    fetchJson<{
+      integration: string;
+      enabled: boolean;
+      configured: boolean;
+      local: boolean;
+      logged_in: boolean;
+      sdk: boolean;
+      model: string;
+      login_url?: string | null;
+    }>("/api/v1/integrations/cursor"),
+  setCursorIntegration: (enabled: boolean) =>
+    fetchJson<{
+      integration: string;
+      enabled: boolean;
+      configured: boolean;
+      local: boolean;
+      logged_in: boolean;
+      sdk: boolean;
+      model: string;
+      login_url?: string | null;
+    }>("/api/v1/integrations/cursor", { method: "PUT", body: JSON.stringify({ enabled }) }),
+  startCursorLogin: () =>
+    fetchJson<{ logged_in: boolean; url: string | null; pending: boolean; error: string | null }>(
+      "/api/v1/integrations/cursor/login",
+      { method: "POST" },
+    ),
+  getProjectAiSettings: (projectId: string) =>
+    fetchJson<{
+      model: string;
+      effort: string;
+      provider: string;
+      cursor_enabled: boolean;
+      engines: Array<{
+        id: string;
+        label: string;
+        models: Array<{ id: string; label: string; efforts: Array<{ id: string; label: string }> }>;
+      }>;
+    }>(`/api/v1/integrations/projects/${projectId}/ai-settings`),
+  saveProjectAiSettings: (projectId: string, body: { model: string; effort: string }) =>
+    fetchJson<{ model: string; effort: string; provider: string }>(
+      `/api/v1/integrations/projects/${projectId}/ai-settings`,
+      { method: "PUT", body: JSON.stringify(body) },
+    ),
   searchKnowledge: (query?: string, domain?: string, limit?: number) => {
     const params = new URLSearchParams();
     if (query) params.set("q", query);

@@ -1,6 +1,8 @@
-import { For, createSignal } from "solid-js";
+import { For, createEffect, createSignal } from "solid-js";
 import { TvIcon } from "../../../../shared/components/TvIcon";
+import { api } from "../../../../shared/api/client";
 import { showToast } from "../../../../state/store";
+import { mapStudioProfile } from "../../apiMappers";
 import type { ContentProfile } from "../../demoData";
 import {
   EditInstructionsModal,
@@ -35,14 +37,33 @@ const DEFAULT_LINES = [
   "Fechar com ação que gere salvamento",
 ];
 
+function linesFromProfile(profile: ContentProfile): string[] {
+  const raw = profile.designSystem.doList;
+  if (raw && raw.includes("\n")) {
+    return raw
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+  }
+  return [...DEFAULT_LINES];
+}
+
 export function OraclePanel(props: {
   profile: ContentProfile;
   onNovaRodada?: () => void;
+  onProfilePatch?: (next: ContentProfile) => void;
 }) {
   const [editOpen, setEditOpen] = createSignal(false);
   const [instructions, setInstructions] = createSignal<EditorialInstructions>({
-    lines: [...DEFAULT_LINES],
+    lines: linesFromProfile(props.profile),
     toneOfVoice: props.profile.designSystem.toneOfVoice,
+  });
+
+  createEffect(() => {
+    setInstructions({
+      lines: linesFromProfile(props.profile),
+      toneOfVoice: props.profile.designSystem.toneOfVoice,
+    });
   });
 
   return (
@@ -114,9 +135,27 @@ export function OraclePanel(props: {
         initial={instructions()}
         onClose={() => setEditOpen(false)}
         onSave={(next) => {
-          setInstructions(next);
-          setEditOpen(false);
-          showToast("Instruções editoriais atualizadas", "Mesa do Oráculo", "success");
+          void (async () => {
+            try {
+              const updated = await api.patchStudioProfile(props.profile.id, {
+                tone: next.toneOfVoice,
+                guidelines: next.lines.filter((l) => l.trim()).join("\n"),
+                design_system: {
+                  ...props.profile.designSystem,
+                  toneOfVoice: next.toneOfVoice,
+                  doList: next.lines.filter((l) => l.trim()).join("\n"),
+                },
+              });
+              const mapped = mapStudioProfile(updated);
+              setInstructions(next);
+              props.onProfilePatch?.(mapped);
+              setEditOpen(false);
+              showToast("Instruções editoriais atualizadas", "Mesa do Oráculo", "success");
+            } catch (err) {
+              console.warn(err);
+              showToast("Falha ao salvar instruções", "Studio", "error");
+            }
+          })();
         }}
       />
     </div>

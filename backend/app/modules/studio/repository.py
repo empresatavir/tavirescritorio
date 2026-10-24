@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.persona import Persona
 from app.models.profile import Profile
 from app.models.piece import Piece
+from app.models.studio_decision import StudioDecision
 
 
 class PersonaRepository:
@@ -39,6 +40,16 @@ class ProfileRepository:
         await self.session.flush()
         return profile
 
+    async def update(self, profile_id: str, **fields) -> Profile | None:
+        profile = await self.get_by_id(profile_id)
+        if not profile:
+            return None
+        for key, value in fields.items():
+            if value is not None and hasattr(profile, key):
+                setattr(profile, key, value)
+        await self.session.flush()
+        return profile
+
 
 class PieceRepository:
     def __init__(self, session: AsyncSession):
@@ -48,7 +59,7 @@ class PieceRepository:
         self,
         profile_id: str | None = None,
         stage: str | None = None,
-        net: str | None = None
+        net: str | None = None,
     ) -> list[Piece]:
         stmt = select(Piece)
         if profile_id:
@@ -70,7 +81,6 @@ class PieceRepository:
         return piece
 
     async def get_next_num(self) -> str:
-        # Pega a contagem total de peças para gerar ST-031, ST-032, etc.
         res = await self.session.execute(select(func.count(Piece.id)))
         count = res.scalar() or 0
         return f"ST-{count + 31:03d}"
@@ -96,11 +106,13 @@ class PieceRepository:
             piece.published_at = datetime.utcnow()
             piece.status = "published"
         cur_timeline = list(piece.timeline) if piece.timeline else []
-        cur_timeline.append([
-            datetime.now().strftime("%d/%m %H:%M"),
-            "Pipeline",
-            f"Movido de {old_stage} para {new_stage}"
-        ])
+        cur_timeline.append(
+            [
+                datetime.now().strftime("%d/%m %H:%M"),
+                "Pipeline",
+                f"Movido de {old_stage} para {new_stage}",
+            ]
+        )
         piece.timeline = cur_timeline
         return piece
 
@@ -112,6 +124,12 @@ class PieceRepository:
         caption: str | None = None,
         tags: str | None = None,
         body: str | None = None,
+        subtitle: str | None = None,
+        cta: str | None = None,
+        slides: list | None = None,
+        progress: int | None = None,
+        squad: str | None = None,
+        needs: bool | None = None,
     ) -> Piece | None:
         piece = await self.get_by_id(piece_id)
         if not piece:
@@ -126,6 +144,18 @@ class PieceRepository:
             piece.tags = tags
         if body is not None:
             piece.body = body
+        if subtitle is not None:
+            piece.subtitle = subtitle
+        if cta is not None:
+            piece.cta = cta
+        if slides is not None:
+            piece.slides = slides
+        if progress is not None:
+            piece.progress = progress
+        if squad is not None:
+            piece.squad = squad
+        if needs is not None:
+            piece.needs = needs
         return piece
 
     async def publish(self, piece_id: str, url: str | None = None) -> Piece | None:
@@ -134,13 +164,48 @@ class PieceRepository:
             return None
         piece.stage = "done"
         piece.status = "published"
+        piece.needs = False
         piece.published_at = datetime.utcnow()
         piece.published_url = url or f"https://tavir.io/content/{piece.num or piece.id}"
         cur_timeline = list(piece.timeline) if piece.timeline else []
-        cur_timeline.append([
-            datetime.now().strftime("%d/%m %H:%M"),
-            "Publicador",
-            f"Conteúdo publicado: {piece.published_url}"
-        ])
+        cur_timeline.append(
+            [
+                datetime.now().strftime("%d/%m %H:%M"),
+                "Publicador",
+                f"Conteúdo publicado: {piece.published_url}",
+            ]
+        )
         piece.timeline = cur_timeline
         return piece
+
+
+class DecisionRepository:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def list_all(
+        self,
+        profile_id: str | None = None,
+        status: str | None = None,
+    ) -> list[StudioDecision]:
+        stmt = select(StudioDecision)
+        if profile_id:
+            stmt = stmt.where(StudioDecision.profile_id == profile_id)
+        if status:
+            stmt = stmt.where(StudioDecision.status == status)
+        stmt = stmt.order_by(StudioDecision.created_at.desc())
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def get_by_id(self, decision_id: str) -> StudioDecision | None:
+        return await self.session.get(StudioDecision, decision_id)
+
+    async def create(self, decision: StudioDecision) -> StudioDecision:
+        self.session.add(decision)
+        await self.session.flush()
+        return decision
+
+    async def next_run_id(self) -> str:
+        res = await self.session.execute(select(func.count(StudioDecision.id)))
+        count = res.scalar() or 0
+        return f"TVR-{2800 + count + 1}"

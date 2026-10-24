@@ -1,6 +1,10 @@
 """Raízes de workspace da Fábrica — Interno vs Externo."""
 from __future__ import annotations
 
+import os
+import re
+import subprocess
+import unicodedata
 from pathlib import Path
 
 # backend/app/modules/factory/workspace_roots.py → repo root = parents[4]
@@ -15,6 +19,20 @@ OWNERSHIP_ROOTS = {
     "interno": INTERNAL_ROOT,
     "externo": EXTERNAL_ROOT,
 }
+
+
+def slugify_project_name(name: str) -> str:
+    """
+    Normaliza nome de projeto para pasta/slug ASCII.
+    Ex.: "Venda de Maça" → "venda-de-maca"
+    """
+    text = (name or "").strip().lower()
+    # NFD: "ç" → "c" + cedilha combinante; remove marcas
+    text = unicodedata.normalize("NFD", text)
+    text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn")
+    text = re.sub(r"[^a-z0-9]+", "-", text)
+    text = re.sub(r"-{2,}", "-", text).strip("-")
+    return text or "projeto"
 
 
 def resolve_ownership_root(ownership: str) -> Path:
@@ -41,3 +59,36 @@ def materialize_project_workspace(ownership: str, slug: str) -> Path:
             encoding="utf-8",
         )
     return ws.resolve()
+
+
+def assert_path_under_factory_roots(path: Path) -> Path:
+    """Garante que o path está dentro de tavir-interno ou tavir-exterrno."""
+    resolved = path.resolve()
+    allowed = [INTERNAL_ROOT.resolve(), EXTERNAL_ROOT.resolve()]
+    for root in allowed:
+        try:
+            resolved.relative_to(root)
+            return resolved
+        except ValueError:
+            continue
+    raise ValueError("Caminho fora das raízes de workspace da Fábrica")
+
+
+def open_folder_in_os(path: Path) -> None:
+    """Abre a pasta no gerenciador de arquivos do SO (Explorer no Windows)."""
+    resolved = assert_path_under_factory_roots(path)
+    if not resolved.is_dir():
+        raise FileNotFoundError(f"Pasta não encontrada: {resolved}")
+
+    if os.name == "nt":
+        # explorer com path absoluto — abre a pasta no Windows Explorer
+        subprocess.Popen(["explorer", str(resolved)], shell=False)
+        return
+
+    import sys
+
+    if sys.platform == "darwin":
+        subprocess.Popen(["open", str(resolved)], shell=False)
+        return
+
+    subprocess.Popen(["xdg-open", str(resolved)], shell=False)

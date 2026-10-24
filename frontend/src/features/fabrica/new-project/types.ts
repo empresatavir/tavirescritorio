@@ -9,6 +9,7 @@ export interface NewProjectSubmitPayload {
   ownership: NewProjectOwnership;
   track: NewProjectTrack;
   context_files: string[];
+  context_file_blobs?: File[];
   design_system_files: string[];
   stack_frontend?: string;
   stack_backend?: string;

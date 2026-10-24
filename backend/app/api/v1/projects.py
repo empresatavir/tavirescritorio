@@ -1,13 +1,12 @@
 """Projects API router — read and write endpoints for projects."""
 import uuid
-import re
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.shared.database import get_session
 from app.models.project import Project
 from app.modules.projects.repository import ProjectRepository
-from app.modules.factory.workspace_roots import materialize_project_workspace
+from app.modules.factory.workspace_roots import materialize_project_workspace, slugify_project_name
 from app.modules.factory.esteiras import resolve_template_code, get_esteira
 from app.modules.factory.run_service import materialize_run_for_project
 from app.api.v1.schemas import ProjectResponse
@@ -62,7 +61,7 @@ async def create_project(req: CreateProjectRequest, session: AsyncSession = Depe
     if req.design_system_file and req.design_system_file not in ds_files:
         ds_files.append(req.design_system_file)
 
-    slug_base = re.sub(r"[^a-z0-9]+", "-", req.name.lower()).strip("-") or "projeto"
+    slug_base = slugify_project_name(req.name)
     project_id = str(uuid.uuid4())
     slug = f"{slug_base}-{project_id[:6]}"
 

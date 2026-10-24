@@ -50,7 +50,8 @@ async def test_agent_soul_update(session):
 
 @pytest.mark.asyncio
 async def test_chat_flow_service(session, monkeypatch):
-    monkeypatch.setattr("app.modules.chat.service.GHOSTCLI_API_KEY", "")
+    monkeypatch.setattr("app.modules.ghostcli.client.api_key", lambda: "")
+    monkeypatch.setattr("app.modules.chat.service.is_configured", lambda: False)
     chat_repo = ChatRepository(session)
     conv = await chat_repo.create_conversation(
         agent_id="ag-test-1",

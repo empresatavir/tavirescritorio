@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Concierge</title>
+<style>
+  :root {
+    --bg: #00131a;
+    --side: #002432;
+    --side-2: #001c28;
+    --card: #032937;
+    --card-2: #043140;
+    --line: rgba(120, 196, 214, .22);
+    --line-strong: rgba(150, 220, 236, .38);
+    --text: #e8f6fb;
+    --text-2: #c5dde6;
+    --muted: #8eafbb;
+    --cyan: #2ec4de;
+    --cyan-d: #1498b8;
+    --cyan-ink: #042028;
+    --ok: #3ddea0;
+    --bad: #ff5d6c;
+    --warn: #f0b429;
+    --orange: #e08a45;
+    --blue: #3d8fd4;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #000; color: var(--text); font-family: "Segoe UI", sans-serif; font-size: 13px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  .win { height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
+  .caption { height: 32px; display: flex; align-items: center; padding: 0 12px; background: #001018; color: var(--muted); font-size: 12px; gap: 8px; }
+  .caption .dots { margin-left: auto; display: flex; gap: 8px; }
+  .caption i { width: 12px; height: 12px; border: 1px solid var(--muted); display: inline-block; }
+  .app { flex: 1; min-height: 0; display: grid; grid-template-columns: 232px minmax(0, 1fr); }
+  .side { background: var(--side); border-right: 1px solid rgba(0,0,0,.35); display: flex; flex-direction: column; min-height: 0; }
+  .brand { display: flex; gap: 10px; align-items: center; padding: 14px 14px 8px; }
+  .logo { width: 34px; height: 34px; border-radius: 8px; background: #fff; color: #111; font-weight: 800; display: grid; place-items: center; font-size: 11px; letter-spacing: -.03em; }
+  .brand b { display: block; font-size: 14px; }
+  .brand span, .who { color: var(--muted); font-size: 11px; }
+  .srv { margin: 4px 14px 8px; align-self: flex-start; border: 1px solid rgba(61,222,160,.45); color: var(--ok); border-radius: 999px; padding: 2px 8px; font-size: 10px; letter-spacing: .08em; }
+  .grp { padding: 12px 16px 4px; color: var(--muted); font-size: 10px; letter-spacing: .14em; }
+  .side { overflow: auto; }
+  .nav { width: calc(100% - 16px); margin: 1px 8px; border: 0; background: transparent; color: var(--text-2); text-align: left; border-radius: 8px; padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; transition: background .16s ease, color .16s ease, transform .16s ease; }
+  .nav-l { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+  .nav-l svg { width: 15px; height: 15px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .nav:hover { background: rgba(46,196,222,.14); color: white; transform: translateX(2px); }
+  .nav.is-on { background: #0a4d63; color: white; box-shadow: inset 3px 0 0 var(--cyan); }
+  .badge { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--cyan); color: var(--cyan-ink); font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+  .badge.warn { background: var(--warn); }
+  .foot { margin-top: auto; padding: 12px 14px 14px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+  .main { min-width: 0; min-height: 0; display: flex; flex-direction: column; }
+  .top { height: 52px; display: flex; align-items: center; justify-content: flex-end; padding: 0 16px; }
+  .btn { border: 1px solid var(--line-strong); background: transparent; color: var(--text-2); border-radius: 8px; padding: 7px 12px; transition: background .15s ease, color .15s ease, border-color .15s ease, transform .12s ease, filter .15s ease; }
+  .btn:hover { border-color: var(--cyan); color: white; background: rgba(46,196,222,.1); }
+  .btn:active { transform: scale(.98); }
+  .btn.primary { background: var(--cyan); border-color: transparent; color: var(--cyan-ink); font-weight: 700; }
+  .btn.primary:hover { color: var(--cyan-ink); filter: brightness(1.08); transform: translateY(-1px); }
+  .btn.ghost { background: #063646; }
+  .btn.danger { color: #ffb4b8; border-color: rgba(255,93,108,.45); }
+  .btn.tiny { padding: 4px 8px; font-size: 12px; }
+  .view { display: none; min-height: 0; overflow: auto; padding: 0 18px 28px; }
+  .view.is-on { display: block; animation: rise .22s ease; }
+  h1 { margin: 0; font-size: 22px; font-weight: 650; }
+  .lead { margin: 4px 0 14px; color: var(--muted); }
+  .kpis { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 8px; }
+  .kpi { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; min-height: 92px; transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease; }
+  .kpi:hover { transform: translateY(-3px); border-color: rgba(46,196,222,.55); box-shadow: 0 10px 24px rgba(0,0,0,.28); }
+  .kpi .src { font-size: 10px; letter-spacing: .06em; color: var(--cyan); }
+  .kpi .n { font-size: 26px; font-weight: 720; margin: 2px 0; }
+  .kpi .d { color: var(--muted); font-size: 12px; }
+  .panel { margin-top: 14px; background: rgba(3,41,55,.55); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  .panel h2 { margin: 0 0 10px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .chart { display: flex; gap: 14px; align-items: flex-end; }
+  .bars { flex: 1; height: 140px; display: flex; align-items: flex-end; gap: 8px; }
+  .bar { flex: 1; display: flex; align-items: flex-end; gap: 2px; height: 100%; }
+  .bar i { width: 7px; display: block; border-radius: 2px 2px 0 0; transform-origin: bottom; animation: grow .45s ease; }
+  .legend { width: 180px; color: var(--muted); font-size: 12px; }
+  .legend div { display: flex; justify-content: space-between; gap: 8px; margin: 4px 0; }
+  .legend b { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 8px; border-bottom: 1px solid var(--line); }
+  td { padding: 8px; border-bottom: 1px solid rgba(120,196,214,.12); vertical-align: middle; }
+  tr.click { transition: background .12s ease; }
+  tr.click:hover td { background: rgba(46,196,222,.1); }
+  .key { color: var(--cyan); font-family: Consolas, monospace; font-size: 12px; }
+  .tag { display: inline-flex; border-radius: 999px; padding: 2px 8px; font-size: 11px; border: 1px solid var(--line); color: var(--text-2); }
+  .tag.ok { color: var(--ok); border-color: rgba(61,222,160,.4); background: rgba(61,222,160,.1); }
+  .tag.bad { color: #ffb4b8; border-color: rgba(255,93,108,.4); background: rgba(255,93,108,.1); }
+  .tag.warn { color: var(--warn); border-color: rgba(240,180,41,.4); }
+  .tag.hot { color: var(--orange); border-color: rgba(224,138,69,.45); }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; margin-bottom: 10px; }
+  .filters label, .field label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; }
+  .filters input, .filters select, .field input, .field select, .field textarea {
+    background: #01202b; border: 1px solid var(--line); border-radius: 8px; padding: 7px 8px; min-width: 0;
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+  .field textarea { min-height: 88px; resize: vertical; }
+  .seg { display: inline-flex; background: #01202b; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg button { border: 0; background: transparent; color: var(--muted); padding: 7px 12px; transition: background .15s ease, color .15s ease; }
+  .seg button:hover { color: white; }
+  .seg button.is-on { background: #0a4d63; color: white; }
+  .board { display: grid; grid-template-columns: repeat(5, minmax(190px, 1fr)); gap: 8px; align-items: start; }
+  .col { background: rgba(1, 24, 34, .65); border: 1px solid var(--line); border-radius: 12px; padding: 8px; min-height: 180px; transition: border-color .16s ease; }
+  .col:hover { border-color: rgba(46,196,222,.4); }
+  .col h3 { margin: 2px 4px 8px; font-size: 11px; letter-spacing: .06em; color: var(--muted); display: flex; justify-content: space-between; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px; margin-bottom: 8px; transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease; }
+  .card:hover { transform: translateY(-2px); border-color: var(--cyan); box-shadow: 0 8px 18px rgba(0,0,0,.25); }
+  .card p { margin: 6px 0; line-height: 1.35; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; color: var(--muted); font-size: 11px; align-items: center; }
+  .menu { position: fixed; z-index: 40; min-width: 280px; background: #012833; border: 1px solid var(--line-strong); border-radius: 10px; padding: 6px; box-shadow: 0 16px 40px rgba(0,0,0,.45); animation: pop .14s ease; }
+  .menu button { display: block; width: 100%; text-align: left; background: transparent; border: 0; color: var(--text-2); border-radius: 7px; padding: 7px 8px; transition: background .12s ease, color .12s ease, padding-left .12s ease; }
+  .menu button:hover, .menu .sub button:hover { background: rgba(46,196,222,.16); color: white; padding-left: 12px; }
+  .menu hr { border: 0; border-top: 1px solid var(--line); margin: 4px; }
+  .prio { position: relative; }
+  .prio .sub { display: none; position: absolute; left: 100%; top: 0; min-width: 160px; background: #012833; border: 1px solid var(--line-strong); border-radius: 8px; padding: 4px; }
+  .prio:hover .sub, .prio:focus-within .sub { display: block; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 5px 10px; color: var(--text-2); font-size: 12px; transition: background .15s ease, border-color .15s ease, color .15s ease, transform .12s ease; }
+  .chip:hover { border-color: var(--cyan); color: white; transform: translateY(-1px); }
+  .chip.is-on { background: rgba(46,196,222,.16); border-color: var(--cyan); color: white; }
+  .split { display: grid; grid-template-columns: 1.05fr .95fr; gap: 12px; }
+  .drop { border: 1px dashed var(--line-strong); border-radius: 10px; padding: 18px; text-align: center; color: var(--muted); margin-bottom: 10px; }
+  .appr, .proj, .bank, .user { transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease; }
+  .appr:hover, .proj:hover, .bank:hover, .user:hover { transform: translateY(-2px); border-color: rgba(46,196,222,.45); box-shadow: 0 10px 22px rgba(0,0,0,.22); }
+  .appr { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .appr h3 { margin: 6px 0; font-size: 15px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+  .box { border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+  .box small { display: block; color: var(--muted); font-size: 11px; margin-bottom: 4px; }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+  .tabs button { border: 0; background: transparent; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid transparent; transition: color .15s ease, border-color .15s ease; }
+  .tabs button:hover { color: white; }
+  .tabs button.is-on { color: white; border-bottom-color: var(--cyan); }
+  .proj { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .paths, .toggles { display: grid; gap: 8px; margin-top: 8px; }
+  .paths { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .toggles { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .paths div, .tog { background: #01202b; border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+  .paths span { display: block; color: var(--muted); font-size: 11px; }
+  .tog { display: flex; gap: 8px; align-items: flex-start; font-size: 12px; }
+  .note { background: rgba(46,196,222,.08); border: 1px solid rgba(46,196,222,.28); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; color: var(--text-2); }
+  .banks { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
+  .bank { background: var(--card); border: 1px solid rgba(240,180,41,.35); border-radius: 10px; padding: 10px; }
+  .bank b { display: block; }
+  .user { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .perm { margin-top: 8px; }
+  .perm p { margin: 8px 0 4px; color: var(--muted); font-size: 11px; letter-spacing: .06em; }
+  .hero { background: linear-gradient(90deg, #08324a, #0a6e92 55%, #1498b8); border-radius: 14px; padding: 18px; margin-bottom: 12px; }
+  .modal-back { position: fixed; inset: 0; background: rgba(0,8,12,.72); z-index: 50; display: grid; place-items: center; padding: 20px; animation: fade .18s ease; }
+  .modal { width: min(920px, 100%); max-height: min(86vh, 820px); overflow: auto; background: #012833; border: 1px solid var(--line-strong); border-radius: 14px; padding: 14px 16px 16px; animation: pop .22s cubic-bezier(.2,.8,.2,1); }
+  .modal.wide { width: min(1040px, 100%); }
+  .modal header { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+  .checks label { display: flex; gap: 8px; padding: 3px 0; }
+  .diff { display: grid; grid-template-columns: 240px 1fr; min-height: 320px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .files button { display: block; width: 100%; text-align: left; background: transparent; border: 0; color: var(--text-2); padding: 8px; }
+  .files button.is-on { background: rgba(46,196,222,.15); }
+  .diff pre { margin: 0; padding: 10px; overflow: auto; font-family: Consolas, monospace; font-size: 12px; line-height: 1.45; background: #00161e; }
+  .add { color: #8ee0c0; }
+  .del { color: #ffb4b8; }
+  .timeline { border-left: 2px solid var(--line); margin-left: 6px; padding-left: 10px; }
+  .timeline div { margin: 0 0 8px; }
+  .timeline time { display: block; color: var(--muted); font-size: 11px; }
+  .iris-fab { position: fixed; right: 18px; bottom: 18px; z-index: 30; width: 54px; height: 54px; border-radius: 50%; border: 0; background: var(--cyan); color: var(--cyan-ink); font-weight: 800; box-shadow: 0 8px 24px rgba(0,0,0,.35); transition: transform .16s ease, box-shadow .16s ease; }
+  .iris-fab:hover { transform: scale(1.08); box-shadow: 0 12px 28px rgba(46,196,222,.35); }
+  .iris { position: fixed; right: 18px; bottom: 82px; width: min(340px, calc(100vw - 24px)); height: 420px; background: #012833; border: 1px solid var(--line-strong); border-radius: 14px; z-index: 30; display: none; flex-direction: column; }
+  .iris.is-on { display: flex; animation: irisIn .22s ease; }
+  .iris header, .composer { padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .composer { border-bottom: 0; border-top: 1px solid var(--line); display: flex; gap: 8px; }
+  .composer input { flex: 1; background: #01202b; border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+  .thread { flex: 1; overflow: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .bubble { max-width: 92%; background: #01202b; border-radius: 10px; padding: 8px 10px; line-height: 1.4; }
+  .bubble.me { align-self: flex-end; background: rgba(46,196,222,.16); }
+  .hidden { display: none !important; }
+  .toast { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--cyan); color: var(--cyan-ink); font-weight: 700; border-radius: 999px; padding: 8px 14px; z-index: 70; animation: toastIn .2s ease; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 0 0 rgba(46,196,222,.6); animation: pulse 1.8s ease infinite; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%); } }
+  @keyframes pop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes grow { from { transform: scaleY(.2); } to { transform: scaleY(1); } }
+  @keyframes irisIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 5px rgba(46,196,222,0); } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+  @media (max-width: 1100px) {
+    .kpis, .board, .paths, .toggles, .banks, .split, .row2 { grid-template-columns: 1fr 1fr; }
+    .app { grid-template-columns: 1fr; }
+    .side { display: none; }
+    .side.is-open { display: flex; position: fixed; z-index: 20; inset: 32px auto 0 0; width: 240px; }
+  }
+</style>
+</head>
+<body>
+<div class="win">
+  <div class="caption">Concierge <span class="dots"><i></i><i></i><i></i></span></div>
+  <div class="app">
+    <aside class="side" id="side">
+      <div class="brand">
+        <div class="logo">TOTVS</div>
+        <div><b>Concierge</b><span class="who">TOTVS · Wesley</span></div>
+      </div>
+      <div class="srv">SERVIDOR</div>
+      <div class="grp">OPERAÇÃO</div>
+      <button class="nav is-on" data-go="visao"><span class="nav-l"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Visão geral</span></button>
+      <button class="nav" data-go="board"><span class="nav-l"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16"/><rect x="10" y="4" width="5" height="10"/><rect x="17" y="4" width="4" height="13"/></svg>Board</span><span class="dot" title="Há atualização no board"></span></button>
+      <button class="nav" data-go="express"><span class="nav-l"><svg viewBox="0 0 24 24"><path d="M13 3 5 14h7l-1 7 8-11h-7l1-7z"/></svg>Análise Express</span></button>
+      <button class="nav" data-go="exec"><span class="nav-l"><svg viewBox="0 0 24 24"><path d="M8 6v12l10-6z"/></svg>Execuções</span></button>
+      <button class="nav" data-go="aprov"><span class="nav-l"><svg viewBox="0 0 24 24"><path d="M5 12.5 9.2 17 19 7"/></svg>Aprovações</span><span class="badge warn">4</span></button>
+      <button class="nav" data-go="suporte"><span class="nav-l"><svg viewBox="0 0 24 24"><path d="M12 21a8 8 0 0 0 8-8c0-3.2-2-6-5-7.2"/><path d="M12 21a8 8 0 0 1-8-8c0-3.2 2-6 5-7.2"/><path d="M9 10h.01M15 10h.01M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>Suporte</span></button>
+      <div class="grp">GESTÃO</div>
+      <button class="nav" data-go="usuarios"><span class="nav-l"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><circle cx="17" cy="9" r="2.2"/><path d="M16.2 19a4.5 4.5 0 0 1 4.3-3"/></svg>Usuários</span></button>
+      <button class="nav" data-go="config" data-tab="memorias"><span class="nav-l"><svg viewBox="0 0 24 24"><path d="M6 4h9a3 3 0 0 1 3 3v13H9a3 3 0 0 0-3 3z"/><path d="M6 4v16"/></svg>Memórias</span><span class="badge">39</span></button>
+      <button class="nav" data-go="relatorios"><span class="nav-l"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></svg>Relatórios</span><span class="dot" title="Relatório novo"></span></button>
+      <button class="nav" data-go="saude"><span class="nav-l"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-5 4 10 2-5h6"/></svg>Saúde do produto</span></button>
+      <button class="nav" data-go="melhorias"><span class="nav-l"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="3"/></svg>Melhorias</span></button>
+      <button class="nav" data-go="logs"><span class="nav-l"><svg viewBox="0 0 24 24"><path d="M8 7h12M8 12h12M8 17h12M4 7h.01M4 12h.01M4 17h.01"/></svg>Logs</span></button>
+      <div class="grp">CONFIGURAÇÃO</div>
+      <button class="nav" data-go="atualizacoes"><span class="nav-l"><svg viewBox="0 0 24 24"><path d="M12 5v10"/><path d="m8 11 4 4 4-4"/><path d="M5 19h14"/></svg>Atualizações</span></button>
+      <button class="nav" data-go="config"><span class="nav-l"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6"/></svg>Configurações</span></button>
+      <button class="nav" data-go="sobre"><span class="nav-l"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg>Sobre</span></button>
+      <button class="nav" data-go="conhecer"><span class="nav-l"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="m14.5 9.5-2 5-5 2 2-5 5-2z"/></svg>Conhecer o Concierge</span></button>
+      <div class="foot">Board atualizado há 6 min<br>Board só atualiza no “Atualizar”<br>Verifique issue nova a cada 1 minuto<br><br>Desenvolvido por Wesley Barcelos<br>TOTVS Hotelaria</div>
+    </aside>
+    <div class="main">
+      <div class="top">
+        <button class="btn tiny" id="menu-btn" type="button">Menu</button>
+        <button class="btn" id="refresh" type="button" style="margin-left:8px">Atualizar</button>
+      </div>
+
+      <section class="view is-on" id="view-visao">
+        <h1>Visão geral</h1>
+        <p class="lead">O estado da operação em um olhar</p>
+        <div style="display:flex;justify-content:flex-end;margin-top:-28px"><button class="btn tiny" data-go="config" data-tab="visao" type="button">Configurar</button></div>
+        <div class="kpis" id="kpis"></div>
+        <div class="panel">
+          <h2>Atividade dos últimos 14 dias</h2>
+          <div class="chart">
+            <div class="bars" id="bars"></div>
+            <div class="legend">
+              <div><span><b style="background:var(--blue)"></b>Abertas</span>58</div>
+              <div><span><b style="background:var(--ok)"></b>Concluídas</span>24</div>
+              <div><span><b style="background:var(--warn)"></b>Comprometido</span>20</div>
+              <div><span><b style="background:var(--orange)"></b>Refinamento concluído</span>22</div>
+              <div><span><b style="background:var(--bad)"></b>Em refinamento</span>22</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Execuções recentes <button class="btn tiny" data-go="board" type="button">Abrir o board</button></h2>
+          <table>
+            <thead><tr><th>Issue</th><th>Etapa</th><th>Estado</th><th>Duração</th><th>Quando</th></tr></thead>
+            <tbody>
+              <tr class="click" data-run="DCMF2-23435"><td class="key">DCMF2-23435</td><td>Compilação</td><td><span class="tag ok">Concluído</span></td><td>4s</td><td>há 12 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="view" id="view-board">
+        <h1>Board</h1>
+        <p class="lead">Issues por coluna, direto do Jira</p>
+        <div class="filters">
+          <div class="seg" id="board-mode">
+            <button type="button" class="is-on" data-mode="kanban">Kanban</button>
+            <button type="button" data-mode="linhas">Linhas</button>
+          </div>
+          <label>Buscar<input id="q" placeholder="Chave, título, reporter, dev ou ticket"></label>
+          <label>Tipo de issue<select id="f-tipo"><option value="">Todos</option><option>Apoio</option><option>Apoio - Cliente</option><option>Manutenção</option></select></label>
+          <label>Prioridade<select id="f-prio"><option value="">Todos</option><option>Crítica</option><option>Alta</option><option>Média</option><option>Baixa</option><option>Planejada</option></select></label>
+          <label>Responsável<select id="f-resp"><option value="">Todos</option></select></label>
+          <label>Feito pelo Concierge<select id="f-feito"><option value="">Todos</option><option>Refinado aqui</option><option>Codificado aqui</option></select></label>
+          <label>Prazo (SLA)<select><option>Todos</option><option>Atrasada</option><option>Impedida</option><option>No prazo</option></select></label>
+          <label>Atualizadas em<select><option>Qualquer data</option><option>Hoje</option><option>7 dias</option><option>14 dias</option></select></label>
+          <label class="tog"><input type="checkbox" id="f-imp"> Impedidas</label>
+          <label class="tog"><input type="checkbox" id="f-fix"> Fixadas</label>
+          <button class="btn tiny" id="f-proj" type="button">Projetos (4)</button>
+        </div>
+        <div class="board" id="kanban"></div>
+        <div class="panel hidden" id="linhas">
+          <div class="meta" style="margin-bottom:8px">Agrupar: coluna</div>
+          <table><thead><tr><th>Issue</th><th>Título</th><th>Coluna</th><th>Prioridade</th><th>Responsável</th><th>Etiquetas</th></tr></thead><tbody></tbody></table>
+        </div>
+      </section>
+
+      <section class="view" id="view-express">
+        <h1>Análise Express</h1>
+        <p class="lead">A análise do refinamento sem issue — descreva, anexe os prints e veja se é para responder ou abrir issue</p>
+        <div class="split">
+          <form class="panel" id="express-form" style="margin-top:0">
+            <h2>Nova análise</h2>
+            <p class="lead">Descreva o problema e anexe os prints. O agente faz a mesma análise do refinamento (memórias, bases, banco somente leitura e fonte) e diz o caminho: responder, abrir issue ou pedir mais dados.</p>
+            <div class="field"><label>Título (opcional)</label><input name="titulo" placeholder="ex.: Fechamento de caixa com diferença de centavos"></div>
+            <div class="field"><label>O que está acontecendo?</label><textarea name="texto" required placeholder="Em que tela/rotina, com que cliente/base, desde quando, e o que era esperado. Cole prints aqui com Ctrl+V."></textarea></div>
+            <div class="drop">Arraste prints e arquivos para cá, cole com Ctrl+V ou <button class="btn tiny" type="button">escolher arquivos</button></div>
+            <div class="field"><label>Orientação para o agente (opcional)</label><input name="dica" placeholder=""></div>
+            <button class="btn primary" type="submit">Analisar com o agente</button>
+            <p class="lead">Nada vai ao Jira se for abrir issue; o rascunho passa por Aprovações.</p>
+          </form>
+          <div class="panel" style="margin-top:0">
+            <h2>Análises</h2>
+            <p class="lead">As mais recentes primeiro. Clique para ver a recomendação, a resposta e o rascunho da issue.</p>
+            <table>
+              <thead><tr><th>Problema</th><th>Andamento</th><th>Recomendação</th><th>Quando</th></tr></thead>
+              <tbody id="express-rows">
+                <tr><td>tem como enviar as queries que são executadas pelo FRONT OFFICE api?</td><td><span class="tag warn">sem resultado</span></td><td>—</td><td>ontem</td></tr>
+                <tr><td>relatórios do reser no no Fazenda no batem</td><td><span class="tag ok">concluída</span></td><td>Responder — não é defeito</td><td>há 4 dias</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-exec">
+        <h1>Execuções</h1>
+        <p class="lead">Histórico e auditoria do que os agentes fizeram</p>
+        <div class="chips" id="exec-chips" style="margin-bottom:10px"></div>
+        <div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:8px">
+          <input id="exec-q" placeholder="Buscar por chave ou título..." style="background:#01202b;border:1px solid var(--line);border-radius:8px;padding:8px;min-width:240px">
+          <button class="btn tiny" id="exec-clear" type="button">Limpar</button>
+        </div>
+        <div class="panel">
+          <div class="meta" style="justify-content:space-between"><span id="exec-count"></span><span>Custo somado <b id="exec-cost">US$ 0,15</b></span></div>
+          <table>
+            <thead><tr><th>Issue</th><th>Título</th><th>Etapa</th><th>Estado</th><th>Duração</th><th>Tokens</th><th>Custo</th><th>Usuário</th><th>Início</th></tr></thead>
+            <tbody id="exec-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="view" id="view-aprov">
+        <h1>Aprovações</h1>
+        <p class="lead">Nada chega ao Jira sem o seu aceite — revise campo por campo</p>
+        <div class="note">Nenhuma alteração chega ao Jira sem passar por aqui. Os agentes produzem o parecer. Cada pedido abaixo mostra exatamente o que será gravado, campo por campo, com o valor atual e o valor novo. Só o seu aceite executa a escrita.</div>
+        <input id="aprov-q" placeholder="Buscar por issue (ex.: DCMF2-23326) ou título..." style="width:100%;background:#01202b;border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px">
+        <div class="meta" style="margin-bottom:8px">AGUARDANDO SEU ACEITE <button class="btn tiny" id="aprov-clear" type="button">Limpar</button></div>
+        <div id="aprov-list"></div>
+        <div class="panel">
+          <h2>Histórico de decisões <button class="btn tiny" type="button" data-toast="Histórico limpo nesta sessão.">Limpar histórico</button></h2>
+          <table>
+            <thead><tr><th>Issue</th><th>Etapa</th><th>Decisão</th><th>Quando</th><th>Resultado</th><th>Ações</th></tr></thead>
+            <tbody>
+              <tr><td class="key">DCMF2-23435</td><td>Pull request</td><td><span class="tag warn">Abandonado</span></td><td>21/10, 16:26</td><td>PR #884561 abandonado no Azure. Coluna voltou.</td><td><button class="btn tiny" data-toast="Descartado.">Descartar</button></td></tr>
+              <tr><td class="key">DCMF2-23435</td><td>Pull request</td><td><span class="tag bad">Falhou</span></td><td>21/10, 15:42</td><td>Não concluiu — a pasta do fonte não é um repositório git.</td><td><button class="btn tiny" data-toast="Tentativa reenfileirada.">Tentar de novo</button></td></tr>
+              <tr><td class="key">DCMF2-23434</td><td>Refinamento</td><td><span class="tag ok">Aprovado</span></td><td>21/10, 13:51</td><td>Comentário publicado. 2 anexos. Refinamento concluído.</td><td><button class="btn tiny" data-toast="Decisão revertida para a fila.">Reverter</button></td></tr>
+              <tr><td class="key">DCMF2-23437</td><td>Dados insuficientes</td><td><span class="tag ok">Aprovado</span></td><td>21/10, 12:15</td><td>Comentário publicado. Recusa com instrução.</td><td><button class="btn tiny" data-toast="Decisão revertida para a fila.">Reverter</button></td></tr>
+              <tr><td class="key">DCMF2-23436</td><td>Duplicidade</td><td><span class="tag ok">Aprovado</span></td><td>21/10, 11:50</td><td>Aprovado.</td><td><button class="btn tiny" data-toast="Decisão revertida para a fila.">Reverter</button></td></tr>
+              <tr><td class="key">DCMF2-23436</td><td>Tipo de issue</td><td><span class="tag ok">Aprovado</span></td><td>21/10, 11:09</td><td>Aprovado.</td><td><button class="btn tiny" data-toast="Decisão revertida para a fila.">Reverter</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="view" id="view-suporte"><h1>Suporte</h1><p class="lead">Tickets do Zendesk são enviados pela fila de aprovação e pelo refinamento (ticket de origem da issue). O interior desta tela não entrou nos prints.</p></section>
+      <section class="view" id="view-relatorios"><h1>Relatórios</h1><p class="lead">A Íris monta o relatório pedido sobre o projeto. O interior desta tela não entrou nos prints.</p></section>
+      <section class="view" id="view-saude"><h1>Saúde do produto</h1><p class="lead">Item do menu Gestão. O interior desta tela não entrou nos prints.</p></section>
+      <section class="view" id="view-melhorias"><h1>Melhorias</h1><p class="lead">Sugestões seguem para o e-mail do desenvolvedor, no Perfil. O interior desta tela não entrou nos prints.</p></section>
+      <section class="view" id="view-logs"><h1>Logs</h1><p class="lead">Log de erro, permissão à parte na gestão de usuários. O interior desta tela não entrou nos prints.</p></section>
+      <section class="view" id="view-atualizacoes"><h1>Atualizações</h1><p class="lead">Versão em execução: v1.0.0-alpha.2. Verificar atualizações também está na tela Sobre. O interior desta tela não entrou nos prints.</p></section>
+      <section class="view" id="view-conhecer"><h1>Conhecer o Concierge</h1><p class="lead">Tutorial de primeiro uso. Na reunião ele foi pulado. O interior desta tela não entrou nos prints.</p></section>
+
+      <section class="view" id="view-usuarios">
+        <h1>Usuários</h1>
+        <p class="lead">Acesso ao servidor/token, onde a inteligência roda e liberação</p>
+        <article class="user">
+          <b>tayrone.areas</b> <span class="tag">Usuário</span> <span class="tag ok">Liberado</span>
+          <div class="meta">Admin · 26/26 permissões · visto 21/10/2026</div>
+        </article>
+        <article class="user">
+          <b>wesleyjardim</b> <span class="tag">Usuário</span> <span class="tag ok">Liberado</span>
+          <div class="meta">Admin · 26/26 permissões · visto 13/10/2026</div>
+          <div class="meta" style="margin-top:8px">Inteligência <span class="tag ok">Máquina dele</span> · Fonte <span class="tag ok">Máquina dele</span> · Banco de dados <span class="tag ok">Máquina dele</span> · Compilação <span class="tag ok">Máquina dele</span> <button class="btn tiny" data-toast="Acesso bloqueado nesta sessão.">Bloquear acesso</button> <button class="btn tiny" data-toast="Usuário removido só nesta sessão visual.">Remover</button></div>
+          <div class="perm">
+            <p>PERFIL</p>
+            <select><option>Admin</option><option>Usuário</option></select>
+            <span class="meta">26/26 permissões</span>
+            <p>MENUS</p>
+            <div class="chips" id="perm-menus"></div>
+            <p>CONFIGURAÇÃO</p>
+            <div class="chips" id="perm-cfg"></div>
+            <p>AÇÕES</p>
+            <div class="chips" id="perm-acoes"></div>
+            <p>GOVERNANÇA (ELEVADO)</p>
+            <div class="chips" id="perm-gov"></div>
+          </div>
+          <p class="lead">Permissões por projeto. Sem nenhum projeto marcado, as permissões globais valem em todos. Ao marcar um projeto, o usuário fica restrito a ele.</p>
+          <div class="meta" style="display:block">
+            <div>DCMF2 — FrontOffice · DCMF2</div>
+            <div>DCMHBF — BackOffice · DCMHBF</div>
+            <div>DFOODCHF — Food Chef · DFOODCHF</div>
+            <div>DCMTHEX — THEX · DCMTHEX</div>
+          </div>
+        </article>
+      </section>
+
+      <section class="view" id="view-config">
+        <h1>Configurações</h1>
+        <p class="lead">Caminhos, modelo e comportamento da aplicação</p>
+        <div class="tabs" id="cfg-tabs">
+          <button type="button" data-tab="perfil" class="is-on">Perfil</button>
+          <button type="button" data-tab="visao">Visão geral</button>
+          <button type="button" data-tab="projetos">Projetos</button>
+          <button type="button" data-tab="credenciais">Credenciais</button>
+          <button type="button" data-tab="bancos">Bancos</button>
+          <button type="button" data-tab="memorias">Memórias</button>
+          <button type="button" data-tab="jira">Jira</button>
+          <button type="button" data-tab="agentes">Agentes</button>
+          <button type="button" data-tab="servidor">Servidor</button>
+          <button type="button" data-tab="sistema">Sistema</button>
+        </div>
+        <div data-panel="perfil">
+          <div class="panel">
+            <h2>Perfil</h2>
+            <p class="lead">Seu nome e e-mail — usados nas saudações e nos relatórios do assistente.</p>
+            <div class="field"><label>Apelido (como quer ser chamado)</label><input value="Wesley"></div>
+            <div class="row2">
+              <div class="field"><label>Nome completo</label><input value="Wesley Jardim Barcelos"></div>
+              <div class="field"><label>E-mail</label><input value="wesleyjardim@totvs.com.br"></div>
+            </div>
+            <div class="field"><label>E-mail do desenvolvedor (para sugestões)</label><input value="wesleyjardim@totvs.com.br"></div>
+            <p class="lead">Se o perfil e o e-mail da sua conta Claude forem outros, salve para confirmar.</p>
+            <label class="tog"><input type="checkbox"> Sugerir melhoria — abre o e-mail já preenchido para o desenvolvedor. Você revisa e envia.</label>
+          </div>
+        </div>
+        <div data-panel="visao" class="hidden">
+          <div class="panel">
+            <h2>Visão geral</h2>
+            <p class="lead">Escolha quais indicadores e blocos aparecem na tela inicial e como a atividade é medida.</p>
+            <p>KPIs no topo. JIRA vem do board (respeita os filtros). CONCIERGE é da automação.</p>
+            <p class="meta">CONCIERGE (AUTOMAÇÃO)</p>
+            <div class="chips" id="kpi-concierge"></div>
+            <p class="meta">JIRA (BOARD — INCLUI A CONTAGEM DE CADA COLUNA)</p>
+            <div class="chips" id="kpi-jira"></div>
+            <p>Blocos visíveis</p>
+            <label class="tog"><input type="checkbox" checked> Gráfico “Atividade (entradas + saídas)”</label>
+            <label class="tog"><input type="checkbox" checked> Tabela “Execuções recentes”</label>
+            <label class="tog"><input type="checkbox"> Aviso de credenciais faltando</label>
+            <div class="row2" style="margin-top:10px">
+              <div class="field"><label>Fonte padrão</label><select><option>Jira + Concierge</option><option>Só Jira</option><option>Só Concierge</option></select></div>
+              <div class="field"><label>Período</label><select><option>Últimos 14 dias</option><option>Últimos 7 dias</option><option>Últimos 30 dias</option></select></div>
+              <div class="field"><label>Formato</label><select><option>Barras (lado a lado)</option><option>Barras empilhadas</option></select></div>
+            </div>
+            <p>Séries do gráfico</p>
+            <label class="tog"><input type="checkbox" checked> Abertas</label>
+            <label class="tog"><input type="checkbox" checked> Concluídas</label>
+            <p>Fluxo (entrada e saída) por esteira, entrada em cada coluna</p>
+            <div class="chips" id="fluxo"></div>
+          </div>
+        </div>
+        <div data-panel="projetos" class="hidden" id="projetos"></div>
+        <div data-panel="credenciais" class="hidden">
+          <div class="note">Suas credenciais não saem desta máquina. Elas são cifradas pelo Windows com a sua conta de usuário. Nem a interface do Concierge nem os arquivos de projeto têm acesso ao valor — só o processo interno que faz as chamadas. Cada pessoa da equipe cadastra as próprias.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <button class="btn" type="button" data-toast="Modelo CLAUDE.local.md importado como rascunho. O valor não é exibido.">Importar de um CLAUDE.local.md</button>
+            <button class="btn" type="button" data-toast="Modelo gerado para a equipe, sem segredos.">Gerar modelo para a equipe</button>
+            <button class="btn primary" type="button" data-toast="Conexão com o Jira conferida.">Testar conexão com o Jira</button>
+          </div>
+          <div class="proj"><b>Contas conectadas</b><p class="lead">Login não fica no Concierge, com a sua conta. Nenhuma senha passa pelo app; a sessão fica guardada nesta máquina.</p>
+            <div class="box" style="margin-bottom:8px"><b>Zendesk</b><p class="lead">Usado pelo Suporte (seus tickets são enviados pela fila de aprovação) e pelo refinamento (ticket de origem da issue).</p><button class="btn tiny" data-toast="Fluxo de entrada no Zendesk aberto como na tela.">Entrar no Zendesk</button></div>
+            <div class="box"><b>Google</b> <span class="tag ok">conectado</span><p class="lead">Conta Google ativa no Concierge — baixa as evidências enviadas por link do Drive.</p><button class="btn tiny" data-toast="Saiu da conta Google nesta sessão.">Sair</button></div>
+          </div>
+          <div class="proj"><b>Inteligência artificial</b> <span class="meta">0/1</span><p class="lead">O motor que executa os agentes.</p>
+            <div class="box">Anthropic API Key (opcional)<p class="lead">Só é necessária se você escolher o modo “API key” nas Configurações. No modo padrão (assinatura) os agentes usam o login do Claude Code da máquina; nada precisa ser cadastrado aqui.</p><input placeholder="colar o valor..."> <button class="btn tiny" data-toast="Valor cifrado nesta máquina. A tela não mostra de volta.">Salvar</button></div>
+          </div>
+          <div class="proj"><b>Jira</b> <span class="meta">1/1</span><p class="lead">Leitura do board, anexos, comentários e transições.</p>
+            <div class="box">Jira — Personal Access Token <span class="tag ok">configurado</span><p class="lead">Atualizado há alguns dias. O valor não volta para a tela.</p><button class="btn tiny">Substituir o valor</button> <button class="btn tiny" data-toast="Token removido nesta sessão.">Remover</button></div>
+          </div>
+          <div class="proj"><b>Bases de conhecimento</b> <span class="meta">3/4</span><p class="lead">TDN e Zendesk, para o agente entender a regra de negócio.</p>
+            <div class="box">TDN — token pessoal <span class="tag ok">configurado</span><p class="lead">Atualizado há 62 dias.</p></div>
+            <div class="box">Google Drive — client secret (app para computador)<p class="lead">OAuth usado no Google Cloud para o Concierge ler o Drive.</p><input placeholder="colar o valor..."> <button class="btn tiny">Salvar</button></div>
+            <div class="box">Google Drive — autorização (OAuth)<p class="lead">Preenchido ao clicar em Conectar Google Drive. A sessão fica cifrada.</p></div>
+            <div class="box">Zendesk — access token (OAuth)<p class="lead">Só para quem usa OAuth. O login de Credenciais → Contas conectadas já cobre o fluxo comum.</p></div>
+          </div>
+          <div class="proj"><b>Azure DevOps</b> <span class="meta">1/1</span><p class="lead">PAT para abrir pull requests. O git push usa as credenciais do Windows.</p>
+            <div class="box">Azure DevOps — Personal Access Token <span class="tag ok">configurado</span><p class="lead">Atualizado há 62 dias. O valor não volta para a tela.</p><button class="btn tiny">Substituir o valor</button> <button class="btn tiny">Remover</button></div>
+          </div>
+        </div>
+        <div data-panel="bancos" class="hidden">
+          <div class="note">As conexões ficam cifradas na sua máquina — cada uma guarda seu próprio usuário e senha, protegidos pela sua conta do Windows. No Oracle você escolhe o alias do TNS. No SQL Server você informa o servidor. Requer a VPN da TOTVS ativa para conectar. O banco do Concierge em si é SQLite, à parte destas conexões de leitura.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <button class="btn" data-toast="Importação do DBeaver/Toad preparada. Nada é gravado fora desta sessão.">Importar do DBeaver/Toad</button>
+            <button class="btn" data-toast="Duplicadas marcadas.">Remover duplicadas</button>
+            <button class="btn" data-toast="Novo alias TNS.">Novo alias TNS</button>
+            <button class="btn primary" data-toast="Nova conexão.">Nova conexão</button>
+          </div>
+          <p>ORACLE · 15</p>
+          <div class="banks" id="banks"></div>
+          <p>SQL SERVER</p>
+          <div class="banks" id="banks-sql"></div>
+        </div>
+        <div data-panel="memorias" class="hidden">
+          <div class="chips" id="mem-tabs" style="margin-bottom:8px">
+            <button class="chip" type="button" data-mem="minhas">Minhas memórias</button>
+            <button class="chip is-on" type="button" data-mem="cura">Em curadoria 39</button>
+            <button class="chip" type="button" data-mem="projeto">Do projeto</button>
+            <button class="chip" type="button" data-mem="versao">Na versão</button>
+            <button class="chip" type="button" data-mem="bases">Bases</button>
+            <button class="chip" type="button" data-mem="aud">Auditoria</button>
+          </div>
+          <div id="mem-cura">
+            <div class="filters">
+              <select id="mem-proj"><option>DCMF2 — FrontOffice</option><option>DCMHBF — BackOffice</option><option>DFOODCHF — Food Chef</option><option>DCMTHEX — THEX</option></select>
+              <div class="seg"><button class="is-on" type="button">Refinamento</button><button type="button">Desenvolvimento</button><button type="button">Suporte</button></div>
+              <select><option>Pendentes 22</option><option>Aprovadas 27</option><option>Recusadas 0</option><option>Todas 49</option></select>
+              <input placeholder="Buscar título, conteúdo, issue ou autor...">
+              <button class="btn tiny" data-toast="Selecionadas aprovadas.">Aprovar selecionadas</button>
+              <button class="btn tiny" data-toast="Selecionadas recusadas.">Recusar selecionadas</button>
+            </div>
+            <table>
+              <thead><tr><th></th><th>Regra</th><th>Projeto</th><th>Origem</th><th>Autor</th><th>Quando</th><th>Estado</th><th></th></tr></thead>
+              <tbody id="mem-body"></tbody>
+            </table>
+          </div>
+          <div id="mem-versao" class="hidden panel">
+            <h2>Na versão</h2>
+            <p class="lead">Arquivos de memória que acompanham o Concierge. Versão 100-alpha.22. Escolha um arquivo para ler o conteúdo aqui.</p>
+            <div class="split">
+              <div id="ver-files"></div>
+              <div class="drop" id="ver-read">Escolha um arquivo. Clique num item à esquerda para ler o conteúdo aqui.</div>
+            </div>
+          </div>
+          <div id="mem-bases" class="hidden">
+            <div class="row2">
+              <div class="box"><b>TDN</b><p class="lead">8.802 documentos · atualizado em 04/05/2026</p><input placeholder="Buscar no TDN pelo título"></div>
+              <div class="box"><b>Help</b><p class="lead">20.197 documentos · atualizado em 18/05/2026</p></div>
+              <div class="box"><b>Central de Atendimento</b><p class="lead">5.005 documentos · atualizado em 24/05/2026</p></div>
+            </div>
+          </div>
+          <div id="mem-outras" class="hidden panel"><p class="lead" id="mem-outras-txt"></p></div>
+        </div>
+        <div data-panel="jira" class="hidden"><div class="panel"><h2>Jira</h2><p class="lead">Leitura do board, anexos, comentários e transições. O token fica em Credenciais. O miolo desta aba, além dessa função, não entrou nos prints.</p></div></div>
+        <div data-panel="agentes" class="hidden"><div class="panel"><h2>Agentes</h2><p class="lead">A aba existe na barra. O interior não entrou nos prints nem nos frames.</p></div></div>
+        <div data-panel="servidor" class="hidden">
+          <div class="panel">
+            <h2>Primeiros passos do servidor</h2>
+            <p class="lead">Depois de instalar, faça este setup uma vez. Verde é pronto; âmbar é pendente. O que dá para automatizar já está em “Requisitos da máquina”; o resto são credenciais suas.</p>
+            <ol>
+              <li>Login da assinatura — os agentes usam a sua conta do Claude. Sem este login eles faltam com “not logged in”.</li>
+              <li>Token do Jira — cadastre o Personal Access Token na aba Credenciais.</li>
+              <li>Banco SQLite — o arquivo é criado na primeira subida. Não é um serviço à parte.</li>
+              <li>Iniciar o servidor — o Node sobe dentro do Electron e abre a porta HTTP.</li>
+              <li>Túnel público (opcional) — só se for expor o servidor fora desta máquina.</li>
+            </ol>
+          </div>
+          <div class="panel">
+            <h2>Banco de dados</h2>
+            <p class="lead">SQLite, arquivo local do Concierge. Electron é a janela. Node é o processo que abre a porta e cuida das tabelas. Não há MySQL neste projeto.</p>
+            <div class="row2">
+              <div class="field"><label>Arquivo</label><input value="concierge.sqlite"></div>
+              <div class="field"><label>Pasta</label><input value="dados do usuário desta máquina"></div>
+            </div>
+          </div>
+          <div class="panel">
+            <h2>Servidor</h2>
+            <p class="lead">Liga o servidor para os clientes remotos: sobe o Node, lendo o SQLite, e abre a porta HTTP. Sem isso, o app funciona só como console local.</p>
+            <div class="row2">
+              <div class="field"><label>Porta</label><input value="8787"></div>
+              <div class="field"><label>Processo</label><input value="Node, dentro do Electron"></div>
+            </div>
+            <label class="tog"><input type="checkbox" checked> Ligar servidor e túnel ao iniciar — ao abrir o Concierge, sobe o Node e o HTTP automaticamente.</label>
+            <label class="tog"><input type="checkbox"> Iniciar minimizado na bandeja.</label>
+            <p>Executando em http://localhost:8787</p>
+            <button class="btn tiny" data-toast="Servidor Node na porta 8787.">No ar · porta 8787</button>
+            <button class="btn tiny" data-toast="Servidor parado nesta sessão.">Parar servidor</button>
+            <div class="field" style="margin-top:10px"><label>Túnel público (ngrok)</label><input value="probing-buddy-clarinet.ngrok-free.dev"></div>
+            <button class="btn tiny" data-toast="Túnel desligado.">Desligar túnel</button>
+            <span class="tag ok">No ar</span>
+            <p class="lead">https://probing-buddy-clarinet.ngrok-free.dev</p>
+          </div>
+        </div>
+        <div data-panel="sistema" class="hidden"><div class="panel"><h2>Sistema</h2><p class="lead">A aba existe na barra. O interior não entrou nos prints nem nos frames. Electron 43.2.0 aparece no rodapé da tela Sobre.</p></div></div>
+      </section>
+
+      <section class="view" id="view-sobre">
+        <div class="hero">
+          <div class="meta">TOTVS</div>
+          <h1>Concierge</h1>
+          <p>Orquestrador dos agentes de refinamento e desenvolvimento — para qualquer projeto.</p>
+          <span class="tag">v1.0.0-alpha.2</span>
+          <button class="btn tiny" data-toast="Procura de atualização feita. Continua na alpha.2 desta tela.">Verificar atualizações</button>
+        </div>
+        <div class="panel">
+          <h2>Objetivo</h2>
+          <p>Acelerar e padronizar o ciclo das issues de qualquer projeto da empresa: acompanhar o board do Jira, refinar a causa-raiz no fonte, codificar a correção e compilar — com governança (nada é escrito no Jira sem o seu aceite) e sem sair da sua máquina. A ideia é você orquestrar os agentes como um concierge orquestra o atendimento: tudo no lugar, no seu comando. O Concierge nasceu no projeto VHF, mas foi pensado para atender qualquer produto/equipe.</p>
+        </div>
+        <div class="split">
+          <div class="panel"><h2>Concierge</h2><p>O concierge é quem orquestra e atende tudo que o hóspede precisa. Aqui, o app orquestra os agentes e cuida do fluxo de trabalho do time, seja qual for o projeto.</p></div>
+          <div class="panel"><h2>Íris</h2><p>Na mitologia, Íris é a mensageira que liga os mundos (o arco-íris). Íris é também a parte do olho que enxerga. Nome curto e elegante para a assistente que vê os dados do projeto e te traz as respostas. Ela pensa com o Claude, usando a sua assinatura. Está preparada para um servidor próprio com Ollama.</p></div>
+        </div>
+        <div class="panel">
+          <h2>Novidades (changelog)</h2>
+          <p><b>v1.0.0-alpha.2</b> <span class="tag">MAIS RECENTE</span> 2026-10-15<br>Novidades mostram só a série alpha: o histórico do Sobre recomeça na 1.0.0-alpha.1 (as versões 0.x anteriores ficaram guardadas na documentação do projeto). Documentação: manual de uso e guia de desenvolvimento no repositório.</p>
+          <p><b>v1.0.0-alpha.1</b> 2026-10-05</p>
+          <p class="meta">Electron 43.2.0 · Node 24.18.0</p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<button class="iris-fab" id="iris-fab" type="button" title="Íris">Íris</button>
+<aside class="iris" id="iris">
+  <header><b>Íris</b><div class="meta">Assistente do Concierge</div><p class="lead">Pode me perguntar sobre o projeto — ex.: “quantas issues no backlog?”, “resume as execuções com erro”, “o que está impedido?”.</p></header>
+  <div class="thread" id="thread"><div class="bubble">Olá, Wesley. Estou de olho no DCMF2 — FrontOffice.</div></div>
+  <form class="composer" id="iris-form"><input name="q" placeholder="Pergunte algo à Íris"><button class="btn primary tiny" type="submit">Enviar</button></form>
+</aside>
+<div id="menu" class="menu hidden"></div>
+<div id="modal-root"></div>
+<div id="toast" class="toast hidden"></div>
+<script>
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const kpis = [
+  ["JIRA","25","no backlog","aguardando refinamento"],
+  ["JIRA","2","em refinamento","na esteira de refino"],
+  ["JIRA","5","críticas","alta/crítica"],
+  ["JIRA","6","impedidas","com bloqueio"],
+  ["CONCIERGE","6","refinamentos","execuções concluídas"],
+  ["CONCIERGE","1","versões geradas","builds prontos"],
+  ["CONCIERGE","11 min","tempo médio de refino","por execução"],
+  ["CONCIERGE","US$ 0,00","custo acumulado","em chamadas de IA"],
+  ["CONCIERGE","0","PRs abertos","aprovados no Azure"],
+  ["CONCIERGE","0","PRs na fila","aguardando aceite"],
+  ["CONCIERGE","1","desenvolvimentos","execuções concluídas"],
+  ["CONCIERGE","2","econ. licenças","D compilam no servidor"]
+];
+$("#kpis").innerHTML = kpis.map(k => `<article class="kpi"><div class="src">${k[0]}</div><div class="n">${k[1]}</div><div class="d"><b style="color:var(--text)">${k[2]}</b><br>${k[3]}</div></article>`).join("");
+const bars = $("#bars");
+[18,40,22,70,36,90,28,64,20,48].forEach((n,i) => {
+  const d = document.createElement("div");
+  d.className = "bar";
+  d.innerHTML = `<i style="height:${n}px;background:var(--blue)"></i><i style="height:${Math.round(n*.55)}px;background:var(--ok)"></i><i style="height:${Math.round(n*.35)}px;background:var(--warn)"></i><i style="height:${20+(i%4)*8}px;background:var(--orange)"></i>`;
+  bars.appendChild(d);
+});
+const cols = ["Backlog","Em refinamento","Refinamento concluído","Comprometido","Em andamento"];
+const colCount = {"Backlog":29,"Em refinamento":2,"Refinamento concluído":14,"Comprometido":2,"Em andamento":0};
+const issues = [
+  {id:"DCMF2-22831", title:"Hotelaria - Front Office - VHF - Plugin Fast Check-in com erro - Prstagy", tipo:"Apoio", prio:"Baixa", resp:"Wesley", col:"Backlog", quando:"há 22 dias", flag:"Impedida há 30d", tags:"R"},
+  {id:"DCMF2-23119", title:"Hotelaria - Front Office - VHF Mobile - Erro ao tentar realizar estorno de qualquer item - Estanplaza", tipo:"Apoio - Cliente", prio:"Média", resp:"Rodolfo", col:"Backlog", quando:"há 16 dias", flag:"Atrasada 30d", tags:""},
+  {id:"DCMF2-23143", title:"Fast Checkin VHF SoftWin São Luís - Sobrenome FNRH", tipo:"Apoio", prio:"Média", resp:"", col:"Backlog", quando:"há 19 dias", flag:"Atrasada 42d", tags:""},
+  {id:"DCMF2-23170", title:"Inconsistência em valores que deveriam ser iguais", tipo:"Apoio", prio:"Alta", resp:"Wesley", col:"Backlog", quando:"há 22 dias", flag:"Impedida há 1d", tags:""},
+  {id:"DCMF2-23185", title:"Hotelaria - Front Office - VHF - Dúvida sobre", tipo:"Apoio - Cliente", prio:"Média", resp:"", col:"Backlog", quando:"há 22 dias", flag:"", tags:""},
+  {id:"DCMF2-22924", title:"Chave Eletrônica: Chave Órbita não Funcionou", tipo:"Manutenção", prio:"Média", resp:"Jorge", col:"Em refinamento", quando:"há 65 dias", flag:"Atrasada 6d", tags:""},
+  {id:"DCMF2-23216", title:"API RESERVAS - ERRO AUDITORIA", tipo:"Manutenção", prio:"Média", resp:"Rodrigo", col:"Em refinamento", quando:"há 22 dias", flag:"Faltam 7d", tags:""},
+  {id:"DCMF2-23121", title:"Mesclagem da FNRH ocorre ao preencher o CPF e trocar de campo", tipo:"Manutenção", prio:"Média", resp:"Marcus", col:"Refinamento concluído", quando:"ontem", flag:"Atrasada 13d", tags:"R"},
+  {id:"DCMF2-23126", title:"VHF/CAP - Integração de cartas de crédito - Scheme Local", tipo:"Manutenção", prio:"Baixa", resp:"Marcus", col:"Refinamento concluído", quando:"há 15 dias", flag:"Impedida há 17d", tags:"R"},
+  {id:"DCMF2-23138", title:"VHF_API_APP - Geração de arquivos .dmp", tipo:"Manutenção", prio:"Alta", resp:"Ana", col:"Refinamento concluído", quando:"há 14 dias", flag:"Atrasada 10d", tags:"R"},
+  {id:"DCMF2-23221", title:"VHF_API_APP - Retirada do .exe da pasta Serviços e arquivos .bpl faltantes", tipo:"Manutenção", prio:"Média", resp:"Alessandro", col:"Refinamento concluído", quando:"há 16 dias", flag:"Atrasada 6d", tags:""},
+  {id:"DCMF2-23139", title:"Hotelaria - Front Office - VHF - Reservas com diferença de R$0,01 no lançamento na operação de caixa", tipo:"Manutenção", prio:"Baixa", resp:"", col:"Comprometido", quando:"", flag:"Atrasada 15d", tags:""},
+  {id:"DCMF2-23408", title:"[TimeSharing] Melhorias do campo alterar data de compra", tipo:"Manutenção", prio:"Média", resp:"Wallace", col:"Comprometido", quando:"", flag:"Faltam 24d", tags:""},
+  {id:"DCMF2-23432", title:"Problema no cálculo da tela de Analise do Evento", tipo:"Manutenção", prio:"Média", resp:"Wesley Jardim Barcelos", col:"Refinamento concluído", quando:"há 14 min", flag:"", tags:"R"},
+  {id:"DCMF2-23435", title:"VHF - Plugin RD Station x VHF - Fazenda Park Resort", tipo:"Manutenção", prio:"Média", resp:"Wesley Jardim Barcelos", col:"Fora deste recorte", quando:"há 2 h", flag:"", tags:"R D C"}
+];
+const runs = [
+  {id:"DCMF2-23432", title:"Problema no cálculo da tela de Analise do Evento", etapa:"Refinamento", estado:"Concluído", dur:"6m 48s", tok:"16.715", custo:"US$ 0,15", user:"Wesley Jardim Barcelos", inicio:"21/10, 16:41"},
+  {id:"DCMF2-23435", title:"VHF - Plugin RD Station x VHF - Fazenda Park Resort", etapa:"Compilação", estado:"Concluído", dur:"6s", tok:"0", custo:"US$ 0,00", user:"Wesley Jardim Barcelos", inicio:"21/10, 16:26"},
+  {id:"DCMF2-23435", title:"VHF - Plugin RD Station x VHF - Fazenda Park Resort", etapa:"Compilação", estado:"Erro", dur:"7s", tok:"0", custo:"US$ 0,00", user:"Wesley Jardim Barcelos", inicio:"21/10, 16:18", retry:"Reenfileirar"},
+  {id:"DCMF2-23435", title:"VHF - Plugin RD Station x VHF - Fazenda Park Resort", etapa:"Compilação", estado:"Concluído", dur:"3m 32s", tok:"0", custo:"US$ 0,00", user:"Wesley Jardim Barcelos", inicio:"21/10, 15:45"},
+  {id:"DCMF2-23435", title:"VHF - Plugin RD Station x VHF - Fazenda Park Resort", etapa:"Desenvolvimento", estado:"Concluído", dur:"8m 16s", tok:"0", custo:"US$ 0,00", user:"Wesley Jardim Barcelos", inicio:"21/10, 13:56"},
+  {id:"DCMF2-23434", title:"ORIGEM DOS GRUPOS", etapa:"Refinamento", estado:"Concluído", dur:"1m 53s", tok:"0", custo:"US$ 0,00", user:"Wesley Jardim Barcelos", inicio:"21/10, 13:27"},
+  {id:"DCMF2-23437", title:"RELATÓRIO DE GRUPO COM INCONSISTÊNCIA", etapa:"Refinamento", estado:"Concluído", dur:"1m 12s", tok:"0", custo:"US$ 0,00", user:"Wesley Jardim Barcelos", inicio:"21/10, 11:56"},
+  {id:"DCMF2-23436", title:"Hotelaria - TimeSharing - Erro Access Violation ao emitir relatório", etapa:"Refinamento", estado:"Concluído", dur:"20s", tok:"0", custo:"US$ 0,00", user:"Wesley Jardim Barcelos", inicio:"21/10, 10:34"}
+];
+const aprov = [
+  {id:"DCMF2-23432", etapa:"Refinamento", title:"Problema no cálculo da tela de Analise do Evento", texto:"Novo comentário — 16.715 caracteres, 150 linhas", de:"Backlog", para:"Refinamento concluído", quando:"gerado há 14 min", diff:false},
+  {id:"DCMF2-23435", etapa:"Desenvolvimento", title:"VHF - Plugin RD Station x VHF - Fazenda Park Resort", texto:"Novo comentário — 9.430 caracteres, 130 linhas", de:"Refinamento concluído", para:"Em desenvolvimento", quando:"gerado há 2 h", diff:true},
+  {id:"DCMF2-23436", etapa:"Refinamento", title:"Hotelaria - TimeSharing - Erro Access Violation ao emitir relatório - Santíssimo Resort (Cloud TOTVS)", texto:"Novo comentário — 12.914 caracteres, 94 linhas", de:"Backlog", para:"Refinamento concluído", quando:"gerado há 6 h", diff:false}
+];
+const memories = [
+  ["Regra: Evento - totais Orçado/Confirmado (rodapé) e guia Análise e painel das guias de detalhe", "DCMF2", "Refino DCMF2-23432", "Wesley Jardim Barcelos", "20/10/2026"],
+  ["Regra: Integração Plugin RD Station x VHF (envio incremental de reservas)", "DCMF2", "Refino DCMF2-23435", "Wesley Jardim Barcelos", "21/10/2026"],
+  ["Regra: Origem da reserva x Origem do orçamento", "DCMF2", "Refino DCMF2-23434", "Wesley Jardim Barcelos", "21/10/2026"],
+  ["Regra: Visualizar seleções do framework (itens/form) - permissão de relatório por tela", "DCMF2", "Refino DCMF2-23164", "Wesley Jardim Barcelos", "21/10/2026"],
+  ["Regra: Pacote (Rate Management) - obrigatoriedade no VHF, impacto em reserva existente", "DCMF2", "Refino DCMF2-23126", "Wesley Jardim Barcelos", "20/10/2026"]
+];
+const versionFiles = [
+  "ausencia-funcionalidade.md",
+  "central-atendimento.md",
+  "ferramentas-shell.md",
+  "jira-comentario.md",
+  "jira-anexo.md",
+  "comportamento-padrao-vhf.md"
+];
+const banks = ["AH (DBeaver)","ARENA_TESTE (DBeaver)","BBCM01 (DBeaver)","CM_FAZENDA (DBeaver)","Costao do Santinho (DBeaver)","FLIX (DBeaver)","INTERCITY (DBeaver)","INTERCITY_HOM (DBeaver)","IRON (DBeaver)","KHOTEL (DBeaver)","MULTISCHEMA (DBeaver)","Pires (DBeaver)","SESC (DBeaver)","WISH (DBeaver)","WISHML (DBeaver)"];
+const banksSql = ["Aguativa (DBeaver)","Ara Hotéis (DBeaver)","Pérola (DBeaver)"];
+const perms = {
+  menus: ["Board","Execuções","Aprovações (levar ao Jira)","Suporte (tickets do Zendesk com o agente)","Relatórios (Íris)","Melhorias","Logs de erro","Usuários"],
+  cfg: ["Projetos","Credenciais","Credenciais de IA (Anthropic API key)","Bancos","Configurações"],
+  acoes: ["Assistente Íris","Refinar issues","Codificar (dev)","Compilar versão","Gerador de changelog","Ver custos (US$/tokens)","Decidir aprovações (aprovar, rejeitar, reverter)"],
+  gov: ["Ver execuções e aprovações de TODOS os usuários","Criar/editar projetos","Gerenciar usuários (cadastrar, permissões)","Curar conhecimento (aceitar aprendizados sugeridos ao time)","Suporte: ver o raciocínio e a parte técnica da análise (memória, só o andamento)"]
+};
+const kpiConcierge = ["Refinamentos","Desenvolvimentos","Versões geradas","PRs abertos","PRs na fila","Tempo médio de refino","Custo acumulado","Econ. licenças"];
+const kpiJira = ["No backlog","Em refinamento","Total no board","Entradas (período)","Saídas (período)","Saldo (período)","Impedidas","Sem responsável","Concluídas","Críticas","Refinamento concluído","Comprometido","Em andamento","Em Dev","Em Code Review","Aguardando teste (QA)","Em teste (QA)","Pronto p/ publicação"];
+const fluxo = ["Backlog","Em refinamento","Refinamento concluído","Comprometido","Em andamento","Em Dev","Em Code Review","Aguardando teste (QA)","Em teste (QA)","Pronto p/ publicação"];
+const execStages = [["","Todas 23"],["Refinamento","Refinamento 8"],["Desenvolvimento","Desenvolvimento 1"],["Compilação","Compilação 7"],["Suporte","Suporte"],["Análise express","Análise express 1"],["Conserto","Conserto"]];
+
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.add("hidden"), 2200); }
+function go(id, tab, source){
+  $$(".view").forEach(v => v.classList.toggle("is-on", v.id==="view-"+id));
+  const fromNav = source && source.classList.contains("nav");
+  $$(".nav").forEach(b => b.classList.toggle("is-on", fromNav ? b===source : (b.dataset.go===id && !b.dataset.tab)));
+  $("#side").classList.remove("is-open");
+  if (id==="config") openTab(tab || "perfil", true);
+}
+document.addEventListener("click", (e) => {
+  const g = e.target.closest("[data-go]");
+  if (g && g.dataset.go) go(g.dataset.go, g.dataset.tab, g);
+  const tab = e.target.closest("[data-tab]");
+  if (tab && tab.dataset.tab && !tab.closest("#cfg-tabs") && !(g && g.dataset.tab)) openTab(tab.dataset.tab);
+  const toastBtn = e.target.closest("[data-toast]");
+  if (toastBtn) toast(toastBtn.dataset.toast);
+});
+$("#menu-btn").onclick = () => $("#side").classList.toggle("is-open");
+$("#refresh").onclick = () => toast("Board e indicadores relidos. O board só atualiza neste botão.");
+
+function cardHtml(it){
+  return `<article class="card" data-id="${it.id}"><div class="meta"><span class="key">${it.id}</span><span class="tag">${it.tipo}</span><span class="tag">${it.prio}</span></div><p>${it.title}</p><div class="meta">${it.flag?`<span class="tag hot">${it.flag}</span>`:""}<span>${it.resp||""}</span><span>${it.quando}</span><span>${it.tags}</span></div></article>`;
+}
+function renderBoard(){
+  const q = $("#q").value.toLowerCase();
+  const tipo = $("#f-tipo").value, prio=$("#f-prio").value, resp=$("#f-resp").value;
+  const list = issues.filter(it => (!q || (it.id+" "+it.title+" "+it.resp).toLowerCase().includes(q)) && (!tipo||it.tipo===tipo) && (!prio||it.prio===prio) && (!resp||it.resp===resp) && (!$("#f-imp").checked || /Impedida/.test(it.flag)));
+  $("#kanban").innerHTML = cols.map(c => {
+    const items = list.filter(it => it.col===c);
+    const n = (q||tipo||prio||resp||$("#f-imp").checked) ? items.length : (colCount[c]??items.length);
+    return `<section class="col"><h3>${c.toUpperCase()} <span>${n}</span></h3>${items.map(cardHtml).join("") || `<p class="meta">Nenhuma issue aqui.</p>`}</section>`;
+  }).join("");
+  $("#linhas tbody").innerHTML = list.map(it => `<tr class="click" data-id="${it.id}"><td class="key">${it.id}</td><td>${it.tipo} · ${it.title}</td><td>${it.col}</td><td>${it.prio}</td><td>${it.resp||"—"}</td><td>${it.tags||"—"}</td></tr>`).join("");
+  const resps = [...new Set(issues.map(i=>i.resp).filter(Boolean))];
+  if ($("#f-resp").options.length < 2) resps.forEach(r => { const o=document.createElement("option"); o.textContent=r; $("#f-resp").appendChild(o); });
+}
+["q","f-tipo","f-prio","f-resp","f-imp","f-fix"].forEach(id => $("#"+id).addEventListener("input", renderBoard));
+$("#board-mode").onclick = (e) => {
+  const b = e.target.closest("button"); if(!b) return;
+  $$("#board-mode button").forEach(x => x.classList.toggle("is-on", x===b));
+  const lines = b.dataset.mode==="linhas";
+  $("#kanban").classList.toggle("hidden", lines);
+  $("#linhas").classList.toggle("hidden", !lines);
+};
+$("#f-proj").onclick = () => toast("Projetos no filtro: DCMF2 FrontOffice, DCMHBF BackOffice, DFOODCHF Food Chef, DCMTHEX THEX.");
+renderBoard();
+
+const menu = $("#menu");
+function openMenu(x,y,id,kind){
+  const issue = issues.find(i=>i.id===id) || {id};
+  const prio = ["Crítica","Alta","Média","Baixa","Planejada"].map(p=>`<button type="button" data-act="prio" data-v="${p}">${p}${p===(issue.prio||"Média")?" · atual":""}</button>`).join("");
+  const body = kind==="exec" ? `
+    <strong style="display:block;padding:6px 8px" class="key">${id}</strong>
+    <button type="button" data-act="exec">Ver execução</button>
+    <button type="button" data-act="jira">Abrir no Jira</button>
+    <button type="button" data-act="baixar">Baixar compilado</button>
+    <button type="button" data-act="diff">Ver mudanças</button>
+    <button type="button" data-act="refinar">Refinar novamente</button>
+    <button type="button" data-act="recod">Recodificar</button>` : `
+    <strong style="display:block;padding:6px 8px" class="key">${id}</strong>
+    <button type="button" data-act="fixar">Fixar para acompanhar</button>
+    <button type="button" data-act="auto">Voltar a automatizar</button>
+    <div class="prio"><button type="button">Prioridade: ${issue.prio||"Média"}</button><div class="sub">${prio}</div></div>
+    <button type="button" data-act="imp">Marcar impedimento</button>
+    <button type="button" data-act="refinar">Refinar · claude-opus-5-5 · Média</button>
+    <button type="button" data-act="recod">Recodificar</button>
+    <button type="button" data-act="comp">Compilar versão (rápida)</button>
+    <button type="button" data-act="pr">Gerar Pull Request</button>
+    <hr>
+    <button type="button" data-act="exec">Abrir detalhe</button>
+    <button type="button" data-act="jira">Abrir no Jira</button>
+    <button type="button" data-act="clone">Clonar issue</button>
+    <button type="button" data-act="diff">Ver mudanças</button>
+    <button type="button" data-act="gate-r">Enviar refinamento para aprovação</button>
+    <button type="button" data-act="gate-d">Enviar desenvolvimento para aprovação</button>
+    <button type="button" data-act="abandon">Abandonar PR #884561</button>
+    <button type="button" data-act="limpar">Limpar (refazer do zero)</button>`;
+  menu.innerHTML = body;
+  menu.classList.remove("hidden");
+  menu.style.left = Math.min(x, innerWidth-300)+"px";
+  menu.style.top = Math.min(y, innerHeight-360)+"px";
+  menu.dataset.id = id;
+}
+document.addEventListener("contextmenu", (e) => {
+  const host = e.target.closest("[data-id], [data-run]");
+  const onBoard = $("#view-board").classList.contains("is-on");
+  const onExec = $("#view-exec").classList.contains("is-on");
+  if (!host || (!onBoard && !onExec)) return;
+  e.preventDefault();
+  openMenu(e.clientX, e.clientY, host.dataset.id || host.dataset.run, onExec ? "exec" : "board");
+});
+document.addEventListener("click", (e) => { if (!menu.contains(e.target)) menu.classList.add("hidden"); });
+menu.addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if(!b || !b.dataset.act) return;
+  const id = menu.dataset.id, act=b.dataset.act;
+  menu.classList.add("hidden");
+  if (act==="exec") openRun(id);
+  else if (act==="diff") openDiff(id);
+  else if (act==="gate-r" || act==="gate-d") { go("aprov"); toast(id+" entrou na fila de aceite."); }
+  else if (act==="jira") toast("Abriria o "+id+" no Jira. Esta réplica não sai da página.");
+  else if (act==="prio") toast("Prioridade de "+id+" marcada como "+b.dataset.v+".");
+  else if (act==="abandon") toast("PR #884561 de "+id+" abandonado. A coluna volta.");
+  else if (act==="refinar") toast("Refino de "+id+" enfileirado. Modelo claude-opus-5-5, esforço médio.");
+  else if (act==="comp") toast("Compilação rápida de "+id+" enfileirada.");
+  else if (act==="pr") toast("Pull request de "+id+" vai para a fila de aceite antes de ir ao Azure.");
+  else if (act==="baixar") toast("Compilado de "+id+" disponível na pasta de versão do projeto.");
+  else toast(act+" · "+id);
+});
+
+function openModal(title, body, foot, wide){
+  $("#modal-root").innerHTML = `<div class="modal-back" id="modal-back"><div class="modal ${wide?"wide":""}" role="dialog"><header><div><h2 style="margin:0;font-size:16px">${title}</h2></div><button class="btn tiny" type="button" data-close>Fechar</button></header>${body}${foot||""}</div></div>`;
+  $("#modal-back").addEventListener("click", (e) => { if (e.target.id==="modal-back" || e.target.closest("[data-close]")) $("#modal-root").innerHTML=""; });
+}
+function openRun(id){
+  const it = issues.find(i=>i.id===id) || runs.find(r=>r.id===id) || {id, title:id};
+  openModal(id+" · Executando · agente de refinamento", `
+    <p>${it.title||""}</p>
+    <div class="row2">
+      <div class="box"><small>Solicitante</small>Wesley Jardim Barcelos</div>
+      <div class="box"><small>Duração</small>49s</div>
+      <div class="box"><small>Modelo</small>claude-opus-5-5</div>
+      <div class="box"><small>Esforço</small>Médio</div>
+      <div class="box"><small>Tokens</small>0</div>
+      <div class="box"><small>Custo</small>US$ 0,00</div>
+    </div>
+    <button class="btn tiny" type="button" data-toast="Abriria a issue no Jira.">Abrir no Jira</button>
+    <h2 style="margin-top:12px">Linha do tempo</h2>
+    <div class="timeline">
+      <div><time>16:41:05</time>Iniciando agente de refinamento para ${id} em E:\\issues (modelo claude-opus-5-5, esforço médio).</div>
+      <div><time>16:41:18</time>Issue de manutenção, com prints e passos de reprodução. Vou baixar os anexos e ler a issue anterior ligada a esta.</div>
+      <div><time>16:41:32</time>Baixar anexo e ler issue anterior.</div>
+      <div><time>16:41:40</time>Lendo o fonte e cruzando com a documentação (Help, TDN, central, histórico de suporte).</div>
+    </div>
+    <div class="field"><label>Fale com o agente sem parar a execução — ele lê no próximo passo</label><input id="say" placeholder='Ex.: "não precisa ler a TDN, a causa está no fonte"'></div>
+  `, `<div style="display:flex;gap:8px;justify-content:space-between"><div><button class="btn" id="pause" type="button">Pausar</button> <button class="btn danger" id="cancel" type="button">Cancelar execução</button></div><button class="btn primary" id="send" type="button">Enviar</button></div>`);
+  $("#send").onclick = () => { toast("Recado enviado ao agente. A execução segue."); $("#modal-root").innerHTML=""; };
+  $("#pause").onclick = () => toast("Execução pausada.");
+  $("#cancel").onclick = () => { toast("Execução de "+id+" cancelada."); $("#modal-root").innerHTML=""; };
+}
+$$("[data-run]").forEach(tr => tr.addEventListener("click", () => openRun(tr.dataset.run)));
+
+const diffs = {
+  "CLAUDE.md": `<span class="del">- hotel com ULTIMAEXECUCAO nula não envia nada no primeiro ciclo</span>\n<span class="add">+ ULTIMAEXECUCAO é gravada por hotel a cada ciclo, com ou sem reservas</span>`,
+  "VHFHD.OutDadosIntegracao.pas": `<span class="add">+ Status gravado no log. ENVIADO COM SUCESSO é o padrão.</span>\n<span class="del">- rsNaoEnviado existe mas não é usado</span>`,
+  "VHFHD.FacadeIntegracao.pas": `<span class="add">+ PROCESSARINTEGRACAO corrigido na DCMF2-23254</span>`,
+  "RegrasPluginIDSStation.txt": `<span class="add">+ e-mail do hóspede não é obrigatório no plugin; o RD identifica o contato pelo e-mail</span>`,
+  "VHFHD.Servico.Contact.pas": `<span class="del">- falha técnica (timeout, rede) não grava log</span>\n<span class="add">+ falha técnica grava log e a data avança mesmo assim</span>`,
+  "FlagTransmissao.pas": `<span class="add">+ ENVIADO COM ERRO também para o lote inteiro em falha sistêmica</span>`
+};
+function openDiff(id){
+  const files = Object.keys(diffs);
+  openModal("Mudanças no código — "+id, `<p class="lead">feature/${id}-vhf · 6 arquivos · +50 −19</p><div class="diff"><div class="files" id="diff-files">${files.map((f,i)=>`<button type="button" class="${i===0?"is-on":""}" data-file="${f}">${f}</button>`).join("")}</div><pre id="diff-body">${diffs[files[0]]}</pre></div>`, "", true);
+  $("#diff-files").onclick = (e) => {
+    const b = e.target.closest("[data-file]"); if(!b) return;
+    $$("#diff-files button").forEach(x => x.classList.toggle("is-on", x===b));
+    $("#diff-body").innerHTML = diffs[b.dataset.file];
+  };
+}
+function openReview(a){
+  const topics = ["Resumo","Módulo e integrações afetadas","Reprodução / evidências","Análise de causa-raiz","Possível origem","Objetos do banco envolvidos","Sugestão de correção","Impactos, riscos e regressão","Critérios de aceite","Em aberto / a confirmar"];
+  openModal(a.id+" · "+a.etapa+" · Pendente", `
+    <p>${a.title}</p>
+    <p class="meta">O QUE SERÁ ALTERADO NO JIRA <button class="btn tiny" type="button" data-toast="Tipo de issue reavaliado.">Reavaliar tipo da issue</button></p>
+    <div class="box"><b>Comentário na issue</b><p class="lead">Publica o refinamento técnico completo como comentário público na issue. ${a.texto}.</p>
+      <label class="tog"><input type="radio" name="dest" checked> Comentário</label>
+      <label class="tog"><input type="radio" name="dest"> Descrição (acima do atual, com régua)</label>
+      <label class="tog"><input type="checkbox"> Publicar sem movimentar a coluna no Jira</label>
+    </div>
+    <p>Tópicos a publicar</p>
+    <div class="checks">${topics.map((t,i)=>`<label><input type="checkbox" checked> ${i+1}. ${t}</label>`).join("")}</div>
+    <div class="box" style="margin-top:8px"><small>Prévia</small>(${a.id}) ${a.title}<br><br>1. RESUMO<br>O agente cruzou Help, TDN, central, histórico de suporte e o fonte. O parecer completo tem ${a.texto}. A evidência (print ou anexo) entra neste comentário. Nada disso foi gravado no Jira.</div>
+    <p>Coluna do board</p>
+    <div class="meta">HOJE <span class="tag">${a.de}</span> DEPOIS <span class="tag ok">${a.para}</span></div>
+  `, `<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button class="btn danger" id="rej" type="button">Rejeitar</button><button class="btn primary" id="acc" type="button">Aprovar e enviar ao Jira</button></div>`, true);
+  $("#acc").onclick = () => { document.querySelector(`[data-aprov="${a.id}"]`)?.remove(); $("#modal-root").innerHTML=""; toast(a.id+" aceita. A escrita no Jira só ocorre neste clique."); };
+  $("#rej").onclick = () => { $("#modal-root").innerHTML=""; toast(a.id+" rejeitada. O rascunho continua na fila."); };
+}
+function renderAprov(){
+  const q = $("#aprov-q").value.toLowerCase();
+  $("#aprov-list").innerHTML = aprov.filter(a => !q || (a.id+" "+a.title).toLowerCase().includes(q)).map(a => `<article class="appr" data-aprov="${a.id}">
+    <div class="meta"><span class="key">${a.id}</span><span class="tag">${a.etapa}</span><span style="margin-left:auto">${a.quando}</span></div>
+    <h3>${a.title}</h3>
+    <div class="row2"><div class="box"><small>Comentário na issue</small>${a.texto}</div><div class="box"><small>Coluna do board</small><span class="tag">${a.de}</span> → <span class="tag ok">${a.para}</span></div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn primary" type="button" data-ok>Aprovar e enviar ao Jira</button>
+      ${a.diff?`<button class="btn" type="button" data-diff>Ver mudanças</button>`:""}
+      <button class="btn" type="button" data-rev>Revisar em detalhe</button>
+    </div>
+  </article>`).join("");
+}
+renderAprov();
+$("#aprov-q").addEventListener("input", renderAprov);
+$("#aprov-clear").onclick = () => { $("#aprov-q").value=""; renderAprov(); };
+$("#aprov-list").onclick = (e) => {
+  const card = e.target.closest("[data-aprov]"); if(!card) return;
+  const a = aprov.find(x => x.id===card.dataset.aprov);
+  if (e.target.closest("[data-ok]")) { card.remove(); toast(a.id+" aceita e enviada ao Jira."); }
+  else if (e.target.closest("[data-diff]")) openDiff(a.id);
+  else if (e.target.closest("[data-rev]")) openReview(a);
+};
+
+function renderExec(etapa){
+  const q = $("#exec-q").value.toLowerCase();
+  const list = runs.filter(r => (!etapa || r.etapa===etapa) && (!q || (r.id+" "+r.title).toLowerCase().includes(q)));
+  $("#exec-count").textContent = list.length+" execuções";
+  $("#exec-body").innerHTML = list.map(r => `<tr class="click" data-run="${r.id}"><td class="key">${r.id}</td><td>${r.title}</td><td>${r.etapa}</td><td><span class="tag ${r.estado==="Erro"?"bad":"ok"}">${r.estado}</span> ${r.retry?`<button class="btn tiny" data-toast="Reenfileirado.">${r.retry}</button>`:""}</td><td>${r.dur}</td><td>${r.tok}</td><td>${r.custo}</td><td>${r.user}</td><td>${r.inicio}</td></tr>`).join("");
+  $$("#exec-body [data-run]").forEach(tr => tr.addEventListener("click", (e) => { if(e.target.closest("button")) return; openRun(tr.dataset.run); }));
+}
+$("#exec-chips").innerHTML = execStages.map((s,i)=>`<button class="chip ${i===0?"is-on":""}" type="button" data-etapa="${s[0]}">${s[1]}</button>`).join("");
+$("#exec-chips").onclick = (e) => { const b=e.target.closest("button"); if(!b) return; $$("#exec-chips button").forEach(x=>x.classList.toggle("is-on", x===b)); renderExec(b.dataset.etapa); };
+$("#exec-q").addEventListener("input", () => renderExec($("#exec-chips .is-on").dataset.etapa));
+$("#exec-clear").onclick = () => { $("#exec-q").value=""; renderExec(""); };
+renderExec("");
+
+$("#express-form").onsubmit = (e) => {
+  e.preventDefault();
+  const t = new FormData(e.target).get("titulo") || new FormData(e.target).get("texto").slice(0,80);
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>${t}</td><td><span class="tag ok">concluída</span></td><td>Responder — o rascunho não abre issue até você aceitar</td><td>agora</td>`;
+  $("#express-rows").prepend(tr);
+  e.target.reset();
+  toast("Análise express concluída. Se virar issue, o rascunho passa por Aprovações.");
+};
+
+function chips(id, items, on){
+  $(id).innerHTML = items.map(t => `<button type="button" class="chip ${on?"is-on":""}">${t}</button>`).join("");
+  $(id).onclick = (e) => { const b=e.target.closest("button"); if(b) b.classList.toggle("is-on"); };
+}
+chips("#kpi-concierge", kpiConcierge, true);
+chips("#kpi-jira", kpiJira, false);
+chips("#fluxo", fluxo, false);
+["#perm-menus","#perm-cfg","#perm-acoes","#perm-gov"].forEach((id,i)=>chips(id, [perms.menus,perms.cfg,perms.acoes,perms.gov][i], true));
+$("#banks").innerHTML = banks.map(b=>`<article class="bank"><span class="tag">ORACLE</span> <span class="tag ok">senha cifrada</span><b>${b}</b><div class="meta">cm</div><button class="btn tiny">Editar</button> <button class="btn tiny">Remover</button></article>`).join("");
+$("#banks-sql").innerHTML = banksSql.map(b=>`<article class="bank"><span class="tag">SQL SERVER</span> <span class="tag ok">senha cifrada</span><b>${b}</b><div class="meta">cm</div><button class="btn tiny">Editar</button> <button class="btn tiny">Remover</button></article>`).join("");
+
+const projects = [
+  {name:"DCMF2 — FrontOffice", key:"DCMF2", board:"123544", tipos:"Manutenção, Apoio, Apoio - Cliente", foco:true, ativo:true, fonte:"E:\\Fonte\\VHF\\etal", refino:"E:\\issues", dev:"E:\\VHF\\VHF-Build", versao:"E:\\Fonte\\Bin\\win32\\Release"},
+  {name:"DCMHBF — BackOffice", key:"DCMHBF", board:"10818", tipos:"Manutenção, Apoio, Apoio - Cliente", foco:false, ativo:false, fonte:"", refino:"", dev:"", versao:""}
+];
+function renderProjects(){
+  $("#projetos").innerHTML = `<div class="note">Vários projetos, acompanhados ao mesmo tempo. Cada projeto tem board, filtro e automação próprios. Você indica o caminho do fonte e pode escolher onde salvar o refinamento, o desenvolvimento e a versão compilada (em branco, o Concierge usa um padrão). Marque quais ficam ativos para vigilância de issues novas, o board mostra o projeto em foco.</div>
+    <div style="display:flex;justify-content:space-between"><b>PROJETOS ${projects.length}</b><button class="btn primary tiny" id="novo-proj" type="button">Novo projeto</button></div>`
+    + projects.map((p,i)=>`<article class="proj"><div style="display:flex;justify-content:space-between;gap:8px"><div><b>${p.name}</b> ${p.foco?'<span class="tag ok">em foco no board</span>':""} ${p.ativo?'<span class="tag ok">ativo</span>':'<span class="tag">pausado</span>'}<div class="meta">${p.key} · board ${p.board} · tipos: ${p.tipos}</div></div><div><button class="btn tiny" data-edit="${i}" type="button">Editar</button> <button class="btn tiny" data-foco="${i}" type="button">Focar no board</button> <button class="btn tiny" type="button">Remover</button></div></div>
+      <p class="meta">PASTAS DE TRABALHO</p>
+      <div class="paths"><div><span>FONTE</span>${p.fonte||"—"}</div><div><span>REFINAMENTO</span>${p.refino||"—"}</div><div><span>DESENVOLVIMENTO</span>${p.dev||"—"}</div><div><span>VERSÃO COMPILADA</span>${p.versao||"—"}</div></div>
+      <p class="meta">VIGILÂNCIA E AUTOMAÇÃO</p>
+      <div class="toggles">
+        <label class="tog"><input type="checkbox" ${p.ativo?"checked":""}> Ativo — passa a notificar nos relatórios</label>
+        <label class="tog"><input type="checkbox" checked> Vigiar issues novas</label>
+        <label class="tog"><input type="checkbox" ${p.foco?"checked":""}> Refinar sozinho — issues novas no backlog disparam o refinamento</label>
+        <label class="tog"><input type="checkbox"> Codificar sozinho — após o refino, dispara a codificação (não compila, build é separado)</label>
+        <label class="tog"><input type="checkbox"> Compilar sozinho — após codificar, dispara a compilação (build direto, sem IA)</label>
+        <label class="tog"><input type="checkbox"> Levar ao Jira sozinho — sem isto, espera a fila de aprovações</label>
+        <label class="tog"><input type="checkbox"> Abrir PR sozinho — cria a branch, o commit, o push e o PR no Azure (feature → develop)</label>
+        <label class="tog"><input type="checkbox" checked> Novas entram manuais — você escolhe quando refinar, codificar ou compilar</label>
+      </div></article>`).join("");
+  $("#novo-proj").onclick = () => openEdit({name:"", key:"", board:"", tipos:"", fonte:"", refino:"", dev:"", versao:""}, true);
+  $$("[data-edit]").forEach(b => b.onclick = () => openEdit(projects[+b.dataset.edit], false));
+  $$("[data-foco]").forEach(b => b.onclick = () => { projects.forEach((p,i)=>p.foco=i===+b.dataset.foco); renderProjects(); toast("Projeto em foco no board."); });
+}
+function openEdit(p){
+  const topics = ["1. Resumo","2. Módulo e integrações afetadas","3. Reprodução / evidências","4. Análise de causa-raiz","5. Possível origem","6. Objetos do banco envolvidos","7. Sugestão de correção","8. Impactos, riscos e regressão","9. Critérios de aceite","10. Em aberto / a confirmar"];
+  const checked = new Set([0,1,2,3,4,6,7,8]);
+  openModal("Editar projeto", `
+    <h2>IDENTIFICAÇÃO</h2>
+    <div class="field"><label>Nome</label><input value="${p.name||""}"></div>
+    <div class="row2"><div class="field"><label>Chave do projeto (Jira)</label><input value="${p.key||"DCMF2"}"></div><div class="field"><label>Board (id)</label><input value="${p.board||"123544"}"></div></div>
+    <div class="field"><label>Filtro rápido (opcional)</label><input placeholder="ex.: status != Fechado"></div>
+    <h2>BOARD E TIPOS DE ISSUE</h2>
+    <div class="field"><label>Tipos de issue</label><select><option>3 selecionados</option><option>Manutenção</option><option>Apoio</option><option>Apoio - Cliente</option></select></div>
+    <button class="btn tiny" type="button" data-toast="Tipos relidos do Jira.">Carregar do Jira</button>
+    <p class="lead">Nenhum marcado = todos os tipos. Tipos fora da lista entram no manual.</p>
+    <div class="field"><label>Automação — tipos que a Íris pode fazer sozinha</label><select><option>2 selecionados</option></select></div>
+    <h2>PASTAS DESTA MÁQUINA</h2>
+    <div class="field"><label>Caminho do fonte</label><input value="${p.fonte||"E:\\\\Fonte\\\\VHF\\\\etal"}"></div>
+    <div class="field"><label>Refinamento</label><input value="${p.refino||"E:\\\\issues"}"></div>
+    <div class="field"><label>Desenvolvimento</label><input value="${p.dev||""}"></div>
+    <div class="field"><label>Versão compilada</label><input value="${p.versao||""}"></div>
+    <h2>INTEGRAÇÃO — AZURE DEVOPS (PULL REQUEST)</h2>
+    <div class="row2"><div class="field"><label>Organização</label><input value="totvsfc"></div><div class="field"><label>Projeto</label><input value="Hospitalidade"></div><div class="field"><label>Repositório</label><input value="hotal"></div><div class="field"><label>Branch base</label><input value="develop"></div></div>
+    <label class="tog"><input type="checkbox" checked> Isolar cada dev num worktree próprio — cada issue ganha uma árvore isolada a partir da base atualizada, sem um dev sobrescrever o outro.</label>
+    <button class="btn tiny" type="button" data-toast="Conexão testada com o PAT. O valor não é exibido.">Testar conexão</button>
+    <button class="btn tiny" type="button" data-toast="Repositório verificado. O clone do fonte confere.">Verificar repositório</button>
+    <h2>PUBLICAÇÃO DO REFINAMENTO</h2>
+    <div class="field"><label>Onde gravar o texto do refino/dev ao aprovar</label><select><option>Comentário (padrão)</option><option>Descrição (acima do atual, com régua)</option></select></div>
+    <p>Tópicos do refinamento publicados por padrão</p>
+    <div class="checks">${topics.map((t,i)=>`<label><input type="checkbox" ${checked.has(i)?"checked":""}> ${t}</label>`).join("")}</div>
+    <h2>FLUXO DO BOARD — POR TIPO DE ISSUE</h2>
+    <p class="lead">Cada tipo de issue aparece abaixo com as etapas do ciclo. Preencha só o status que o workflow do Jira permite.</p>
+    ${["APOIO","APOIO - CLIENTE","MANUTENÇÃO"].map(tipo => `<div class="box" style="margin-bottom:8px"><b>${tipo}</b>
+      <p class="meta">Ciclo simples</p>
+      <div class="paths"><div><span>Ao iniciar</span><select><option>— não mover —</option><option>Backlog</option></select></div><div><span>Em andamento</span><select><option>Em andamento</option><option>Em refinamento</option></select></div><div><span>Ao concluir</span><select><option>Concluído</option></select></div><div><span>Ao recusar</span><select><option>Recusada</option></select></div></div>
+      <p class="meta">Esteira de produto — refino → dev → compilação → PR</p>
+      <div class="paths"><div><span>Refino início</span><select><option>${tipo==="MANUTENÇÃO"?"Em refinamento":"Comprometido"}</option></select></div><div><span>Refino concluído</span><select><option>${tipo==="MANUTENÇÃO"?"Refinamento concluído":"Em andamento"}</option></select></div><div><span>Dev início</span><select><option>${tipo==="MANUTENÇÃO"?"Comprometido":"— não mover —"}</option></select></div><div><span>Compilação</span><select><option>${tipo==="MANUTENÇÃO"?"Em desenvolvimento":"— não mover —"}</option></select></div><div><span>Após PR</span><select><option>${tipo==="MANUTENÇÃO"?"Em Code Review":"— não mover —"}</option></select></div></div>
+    </div>`).join("")}
+    <button class="btn tiny" type="button">+ Configurar também um tipo fora da seleção...</button>
+  `, `<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button class="btn" data-close type="button">Cancelar</button><button class="btn primary" id="save-proj" type="button">Salvar projeto</button></div>`, true);
+  $("#save-proj").onclick = () => { $("#modal-root").innerHTML=""; toast("Projeto salvo. A automação respeita a fila de aprovações."); };
+}
+renderProjects();
+
+function openTab(name, fromGo){
+  $$("#cfg-tabs button").forEach(b => b.classList.toggle("is-on", b.dataset.tab===name));
+  $$("[data-panel]").forEach(p => p.classList.toggle("hidden", p.dataset.panel!==name));
+  if (!fromGo && !$("#view-config").classList.contains("is-on")) go("config", name);
+  if (!fromGo) {
+    const mem = name==="memorias";
+    $$(".nav").forEach(b => b.classList.toggle("is-on", mem ? b.dataset.tab==="memorias" : (b.dataset.go==="config" && !b.dataset.tab)));
+  }
+}
+$("#cfg-tabs").onclick = (e) => { const b=e.target.closest("button"); if(b) openTab(b.dataset.tab); };
+
+$("#mem-body").innerHTML = memories.map(m => `<tr><td><input type="checkbox"></td><td>${m[0]}</td><td>${m[1]}</td><td class="key">${m[2]}</td><td>${m[3]}</td><td>${m[4]}</td><td><span class="tag warn">Pendente</span></td><td><button class="btn tiny" data-mem="v">Verificar</button> <button class="btn tiny" data-mem="a">Aprovar</button></td></tr>`).join("");
+$("#mem-body").onclick = (e) => {
+  const b = e.target.closest("[data-mem]"); if(!b) return;
+  const td = b.closest("tr").querySelector(".tag");
+  td.className = "tag " + (b.dataset.mem==="a"?"ok":"bad");
+  td.textContent = b.dataset.mem==="a" ? "Aprovada" : "Em verificação";
+  b.closest("td").innerHTML = "";
+  toast(b.dataset.mem==="a" ? "Regra aceita. Passa a valer no projeto." : "Regra em verificação.");
+};
+$("#ver-files").innerHTML = versionFiles.map(f=>`<button class="btn" style="display:block;width:100%;text-align:left;margin-bottom:4px" type="button" data-file="${f}">${f}</button>`).join("");
+$("#ver-files").onclick = (e) => { const b=e.target.closest("[data-file]"); if(b) $("#ver-read").textContent = b.dataset.file+" — memória padrão desta versão. O conteúdo acompanha o repositório do Concierge e não é copiado por projeto."; };
+$("#mem-tabs").onclick = (e) => {
+  const b=e.target.closest("button"); if(!b) return;
+  $$("#mem-tabs button").forEach(x=>x.classList.toggle("is-on", x===b));
+  const id=b.dataset.mem;
+  $("#mem-cura").classList.toggle("hidden", id!=="cura");
+  $("#mem-versao").classList.toggle("hidden", id!=="versao");
+  $("#mem-bases").classList.toggle("hidden", id!=="bases");
+  const other = id==="minhas"||id==="projeto"||id==="aud";
+  $("#mem-outras").classList.toggle("hidden", !other);
+  if (id==="minhas") $("#mem-outras-txt").textContent = "Memórias só suas, ainda não promovidas ao projeto.";
+  if (id==="projeto") $("#mem-outras-txt").textContent = "Regras já aceitas para o projeto selecionado. O filtro de projeto está no topo.";
+  if (id==="aud") $("#mem-outras-txt").textContent = "Auditoria de quem aceitou ou recusou cada regra. A tabela completa não entrou nos prints.";
+};
+
+const iris=$("#iris");
+$("#iris-fab").onclick = () => iris.classList.toggle("is-on");
+$("#iris-form").onsubmit = (e) => {
+  e.preventDefault();
+  const q = new FormData(e.target).get("q").trim(); if(!q) return;
+  const thread=$("#thread");
+  const me=document.createElement("div"); me.className="bubble me"; me.textContent=q; thread.appendChild(me);
+  const bot=document.createElement("div"); bot.className="bubble";
+  bot.textContent = /backlog|quant/i.test(q) ? "No DCMF2 há 25 no backlog, 2 em refinamento e 4 aprovações esperando o seu aceite."
+    : /erro|23435/i.test(q) ? "A DCMF2-23435 teve compilação com erro às 16:18 e uma concluída às 16:26. Dá para reenfileirar pela tela de Execuções."
+    : "Posso olhar board, execuções, aprovações e memórias deste projeto. Nada é escrito no Jira sem o seu aceite.";
+  thread.appendChild(bot); thread.scrollTop=thread.scrollHeight; e.target.reset();
+};
+document.addEventListener("keydown", (e) => { if(e.key==="Escape"){ $("#modal-root").innerHTML=""; menu.classList.add("hidden"); iris.classList.remove("is-on"); } });
+</script>
+</body>
+</html>

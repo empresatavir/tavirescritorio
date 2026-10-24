@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Report — http://localhost:9002/fabrica/d49fe638-14a1-4291-8692-f0c350102f60</title>
+<style>
+  :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8; --accent: #ef4444; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--accent); }
+  h2 { font-size: 1.25rem; margin: 2rem 0 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid #334155; }
+  h3 { font-size: 1.05rem; margin: 1.5rem 0 0.5rem; }
+  p { margin-bottom: 0.75rem; }
+  code { background: #334155; padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; }
+  li { margin-left: 1.5rem; margin-bottom: 0.25rem; }
+  ul { margin-bottom: 0.75rem; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  td, th { padding: 0.5rem 0.75rem; border: 1px solid #334155; text-align: left; }
+  tr:nth-child(even) { background: rgba(255,255,255,0.03); }
+  hr { border: none; border-top: 1px solid #334155; margin: 2rem 0; }
+  strong { color: #f1f5f9; }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #ffffff; --card: #f8fafc; --text: #1e293b; --muted: #64748b; }
+    code { background: #e2e8f0; }
+    td, th { border-color: #cbd5e1; }
+  }
+</style>
+</head>
+<body>
+<p><h1>Relatório QA — http://localhost:9002/fabrica/d49fe638-14a1-4291-8692-f0c350102f60</h1></p><p><strong>Data:</strong> 2026-10-22T15:50:00  
+<strong>Ambiente:</strong> preview  
+<strong>Viewport:</strong> 1440x900  
+<strong>Duração:</strong> 540.0s | <strong>Ações:</strong> 12  </p><p><h2>❌ Resultado: FALHOU</h2></p><p><tr><td>Severidade</td><td>Quantidade</td></tr>
+<tr><td>------------</td><td>-----------</td></tr>
+<tr><td>🔴 CRÍTICO</td><td>0</td></tr>
+<tr><td>🟠 ALTO</td><td>3</td></tr>
+<tr><td>🟡 MÉDIO</td><td>4</td></tr>
+<tr><td>🔵 BAIXO</td><td>1</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>8</strong></td></tr></p><p><h2>Achados Detalhados</h2></p><p><h3>1. [🟠 ALTO] Validar pastas não valida a pasta</h3></p><p><li><strong>ID:</strong> <code>QA-001</code></li>
+<li><strong>Categoria:</strong> interatividade</li>
+<li><strong>Ação:</strong> Clicar em Validar pastas</li>
+<li><strong>Comportamento da UI:</strong> O botão só repete o caminho do workspace. Ele não diz se as pastas esperadas existem.</li>
+<li><strong>Rede:</strong> <code>Nenhuma chamada de API</code></li>
+<li><strong>💡 Sugestão:</strong> Conferir no backend as pastas esperadas da etapa e mostrar o que existe e o que falta.</li></p><p><h3>2. [🟠 ALTO] Dois modelos do Cursor são recusados pelo agente local</h3></p><p><li><strong>ID:</strong> <code>QA-002</code></li>
+<li><strong>Categoria:</strong> motores</li>
+<li><strong>Ação:</strong> Ler GPT-5 e Sonnet Thinking no diálogo Configurar</li>
+<li><strong>Comportamento da UI:</strong> Os dois modelos aparecem como escolhíveis.</li>
+<li><strong>Rede:</strong> <code>O agente local respondeu: Cannot use this model: gpt-5. O mesmo ocorreu com sonnet-4-thinking.</code></li>
+<li><strong>💡 Sugestão:</strong> Listar só os ids que o agente local aceita, ou mapear cada rótulo para um id aceito.</li></p><p><h3>3. [🟠 ALTO] O relatório da etapa atual é de uma entrega anterior</h3></p><p><li><strong>ID:</strong> <code>QA-003</code></li>
+<li><strong>Categoria:</strong> consistência</li>
+<li><strong>Ação:</strong> Ler o relatório do agente na visão geral</li>
+<li><strong>Comportamento da UI:</strong> A etapa em execução é Implementação controlada · backend. O texto é changes/NOTES.md e o rodapé diz que o arquivo foi gerado na etapa m_code, com o modelo claude-opus-5-5.</li>
+<li><strong>Rede:</strong> <code>GET ai-settings devolve cursor, auto-smart, balanced.</code></li>
+<li><strong>💡 Sugestão:</strong> Marcar o arquivo como entrega anterior enquanto a etapa atual ainda está em execução.</li></p><p><h3>4. [🟡 MÉDIO] O chat abre no primeiro agente e mistura as mensagens</h3></p><p><li><strong>ID:</strong> <code>QA-004</code></li>
+<li><strong>Categoria:</strong> interatividade</li>
+<li><strong>Ação:</strong> Abrir a aba Chat</li>
+<li><strong>Comportamento da UI:</strong> O título do fio é Dora Descoberta. As mensagens visíveis são do Diego Sistemas.</li>
+<li><strong>💡 Sugestão:</strong> Abrir no agente da etapa atual e mostrar só as mensagens desse agente.</li></p><p><h3>5. [🟡 MÉDIO] A execução automática não existe no backend</h3></p><p><li><strong>ID:</strong> <code>QA-005</code></li>
+<li><strong>Categoria:</strong> consistência</li>
+<li><strong>Ação:</strong> Ler os dois interruptores e o run</li>
+<li><strong>Comportamento da UI:</strong> Os dois interruptores dizem desligada. Isso está certo neste navegador.</li>
+<li><strong>Rede:</strong> <code>O run não guarda esse estado. O valor fica só no localStorage.</code></li>
+<li><strong>💡 Sugestão:</strong> Guardar ligado ou desligado no run. O interruptor não foi ligado neste teste.</li></p><p><h3>6. [🟡 MÉDIO] A primeira pintura diz que a esteira está vazia</h3></p><p><li><strong>ID:</strong> <code>QA-006</code></li>
+<li><strong>Categoria:</strong> interatividade</li>
+<li><strong>Ação:</strong> Recarregar a tela do projeto</li>
+<li><strong>Comportamento da UI:</strong> Por cerca de um segundo a visão geral diz que o run ainda não materializou stages. Depois as 10 etapas aparecem.</li>
+<li><strong>Rede:</strong> <code>GET /run já devolvia as 10 etapas.</code></li>
+<li><strong>💡 Sugestão:</strong> Mostrar carregando até o pedido voltar.</li></p><p><h3>7. [🟡 MÉDIO] O modo do Auto não chega ao agente</h3></p><p><li><strong>ID:</strong> <code>QA-007</code></li>
+<li><strong>Categoria:</strong> motores</li>
+<li><strong>Ação:</strong> Selecionar Cursor e Auto em Configurar</li>
+<li><strong>Comportamento da UI:</strong> O terceiro campo vira Modo, com Cost, Balance e Intelligence.</li>
+<li><strong>Rede:</strong> <code>A chamada local usa só o modelo auto. O modo salvo não entra no comando.</code></li>
+<li><strong>💡 Sugestão:</strong> Enviar o modo quando o agente local aceitar, ou tirar o campo enquanto ele não tiver efeito.</li></p><p><h3>8. [🔵 BAIXO] A nota do modal tem um espaço antes do ponto</h3></p><p><li><strong>ID:</strong> <code>QA-008</code></li>
+<li><strong>Categoria:</strong> modais</li>
+<li><strong>Ação:</strong> Abrir Configurar com Auto selecionado</li>
+<li><strong>Comportamento da UI:</strong> A nota termina com a palavra modo, um espaço e o ponto.</li>
+<li><strong>💡 Sugestão:</strong> Remover o espaço antes do ponto.</li></p><p><h2>Caminho Feliz</h2></p><p><li><strong>Status:</strong> ❌ parcial</li>
+<li><strong>Ações:</strong> 12</li>
+<li><strong>Observações:</strong> Esteira, kanban, SSE, Configurar e Pasta local conferem com o backend. Ghost Opus, Cursor Auto e Cursor Composer responderam ok. Executar, Concluir, Marcar falha, Pausar, Refazer e Autorizar não foram acionados.</li></p><p><h2>Limitações</h2></p><p><li>Upload não se aplica a esta tela.</li>
+<li>Executar, Concluir etapa, Marcar falha, Pausar, Refazer projeto, Refazer entrega e Autorizar não foram clicados, para não alterar a esteira.</li>
+<li>O interruptor de execução automática não foi ligado.</li>
+<li>Sonnet e Fable do Ghost não receberam uma chamada própria. Só o Opus foi sondado.</li>
+<li>O runner genérico não enxerga os controles desta tela. Os achados vêm da passagem dirigida.</li></p><p>---
+*Gerado por QA Usabilidade TAVIR em 2026-10-22 12:48*</p>
+</body>
+</html>

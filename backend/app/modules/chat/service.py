@@ -1,13 +1,10 @@
 """Chat service — orchestrates conversation, agent personas and contextual replies via GhostCLI gateway."""
-import os
-import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.chat.repository import ChatRepository
 from app.modules.agents.repository import AgentRepository
 from app.models.chat_message import ChatMessage
-
-GHOSTCLI_BASE_URL = os.environ.get("GHOSTCLI_BASE_URL", "https://ghostcli.cloud/v1")
-GHOSTCLI_API_KEY = os.environ.get("GHOSTCLI_API_KEY", "")
+from app.modules.ghostcli import chat_completion, default_model, is_configured
+from app.modules.ghostcli.client import GhostCliError
 
 
 class ChatService:
@@ -34,7 +31,7 @@ class ChatService:
 
         # 2. Extract conversation settings
         settings = conv.settings or {}
-        model = settings.get("model", "claude-sonnet-5")
+        model = settings.get("model") or default_model()
         effort = settings.get("effort", "médio")
         insp = settings.get("insp", 30)
 
@@ -87,44 +84,25 @@ class ChatService:
             "Se não souber algo, diga claramente e sugira próximos passos."
         )
 
-        api_key = GHOSTCLI_API_KEY
-        if not api_key:
+        if not is_configured():
+            from app.modules.ghostcli.notice import report_ai_link_error
+
+            report_ai_link_error("GhostCLI sem chave. Defina GHOSTCLI_API_KEY.")
             return (
                 f"[GhostCLI] Chave de API não configurada. Defina GHOSTCLI_API_KEY no ambiente. "
                 f"Como {agent_name} ({agent_role}), recebi sua mensagem e aguardo a configuração do gateway para responder com IA real."
             )
 
-        payload = {
-            "model": model,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                *history,
-            ],
-            "max_tokens": 1024,
-        }
-
         try:
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                response = await client.post(
-                    f"{GHOSTCLI_BASE_URL}/chat/completions",
-                    json=payload,
-                    headers={
-                        "Authorization": f"Bearer {api_key}",
-                        "Content-Type": "application/json",
-                    },
-                )
-                response.raise_for_status()
-                data = response.json()
-                return data["choices"][0]["message"]["content"]
-        except httpx.HTTPStatusError as exc:
-            status = exc.response.status_code
-            body = exc.response.text[:200]
-            return (
-                f"[GhostCLI] Erro {status} ao chamar o gateway: {body}. "
-                f"Verifique a chave de API e o modelo '{model}' no painel do GhostCLI."
+            return await chat_completion(
+                system=system_prompt,
+                messages=history,
+                model=model or default_model(),
+                max_tokens=1024,
+                timeout=60.0,
             )
-        except Exception as exc:
+        except GhostCliError as exc:
             return (
-                f"[GhostCLI] Falha de conexão com o gateway: {type(exc).__name__}: {exc}. "
-                f"Verifique se GHOSTCLI_BASE_URL ({GHOSTCLI_BASE_URL}) está acessível."
+                f"[GhostCLI] {exc}. "
+                f"Verifique a chave de API e o modelo '{model}' no painel do GhostCLI."
             )

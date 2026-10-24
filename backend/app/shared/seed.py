@@ -16,6 +16,7 @@ from app.models.template import EngineeringTemplate
 from app.models.persona import Persona
 from app.models.profile import Profile
 from app.models.piece import Piece
+from app.models.studio_decision import StudioDecision
 
 # Full 47 Agents roster across 11 sectors
 ROSTER_AGENTS_47 = [
@@ -355,7 +356,7 @@ async def seed():
         # 8. Seed factory projects
         factory_projs = [
             ("fp-1", "lp-advocacia", "LP Nicho Advocacia", "Nicho Advocacia", "lp-c", 4, 10, "running", "github.com/empresatavir/lp-advocacia", "netlify · travada", "SolidJS + Tailwind + Vite", "Converter sócios de escritórios de advocacia", ["Headline + Hero", "Grid de dores e soluções", "Prova social e casos", "Formulário"]),
-            ("fp-2", "saas-gestao-contabil", "SaaS Gestão Contábil", "ContabHub", "sy-c", 2, 12, "paused", "github.com/empresatavir/contabhub-api", "railway · travada", "FastAPI + PostgreSQL + SolidJS", "Automatizar conciliação fiscal", ["Autenticação Gov.br", "Leitura XML NFe", "Cálculo DAS", "Dashboard"]),
+            ("fp-2", "saas-gestao-contabil", "SaaS Gestão Contábil", "ContabHub", "sy-c", 2, 13, "paused", "github.com/empresatavir/contabhub-api", "railway · travada", "FastAPI + PostgreSQL + SolidJS", "Automatizar conciliação fiscal", ["Autenticação Gov.br", "Leitura XML NFe", "Cálculo DAS", "Dashboard"]),
             ("fp-3", "mentoria-ia-executivos", "Oferta Mentoria IA Executivos", "TAVIR Educação", "of-c", 5, 10, "running", None, "hubspot · crm", "Documento Comercial + Funil", "Turma fechada para 15 CTOs", ["Ementa 8 encontros", "Modelo de precificação", "Contrato e SLA"]),
         ]
         for p_id, slug, name, comp, t_code, s_done, s_tot, status, repo, dep, stack, goal, scope in factory_projs:
@@ -392,91 +393,292 @@ async def seed():
         await session.commit()
         print("Factory projects seeded successfully")
 
-        # 9. Seed studio personas & profiles
+        # 9. Seed studio profiles (alinhados ao FE Studio)
+        def _ds(accent: str, tone: str = "didático, direto e sem hype") -> dict:
+            return {
+                "primary": "#0B1220",
+                "secondary": "#F4F6F2",
+                "accent": accent,
+                "fontDisplay": "Instrument Sans",
+                "fontBody": "Instrument Sans",
+                "toneOfVoice": tone,
+                "doList": "Usar prova, números e CTA claro",
+                "dontList": "Prometer resultado financeiro garantido",
+                "visualNotes": "Alto contraste, tipografia forte, poucas cores",
+            }
+
         studio_profiles = [
-            ("pf-datavir", "Datavir", "Dados e BI para pequenas e médias empresas", "Donos e gestores de PMEs", "didático e direto", "Consultoria de dados da TAVIR.", "#B7F34A", "DV", [
-                {"net": "li", "handle": "Datavir", "logo": "assets/logos/linkedin.svg"},
-                {"net": "ig", "handle": "@datavir", "logo": "assets/logos/instagram.svg"},
-            ]),
-            ("pf-canal", "Canal IA na Prática", "IA aplicada ao trabalho", "Profissionais que querem usar IA", "curioso e prático", "Canal de episódios semanais com demonstrações.", "#1BC5BD", "IA", [
-                {"net": "yt", "handle": "IA na Prática", "logo": "assets/logos/youtube.svg"},
-                {"net": "tt", "handle": "@ianapratica", "logo": "assets/logos/tiktok.svg"},
-                {"net": "ig", "handle": "@ianapratica", "logo": "assets/logos/instagram.svg"},
-            ]),
-            ("pf-tavir", "TAVIR", "Operação com agentes de IA", "Empresas que automatizam com controle", "confiante e transparente", "Marca institucional da TAVIR.", "#F4F6F2", "TV", [
-                {"net": "ig", "handle": "@tavir", "logo": "assets/logos/instagram.svg"},
-                {"net": "li", "handle": "TAVIR", "logo": "assets/logos/linkedin.svg"},
-            ]),
+            {
+                "id": "pf-carlos",
+                "name": "Carlos Junior",
+                "handle": "@carlosjunior",
+                "company": "TAVIR",
+                "niche": "IA & Negócios",
+                "audience": "Founders e operadores que querem IA com controle",
+                "tone": "didático, direto e sem hype",
+                "context": "Perfil pessoal do CEO. Foco em sistemas, operação e IA com supervisão humana.",
+                "color": "#B7F34A",
+                "initials": "CJ",
+                "cycle_goal": 24,
+                "cycle_done": 18,
+                "networks": [
+                    {"net": "ig", "handle": "@carlosjunior", "url": "https://instagram.com/carlosjunior", "followers": 18400, "engagement": 4.2},
+                    {"net": "yt", "handle": "Carlos Junior", "url": "https://youtube.com/@carlosjunior", "followers": 9200, "engagement": 6.1},
+                    {"net": "li", "handle": "Carlos Junior", "url": "https://linkedin.com/in/carlosjunior", "followers": 11200, "engagement": 3.4},
+                ],
+                "design_system": _ds("#B7F34A"),
+            },
+            {
+                "id": "pf-datavir",
+                "name": "Datavir",
+                "handle": "@datavir",
+                "company": "TAVIR · Datavir",
+                "niche": "Dados e BI para PMEs",
+                "audience": "Donos e gestores que ainda decidem por planilha",
+                "tone": "didático e direto",
+                "context": "Consultoria de dados da TAVIR. Nunca prometer resultado financeiro.",
+                "color": "#1BC5BD",
+                "initials": "DV",
+                "cycle_goal": 12,
+                "cycle_done": 5,
+                "networks": [
+                    {"net": "li", "handle": "Datavir", "url": "https://linkedin.com/company/datavir", "followers": 3400, "engagement": 2.8},
+                    {"net": "ig", "handle": "@datavir", "url": "https://instagram.com/datavir", "followers": 2100, "engagement": 3.1},
+                ],
+                "design_system": _ds("#1BC5BD", "didático e direto"),
+            },
+            {
+                "id": "pf-canal",
+                "name": "IA na Prática",
+                "handle": "@ianapratica",
+                "company": "TAVIR",
+                "niche": "IA aplicada ao trabalho",
+                "audience": "Profissionais que querem usar IA no dia a dia",
+                "tone": "curioso e prático",
+                "context": "Canal de episódios semanais com demonstrações.",
+                "color": "#F2BC59",
+                "initials": "IA",
+                "cycle_goal": 16,
+                "cycle_done": 9,
+                "networks": [
+                    {"net": "yt", "handle": "IA na Prática", "url": "https://youtube.com/@ianapratica", "followers": 15600, "engagement": 7.4},
+                    {"net": "ig", "handle": "@ianapratica", "url": "https://instagram.com/ianapratica", "followers": 8800, "engagement": 5.2},
+                ],
+                "design_system": _ds("#F2BC59", "curioso e prático"),
+            },
         ]
-        for pf_id, name, niche, aud, tone, ctx, color, inits, nets in studio_profiles:
-            existing_pf = await session.get(Profile, pf_id)
+        for pf in studio_profiles:
+            existing_pf = await session.get(Profile, pf["id"])
             if not existing_pf:
-                session.add(
-                    Profile(
-                        id=pf_id,
-                        name=name,
-                        niche=niche,
-                        audience=aud,
-                        tone=tone,
-                        context=ctx,
-                        color=color,
-                        initials=inits,
-                        networks=nets,
-                        platform="multi",
-                        status="active",
-                    )
-                )
+                session.add(Profile(**pf, platform="multi", status="active", guidelines=pf["context"]))
             else:
-                existing_pf.color = color
-                existing_pf.initials = inits
-                existing_pf.networks = nets
-                existing_pf.niche = niche
-                existing_pf.audience = aud
-                existing_pf.context = ctx
+                for k, v in pf.items():
+                    if k != "id":
+                        setattr(existing_pf, k, v)
+                existing_pf.guidelines = pf["context"]
+                existing_pf.platform = "multi"
+                existing_pf.status = "active"
         await session.commit()
         print("Studio profiles seeded successfully")
 
         # 10. Seed studio pieces
         studio_pieces = [
-            ("pc-01", "ST-031", "pf-datavir", "li", "review", "Por que sua PME ainda decide no escuro", 'Abertura com a pergunta "quantas decisões tiveram dado por trás?".', 'Quantas decisões desta semana tiveram dado por trás?', "#dados #bi #pme", False),
-            ("pc-02", "ST-032", "pf-datavir", "ig", "pauta", "3 planilhas que deveriam ser dashboard", "Carrossel de 5 slides mostrando antes e depois.", "Se você ainda gasta 4 horas por semana copiando dados...", "#dashboard #automacao", True),
-            ("pc-03", "ST-033", "pf-canal", "yt", "prod", "Como criar um agente que analisa PDF em 5 min", "Tutorial passo a passo usando modelo local e parser.", "Neste vídeo vamos montar um agente do zero.", "#ia #python #tutorial", False),
-            ("pc-04", "ST-034", "pf-canal", "tt", "pub", "O erro mais comum ao usar prompts longos", "Vídeo de 60 segundos com hook nos primeiros 3 segundos.", "Pare de colar o texto todo no prompt!", "#shorts #produtividade", False),
-            ("pc-05", "ST-035", "pf-tavir", "li", "done", "Como orquestramos 47 agentes de IA no mesmo escritório", "Artigo institucional detalhando o TAVIR Escritório.", "Construímos uma operação autônoma supervisionada por humanos.", "#tavir #agentes #ia", False),
-            ("pc-06", "ST-036", "pf-tavir", "ig", "idea", "Humanos no controle: o papel do CEO na operação autônoma", "Infográfico visual comparando automação cega vs supervisionada.", "IA sem supervisão é risco. IA com supervisão é alavancagem.", "#lideranca #governanca", False),
+            {
+                "id": "pc-6",
+                "num": "ST-046",
+                "profile_id": "pf-carlos",
+                "net": "ig",
+                "stage": "review",
+                "title": "Sua agenda está indecisa",
+                "subtitle": "Pacote final",
+                "needs": True,
+                "caption": "Você não precisa de mais uma ferramenta. Precisa decidir quais escolhas não quer refazer toda semana. Neste carrossel, reuni as 3 decisões que devolvem foco para a operação.",
+                "cta": "Salve este mapa e compartilhe com quem vive apagando incêndios.",
+                "tags": "#produtividade #sistemas #criadores #gestão #inteligênciaartificial",
+                "slides": [
+                    "Sua agenda não está cheia.\nEla está indecisa.",
+                    "O problema não é volume.",
+                    "São as microdecisões.",
+                    "Três decisões que devolvem foco.",
+                    "Salve e compartilhe.",
+                ],
+                "script": "Carrossel 5 slides · revisão humana",
+                "squad": "Instagram Studio",
+            },
+            {
+                "id": "pc-7",
+                "num": "ST-047",
+                "profile_id": "pf-carlos",
+                "net": "li",
+                "stage": "review",
+                "title": "Ritual de segunda",
+                "subtitle": "3 pautas",
+                "needs": True,
+                "caption": "Toda segunda eu abro a semana com as mesmas 3 perguntas. Não é motivação — é protocolo.",
+                "cta": "Salve o ritual e use na próxima abertura de sprint.",
+                "tags": "#operação #liderança #sistemas #produtividade",
+                "slides": [
+                    "Ritual de segunda.\nTrês perguntas, zero improviso.",
+                    "1. O que não pode falhar esta semana?",
+                    "2. O que estamos fingindo que é urgente?",
+                    "3. Quem decide o quê — e com qual dado?",
+                ],
+                "script": "Post LinkedIn",
+            },
+            {
+                "id": "pc-01",
+                "num": "ST-031",
+                "profile_id": "pf-datavir",
+                "net": "li",
+                "stage": "review",
+                "title": "Por que sua PME ainda decide no escuro",
+                "needs": True,
+                "caption": "Quantas decisões desta semana tiveram dado por trás?",
+                "tags": "#dados #bi #pme",
+                "script": 'Abertura com a pergunta "quantas decisões tiveram dado por trás?".',
+            },
+            {
+                "id": "pc-02",
+                "num": "ST-032",
+                "profile_id": "pf-datavir",
+                "net": "ig",
+                "stage": "pauta",
+                "title": "3 planilhas que deveriam ser dashboard",
+                "needs": True,
+                "caption": "Se você ainda gasta 4 horas por semana copiando dados...",
+                "tags": "#dashboard #automacao",
+                "script": "Carrossel de 5 slides mostrando antes e depois.",
+            },
+            {
+                "id": "pc-03",
+                "num": "ST-033",
+                "profile_id": "pf-canal",
+                "net": "yt",
+                "stage": "prod",
+                "title": "Como criar um agente que analisa PDF em 5 min",
+                "subtitle": "roteiro",
+                "progress": 55,
+                "squad": "YouTube Roteirista",
+                "caption": "Neste vídeo vamos montar um agente do zero.",
+                "tags": "#ia #python #tutorial",
+                "script": "Tutorial passo a passo usando modelo local e parser.",
+            },
+            {
+                "id": "pc-05",
+                "num": "ST-035",
+                "profile_id": "pf-carlos",
+                "net": "ig",
+                "stage": "done",
+                "title": "Pare de otimizar tarefas",
+                "subtitle": "Publicado",
+                "caption": "Otimizar a tarefa errada só acelera o caos.",
+                "tags": "#sistemas #foco",
+                "status": "published",
+            },
         ]
-        for pc_id, num, pf_id, net, stage, title, script, caption, tags, needs in studio_pieces:
-            existing_pc = await session.get(Piece, pc_id)
+        for pc in studio_pieces:
+            status = pc.get("status") or ("published" if pc["stage"] == "done" else "draft")
+            images = (
+                ["Imagem 1200x1200"]
+                if pc["net"] == "li"
+                else ["Thumbnail 1920x1080"]
+                if pc["net"] == "yt"
+                else ["Imagem 1080x1350"]
+            )
+            fields = {k: v for k, v in pc.items() if k not in ("id", "status")}
+            existing_pc = await session.get(Piece, pc["id"])
             if not existing_pc:
                 session.add(
                     Piece(
-                        id=pc_id,
-                        num=num,
-                        profile_id=pf_id,
-                        net=net,
-                        stage=stage,
-                        title=title,
-                        script=script,
-                        caption=caption,
-                        tags=tags,
-                        needs=needs,
+                        id=pc["id"],
+                        **fields,
                         content_type="post",
-                        images=["Imagem 1200x628"] if net == "li" else ["Imagem 1080x1350"] if net == "ig" else ["Thumbnail 1920x1080"],
+                        images=images,
                         timeline=[[datetime.now().strftime("%d/%m %H:%M"), "Operação", "Peça inicializada no Studio"]],
-                        status="published" if stage == "done" else "draft",
-                        published_url=f"https://tavir.io/content/{num}" if stage == "done" else None,
+                        status=status,
+                        published_url=f"https://tavir.io/content/{pc['num']}" if pc["stage"] == "done" else None,
                     )
                 )
             else:
-                existing_pc.num = num
-                existing_pc.net = net
-                existing_pc.stage = stage
-                existing_pc.needs = needs
-                existing_pc.script = script
-                existing_pc.caption = caption
-                existing_pc.tags = tags
+                for k, v in fields.items():
+                    setattr(existing_pc, k, v)
+                existing_pc.status = status
+                existing_pc.images = images
         await session.commit()
         print("Studio pieces seeded successfully")
+
+        # 11. Seed studio decisions
+        oracle_options = [
+            {
+                "id": "opt-a",
+                "label": "OPÇÃO A",
+                "style": "CONTRARIAN",
+                "fit": 94,
+                "title": "Produtividade não é fazer mais. É decidir menos.",
+                "angle": "Desconstruir a rotina lotada e mostrar o custo cognitivo das microdecisões.",
+                "hook": "“Sua agenda não está cheia. Ela está indecisa.”",
+                "sources": "MIT Sloan · HBR · Dados TAVIR",
+                "whyNow": "Conecta uma dor latente ao posicionamento de sistemas e tem alto potencial de salvamento.",
+            },
+            {
+                "id": "opt-b",
+                "label": "OPÇÃO B",
+                "style": "PRÁTICO",
+                "fit": 88,
+                "title": "O ritual de 12 minutos que organiza uma semana inteira.",
+                "angle": "Entregar um framework visual de priorização em quatro movimentos replicáveis.",
+                "hook": "“Antes de abrir o Notion, responda estas 4 perguntas.”",
+                "sources": "Método Ivy Lee · Shape Up · Pesquisa própria",
+                "whyNow": "Formato utilitário com forte histórico de compartilhamento neste perfil.",
+            },
+            {
+                "id": "opt-c",
+                "label": "OPÇÃO C",
+                "style": "BASTIDORES",
+                "fit": 81,
+                "title": "Como uma equipe pequena publica como uma redação.",
+                "angle": "Abrir o processo real, incluindo gargalos, automações e decisões humanas.",
+                "hook": "“Não contratamos mais pessoas. Mudamos a esteira.”",
+                "sources": "Cases Buffer · Linear · Operação TAVIR",
+                "whyNow": "Humaniza a marca e cria autoridade, mas exige mais prova visual para performar.",
+            },
+        ]
+        studio_decisions = [
+            {
+                "id": "dec-1",
+                "profile_id": "pf-carlos",
+                "run_id": "TVR-2841",
+                "kind": "pauta",
+                "title": "Escolha a próxima pauta do ciclo",
+                "subtitle": "O Oráculo cruzou repertório, tendências e desempenho histórico.",
+                "status": "pending",
+                "options": oracle_options,
+                "selected_option_id": "opt-a",
+                "waiting_label": "aguardando você",
+            },
+            {
+                "id": "dec-2",
+                "profile_id": "pf-carlos",
+                "run_id": "TVR-2837",
+                "kind": "revisao",
+                "title": "Pacote final · “Sua agenda está indecisa”",
+                "subtitle": "Pacote pronto para liberação",
+                "status": "pending",
+                "piece_id": "pc-6",
+                "waiting_label": "revisão humana",
+                "platform_label": "Instagram Studio",
+            },
+        ]
+        for dec in studio_decisions:
+            existing_dec = await session.get(StudioDecision, dec["id"])
+            if not existing_dec:
+                session.add(StudioDecision(**dec))
+            else:
+                for k, v in dec.items():
+                    if k != "id":
+                        setattr(existing_dec, k, v)
+        await session.commit()
+        print("Studio decisions seeded successfully")
 
 if __name__ == "__main__":
     asyncio.run(seed())

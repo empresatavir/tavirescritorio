@@ -1,4 +1,4 @@
-import { For, Show, createMemo, createSignal, onCleanup } from "solid-js";
+import { For, Show, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 import "./console.css";
 import "./console-panels.css";
 import { SUBNAV, type FabricaViewId, type WorkspaceSubview } from "./consoleNav";
@@ -11,17 +11,14 @@ import { AccessPanel } from "./panels/AccessPanel";
 import { SecurityPanel } from "./panels/SecurityPanel";
 import { ChatPanel } from "./panels/ChatPanel";
 import { EmptyState } from "./panels/EmptyState";
+import { ArtifactsPanel } from "./panels/ArtifactsPanel";
+import { StageReport } from "./panels/StageReport";
 import { createFactoryRunController } from "./useFactoryRun";
-import type { FactoryStageInstance } from "../../../shared/api/client";
+import { RedoDialog } from "./RedoDialog";
+import { ProjectAiDialog } from "../ProjectAiDialog";
+import { api, type FactoryStageInstance } from "../../../shared/api/client";
 
 type NavSnap = { view: FabricaViewId; subview: WorkspaceSubview };
-
-interface LocalFile {
-  id: string;
-  name: string;
-  type: string;
-  sizeLabel: string;
-}
 
 function nodeClass(stage: FactoryStageInstance, selectedId: string | null): string {
   const parts = ["fc-flow-node"];
@@ -71,10 +68,85 @@ export function FabricaConsole(props: {
   const [selectedStageId, setSelectedStageId] = createSignal<string | null>(null);
   const [selectedLedgerId, setSelectedLedgerId] = createSignal<string | null>(null);
   const [toast, setToast] = createSignal("");
-  const [paused, setPaused] = createSignal(false);
+  const [redoMode, setRedoMode] = createSignal<"gate" | "project" | null>(null);
+  const [settingsOpen, setSettingsOpen] = createSignal(false);
+  const [redoStageId, setRedoStageId] = createSignal<string | null>(null);
   const [feedOpen, setFeedOpen] = createSignal(false);
-  const [files, setFiles] = createSignal<LocalFile[]>([]);
   const factory = createFactoryRunController(() => props.projectId);
+  const [folderCheck, setFolderCheck] = createSignal("");
+  const autoOn = () => factory.run()?.meta?.auto_execute === true;
+  let pumping = false;
+  let bootPumped = false;
+
+  const pumpAuto = async () => {
+    if (pumping || !autoOn()) return;
+    pumping = true;
+    try {
+      while (autoOn()) {
+        if (!factory.canAutoRun()) break;
+        const stage = factory.currentStage();
+        if (!stage) break;
+        const stopsForCeo = stage.is_gate || stage.status === "awaiting_gate";
+        showToast(`Execução automática · ${stage.title}`);
+        await factory.execute();
+        if (!autoOn()) {
+          showToast("Execução automática desligada.");
+          break;
+        }
+        if (stopsForCeo) {
+          showToast("Gate atualizado. A autorização continua com você.");
+          break;
+        }
+        await factory.complete();
+        const next = factory.currentStage();
+        if (!next || next.is_gate || next.status === "awaiting_gate") {
+          showToast("Execução automática parou no gate. Autorize para seguir.");
+          break;
+        }
+      }
+    } catch {
+      try {
+        await factory.setAutoExecute(false);
+      } catch {
+        /* o aviso abaixo já explica a parada */
+      }
+      showToast(factory.error() || "Execução automática interrompida.");
+    } finally {
+      pumping = false;
+    }
+  };
+
+  const toggleAuto = async () => {
+    const next = !autoOn();
+    try {
+      await factory.setAutoExecute(next);
+      showToast(next ? "Execução automática ligada." : "Execução automática desligada.");
+      if (next) void pumpAuto();
+    } catch {
+      showToast(factory.error() || "Não foi possível gravar a execução automática.");
+    }
+  };
+
+  const authorizeGate = async () => {
+    try {
+      await factory.authorize();
+      showToast("Gate autorizado · esteira avançou.");
+      if (autoOn()) void pumpAuto();
+    } catch {
+      showToast(factory.error() || "Falha ao autorizar gate");
+    }
+  };
+
+  createEffect(() => {
+    if (bootPumped || factory.loading() || !factory.run()) return;
+    bootPumped = true;
+    if (autoOn()) void pumpAuto();
+  });
+
+  const openGateRedo = (stageId?: string | null) => {
+    setRedoStageId(stageId || factory.currentStage()?.stage_def_id || null);
+    setRedoMode("gate");
+  };
   let toastTimer: number | undefined;
 
   const stages = createMemo(() => factory.run()?.stages ?? []);
@@ -94,16 +166,6 @@ export function FabricaConsole(props: {
     return list.length ? list[list.length - 1] : null;
   });
 
-  const artifacts = createMemo(() => {
-    const out: string[] = [];
-    for (const s of stages()) {
-      for (const a of s.expected_artifacts || []) {
-        if (a && !out.includes(a)) out.push(a);
-      }
-    }
-    return out;
-  });
-
   const agents = createMemo(() => {
     const map = new Map<string, { name: string; role: string }>();
     for (const s of stages()) {
@@ -116,10 +178,11 @@ export function FabricaConsole(props: {
 
   const projectMeta = createMemo((): ProjectMeta => {
     const r = factory.run();
+    const cur = factory.currentStage();
     const done = r?.stages_done ?? stages().filter((s) => s.status === "done").length;
     const total = r?.total_stages ?? stages().length;
     const status =
-      paused()
+      r?.status === "paused"
         ? ("paused" as const)
         : r?.status === "completed" || r?.status === "done"
           ? ("done" as const)
@@ -133,14 +196,44 @@ export function FabricaConsole(props: {
       totalStages: total,
       company: props.projectCompany || "—",
       localPath: r?.workspace_path || "",
+      gatePending: factory.canAuthorize(),
+      failPending: !!cur && cur.status === "failed",
+      currentStageLabel: cur ? `${cur.code} · ${cur.title}` : undefined,
     };
   });
 
   const showToast = (msg: string) => {
     setToast(msg);
     window.clearTimeout(toastTimer);
-    toastTimer = window.setTimeout(() => setToast(""), 2200);
+    toastTimer = window.setTimeout(() => setToast(""), 4200);
   };
+
+  let reportPrepared = "";
+  createEffect(() => {
+    const stage = factory.currentStage();
+    const currentRun = factory.run();
+    if (factory.loading() || factory.busy() || !stage || !currentRun) return;
+    const paths = stage.expected_artifacts || [];
+    const needsReport =
+      stage.is_gate &&
+      stage.status === "awaiting_gate" &&
+      paths.length > 0 &&
+      !stage.artifact_hash;
+    if (!needsReport) return;
+    if (autoOn() && factory.canAutoRun()) return;
+    const key = `${currentRun.id}:${stage.stage_def_id}`;
+    if (reportPrepared === key) return;
+    reportPrepared = key;
+    void (async () => {
+      showToast("Gerando o relatório do agente…");
+      try {
+        await factory.execute("Entrega do agente");
+        showToast("Relatório pronto para leitura.");
+      } catch {
+        showToast(factory.error() || "A IA não entregou o relatório.");
+      }
+    })();
+  });
 
   onCleanup(() => window.clearTimeout(toastTimer));
 
@@ -199,33 +292,49 @@ export function FabricaConsole(props: {
     else showToast("Nenhum módulo encontrado.");
   };
 
-  const openLocalFolder = () => {
-    const path = projectMeta().localPath;
-    if (!path) {
+  const openLocalFolder = async () => {
+    if (!projectMeta().localPath && !factory.run()?.workspace_path) {
       showToast("Workspace ainda não materializado.");
       return;
     }
-    showToast(`Pasta: ${path}`);
-  };
-
-  const validateFolders = () => {
-    const path = projectMeta().localPath;
-    showToast(path ? `Workspace: ${path}` : "Sem workspace_path no run.");
-  };
-
-  const onFilePick = (list: FileList | null) => {
-    if (!list?.length) return;
-    const next: LocalFile[] = [...files()];
-    for (const f of Array.from(list)) {
-      next.push({
-        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-        name: f.name,
-        type: f.type || "arquivo",
-        sizeLabel: f.size < 1024 ? `${f.size} B` : `${(f.size / 1024).toFixed(1)} KB · sessão`,
-      });
+    try {
+      const res = await api.openFactoryWorkspace(props.projectId);
+      showToast(`Explorer: ${res.path}`);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Falha ao abrir pasta no Explorer");
     }
-    setFiles(next);
-    showToast("Arquivos mantidos só nesta sessão do navegador.");
+  };
+
+  const validateFolders = async () => {
+    try {
+      const listed = await api.listFactoryArtifacts(props.projectId);
+      const expected = listed.expected || [];
+      if (!listed.local_path) {
+        setFolderCheck("Sem workspace_path no run.");
+        showToast("Sem workspace_path no run.");
+        return;
+      }
+      if (!expected.length) {
+        const text = "Esta etapa não declara pastas esperadas.";
+        setFolderCheck(text);
+        showToast(text);
+        return;
+      }
+      const present = expected.filter((item) => item.present).map((item) => item.path);
+      const missing = expected.filter((item) => !item.present).map((item) => item.path);
+      const text = [
+        present.length ? `Presentes: ${present.join(", ")}` : "",
+        missing.length ? `Faltam: ${missing.join(", ")}` : "Nenhuma pasta esperada falta.",
+      ]
+        .filter(Boolean)
+        .join(". ");
+      setFolderCheck(text);
+      showToast(text);
+    } catch (err) {
+      const text = err instanceof Error ? err.message : "Não foi possível validar as pastas.";
+      setFolderCheck(text);
+      showToast(text);
+    }
   };
 
   const groups = () => {
@@ -251,6 +360,7 @@ export function FabricaConsole(props: {
       total: r.total_stages ?? r.stages.length,
       status: s.status,
       isGate: s.is_gate,
+      stageDefId: s.stage_def_id,
     };
   });
 
@@ -329,16 +439,47 @@ export function FabricaConsole(props: {
           projectId={props.projectId}
           projectName={props.projectName}
           meta={projectMeta()}
-          running={!paused() && projectMeta().status === "running"}
-          onToggleRun={() => {
-            setPaused((p) => {
-              const next = !p;
-              showToast(next ? "Esteira pausada na UI (estado local)." : "Esteira retomada na UI.");
-              return next;
-            });
+          running={projectMeta().status === "running"}
+          busy={factory.busy()}
+          canAuthorize={factory.canAuthorize()}
+          canResume={factory.canResume()}
+          canAutoRun={factory.canAutoRun()}
+          autoOn={autoOn()}
+          onToggleAuto={toggleAuto}
+          canRedo={factory.canAuthorize()}
+          canRestart={factory.canRestart()}
+          onRedo={() => openGateRedo(factory.currentStage()?.stage_def_id)}
+          onRestart={() => setRedoMode("project")}
+          onAuthorize={authorizeGate}
+          onResume={async () => {
+            try {
+              await factory.resume();
+              showToast("Esteira retomada.");
+              if (autoOn()) void pumpAuto();
+            } catch {
+              showToast(factory.error() || "Falha ao retomar");
+            }
+          }}
+          onToggleRun={async () => {
+            try {
+              if (factory.canPause()) {
+                await factory.pause();
+                showToast("Esteira pausada.");
+              } else if (factory.canResume()) {
+                await factory.resume();
+                showToast("Esteira retomada.");
+                if (autoOn()) void pumpAuto();
+              } else {
+                showToast("Esteira não pode pausar/retomar neste estado.");
+              }
+            } catch {
+              showToast(factory.error() || "Falha na pausa/retomada");
+            }
           }}
           onOpenFolder={openLocalFolder}
           onValidate={validateFolders}
+          folderCheck={folderCheck()}
+          onOpenSettings={() => setSettingsOpen(true)}
           onBack={props.onBackToDashboard}
         />
       </Show>
@@ -350,20 +491,24 @@ export function FabricaConsole(props: {
               loading={factory.loading()}
               stages={factory.overviewStages()}
               activity={factory.activity()}
+              pendencies={factory.pendencies()}
               current={overviewCurrent()}
+              runStatus={factory.run()?.status}
               canAuthorize={factory.canAuthorize()}
               canComplete={factory.canComplete()}
+              canExecute={factory.canExecute()}
+              canAutoRun={factory.canAutoRun()}
+              autoOn={autoOn()}
+              onToggleAuto={toggleAuto}
+              canRedo={factory.canAuthorize()}
+              onRedo={() => openGateRedo(factory.currentStage()?.stage_def_id)}
+              onRedoStage={(id) => openGateRedo(id)}
+              canFail={factory.canFail()}
+              canResume={factory.canResume()}
               busy={factory.busy()}
               error={factory.error()}
               connected={factory.connected()}
-              onAuthorize={async () => {
-                try {
-                  await factory.authorize();
-                  showToast("Gate autorizado · esteira avançou.");
-                } catch {
-                  showToast(factory.error() || "Falha ao autorizar gate");
-                }
-              }}
+              onAuthorize={authorizeGate}
               onComplete={async () => {
                 try {
                   await factory.complete();
@@ -372,10 +517,64 @@ export function FabricaConsole(props: {
                   showToast(factory.error() || "Falha ao concluir etapa");
                 }
               }}
-              onGoAccess={() => {
-                setSubview("access");
-                switchView("workspace");
+              onExecute={async () => {
+                try {
+                  await factory.execute();
+                  showToast("Etapa executada · artefatos materializados.");
+                } catch {
+                  showToast(factory.error() || "Falha ao executar etapa");
+                }
               }}
+              onFail={async () => {
+                try {
+                  await factory.fail("Falha marcada pelo operador");
+                  showToast("Etapa marcada como falha · esteira pausada.");
+                } catch {
+                  showToast(factory.error() || "Falha ao marcar etapa");
+                }
+              }}
+              onResume={async () => {
+                try {
+                  await factory.resume();
+                  showToast("Esteira retomada.");
+                } catch {
+                  showToast(factory.error() || "Falha ao retomar");
+                }
+              }}
+              report={
+                <StageReport
+                  projectId={props.projectId}
+                  stageTitle={factory.currentStage()?.title}
+                  stageId={factory.currentStage()?.stage_def_id}
+                  fresh={Boolean(factory.currentStage()?.artifact_hash)}
+                  paths={factory.currentStage()?.expected_artifacts || []}
+                  onGenerate={
+                    factory.currentStage()?.is_gate &&
+                    factory.currentStage()?.status === "awaiting_gate" &&
+                    (factory.currentStage()?.expected_artifacts || []).length
+                      ? async () => {
+                          showToast("Gerando o relatório do agente…");
+                          try {
+                            await factory.execute("Entrega do agente");
+                            showToast("Relatório pronto para leitura.");
+                          } catch {
+                            showToast(factory.error() || "A IA não entregou o relatório.");
+                          }
+                        }
+                      : undefined
+                  }
+                />
+              }
+              showDeliveryProcess={stages().some((stage) =>
+                [
+                  "m_code",
+                  "m_code_be",
+                  "m_code_fe",
+                  "build",
+                  "build_be",
+                  "build_fe",
+                ].includes(stage.stage_def_id),
+              )}
             />
           </div>
         </section>
@@ -399,6 +598,9 @@ export function FabricaConsole(props: {
                     </Show>
                     <Show when={factory.canAuthorize()}>
                       <span class="fc-tag warn">GATE PENDENTE</span>
+                    </Show>
+                    <Show when={factory.canResume()}>
+                      <span class="fc-tag danger">PAUSADA / FALHA</span>
                     </Show>
                   </div>
                 </div>
@@ -489,16 +691,36 @@ export function FabricaConsole(props: {
                               type="button"
                               class="fc-btn-sec"
                               disabled={factory.busy()}
+                              onClick={() => void authorizeGate()}
+                            >
+                              Autorizar gate
+                            </button>
+                          </Show>
+                          <Show when={s().is_gate && (s().status === "awaiting_gate" || s().status === "done")}>
+                            <button
+                              type="button"
+                              class="fc-btn-sec"
+                              disabled={factory.busy()}
+                              onClick={() => openGateRedo(s().stage_def_id)}
+                            >
+                              Refazer entrega
+                            </button>
+                          </Show>
+                          <Show when={factory.canResume() && s().stage_def_id === factory.currentStage()?.stage_def_id}>
+                            <button
+                              type="button"
+                              class="fc-btn-sec"
+                              disabled={factory.busy()}
                               onClick={async () => {
                                 try {
-                                  await factory.authorize();
-                                  showToast("Gate autorizado.");
+                                  await factory.resume();
+                                  showToast("Esteira retomada.");
                                 } catch {
-                                  showToast(factory.error() || "Falha ao autorizar");
+                                  showToast(factory.error() || "Falha ao retomar");
                                 }
                               }}
                             >
-                              Autorizar gate
+                              Retomar
                             </button>
                           </Show>
                         </div>
@@ -687,82 +909,21 @@ export function FabricaConsole(props: {
                   <div>
                     <p class="fc-micro">Artefatos</p>
                     <h1>Documentos gerados</h1>
-                    <p>Artefatos esperados declarados nas stages.</p>
+                    <p>Arquivos textuais do workspace · leitura e gravação reais.</p>
                   </div>
                 </div>
-                <Show
-                  when={artifacts().length}
-                  fallback={
-                    <EmptyState
-                      title="Nenhum documento"
-                      text="Quando as etapas declararem expected_artifacts, a lista aparece aqui."
-                    />
-                  }
-                >
-                  <div class="fc-inner" style={{ padding: "8px" }}>
-                    <For each={artifacts()}>
-                      {(a) => (
-                        <div class="fc-doc-btn" style={{ cursor: "default" }}>
-                          <span class="fc-artifact-type">FILE</span>
-                          <span>
-                            <strong style={{ "font-size": "11px" }}>{a}</strong>
-                          </span>
-                        </div>
-                      )}
-                    </For>
-                  </div>
-                </Show>
+                <ArtifactsPanel projectId={props.projectId} mode="docs" onToast={showToast} />
               </Show>
 
               <Show when={subview() === "files"}>
                 <div class="fc-page-head">
                   <div>
                     <p class="fc-micro">Arquivos</p>
-                    <h1>Arquivos da sessão</h1>
-                    <p>Importação local em memória (não envia ao servidor).</p>
+                    <h1>Arquivos do workspace</h1>
+                    <p>Inventário completo em disco (texto e binário).</p>
                   </div>
-                  <label class="fc-btn">
-                    ＋ Selecionar arquivos
-                    <input type="file" multiple hidden onChange={(e) => onFilePick(e.currentTarget.files)} />
-                  </label>
                 </div>
-                <Show
-                  when={files().length}
-                  fallback={<EmptyState title="Nenhum arquivo" text="Selecione arquivos para manter nesta sessão." />}
-                >
-                  <div style={{ overflow: "auto", border: "1px solid var(--line)", "border-radius": "8px" }}>
-                    <table style={{ width: "100%", "border-collapse": "collapse", "min-width": "420px" }}>
-                      <thead>
-                        <tr style={{ background: "var(--surface-1)", "text-align": "left" }}>
-                          <th style={{ padding: "8px", "font-size": "10px" }}>Nome</th>
-                          <th style={{ padding: "8px", "font-size": "10px" }}>Tipo</th>
-                          <th style={{ padding: "8px", "font-size": "10px" }}>Tamanho</th>
-                          <th style={{ padding: "8px", "font-size": "10px" }}>Ações</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <For each={files()}>
-                          {(f) => (
-                            <tr style={{ "border-top": "1px solid var(--line)" }}>
-                              <td style={{ padding: "8px", "font-size": "11px" }}>{f.name}</td>
-                              <td style={{ padding: "8px", "font-size": "11px" }}>{f.type}</td>
-                              <td style={{ padding: "8px", "font-size": "11px" }}>{f.sizeLabel}</td>
-                              <td style={{ padding: "8px" }}>
-                                <button
-                                  type="button"
-                                  class="fc-btn-sec"
-                                  onClick={() => setFiles((list) => list.filter((x) => x.id !== f.id))}
-                                >
-                                  Remover
-                                </button>
-                              </td>
-                            </tr>
-                          )}
-                        </For>
-                      </tbody>
-                    </table>
-                  </div>
-                </Show>
+                <ArtifactsPanel projectId={props.projectId} mode="files" onToast={showToast} />
               </Show>
 
               <Show when={subview() === "access"}>
@@ -772,7 +933,7 @@ export function FabricaConsole(props: {
                     <h1>Acessos</h1>
                   </div>
                 </div>
-                <AccessPanel />
+                <AccessPanel projectId={props.projectId} onToast={showToast} />
               </Show>
 
               <Show when={subview() === "qa"}>
@@ -782,7 +943,7 @@ export function FabricaConsole(props: {
                     <h1>Completion Guard & QA</h1>
                   </div>
                 </div>
-                <QaPanel />
+                <QaPanel projectId={props.projectId} onToast={showToast} />
               </Show>
 
               <Show when={subview() === "security"}>
@@ -828,7 +989,12 @@ export function FabricaConsole(props: {
                     <p>Progresso real das stages.</p>
                   </div>
                 </div>
-                <RoadmapPanel stages={stages()} templateCode={factory.run()?.template_code} />
+                <RoadmapPanel
+                  projectId={props.projectId}
+                  stages={stages()}
+                  templateCode={factory.run()?.template_code}
+                  onRedoStage={(id) => openGateRedo(id)}
+                />
               </Show>
             </section>
 
@@ -875,7 +1041,13 @@ export function FabricaConsole(props: {
 
         <section class={`fc-screen ${view() === "chat" ? "is-active" : ""}`} aria-label="Chat do projeto">
           <div class="fc-chat2-wrap">
-            <ChatPanel projectName={props.projectName} stages={stages()} onToast={showToast} />
+            <ChatPanel
+              projectId={props.projectId}
+              projectName={props.projectName}
+              stages={stages()}
+              currentAgent={factory.currentStage()?.agent}
+              onToast={showToast}
+            />
           </div>
         </section>
       </main>
@@ -883,6 +1055,40 @@ export function FabricaConsole(props: {
       <div class={`fc-toast ${toast() ? "show" : ""}`} role="status">
         {toast()}
       </div>
+      <RedoDialog
+        open={redoMode() !== null}
+        mode={redoMode() === "project" ? "project" : "gate"}
+        busy={factory.busy()}
+        model={String(factory.run()?.meta?.model || "claude-opus-5-5")}
+        effort={String(factory.run()?.meta?.effort || "xhigh")}
+        onClose={() => setRedoMode(null)}
+        onSubmit={async (body) => {
+          const mode = redoMode();
+          try {
+            if (mode === "project") {
+              await factory.restartRun(body);
+              showToast("Esteira reiniciada no Gate 0. A execução automática só segue depois que você autorizar.");
+            } else {
+              const id = redoStageId() || factory.currentStage()?.stage_def_id;
+              if (!id) {
+                showToast("Selecione um gate para refazer.");
+              } else {
+                await factory.redoGate(id, body);
+                showToast("Entrega reaberta. Os arquivos serão reescritos na próxima execução.");
+                if (autoOn()) void pumpAuto();
+              }
+            }
+            setRedoMode(null);
+          } catch {
+            showToast(factory.error() || "Não foi possível refazer");
+          }
+        }}
+      />
+      <ProjectAiDialog
+        projectId={settingsOpen() ? props.projectId : null}
+        projectName={props.projectName}
+        onClose={() => setSettingsOpen(false)}
+      />
     </div>
   );
 }

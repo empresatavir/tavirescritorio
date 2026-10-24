@@ -7,11 +7,26 @@ from app.modules.factory.esteiras import ESTEIRAS, resolve_template_code
 
 @pytest.mark.asyncio
 async def test_esteira_definitions_counts():
-    assert len(ESTEIRAS["lp-c"]["stages"]) == 10
+    assert len(ESTEIRAS["lp-c"]["stages"]) == 12
     assert len(ESTEIRAS["lp-m"]["stages"]) == 8
-    assert len(ESTEIRAS["of-c"]["stages"]) == 10
-    assert len(ESTEIRAS["sy-c"]["stages"]) == 12
-    assert len(ESTEIRAS["sy-m"]["stages"]) == 8
+    assert len(ESTEIRAS["of-c"]["stages"]) == 12
+    assert len(ESTEIRAS["sy-c"]["stages"]) == 13
+    assert len(ESTEIRAS["sy-m"]["stages"]) == 10
+    sy_m = {s["id"]: s for s in ESTEIRAS["sy-m"]["stages"]}
+    assert sy_m["m_code_be"]["agent"] == "Diego Sistemas"
+    assert sy_m["m_code_fe"]["agent"] == "Dev Frontend"
+    assert sy_m["m_qa_be"]["agent"] == "Tester Automatizado"
+    assert sy_m["m_qa_fe"]["agent"] == "Validador Visual"
+    sy_c = {s["id"]: s for s in ESTEIRAS["sy-c"]["stages"]}
+    assert sy_c["build_be"]["agent"] == "Diego Sistemas"
+    assert sy_c["build_fe"]["agent"] == "Dev Frontend"
+    assert sy_c["qa_be"]["agent"] == "Tester Automatizado"
+    assert sy_c["qa_fe"]["agent"] == "Validador Visual"
+    assert ESTEIRAS["lp-c"]["stages"][7]["agent"] == "Dev Frontend"
+    # Ordem canônica: Dora → Marina/Yuri → Ari → Paula → plan_gate
+    ids = [s["id"] for s in ESTEIRAS["lp-c"]["stages"][:5]]
+    assert ids == ["brief", "requirements", "architecture", "paula_plan", "plan_gate"]
+    assert ESTEIRAS["lp-c"]["stages"][3]["agent"] == "Paula PM"
     assert resolve_template_code("lp", "zero") == "lp-c"
     assert resolve_template_code("lp", "pronto") == "lp-m"
     assert resolve_template_code("sy", "zero") == "sy-c"
@@ -39,7 +54,7 @@ async def test_create_project_materializes_run_and_workspace():
         assert create.status_code == 201, create.text
         proj = create.json()
         assert proj["template_code"] == "lp-c"
-        assert proj["total_stages"] == 10
+        assert proj["total_stages"] == 12
         assert proj["local_path"]
         assert "tavir-interno" in proj["local_path"].replace("/", "\\")
 
@@ -47,8 +62,10 @@ async def test_create_project_materializes_run_and_workspace():
         assert run_resp.status_code == 200, run_resp.text
         run = run_resp.json()
         assert run["template_code"] == "lp-c"
-        assert len(run["stages"]) == 10
+        assert len(run["stages"]) == 12
         assert run["current_stage_id"] == "brief"
+        assert run["meta"].get("model") == "claude-opus-5-5"
+        assert run["meta"].get("effort") == "xhigh"
         first = run["stages"][0]
         assert first["stage_def_id"] == "brief"
         assert first["is_gate"] is True

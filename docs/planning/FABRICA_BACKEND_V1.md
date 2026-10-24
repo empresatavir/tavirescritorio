@@ -1,6 +1,8 @@
 # Fábrica Backend V1 — Documento vivo
 
-**Status:** decisões fechadas (2026-10-20) · ownership OK · B0–B2 OK · **console Overview ligado a B1/B2** · próxima: **B3** (pendências/resume) ou **B4** artefatos  
+**Status:** decisões fechadas (2026-10-20) · ownership OK · **B0–B9 entregues** · console ligado a run/artefatos/QA/chat/acessos  
+
+
 **Supersede parcial:** `planFabricaTavir.md` permanece como referência de **UI/console** (topologia · livro-razão · workspace). Para backend e esteira real, este documento prevalece.  
 **Base técnica:** `FABRICA_CONSOLE_BACKEND.md` (contratos REST/SSE a evoluir).
 
@@ -37,20 +39,33 @@ A Fábrica deve levar um projeto **do cadastro até a etapa final**, com:
 
 Pesquisa de mercado (brief → design/copy → build → QA → handoff) + agentes TAVIR. LP não precisa de 16 nós.
 
-### 3.1 LP / Oferta — criação (`track=zero`) — **10 etapas**
+### 3.0 Ordem canônica de criação (fechada)
+
+1. **Dora Descoberta** — Gate 0 / briefing  
+2. **Marina + Yuri** — requisitos  
+3. **Ari Arquiteto** — arquitetura  
+4. **Paula PM** — plano + **roadmap** + **kanban** (`plan.md`, `roadmap.md`, `kanban.md`)  
+5. **CEO local** — `plan_gate`  
+6. Demais agentes da esteira (Enzo → Diego → Talita → …)
+
+**Modelo / esforço (v1, até Paula redefinir):** todos os agentes iniciais usam **Opus** (`claude-opus-5-5`) e esforço **máximo** (`xhigh`), gravados em `run.meta.model` / `run.meta.effort`.
+
+### 3.1 LP / Oferta — criação (`track=zero`)
 
 | # | id | Título | Agente | Gate? |
 |---|-----|--------|--------|-------|
-| 01 | `brief` | Gate 0 · Briefing / demanda | Dora Descoberta | sim (humano) |
+| 01 | `brief` | Gate 0 · Briefing / demanda | Dora Descoberta | sim |
 | 02 | `requirements` | Requisitos verificáveis | Marina + Yuri | não |
-| 03 | `req_gate` | Aprovação dos requisitos | CEO local | sim |
-| 04 | `visual_proof` | Prova visual · tokens / esqueleto | Enzo Extrator | não |
-| 05 | `visual_gate` | Aprovação da prova visual | CEO local | sim |
-| 06 | `build` | Construção da página | Diego Desenvolvedor | não |
-| 07 | `qa` | QA local + evidências | Talita QA | sim |
-| 08 | `seo_sec` | SEO básico + Security/LGPD | Nina + Sérgio | não |
-| 09 | `docs` | Documentação & runbook | Dante Doc | não |
-| 10 | `final_gate` | Gate Final · Completion Guard | CEO local | sim |
+| 03 | `architecture` | Arquitetura e escopo técnico | Ari Arquiteto | não |
+| 04 | `paula_plan` | Planejamento · roadmap e kanban | Paula PM | não |
+| 05 | `plan_gate` | Aprovação do plano (CEO) | CEO local | sim |
+| 06 | `visual_proof` | Prova visual · tokens / esqueleto | Enzo Extrator | não |
+| 07 | `visual_gate` | Aprovação da prova visual | CEO local | sim |
+| 08 | `build` | Construção da página | Diego Desenvolvedor | não |
+| 09 | `qa` | QA local + evidências | Talita QA | não |
+| 10 | `seo_sec` | SEO básico + Security/LGPD | Nina + Sérgio | não |
+| 11 | `docs` | Documentação & runbook | Dante Doc | não |
+| 12 | `final_gate` | Gate Final · Completion Guard | CEO local | sim |
 
 ### 3.2 LP / Oferta — manutenção (`track=pronto`) — **8 etapas**
 
@@ -67,7 +82,7 @@ Pesquisa de mercado (brief → design/copy → build → QA → handoff) + agent
 
 ### 3.3 Sistemas — criação
 
-Mesmo motor; **12 etapas** (inclui Arquitetura condicional + Backend/Frontend). Detalhe na Fase B0 (seed JSON).
+Mesma ordem canônica (Dora → Marina/Yuri → Ari → Paula → plan_gate), depois visual/build BE/FE/QA/docs/final_gate.
 
 ### 3.4 Topologia do console (9 nós)
 
@@ -127,13 +142,13 @@ Critério de “etapa build concluída”:
 | **B0** | Esteiras canônicas + `factory_runs` / `factory_stages` + create materializa run | **Feito** |
 | **B1** | Authorize / complete / fail + ledger + sync `stages_done` | **Feito** |
 | **B2** | SSE `stage.changed` / `event.appended` (+ snapshot) | **Feito** |
-| **B3** | Gates CEO local (UI + resume pós-fail) | Próxima |
-| **B4** | Artefatos / arquivos | — |
-| **B5** | QA / Completion Guard | — |
-| **B6** | Roadmap = projeção das stages | — |
-| **B7** | Executor real (GhostCLI + filesystem) | — |
-| **B8** | Chat por projeto + personas | — |
-| **B9** | Acessos (metadados + reveal auditado) | — |
+| **B3** | Gates CEO local (UI + resume pós-fail) | **Feito** |
+| **B4** | Artefatos / arquivos | **Feito** |
+| **B5** | QA / Completion Guard | **Feito** |
+| **B6** | Roadmap = projeção das stages | **Feito** |
+| **B7** | Executor real (GhostCLI + filesystem) | **Feito** |
+| **B8** | Chat por projeto + personas | **Feito** |
+| **B9** | Acessos (metadados + reveal auditado) | **Feito** |
 
 ---
 
@@ -205,9 +220,50 @@ Console da Fábrica consome o run real:
 1. `api.getFactoryRun` / `authorizeFactoryStage` / `completeFactoryStage` / `getFactoryLedger`
 2. Controller Solid `createFactoryRunController` + SSE (`useFactoryRun.ts`)
 3. `OverviewPanel` + `FabricaConsole`: etapas, gate Autorizar, Concluir etapa, atividade ao vivo
-4. Fallback demo só quando não há run (projeto sem esteira)
+4. Sem dados demo — empty states quando não há run/artefatos
 
-## 13. Próximo passo sugerido
+## 13. Entrega B3 (feito)
 
-**B3:** pendências/resume pós-fail + gates restantes no hero/topologia.  
-Ou **B4:** artefatos reais no workspace.
+| Método | Path | Efeito |
+|--------|------|--------|
+| POST | `.../stages/{id}/resume` | `failed` → `running`/`awaiting_gate`; run `paused` → `running` |
+| POST | `.../run/resume` | Retoma etapa atual do run pausado |
+| POST | `.../run/pause` | Pausa suave (sem falhar etapa) |
+
+Pendências derivadas em `serialize_run.pendencies` + sync em `project.pendencies` (gates `auth` + falhas `error`).
+
+UI: Overview (Autorizar / Retomar / Marcar falha), Hero (Gate CEO / Falha + pause/resume API), Topologia (Retomar).
+
+## 14. Entrega B4 (feito)
+
+| Método | Path |
+|--------|------|
+| GET | `.../projects/{id}/artifacts` — lista + expected da etapa |
+| GET | `.../artifacts/content?path=` — leitura textual + sha256 |
+| PUT | `.../artifacts` — grava UTF-8 + ledger `written` |
+
+UI: `ArtifactsPanel` em Documentos / Arquivos.
+
+## 15. Entrega B5 (feito)
+
+`GET .../projects/{id}/qa` — Completion Guard (`qa_guard.evaluate_guard`) · UI `QaPanel`.
+
+## 16. Entrega B6 (feito)
+
+`GET .../projects/{id}/roadmap` — projeção das stages · UI `RoadmapPanel`.
+
+## 17. Entrega B7 (feito)
+
+`POST .../stages/{id}/execute` — materializa `expected_artifacts` no workspace, hash no ledger; GhostCLI opcional se no PATH. UI Overview: **Executar**.
+
+## 18. Entrega B8 (feito)
+
+`GET/POST .../projects/{id}/chat` — mensagens em `project.files.chat` isoladas por `project_id` + persona. UI `ChatPanel`.
+
+## 19. Entrega B9 (feito)
+
+`GET/PUT .../access` + `POST .../access/{key}/reveal` — metadados com máscara; reveal só audita ledger (sem plaintext). UI `AccessPanel`.
+
+## 20. Próximo passo sugerido
+
+Operação: GhostCLI real no execute (quando binário disponível) · endurecer complete exigindo artefatos · polish UX.

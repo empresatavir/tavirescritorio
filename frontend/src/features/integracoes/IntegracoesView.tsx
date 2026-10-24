@@ -2,6 +2,7 @@ import { createSignal, createMemo, createEffect, onCleanup, For, Show } from "so
 import { TvIcon } from "../../shared/components/TvIcon";
 import { showToast } from "../../state/store";
 import { api } from "../../shared/api/client";
+import "../fabrica/project-ai-dialog.css";
 
 interface IntegrationItem {
   id: string;
@@ -89,6 +90,19 @@ const INITIAL_INTEGRATIONS: IntegrationItem[] = [
     base: "https://api.openai.com/v1/chat/completions",
     auth: "API key (Bearer)",
     usedBy: "Início de job e Planejamento de Teste",
+  },
+  {
+    id: "cursor",
+    group: "ai",
+    name: "Cursor",
+    description: "Login da instalação local, como o Claude",
+    glyph: "bot",
+    connected: false,
+    category: "Motor de IA",
+    docs: "https://cursor.com/docs/cli/overview",
+    base: "Cursor Agent · instalação local",
+    auth: "Login local do Cursor",
+    usedBy: "Fábrica, Chat e Studio",
   },
   {
     id: "int-05",
@@ -205,6 +219,14 @@ interface ManagedService {
   has_log_errors: boolean;
 }
 
+function cursorCheck(status: { enabled: boolean; configured: boolean; local?: boolean; logged_in?: boolean }): string | undefined {
+  if (!status.enabled) return undefined;
+  if (status.logged_in) return "instalação local";
+  if (status.local) return "falta login local";
+  if (status.configured) return "chave de API";
+  return "CLI ausente";
+}
+
 export function IntegracoesView() {
   const [integrations, setIntegrations] = createSignal<IntegrationItem[]>(INITIAL_INTEGRATIONS);
   const [selectedIntId, setSelectedIntId] = createSignal<string | null>(null);
@@ -218,6 +240,34 @@ export function IntegracoesView() {
   const [logViewerServiceId, setLogViewerServiceId] = createSignal<string | null>(null);
   const [logLines, setLogLines] = createSignal<string[]>([]);
   const [logErrorsOnly, setLogErrorsOnly] = createSignal(false);
+  const [cursorLoginUrl, setCursorLoginUrl] = createSignal<string | null>(null);
+  const [cursorLoginBusy, setCursorLoginBusy] = createSignal(false);
+  let loginPoll: number | undefined;
+
+  const stopLoginPoll = () => {
+    if (loginPoll) {
+      clearInterval(loginPoll);
+      loginPoll = undefined;
+    }
+  };
+  onCleanup(stopLoginPoll);
+
+  const refreshCursor = async () => {
+    const status = await api.getCursorIntegration();
+    setIntegrations((prev) =>
+      prev.map((item) =>
+        item.id === "cursor"
+          ? {
+              ...item,
+              connected: status.enabled,
+              check: cursorCheck(status),
+            }
+          : item,
+      ),
+    );
+    if (status.login_url) setCursorLoginUrl(status.login_url);
+    return status;
+  };
 
   const fetchServicesStatus = async () => {
     try {
@@ -270,7 +320,29 @@ export function IntegracoesView() {
     return integrations().find((i) => i.id === id) || null;
   });
 
-  const handleToggle = (id: string) => {
+  const handleToggle = async (id: string) => {
+    if (id === "cursor") {
+      const current = integrations().find((item) => item.id === "cursor");
+      const next = !current?.connected;
+      try {
+        const status = await api.setCursorIntegration(next);
+        setIntegrations((prev) =>
+          prev.map((item) =>
+            item.id === "cursor"
+              ? {
+                  ...item,
+                  connected: status.enabled,
+                  check: cursorCheck(status),
+                }
+              : item,
+          ),
+        );
+        showToast(status.enabled ? "Cursor ligado" : "Cursor desligado", "Integração", status.enabled ? "success" : "info");
+      } catch (err) {
+        showToast(err instanceof Error ? err.message : "Não foi possível mudar o Cursor", "Integração", "error");
+      }
+      return;
+    }
     setIntegrations((prev) =>
       prev.map((i) => {
         if (i.id === id) {
@@ -285,6 +357,51 @@ export function IntegracoesView() {
         return i;
       })
     );
+  };
+
+  createEffect(() => {
+    void refreshCursor().catch(() => {});
+  });
+
+  const handleCursorLogin = async () => {
+    setCursorLoginBusy(true);
+    try {
+      const data = await api.startCursorLogin();
+      if (data.logged_in) {
+        await refreshCursor();
+        setCursorLoginUrl(null);
+        showToast("Cursor já autenticado nesta máquina", "Integração", "success");
+        return;
+      }
+      if (data.url) {
+        setCursorLoginUrl(data.url);
+        window.open(data.url, "_blank", "noopener,noreferrer");
+      } else if (data.error) {
+        showToast(data.error, "Cursor", "error");
+        return;
+      }
+      stopLoginPoll();
+      const started = Date.now();
+      loginPoll = window.setInterval(() => {
+        void refreshCursor()
+          .then((status) => {
+            if (status.logged_in) {
+              stopLoginPoll();
+              setCursorLoginUrl(null);
+              setCursorLoginBusy(false);
+              showToast("Login do Cursor concluído", "Integração", "success");
+            } else if (Date.now() - started > 180000) {
+              stopLoginPoll();
+              setCursorLoginBusy(false);
+            }
+          })
+          .catch(() => {});
+      }, 2000);
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Não foi possível abrir o login do Cursor", "Cursor", "error");
+    } finally {
+      if (!loginPoll) setCursorLoginBusy(false);
+    }
   };
 
   const handleHealthCheck = async () => {
@@ -488,26 +605,80 @@ export function IntegracoesView() {
 
                             <span style={{ flex: "1" }}></span>
 
-                            <Show when={item.group !== "local"}>
+                            <Show when={item.id === "cursor" && item.check === "falta login local"}>
                               <button
                                 type="button"
-                                onClick={() => handleToggle(item.id)}
+                                onClick={() => void handleCursorLogin()}
                                 style={{
                                   height: "28px",
                                   padding: "0 12px",
                                   "border-radius": "999px",
                                   cursor: "pointer",
                                   "font-size": "12px",
-                                  "font-weight": "500",
-                                  border: isConnected() ? "1px solid rgba(244,246,242,.16)" : "none",
-                                  background: isConnected() ? "transparent" : "var(--lime, #B7F34A)",
-                                  color: isConnected() ? "var(--ember, oklch(.635 .185 27))" : "var(--ink-panel, #25360a)",
+                                  "font-weight": "600",
+                                  border: "none",
+                                  background: "var(--lime, #B7F34A)",
+                                  color: "var(--ink-panel, #25360a)",
                                 }}
                               >
-                                {isConnected() ? "Desconectar" : "Conectar"}
+                                {cursorLoginBusy() ? "Aguardando login" : "Entrar"}
+                              </button>
+                            </Show>
+
+                            <Show
+                              when={item.id === "cursor"}
+                              fallback={
+                                <Show when={item.group !== "local"}>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggle(item.id)}
+                                    style={{
+                                      height: "28px",
+                                      padding: "0 12px",
+                                      "border-radius": "999px",
+                                      cursor: "pointer",
+                                      "font-size": "12px",
+                                      "font-weight": "500",
+                                      border: isConnected() ? "1px solid rgba(244,246,242,.16)" : "none",
+                                      background: isConnected() ? "transparent" : "var(--lime, #B7F34A)",
+                                      color: isConnected() ? "var(--ember, oklch(.635 .185 27))" : "var(--ink-panel, #25360a)",
+                                    }}
+                                  >
+                                    {isConnected() ? "Desconectar" : "Conectar"}
+                                  </button>
+                                </Show>
+                              }
+                            >
+                              <button
+                                type="button"
+                                class={`int-switch ${isConnected() ? "is-on" : ""}`}
+                                role="switch"
+                                aria-checked={isConnected()}
+                                aria-label={isConnected() ? "Desligar Cursor" : "Ligar Cursor"}
+                                onClick={() => void handleToggle(item.id)}
+                              >
+                                <span />
                               </button>
                             </Show>
                           </div>
+                          <Show when={item.id === "cursor" && cursorLoginUrl()}>
+                            <a
+                              href={cursorLoginUrl()!}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                color: "var(--lime, #B7F34A)",
+                                "font-size": "12px",
+                                "font-weight": "600",
+                                "overflow-wrap": "anywhere",
+                              }}
+                            >
+                              Abrir login do Cursor
+                            </a>
+                            <span style={{ "font-size": "12px", color: "var(--text-secondary, #cbd3de)", "line-height": "1.4" }}>
+                              Autorize esta máquina no navegador. O cartão muda para instalação local quando o login terminar.
+                            </span>
+                          </Show>
                         </div>
                       );
                     }}

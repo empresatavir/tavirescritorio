@@ -8,7 +8,16 @@ from app.models.persona import Persona
 from app.models.profile import Profile
 from app.models.piece import Piece
 from app.modules.factory.repository import TemplateRepository
-from app.modules.studio.repository import ProfileRepository, PieceRepository
+from app.modules.studio.repository import ProfileRepository, PieceRepository, DecisionRepository
+from app.modules.studio.oracle_service import OracleService, _fallback_options
+from app.modules.studio.production_service import (
+    ProductionService,
+    fallback_ads,
+    fallback_carousel,
+    fallback_yt_script,
+    resolve_squad_id,
+)
+from app.models.studio_decision import StudioDecision
 
 
 @pytest.fixture
@@ -124,3 +133,83 @@ async def test_studio_repository_flow(session):
     assert published.stage == "done"
     assert published.status == "published"
     assert published.published_at is not None
+
+
+@pytest.mark.asyncio
+async def test_oracle_fallback_creates_decision(session):
+    profiles = ProfileRepository(session)
+    profile = await profiles.get_by_id("pf-test")
+    assert profile is not None
+
+    opts = _fallback_options(profile, "Tema de teste", "ig")
+    assert len(opts) == 3
+    assert opts[0]["style"] == "CONTRARIAN"
+
+    oracle = OracleService(session)
+    decision = await oracle.run(profile, net="ig", theme="Tema de teste")
+    await session.commit()
+    assert decision.kind == "pauta"
+    assert decision.status == "pending"
+    assert len(decision.options) == 3
+    assert decision.run_id.startswith("TVR-")
+
+    dec_repo = DecisionRepository(session)
+    listed = await dec_repo.list_all(profile_id="pf-test", status="pending")
+    assert any(d.id == decision.id for d in listed)
+
+
+def test_resolve_squad_and_fallbacks():
+    assert resolve_squad_id(None, "yt") == "yt-roteirista"
+    assert resolve_squad_id(None, "ig") == "ig-studio"
+    assert resolve_squad_id("ads", "ig") == "ads"
+    assert resolve_squad_id("Instagram Studio", "ig") == "ig-studio"
+
+
+@pytest.mark.asyncio
+async def test_production_fallback_creates_review(session):
+    profiles = ProfileRepository(session)
+    pieces = PieceRepository(session)
+    profile = await profiles.get_by_id("pf-test")
+    assert profile is not None
+
+    car = fallback_carousel(profile, {"title": "Tese X", "hook": "Hook", "angle": "Ângulo", "style": "PRÁTICO"})
+    assert car["kind"] == "carousel"
+    assert len(car["slides"]) >= 5
+
+    yt = fallback_yt_script(profile, {"title": "Ep YT", "hook": "H", "angle": "A", "style": "BASTIDORES"})
+    assert yt["kind"] == "yt_script"
+    assert "HOOK" in yt["script"]
+
+    ads = fallback_ads(profile, {"title": "Ads", "hook": "H", "angle": "A", "style": "CONTRARIAN"})
+    assert ads["kind"] == "ads"
+    assert len(ads["slides"]) == 3
+
+    piece = Piece(
+        id="pc-prod-1",
+        num="ST-099",
+        profile_id="pf-test",
+        title="Peça em produção",
+        net="ig",
+        content_type="post",
+        stage="prod",
+        needs=False,
+    )
+    await pieces.create(piece)
+
+    production = ProductionService(session)
+    updated, review = await production.produce(
+        piece,
+        profile,
+        option={"title": "Tese X", "hook": "Hook", "angle": "Ângulo", "style": "PRÁTICO"},
+        squad_id="ig-studio",
+        create_review=True,
+    )
+    await session.commit()
+    assert updated.stage == "review"
+    assert updated.slides and len(updated.slides) >= 5
+    assert updated.caption
+    assert updated.cta
+    assert review is not None
+    assert review.kind == "revisao"
+    assert review.status == "pending"
+    assert review.piece_id == updated.id
