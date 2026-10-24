@@ -113,7 +113,9 @@ export function OraclePanel(props: {
         <div class="stu-card-head">
           <div>
             <h2 class="stu-card-title">Instruções editoriais</h2>
-            <p class="stu-muted-line">Contexto aplicado em toda pauta deste perfil.</p>
+            <p class="stu-muted-line">
+              Contexto aplicado em toda pauta deste perfil.
+            </p>
           </div>
           <button type="button" class="stu-btn-sm" onClick={() => setEditOpen(true)}>
             Editar instruções

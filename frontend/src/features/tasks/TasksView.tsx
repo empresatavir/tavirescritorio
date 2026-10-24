@@ -102,15 +102,16 @@ export function TasksView() {
   const [artActive, setArtActive] = createSignal("");
   const [artLoading, setArtLoading] = createSignal(false);
 
+  // Poll leve: sync só atualiza signals se o conteúdo mudou (sem flicker).
   createEffect(() => {
-    syncApprovals().then(() => syncTasks());
-    syncLiveJobs();
-    syncCockpit();
+    void syncApprovals().then(() => syncTasks());
+    void syncLiveJobs();
+    void syncCockpit();
     const timer = setInterval(() => {
-      syncApprovals().then(() => syncTasks());
-      syncLiveJobs();
-      syncCockpit();
-    }, 3000);
+      void syncApprovals().then(() => syncTasks());
+      void syncLiveJobs();
+      void syncCockpit();
+    }, 4000);
     onCleanup(() => clearInterval(timer));
   });
 
@@ -140,10 +141,10 @@ export function TasksView() {
 
   const selectedTask = () => tasks().find((t) => t.id === selectedTaskId());
 
-  // Carrega artefatos/resultado ao abrir o drawer
+  // Artefatos só quando muda o id selecionado (não a cada poll de tasks)
   createEffect(() => {
-    const t = selectedTask();
-    if (!t) {
+    const id = selectedTaskId();
+    if (!id) {
       setTaskArts([]);
       setTaskArtJobId(null);
       setArtContent("");
@@ -154,7 +155,7 @@ export function TasksView() {
     setArtLoading(true);
     (async () => {
       try {
-        const bundle = await api.listTaskArtifacts(t.id);
+        const bundle = await api.listTaskArtifacts(id);
         if (cancelled) return;
         const list = bundle.artifacts || [];
         setTaskArts(list);
@@ -164,7 +165,7 @@ export function TasksView() {
           prefer.map((n) => list.find((a) => a.name === n)).find(Boolean)?.name || list[0]?.name || "";
         setArtActive(first);
         if (first) {
-          const body = await api.getTaskArtifactContent(t.id, first);
+          const body = await api.getTaskArtifactContent(id, first);
           if (cancelled) return;
           setArtContent(body.content + (body.truncated ? "\n\n… (truncado)" : ""));
         } else {
@@ -186,16 +187,14 @@ export function TasksView() {
 
   const openArtifact = async (name: string) => {
     const t = selectedTask();
-    if (!t) return;
+    if (!t || artActive() === name) return;
     setArtActive(name);
-    setArtLoading(true);
+    // Não zera o conteúdo nem dispara loading full-screen — evita “piscar” o drawer
     try {
       const body = await api.getTaskArtifactContent(t.id, name);
       setArtContent(body.content + (body.truncated ? "\n\n… (truncado)" : ""));
-    } catch (err) {
+    } catch {
       setArtContent(`Erro ao ler ${name}`);
-    } finally {
-      setArtLoading(false);
     }
   };
 
@@ -328,7 +327,7 @@ export function TasksView() {
         model_name: payload.modelName,
         effort: payload.effortLabel,
         origin: "planning",
-        command: `echo "[Paula PM · ${payload.modelName}] Plano Task #${payload.taskSeq} · esforço ${payload.effortLabel}"`,
+        command: `planning:#${payload.taskSeq}`,
         timeout: payload.effortLevel === 4 ? 120 : payload.effortLevel === 3 ? 90 : 60,
       });
 
@@ -363,8 +362,6 @@ export function TasksView() {
     try {
       const modelName = tagValue(task.tags, "model:") || "Fable";
       const effortLabel = tagValue(task.tags, "effort:") || "Máximo";
-      const safeTitle = task.title.replace(/"/g, "");
-
       const createdJob = await api.createJob({
         task_id: task.id,
         project_id: "tavir-core",
@@ -372,7 +369,7 @@ export function TasksView() {
         model_name: modelName,
         effort: effortLabel,
         origin: "execution",
-        command: `echo "[Paula PM] Executando plano Task #${task.seq}: ${safeTitle} (${modelName} · ${effortLabel})"`,
+        command: `execution:#${task.seq}`,
         timeout: 180,
       });
 
@@ -1004,9 +1001,10 @@ export function TasksView() {
         </For>
       </div>
 
-      {/* Drawer */}
-      <Show when={selectedTask()}>
-        {(t) => {
+      {/* Drawer — keyed por id estável (não pelo objeto da task) p/ não remountar no poll */}
+      <Show when={selectedTaskId()}>
+        {(tid) => {
+          const t = () => tasks().find((x) => x.id === tid())!;
           const prio = () => priorityMeta(t().priority);
           const cta = () => primaryCta(t());
 
@@ -1893,7 +1891,7 @@ export function TasksView() {
                             background: "#070c16",
                           }}
                         >
-                          {artLoading() ? "Carregando…" : artContent() || "Sem conteúdo neste arquivo."}
+                          {artContent() || (artLoading() ? "Carregando…" : "Sem conteúdo neste arquivo.")}
                         </pre>
                       </div>
                     </div>

@@ -123,7 +123,7 @@ export function StudioWorkspace() {
     <Show
       when={!loading()}
       fallback={
-        <div class="stu-empty" style={{ height: "100%", border: "none" }}>
+        <div class="stu-empty is-fullpage">
           <h2>Abrindo workspace…</h2>
         </div>
       }
@@ -131,7 +131,7 @@ export function StudioWorkspace() {
       <Show
         when={profile()}
         fallback={
-          <div class="stu-empty" style={{ height: "100%", border: "none" }}>
+          <div class="stu-empty is-fullpage">
             <h2>Perfil não encontrado</h2>
             <button type="button" class="stu-btn-lg" onClick={() => navigate("/studio")}>
               Voltar ao Painel do Studio
@@ -187,7 +187,7 @@ export function StudioWorkspace() {
                 <div class="stu-ws-avatar" style={{ background: pf().color }}>
                   {pf().initials}
                 </div>
-                <div style={{ "min-width": 0 }}>
+                <div class="stu-ws-profile-meta">
                   <strong>
                     {pf().handle} · {pf().niche}
                   </strong>
@@ -249,15 +249,13 @@ export function StudioWorkspace() {
                   </article>
                   <article class="stu-dash-tile">
                     <span>Tom de voz</span>
-                    <strong style={{ "font-size": "14px", "line-height": "1.3" }}>
-                      {pf().designSystem.toneOfVoice}
-                    </strong>
+                    <strong class="stu-tone-tile">{pf().designSystem.toneOfVoice}</strong>
                     <em>{pf().niche}</em>
                   </article>
                 </div>
                 <div class="stu-card">
                   <div class="stu-card-head">
-                    <h2 style={{ margin: 0, "font-size": "16px" }}>Redes do perfil</h2>
+                    <h2 class="stu-card-title">Redes do perfil</h2>
                   </div>
                   <div class="stu-net-stats">
                     <For each={pf().nets}>
@@ -282,7 +280,7 @@ export function StudioWorkspace() {
                 </div>
                 <div class="stu-card">
                   <div class="stu-card-head">
-                    <h2 style={{ margin: 0, "font-size": "16px" }}>Design system</h2>
+                    <h2 class="stu-card-title">Design system</h2>
                   </div>
                   <div class="stu-ds-card">
                     <div class="stu-swatches">
@@ -290,22 +288,19 @@ export function StudioWorkspace() {
                       <div class="stu-swatch" style={{ background: pf().designSystem.secondary }} />
                       <div class="stu-swatch" style={{ background: pf().designSystem.accent }} />
                     </div>
-                    <div style={{ "font-size": "13px", "line-height": "1.55", color: "var(--text-secondary)" }}>
-                      <p style={{ margin: "0 0 8px" }}>
-                        <strong style={{ color: "var(--text-primary)" }}>Tipografia:</strong>{" "}
-                        {pf().designSystem.fontDisplay} · {pf().designSystem.fontBody}
+                    <div class="stu-ds-copy">
+                      <p>
+                        <strong>Tipografia:</strong> {pf().designSystem.fontDisplay} ·{" "}
+                        {pf().designSystem.fontBody}
                       </p>
-                      <p style={{ margin: "0 0 8px" }}>
-                        <strong style={{ color: "var(--text-primary)" }}>Fazer:</strong>{" "}
-                        {pf().designSystem.doList}
+                      <p>
+                        <strong>Fazer:</strong> {pf().designSystem.doList}
                       </p>
-                      <p style={{ margin: "0 0 8px" }}>
-                        <strong style={{ color: "var(--text-primary)" }}>Evitar:</strong>{" "}
-                        {pf().designSystem.dontList}
+                      <p>
+                        <strong>Evitar:</strong> {pf().designSystem.dontList}
                       </p>
-                      <p style={{ margin: 0 }}>
-                        <strong style={{ color: "var(--text-primary)" }}>Visual:</strong>{" "}
-                        {pf().designSystem.visualNotes}
+                      <p>
+                        <strong>Visual:</strong> {pf().designSystem.visualNotes}
                       </p>
                     </div>
                   </div>
@@ -370,8 +365,8 @@ export function StudioWorkspace() {
                             <span class="stu-run-meta">
                               RUN #{dec.runId} · {dec.ago}
                             </span>
-                            <h2 style={{ margin: "10px 0 0", "font-size": "18px" }}>{dec.title}</h2>
-                            <p style={{ margin: "6px 0 0", "font-size": "12px", color: "var(--text-muted)" }}>
+                            <h2 class="stu-card-title is-lg">{dec.title}</h2>
+                            <p class="stu-muted-line">
                               {dec.subtitle}
                             </p>
                           </div>
@@ -478,7 +473,7 @@ export function StudioWorkspace() {
                               <span class="stu-run-meta">
                                 RUN #{dec.runId} · {dec.platformLabel || dec.ago}
                               </span>
-                              <h2 style={{ margin: "10px 0 0", "font-size": "18px" }}>{dec.title}</h2>
+                              <h2 class="stu-card-title is-lg">{dec.title}</h2>
                             </div>
                           </div>
                           <div class="stu-review">
@@ -546,10 +541,7 @@ export function StudioWorkspace() {
                                 <li>CTA alinhado à meta do ciclo</li>
                                 <li>Prévia conferida em celular</li>
                               </ul>
-                              <div
-                                class="stu-card-actions"
-                                style={{ "border-top": "none", "padding-top": 0, "margin-top": "8px" }}
-                              >
+                              <div class="stu-card-actions is-flush">
                                 <button
                                   type="button"
                                   class="stu-btn-sm"

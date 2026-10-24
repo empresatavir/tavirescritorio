@@ -57,7 +57,9 @@ export const EvidenceViewerModal: Component<EvidenceViewerModalProps> = (props) 
         setArtifacts(sorted);
         if (sorted.length === 0) {
           setActiveName("");
-          setContent("Nenhum artefato encontrado neste job.\n\nQuando a execução terminar, aparecem aqui: execucao.md, output.txt e plano.md.");
+          setContent(
+            "Nenhum artefato encontrado neste job.\n\nQuando a execução terminar, aparecem aqui: execucao.md, output.txt e plano.md."
+          );
           return;
         }
         const first = sorted[0].name;
@@ -98,92 +100,121 @@ export const EvidenceViewerModal: Component<EvidenceViewerModalProps> = (props) 
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const jobShort = () => (props.jobId ? props.jobId.slice(0, 8) : "—");
+  const guardLabel = () =>
+    props.guardStatus === "blocked" ? "Bloqueado" : props.guardStatus === "pending" ? "Pendente" : "OK";
+
   return (
     <Show when={props.isOpen ?? true}>
       <div
         class="fixed inset-0 z-50 flex items-center justify-center p-4"
         style={{
-          background: "rgba(11, 18, 32, 0.85)",
+          background: "rgba(11, 18, 32, 0.8)",
           "backdrop-filter": "blur(8px)",
           "-webkit-backdrop-filter": "blur(8px)",
+          transition: "opacity 0.2s ease",
         }}
         onClick={(e) => {
           if (e.target === e.currentTarget && props.onClose) props.onClose();
         }}
       >
         <div
-          class="relative w-full max-w-[820px] max-h-[88vh] flex flex-col rounded-2xl overflow-hidden"
+          class="relative w-full max-w-[720px] max-h-[88vh] flex flex-col rounded-2xl overflow-hidden"
           style={{
-            background: "#0F172A",
+            background: "var(--surface-ink, #0F172A)",
             border: "1px solid rgba(255, 255, 255, 0.09)",
-            "box-shadow": "0 24px 64px rgba(0, 0, 0, 0.85)",
-            color: "#F4F6F2",
+            "box-shadow": "0 24px 64px rgba(0, 0, 0, 0.75)",
+            color: "var(--text-primary, #F4F6F2)",
           }}
         >
           <div
             class="absolute inset-x-0 top-0 h-[1px] pointer-events-none"
             style={{
-              background: "linear-gradient(90deg, transparent 0%, rgba(27, 197, 189, 0.6) 50%, transparent 100%)",
+              background:
+                "linear-gradient(90deg, transparent 0%, rgba(27, 197, 189, 0.5) 50%, transparent 100%)",
             }}
           />
 
+          {/* HEADER — padrão PlanTaskModal / CreateTaskModal */}
           <div
-            class="flex items-center justify-between px-6 py-4 shrink-0"
+            class="flex items-start justify-between px-6 pt-5 pb-4 shrink-0"
             style={{ "border-bottom": "1px solid rgba(255, 255, 255, 0.06)" }}
           >
-            <div class="flex items-center gap-3 min-w-0">
-              <span
-                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0"
-                style={{
-                  background: "rgba(27, 197, 189, 0.12)",
-                  border: "1px solid rgba(27, 197, 189, 0.3)",
-                  color: "var(--teal, #1BC5BD)",
-                }}
-              >
-                <TvIcon name="file-search" width="16" height="16" />
-              </span>
-              <div class="min-w-0">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <h2 class="text-sm font-semibold tracking-tight text-[#F4F6F2]">
-                    Resultado & Evidências
-                  </h2>
+            <div class="min-w-0">
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <h2 class="text-lg font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>
+                  Resultado & evidências
+                </h2>
+                <span
+                  class="inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 font-mono text-xs font-medium"
+                  style={{
+                    background: "rgba(27, 197, 189, 0.1)",
+                    border: "1px solid rgba(27, 197, 189, 0.25)",
+                    color: "#1BC5BD",
+                  }}
+                >
+                  Job {jobShort()}
+                </span>
+                <Show when={props.taskSeq}>
                   <span
-                    class="text-[10px] font-mono px-2 py-0.5 rounded-full font-medium"
+                    class="inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-medium"
                     style={{
-                      background:
-                        props.guardStatus === "blocked" ? "rgba(239, 68, 68, 0.15)" : "rgba(27, 197, 189, 0.15)",
-                      color: props.guardStatus === "blocked" ? "#f87171" : "var(--teal, #1BC5BD)",
-                      border:
-                        props.guardStatus === "blocked"
-                          ? "1px solid rgba(239, 68, 68, 0.3)"
-                          : "1px solid rgba(27, 197, 189, 0.3)",
+                      background: "rgba(255, 255, 255, 0.04)",
+                      border: "1px solid rgba(255, 255, 255, 0.08)",
+                      color: "var(--text-secondary)",
                     }}
                   >
-                    {props.guardStatus === "blocked" ? "Guard: Bloqueado" : "Guard: OK"}
+                    #{props.taskSeq}
                   </span>
-                </div>
-                <p class="text-xs text-[var(--text-secondary,#cbd3de)] mt-0.5 truncate">
-                  Job {props.jobId.slice(0, 8)}
-                  {props.taskSeq ? ` · Task #${props.taskSeq}` : ""}
-                  {props.taskTitle ? ` · ${props.taskTitle}` : ""}
-                </p>
+                </Show>
+                <span
+                  class="inline-flex items-center rounded-md px-2 py-0.5 font-mono text-[10px] font-medium uppercase"
+                  style={{
+                    background:
+                      props.guardStatus === "blocked"
+                        ? "oklch(.635 .185 27 / .14)"
+                        : "rgba(27, 197, 189, 0.12)",
+                    border:
+                      props.guardStatus === "blocked"
+                        ? "1px solid oklch(.635 .185 27 / .35)"
+                        : "1px solid rgba(27, 197, 189, 0.3)",
+                    color: props.guardStatus === "blocked" ? "oklch(.78 .16 27)" : "#1BC5BD",
+                  }}
+                >
+                  Guard {guardLabel()}
+                </span>
               </div>
+              <p class="mt-1 text-xs truncate" style={{ color: "var(--text-muted, rgba(244, 246, 242, 0.55))" }}>
+                {props.taskTitle || props.jobTitle || "Artefatos gerados no workspace do job"}
+              </p>
             </div>
 
             <button
               type="button"
-              aria-label="Fechar"
               onClick={() => props.onClose?.()}
-              class="text-[var(--text-muted,#aeb7c4)] hover:text-[#F4F6F2] transition-colors p-1.5 rounded-lg hover:bg-white/5 shrink-0"
+              style={{
+                background: "rgba(11, 18, 32, 0.7)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                color: "var(--text-muted)",
+                "border-radius": "9999px",
+                padding: "3px 10px",
+                "font-family": "var(--font-mono, monospace)",
+                "font-size": "11px",
+                cursor: "pointer",
+                outline: "none",
+                flex: "none",
+              }}
+              title="Fechar modal (Esc)"
             >
-              <TvIcon name="circle-x" width="18" height="18" />
+              Esc
             </button>
           </div>
 
+          {/* TABS DE ARTEFATOS */}
           <Show when={artifacts().length > 0}>
             <div
-              class="flex gap-1.5 px-4 py-2.5 overflow-x-auto shrink-0"
-              style={{ "border-bottom": "1px solid rgba(255,255,255,.06)", background: "#0a1220" }}
+              class="flex gap-1.5 px-6 py-3 overflow-x-auto shrink-0"
+              style={{ "border-bottom": "1px solid rgba(255, 255, 255, 0.06)" }}
             >
               <For each={artifacts()}>
                 {(a) => (
@@ -192,12 +223,12 @@ export const EvidenceViewerModal: Component<EvidenceViewerModalProps> = (props) 
                     onClick={() => selectArtifact(a.name)}
                     class="px-3 py-1.5 rounded-lg text-[11px] font-mono font-medium transition-colors shrink-0"
                     style={{
-                      background: activeName() === a.name ? "rgba(27,197,189,.18)" : "transparent",
-                      color: activeName() === a.name ? "var(--teal,#1BC5BD)" : "#aeb7c4",
+                      background: activeName() === a.name ? "rgba(27, 197, 189, 0.14)" : "transparent",
+                      color: activeName() === a.name ? "#1BC5BD" : "var(--text-secondary)",
                       border:
                         activeName() === a.name
-                          ? "1px solid rgba(27,197,189,.4)"
-                          : "1px solid transparent",
+                          ? "1px solid rgba(27, 197, 189, 0.4)"
+                          : "1px solid rgba(255, 255, 255, 0.08)",
                       cursor: "pointer",
                     }}
                   >
@@ -208,33 +239,59 @@ export const EvidenceViewerModal: Component<EvidenceViewerModalProps> = (props) 
             </div>
           </Show>
 
-          <div class="flex-1 overflow-y-auto p-6 bg-[#070c16] min-h-0">
+          {/* BODY */}
+          <div
+            class="flex-1 overflow-y-auto px-6 py-5 min-h-0"
+            style={{ background: "rgba(11, 18, 32, 0.55)" }}
+          >
             <Show when={loading()}>
-              <div class="text-xs text-[var(--text-muted)] font-mono mb-3">Carregando…</div>
+              <div class="text-xs font-mono mb-3" style={{ color: "var(--text-muted)" }}>
+                Carregando…
+              </div>
             </Show>
             <Show when={loadError()}>
-              <div class="text-xs text-[oklch(.7_.16_27)] mb-3">{loadError()}</div>
+              <div class="text-xs mb-3" style={{ color: "oklch(.7 .16 27)" }}>
+                {loadError()}
+              </div>
             </Show>
-            <pre
-              class="text-xs font-mono leading-relaxed text-[#cbd3de] whitespace-pre-wrap select-text m-0"
-              style={{ "font-family": "var(--font-mono, monospace)" }}
+            <div
+              class="rounded-xl p-4"
+              style={{
+                background: "rgba(11, 18, 32, 0.9)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+              }}
             >
-              {content()}
-            </pre>
+              <pre
+                class="text-xs font-mono leading-relaxed whitespace-pre-wrap select-text m-0"
+                style={{
+                  "font-family": "var(--font-mono, monospace)",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                {content()}
+              </pre>
+            </div>
           </div>
 
+          {/* FOOTER */}
           <div
-            class="flex items-center justify-between px-6 py-3.5 shrink-0 bg-[#0F172A] gap-3 flex-wrap"
+            class="flex items-center justify-between px-6 py-3.5 shrink-0 gap-3 flex-wrap"
             style={{ "border-top": "1px solid rgba(255, 255, 255, 0.06)" }}
           >
-            <div class="text-[11px] text-[var(--text-muted,#aeb7c4)]">
-              {activeName() || "sem arquivo"} · resultado da execução no workspace
+            <div class="text-[11px] font-mono" style={{ color: "var(--text-muted)" }}>
+              {activeName() || "sem arquivo"} · workspace do job
             </div>
             <div class="flex items-center gap-2">
               <button
                 type="button"
                 onClick={copyToClipboard}
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-[#F4F6F2] bg-white/10 hover:bg-white/15 transition-colors"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                style={{
+                  background: "rgba(255, 255, 255, 0.06)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                  color: "var(--text-primary)",
+                  cursor: "pointer",
+                }}
               >
                 <TvIcon name="bookmark" width="12" height="12" />
                 <span>{copied() ? "Copiado!" : "Copiar"}</span>
@@ -242,8 +299,13 @@ export const EvidenceViewerModal: Component<EvidenceViewerModalProps> = (props) 
               <button
                 type="button"
                 onClick={() => props.onClose?.()}
-                class="px-4 py-1.5 rounded-lg text-xs font-semibold text-[#0B1220] transition-opacity hover:opacity-90"
-                style={{ background: "var(--lime, #B7F34A)" }}
+                class="px-4 py-1.5 rounded-lg text-xs font-semibold transition-opacity hover:opacity-90"
+                style={{
+                  background: "var(--action-bg, var(--lime, #B7F34A))",
+                  color: "var(--action-fg, #0B1220)",
+                  border: "none",
+                  cursor: "pointer",
+                }}
               >
                 Fechar
               </button>

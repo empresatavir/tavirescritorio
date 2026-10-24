@@ -1,5 +1,6 @@
 import { createSignal, createEffect } from "solid-js";
 import { api, parseApiError } from "../shared/api/client";
+import { formatLocalTime } from "../shared/datetime";
 
 export interface NavItem {
   id: string;
@@ -438,7 +439,7 @@ export async function syncLiveJobs() {
 
         // Add execution timestamp to differentiate multiple runs of same task
         const execTime = bj.created_at
-          ? new Date(bj.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+          ? formatLocalTime(bj.created_at)
           : "";
         const jobTitle = taskTitle
           ? (taskSeq ? `Task #${taskSeq}: ${taskTitle} (${execTime})` : `${taskTitle} (${execTime})`)
@@ -580,12 +581,63 @@ function mapApiStatus(raw: string | null | undefined): UiTaskStatus {
   }
 }
 
-/** Full replace a partir do backend — evita cards fantasma de REAL_TASKS. */
+function sameStrArr(a?: string[], b?: string[]): boolean {
+  const aa = a || [];
+  const bb = b || [];
+  if (aa.length !== bb.length) return false;
+  for (let i = 0; i < aa.length; i++) if (aa[i] !== bb[i]) return false;
+  return true;
+}
+
+function taskVisualEqual(prev: UiTask, next: UiTask): boolean {
+  return (
+    prev.id === next.id &&
+    prev.seq === next.seq &&
+    prev.title === next.title &&
+    prev.status === next.status &&
+    prev.assignee === next.assignee &&
+    prev.priority === next.priority &&
+    prev.sector === next.sector &&
+    prev.escalation === next.escalation &&
+    prev.activeJobId === next.activeJobId &&
+    prev.description === next.description &&
+    prev.createdAt === next.createdAt &&
+    prev.awaitingApproval === next.awaitingApproval &&
+    prev.pendingHomologation === next.pendingHomologation &&
+    prev.pendingApprovalId === next.pendingApprovalId &&
+    sameStrArr(prev.tags, next.tags) &&
+    sameStrArr(prev.dependsOn, next.dependsOn) &&
+    sameStrArr(prev.handoffs, next.handoffs) &&
+    sameStrArr(prev.gates, next.gates)
+  );
+}
+
+function approvalVisualEqual(prev: UiApproval, next: UiApproval): boolean {
+  return (
+    prev.id === next.id &&
+    prev.title === next.title &&
+    prev.agentId === next.agentId &&
+    prev.agentName === next.agentName &&
+    prev.type === next.type &&
+    prev.status === next.status &&
+    prev.requestedAt === next.requestedAt &&
+    prev.description === next.description &&
+    prev.impact === next.impact &&
+    prev.taskId === next.taskId &&
+    prev.reason === next.reason &&
+    prev.onApproveText === next.onApproveText &&
+    prev.onRejectText === next.onRejectText
+  );
+}
+
+/** Full replace a partir do backend — reusa referências quando nada mudou (evita flicker). */
 export async function syncTasks() {
   try {
     const backendTasks = await api.listTasks();
     const curAgents = agents();
     const pendingAps = approvals().filter((a) => a.status === "pending" && a.taskId);
+    const prev = tasks();
+    const prevById = new Map(prev.map((t) => [t.id, t]));
 
     const mapped: UiTask[] = (backendTasks || []).map((t) => {
       const ag = curAgents.find((a) => a.id === t.assignee_agent_id);
@@ -606,7 +658,7 @@ export async function syncTasks() {
       // Vermelho em Em execução: gate humano mid-flight (Opção A)
       const awaitingApproval =
         Boolean(linkedAp) && (status === "in_progress" || status === "planning");
-      return {
+      const next: UiTask = {
         id: t.id,
         seq: t.seq || 0,
         title: t.title,
@@ -631,32 +683,36 @@ export async function syncTasks() {
         pendingHomologation: status === "done" && isAlteracao,
         pendingApprovalId: linkedAp?.id,
       };
+      const old = prevById.get(next.id);
+      return old && taskVisualEqual(old, next) ? old : next;
     });
 
-    setTasks(mapped);
+    const unchanged =
+      mapped.length === prev.length && mapped.every((t, i) => t === prev[i]);
+    if (!unchanged) setTasks(mapped);
   } catch (err) {
     console.warn("Could not sync tasks:", err);
   }
 }
 
-// Fetch live approvals from backend — always replace (inclui lista vazia)
+// Fetch live approvals — só notifica o signal se algo mudou
 export async function syncApprovals() {
   try {
     const backendApprovals = await api.listApprovals();
     const list = Array.isArray(backendApprovals) ? backendApprovals : [];
     const curAgents = agents();
+    const prev = approvals();
+    const prevById = new Map(prev.map((a) => [a.id, a]));
     const mappedApprovals: UiApproval[] = list.map((a) => {
       const ag = curAgents.find((ag) => ag.id === a.requester_agent_id);
-      return {
+      const next: UiApproval = {
         id: a.id,
         title: a.title || `Aprovação ${a.id}`,
         agentId: a.requester_agent_id || "ag-01",
         agentName: ag ? ag.name : "Agente",
         type: (a.type as any) || "authorization",
         status: (a.status as any) || "pending",
-        requestedAt: a.created_at
-          ? new Date(a.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
-          : "—",
+        requestedAt: formatLocalTime(a.created_at, { hour: "2-digit", minute: "2-digit" }),
         description: a.description || "",
         impact: (a.impact as any) || "medium",
         taskId: a.task_id || undefined,
@@ -664,8 +720,12 @@ export async function syncApprovals() {
         onApproveText: a.on_approve_text || undefined,
         onRejectText: a.on_reject_text || undefined,
       };
+      const old = prevById.get(next.id);
+      return old && approvalVisualEqual(old, next) ? old : next;
     });
-    setApprovals(mappedApprovals);
+    const unchanged =
+      mappedApprovals.length === prev.length && mappedApprovals.every((a, i) => a === prev[i]);
+    if (!unchanged) setApprovals(mappedApprovals);
   } catch (err) {
     console.warn("Could not sync approvals:", err);
   }
@@ -675,9 +735,15 @@ export async function syncApprovals() {
 export async function syncCockpit() {
   try {
     const summary = await api.getCockpitSummary();
-    if (summary) {
-      setCockpitData(summary);
+    if (!summary) return;
+    const prev = cockpitData();
+    if (
+      prev &&
+      JSON.stringify(prev) === JSON.stringify(summary)
+    ) {
+      return;
     }
+    setCockpitData(summary);
   } catch (err) {
     console.warn("Could not sync cockpit:", err);
   }
