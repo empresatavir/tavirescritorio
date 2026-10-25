@@ -52,7 +52,7 @@ async def test_factory_api_templates_and_projects():
                 "company": "Cliente Alfa",
                 "ownership": "externo",
                 "template_code": "sy-c",
-                "total_stages": 13,
+                "total_stages": 15,
                 "stack": "Next.js + FastAPI",
                 "scope_items": ["Autenticação", "Catálogo"],
             }
@@ -61,12 +61,12 @@ async def test_factory_api_templates_and_projects():
         created_p = create_resp.json()
         assert created_p["name"] == "Novo Portal B2B"
         assert created_p["template_code"] == "sy-c"
-        assert created_p["total_stages"] == 13
+        assert created_p["total_stages"] == 15
         assert created_p.get("local_path")
         run_resp = await client.get(f"/api/v1/factory/projects/{created_p['id']}/run")
         assert run_resp.status_code == 200
         body = run_resp.json()
-        assert len(body["stages"]) == 13
+        assert len(body["stages"]) == 15
         agents = {stage["stage_def_id"]: stage["agent"] for stage in body["stages"]}
         assert agents["build_be"] == "Diego Sistemas"
         assert agents["build_fe"] == "Dev Frontend"

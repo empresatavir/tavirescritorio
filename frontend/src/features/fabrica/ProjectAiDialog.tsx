@@ -5,7 +5,7 @@ import "./project-ai-dialog.css";
 
 type EffortOption = { id: string; label: string };
 type ModelOption = { id: string; label: string; efforts: EffortOption[] };
-type EngineOption = { id: string; label: string; models: ModelOption[] };
+type EngineOption = { id: string; label: string; enabled?: boolean; models: ModelOption[] };
 
 function preferredEffort(options: EffortOption[], current: string): string {
   if (options.some((item) => item.id === current)) return current;
@@ -25,7 +25,6 @@ export function ProjectAiDialog(props: {
   const [provider, setProvider] = createSignal("ghostcli");
   const [model, setModel] = createSignal("claude-opus-5-5");
   const [effort, setEffort] = createSignal("xhigh");
-  const [cursorOn, setCursorOn] = createSignal(false);
   const [engines, setEngines] = createSignal<EngineOption[]>([]);
   const [busy, setBusy] = createSignal(false);
   let providerEl: HTMLSelectElement | undefined;
@@ -46,7 +45,6 @@ export function ProjectAiDialog(props: {
         const list = data.engines || [];
         const savedEngine = list.find((item) => item.id === data.provider) || list[0];
         const savedModel = savedEngine?.models.find((item) => item.id === data.model) || savedEngine?.models[0];
-        setCursorOn(data.cursor_enabled);
         setEngines(list);
         setProvider(savedEngine?.id || "ghostcli");
         setModel(savedModel?.id || data.model);
@@ -117,14 +115,14 @@ export function ProjectAiDialog(props: {
               Motor de IA
               <select
                 ref={providerEl}
-                disabled={busy()}
+                disabled
                 onChange={(event) => chooseProvider(event.currentTarget.value)}
               >
                 <For each={engines()}>
                   {(item) => (
-                    <option value={item.id} disabled={item.id === "cursor" && !cursorOn()}>
+                    <option value={item.id} disabled={item.enabled === false}>
                       {item.label}
-                      {item.id === "cursor" && !cursorOn() ? " · ligue em Integrações" : ""}
+                      {item.enabled === false ? " · ligue em Integrações" : ""}
                     </option>
                   )}
                 </For>
@@ -159,8 +157,8 @@ export function ProjectAiDialog(props: {
           </Show>
           <p class="pai-note">
             {model() === "auto-smart"
-              ? "O próximo agente usa o Cursor no modelo Auto. Esta instalação não aplica Cost, Balance ou Intelligence."
-              : "O próximo agente deste projeto usa este motor, este modelo e este esforço."}
+              ? "O escritório usa o motor padrão. O modelo é Auto. Esta instalação não aplica Cost, Balance ou Intelligence."
+              : "O escritório usa o motor padrão definido em Integrações. Este projeto escolhe só o modelo e o esforço desse motor."}
           </p>
           <div class="pai-actions">
             <button type="button" onClick={() => props.onClose()}>

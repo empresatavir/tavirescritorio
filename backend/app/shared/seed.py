@@ -356,7 +356,7 @@ async def seed():
         # 8. Seed factory projects
         factory_projs = [
             ("fp-1", "lp-advocacia", "LP Nicho Advocacia", "Nicho Advocacia", "lp-c", 4, 10, "running", "github.com/empresatavir/lp-advocacia", "netlify · travada", "SolidJS + Tailwind + Vite", "Converter sócios de escritórios de advocacia", ["Headline + Hero", "Grid de dores e soluções", "Prova social e casos", "Formulário"]),
-            ("fp-2", "saas-gestao-contabil", "SaaS Gestão Contábil", "ContabHub", "sy-c", 2, 13, "paused", "github.com/empresatavir/contabhub-api", "railway · travada", "FastAPI + PostgreSQL + SolidJS", "Automatizar conciliação fiscal", ["Autenticação Gov.br", "Leitura XML NFe", "Cálculo DAS", "Dashboard"]),
+            ("fp-2", "saas-gestao-contabil", "SaaS Gestão Contábil", "ContabHub", "sy-c", 2, 15, "paused", "github.com/empresatavir/contabhub-api", "railway · travada", "FastAPI + PostgreSQL + SolidJS", "Automatizar conciliação fiscal", ["Autenticação Gov.br", "Leitura XML NFe", "Cálculo DAS", "Dashboard"]),
             ("fp-3", "mentoria-ia-executivos", "Oferta Mentoria IA Executivos", "TAVIR Educação", "of-c", 5, 10, "running", None, "hubspot · crm", "Documento Comercial + Funil", "Turma fechada para 15 CTOs", ["Ementa 8 encontros", "Modelo de precificação", "Contrato e SLA"]),
         ]
         for p_id, slug, name, comp, t_code, s_done, s_tot, status, repo, dep, stack, goal, scope in factory_projs:

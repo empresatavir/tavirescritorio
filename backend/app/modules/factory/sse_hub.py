@@ -23,6 +23,7 @@ class FactorySseHub:
 
     def __init__(self) -> None:
         self._subs: dict[str, list[asyncio.Queue]] = {}
+        self._progress: dict[str, list[dict[str, Any]]] = {}
         self._lock = asyncio.Lock()
 
     async def subscribe(self, run_id: str) -> asyncio.Queue:
@@ -39,9 +40,18 @@ class FactorySseHub:
             if not subs and run_id in self._subs:
                 del self._subs[run_id]
 
+    async def recent_progress(self, run_id: str) -> list[dict[str, Any]]:
+        async with self._lock:
+            return list(self._progress.get(run_id) or [])
+
     async def publish(self, run_id: str, event: str, data: dict[str, Any]) -> None:
         frame = {"event": event, "data": data}
         async with self._lock:
+            if event == "execution.progress":
+                bucket = self._progress.setdefault(run_id, [])
+                bucket.append(frame)
+                if len(bucket) > 80:
+                    del bucket[:-80]
             targets = list(self._subs.get(run_id) or [])
         for q in targets:
             try:

@@ -116,9 +116,11 @@ STAGES_SY_CRIACAO: list[dict[str, Any]] = [
     _s("build_fe", "08", "Construção frontend", "Dev Frontend", "dev_frontend", topology="build", expected_artifacts=["frontend/", "qa/plan-front.md"]),
     _s("qa_be", "09", "QA backend", "Tester Automatizado", "tester", topology="qa", expected_artifacts=["qa/report-back.md"]),
     _s("qa_fe", "10", "QA frontend", "Validador Visual", "validador", topology="qa", expected_artifacts=["qa/report-front.md"]),
-    _s("seo_sec", "11", "Auditoria de segurança · parecer", "Sérgio Seg/LGPD", "sergio", topology="review", expected_artifacts=["security.md"]),
-    _s("docs", "12", "Documentação · suporte, dev e usuário", "Dante Doc", "dante", topology="handoff", expected_artifacts=["docs/suporte.md", "docs/dev.md", "docs/usuario.md"]),
-    _s("final_gate", "13", "Gate Final · Completion Guard", "CEO local", "ceo", gate=True, topology="handoff"),
+    _s("qa_jornada", "11", "Jornada de uso", "Validador Visual", "validador", topology="qa", expected_artifacts=["qa/report-jornada.md"]),
+    _s("build_apk", "12", "Compilação do APK", "Dev Frontend", "dev_frontend", topology="build", expected_artifacts=["qa/evidence/build_apk.log"]),
+    _s("seo_sec", "13", "Auditoria de segurança · parecer", "Sérgio Seg/LGPD", "sergio", topology="review", expected_artifacts=["security.md"]),
+    _s("docs", "14", "Documentação · suporte, dev e usuário", "Dante Doc", "dante", topology="handoff", expected_artifacts=["docs/suporte.md", "docs/dev.md", "docs/usuario.md"]),
+    _s("final_gate", "15", "Gate Final · Completion Guard", "CEO local", "ceo", gate=True, topology="handoff"),
 ]
 
 # --- Sistemas manutenção: backend, frontend e QAs separados ---
@@ -180,8 +182,26 @@ STAGES_SY_MANUTENCAO: list[dict[str, Any]] = [
         expected_artifacts=["qa/report-front.md"],
     ),
     _s(
-        "m_hard",
+        "m_qa_jornada",
         "08",
+        "Jornada de uso",
+        "Validador Visual",
+        "validador",
+        topology="qa",
+        expected_artifacts=["qa/report-jornada.md"],
+    ),
+    _s(
+        "m_apk",
+        "09",
+        "Compilação do APK",
+        "Dev Frontend",
+        "dev_frontend",
+        topology="build",
+        expected_artifacts=["qa/evidence/m_apk.log"],
+    ),
+    _s(
+        "m_hard",
+        "10",
         "Auditoria de segurança · parecer",
         "Sérgio Seg/LGPD",
         "sergio",
@@ -190,14 +210,14 @@ STAGES_SY_MANUTENCAO: list[dict[str, Any]] = [
     ),
     _s(
         "m_docs",
-        "09",
+        "11",
         "Documentação · suporte, dev e usuário",
         "Dante Doc",
         "dante",
         topology="handoff",
         expected_artifacts=["docs/suporte.md", "docs/dev.md", "docs/usuario.md", "docs/changelog.md"],
     ),
-    _s("m_final", "10", "Aprovação final", "CEO local", "ceo", gate=True, topology="handoff"),
+    _s("m_final", "12", "Aprovação final", "CEO local", "ceo", gate=True, topology="handoff"),
 ]
 
 
@@ -360,7 +380,8 @@ def resolve_template_code(
         cat = "sy"
     if cat not in ("lp", "of", "sy"):
         cat = "lp"
-    mode = "m" if (track or "zero").strip().lower() == "pronto" else "c"
+    chosen = (track or "zero").strip().lower()
+    mode = "m" if chosen in {"pronto", "manutencao"} else "c"
     return f"{cat}-{mode}"
 
 

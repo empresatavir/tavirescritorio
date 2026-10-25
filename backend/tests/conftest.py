@@ -26,3 +26,8 @@ def _factory_agent_without_network(monkeypatch):
         return body, "ghostcli: ok · STE100"
 
     monkeypatch.setattr("app.modules.factory.executor._agent_content", _fake)
+
+    def _no_work_session(*_args, **_kwargs):
+        raise RuntimeError("teste não abre sessão de código")
+
+    monkeypatch.setattr("app.modules.cursor_link.client.run_in_workspace", _no_work_session)

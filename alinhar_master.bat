@@ -59,31 +59,29 @@ if defined DIRTY (
   exit /b 2
 )
 
-if "!QUIET!"=="0" echo [2/4] Trocando para master...
-git checkout master
-if errorlevel 1 (
-  echo [ERRO] Nao foi possivel checkout master.
-  if "!NO_PAUSE!"=="0" pause
-  exit /b 1
-)
-
-if "!QUIET!"=="0" echo [3/4] Atualizando master (fast-forward only)...
-git pull --ff-only origin master
-if errorlevel 1 (
-  echo [ERRO] pull --ff-only falhou. master local divergiu do remoto.
-  echo         Resolva manualmente antes de continuar.
-  if /I not "!CURRENT_BRANCH!"=="master" (
-    git checkout "!CURRENT_BRANCH!" >nul 2>&1
-  )
-  if "!NO_PAUSE!"=="0" pause
-  exit /b 1
-)
-
-if "!QUIET!"=="0" echo [4/4] Restaurando branch anterior...
-if /I not "!CURRENT_BRANCH!"=="master" (
-  git checkout "!CURRENT_BRANCH!"
+rem Nao faz checkout. Trocar de branch apaga da pasta os arquivos que o master antigo nao tem.
+if /I "!CURRENT_BRANCH!"=="master" (
+  if "!QUIET!"=="0" echo [2/4] Atualizando master (fast-forward only)...
+  git pull --ff-only origin master
   if errorlevel 1 (
-    echo [AVISO] master atualizado, mas falhou ao voltar para !CURRENT_BRANCH!
+    echo [ERRO] pull --ff-only falhou. master local divergiu do remoto.
+    echo         A pasta do projeto permanece como esta.
+    if "!NO_PAUSE!"=="0" pause
+    exit /b 1
+  )
+) else (
+  git merge-base --is-ancestor master origin/master
+  if errorlevel 1 (
+    echo [ERRO] master local divergiu de origin/master.
+    echo         Nao vou trocar de branch nem apagar arquivos.
+    if "!NO_PAUSE!"=="0" pause
+    exit /b 1
+  )
+  if "!QUIET!"=="0" echo [2/4] Apontando master para origin, sem mexer nos arquivos...
+  git branch -f master origin/master
+  if errorlevel 1 (
+    echo [ERRO] Nao foi possivel atualizar o ponteiro de master.
+    echo         A pasta do projeto permanece como esta.
     if "!NO_PAUSE!"=="0" pause
     exit /b 1
   )

@@ -1,9 +1,96 @@
-import { DOMAINS, currentDomainId, currentScreenId, setModalOpen, setPaletteOpen } from "../state/store";
+import { createSignal } from "solid-js";
+import { DOMAINS, currentDomainId, currentScreenId, setModalOpen, setPaletteOpen, showToast } from "../state/store";
 import { TvIcon } from "../shared/components/TvIcon";
+import { api } from "../shared/api/client";
 
 export function Header() {
   const currentDomain = () => DOMAINS.find((d) => d.id === currentDomainId()) || DOMAINS[0];
   const currentItem = () => currentDomain().items.find((i) => i.id === currentScreenId()) || currentDomain().items[0];
+  const [restarting, setRestarting] = createSignal<"frontend" | "backend" | null>(null);
+
+  const restartOffice = async (kind: "frontend" | "backend") => {
+    if (restarting()) return;
+    const label = kind === "frontend" ? "frontend" : "backend";
+    if (!window.confirm(`Reiniciar o ${label} do escritório?`)) return;
+    setRestarting(kind);
+    try {
+      await api.restartService(kind);
+      if (kind === "frontend") {
+        showToast("O frontend está reiniciando. A página recarrega quando o Vite voltar.", "Frontend");
+        const started = Date.now();
+        const waitUp = () => {
+          if (Date.now() - started > 25000) {
+            window.location.reload();
+            return;
+          }
+          window.setTimeout(async () => {
+            try {
+              const res = await fetch("/", { cache: "no-store" });
+              if (res.ok) window.location.reload();
+              else waitUp();
+            } catch {
+              waitUp();
+            }
+          }, 800);
+        };
+        waitUp();
+      } else {
+        showToast("O backend está reiniciando. A tela espera a API voltar.", "Backend");
+        const started = Date.now();
+        let sawDown = false;
+        const wait = () => {
+          if (Date.now() - started > 30000) {
+            showToast("O backend não voltou. Atualize a página.", "Backend", "error");
+            setRestarting(null);
+            return;
+          }
+          window.setTimeout(async () => {
+            try {
+              const res = await fetch("/api/v1/health", { cache: "no-store" });
+              if (sawDown && res.ok) {
+                window.location.reload();
+                return;
+              }
+            } catch {
+              sawDown = true;
+            }
+            wait();
+          }, 700);
+        };
+        window.setTimeout(wait, 800);
+      }
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Não foi possível reiniciar.", "Servidores", "error");
+      setRestarting(null);
+    }
+  };
+
+  const serverButton = (kind: "frontend" | "backend", label: string) => (
+    <button
+      type="button"
+      aria-label={`Reiniciar ${label}`}
+      title={`Reinicia o ${label} do escritório`}
+      disabled={restarting() !== null}
+      onClick={() => void restartOffice(kind)}
+      style={{
+        display: "flex",
+        "align-items": "center",
+        height: "32px",
+        padding: "0 10px",
+        "border-radius": "var(--radius-pill)",
+        border: "1px solid rgba(244,246,242,.16)",
+        background: "transparent",
+        color: "var(--text-secondary)",
+        "font-size": "12px",
+        "font-weight": 600,
+        cursor: restarting() ? "wait" : "pointer",
+        "white-space": "nowrap",
+        flex: "none",
+      }}
+    >
+      {restarting() === kind ? "Reiniciando…" : label}
+    </button>
+  );
 
   return (
     <header
@@ -53,6 +140,9 @@ export function Header() {
       </div>
 
       <div style={{ flex: 1 }} />
+
+      {serverButton("frontend", "Frontend")}
+      {serverButton("backend", "Backend")}
 
       {/* Global Command Palette Search Bar */}
       <button

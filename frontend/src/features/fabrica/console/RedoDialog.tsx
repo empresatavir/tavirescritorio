@@ -1,41 +1,67 @@
-import { createEffect, createSignal, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import { api } from "../../../shared/api/client";
 
-const MODELS = [
-  { id: "claude-opus-5-5", label: "Opus" },
-  { id: "claude-sonnet-5", label: "Sonnet" },
-  { id: "claude-fable-5.1", label: "Fable" },
-];
+type EffortOption = { id: string; label: string };
+type ModelOption = { id: string; label: string; efforts: EffortOption[] };
+type EngineOption = { id: string; label: string; enabled?: boolean; is_default?: boolean; models: ModelOption[] };
 
-const EFFORTS = [
-  { id: "low", label: "Baixo" },
-  { id: "medium", label: "Médio" },
-  { id: "high", label: "Alto" },
-  { id: "xhigh", label: "Máximo" },
-];
+function preferredEffort(options: EffortOption[], current: string): string {
+  if (options.some((item) => item.id === current)) return current;
+  return options.find((item) => item.id === "balanced")?.id || options.find((item) => item.id === "xhigh")?.id || options[0]?.id || "balanced";
+}
 
 export function RedoDialog(props: {
   open: boolean;
   mode: "gate" | "project";
+  projectId: string;
   busy?: boolean;
-  model?: string;
-  effort?: string;
   onClose: () => void;
   onSubmit: (body: { note: string; model: string; effort: string }) => void;
 }) {
   const [note, setNote] = createSignal("");
-  const [model, setModel] = createSignal(props.model || "claude-opus-5-5");
-  const [effort, setEffort] = createSignal(props.effort || "xhigh");
+  const [provider, setProvider] = createSignal("");
+  const [model, setModel] = createSignal("");
+  const [effort, setEffort] = createSignal("");
+  const [engines, setEngines] = createSignal<EngineOption[]>([]);
+  const [engineOn, setEngineOn] = createSignal(true);
+  const [loading, setLoading] = createSignal(false);
+
+  const engine = createMemo(() => engines().find((item) => item.id === provider()) || engines()[0]);
+  const models = createMemo(() => engine()?.models || []);
+  const efforts = createMemo(() => models().find((item) => item.id === model())?.efforts || []);
 
   let opened = false;
   createEffect(() => {
     const isOpen = props.open;
     if (isOpen && !opened) {
       setNote("");
-      setModel(props.model || "claude-opus-5-5");
-      setEffort(props.effort || "xhigh");
+      setLoading(true);
+      void api
+        .getProjectAiSettings(props.projectId)
+        .then((data) => {
+          const list = (data.engines || []).filter((item) => item.enabled !== false);
+          const chosen = list.find((item) => item.id === data.provider) || list.find((item) => item.is_default) || list[0];
+          const savedModel = chosen?.models.find((item) => item.id === data.model) || chosen?.models[0];
+          setEngines(list);
+          setEngineOn(data.engine_enabled !== false && Boolean(chosen));
+          setProvider(chosen?.id || "");
+          setModel(savedModel?.id || "");
+          setEffort(preferredEffort(savedModel?.efforts || [], data.effort));
+        })
+        .catch(() => {
+          setEngines([]);
+          setEngineOn(false);
+        })
+        .finally(() => setLoading(false));
     }
     opened = isOpen;
   });
+
+  const chooseModel = (next: string) => {
+    const spec = models().find((item) => item.id === next);
+    setModel(next);
+    if (spec) setEffort(preferredEffort(spec.efforts, effort()));
+  };
 
   return (
     <Show when={props.open}>
@@ -48,6 +74,7 @@ export function RedoDialog(props: {
           onClick={(e) => e.stopPropagation()}
           onSubmit={(e) => {
             e.preventDefault();
+            if (!model()) return;
             props.onSubmit({ note: note().trim(), model: model(), effort: effort() });
           }}
         >
@@ -69,29 +96,60 @@ export function RedoDialog(props: {
               onInput={(e) => setNote(e.currentTarget.value)}
             />
           </label>
-          <div class="fc-modal-row">
+          <Show
+            when={!loading() && engines().length > 0 && engineOn()}
+            fallback={
+              <p class="fc-sub">
+                {loading()
+                  ? "Lendo os motores ligados em Integrações."
+                  : "Nenhum motor ligado. Ligue o motor em Integrações para refazer."}
+              </p>
+            }
+          >
             <label class="fc-modal-field">
-              Motor
-              <select value={model()} onChange={(e) => setModel(e.currentTarget.value)}>
-                {MODELS.map((m) => (
-                  <option value={m.id}>{m.label}</option>
-                ))}
+              Motor de IA
+              <select value={provider()} disabled>
+                <For each={engines()}>
+                  {(item) => (
+                    <option value={item.id}>
+                      {item.label}
+                      {item.is_default || item.id === provider() ? " · padrão" : ""}
+                    </option>
+                  )}
+                </For>
               </select>
             </label>
-            <label class="fc-modal-field">
-              Esforço
-              <select value={effort()} onChange={(e) => setEffort(e.currentTarget.value)}>
-                {EFFORTS.map((m) => (
-                  <option value={m.id}>{m.label}</option>
-                ))}
-              </select>
-            </label>
-          </div>
+            <div class="fc-modal-row">
+              <label class="fc-modal-field">
+                Modelo
+                <select value={model()} onChange={(e) => chooseModel(e.currentTarget.value)}>
+                  <For each={models()}>
+                    {(item) => <option value={item.id}>{item.label}</option>}
+                  </For>
+                </select>
+              </label>
+              <Show when={model() !== "auto-smart"}>
+                <label class="fc-modal-field">
+                  Esforço
+                  <select value={effort()} onChange={(e) => setEffort(e.currentTarget.value)}>
+                    <For each={efforts()}>
+                      {(item) => <option value={item.id}>{item.label}</option>}
+                    </For>
+                  </select>
+                </label>
+              </Show>
+            </div>
+            <p class="fc-sub">
+              {model() === "auto-smart"
+                ? "O escritório usa o motor padrão ligado em Integrações. O modelo é Auto."
+                : "Os motores desligados em Integrações ficam fora desta lista. O padrão do escritório é o motor desta chamada."}
+            </p>
+          </Show>
           <div class="fc-btn-row">
             <button type="button" class="fc-btn-sec" disabled={props.busy} onClick={() => props.onClose()}>
               Cancelar
             </button>
-            <button type="submit" class="fc-btn" disabled={props.busy}>
+            <button type="submit" class="fc-btn" disabled={props.busy || loading() || !model() || !engineOn()}>
               {props.busy ? "Aplicando…" : props.mode === "project" ? "Reiniciar esteira" : "Refazer entrega"}
             </button>
           </div>

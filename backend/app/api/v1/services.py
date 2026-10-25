@@ -1,7 +1,9 @@
 """Service management API — health check, logs, start/stop/restart for local TAVIR services."""
 import os
+import shutil
 import signal
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -10,8 +12,8 @@ from fastapi import APIRouter, HTTPException
 
 router = APIRouter(prefix="/api/v1/services", tags=["services"])
 
-# Project root is 3 levels up from this file
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+# services.py → v1 → api → app → backend → raiz do escritório
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
 LOGS_DIR = PROJECT_ROOT / "logs"
 PIDS_DIR = PROJECT_ROOT / ".pids"
 
@@ -69,6 +71,106 @@ def _save_pid(service_id: str, pid: int):
 def _remove_pid(service_id: str):
     pid_file = PIDS_DIR / SERVICES_CONFIG[service_id]["pid_file"]
     pid_file.unlink(missing_ok=True)
+
+
+def _listening_pids(port: int) -> list[int]:
+    """PIDs que escutam a porta, mesmo sem arquivo .pid."""
+    try:
+        out = subprocess.check_output(["netstat", "-ano", "-p", "tcp"], text=True, errors="replace")
+    except (OSError, subprocess.SubprocessError):
+        return []
+    found: list[int] = []
+    suffix = f":{port}"
+    for line in out.splitlines():
+        if "LISTENING" not in line.upper():
+            continue
+        parts = line.split()
+        if len(parts) < 5 or not str(parts[1]).endswith(suffix):
+            continue
+        try:
+            pid = int(parts[-1])
+        except ValueError:
+            continue
+        if pid > 0 and pid not in found:
+            found.append(pid)
+    return found
+
+
+def _kill_pid(pid: int) -> None:
+    if os.name == "nt":
+        subprocess.run(
+            ["taskkill", "/F", "/T", "/PID", str(pid)],
+            capture_output=True,
+            timeout=10,
+        )
+        return
+    try:
+        os.kill(pid, signal.SIGTERM)
+    except OSError:
+        return
+
+
+def _spawn_detached(args: list[str]) -> None:
+    flags = 0
+    if os.name == "nt":
+        flags = 0x00000008 | 0x00000200 | 0x08000000
+    subprocess.Popen(
+        args,
+        creationflags=flags,
+        close_fds=True,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
+def _service_launch(service_id: str) -> tuple[list[str], Path]:
+    """Comando e pasta reais. No Windows o npm precisa do caminho completo."""
+    config = SERVICES_CONFIG[service_id]
+    cwd = Path(config["cwd"])
+    if not cwd.is_dir():
+        raise HTTPException(status_code=500, detail=f"Pasta do {config['name']} não existe: {cwd}")
+    if service_id == "backend":
+        if not (cwd / "run.py").is_file():
+            raise HTTPException(status_code=500, detail=f"run.py não está em {cwd}")
+        return [sys.executable, "run.py"], cwd
+    npm = shutil.which("npm.cmd") or shutil.which("npm")
+    if not npm:
+        raise HTTPException(status_code=500, detail="npm não está no PATH. O frontend não sobe.")
+    if not (cwd / "package.json").is_file():
+        raise HTTPException(status_code=500, detail=f"package.json não está em {cwd}")
+    return [npm, "run", "dev", "--", "--port", str(config["port"])], cwd
+
+
+def _schedule_port_restart(service_id: str) -> None:
+    """Outro processo espera, encerra a porta e sobe o serviço de novo.
+
+    A resposta HTTP sai antes do encerramento, senão o navegador perde a chamada.
+    """
+    config = SERVICES_CONFIG[service_id]
+    command, cwd = _service_launch(service_id)
+    port = str(config["port"])
+    exe = sys.executable
+    code = (
+        "import subprocess,sys,time\n"
+        "time.sleep(1.2)\n"
+        "port, cwd = sys.argv[1], sys.argv[2]\n"
+        "command = sys.argv[3:]\n"
+        "out = subprocess.check_output(['netstat','-ano','-p','tcp'], text=True, errors='replace')\n"
+        "pids=[]\n"
+        "for line in out.splitlines():\n"
+        "    if 'LISTENING' not in line.upper():\n"
+        "        continue\n"
+        "    parts=line.split()\n"
+        "    if len(parts)>=5 and parts[1].endswith(':'+port):\n"
+        "        pids.append(parts[-1])\n"
+        "for pid in dict.fromkeys(pids):\n"
+        "    subprocess.run(['taskkill','/F','/T','/PID', pid], capture_output=True)\n"
+        "time.sleep(1)\n"
+        "child_flags = 0x00000008 | 0x00000200 | 0x08000000\n"
+        "subprocess.Popen(command, cwd=cwd, creationflags=child_flags, close_fds=True)\n"
+    )
+    _spawn_detached([exe, "-c", code, port, str(cwd), *command])
 
 
 def _is_port_listening(port: int) -> bool:
@@ -197,6 +299,7 @@ async def start_service(service_id: str):
     _ensure_dirs()
 
     log_file = LOGS_DIR / config["log_file"]
+    command, cwd = _service_launch(service_id)
 
     # Build environment with overrides
     env = os.environ.copy()
@@ -209,8 +312,8 @@ async def start_service(service_id: str):
     try:
         with open(log_file, "a") as log_fh:
             process = subprocess.Popen(
-                config["command"],
-                cwd=config["cwd"],
+                command,
+                cwd=str(cwd),
                 stdout=log_fh,
                 stderr=subprocess.STDOUT,
                 env=env,
@@ -240,30 +343,25 @@ async def stop_service(service_id: str):
     if service_id not in SERVICES_CONFIG:
         raise HTTPException(status_code=404, detail=f"Service '{service_id}' not found")
 
-    pid = _get_pid(service_id)
-    if pid is None:
+    config = SERVICES_CONFIG[service_id]
+    pids: list[int] = []
+    stored = _get_pid(service_id)
+    if stored:
+        pids.append(stored)
+    for pid in _listening_pids(int(config["port"])):
+        if pid not in pids:
+            pids.append(pid)
+    if not pids:
         return {"message": f"Service '{service_id}' is not running"}
 
     try:
-        if os.name == "nt":
-            # Windows: use taskkill for process tree
-            subprocess.run(
-                ["taskkill", "/F", "/T", "/PID", str(pid)],
-                capture_output=True,
-                timeout=10,
-            )
-        else:
-            os.kill(pid, signal.SIGTERM)
-            # Give it time to shut down gracefully
-            await _async_sleep(2)
-            try:
-                os.kill(pid, 0)  # Check if still alive
-                os.kill(pid, signal.SIGKILL)  # Force kill
-            except ProcessLookupError:
-                pass  # Already dead
+        for pid in pids:
+            _kill_pid(pid)
+        if os.name != "nt":
+            await _async_sleep(1)
 
         _remove_pid(service_id)
-        return {"message": f"Service '{service_id}' stopped", "pid": pid}
+        return {"message": f"Service '{service_id}' stopped", "pid": pids[0]}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Failed to stop service: {exc}")
 
@@ -274,14 +372,13 @@ async def restart_service(service_id: str):
     if service_id not in SERVICES_CONFIG:
         raise HTTPException(status_code=404, detail=f"Service '{service_id}' not found")
 
-    stop_result = await stop_service(service_id)
-    await _async_sleep(1)
-    start_result = await start_service(service_id)
-
+    _schedule_port_restart(service_id)
+    label = "backend" if service_id == "backend" else "frontend"
     return {
-        "message": f"Service '{service_id}' restarted",
-        "stop": stop_result,
-        "start": start_result,
+        "message": f"O {label} vai reiniciar em instantes.",
+        "scheduled": True,
+        "stop": None,
+        "start": None,
     }
 
 

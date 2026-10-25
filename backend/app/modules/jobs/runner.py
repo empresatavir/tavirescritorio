@@ -460,53 +460,26 @@ class JobRunner:
                     "Tente novamente ou consulte um serviço meteorológico."
                 )
 
-        api_key = os.environ.get("GHOSTCLI_API_KEY", "")
-        base = os.environ.get("GHOSTCLI_BASE_URL", "https://ghostcli.cloud/v1")
-        if api_key:
-            try:
-                model = job.model_name or "claude-sonnet-5"
-                payload = {
-                    "model": model,
-                    "messages": [
-                        {
-                            "role": "system",
-                            "content": (
-                                "Você é Paula PM no TAVIR Escritório. Execute a demanda do usuário "
-                                "e entregue uma resposta objetiva em português do Brasil. "
-                                "Não invente dados que precisem de API externa sem avisar."
-                            ),
-                        },
-                        {
-                            "role": "user",
-                            "content": f"Título: {title}\n\nDemanda:\n{demand}",
-                        },
-                    ],
-                    "max_tokens": 1200,
-                }
-                async with httpx.AsyncClient(timeout=60.0) as client:
-                    resp = await client.post(
-                        f"{base}/chat/completions",
-                        json=payload,
-                        headers={
-                            "Authorization": f"Bearer {api_key}",
-                            "Content-Type": "application/json",
-                        },
-                    )
-                    resp.raise_for_status()
-                    return resp.json()["choices"][0]["message"]["content"]
-            except Exception as exc:
-                return (
-                    f"Falha ao consultar o modelo ({type(exc).__name__}: {exc}).\n\n"
-                    f"Demanda recebida:\n{demand}\n\n"
-                    "Configure GHOSTCLI_API_KEY ou rode novamente."
-                )
+        try:
+            from app.modules.ghostcli import chat_completion
 
-        return (
-            f"Demanda recebida:\n{demand}\n\n"
-            "Entrega parcial: o orquestrador registrou a solicitação, mas não há gateway de IA "
-            "(GHOSTCLI_API_KEY) configurado para produzir a resposta completa. "
-            "Para demandas de clima/temperatura, a execução usa Open-Meteo automaticamente."
-        )
+            return await chat_completion(
+                system=(
+                    "Você é Paula PM no TAVIR Escritório. Execute a demanda do usuário "
+                    "e entregue uma resposta objetiva em português do Brasil. "
+                    "Não invente dados que precisem de API externa sem avisar."
+                ),
+                messages=[{"role": "user", "content": f"Título: {title}\n\nDemanda:\n{demand}"}],
+                model=job.model_name,
+                max_tokens=1200,
+                timeout=60.0,
+            )
+        except Exception as exc:
+            return (
+                f"Falha ao consultar o motor padrão ({type(exc).__name__}: {exc}).\n\n"
+                f"Demanda recebida:\n{demand}\n\n"
+                "Confira o motor padrão em Integrações e rode novamente."
+            )
 
     async def _materialize_execution(self, job: Job, workspace: Path, output: str) -> None:
         """Registra evidência de execução e consome plano.md se existir."""

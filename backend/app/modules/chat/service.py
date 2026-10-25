@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.chat.repository import ChatRepository
 from app.modules.agents.repository import AgentRepository
 from app.models.chat_message import ChatMessage
-from app.modules.ghostcli import chat_completion, default_model, is_configured
+from app.modules.ghostcli import chat_completion, default_model
 from app.modules.ghostcli.client import GhostCliError
 
 
@@ -83,15 +83,6 @@ class ChatService:
             "\nResponda sempre em português do Brasil, de forma concisa e operacional. "
             "Se não souber algo, diga claramente e sugira próximos passos."
         )
-
-        if not is_configured():
-            from app.modules.ghostcli.notice import report_ai_link_error
-
-            report_ai_link_error("GhostCLI sem chave. Defina GHOSTCLI_API_KEY.")
-            return (
-                f"[GhostCLI] Chave de API não configurada. Defina GHOSTCLI_API_KEY no ambiente. "
-                f"Como {agent_name} ({agent_role}), recebi sua mensagem e aguardo a configuração do gateway para responder com IA real."
-            )
 
         try:
             return await chat_completion(

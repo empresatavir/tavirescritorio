@@ -1,14 +1,27 @@
 """Async database engine and session factory for TAVIR."""
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy import event, text
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import text
 from pathlib import Path
 
 DB_PATH = Path(__file__).resolve().parent.parent.parent / "tavir.db"
 DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
 
-engine = create_async_engine(DATABASE_URL, echo=False)
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=False,
+    connect_args={"timeout": 30},
+)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+
+
+@event.listens_for(engine.sync_engine, "connect")
+def _sqlite_on_connect(dbapi_connection, _connection_record) -> None:
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA journal_mode=WAL")
+    cursor.execute("PRAGMA busy_timeout=30000")
+    cursor.execute("PRAGMA synchronous=NORMAL")
+    cursor.close()
 
 
 class Base(DeclarativeBase):
@@ -40,6 +53,7 @@ async def ensure_schema_patches() -> None:
         await _add_missing("pieces", "progress", "progress INTEGER")
         await _add_missing("pieces", "squad", "squad VARCHAR(100)")
         await _add_missing("projects", "ai_settings", "ai_settings JSON")
+        await _add_missing("integration_prefs", "is_default", "is_default BOOLEAN NOT NULL DEFAULT 0")
 
 
 async def get_session() -> AsyncSession:

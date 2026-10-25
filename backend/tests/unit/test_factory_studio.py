@@ -136,7 +136,11 @@ async def test_studio_repository_flow(session):
 
 
 @pytest.mark.asyncio
-async def test_oracle_fallback_creates_decision(session):
+async def test_oracle_fallback_creates_decision(session, monkeypatch):
+    async def _offline(**_kwargs):
+        raise RuntimeError("teste sem motor")
+
+    monkeypatch.setattr("app.modules.studio.oracle_service.chat_completion", _offline)
     profiles = ProfileRepository(session)
     profile = await profiles.get_by_id("pf-test")
     assert profile is not None
@@ -166,7 +170,11 @@ def test_resolve_squad_and_fallbacks():
 
 
 @pytest.mark.asyncio
-async def test_production_fallback_creates_review(session):
+async def test_production_fallback_creates_review(session, monkeypatch):
+    async def _offline(**_kwargs):
+        raise RuntimeError("teste sem motor")
+
+    monkeypatch.setattr("app.modules.studio.production_service.chat_completion", _offline)
     profiles = ProfileRepository(session)
     pieces = PieceRepository(session)
     profile = await profiles.get_by_id("pf-test")

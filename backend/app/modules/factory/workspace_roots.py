@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import subprocess
 import unicodedata
 from pathlib import Path
@@ -72,6 +73,33 @@ def assert_path_under_factory_roots(path: Path) -> Path:
         except ValueError:
             continue
     raise ValueError("Caminho fora das raízes de workspace da Fábrica")
+
+
+def project_workspace_for_removal(local_path: str | None) -> Path:
+    """Confere que o caminho é a pasta direta de um projeto, dentro das raízes da Fábrica."""
+    raw = (local_path or "").strip()
+    if not raw:
+        raise ValueError("O projeto não tem pasta para excluir.")
+    resolved = assert_path_under_factory_roots(Path(raw))
+    roots = (INTERNAL_ROOT.resolve(), EXTERNAL_ROOT.resolve())
+    if resolved in roots or resolved == REPO_ROOT.resolve():
+        raise ValueError("A exclusão não remove a raiz do escritório.")
+    if resolved.parent not in roots:
+        raise ValueError("A exclusão só remove a pasta direta do projeto.")
+    if resolved.exists() and not resolved.is_dir():
+        raise ValueError("O caminho do projeto não é uma pasta.")
+    office = resolved / "backend" / "app" / "modules" / "factory" / "executor.py"
+    if office.is_file():
+        raise ValueError("A pasta do escritório não pode ser excluída.")
+    return resolved
+
+
+def remove_project_workspace(local_path: str | None) -> Path:
+    """Apaga a pasta do projeto. Recusa a raiz do escritório e qualquer pasta fora da Fábrica."""
+    target = project_workspace_for_removal(local_path)
+    if target.exists():
+        shutil.rmtree(target)
+    return target
 
 
 def open_folder_in_os(path: Path) -> None:

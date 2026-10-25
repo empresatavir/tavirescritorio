@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -156,6 +156,110 @@ async def get_factory_project(project_id: str, session: AsyncSession = Depends(g
     return proj
 
 
+@router.delete("/projects/{project_id}")
+async def delete_factory_project(
+    project_id: str,
+    delete_folder: bool = Query(False),
+    session: AsyncSession = Depends(get_session),
+):
+    """Tira o projeto da Fábrica. A pasta sai do disco só quando delete_folder é verdadeiro."""
+    from sqlalchemy import delete, or_, select
+
+    from app.models.approval import Approval
+    from app.models.artifact import Artifact
+    from app.models.event import Event
+    from app.models.factory_run import FactoryRun
+    from app.models.factory_stage import FactoryStageInstance
+    from app.models.idea import Idea
+    from app.models.job import Job
+    from app.models.job_attempt import JobAttempt
+    from app.models.piece import Piece
+    from app.models.task import Task
+
+    proj = await session.get(Project, project_id)
+    if proj is None:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    local_path = proj.local_path
+    if delete_folder:
+        from app.modules.factory.workspace_roots import project_workspace_for_removal
+
+        try:
+            project_workspace_for_removal(local_path)
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    task_ids = list((await session.execute(select(Task.id).where(Task.project_id == project_id))).scalars().all())
+    job_filter = [Job.project_id == project_id]
+    if task_ids:
+        job_filter.append(Job.task_id.in_(task_ids))
+    job_ids = list((await session.execute(select(Job.id).where(or_(*job_filter)))).scalars().all())
+    artifact_filter = []
+    if job_ids:
+        artifact_filter.append(Artifact.job_id.in_(job_ids))
+    if task_ids:
+        artifact_filter.append(Artifact.task_id.in_(task_ids))
+    artifact_ids = (
+        list((await session.execute(select(Artifact.id).where(or_(*artifact_filter)))).scalars().all())
+        if artifact_filter
+        else []
+    )
+    approval_filter = []
+    if job_ids:
+        approval_filter.append(Approval.job_id.in_(job_ids))
+    if task_ids:
+        approval_filter.append(Approval.task_id.in_(task_ids))
+    approval_ids = (
+        list((await session.execute(select(Approval.id).where(or_(*approval_filter)))).scalars().all())
+        if approval_filter
+        else []
+    )
+
+    async def drop(model, column, ids: list[str]) -> None:
+        if ids:
+            await session.execute(delete(model).where(column.in_(ids)))
+
+    event_filter = []
+    if job_ids:
+        event_filter.append(Event.job_id.in_(job_ids))
+    if task_ids:
+        event_filter.append(Event.task_id.in_(task_ids))
+    if approval_ids:
+        event_filter.append(Event.approval_id.in_(approval_ids))
+    if artifact_ids:
+        event_filter.append(Event.artifact_id.in_(artifact_ids))
+    if event_filter:
+        await session.execute(delete(Event).where(or_(*event_filter)))
+    await drop(Artifact, Artifact.id, artifact_ids)
+    await drop(JobAttempt, JobAttempt.job_id, job_ids)
+    await drop(Approval, Approval.id, approval_ids)
+    await drop(Job, Job.id, job_ids)
+    await drop(Task, Task.id, task_ids)
+    await session.execute(delete(FactoryStageInstance).where(FactoryStageInstance.project_id == project_id))
+    await session.execute(delete(FactoryRun).where(FactoryRun.project_id == project_id))
+    await session.execute(delete(Piece).where(Piece.project_id == project_id))
+    await session.execute(delete(Idea).where(Idea.project_id == project_id))
+    await session.delete(proj)
+    await session.commit()
+
+    folder_deleted = False
+    folder_error = None
+    if delete_folder:
+        from app.modules.factory.workspace_roots import remove_project_workspace
+
+        try:
+            remove_project_workspace(local_path)
+            folder_deleted = True
+        except OSError as exc:
+            folder_error = str(exc)
+    return {
+        "ok": True,
+        "id": project_id,
+        "folder_deleted": folder_deleted,
+        "folder_error": folder_error,
+    }
+
+
 @router.post("/projects", response_model=FactoryProjectResponse, status_code=201)
 async def create_factory_project(req: CreateFactoryProjectRequest, session: AsyncSession = Depends(get_session)):
     from app.modules.factory.workspace_roots import materialize_project_workspace, slugify_project_name
@@ -239,10 +343,11 @@ async def get_project_run(project_id: str, session: AsyncSession = Depends(get_s
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    from app.modules.factory.run_service import align_run_to_esteira
+    from app.modules.factory.run_service import align_run_to_esteira, stamp_run_engine
 
     if await align_run_to_esteira(session, run, proj):
         await session.refresh(run)
+    await stamp_run_engine(session, run)
 
     stages = await list_stages(session, run.id)
     return serialize_run(run, stages)
@@ -563,12 +668,10 @@ async def post_project_chat(
         history.append({"role": role, "content": m.get("text") or ""})
     history.append({"role": "user", "content": text})
 
-    from app.modules.ghostcli import default_effort, default_model
+    from app.modules.factory.engine_prefs import office_call
 
     run_meta = (run.meta if run else None) or {}
-    model = str(run_meta.get("model") or default_model())
-    effort = str(run_meta.get("effort") or default_effort())
-    provider = str(run_meta.get("provider") or "ghostcli")
+    provider, model, effort, _enabled = await office_call(run_meta.get("model"), run_meta.get("effort"))
 
     system = (
         f"Você é {agent_name}, atuando como {agent_role} na Fábrica TAVIR.\n"
@@ -588,7 +691,7 @@ async def post_project_chat(
             effort=effort,
             provider=provider,
             max_tokens=1200,
-            timeout=240.0,
+            timeout=None,
         )
         ghost_meta = f"{provider}:ok:{model}:{effort}"
     except GhostCliError as exc:
@@ -942,9 +1045,20 @@ async def auto_execute_project_run(
             run,
             proj,
             actor=req.actor or "Executor automático",
+            note=req.note or "",
         )
     except StageTransitionError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except Exception as exc:
+        from app.modules.factory.executor import recover_auto_failure
+
+        return await recover_auto_failure(
+            session,
+            run,
+            proj,
+            exc,
+            actor=req.actor or "Executor automático",
+        )
     await session.commit()
     return payload
 
@@ -1078,6 +1192,14 @@ async def restart_project_run(
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     await session.commit()
     return payload
+
+
+@router.post("/agents/halt")
+async def halt_running_agents():
+    """Corta o agente que a Fábrica abriu. Não espera o banco."""
+    from app.modules.cursor_link.client import halt_factory_agents
+
+    return {"ok": True, "stopped": halt_factory_agents()}
 
 
 @router.post("/projects/{project_id}/run/pause")
@@ -1215,7 +1337,14 @@ async def _factory_run_sse_generator(run_id: str):
         )
 
     q = await factory_sse_hub.subscribe(run_id)
+    seen_progress: set[str] = set()
     try:
+        for frame in await factory_sse_hub.recent_progress(run_id):
+            data = frame.get("data") or {}
+            eid = str(data.get("id") or "")
+            if eid:
+                seen_progress.add(eid)
+            yield format_sse("execution.progress", data, event_id=eid or None)
         while True:
             try:
                 frame = await asyncio.wait_for(q.get(), timeout=15.0)
@@ -1236,6 +1365,10 @@ async def _factory_run_sse_generator(run_id: str):
             event_name = frame.get("event") or "message"
             data = frame.get("data") or {}
             eid = data.get("id") or data.get("stage_instance_id")
+            if event_name == "execution.progress" and eid and str(eid) in seen_progress:
+                continue
+            if event_name == "execution.progress" and eid:
+                seen_progress.add(str(eid))
             yield format_sse(event_name, data, event_id=str(eid) if eid else None)
 
             if event_name == "event.appended" and data.get("action") == "run_completed":

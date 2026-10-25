@@ -1,13 +1,17 @@
 """O conector Cursor usa o agente local em modo leitura."""
 
 import os
+import subprocess
 
+from app.modules.cursor_link import client
 from app.modules.cursor_link.client import (
     _parse_auth,
     cli_command,
     cursor_model_id,
     extract_login_url,
     format_cursor_model,
+    status_from_cli_line,
+    work_command,
 )
 from app.modules.ghostcli.client import ghost_effort_id, ghost_model_id
 from app.modules.ghostcli.notice import plain_engine_error
@@ -46,6 +50,17 @@ def test_comando_local_nao_edita_arquivos():
     assert command[command.index("--sandbox") + 1] == sandbox
 
 
+def test_comando_de_trabalho_edita_o_projeto():
+    command = work_command("agent", r"C:\projetos\mobile", "auto", "implemente o pedido")
+    assert "-p" in command
+    assert "--force" in command
+    assert "--mode" not in command
+    assert command[command.index("--workspace") + 1] == r"C:\projetos\mobile"
+    assert command[-1] == "implemente o pedido"
+    sandbox = "disabled" if os.name == "nt" else "enabled"
+    assert command[command.index("--sandbox") + 1] == sandbox
+
+
 def test_status_json_autenticado():
     assert _parse_auth('{"authenticated": true}', "") is True
 
@@ -76,3 +91,49 @@ def test_aviso_esconde_html_do_gateway():
     assert "524" in text
     assert "Entrar no Cursor" in text
     assert len(text) < 320
+
+
+def test_pasta_travada_nao_cancela_a_resposta(monkeypatch):
+    def locked(path, *args, **kwargs):
+        raise PermissionError(32, "O arquivo já está sendo usado por outro processo", path)
+
+    monkeypatch.setattr(client.shutil, "rmtree", locked)
+    monkeypatch.setattr(client.time, "sleep", lambda _seconds: None)
+
+    def fake_stream(args, *, timeout, cwd, on_status):
+        return subprocess.CompletedProcess(args, 0, stdout='{"result":"contrato pronto"}', stderr="")
+
+    monkeypatch.setattr(client, "_stream_cli", fake_stream)
+    assert client._run_cli_once("agent", "leia o pedido", "auto") == "contrato pronto"
+
+
+def test_comando_parado_nao_encerra_o_agente_nem_o_build():
+    from app.modules.cursor_link.client import _idle_shell_pids
+
+    nodes = [
+        (1, 0, "cmd.exe", 0.0),
+        (2, 1, "powershell.exe", 0.2),
+        (3, 2, "node.exe", 4.0),
+        (4, 3, "powershell.exe", 0.4),
+        (5, 4, "conhost.exe", 0.0),
+        (6, 3, "powershell.exe", 1.0),
+        (7, 6, "dart.exe", 0.2),
+    ]
+    state: dict = {}
+    assert _idle_shell_pids(nodes, 1, state, 1_000) == []
+    assert _idle_shell_pids(nodes, 1, state, 1_100) == [4]
+    assert 2 not in state["shells"]
+    assert _idle_shell_pids(nodes, 1, state, 2_000) == []
+
+    working = list(nodes)
+    working[3] = (4, 3, "powershell.exe", 2.0)
+    state = {}
+    assert _idle_shell_pids(nodes, 1, state, 1_000) == []
+    assert _idle_shell_pids(working, 1, state, 1_100) == []
+
+
+def test_linha_do_agente_nao_despeja_o_arquivo():
+    assert status_from_cli_line('{"type":"assistant","text":"lido"}') == "Cursor · assistant"
+    assert status_from_cli_line('{"result":"arquivo inteiro"}') is None
+    assert status_from_cli_line("Lendo o contrato.") == "Lendo o contrato."
+    assert status_from_cli_line("x" * 200) is None
