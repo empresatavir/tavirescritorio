@@ -96,15 +96,16 @@ def _http_failure(status: int) -> str:
     return f"O Ghost recusou a entrega (HTTP {status})."
 
 
-def _timeout(read_seconds: float) -> httpx.Timeout:
-    """Conexão curta. Leitura longa. Opus com esforço máximo passa de 120 segundos."""
-    return httpx.Timeout(connect=20.0, read=max(float(read_seconds), 240.0), write=60.0, pool=20.0)
+def _timeout(read_seconds: float | None) -> httpx.Timeout:
+    """Conexão curta. A leitura segue até a resposta quando não há prazo."""
+    read = None if read_seconds is None else max(float(read_seconds), 240.0)
+    return httpx.Timeout(connect=20.0, read=read, write=60.0, pool=20.0)
 
 
 async def _post_chat(
     payload: dict[str, Any],
     *,
-    timeout: float,
+    timeout: float | None,
 ) -> str:
     """Tenta três vezes. Timeout e queda de rede não encerram a entrega na primeira falha."""
     last_message = "Falha desconhecida no GhostCLI"
@@ -131,9 +132,10 @@ async def _post_chat(
                 continue
             break
         except httpx.TimeoutException:
+            waited = "sem limite de tempo" if timeout is None else f"até {int(timeout)} segundos"
             last_message = (
                 "Timeout na conexão com GhostCLI após a tentativa "
-                f"{attempt + 1} de 3. A leitura espera até 240 segundos."
+                f"{attempt + 1} de 3. A leitura espera {waited}."
             )
             if attempt < 2:
                 await asyncio.sleep(2.0 * (attempt + 1))
@@ -154,15 +156,37 @@ async def chat_completion(
     effort: str | None = None,
     provider: str | None = None,
     max_tokens: int = 2048,
-    timeout: float = 240.0,
+    timeout: float | None = 720.0,
+    on_status: Any | None = None,
 ) -> str:
-    """Entrega o texto do motor. Se o GhostCLI falhar e o Cursor estiver ligado, o Cursor responde."""
+    """Entrega o texto do motor padrão do escritório. Não troca para o outro motor."""
+    del provider
+    from app.modules.factory.engine_prefs import office_call
+
+    chosen, model, use_effort, enabled = await office_call(model, effort)
+    if not enabled:
+        raise GhostCliError("O motor padrão está desligado. Ligue-o em Integrações.")
+
     payload_messages: list[dict[str, str]] = []
     if system:
         payload_messages.append({"role": "system", "content": system})
     payload_messages.extend(messages)
 
-    use_effort = (effort or default_effort()).strip().lower()
+    if chosen == "cursor":
+        from app.modules.cursor_link.client import complete_text
+
+        try:
+            return await complete_text(
+                system=system,
+                messages=messages,
+                model=model,
+                effort=use_effort,
+                on_status=on_status,
+                timeout=timeout,
+            )
+        except Exception as exc:  # noqa: BLE001
+            raise GhostCliError(str(exc)) from exc
+
     ghost_model = ghost_model_id(model)
     ghost_effort = ghost_effort_id(use_effort)
     payload: dict[str, Any] = {
@@ -172,36 +196,12 @@ async def chat_completion(
         "reasoning_effort": ghost_effort,
         "effort": ghost_effort,
     }
-
-    from app.modules.cursor_link.client import complete_text, is_enabled
-
-    chosen = (provider or "ghostcli").strip().lower()
-    errors: list[str] = []
-
-    async def via_ghost() -> str:
-        if not is_configured():
-            raise GhostCliError("GHOSTCLI_API_KEY não configurada", report=False)
+    if not is_configured():
+        raise GhostCliError("GHOSTCLI_API_KEY não configurada")
+    try:
         return await _post_chat(payload, timeout=timeout)
-
-    async def via_cursor() -> str:
-        if not await is_enabled():
-            raise RuntimeError("O conector Cursor está desligado.")
-        return await complete_text(system=system, messages=messages, model=model, effort=use_effort)
-
-    steps = ("cursor", "ghost") if chosen == "cursor" else ("ghost", "cursor")
-    for step in steps:
-        if step == "cursor" and chosen != "cursor" and not await is_enabled():
-            continue
-        try:
-            if step == "ghost":
-                return await via_ghost()
-            return await via_cursor()
-        except Exception as exc:  # noqa: BLE001
-            errors.append(str(exc))
-
-    if len(errors) == 1:
-        raise GhostCliError(errors[0])
-    raise GhostCliError("Nenhum motor respondeu. " + " ".join(errors))
+    except GhostCliError as exc:
+        raise GhostCliError(str(exc)) from exc
 
 
 async def list_models(timeout: float = 15.0) -> list[dict[str, Any]]:

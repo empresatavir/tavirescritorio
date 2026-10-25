@@ -41,7 +41,7 @@ async def test_timeout_retries_before_success(monkeypatch):
     _Client.calls = 0
     token = begin_ai_link_scope()
     monkeypatch.setattr("app.modules.ghostcli.client.httpx.AsyncClient", _Client)
-    monkeypatch.setattr("app.modules.cursor_link.client.is_enabled", _disabled)
+    monkeypatch.setattr("app.modules.factory.engine_prefs.office_call", _office_ghost)
 
     async def _fast_sleep(*_args, **_kwargs):
         return None
@@ -57,8 +57,8 @@ async def test_timeout_retries_before_success(monkeypatch):
     assert current_ai_link_error() is None
 
 
-async def _disabled() -> bool:
-    return False
+async def _office_ghost(model, effort):
+    return ("ghostcli", model or "claude-opus-5-5", effort or "xhigh", True)
 
 
 @pytest.mark.asyncio
@@ -97,7 +97,7 @@ async def test_http_524_retries_and_hides_the_html_page(monkeypatch):
     _Client.calls = 0
     token = begin_ai_link_scope()
     monkeypatch.setattr("app.modules.ghostcli.client.httpx.AsyncClient", _Client)
-    monkeypatch.setattr("app.modules.cursor_link.client.is_enabled", _disabled)
+    monkeypatch.setattr("app.modules.factory.engine_prefs.office_call", _office_ghost)
 
     async def _fast_sleep(*_args, **_kwargs):
         return None
@@ -121,7 +121,7 @@ async def test_timeout_reports_only_after_the_last_attempt(monkeypatch):
 
     token = begin_ai_link_scope()
     monkeypatch.setattr("app.modules.ghostcli.client.httpx.AsyncClient", _AlwaysTimeout)
-    monkeypatch.setattr("app.modules.cursor_link.client.is_enabled", _disabled)
+    monkeypatch.setattr("app.modules.factory.engine_prefs.office_call", _office_ghost)
 
     async def _fast_sleep(*_args, **_kwargs):
         return None

@@ -48,13 +48,16 @@ async def create_project(req: CreateProjectRequest, session: AsyncSession = Depe
         )
 
     track = (req.track or "zero").strip().lower()
-    if track not in ("zero", "pronto"):
-        raise HTTPException(status_code=400, detail="track deve ser 'zero' ou 'pronto'")
-
-    if track == "pronto" and not req.context_files:
+    if track not in ("zero", "pronto", "especificado", "manutencao"):
         raise HTTPException(
             status_code=400,
-            detail="Projeto com escopo fechado exige ao menos um arquivo em context_files",
+            detail="track deve ser 'zero', 'especificado', 'manutencao' ou 'pronto'",
+        )
+
+    if track in ("pronto", "especificado", "manutencao") and not req.context_files:
+        raise HTTPException(
+            status_code=400,
+            detail="Esta entrada exige ao menos um arquivo em context_files.",
         )
 
     ds_files = list(req.design_system_files or [])
@@ -97,7 +100,11 @@ async def create_project(req: CreateProjectRequest, session: AsyncSession = Depe
         "workspace_root": ownership,
         "template_category": req.template_category,
         "template_code": template_code,
-        "ideation_mode": "long_interview" if track == "zero" else "closed_scope_no_invent",
+        "ideation_mode": {
+            "zero": "long_interview",
+            "especificado": "specified_creation",
+            "manutencao": "maintenance_read",
+        }.get(track, "closed_scope_no_invent"),
     }
 
     project = Project(
@@ -136,3 +143,17 @@ async def create_project(req: CreateProjectRequest, session: AsyncSession = Depe
     await session.commit()
     await session.refresh(project)
     return project
+
+
+@router.post("/{project_id}/intake")
+async def read_project_scope(project_id: str, session: AsyncSession = Depends(get_session)):
+    """A Dora lê os arquivos já gravados e grava o contrato da esteira."""
+    from app.modules.factory.intake import read_uploaded_scope
+
+    repo = ProjectRepository(session)
+    project = await repo.get_by_id(project_id)
+    if not project:
+        raise HTTPException(status_code=404, detail="Projeto não encontrado")
+    result = await read_uploaded_scope(session, project)
+    await session.commit()
+    return result

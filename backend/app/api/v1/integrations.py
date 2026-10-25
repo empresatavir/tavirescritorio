@@ -74,6 +74,40 @@ class AiSettingsBody(BaseModel):
     provider: str | None = None
 
 
+@router.get("/engines")
+async def get_engines() -> dict:
+    from app.modules.factory.engine_prefs import list_engines
+
+    return await list_engines()
+
+
+class EngineToggle(BaseModel):
+    enabled: bool
+
+
+@router.put("/engines/{engine_id}")
+async def put_engine(engine_id: str, body: EngineToggle) -> dict:
+    from app.modules.factory.engine_prefs import set_engine_enabled
+
+    try:
+        payload = await set_engine_enabled(engine_id, body.enabled)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    if engine_id == "cursor":
+        await set_enabled(body.enabled)
+    return payload
+
+
+@router.put("/engines/{engine_id}/default")
+async def put_engine_default(engine_id: str) -> dict:
+    from app.modules.factory.engine_prefs import set_default_engine
+
+    try:
+        return await set_default_engine(engine_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
 @router.get("/cursor")
 async def get_cursor_integration() -> dict:
     return await status()
@@ -104,19 +138,29 @@ async def get_project_ai_settings(
     stored = dict(project.ai_settings or {})
     run = await get_active_run(session, project.id)
     meta = (run.meta if run else None) or {}
-    model = str(stored.get("model") or meta.get("model") or default_model())
-    effort = str(stored.get("effort") or meta.get("effort") or default_effort())
-    spec = _model_spec(model)
-    provider = str(stored.get("provider") or meta.get("provider") or (spec[0]["id"] if spec else "ghostcli"))
-    if spec and spec[0]["id"] != provider:
-        provider = spec[0]["id"]
+    from app.modules.factory.engine_prefs import office_call
+
+    provider, model, effort, enabled = await office_call(
+        stored.get("model") or meta.get("model"),
+        stored.get("effort") or meta.get("effort"),
+    )
     cursor = await status()
+    from app.modules.factory.engine_prefs import list_engines
+
+    flags = await list_engines()
+    enabled_ids = {item["id"] for item in flags["engines"] if item["enabled"]}
+    engines = [
+        {**engine, "enabled": True, "is_default": engine["id"] == provider}
+        for engine in ENGINES
+        if engine["id"] in enabled_ids
+    ]
     return {
         "model": model,
         "effort": effort,
         "provider": provider,
+        "engine_enabled": enabled,
         "cursor_enabled": cursor["enabled"],
-        "engines": ENGINES,
+        "engines": engines,
     }
 
 
@@ -136,9 +180,13 @@ async def put_project_ai_settings(
     allowed = {item["id"] for item in model_spec["efforts"]}
     if body.effort not in allowed:
         raise HTTPException(status_code=400, detail="Esforço indisponível para este modelo")
-    provider = engine["id"]
-    if provider == "cursor" and not (await status())["enabled"]:
-        raise HTTPException(status_code=409, detail="Ligue o conector Cursor em Integrações.")
+    from app.modules.factory.engine_prefs import office_call
+
+    provider, _model, _effort, enabled = await office_call(None, None)
+    if engine["id"] != provider:
+        raise HTTPException(status_code=409, detail="O escritório usa o motor padrão definido em Integrações.")
+    if not enabled:
+        raise HTTPException(status_code=409, detail="Ligue o motor padrão em Integrações.")
     project.ai_settings = {"model": body.model, "effort": body.effort, "provider": provider}
     flag_modified(project, "ai_settings")
     run = await get_active_run(session, project.id)

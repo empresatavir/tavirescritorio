@@ -20,7 +20,7 @@ FRONT_STAGES = {"build_fe", "m_code_fe", "build", "m_code"}
 GUARDED_STAGES = BACK_STAGES | FRONT_STAGES | JORNADA_QA | APK_BUILD
 CODE_SUFFIXES = {".py", ".ts", ".tsx", ".js", ".jsx", ".html", ".css", ".sql"}
 FRONT_SUFFIXES = {".html", ".css", ".js", ".jsx", ".ts", ".tsx"}
-READ_SUFFIXES = {".md", ".txt", ".json", ".csv", ".html", ".css", ".js", ".svg"}
+READ_SUFFIXES = {".md", ".txt", ".json", ".csv", ".html", ".css", ".js", ".jsx", ".ts", ".tsx", ".py", ".svg"}
 ENTREGAVEIS = {"web", "apk", "ambos"}
 
 
@@ -133,7 +133,7 @@ def _read_sources(root: Path) -> list[tuple[str, str]]:
                 text = path.read_text(encoding="utf-8", errors="replace")
             except OSError:
                 continue
-            if path.suffix.lower() in {".html", ".css", ".js", ".svg"}:
+            if path.suffix.lower() in {".html", ".css", ".js", ".jsx", ".ts", ".tsx", ".py", ".svg"}:
                 piece = f"Arquivo de referência `{rel}` ({path.stat().st_size} bytes). Use o caminho. Não invente o que o arquivo não mostra.\n{text[:1500]}"
             else:
                 piece = text[:20000]
@@ -345,7 +345,7 @@ async def read_uploaded_scope(session, project: Project) -> dict:
                     effort=effort,
                     provider=provider,
                     max_tokens=2500,
-                    timeout=240.0,
+                    timeout=None,
                 )
                 contract = parse_contract(text or "")
                 read_ok = True

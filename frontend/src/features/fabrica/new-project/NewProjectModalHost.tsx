@@ -48,24 +48,35 @@ export function NewProjectModalHost(props: NewProjectModalHostProps) {
           };
           const created = await api.createProject(body);
           const skipped: string[] = [];
-          for (const file of payload.context_file_blobs || []) {
+          const save = async (folder: string, file: File) => {
             const safe = file.name.replace(/[\\/]/g, "-");
-            if (!/\.(md|txt|json|csv)$/i.test(safe)) {
+            const readable = /\.(md|txt|json|csv|html|css|js|jsx|ts|tsx|py|svg)$/i.test(safe) && file.size <= 1_500_000;
+            if (!readable) {
               skipped.push(file.name);
-              continue;
+              return;
             }
             await api.writeFactoryArtifact(created.id, {
-              path: `context/${safe}`,
+              path: `${folder}/${safe}`,
               content: await file.text(),
               overwrite: true,
             });
+          };
+          for (const file of payload.context_file_blobs || []) await save("context", file);
+          for (const file of payload.design_system_file_blobs || []) await save("design", file);
+          let reading = "";
+          try {
+            const scope = await api.readProjectScope(created.id);
+            reading = scope.read_ok
+              ? `A Dora leu ${scope.fontes.length} arquivo(s) e gravou o contrato da esteira.`
+              : scope.error || "A Dora não concluiu a leitura do escopo.";
+          } catch (err) {
+            reading = err instanceof Error ? err.message : "A Dora não concluiu a leitura do escopo.";
           }
+          const skipNote = skipped.length ? ` Não entram na leitura: ${skipped.join(", ")}.` : "";
           showToast(
-            skipped.length
-              ? `Projeto "${created.name}" criado. A Dora não lê: ${skipped.join(", ")}. Envie .md, .txt, .json ou .csv.`
-              : `Projeto "${created.name}" criado`,
+            `Projeto "${created.name}" criado. ${reading}${skipNote}`,
             "Fábrica",
-            skipped.length ? "warn" : "success",
+            skipped.length || reading.includes("não") ? "warn" : "success",
           );
           props.onCreated?.(created);
         },

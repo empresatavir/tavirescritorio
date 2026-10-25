@@ -1,5 +1,6 @@
 """A etapa de código só fecha quando o teste falha e depois passa."""
 
+import json
 from pathlib import Path
 
 import pytest
@@ -9,7 +10,9 @@ from app.modules.factory.work_session import (
     build_is_proven,
     run_build_sync,
     run_check_sync,
+    run_visual_sync,
     scan_security,
+    work_kind,
 )
 
 
@@ -144,6 +147,114 @@ def test_markdown_sem_log_nao_prova_o_build(tmp_path: Path):
     (tmp_path / "qa").mkdir()
     (tmp_path / "qa" / "plan-back.md").write_text("Resultado: APROVADO\n", encoding="utf-8")
     assert build_is_proven(tmp_path, "m_code_be") is False
+
+
+def test_pedido_de_codigo_cita_o_programa(tmp_path: Path):
+    seen: list[str] = []
+
+    def spy(workspace: Path, prompt: str, model: str, effort: str, say) -> str:
+        seen.append(prompt)
+        return _agent(workspace, prompt, model, effort, say)
+
+    (tmp_path / "context").mkdir()
+    (tmp_path / "context" / "contrato.json").write_text(
+        json.dumps({"produto": "Painel", "telas": ["Home", "Fila"], "stack_frontend": "React 18"}),
+        encoding="utf-8",
+    )
+    _build(tmp_path, agent=spy)
+    code_prompt = next(prompt for prompt in seen if "Fase: implementação" in prompt)
+    assert "Home" in code_prompt
+    assert "React 18" in code_prompt
+    assert "Um arquivo .md não substitui esse programa." in code_prompt
+
+
+def test_prova_visual_grava_a_interface(tmp_path: Path):
+    (tmp_path / "context").mkdir()
+    (tmp_path / "context" / "contrato.json").write_text(
+        json.dumps({"produto": "Painel", "telas": ["Home"], "stack_frontend": "React 18"}),
+        encoding="utf-8",
+    )
+
+    def agent(workspace: Path, prompt: str, _model: str, _effort: str, _say) -> str:
+        assert "A entrega é a interface" in prompt
+        assert "Home" in prompt
+        folder = workspace / "frontend"
+        folder.mkdir()
+        (folder / "index.html").write_text("<div id='tavir-app'>Home</div>\n" * 40, encoding="utf-8")
+        (folder / "app.js").write_text("const tela = 'Home';\n" * 40, encoding="utf-8")
+        return "ok"
+
+    result = run_visual_sync(
+        tmp_path,
+        "visual_proof",
+        agent_name="Enzo Extrator",
+        title="Prova visual",
+        model="auto",
+        effort="balanced",
+        guidance=None,
+        agent=agent,
+    )
+    assert "interface gravada" in result["note"]
+    readme = (tmp_path / "visual_proof" / "README.md").read_text(encoding="utf-8")
+    assert "frontend/index.html" in readme
+    assert "Vou ler" not in readme
+
+
+def test_prova_visual_flutter_grava_dart(tmp_path: Path):
+    (tmp_path / "context").mkdir()
+    (tmp_path / "context" / "contrato.json").write_text(
+        json.dumps({"produto": "Painel", "telas": ["Home"], "stack_frontend": "Flutter / Dart", "entregavel": "apk"}),
+        encoding="utf-8",
+    )
+
+    def agent(workspace: Path, prompt: str, _model: str, _effort: str, _say) -> str:
+        assert "aplicativo/lib/main.dart" in prompt
+        assert "frontend/index.html" not in prompt
+        lib = workspace / "aplicativo" / "lib"
+        lib.mkdir(parents=True)
+        (workspace / "aplicativo" / "pubspec.yaml").write_text("name: painel\n", encoding="utf-8")
+        (lib / "main.dart").write_text("void main() {}\n// tela Home\n" * 40, encoding="utf-8")
+        return "ok"
+
+    result = run_visual_sync(
+        tmp_path,
+        "visual_proof",
+        agent_name="Enzo Extrator",
+        title="Prova visual",
+        model="auto",
+        effort="balanced",
+        guidance=None,
+        agent=agent,
+    )
+    assert "interface gravada" in result["note"]
+    readme = (tmp_path / "visual_proof" / "README.md").read_text(encoding="utf-8")
+    assert "aplicativo/lib/main.dart" in readme
+
+
+def test_prova_visual_rejeita_so_markdown(tmp_path: Path):
+    def agent(workspace: Path, _prompt: str, _model: str, _effort: str, _say) -> str:
+        folder = workspace / "visual_proof"
+        folder.mkdir()
+        (folder / "README.md").write_text("só texto sobre a tela", encoding="utf-8")
+        return "ok"
+
+    with pytest.raises(WorkSessionError, match="markdown"):
+        run_visual_sync(
+            tmp_path,
+            "visual_proof",
+            agent_name="Enzo Extrator",
+            title="Prova visual",
+            model="auto",
+            effort="balanced",
+            guidance=None,
+            agent=agent,
+        )
+
+
+def test_prova_visual_e_sessao_de_codigo():
+    assert work_kind("visual_proof") == "visual"
+    assert work_kind("build_fe") == "build"
+    assert work_kind("docs") is None
 
 
 def test_sessao_nao_abre_o_escritorio():

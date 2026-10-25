@@ -24,6 +24,7 @@ interface DashProject {
   trackLabel: string;
   currentStage: string;
   pendingCount: number;
+  localPath: string;
 }
 
 interface DashAction {
@@ -61,9 +62,9 @@ const TEMPLATES: Array<{
   {
     id: "sy",
     title: "Sistemas",
-    subtitle: "SaaS · CRM · APIs",
-    desc: "Sistemas e ferramentas com requisitos verificáveis, arquitetura e QA independente.",
-    stagesHint: "até 10 etapas · arquitetura",
+    subtitle: "Sistemas · Criação e manutenção",
+    desc: "Criação do zero, criação com especificação pronta, ou manutenção de um sistema que já existe.",
+    stagesHint: "criação 15 etapas · manutenção 12 etapas",
     icon: "workflow",
   },
 ];
@@ -146,8 +147,13 @@ export function FabricaDashboard() {
 
       const mapOne = (p: FactoryProject | ProjectItem): DashProject => {
         const cat = catFromTemplate(p.template_code);
-        const trackLabel =
-          p.template_code === "ideacao-dora"
+        const raw = (p.template_code || "").toLowerCase();
+        const known = /^(lp|of|sy)-(c|m)$/.exec(raw);
+        const trackLabel = known
+          ? known[2] === "c"
+            ? "Criação"
+            : "Manutenção"
+          : p.template_code === "ideacao-dora"
             ? "Projeto do zero"
             : p.template_code === "execucao-direta"
               ? "Escopo fechado"
@@ -158,13 +164,14 @@ export function FabricaDashboard() {
           name: p.name,
           company: p.company || p.client || "—",
           cat,
-          code: codeFrom(cat, trackLabel, p.name),
+          code: known ? raw.toUpperCase() : codeFrom(cat, trackLabel, p.name),
           stagesDone: p.stages_done ?? 0,
           totalStages: p.total_stages || 1,
           status: normalizeStatus(p.status),
           trackLabel,
           currentStage: "Etapa em curso",
           pendingCount: pendencies.length,
+          localPath: p.local_path || "",
         };
       };
 
@@ -476,6 +483,31 @@ export function FabricaDashboard() {
                           <span class="fab-dash-status" data-status={pj.status}>
                             {statusLabel(pj.status)}
                           </span>
+                          <button
+                            type="button"
+                            class="fab-dash-gear"
+                            aria-label={`Excluir ${pj.name}`}
+                            title="Excluir o projeto. A pergunta seguinte decide se a pasta sai do disco."
+                            onClick={async (event) => {
+                              event.stopPropagation();
+                              if (!window.confirm(`Excluir ${pj.name} da Fábrica?`)) return;
+                              const folder = pj.localPath ? `\n\n${pj.localPath}` : "";
+                              const deleteFolder = window.confirm(`Deseja excluir a pasta do projeto?${folder}`);
+                              try {
+                                const result = await api.deleteFactoryProject(pj.id, deleteFolder);
+                                setProjects((list) => list.filter((item) => item.id !== pj.id));
+                                setActions((list) => list.filter((item) => item.projectId !== pj.id));
+                                if (result.folder_error) {
+                                  window.alert(`O projeto saiu da Fábrica. A pasta permaneceu: ${result.folder_error}`);
+                                }
+                              } catch {
+                                window.alert("Não foi possível excluir o projeto.");
+                              }
+                            }}
+                            onKeyDown={(event) => event.stopPropagation()}
+                          >
+                            ×
+                          </button>
                           <button
                             type="button"
                             class="fab-dash-gear"

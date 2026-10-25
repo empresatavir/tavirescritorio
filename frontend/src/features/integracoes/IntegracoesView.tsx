@@ -18,6 +18,7 @@ interface IntegrationItem {
   base: string;
   auth: string;
   usedBy: string;
+  isDefault?: boolean;
 }
 
 const INITIAL_INTEGRATIONS: IntegrationItem[] = [
@@ -62,6 +63,19 @@ const INITIAL_INTEGRATIONS: IntegrationItem[] = [
     base: "knowledge/ · índice semântico",
     auth: "Acesso ao sistema de arquivos",
     usedBy: "Pesquisador, Redator e Documentador",
+  },
+  {
+    id: "ghostcli",
+    group: "ai",
+    name: "Ghost",
+    description: "Opus, Sonnet e Fable",
+    glyph: "bot",
+    connected: true,
+    category: "Motor de IA",
+    docs: "",
+    base: "GhostCLI",
+    auth: "GHOSTCLI_API_KEY",
+    usedBy: "Fábrica, Chat e Studio",
   },
   {
     id: "int-08",
@@ -252,6 +266,23 @@ export function IntegracoesView() {
   };
   onCleanup(stopLoginPoll);
 
+  const applyEngines = (payload: { engines: { id: string; enabled: boolean; is_default: boolean }[] }) => {
+    const flags = new Map(payload.engines.map((item) => [item.id, item]));
+    setIntegrations((prev) =>
+      prev.map((item) => {
+        const row = flags.get(item.id);
+        if (!row) return item;
+        return { ...item, connected: row.enabled, isDefault: row.is_default };
+      }),
+    );
+  };
+
+  const refreshEngines = async () => {
+    const payload = await api.listAiEngines();
+    applyEngines(payload);
+    return payload;
+  };
+
   const refreshCursor = async () => {
     const status = await api.getCursorIntegration();
     setIntegrations((prev) =>
@@ -321,25 +352,20 @@ export function IntegracoesView() {
   });
 
   const handleToggle = async (id: string) => {
-    if (id === "cursor") {
-      const current = integrations().find((item) => item.id === "cursor");
-      const next = !current?.connected;
+    const current = integrations().find((item) => item.id === id);
+    if (current?.group === "ai") {
       try {
-        const status = await api.setCursorIntegration(next);
-        setIntegrations((prev) =>
-          prev.map((item) =>
-            item.id === "cursor"
-              ? {
-                  ...item,
-                  connected: status.enabled,
-                  check: cursorCheck(status),
-                }
-              : item,
-          ),
+        const payload = await api.setAiEngine(id, !current.connected);
+        applyEngines(payload);
+        if (id === "cursor") await refreshCursor();
+        const row = payload.engines.find((item) => item.id === id);
+        showToast(
+          row?.enabled ? `${current.name} ligado` : `${current.name} desligado`,
+          "Integração",
+          row?.enabled ? "success" : "info",
         );
-        showToast(status.enabled ? "Cursor ligado" : "Cursor desligado", "Integração", status.enabled ? "success" : "info");
       } catch (err) {
-        showToast(err instanceof Error ? err.message : "Não foi possível mudar o Cursor", "Integração", "error");
+        showToast(err instanceof Error ? err.message : "Não foi possível mudar o motor", "Integração", "error");
       }
       return;
     }
@@ -359,7 +385,22 @@ export function IntegracoesView() {
     );
   };
 
+  const handleSetDefault = async (id: string) => {
+    const current = integrations().find((item) => item.id === id);
+    if (!current?.connected) {
+      showToast("Ligue o motor antes de defini-lo como padrão.", "Integração", "info");
+      return;
+    }
+    try {
+      applyEngines(await api.setDefaultAiEngine(id));
+      showToast(`${current.name} é o motor padrão.`, "Integração", "success");
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Não foi possível definir o padrão", "Integração", "error");
+    }
+  };
+
   createEffect(() => {
+    void refreshEngines().catch(() => {});
     void refreshCursor().catch(() => {});
   });
 
@@ -550,7 +591,13 @@ export function IntegracoesView() {
                               </div>
                               <div style={{ display: "flex", "align-items": "center", gap: "6px", "margin-top": "6px", "font-size": "11px", color: statusColor() }}>
                                 <span style={{ width: "6px", height: "6px", "border-radius": "50%", background: statusColor() }}></span>
-                                {isConnected() ? `Conectado · ${item.check || "ok"}` : "Falta ligar · sem credencial"}
+                                {item.group === "ai"
+                                  ? isConnected()
+                                    ? `Ligado${item.check ? ` · ${item.check}` : ""}`
+                                    : "Desligado"
+                                  : isConnected()
+                                    ? `Conectado · ${item.check || "ok"}`
+                                    : "Falta ligar · sem credencial"}
                               </div>
                             </div>
                           </div>
@@ -582,6 +629,7 @@ export function IntegracoesView() {
                               {item.group === "ai" ? "Configurar e testar" : "Detalhes"}
                             </button>
 
+                            <Show when={item.docs}>
                             <a
                               href={item.docs}
                               target="_blank"
@@ -602,6 +650,7 @@ export function IntegracoesView() {
                             >
                               Docs ↗
                             </a>
+                            </Show>
 
                             <span style={{ flex: "1" }}></span>
 
@@ -625,39 +674,54 @@ export function IntegracoesView() {
                               </button>
                             </Show>
 
-                            <Show
-                              when={item.id === "cursor"}
-                              fallback={
-                                <Show when={item.group !== "local"}>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleToggle(item.id)}
-                                    style={{
-                                      height: "28px",
-                                      padding: "0 12px",
-                                      "border-radius": "999px",
-                                      cursor: "pointer",
-                                      "font-size": "12px",
-                                      "font-weight": "500",
-                                      border: isConnected() ? "1px solid rgba(244,246,242,.16)" : "none",
-                                      background: isConnected() ? "transparent" : "var(--lime, #B7F34A)",
-                                      color: isConnected() ? "var(--ember, oklch(.635 .185 27))" : "var(--ink-panel, #25360a)",
-                                    }}
-                                  >
-                                    {isConnected() ? "Desconectar" : "Conectar"}
-                                  </button>
-                                </Show>
-                              }
-                            >
+                            <Show when={item.group === "ai"}>
+                              <button
+                                type="button"
+                                disabled={!isConnected() || item.isDefault}
+                                onClick={() => void handleSetDefault(item.id)}
+                                style={{
+                                  height: "28px",
+                                  padding: "0 12px",
+                                  "border-radius": "999px",
+                                  cursor: !isConnected() || item.isDefault ? "default" : "pointer",
+                                  "font-size": "12px",
+                                  "font-weight": "600",
+                                  border: item.isDefault ? "none" : "1px solid rgba(244,246,242,.16)",
+                                  background: item.isDefault ? "var(--lime, #B7F34A)" : "transparent",
+                                  color: item.isDefault ? "var(--ink-panel, #25360a)" : "var(--text-primary, #F4F6F2)",
+                                  opacity: isConnected() ? "1" : "0.45",
+                                }}
+                              >
+                                {item.isDefault ? "Padrão" : "Definir como padrão"}
+                              </button>
                               <button
                                 type="button"
                                 class={`int-switch ${isConnected() ? "is-on" : ""}`}
                                 role="switch"
                                 aria-checked={isConnected()}
-                                aria-label={isConnected() ? "Desligar Cursor" : "Ligar Cursor"}
+                                aria-label={isConnected() ? `Desligar ${item.name}` : `Ligar ${item.name}`}
                                 onClick={() => void handleToggle(item.id)}
                               >
                                 <span />
+                              </button>
+                            </Show>
+                            <Show when={item.group !== "ai" && item.group !== "local"}>
+                              <button
+                                type="button"
+                                onClick={() => handleToggle(item.id)}
+                                style={{
+                                  height: "28px",
+                                  padding: "0 12px",
+                                  "border-radius": "999px",
+                                  cursor: "pointer",
+                                  "font-size": "12px",
+                                  "font-weight": "500",
+                                  border: isConnected() ? "1px solid rgba(244,246,242,.16)" : "none",
+                                  background: isConnected() ? "transparent" : "var(--lime, #B7F34A)",
+                                  color: isConnected() ? "var(--ember, oklch(.635 .185 27))" : "var(--ink-panel, #25360a)",
+                                }}
+                              >
+                                {isConnected() ? "Desconectar" : "Conectar"}
                               </button>
                             </Show>
                           </div>

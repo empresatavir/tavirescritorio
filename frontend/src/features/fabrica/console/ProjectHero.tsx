@@ -23,7 +23,9 @@ export function ProjectHero(props: {
   meta: ProjectMeta;
   running: boolean;
   busy?: boolean;
+  canInterrupt?: boolean;
   canAuthorize?: boolean;
+  authorizeMode?: "generate" | "release" | "generating";
   canResume?: boolean;
   canAutoRun?: boolean;
   autoOn?: boolean;
@@ -41,6 +43,7 @@ export function ProjectHero(props: {
   folderCheck?: string;
   onOpenSettings?: () => void;
   onBack?: () => void;
+  onDelete?: () => void;
 }) {
   const pct = () =>
     Math.round((props.meta.stagesDone / Math.max(props.meta.totalStages, 1)) * 100);
@@ -60,7 +63,7 @@ export function ProjectHero(props: {
       </Show>
 
       <div class="fc-hero-card">
-        <div class="fc-hero-ring" aria-label={`Progresso ${pct()}%`}>
+        <div class="fc-hero-ring" classList={{ "is-busy": !!props.busy }} aria-label={`Progresso ${pct()}%`}>
           <svg viewBox="0 0 80 80" width="72" height="72">
             <circle cx="40" cy="40" r="34" class="fc-hero-ring-track" />
             <circle
@@ -157,10 +160,20 @@ export function ProjectHero(props: {
               class="fc-hero-btn"
               disabled={props.busy}
               onClick={() => props.onAuthorize?.()}
-              title="Autorizar gate CEO local"
+              title={
+                props.authorizeMode === "generating"
+                  ? "O motor está gravando o arquivo deste gate"
+                  : props.authorizeMode === "generate"
+                    ? "Primeiro grava o arquivo da etapa. Depois libera o gate."
+                    : "O arquivo já está na pasta. Este clique só libera o gate."
+              }
             >
               <TvIcon name="shield-check" width="14" height="14" />
-              Autorizar gate
+              {props.authorizeMode === "generating"
+                ? "Gerando entrega…"
+                : props.authorizeMode === "generate"
+                  ? "Gerar entrega e autorizar"
+                  : "Autorizar gate"}
             </button>
           </Show>
           <Show when={props.canResume}>
@@ -178,9 +191,9 @@ export function ProjectHero(props: {
           <button
             type="button"
             class="fc-hero-btn"
-            disabled={props.busy}
+            disabled={props.busy && !props.canInterrupt}
             onClick={props.onToggleRun}
-            title="Iniciar ou pausar esteira"
+            title={props.canInterrupt ? "Corta a chamada do motor e pausa a esteira" : "Iniciar ou pausar esteira"}
           >
             <TvIcon name={props.running ? "pause" : "play"} width="14" height="14" />
             {props.running ? "Pausar" : "Iniciar"}
@@ -193,6 +206,17 @@ export function ProjectHero(props: {
             <TvIcon name="shield-check" width="14" height="14" />
             Validar pastas
           </button>
+          <Show when={props.onDelete}>
+            <button
+              type="button"
+              class="fc-hero-btn danger"
+              disabled={props.busy}
+              onClick={() => props.onDelete?.()}
+              title="Excluir o projeto. A pergunta seguinte decide se a pasta sai do disco."
+            >
+              Excluir projeto
+            </button>
+          </Show>
           <Show when={props.canRestart}>
             <button
               type="button"

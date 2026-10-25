@@ -45,7 +45,18 @@ export function NewProjectModalReact(props) {
   useEffect(() => {
     if (!props.open) return;
     setError(null);
-  }, [props.open]);
+    setTrack("zero");
+  }, [props.open, props.preferredCategory]);
+
+  const systemsMode = props.preferredCategory === "sy";
+  const fileHint =
+    track === "manutencao"
+      ? " Obrigatório. Envie a especificação, o código ou as telas do sistema que já existe."
+      : track === "especificado"
+        ? " Obrigatório. Envie a especificação. Telas e o modelo do projeto entram aqui."
+        : track === "pronto"
+          ? " Obrigatório para escopo fechado."
+          : "";
 
   const categoryHint = useMemo(() => {
     if (props.preferredCategory === "lp") return "Landing Pages";
@@ -99,9 +110,13 @@ export function NewProjectModalReact(props) {
       setError("Selecione se o projeto é Interno ou Externo.");
       return;
     }
-    if (track === "pronto" && contextFiles.length === 0) {
+    if ((track === "pronto" || track === "especificado" || track === "manutencao") && contextFiles.length === 0) {
       setError(
-        "Projeto com escopo fechado exige ao menos um documento de escopo em “Importar Arquivos”.",
+        track === "manutencao"
+          ? "A manutenção exige o material do sistema que já existe."
+          : track === "especificado"
+            ? "A criação com especificação exige ao menos a especificação do projeto."
+            : "Projeto com escopo fechado exige ao menos um documento de escopo em “Importar Arquivos”.",
       );
       return;
     }
@@ -117,6 +132,7 @@ export function NewProjectModalReact(props) {
         context_files: fileNames(contextFiles),
         context_file_blobs: contextFiles,
         design_system_files: fileNames(designSystemFiles),
+        design_system_file_blobs: designSystemFiles,
         stack_frontend: stackFrontend.trim() || undefined,
         stack_backend: stackBackend.trim() || undefined,
         stack_database: stackDatabase.trim() || undefined,
@@ -164,8 +180,7 @@ export function NewProjectModalReact(props) {
                   Novo Projeto
                 </Dialog.Title>
                 <Dialog.Description size="2" color="gray">
-                  Cadastre a iniciativa e defina a esteira de ideação. Anexos de Design System ficam
-                  isolados do escopo geral.
+                  Cadastre a iniciativa. Os arquivos enviados são lidos na criação e viram o contrato da esteira.
                 </Dialog.Description>
                 {categoryHint ? (
                   <Badge color="teal" variant="soft" mt="2">
@@ -289,7 +304,7 @@ export function NewProjectModalReact(props) {
 
               <Flex direction="column" gap="2">
                 <Text size="2" weight="medium">
-                  Tipo de projeto / esteira
+                  {systemsMode ? "Como o sistema entra na esteira" : "Tipo de projeto / esteira"}
                 </Text>
                 <RadioGroup.Root value={track} onValueChange={(v) => setTrack(v)}>
                   <Flex direction="column" gap="2">
@@ -308,36 +323,70 @@ export function NewProjectModalReact(props) {
                         <Flex gap="2" align="start">
                           <RadioGroup.Item value="zero" />
                           <Box>
-                            <Text weight="bold">Projeto do Zero</Text>
+                            <Text weight="bold">
+                              {systemsMode ? "Criação do zero" : "Projeto do Zero"}
+                            </Text>
                             <Text as="p" size="1" color="gray" mt="1">
-                              Dispara a esteira longa de ideação: a agente entrevista e questiona
-                              iterativamente para levantar requisitos — não presume escopo fechado.
+                              {systemsMode
+                                ? "A ideia ainda vai para o papel. A esteira faz ideação, pesquisa e levantamento antes de codar. Esta entrada usa a esteira de criação."
+                                : "Dispara a esteira longa de ideação: a agente entrevista e questiona iterativamente para levantar requisitos — não presume escopo fechado."}
                             </Text>
                           </Box>
                         </Flex>
                       </Text>
                     </Box>
 
+                    {systemsMode ? (
+                      <Box
+                        p="3"
+                        style={{
+                          borderRadius: 12,
+                          border:
+                            track === "especificado"
+                              ? "1px solid var(--teal-8)"
+                              : "1px solid var(--gray-a5)",
+                          background: track === "especificado" ? "var(--teal-a2)" : "var(--gray-a2)",
+                        }}
+                      >
+                        <Text as="label" size="2">
+                          <Flex gap="2" align="start">
+                            <RadioGroup.Item value="especificado" />
+                            <Box>
+                              <Text weight="bold">Criação com especificação</Text>
+                              <Text as="p" size="1" color="gray" mt="1">
+                                A ideia, os requisitos e a especificação já existem. Envie esse material, o design system e as telas. A esteira cria o sistema a partir disso. Esta entrada também usa a esteira de criação.
+                              </Text>
+                            </Box>
+                          </Flex>
+                        </Text>
+                      </Box>
+                    ) : null}
+
                     <Box
                       p="3"
                       style={{
                         borderRadius: 12,
                         border:
-                          track === "pronto"
+                          track === (systemsMode ? "manutencao" : "pronto")
                             ? "1px solid var(--lime-8, #B7F34A)"
                             : "1px solid var(--gray-a5)",
-                        background: track === "pronto" ? "rgba(183,243,74,0.08)" : "var(--gray-a2)",
+                        background:
+                          track === (systemsMode ? "manutencao" : "pronto")
+                            ? "rgba(183,243,74,0.08)"
+                            : "var(--gray-a2)",
                       }}
                     >
                       <Text as="label" size="2">
                         <Flex gap="2" align="start">
-                          <RadioGroup.Item value="pronto" />
+                          <RadioGroup.Item value={systemsMode ? "manutencao" : "pronto"} />
                           <Box>
-                            <Text weight="bold">Projeto Existente (Escopo Fechado)</Text>
+                            <Text weight="bold">
+                              {systemsMode ? "Manutenção de sistema existente" : "Projeto Existente (Escopo Fechado)"}
+                            </Text>
                             <Text as="p" size="1" color="gray" mt="1">
-                              Exige documento de escopo. A agente só lê, mapeia e resolve
-                              ambiguidades — instruída a não inventar regras; omisso → pergunta ao
-                              operador.
+                              {systemsMode
+                                ? "O sistema já está pronto. Envie a especificação, o código ou as telas. A leitura entende o que existe e a esteira de manutenção segue a partir disso."
+                                : "Exige documento de escopo. A agente só lê, mapeia e resolve ambiguidades — instruída a não inventar regras; omisso → pergunta ao operador."}
                             </Text>
                           </Box>
                         </Flex>
@@ -420,7 +469,7 @@ export function NewProjectModalReact(props) {
                       </Text>
                       <Text as="p" size="1" color="gray">
                         Documentos gerais / escopo (.md, .pdf, .html, .json…).
-                        {track === "pronto" ? " Obrigatório para escopo fechado." : ""}
+                        {fileHint}
                       </Text>
                     </Box>
                     <Button
@@ -435,7 +484,7 @@ export function NewProjectModalReact(props) {
                       ref={contextRef}
                       type="file"
                       multiple
-                      accept=".md,.txt,.html,.json,.pdf,.doc,.docx"
+                      accept=".md,.txt,.html,.json,.pdf,.doc,.docx,.py,.ts,.tsx,.js,.jsx,.css"
                       hidden
                       onChange={onContextChange}
                     />
@@ -544,8 +593,16 @@ export function NewProjectModalReact(props) {
             style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: "#070d18" }}
           >
             <Text size="1" color="gray">
-              {ownership ? `Escopo: ${ownership}` : "Escopo: —"} · Track:{" "}
-              {track === "zero" ? "ideacao-dora" : "execucao-direta"}
+              {ownership ? `Escopo: ${ownership}` : "Escopo: —"} ·{" "}
+              {track === "zero"
+                ? systemsMode
+                  ? "Criação do zero · sy-c"
+                  : "ideacao-dora"
+                : track === "especificado"
+                  ? "Criação com especificação · sy-c"
+                  : track === "manutencao"
+                    ? "Manutenção · sy-m"
+                    : "execucao-direta"}
             </Text>
             <Flex gap="2">
               <Dialog.Close>

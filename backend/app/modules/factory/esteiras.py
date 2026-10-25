@@ -380,7 +380,8 @@ def resolve_template_code(
         cat = "sy"
     if cat not in ("lp", "of", "sy"):
         cat = "lp"
-    mode = "m" if (track or "zero").strip().lower() == "pronto" else "c"
+    chosen = (track or "zero").strip().lower()
+    mode = "m" if chosen in {"pronto", "manutencao"} else "c"
     return f"{cat}-{mode}"
 
 

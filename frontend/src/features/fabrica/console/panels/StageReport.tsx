@@ -34,18 +34,24 @@ export function StageReport(props: {
   onGenerate?: () => Promise<unknown>;
 }) {
   const [docs, setDocs] = createSignal<Array<{ path: string; content: string }>>([]);
+  const [missing, setMissing] = createSignal<string[]>([]);
   const [active, setActive] = createSignal("");
   const [loading, setLoading] = createSignal(false);
   const [error, setError] = createSignal("");
+  const [open, setOpen] = createSignal(false);
 
   const load = async () => {
     setLoading(true);
     setError("");
     try {
       const listed = await api.listFactoryArtifacts(props.projectId);
-      const wanted = (props.paths || []).filter(Boolean);
+      const wanted = (props.paths || []).filter((path) => path && !path.endsWith("/"));
       const present = new Set((listed.files || []).filter((f) => f.is_text).map((f) => f.path));
-      const paths = wanted.filter((path) => present.has(path));
+      let paths = wanted.filter((path) => present.has(path));
+      if (!paths.length) {
+        paths = [...present].filter((path) => path.startsWith("qa/issues/") || path === "qa/report.md").slice(0, 6);
+      }
+      setMissing(wanted.filter((path) => !present.has(path)));
       const loaded: Array<{ path: string; content: string }> = [];
       for (const path of paths) {
         const file = await api.readFactoryArtifact(props.projectId, path);
@@ -55,11 +61,17 @@ export function StageReport(props: {
       setActive((current) => (loaded.some((doc) => doc.path === current) ? current : loaded[0]?.path || ""));
     } catch (err) {
       setDocs([]);
+      setMissing([]);
       setError(err instanceof Error ? err.message : "Não foi possível abrir o relatório.");
     } finally {
       setLoading(false);
     }
   };
+
+  createEffect(() => {
+    void props.stageId;
+    setOpen(false);
+  });
 
   createEffect(() => {
     void props.projectId;
@@ -77,7 +89,7 @@ export function StageReport(props: {
   const stale = () =>
     /executor local \(B7\)|Conteúdo inicial materializado|Contexto atual/.test(current()?.content || "");
   const previous = () => {
-    if (props.fresh || !current()) return "";
+    if (props.fresh || !current() || missing().length) return "";
     const cited = citedStage();
     if (cited && props.stageId && cited !== props.stageId) {
       return `Este arquivo é da etapa ${cited}. A etapa atual ainda não entregou um relatório novo.`;
@@ -88,16 +100,32 @@ export function StageReport(props: {
   return (
     <section class="fc-report" aria-label="Relatório do agente">
       <header class="fc-report-head">
-        <div>
-          <p class="fc-micro">Relatório</p>
-          <h3>{props.stageTitle || "Entrega do agente"}</h3>
-        </div>
-        <button type="button" class="fc-btn-sec" onClick={() => void load()}>
-          Atualizar leitura
+        <button
+          type="button"
+          class="fc-report-toggle"
+          aria-expanded={open()}
+          onClick={() => setOpen((value) => !value)}
+        >
+          <span>
+            <p class="fc-micro">Relatório</p>
+            <h3>{props.stageTitle || "Entrega do agente"}</h3>
+          </span>
+          <span>{open() ? "Ocultar mensagem" : "Exibir mensagem"}</span>
         </button>
+        <Show when={open()}>
+          <button type="button" class="fc-btn-sec" onClick={() => void load()}>
+            Atualizar leitura
+          </button>
+        </Show>
       </header>
+      <Show when={open()}>
       <Show when={error()}>
         <p class="fc-report-error">{error()}</p>
+      </Show>
+      <Show when={missing().length && docs().length}>
+        <p class="fc-report-warn">
+          Esta etapa ainda não gravou {missing().join(", ")}. O texto abaixo é o que já existe no workspace.
+        </p>
       </Show>
       <Show when={previous()}>
         <p class="fc-report-warn">{previous()}</p>
@@ -137,6 +165,7 @@ export function StageReport(props: {
         <button type="button" class="fc-btn-sec" onClick={() => void props.onGenerate?.()}>
           Gerar relatório do agente
         </button>
+      </Show>
       </Show>
     </section>
   );

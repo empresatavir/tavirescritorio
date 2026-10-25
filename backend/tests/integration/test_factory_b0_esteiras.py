@@ -34,6 +34,9 @@ async def test_esteira_definitions_counts():
     assert resolve_template_code("lp", "zero") == "lp-c"
     assert resolve_template_code("lp", "pronto") == "lp-m"
     assert resolve_template_code("sy", "zero") == "sy-c"
+    assert resolve_template_code("sy", "especificado") == "sy-c"
+    assert resolve_template_code("sy", "manutencao") == "sy-m"
+    assert resolve_template_code("of", "especificado") == "of-c"
 
 
 @pytest.mark.asyncio
