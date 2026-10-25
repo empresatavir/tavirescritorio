@@ -82,35 +82,29 @@ export function FabricaConsole(props: {
     if (pumping || !autoOn()) return;
     pumping = true;
     try {
-      while (autoOn()) {
-        if (!factory.canAutoRun()) break;
-        const stage = factory.currentStage();
-        if (!stage) break;
-        const stopsForCeo = stage.is_gate || stage.status === "awaiting_gate";
-        showToast(`Execução automática · ${stage.title}`);
-        await factory.execute();
-        if (!autoOn()) {
-          showToast("Execução automática desligada.");
-          break;
-        }
-        if (stopsForCeo) {
-          showToast("Gate atualizado. A autorização continua com você.");
-          break;
-        }
-        await factory.complete();
-        const next = factory.currentStage();
-        if (!next || next.is_gate || next.status === "awaiting_gate") {
-          showToast("Execução automática parou no gate. Autorize para seguir.");
-          break;
-        }
+      const stage = factory.currentStage();
+      if (!stage) return;
+      if (stage.is_gate || stage.status === "awaiting_gate") {
+        showToast("Execução automática parou no gate. Autorize para seguir.");
+        return;
+      }
+      showToast(`Execução automática · ${stage.title}`);
+      const payload = await factory.autoRun();
+      const auto = payload && "auto" in payload ? payload.auto : undefined;
+      const next = factory.currentStage();
+      if (auto?.stop_reason === "error") {
+        showToast(auto.message || "A etapa parou. O que já foi gravado permanece.");
+      } else if (!autoOn()) {
+        showToast("Execução automática desligada.");
+      } else if (!next || next.is_gate || next.status === "awaiting_gate") {
+        showToast("Execução automática parou no gate. Autorize para seguir.");
       }
     } catch {
-      try {
-        await factory.setAutoExecute(false);
-      } catch {
-        /* o aviso abaixo já explica a parada */
-      }
-      showToast(factory.error() || "Execução automática interrompida.");
+      showToast(
+        factory.error()
+          ? `${factory.error()} O avanço já gravado permanece.`
+          : "Execução automática interrompida. O avanço já gravado permanece.",
+      );
     } finally {
       pumping = false;
     }
@@ -140,6 +134,8 @@ export function FabricaConsole(props: {
   createEffect(() => {
     if (bootPumped || factory.loading() || !factory.run()) return;
     bootPumped = true;
+    const checkpoint = factory.run()?.meta?.checkpoint as { status?: string } | undefined;
+    if (checkpoint?.status === "error") return;
     if (autoOn()) void pumpAuto();
   });
 
@@ -361,6 +357,9 @@ export function FabricaConsole(props: {
       status: s.status,
       isGate: s.is_gate,
       stageDefId: s.stage_def_id,
+      expected: s.expected_artifacts || [],
+      startedAt: s.started_at || undefined,
+      delivered: Boolean(s.artifact_hash),
     };
   });
 
@@ -441,7 +440,18 @@ export function FabricaConsole(props: {
           meta={projectMeta()}
           running={projectMeta().status === "running"}
           busy={factory.busy()}
+          canInterrupt={factory.busy() && factory.canPause()}
           canAuthorize={factory.canAuthorize()}
+          authorizeMode={
+            factory.busyAction() === "authorize"
+              ? "generating"
+              : factory.currentStage()?.is_gate &&
+                  factory.currentStage()?.status === "awaiting_gate" &&
+                  (factory.currentStage()?.expected_artifacts || []).length > 0 &&
+                  !factory.currentStage()?.artifact_hash
+                ? "generate"
+                : "release"
+          }
           canResume={factory.canResume()}
           canAutoRun={factory.canAutoRun()}
           autoOn={autoOn()}
@@ -463,8 +473,9 @@ export function FabricaConsole(props: {
           onToggleRun={async () => {
             try {
               if (factory.canPause()) {
+                const cutting = factory.busy();
                 await factory.pause();
-                showToast("Esteira pausada.");
+                showToast(cutting ? "Pausa pedida. A chamada do motor está sendo encerrada." : "Esteira pausada.");
               } else if (factory.canResume()) {
                 await factory.resume();
                 showToast("Esteira retomada.");
@@ -481,6 +492,25 @@ export function FabricaConsole(props: {
           folderCheck={folderCheck()}
           onOpenSettings={() => setSettingsOpen(true)}
           onBack={props.onBackToDashboard}
+          onDelete={async () => {
+            const name = props.projectName || "este projeto";
+            if (!window.confirm(`Excluir ${name} da Fábrica?`)) return;
+            const folder = projectMeta().localPath ? `\n\n${projectMeta().localPath}` : "";
+            const deleteFolder = window.confirm(`Deseja excluir a pasta do projeto?${folder}`);
+            try {
+              const result = await api.deleteFactoryProject(props.projectId, deleteFolder);
+              if (result.folder_error) {
+                showToast(`Projeto excluído. A pasta permaneceu: ${result.folder_error}`);
+              } else if (deleteFolder) {
+                showToast("Projeto e pasta excluídos.");
+              } else {
+                showToast("Projeto excluído da Fábrica. A pasta permanece no disco.");
+              }
+              props.onBackToDashboard?.();
+            } catch {
+              showToast("Não foi possível excluir o projeto.");
+            }
+          }}
         />
       </Show>
 
@@ -491,6 +521,7 @@ export function FabricaConsole(props: {
               loading={factory.loading()}
               stages={factory.overviewStages()}
               activity={factory.activity()}
+              execution={factory.executionLog()}
               pendencies={factory.pendencies()}
               current={overviewCurrent()}
               runStatus={factory.run()?.status}
@@ -499,6 +530,17 @@ export function FabricaConsole(props: {
               canExecute={factory.canExecute()}
               canAutoRun={factory.canAutoRun()}
               autoOn={autoOn()}
+              model={String(factory.run()?.meta?.model || "—")}
+              effort={String(factory.run()?.meta?.effort || "—")}
+              canPause={factory.canPause()}
+              onPause={async () => {
+                try {
+                  await factory.pause();
+                  showToast("Esteira pausada.");
+                } catch {
+                  showToast(factory.error() || "Falha ao pausar");
+                }
+              }}
               onToggleAuto={toggleAuto}
               canRedo={factory.canAuthorize()}
               onRedo={() => openGateRedo(factory.currentStage()?.stage_def_id)}
@@ -506,7 +548,34 @@ export function FabricaConsole(props: {
               canFail={factory.canFail()}
               canResume={factory.canResume()}
               busy={factory.busy()}
+              busyAction={factory.busyAction()}
+              busySince={factory.busySince()}
+              haltAsked={factory.haltAsked()}
               error={factory.error()}
+              checkpoint={(factory.run()?.meta?.checkpoint as { at?: string; title?: string; status?: string; note?: string; action?: string } | undefined) || null}
+              checkpoints={(factory.run()?.meta?.checkpoints as { at?: string; title?: string; status?: string; note?: string; action?: string }[] | undefined) || []}
+              onContinue={async () => {
+                const checkpoint = factory.run()?.meta?.checkpoint as { action?: string } | undefined;
+                const repair = checkpoint?.action === "agent";
+                try {
+                  showToast(
+                    repair
+                      ? "O escritório vai corrigir esta etapa com o agente."
+                      : "O escritório vai resolver esta etapa.",
+                  );
+                  const payload = await factory.autoRun(repair);
+                  const auto = payload && "auto" in payload ? payload.auto : undefined;
+                  if (auto?.stop_reason === "error") {
+                    showToast(auto.message || "A etapa parou. O que já foi gravado permanece.");
+                  }
+                } catch {
+                  showToast(
+                    factory.error()
+                      ? `${factory.error()} O avanço já gravado permanece.`
+                      : "A etapa não avançou. O avanço já gravado permanece.",
+                  );
+                }
+              }}
               connected={factory.connected()}
               onAuthorize={authorizeGate}
               onComplete={async () => {
@@ -1058,9 +1127,8 @@ export function FabricaConsole(props: {
       <RedoDialog
         open={redoMode() !== null}
         mode={redoMode() === "project" ? "project" : "gate"}
+        projectId={props.projectId}
         busy={factory.busy()}
-        model={String(factory.run()?.meta?.model || "claude-opus-5-5")}
-        effort={String(factory.run()?.meta?.effort || "xhigh")}
         onClose={() => setRedoMode(null)}
         onSubmit={async (body) => {
           const mode = redoMode();

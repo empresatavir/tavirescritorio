@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -25,7 +26,7 @@ from app.modules.factory.quality_loop import (
     report_path,
 )
 
-CODE_SUFFIXES = {".py", ".js", ".jsx", ".ts", ".tsx", ".html", ".css", ".vue"}
+CODE_SUFFIXES = {".py", ".js", ".jsx", ".ts", ".tsx", ".html", ".css", ".vue", ".dart"}
 _SKIP = {"node_modules", "__pycache__", ".git", ".venv", ".pytest_cache"}
 _SECRET = re.compile(
     r"-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----"
@@ -39,7 +40,12 @@ class WorkSessionError(RuntimeError):
     """A etapa não pode avançar sem a prova da execução."""
 
 
+VISUAL = {"visual_proof"}
+
+
 def work_kind(stage_def_id: str) -> str | None:
+    if stage_def_id in VISUAL:
+        return "visual"
     if stage_def_id in JORNADA_QA:
         return "jornada"
     if stage_def_id in APK_BUILD:
@@ -95,6 +101,53 @@ def apply_evidence_verdict(text: str, kind: str, proven: str | None) -> str:
     return f"{label}: {decision}\n\n{cleaned.strip()}\n"
 
 
+def run_visual_sync(
+    root: Path,
+    stage_def_id: str,
+    *,
+    agent_name: str,
+    title: str,
+    model: str,
+    effort: str,
+    guidance: str | None,
+    expected: list[str] | None = None,
+    on_status=None,
+    agent=None,
+) -> dict:
+    """A prova visual grava a interface. Um README não fecha a etapa."""
+    root = root.resolve()
+    _assert_delivery_workspace(root)
+    say = on_status or (lambda _message: None)
+    run_agent = agent or _default_agent
+    say(f"{agent_name} abre a sessão de código para construir a interface.")
+    _invoke(
+        run_agent,
+        root,
+        _prompt_visual(root, stage_def_id, agent_name, title, guidance),
+        model,
+        effort,
+        say,
+    )
+    if not _visual_is_product(root):
+        where = (
+            "aplicativo/lib/*.dart"
+            if _client_is_flutter(root)
+            else "frontend/index.html e frontend/app.js"
+        )
+        raise WorkSessionError(
+            "A sessão não gravou a interface. Um markdown não é a prova visual. "
+            f"A entrega fica em {where}."
+        )
+    readme = _visual_index(root)
+    files = [_write(root, "visual_proof/README.md", readme)]
+    for relative in _visual_paths(root):
+        path = root / relative
+        if path.is_file():
+            files.append({"path": relative, "sha256": file_sha256(path), "size": path.stat().st_size})
+    say(f"{title} gravou a interface no projeto.")
+    return {"files": files, "note": "sessão de código · interface gravada"}
+
+
 def run_build_sync(
     root: Path,
     stage_def_id: str,
@@ -112,14 +165,14 @@ def run_build_sync(
     """Abre a sessão de código e a fábrica executa o teste duas vezes."""
     root = root.resolve()
     _assert_delivery_workspace(root)
-    layout = layout_for(stage_def_id)
+    layout = _resolve_layout(root, stage_def_id)
     say = on_status or (lambda _message: None)
     run_agent = agent or _default_agent
     run_cmd = shell or run_shell
 
     def _execute() -> tuple[list[str], int, str]:
         args = test_args(root, layout)
-        code, output = run_cmd(root, args)
+        code, output = _run_tests(root, layout, run_cmd, args)
         return args, code, output
 
     say(f"{agent_name} abre a sessão de código. Esta sessão pode editar arquivo e rodar comando.")
@@ -228,14 +281,14 @@ def run_check_sync(
         command = "scanner local de segredo, chave e eval"
         code = 0 if passed else 1
     else:
-        layout = layout_for(stage_def_id)
+        layout = _resolve_layout(root, stage_def_id)
         args = test_args(root, layout)
         command = " ".join(args)
         say(f"{agent_name} executa o teste. O relatório sai do código de saída.")
         if not (root / layout["tests"]).is_dir():
             code, output = 1, f"Não há teste em {layout['tests']}."
         else:
-            code, output = (shell or run_shell)(root, args)
+            code, output = _run_tests(root, layout, shell or run_shell, args)
             _reject_runner_failure(output)
         passed = code == 0 and not _no_tests(code, output)
         if _no_tests(code, output):
@@ -277,7 +330,31 @@ def run_check_sync(
     return {"files": files, "note": f"execução {state} · código {code}"}
 
 
+def flutter_executable() -> str | None:
+    """Caminho do Flutter. O processo do escritório nem sempre herda o PATH do usuário."""
+    found = shutil.which("flutter") or shutil.which("flutter.bat")
+    if found:
+        return found
+    home = Path(os.environ.get("USERPROFILE") or "")
+    local = Path(os.environ.get("LOCALAPPDATA") or "")
+    appdata = Path(os.environ.get("APPDATA") or "")
+    candidates = [
+        appdata / "FlutterFlow" / "flutterflow" / "flutter" / "bin" / "flutter.bat",
+        local / "flutter" / "bin" / "flutter.bat",
+        home / "flutter" / "bin" / "flutter.bat",
+        home / "develop" / "flutter" / "bin" / "flutter.bat",
+        Path("C:/flutter/bin/flutter.bat"),
+        Path("C:/src/flutter/bin/flutter.bat"),
+    ]
+    for path in candidates:
+        if path.is_file():
+            return str(path)
+    return None
+
+
 def test_args(root: Path, layout: dict[str, str]) -> list[str]:
+    if layout.get("code") == "aplicativo":
+        return [flutter_executable() or "flutter", "test"]
     pkg = _package_json(root, layout)
     if pkg is not None:
         npm = "npm.cmd" if os.name == "nt" else "npm"
@@ -298,7 +375,20 @@ def test_args(root: Path, layout: dict[str, str]) -> list[str]:
     ]
 
 
+def resolve_command(args: list[str]) -> list[str]:
+    """Troca flutter pelo caminho desta máquina. O nome solto falha no processo do escritório."""
+    if not args:
+        return list(args)
+    token = str(args[0]).lower()
+    if token in {"flutter", "flutter.bat", "flutter.cmd"}:
+        found = flutter_executable()
+        if found:
+            return [found, *args[1:]]
+    return list(args)
+
+
 def run_shell(root: Path, args: list[str], timeout: float = 180, cwd: Path | None = None) -> tuple[int, str]:
+    args = resolve_command(args)
     env = os.environ.copy()
     env.pop("PYTEST_ADDOPTS", None)
     try:
@@ -315,7 +405,8 @@ def run_shell(root: Path, args: list[str], timeout: float = 180, cwd: Path | Non
     except subprocess.TimeoutExpired:
         return 124, f"O comando passou de {int(timeout)} s."
     except OSError as exc:
-        return 127, str(exc)
+        command = args[0] if args else "o comando"
+        return 127, f"Não encontrei o comando {command}. {exc}"
     output = f"{proc.stdout or ''}\n{proc.stderr or ''}".strip()
     return proc.returncode, output[-8000:]
 
@@ -324,7 +415,7 @@ def scan_security(root: Path) -> list[str]:
     """Varre o código do produto. Não edita arquivo."""
     findings: list[str] = []
     saw_code = False
-    for folder in ("backend", "frontend", "src"):
+    for folder in ("backend", "frontend", "src", "aplicativo"):
         base = root / folder
         if not base.is_dir():
             continue
@@ -394,10 +485,13 @@ def _invoke(agent, root: Path, prompt: str, model: str, effort: str, say) -> Non
 
 
 def _prompt_tests(root, stage_def_id, agent_name, title, layout, guidance) -> str:
-    target = _target_line(layout)
+    target = _target_line(layout, root)
     return (
         f"Você é {agent_name}. Etapa {title} (`{stage_def_id}`).\n"
         "Fase: só testes.\n"
+        "A entrega desta esteira é o programa. Esta fase grava só o teste executável.\n"
+        "Não entregue a cobertura em markdown.\n"
+        f"{_product_brief(root)}"
         f"Crie testes executáveis em `{layout['tests']}`.\n"
         "Não crie a implementação do produto nesta fase.\n"
         f"{target}\n"
@@ -412,11 +506,13 @@ def _prompt_tests(root, stage_def_id, agent_name, title, layout, guidance) -> st
 
 
 def _prompt_code(root, stage_def_id, agent_name, title, layout, guidance, failure) -> str:
-    target = _target_line(layout)
+    target = _target_line(layout, root)
     tail = " ".join((failure or "").split())[-800:]
     return (
         f"Você é {agent_name}. Etapa {title} (`{stage_def_id}`).\n"
         "Fase: implementação.\n"
+        "A entrega é o programa. Grave os arquivos no projeto. Não responda com um relatório.\n"
+        f"{_product_brief(root)}"
         f"Implemente o código em `{layout['code']}` para o teste em `{layout['tests']}` passar.\n"
         f"{target}\n"
         "Não edite os arquivos de teste. Não apague asserção. Não aumente timeout.\n"
@@ -430,24 +526,173 @@ def _prompt_code(root, stage_def_id, agent_name, title, layout, guidance, failur
     )
 
 
+def _prompt_visual(root: Path, stage_def_id: str, agent_name: str, title: str, guidance: str | None) -> str:
+    if _client_is_flutter(root):
+        place = "Grave o app Flutter em `aplicativo/pubspec.yaml` e `aplicativo/lib/main.dart`. As telas ficam em `aplicativo/lib/`."
+    else:
+        place = "Grave `frontend/index.html` e `frontend/app.js`."
+    return (
+        f"Você é {agent_name}. Etapa {title} (`{stage_def_id}`).\n"
+        "A entrega é a interface do produto, em código.\n"
+        f"{place}\n"
+        "Construa as telas e os sheets do contrato nessa interface.\n"
+        "Use a stack de frontend do contrato.\n"
+        "Não escreva um relatório. Não responda só com texto. Um README não conta como entrega.\n"
+        "Não altere context/. Não altere o backend.\n"
+        "Não faça deploy. Não faça push.\n"
+        f"{_product_brief(root)}"
+        f"{_sources(root)}\n"
+        f"{_guidance(guidance)}"
+    )
+
+
+def _product_brief(root: Path) -> str:
+    data = _contract(root)
+    if data is None and not (root / "context" / "contrato.json").is_file():
+        return (
+            "Não há contrato. Implemente o programa descrito nos arquivos de context/.\n"
+            "Um arquivo .md não substitui esse programa.\n"
+        )
+    if not data:
+        return (
+            "O contrato não pôde ser lido. Implemente o programa descrito nos arquivos de context/.\n"
+            "Um arquivo .md não substitui esse programa.\n"
+        )
+    lines = ["O programa pedido no contrato:"]
+    if data.get("produto"):
+        lines.append(f"Produto: {data['produto']}.")
+    if data.get("stack_frontend"):
+        lines.append(f"Stack de frontend: {data['stack_frontend']}.")
+    if data.get("stack_backend"):
+        lines.append(f"Stack de backend: {data['stack_backend']}.")
+    telas = [str(item) for item in (data.get("telas") or []) if str(item).strip()]
+    if telas:
+        lines.append("Telas: " + ", ".join(telas) + ".")
+    sheets = [str(item) for item in (data.get("sheets") or []) if str(item).strip()]
+    if sheets:
+        lines.append("Sheets: " + ", ".join(sheets) + ".")
+    regras = [str(item) for item in (data.get("regras") or []) if str(item).strip()]
+    if regras:
+        lines.append("Regras:")
+        lines.extend(f"- {item}" for item in regras[:12])
+    lines.append("Um arquivo .md não substitui esse programa.")
+    return "\n".join(lines) + "\n"
+
+
+def _client_is_flutter(root: Path) -> bool:
+    data = _contract(root) or {}
+    blob = " ".join(
+        [
+            str(data.get("stack_frontend") or ""),
+            str(data.get("entregavel") or ""),
+            " ".join(str(item) for item in (data.get("frontend_files") or [])),
+        ]
+    ).lower()
+    return "flutter" in blob or ".dart" in blob
+
+
+def _resolve_layout(root: Path, stage_def_id: str) -> dict[str, str]:
+    layout = layout_for(stage_def_id)
+    if layout["side"] == "frontend" and _client_is_flutter(root):
+        return {**layout, "code": "aplicativo", "tests": "aplicativo/test"}
+    return layout
+
+
+def _run_tests(root: Path, layout: dict[str, str], runner, args: list[str]) -> tuple[int, str]:
+    if layout.get("code") != "aplicativo":
+        return runner(root, args)
+    try:
+        return runner(root, args, cwd=root / "aplicativo")
+    except TypeError:
+        return runner(root, args)
+
+
+def _visual_paths(root: Path) -> list[str]:
+    if _client_is_flutter(root):
+        base = root / "aplicativo"
+        if not base.is_dir():
+            return []
+        found = [
+            path.relative_to(root).as_posix()
+            for path in sorted(base.rglob("*.dart"))
+            if path.is_file() and "test" not in path.parts
+        ]
+        pubspec = base / "pubspec.yaml"
+        if pubspec.is_file():
+            found.insert(0, "aplicativo/pubspec.yaml")
+        return found[:12]
+    return [
+        relative
+        for relative in ("frontend/index.html", "frontend/app.js", "frontend/app.ts", "frontend/app.tsx")
+        if (root / relative).is_file()
+    ]
+
+
+def _visual_text(root: Path) -> str:
+    chunks: list[str] = []
+    for relative in _visual_paths(root):
+        path = root / relative
+        try:
+            chunks.append(path.read_text(encoding="utf-8", errors="replace"))
+        except OSError:
+            continue
+    return "\n".join(chunks)
+
+
+def _visual_is_product(root: Path) -> bool:
+    text = _visual_text(root)
+    if len(text.strip()) < 800:
+        return False
+    data = _contract(root) or {}
+    telas = [str(item) for item in (data.get("telas") or []) if str(item).strip()]
+    if telas and not any(item in text for item in telas):
+        return False
+    return True
+
+
+def _visual_index(root: Path) -> str:
+    lines = ["# Prova visual", "", "A interface está nos arquivos de código.", ""]
+    lines.extend(f"- {relative}" for relative in _visual_paths(root))
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _contract(root: Path) -> dict | None:
+    path = root / "context" / "contrato.json"
+    if not path.is_file():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
 def _apk_hint(root: Path, layout: dict[str, str]) -> str:
     if layout.get("side") != "frontend":
         return ""
     from app.modules.factory.intake import entregavel_de
 
+    if _client_is_flutter(root):
+        return (
+            "O cliente é o app Flutter/Dart em aplicativo/. O APK sai desse projeto. "
+            'O manifesto precisa de android.permission.INTERNET e android:usesCleartextTraffic="true". '
+            "Não copie SVG com metadata ou c2pa."
+        )
     if entregavel_de(root) == "web" and not (root / "aplicativo" / "pubspec.yaml").is_file():
         return ""
     return (
-        "O entregável inclui APK. Grave o cliente Flutter em aplicativo/ "
-        "sem apagar frontend/index.html nem frontend/app.js. "
+        "O entregável inclui APK. Grave o cliente Flutter em aplicativo/. "
         'O manifesto precisa de android.permission.INTERNET e android:usesCleartextTraffic="true". '
         "Não copie SVG com metadata ou c2pa."
     )
 
 
-def _target_line(layout: dict[str, str]) -> str:
+def _target_line(layout: dict[str, str], root: Path | None = None) -> str:
     if layout["side"] == "backend":
         return "Se o contrato não citar arquivo, grave `backend/office.py`."
+    if layout["side"] == "frontend" and root is not None and _client_is_flutter(root):
+        return "Grave `aplicativo/pubspec.yaml` e os arquivos `.dart` em `aplicativo/lib/`."
     if layout["side"] == "frontend":
         return "Se o contrato não citar arquivo, grave `frontend/index.html` e `frontend/app.js`."
     return "Grave `index.html` e o código em `src/`."

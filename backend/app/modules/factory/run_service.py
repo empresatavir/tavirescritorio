@@ -115,6 +115,9 @@ async def materialize_run_for_project(
     now = datetime.now(timezone.utc)
 
     ai = dict(getattr(project, "ai_settings", None) or {})
+    from app.modules.factory.engine_prefs import office_call
+
+    provider, model, effort, _enabled = await office_call(ai.get("model"), ai.get("effort"))
     run = FactoryRun(
         id=run_id,
         project_id=project.id,
@@ -126,9 +129,9 @@ async def materialize_run_for_project(
             "esteira_name": esteira["name"] if esteira else code,
             "total_stages": len(defs),
             # Defaults até o CEO redefinir na engrenagem do projeto
-            "model": ai.get("model") or "claude-opus-5-5",
-            "effort": ai.get("effort") or "xhigh",
-            "provider": ai.get("provider") or "ghostcli",
+            "model": model,
+            "effort": effort,
+            "provider": provider,
             "orchestration": [
                 "dora",
                 "marina_yuri",
@@ -148,7 +151,7 @@ async def materialize_run_for_project(
                     "actor": "Sistema",
                     "note": (
                         f"Run materializado · esteira {code} · "
-                        "modelo claude-opus-5-5 · esforço xhigh"
+                        f"motor {provider} · modelo {model} · esforço {effort}"
                     ),
                 }
             ],
@@ -307,7 +310,13 @@ async def align_run_to_esteira(
                 setattr(stage, key, value)
                 changed = True
         if stage.status != "done":
-            artifacts = list(item.get("expected_artifacts") or [])
+            from app.modules.factory.intake import merge_expected
+
+            artifacts = merge_expected(
+                project.local_path,
+                item["id"],
+                list(item.get("expected_artifacts") or []),
+            )
             if list(stage.expected_artifacts or []) != artifacts:
                 stage.expected_artifacts = artifacts
                 flag_modified(stage, "expected_artifacts")
@@ -598,6 +607,7 @@ async def _rewind_if_quality_failed(
         side_stage_ids,
         write_issue,
     )
+    from app.modules.factory.work_session import apply_evidence_verdict, evidence_state
 
     kind = quality_kind(stage.stage_def_id)
     if not kind:
@@ -612,6 +622,17 @@ async def _rewind_if_quality_failed(
             text = report.read_text(encoding="utf-8", errors="replace")
     except (ArtifactError, OSError):
         text = ""
+
+    proven = evidence_state(root, stage.stage_def_id)
+    text = apply_evidence_verdict(text, kind, proven)
+    if root is not None:
+        try:
+            report = root / report_path(kind, stage.stage_def_id)
+            if report.is_file() or proven is not None:
+                report.parent.mkdir(parents=True, exist_ok=True)
+                report.write_text(text, encoding="utf-8")
+        except OSError:
+            pass
 
     if read_verdict(text, kind) == "aprovado":
         return None
@@ -738,6 +759,22 @@ async def complete_stage(
         raise StageTransitionError(
             "Execute a etapa antes de concluir. Arquivos antigos na pasta não contam como entrega nova."
         )
+
+    from app.modules.factory.artifacts import ArtifactError, resolve_workspace_root
+    from app.modules.factory.quality_loop import BACK_BUILD, FRONT_BUILD
+    from app.modules.factory.work_session import build_is_proven
+
+    if stage.stage_def_id in BACK_BUILD | FRONT_BUILD:
+        try:
+            root = resolve_workspace_root(project.local_path)
+        except ArtifactError as exc:
+            raise StageTransitionError(str(exc)) from exc
+        if not build_is_proven(root, stage.stage_def_id):
+            raise StageTransitionError(
+                "A etapa de código não tem o log da execução. "
+                "O teste precisa falhar antes da correção e passar depois. "
+                "Um arquivo markdown não fecha esta etapa."
+            )
 
     looped = await _rewind_if_quality_failed(
         session, run, project, stages, stage, actor=actor or stage.agent
@@ -985,10 +1022,12 @@ async def redo_gate_delivery(
         )
 
     meta = dict(run.meta or {})
-    if model:
-        meta["model"] = model.strip()
-    if effort:
-        meta["effort"] = effort.strip()
+    from app.modules.factory.engine_prefs import office_call
+
+    provider, fitted_model, fitted_effort, _enabled = await office_call(model or meta.get("model"), effort or meta.get("effort"))
+    meta["provider"] = provider
+    meta["model"] = fitted_model
+    meta["effort"] = fitted_effort
     upstream = _upstream_work(stages, gate)
     targets = list(upstream)
     if gate.expected_artifacts:
@@ -1097,8 +1136,12 @@ async def restart_run(
     project.stages_done = 0
 
     meta = dict(run.meta or {})
-    meta["model"] = (model or "claude-opus-5-5").strip()
-    meta["effort"] = (effort or "xhigh").strip()
+    from app.modules.factory.engine_prefs import office_call
+
+    provider, fitted_model, fitted_effort, _enabled = await office_call(model or meta.get("model"), effort or meta.get("effort"))
+    meta["provider"] = provider
+    meta["model"] = fitted_model
+    meta["effort"] = fitted_effort
     meta.pop("plan_ready", None)
     meta.pop("planner", None)
     # Arquivos já existentes na pasta não podem ser reaproveitados: cada etapa
@@ -1221,6 +1264,25 @@ def serialize_stage(st: FactoryStageInstance) -> dict:
         "started_at": _dt(st.started_at),
         "finished_at": _dt(st.finished_at),
     }
+
+
+async def stamp_run_engine(session: AsyncSession, run: FactoryRun) -> None:
+    """A esteira aberta passa a mostrar o motor padrão do escritório."""
+    from sqlalchemy.orm.attributes import flag_modified
+
+    from app.modules.factory.engine_prefs import office_call
+
+    meta = dict(run.meta or {})
+    provider, model, effort, _enabled = await office_call(meta.get("model"), meta.get("effort"))
+    if meta.get("provider") == provider and meta.get("model") == model and meta.get("effort") == effort:
+        return
+    meta["provider"] = provider
+    meta["model"] = model
+    meta["effort"] = effort
+    run.meta = meta
+    flag_modified(run, "meta")
+    await session.commit()
+    await session.refresh(run)
 
 
 def serialize_run(run: FactoryRun, stages: list[FactoryStageInstance]) -> dict:

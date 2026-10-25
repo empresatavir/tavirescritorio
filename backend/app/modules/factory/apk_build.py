@@ -10,7 +10,7 @@ import shutil
 from pathlib import Path
 
 from app.modules.factory.intake import entregavel_de
-from app.modules.factory.work_session import WorkSessionError, evidence_file, run_shell
+from app.modules.factory.work_session import WorkSessionError, evidence_file, flutter_executable, run_shell
 
 NDK_VERSION = "28.2.13676358"
 
@@ -34,7 +34,10 @@ def sdk_padrao(env: dict | None = None) -> Path | None:
 
 def faltas_toolchain(which, sdk: Path | None) -> list[str]:
     faltas = []
-    if which("flutter") is None:
+    flutter = which("flutter") or which("flutter.bat")
+    if flutter is None and which is shutil.which:
+        flutter = flutter_executable()
+    if flutter is None:
         faltas.append("flutter não está no PATH. Instale o Flutter e rode de novo.")
     if sdk is None:
         faltas.append(
@@ -101,6 +104,10 @@ def run_apk_sync(
     which=None,
     sdk: Path | None = None,
     env: dict | None = None,
+    repair: bool = False,
+    model: str = "",
+    effort: str = "",
+    agent=None,
 ) -> dict:
     root = root.resolve()
     say = on_status or (lambda _message: None)
@@ -144,19 +151,44 @@ def run_apk_sync(
     if faltas:
         raise WorkSessionError(" ".join(faltas))
 
+    if repair:
+        previous = ""
+        evidence = root / evidence_file(stage_def_id)
+        if evidence.is_file():
+            previous = evidence.read_text(encoding="utf-8", errors="replace")[-2500:]
+        say(f"{agent_name} corrige a compilação a partir do log.")
+        from app.modules.factory.work_session import _default_agent, _invoke
+
+        _invoke(
+            agent or _default_agent,
+            root,
+            (
+                f"Você é {agent_name}. A compilação do APK falhou.\n"
+                "Corrija somente o cliente em aplicativo/ para o comando "
+                "flutter build apk --release gerar app-release.apk.\n"
+                "Não apague backend/ nem a prova visual.\n"
+                f"Log:\n{previous or 'sem log'}\n"
+            ),
+            model or "auto",
+            effort or "medium",
+            say,
+        )
     say(f"{agent_name} compila o APK.")
     if casa is not None and not os.environ.get("ANDROID_HOME"):
         os.environ["ANDROID_HOME"] = str(casa)
         os.environ["ANDROID_SDK_ROOT"] = str(casa)
     run_cmd = shell or run_shell
+    from app.modules.factory.work_session import resolve_command
+
     code, output = run_cmd(
         root,
-        ["flutter", "build", "apk", "--release"],
+        resolve_command(["flutter", "build", "apk", "--release"]),
         timeout=900,
         cwd=root / "aplicativo",
     )
     apk = root / "aplicativo" / "build" / "app" / "outputs" / "flutter-apk" / "app-release.apk"
     if code != 0 or not apk.is_file():
+        tail = " ".join((output or "").split())[-280:]
         log = (
             f"comando: flutter build apk --release\nexecucao: falhou\ncodigo_saida: {code}\n---\n"
             f"{output.strip()[:4000]}\n"
@@ -164,7 +196,8 @@ def run_apk_sync(
         _write(root, evidence_file(stage_def_id), log)
         raise WorkSessionError(
             "flutter build apk --release não gerou "
-            "aplicativo/build/app/outputs/flutter-apk/app-release.apk."
+            "aplicativo/build/app/outputs/flutter-apk/app-release.apk. "
+            f"{tail}"
         )
 
     log = (

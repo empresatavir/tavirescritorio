@@ -220,6 +220,17 @@ export interface FactoryRunPendency {
   action?: "authorize" | "resume" | string;
 }
 
+export interface CheckpointInfo {
+  at?: string;
+  stage_def_id?: string;
+  title?: string;
+  status?: string;
+  note?: string;
+  action?: string;
+  problem?: string;
+  solution?: string;
+}
+
 export interface FactoryRunPayload {
   id: string;
   project_id: string;
@@ -234,6 +245,13 @@ export interface FactoryRunPayload {
   total_stages?: number;
   pendencies?: FactoryRunPendency[];
   last_ledger?: FactoryLedgerEntry;
+  auto?: {
+    steps?: unknown[];
+    stop_reason?: string;
+    steps_count?: number;
+    message?: string;
+    checkpoint?: CheckpointInfo;
+  };
   created_at?: string | null;
   updated_at?: string | null;
 }
@@ -254,7 +272,7 @@ export interface CreateProjectPayload {
   stack_frontend?: string;
   stack_backend?: string;
   stack_database?: string;
-  track: "zero" | "pronto";
+  track: "zero" | "pronto" | "especificado" | "manutencao";
   context_files?: string[];
   /** @deprecated use design_system_files */
   design_system_file?: string;
@@ -845,6 +863,18 @@ export const api = {
 
   // Projects
   listProjects: () => fetchJson<ProjectItem[]>("/api/v1/projects/"),
+  readProjectScope: (projectId: string) =>
+    fetchJson<{
+      read_ok: boolean;
+      error: string;
+      escopo: string;
+      contrato: string;
+      fontes: string[];
+      backend_files: string[];
+      frontend_files: string[];
+      telas: string[];
+    }>(`/api/v1/projects/${projectId}/intake`, { method: "POST" }),
+
   createProject: (payload: CreateProjectPayload) =>
     fetchJson<ProjectItem>("/api/v1/projects/", {
       method: "POST",
@@ -883,6 +913,11 @@ export const api = {
   getTemplate: (code: string) => fetchJson<EngineeringTemplate>(`/api/v1/factory/templates/${code}`),
   listFactoryProjects: () => fetchJson<FactoryProject[]>("/api/v1/factory/projects"),
   getFactoryProject: (id: string) => fetchJson<FactoryProject>(`/api/v1/factory/projects/${id}`),
+  deleteFactoryProject: (id: string, deleteFolder = false) =>
+    fetchJson<{ ok: boolean; id: string; folder_deleted: boolean; folder_error?: string | null }>(
+      `/api/v1/factory/projects/${id}${deleteFolder ? "?delete_folder=true" : ""}`,
+      { method: "DELETE" },
+    ),
   createFactoryProject: (data: any) =>
     fetchJson<FactoryProject>("/api/v1/factory/projects", {
       method: "POST",
@@ -980,6 +1015,9 @@ export const api = {
       body: JSON.stringify(body ?? {}),
     }),
 
+  haltFactoryAgents: () =>
+    fetchJson<{ ok: boolean; stopped: number }>("/api/v1/factory/agents/halt", { method: "POST" }),
+
   pauseFactoryRun: (projectId: string, body?: FactoryStageActionBody) =>
     fetchJson<FactoryRunPayload>(`/api/v1/factory/projects/${projectId}/run/pause`, {
       method: "POST",
@@ -1013,7 +1051,13 @@ export const api = {
   autoExecuteFactoryRun: (projectId: string, body?: FactoryStageActionBody) =>
     fetchJson<
       FactoryRunPayload & {
-        auto?: { steps: unknown[]; stop_reason: string; steps_count: number };
+        auto?: {
+          steps: unknown[];
+          stop_reason: string;
+          steps_count: number;
+          message?: string;
+          checkpoint?: CheckpointInfo;
+        };
       }
     >(`/api/v1/factory/projects/${projectId}/run/auto`, {
       method: "POST",
@@ -1232,6 +1276,20 @@ export const api = {
       method: "POST",
     }),
   getGhostCliStatus: () => fetchJson<{ integration: string; status: string; latency_ms: number | null; last_check: string | null; error: string | null }>("/api/v1/integrations/ghostcli/status"),
+  listAiEngines: () =>
+    fetchJson<{ default_id: string; engines: { id: string; enabled: boolean; is_default: boolean }[] }>(
+      "/api/v1/integrations/engines",
+    ),
+  setAiEngine: (engineId: string, enabled: boolean) =>
+    fetchJson<{ default_id: string; engines: { id: string; enabled: boolean; is_default: boolean }[] }>(
+      `/api/v1/integrations/engines/${engineId}`,
+      { method: "PUT", body: JSON.stringify({ enabled }) },
+    ),
+  setDefaultAiEngine: (engineId: string) =>
+    fetchJson<{ default_id: string; engines: { id: string; enabled: boolean; is_default: boolean }[] }>(
+      `/api/v1/integrations/engines/${engineId}/default`,
+      { method: "PUT" },
+    ),
   getCursorIntegration: () =>
     fetchJson<{
       integration: string;
@@ -1264,10 +1322,13 @@ export const api = {
       model: string;
       effort: string;
       provider: string;
+      engine_enabled?: boolean;
       cursor_enabled: boolean;
       engines: Array<{
         id: string;
         label: string;
+        enabled?: boolean;
+        is_default?: boolean;
         models: Array<{ id: string; label: string; efforts: Array<{ id: string; label: string }> }>;
       }>;
     }>(`/api/v1/integrations/projects/${projectId}/ai-settings`),
@@ -1399,6 +1460,7 @@ export const api = {
       onEventAppended?: (data: Record<string, unknown>) => void;
       onStageChanged?: (data: Record<string, unknown>) => void;
       onRunCompleted?: (data: Record<string, unknown>) => void;
+      onExecutionProgress?: (data: Record<string, unknown>) => void;
       onError?: (error: Error) => void;
     },
   ): AbortController {
@@ -1437,6 +1499,10 @@ export const api = {
         const data = parse(msg as MessageEvent);
         if (data) handlers.onRunCompleted?.(data);
         source.close();
+      });
+      source.addEventListener("execution.progress", (msg) => {
+        const data = parse(msg as MessageEvent);
+        if (data) handlers.onExecutionProgress?.(data);
       });
 
       source.onerror = () => {

@@ -9,6 +9,18 @@ import {
 
 export type OverviewStageState = "done" | "blocked" | "queued" | "running";
 
+export type FactoryBusyAction =
+  | "complete"
+  | "execute"
+  | "auto"
+  | "authorize"
+  | "pause"
+  | "resume"
+  | "fail"
+  | "redo"
+  | "restart"
+  | "switch";
+
 function mapStageState(status: FactoryStageInstance["status"]): OverviewStageState {
   if (status === "done") return "done";
   if (status === "running") return "running";
@@ -37,10 +49,16 @@ function formatLedgerMeta(entry: FactoryLedgerEntry): string {
 export function createFactoryRunController(projectId: Accessor<string>) {
   const [run, setRun] = createSignal<FactoryRunPayload | null>(null);
   const [loading, setLoading] = createSignal(true);
-  const [busy, setBusy] = createSignal(false);
+  const [busyAction, setBusyAction] = createSignal<FactoryBusyAction | null>(null);
+  const [busySince, setBusySince] = createSignal<number | null>(null);
+  const [haltAsked, setHaltAsked] = createSignal(false);
+  const busy = () => busyAction() !== null;
   const [error, setError] = createSignal<string | null>(null);
   const [liveFeed, setLiveFeed] = createSignal<
     Array<{ id: string; title: string; meta: string; tone: "ok" | "warn" | "danger" }>
+  >([]);
+  const [executionLog, setExecutionLog] = createSignal<
+    Array<{ id: string; stageId: string; message: string; at?: string; actor?: string }>
   >([]);
   const [connected, setConnected] = createSignal(false);
 
@@ -190,6 +208,24 @@ export function createFactoryRunController(projectId: Accessor<string>) {
           /* ignore */
         }
       },
+      onExecutionProgress: (data) => {
+        const id = String(data.id || `${Date.now()}`);
+        const at = typeof data.occurred_at === "string" ? data.occurred_at : undefined;
+        if (at && Number.isNaN(Date.parse(at))) return;
+        setExecutionLog((prev) => {
+          if (prev.some((line) => line.id === id)) return prev;
+          return [
+            ...prev,
+            {
+              id,
+              stageId: String(data.stage_def_id || ""),
+              message: String(data.message || "Passo da execução"),
+              at,
+              actor: String(data.actor || ""),
+            },
+          ].slice(-40);
+        });
+      },
       onError: () => setConnected(false),
     });
   };
@@ -244,8 +280,13 @@ export function createFactoryRunController(projectId: Accessor<string>) {
     detachSse();
   });
 
-  const withBusy = async (fn: () => Promise<FactoryRunPayload>, errMsg: string) => {
-    setBusy(true);
+  const withBusy = async (
+    action: FactoryBusyAction,
+    fn: () => Promise<FactoryRunPayload>,
+    errMsg: string,
+  ) => {
+    setBusyAction(action);
+    setBusySince(Date.now());
     setError(null);
     try {
       const next = await fn();
@@ -255,7 +296,9 @@ export function createFactoryRunController(projectId: Accessor<string>) {
       setError(err instanceof Error ? err.message : errMsg);
       throw err;
     } finally {
-      setBusy(false);
+      setBusyAction(null);
+      setBusySince(null);
+      setHaltAsked(false);
     }
   };
 
@@ -263,6 +306,7 @@ export function createFactoryRunController(projectId: Accessor<string>) {
     const s = currentStage();
     if (!s || !canAuthorize()) return;
     return withBusy(
+      "authorize",
       () =>
         api.authorizeFactoryStage(projectId(), s.stage_def_id, {
           note,
@@ -276,6 +320,7 @@ export function createFactoryRunController(projectId: Accessor<string>) {
     const s = currentStage();
     if (!s || !canComplete()) return;
     return withBusy(
+      "complete",
       () => api.completeFactoryStage(projectId(), s.stage_def_id, { note }),
       "Falha ao concluir etapa",
     );
@@ -285,6 +330,7 @@ export function createFactoryRunController(projectId: Accessor<string>) {
     const s = currentStage();
     if (!s || !canFail()) return;
     return withBusy(
+      "fail",
       () => api.failFactoryStage(projectId(), s.stage_def_id, { note }),
       "Falha ao marcar etapa",
     );
@@ -294,6 +340,7 @@ export function createFactoryRunController(projectId: Accessor<string>) {
     if (!canResume()) return;
     const s = currentStage();
     return withBusy(
+      "resume",
       () =>
         s
           ? api.resumeFactoryStage(projectId(), s.stage_def_id, {
@@ -306,8 +353,15 @@ export function createFactoryRunController(projectId: Accessor<string>) {
   };
 
   const pause = async (note?: string) => {
+    const action = busyAction();
+    if (busy()) {
+      setHaltAsked(true);
+      await api.haltFactoryAgents();
+      if (action === "auto" || action === "execute" || action === "pause") return;
+    }
     if (!canPause()) return;
     return withBusy(
+      "pause",
       () => api.pauseFactoryRun(projectId(), { note, actor: "CEO local" }),
       "Falha ao pausar esteira",
     );
@@ -323,6 +377,7 @@ export function createFactoryRunController(projectId: Accessor<string>) {
       s.is_gate && s.status === "awaiting_gate" && (s.expected_artifacts || []).length > 0;
     if (!forced && !deliveryGate && !canExecute()) return;
     return withBusy(
+      "execute",
       () =>
         api.executeFactoryStage(projectId(), s.stage_def_id, {
           note: note || (forced || deliveryGate ? "Entrega do agente" : undefined),
@@ -353,6 +408,7 @@ export function createFactoryRunController(projectId: Accessor<string>) {
   ) => {
     if (!stageDefId || !run()) return;
     return withBusy(
+      "redo",
       () =>
         api.redoFactoryGate(projectId(), stageDefId, {
           ...body,
@@ -365,6 +421,7 @@ export function createFactoryRunController(projectId: Accessor<string>) {
   const restartRun = async (body: { note?: string; model?: string; effort?: string }) => {
     if (!canRestart()) return;
     return withBusy(
+      "restart",
       () => api.restartFactoryRun(projectId(), { ...body, actor: "CEO local" }),
       "Falha ao reiniciar o projeto",
     );
@@ -373,18 +430,21 @@ export function createFactoryRunController(projectId: Accessor<string>) {
   const setAutoExecute = async (enabled: boolean) => {
     if (!run()) return;
     return withBusy(
+      "switch",
       () => api.setFactoryAutoSwitch(projectId(), enabled),
       "Falha ao gravar a execução automática",
     );
   };
 
-  const autoRun = async () => {
-    if (!canAutoRun()) return;
+  const autoRun = async (repair = false) => {
     return withBusy(
+      "auto",
       () =>
         api.autoExecuteFactoryRun(projectId(), {
           actor: "Executor automático",
-          note: "Execução automática até o próximo gate",
+          note: repair
+            ? "Reparar com o log desta etapa"
+            : "Execução automática até o próximo gate",
         }),
       "Falha na execução automática",
     );
@@ -394,12 +454,16 @@ export function createFactoryRunController(projectId: Accessor<string>) {
     run,
     loading,
     busy,
+    busyAction,
+    busySince,
+    haltAsked,
     error,
     connected,
     currentStage,
     overviewStages,
     pendencies,
     activity,
+    executionLog,
     canAuthorize,
     canComplete,
     canExecute,
