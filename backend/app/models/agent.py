@@ -1,4 +1,4 @@
-from sqlalchemy import String, Text, DateTime, Integer, Float, func
+from sqlalchemy import Boolean, String, Text, DateTime, Integer, Float, func
 from sqlalchemy.orm import Mapped, mapped_column
 from app.shared.database import Base
 
@@ -10,10 +10,13 @@ class Agent(Base):
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     role: Mapped[str] = mapped_column(String(100), nullable=False)
     sector: Mapped[str] = mapped_column(String(100), nullable=False)
+    reports_to: Mapped[str | None] = mapped_column(String(200), nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
     skills: Mapped[str | None] = mapped_column(Text, nullable=True)
     model_provider: Mapped[str | None] = mapped_column(String(50), nullable=True)
     soul_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    craft_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    soul_locked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="1")
     total_jobs: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     total_cost: Mapped[float] = mapped_column(Float, default=0.0, nullable=False)
     avatar_color: Mapped[str | None] = mapped_column(String(30), nullable=True)

@@ -1,215 +1,111 @@
-import { createSignal, Show } from "solid-js";
+import { createSignal, onMount, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
-import { TvIcon } from "../../shared/components";
+import { api, parseApiError } from "../../shared/api/client";
+import { officeSession, refreshSession } from "../../state/session";
 
-/**
- * G9 — Login local com sessão loopback e gestão de acesso do operador.
- * Single-user: secret persistido em localStorage com expiração de 24h.
- */
-
-const SESSION_KEY = "tavir_session";
-const SESSION_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
-const DEFAULT_SECRET = "tavir-local-2024";
-
-interface Session {
-  authenticated: boolean;
-  loginAt: number;
-  user: string;
-}
-
-export function getSession(): Session | null {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return null;
-    const session: Session = JSON.parse(raw);
-    if (Date.now() - session.loginAt > SESSION_TTL_MS) {
-      localStorage.removeItem(SESSION_KEY);
-      return null;
-    }
-    return session;
-  } catch {
-    return null;
-  }
-}
-
-export function isLoggedIn(): boolean {
-  return getSession()?.authenticated === true;
-}
-
-export function logout(): void {
-  localStorage.removeItem(SESSION_KEY);
-}
+const EMPTY = "Informe a chave local para continuar.";
 
 export function Login() {
   const navigate = useNavigate();
   const [secret, setSecret] = createSignal("");
-  const [showPassword, setShowPassword] = createSignal(false);
+  const [visible, setVisible] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
-  const [loading, setLoading] = createSignal(false);
-  const [currentSession, setCurrentSession] = createSignal<Session | null>(getSession());
+  const [busy, setBusy] = createSignal(false);
 
-  const handleFillDevKey = () => {
-    setSecret(DEFAULT_SECRET);
+  onMount(() => {
+    void refreshSession();
+  });
+
+  const enter = async (event: Event) => {
+    event.preventDefault();
+    if (!secret().trim()) {
+      setError(EMPTY);
+      return;
+    }
+    setBusy(true);
     setError(null);
-  };
-
-  const handleSubmit = async (e: Event) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    // Brief simulation for smooth UX
-    await new Promise((r) => setTimeout(r, 250));
-
-    if (secret().trim() === DEFAULT_SECRET) {
-      const session: Session = {
-        authenticated: true,
-        loginAt: Date.now(),
-        user: "Carlos · CEO",
-      };
-      localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-      setCurrentSession(session);
-      navigate("/sala-operacao");
-    } else {
-      setError("Chave de acesso inválida. Tente 'tavir-local-2024' para o ambiente local.");
-      setLoading(false);
+    try {
+      const state = await api.login(secret());
+      setSecret("");
+      await refreshSession();
+      navigate(state.onboarding_complete ? "/sala-operacao" : "/onboarding");
+    } catch (err) {
+      const parsed = parseApiError(err);
+      setError(parsed.detail || "A chave local não confere.");
+    } finally {
+      setBusy(false);
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    setCurrentSession(null);
+  const leave = async () => {
+    await api.logout();
+    await refreshSession();
     setSecret("");
     setError(null);
   };
 
   return (
-    <div class="flex h-full w-full items-center justify-center overflow-y-auto bg-[var(--surface-0)] p-6">
-      <div class="relative w-full max-w-md overflow-hidden rounded-2xl border border-[rgba(244,246,242,.15)] bg-[#0f1729] p-8 shadow-2xl">
-        <div class="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-[rgba(183,243,74,0.05)] blur-3xl pointer-events-none" />
-        <div class="absolute -bottom-20 -left-20 h-56 w-56 rounded-full bg-[rgba(27,197,189,0.05)] blur-3xl pointer-events-none" />
-
-        {/* Brand Header */}
-        <div class="relative z-10 mb-6 flex flex-col items-center text-center">
-          <div class="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-[rgba(244,246,242,.15)] bg-[#131c31] shadow-inner">
-            <img
-              src="/assets/brand/tavir-symbol-lime.svg"
-              alt="TAVIR Símbolo"
-              class="h-8 w-8 object-contain"
-            />
-          </div>
-          <h1 class="text-xl font-bold tracking-tight text-[var(--cloud)]">
-            TAVIR Escritório
-          </h1>
-          <p class="mt-1 text-xs text-[var(--t2,#cbd3de)]">
-            Acesso Local & Orquestração Operacional
-          </p>
-          <span class="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-[rgba(244,246,242,.1)] bg-[#070d18] px-3 py-0.5 text-[10px] font-mono uppercase tracking-[0.12em] text-[var(--muted,#aeb7c4)]">
-            <span class="h-1.5 w-1.5 rounded-full bg-[var(--lime)] animate-pulse" />
-            Loopback 127.0.0.1
-          </span>
-        </div>
-
-        {/* Active Session View */}
+    <div class="login-screen" style={{ "min-height": "100vh", display: "flex", background: "var(--surface-0)", color: "var(--text-primary)" }}>
+      <section style={{ flex: "1 1 420px", padding: "64px 48px", background: "#0B1220", color: "#F4F6F2" }}>
+        <p style={{ "font-size": "12px", "letter-spacing": "0.14em", "text-transform": "uppercase", color: "#aeb7c4" }}>TAVIR Escritório</p>
+        <h1 style={{ "font-size": "40px", "font-weight": 600, "letter-spacing": "-0.04em", "line-height": 1.02, "margin-top": "14px", "max-width": "540px" }}>
+          Inteligência que entra em operação.
+        </h1>
+        <p style={{ color: "#aeb7c4", "margin-top": "16px", "max-width": "460px", "font-size": "16px" }}>
+          Orquestre agentes, tasks e entregas a partir desta máquina. Cada passo fica registrado. Cada ação irreversível espera você.
+        </p>
+      </section>
+      <section style={{ flex: "1 1 420px", display: "grid", "place-items": "center", padding: "48px 24px" }}>
         <Show
-          when={!currentSession()}
+          when={officeSession()?.authenticated}
           fallback={
-            <div class="relative z-10 flex flex-col gap-4">
-              <div class="rounded-xl border border-[rgba(27,197,189,0.25)] bg-[rgba(27,197,189,0.08)] p-4 text-center">
-                <p class="text-xs font-semibold text-[var(--teal,#1BC5BD)]">Sessão Ativa do Operador</p>
-                <p class="mt-1 text-sm font-bold text-[var(--cloud)]">{currentSession()?.user}</p>
-                <p class="mt-0.5 text-[10px] font-mono text-[var(--muted,#aeb7c4)]">
-                  Iniciada em: {new Date(currentSession()!.loginAt).toLocaleTimeString("pt-BR")}
-                </p>
+            <form onSubmit={enter} style={{ width: "min(400px, 100%)", display: "flex", "flex-direction": "column", gap: "18px" }}>
+              <div>
+                <div style={{ "font-size": "12px", "letter-spacing": "0.14em", "text-transform": "uppercase", color: "var(--text-muted)" }}>Loopback · 127.0.0.1</div>
+                <h2 style={{ "font-size": "28px", "font-weight": 600, "letter-spacing": "-0.03em", "margin-top": "8px" }}>Entrar no escritório</h2>
+                <p style={{ "margin-top": "6px", color: "var(--text-secondary)" }}>Use a chave local do operador.</p>
               </div>
-
-              <div class="flex flex-col gap-2">
-                <button
-                  type="button"
-                  onClick={() => navigate("/sala-operacao")}
-                  class="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[var(--lime)] px-4 text-xs font-bold uppercase tracking-wider text-[#0B1220] transition-opacity hover:opacity-90"
-                >
-                  <TvIcon name="terminal" width={14} height={14} />
-                  Entrar na Sala de Operação
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  class="flex h-9 w-full items-center justify-center gap-2 rounded-lg border border-[rgba(244,246,242,.15)] bg-transparent px-4 text-xs font-medium text-[var(--t2,#cbd3de)] transition-colors hover:bg-[rgba(244,246,242,.05)]"
-                >
-                  Encerrar Sessão (Logout)
-                </button>
+              <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
+                <label for="chave-acesso">Chave de acesso</label>
+                <span style={{ position: "relative" }}>
+                  <input
+                    id="chave-acesso"
+                    name="chave"
+                    type={visible() ? "text" : "password"}
+                    value={secret()}
+                    autocomplete="current-password"
+                    placeholder="Digite a chave local"
+                    onInput={(e) => {
+                      setSecret(e.currentTarget.value);
+                      setError(null);
+                    }}
+                    style={{ width: "100%", height: "44px", "padding-right": "88px", "box-sizing": "border-box" }}
+                  />
+                  <button type="button" onClick={() => setVisible(!visible())} style={{ position: "absolute", right: "14px", top: "12px" }}>
+                    {visible() ? "Ocultar" : "Mostrar"}
+                  </button>
+                </span>
+                <Show when={error()}>
+                  <small role="alert" style={{ color: "var(--danger, #d4564e)" }}>{error()}</small>
+                </Show>
               </div>
-            </div>
+              <button type="submit" disabled={busy()} style={{ height: "46px" }}>
+                Acessar painel
+              </button>
+              <p>A chave não sai desta máquina. A sessão expira depois de 12 h sem uso.</p>
+            </form>
           }
         >
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} class="relative z-10 flex flex-col gap-4">
-            <div class="flex flex-col gap-1.5">
-              <div class="flex items-center justify-between">
-                <label class="text-[10px] font-mono uppercase tracking-[var(--tracking-label,0.12em)] text-[var(--muted,#aeb7c4)]">
-                  Chave de Acesso do Operador
-                </label>
-                <button
-                  type="button"
-                  onClick={handleFillDevKey}
-                  class="text-[10px] font-mono text-[var(--teal,#1BC5BD)] transition-colors hover:underline"
-                >
-                  Preencher Chave Dev
-                </button>
-              </div>
-
-              <div class="relative flex items-center">
-                <input
-                  type={showPassword() ? "text" : "password"}
-                  value={secret()}
-                  onInput={(e) => setSecret(e.currentTarget.value)}
-                  placeholder="tavir-local-2024"
-                  class="h-10 w-full rounded-lg border border-[rgba(244,246,242,.15)] bg-[#070d18] px-3.5 pr-10 text-xs font-mono text-[var(--cloud)] outline-none transition-colors focus:border-[var(--teal,#1BC5BD)] placeholder:text-[var(--muted,#5e6878)]"
-                  autofocus
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword())}
-                  class="absolute right-2.5 p-1 text-[var(--muted,#aeb7c4)] transition-colors hover:text-[var(--cloud)]"
-                  title={showPassword() ? "Ocultar chave" : "Mostrar chave"}
-                >
-                  <TvIcon name={showPassword() ? "eye-off" : "eye"} width={14} height={14} />
-                </button>
-              </div>
+          <div style={{ width: "min(400px, 100%)", display: "flex", "flex-direction": "column", gap: "14px" }}>
+            <div>
+              <div>Sessão ativa</div>
+              <b style={{ "font-size": "18px" }}>{officeSession()?.operator || "Carlos · CEO"}</b>
             </div>
-
-            <Show when={error()}>
-              <div class="rounded-lg border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.1)] p-2.5 text-xs text-[#fca5a5]">
-                {error()}
-              </div>
-            </Show>
-
-            <button
-              type="submit"
-              disabled={loading() || !secret()}
-              class="mt-1 flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[var(--lime)] px-4 text-xs font-bold uppercase tracking-wider text-[#0B1220] transition-opacity duration-150 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {loading() ? (
-                <span>Validando acesso...</span>
-              ) : (
-                <>
-                  <TvIcon name="lock" width={14} height={14} />
-                  <span>Acessar Painel</span>
-                </>
-              )}
-            </button>
-          </form>
+            <button type="button" onClick={() => navigate("/sala-operacao")}>Entrar na Sala</button>
+            <button type="button" onClick={() => void leave()}>Encerrar sessão</button>
+          </div>
         </Show>
-
-        {/* Footer Note */}
-        <div class="mt-6 border-t border-[rgba(244,246,242,.08)] pt-4 text-center">
-          <p class="text-[10px] leading-relaxed text-[var(--muted,#aeb7c4)]">
-            Ambiente seguro local • Chave padrão de desenvolvimento: <code class="font-mono text-[var(--cloud)]">tavir-local-2024</code>
-          </p>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

@@ -1,0 +1,45 @@
+{
+  "name": "tavir-escritorio",
+  "version": "2.0.0",
+  "private": true,
+  "description": "TAVIR Escritório — Plataforma Desktop Nativa de Orquestração com Multi-Engine e Design System TAVIR",
+  "author": {
+    "name": "TAVIR AI"
+  },
+  "main": "dist/main/index.js",
+  "scripts": {
+    "dev": "npm run build:main && concurrently -k -n VITE,TSC,ELECTRON -c cyan,yellow,magenta \"npm:dev:renderer\" \"npm:dev:main\" \"npm:dev:electron\"",
+    "dev:renderer": "vite",
+    "dev:main": "tsc -p tsconfig.main.json --watch --preserveWatchOutput",
+    "dev:electron": "wait-on tcp:5273 dist/main/index.js && electron . --dev",
+    "build": "npm run build:main && npm run build:renderer",
+    "build:main": "tsc -p tsconfig.main.json",
+    "build:renderer": "node scripts/copy_canonical_renderer.js",
+    "typecheck": "tsc -p tsconfig.main.json --noEmit && tsc -p tsconfig.renderer.json --noEmit",
+    "start": "npm run build && electron .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:motion": "vitest run tests/motion.spec.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.289"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "concurrently": "^10.0.4",
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10",
+    "wait-on": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

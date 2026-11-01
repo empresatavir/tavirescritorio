@@ -22,7 +22,23 @@ from app.api.v1.services import router as services_router
 from app.api.v1.proposals import router as proposals_router
 from app.api.v1.models import router as models_router
 from app.api.v1.integrations import router as integrations_router
+from app.api.v1.settings_office import router as settings_router
+from app.api.v1.raiox import router as raiox_router
+from app.api.v1.auth import router as auth_router
+from app.api.v1.ledger import router as ledger_router
+from app.api.v1.notifications import router as notifications_router
+from app.api.v1.search import router as search_router
+from app.api.v1.cost import router as cost_router
+from app.api.v1.vault import router as vault_router
+from app.api.v1.modules import router as modules_router
+from app.api.v1.edit import router as edit_router
+from app.api.v1.commercial import router as commercial_router
+from app.api.v1.social import router as social_router
+from app.api.v1.inbox import router as inbox_router
+from app.api.v1.missions import router as missions_router
+from app.api.v1.tours import router as tours_router
 from app.modules.ghostcli.notice import begin_ai_link_scope, current_ai_link_error, reset_ai_link_scope
+from app.modules.agents.design_profiles import apply_design_profiles
 from app.shared.database import ensure_schema_patches
 
 
@@ -30,6 +46,7 @@ from app.shared.database import ensure_schema_patches
 async def lifespan(_app: FastAPI):
     try:
         await ensure_schema_patches()
+        await apply_design_profiles()
     except Exception as exc:
         print(f"[main] schema patch warning: {exc}")
     yield
@@ -92,6 +109,21 @@ app.include_router(services_router)
 app.include_router(proposals_router)
 app.include_router(models_router)
 app.include_router(integrations_router)
+app.include_router(settings_router)
+app.include_router(raiox_router)
+app.include_router(auth_router)
+app.include_router(ledger_router)
+app.include_router(notifications_router)
+app.include_router(search_router)
+app.include_router(cost_router)
+app.include_router(vault_router)
+app.include_router(modules_router)
+app.include_router(edit_router)
+app.include_router(commercial_router)
+app.include_router(social_router)
+app.include_router(inbox_router)
+app.include_router(missions_router)
+app.include_router(tours_router)
 
 # Health endpoint
 @app.get("/api/v1/health")

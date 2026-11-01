@@ -31,7 +31,7 @@ const NAV_GROUPS = [
     items: [
       { path: "/analytics", label: "Analytics" },
       { path: "/doctor", label: "Doctor" },
-      { path: "/integracoes", label: "Integrações" },
+      { path: "/configuracoes", label: "Configurações" },
       { path: "/skills", label: "Skills" },
       { path: "/org-chart", label: "Org Chart" },
     ],
@@ -58,7 +58,7 @@ const NAV_GROUPS = [
   {
     label: "Comercial",
     items: [
-      { path: "/funnel", label: "Funnel" },
+      { path: "/funil", label: "Funil" },
       { path: "/finances", label: "Finances" },
       { path: "/propostas", label: "Propostas" },
       { path: "/content", label: "Content" },

@@ -1,0 +1,2580 @@
+{
+  "screenId": "flow-beta",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 73,
+        "nav": 1,
+        "button": 38,
+        "img": 2,
+        "i": 9,
+        "aside": 2,
+        "small": 3,
+        "span": 112,
+        "b": 9,
+        "em": 2,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 1,
+        "h3": 3,
+        "section": 3,
+        "label": 2,
+        "input": 2,
+        "table": 1,
+        "thead": 1,
+        "tr": 6,
+        "th": 4,
+        "tbody": 1,
+        "td": 20
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Visão dos módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fábrica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "beta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Edição",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "beta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Módulo · Atender",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "beta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Esteiras automáticas entre módulos. Cada workflow tem gatilho, passos com dono e gate humano onde a ação não tem volta.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rodar agora",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Novo workflow",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Em arquitetura: o desenho, as regras e o histórico já valem. A execução automática entra na próxima versão do motor.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Workflows",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Publicar carrossel",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "48",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "execuções ·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "há 2 h",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fechar proposta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "9",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "execuções ·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ontem",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Lead do WhatsApp",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "151",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "execuções ·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "há 12 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Indexar referência",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "execuções ·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "há 6 dias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Publicar carrossel",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ativo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio → Social",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gatilho",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Peça chega em Pacote",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Adapta legenda e hashtags",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iara Instagram",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Revisão final",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rita Revisora",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gate humano",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carlos aprova publicação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carlos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Publica e registra",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Paulo Publicador",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Passo selecionado ·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gate humano",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nome",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dono",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Entrada",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "parecer",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Saída",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "decisão",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Pode rodar sozinho",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gate humano nunca roda sozinho. É regra do escritório.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Últimas execuções",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "30 dias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Quando",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Resultado",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Parou em",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Duração",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "14:08",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "concluído",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "—",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "11:40",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "no gate",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carlos aprova publicação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2 h 10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ontem 18:02",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "concluído",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "—",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ontem 09:15",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "recusado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carlos aprova publicação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "22 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "27/10 17:30",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "concluído",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "—",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO MÓDULOS Visão dos módulos Raio-X Studio Fábrica 1 Flow BETA Edição BETA Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão dos módulos",
+          "label": null,
+          "text": "Visão dos módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fábrica 1",
+          "label": null,
+          "text": "Fábrica 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow BETA",
+          "label": null,
+          "text": "Flow BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição BETA",
+          "label": null,
+          "text": "Edição BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Módulos / Flow AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Módulos / Flow AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Flow",
+          "label": null,
+          "text": "Flow",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 122,
+            "width": 779,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Rodar agora",
+          "label": null,
+          "text": "Rodar agora",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1127,
+            "y": 163,
+            "width": 116,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo workflow",
+          "label": null,
+          "text": "Novo workflow",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1251,
+            "y": 163,
+            "width": 157,
+            "height": 40
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Workflows 4 Publicar carrossel 48 execuções · há 2 h Fechar proposta 9 execuções · ontem Lead do WhatsApp 151 execuções · há 12 min Indexar referência 4 execuções · há 6 dias",
+          "label": null,
+          "text": "Workflows 4 Publicar carrossel 48 execuções · há 2 h Fechar proposta 9 execuções · ontem Lead do WhatsApp 151 execuções · há 12 min Indexar referência 4 execuções · há 6 dias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 297,
+            "width": 280,
+            "height": 301
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Workflows",
+          "label": null,
+          "text": "Workflows",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 351,
+            "y": 312,
+            "width": 71,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Publicar carrossel 48 execuções · há 2 h",
+          "label": null,
+          "text": "Publicar carrossel 48 execuções · há 2 h",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 360,
+            "width": 194,
+            "height": 38
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ativar Publicar carrossel",
+          "label": "Ativar Publicar carrossel",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 553,
+            "y": 365,
+            "width": 44,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fechar proposta 9 execuções · ontem",
+          "label": null,
+          "text": "Fechar proposta 9 execuções · ontem",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 422,
+            "width": 194,
+            "height": 38
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ativar Fechar proposta",
+          "label": "Ativar Fechar proposta",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 553,
+            "y": 428,
+            "width": 44,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Lead do WhatsApp 151 execuções · há 12 min",
+          "label": null,
+          "text": "Lead do WhatsApp 151 execuções · há 12 min",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 485,
+            "width": 194,
+            "height": 38
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ativar Lead do WhatsApp",
+          "label": "Ativar Lead do WhatsApp",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 553,
+            "y": 490,
+            "width": 44,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Indexar referência 4 execuções · há 6 dias",
+          "label": null,
+          "text": "Indexar referência 4 execuções · há 6 dias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 547,
+            "width": 194,
+            "height": 38
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ativar Indexar referência",
+          "label": "Ativar Indexar referência",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 553,
+            "y": 553,
+            "width": 44,
+            "height": 26
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Publicar carrossel ATIVO Studio → Social GATILHO Peça chega em Pacote Studio AGENTE Adapta legenda e hashtags Iara Instagram AGENTE Revisão final Rita Revisora GATE HUMANO Carlos aprova publicação Carlos AÇÃO Publica e registra Paulo Publicador PASSO SELECIONADO · GATE HUMANO Nome Dono Entrada parecer Saída decisão Pode rodar sozinho Gate humano nunca roda sozinho. É regra do escritório. Últimas execuções 30 DIAS QUANDO RESULTADO PAROU EM DURAÇÃO 14:08 CONCLUÍDO — 3 min 11:40 NO GATE Carlos aprova publicação 2 h 10 ontem 18:02 CONCLUÍDO — 4 min ontem 09:15 RECUSADO Carlos aprova publicação 22 min 27/10 17:30 CONCLUÍDO — 3 min",
+          "label": null,
+          "text": "Publicar carrossel ATIVO Studio → Social GATILHO Peça chega em Pacote Studio AGENTE Adapta legenda e hashtags Iara Instagram AGENTE Revisão final Rita Revisora GATE HUMANO Carlos aprova publicação Carlos AÇÃO Publica e registra Paulo Publicador PASSO SELECIONADO · GATE HUMANO Nome Dono Entrada parecer Saída decisão Pode rodar sozinho Gate humano nunca roda sozinho. É regra do escritório. Últimas execuções 30 DIAS QUANDO RESULTADO PAROU EM DURAÇÃO 14:08 CONCLUÍDO — 3 min 11:40 NO GATE Carlos aprova publicação 2 h 10 ontem 18:02 CONCLUÍDO — 4 min ontem 09:15 RECUSADO Carlos aprova publicação 22 min 27/10 17:30 CONCLUÍDO — 3 min",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 628,
+            "y": 297,
+            "width": 780,
+            "height": 663
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Publicar carrossel",
+          "label": null,
+          "text": "Publicar carrossel",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 649,
+            "y": 318,
+            "width": 134,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "GATILHO Peça chega em Pacote Studio",
+          "label": null,
+          "text": "GATILHO Peça chega em Pacote Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 651,
+            "y": 366,
+            "width": 168,
+            "height": 121
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AGENTE Adapta legenda e hashtags Iara Instagram",
+          "label": null,
+          "text": "AGENTE Adapta legenda e hashtags Iara Instagram",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 863,
+            "y": 366,
+            "width": 168,
+            "height": 121
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AGENTE Revisão final Rita Revisora",
+          "label": null,
+          "text": "AGENTE Revisão final Rita Revisora",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1075,
+            "y": 374,
+            "width": 168,
+            "height": 104
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "GATE HUMANO Carlos aprova publicação Carlos",
+          "label": null,
+          "text": "GATE HUMANO Carlos aprova publicação Carlos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1287,
+            "y": 366,
+            "width": 168,
+            "height": 121
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AÇÃO Publica e registra Paulo Publicador",
+          "label": null,
+          "text": "AÇÃO Publica e registra Paulo Publicador",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1499,
+            "y": 374,
+            "width": 168,
+            "height": 104
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Adicionar passo",
+          "label": "Adicionar passo",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1695,
+            "y": 406,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "PASSO SELECIONADO · GATE HUMANO Nome Dono Entrada parecer Saída decisão Pode rodar sozinho Gate humano nunca roda sozinho. É regra do escritório.",
+          "label": null,
+          "text": "PASSO SELECIONADO · GATE HUMANO Nome Dono Entrada parecer Saída decisão Pode rodar sozinho Gate humano nunca roda sozinho. É regra do escritório.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 628,
+            "y": 530,
+            "width": 362,
+            "height": 379
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Nome",
+          "label": null,
+          "text": "Nome",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 649,
+            "y": 581,
+            "width": 320,
+            "height": 68
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Nome",
+          "label": "Nome",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 649,
+            "y": 607,
+            "width": 320,
+            "height": 42
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Dono",
+          "label": null,
+          "text": "Dono",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 649,
+            "y": 663,
+            "width": 320,
+            "height": 68
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Dono",
+          "label": "Dono",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 649,
+            "y": 688,
+            "width": 320,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Pode rodar sozinho",
+          "label": "Pode rodar sozinho",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 925,
+            "y": 832,
+            "width": 44,
+            "height": 26
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Últimas execuções 30 DIAS QUANDO RESULTADO PAROU EM DURAÇÃO 14:08 CONCLUÍDO — 3 min 11:40 NO GATE Carlos aprova publicação 2 h 10 ontem 18:02 CONCLUÍDO — 4 min ontem 09:15 RECUSADO Carlos aprova publicação 22 min 27/10 17:30 CONCLUÍDO — 3 min",
+          "label": null,
+          "text": "Últimas execuções 30 DIAS QUANDO RESULTADO PAROU EM DURAÇÃO 14:08 CONCLUÍDO — 3 min 11:40 NO GATE Carlos aprova publicação 2 h 10 ontem 18:02 CONCLUÍDO — 4 min ontem 09:15 RECUSADO Carlos aprova publicação 22 min 27/10 17:30 CONCLUÍDO — 3 min",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1006,
+            "y": 530,
+            "width": 402,
+            "height": 430
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Últimas execuções",
+          "label": null,
+          "text": "Últimas execuções",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1025,
+            "y": 545,
+            "width": 123,
+            "height": 21
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão dos módulos",
+          "label": null,
+          "text": "Visão dos módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fábrica 1",
+          "label": null,
+          "text": "Fábrica 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow BETA",
+          "label": null,
+          "text": "Flow BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição BETA",
+          "label": null,
+          "text": "Edição BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Rodar agora",
+          "label": null,
+          "text": "Rodar agora",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1127,
+            "y": 163,
+            "width": 116,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo workflow",
+          "label": null,
+          "text": "Novo workflow",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1251,
+            "y": 163,
+            "width": 157,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Publicar carrossel 48 execuções · há 2 h",
+          "label": null,
+          "text": "Publicar carrossel 48 execuções · há 2 h",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 360,
+            "width": 194,
+            "height": 38
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ativar Publicar carrossel",
+          "label": "Ativar Publicar carrossel",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 553,
+            "y": 365,
+            "width": 44,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fechar proposta 9 execuções · ontem",
+          "label": null,
+          "text": "Fechar proposta 9 execuções · ontem",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 422,
+            "width": 194,
+            "height": 38
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ativar Fechar proposta",
+          "label": "Ativar Fechar proposta",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 553,
+            "y": 428,
+            "width": 44,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Lead do WhatsApp 151 execuções · há 12 min",
+          "label": null,
+          "text": "Lead do WhatsApp 151 execuções · há 12 min",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 485,
+            "width": 194,
+            "height": 38
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ativar Lead do WhatsApp",
+          "label": "Ativar Lead do WhatsApp",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 553,
+            "y": 490,
+            "width": 44,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Indexar referência 4 execuções · há 6 dias",
+          "label": null,
+          "text": "Indexar referência 4 execuções · há 6 dias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 547,
+            "width": 194,
+            "height": 38
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ativar Indexar referência",
+          "label": "Ativar Indexar referência",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 553,
+            "y": 553,
+            "width": 44,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "GATILHO Peça chega em Pacote Studio",
+          "label": null,
+          "text": "GATILHO Peça chega em Pacote Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 651,
+            "y": 366,
+            "width": 168,
+            "height": 121
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AGENTE Adapta legenda e hashtags Iara Instagram",
+          "label": null,
+          "text": "AGENTE Adapta legenda e hashtags Iara Instagram",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 863,
+            "y": 366,
+            "width": 168,
+            "height": 121
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AGENTE Revisão final Rita Revisora",
+          "label": null,
+          "text": "AGENTE Revisão final Rita Revisora",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1075,
+            "y": 374,
+            "width": 168,
+            "height": 104
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "GATE HUMANO Carlos aprova publicação Carlos",
+          "label": null,
+          "text": "GATE HUMANO Carlos aprova publicação Carlos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1287,
+            "y": 366,
+            "width": 168,
+            "height": 121
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AÇÃO Publica e registra Paulo Publicador",
+          "label": null,
+          "text": "AÇÃO Publica e registra Paulo Publicador",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1499,
+            "y": 374,
+            "width": 168,
+            "height": 104
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Adicionar passo",
+          "label": "Adicionar passo",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1695,
+            "y": 406,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Nome",
+          "label": null,
+          "text": "Nome",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 649,
+            "y": 581,
+            "width": 320,
+            "height": 68
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Nome",
+          "label": "Nome",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 649,
+            "y": 607,
+            "width": 320,
+            "height": 42
+          },
+          "kind": "field",
+          "type": "text",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": true
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Dono",
+          "label": null,
+          "text": "Dono",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 649,
+            "y": 663,
+            "width": 320,
+            "height": 68
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Dono",
+          "label": "Dono",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 649,
+            "y": 688,
+            "width": 320,
+            "height": 42
+          },
+          "kind": "field",
+          "type": "text",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": true
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Pode rodar sozinho",
+          "label": "Pode rodar sozinho",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 925,
+            "y": 832,
+            "width": 44,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": true,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

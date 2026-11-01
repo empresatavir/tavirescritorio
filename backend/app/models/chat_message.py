@@ -1,5 +1,5 @@
 """ChatMessage model — message inside a chat conversation."""
-from sqlalchemy import String, Text, DateTime, ForeignKey, func
+from sqlalchemy import JSON, String, Text, DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column
 from app.shared.database import Base
 
@@ -12,6 +12,8 @@ class ChatMessage(Base):
     role: Mapped[str] = mapped_column(String(20), nullable=False)  # "user" | "assistant" | "system"
     text: Mapped[str] = mapped_column(Text, nullable=False)
     meta: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    images: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    actions: Mapped[list | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[str] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

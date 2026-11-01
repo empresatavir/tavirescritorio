@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Módulos</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page">
+  <div class="phead">
+    <div class="grow">
+      <div class="eyebrow">Módulos · cinco linhas de produção</div>
+      <h1 style="margin-top: 8px">Do diagnóstico à entrega</h1>
+      <p>Cada módulo tem esteira própria, gate humano antes do irreversível e livro-razão. Eles se encaixam na jornada que a TAVIR vende ao cliente.</p>
+    </div>
+  </div>
+
+  <section class="ink" style="padding: 24px; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; align-items: center; gap: 10px"><span class="eyebrow">Jornada do cliente</span><div class="grow"></div><span class="muted" style="font-size: 12px">Clique numa etapa para ver os módulos que a servem</span></div>
+    <div style="position: relative">
+      <div style="position: absolute; left: 4%; right: 4%; top: 21px; height: 2px; background: rgba(244,246,242,.12); border-radius: 2px"></div>
+      <div style="position: absolute; left: 4%; top: 21px; height: 2px; width: {{jw}}%; background: #1BC5BD; border-radius: 2px; transition: width 500ms cubic-bezier(.2,.7,.2,1)"></div>
+      <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; position: relative">
+        <sc-for list="{{journey}}" as="j" hint-placeholder-count="5">
+          <button onClick="{{j.pick}}" style="display: flex; flex-direction: column; align-items: center; gap: 10px; background: transparent; border: 0; color: inherit; padding: 0">
+            <span style="width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: 2px solid {{j.ring}}; background: {{j.bg}}; color: {{j.fg}}; font-family: var(--font-mono); font-size: 13px; transition: all 180ms cubic-bezier(.2,.7,.2,1)">{{j.n}}</span>
+            <b style="font-size: 14px">{{j.label}}</b>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display: flex; gap: 16px; align-items: center; padding: 14px 16px; border-radius: 12px; background: rgba(244,246,242,.04); border: 1px solid var(--on-ink-line); animation: fade 240ms var(--ease) both">
+      <div class="grow"><div class="eyebrow">{{jcur.label}}</div><p style="margin-top: 6px; font-size: 14px">{{jcur.text}}</p></div>
+      <div class="segs"><sc-for list="{{jcur.mods}}" as="m" hint-placeholder-count="2"><button class="btn sm onink-sec" onClick="{{m.go}}">{{m.label}} →</button></sc-for></div>
+    </div>
+  </section>
+
+  <div class="g3">
+    <sc-for list="{{mods}}" as="m" hint-placeholder-count="5">
+      <article class="card" style="display: flex; flex-direction: column; overflow: hidden; animation: rise 320ms var(--ease) both; animation-delay: {{m.delay}}ms">
+        <div style="padding: 20px 20px 0; display: flex; gap: 14px; align-items: flex-start">
+          <span style="width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{m.d}}"></path></svg></span>
+          <div class="grow"><div style="display: flex; gap: 8px; align-items: center"><h2 style="font-size: 18px; font-weight: 600">{{m.name}}</h2><span class="badge {{m.bcls}}">{{m.badge}}</span></div><p class="sec" style="font-size: 13px; margin-top: 4px">{{m.what}}</p></div>
+        </div>
+        <div style="margin: 16px 20px 0; padding: 12px 14px; border-radius: 12px; background: var(--surface-0); border: 1px solid var(--line)">
+          <div class="eyebrow" style="font-size: 10px">Agora</div>
+          <div style="font-weight: 600; font-size: 14px; margin-top: 4px">{{m.now}}</div>
+          <div class="muted" style="font-size: 12px">{{m.stage}}</div>
+          <div style="display: flex; gap: 3px; margin-top: 10px"><sc-for list="{{m.segs}}" as="g" hint-placeholder-count="6"><i style="flex: 1; height: 4px; border-radius: 2px; background: {{g.bg}}"></i></sc-for></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 16px 20px">
+          <sc-for list="{{m.nums}}" as="n" hint-placeholder-count="3"><div><div class="num" style="font-size: 22px">{{n.v}}</div><div class="muted" style="font-size: 11px">{{n.k}}</div></div></sc-for>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--line); margin-top: auto">
+          <div style="display: flex"><sc-for list="{{m.team}}" as="t" hint-placeholder-count="3"><span class="av" style="width: 28px; height: 28px; font-size: 9px; margin-right: -6px; border: 2px solid var(--surface-2)">{{t.i}}</span></sc-for></div>
+          <div class="grow"></div>
+          <button class="btn sm ghost" onClick="{{m.act}}">{{m.actLabel}}</button>
+          <button class="btn sm secondary" onClick="{{m.go}}">Abrir</button>
+        </div>
+      </article>
+    </sc-for>
+    <article class="card" style="display: flex; flex-direction: column; gap: 14px; padding: 20px; border-style: dashed">
+      <span class="eyebrow">Entregas · últimos 30 dias</span>
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <sc-for list="{{thru}}" as="t" hint-placeholder-count="5">
+          <div style="display: grid; grid-template-columns: 70px minmax(0, 1fr) 36px; gap: 10px; align-items: center; font-size: 13px">
+            <span class="sec">{{t.k}}</span>
+            <div class="track" style="height: 8px"><div class="fill" style="width: {{t.w}}%; transform-origin: left; animation: growx 700ms var(--ease) both"></div></div>
+            <span class="num" style="text-align: right">{{t.v}}</span>
+          </div>
+        </sc-for>
+      </div>
+      <p class="muted" style="font-size: 12px">Peças, entregas ou casos fechados, por módulo. Dados do protótipo.</p>
+      <div style="margin-top: auto; display: flex; gap: 12px; align-items: center; padding-top: 12px; border-top: 1px solid var(--line)">
+        <div class="grow"><div class="eyebrow" style="font-size: 10px">Tempo médio até o gate</div><div class="num" style="font-size: 22px; margin-top: 4px">3 h 40</div></div>
+        <span class="badge flow">−18% no mês</span>
+      </div>
+    </article>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"spot":{"editor":null},"$preview":{"width":1176,"height":1100}}'>
+const P = {
+  search: 'M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13M20 20l-4.8-4.8',
+  spark: 'M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6z',
+  factory: 'M3 20V10l6 3v-3l6 3V7l6 3v10zM7 16h2M12 16h2M17 16h2',
+  flow: 'M4 5h5v5H4zM15 14h5v5h-5zM9 7.5h3a2 2 0 0 1 2 2v5a2 2 0 0 0 1 1.7',
+  film: 'M4 5h16v14H4zM8 5v14M16 5v14M4 9.5h4M4 14.5h4M16 9.5h4M16 14.5h4'
+};
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const JOURNEY = [
+  ['Encontrar', 'O Raio-X lê presença, atendimento e oferta de um negócio antes de qualquer proposta.', [['Raio-X', 'raiox']]],
+  ['Conversar', 'Studio e Social produzem o conteúdo que faz o cliente certo chegar e confiar.', [['Studio', 'studio'], ['Social', 'social']]],
+  ['Atender', 'Flow liga as esteiras e Comunicações recebe o que chega pelo WhatsApp, e-mail e direct.', [['Flow', 'flow'], ['Comunicações', 'comms']]],
+  ['Vender', 'Propostas com link e a Fábrica constroem landing, oferta e sistema que convertem.', [['Propostas', 'propostas'], ['Fábrica', 'fabrica']]],
+  ['Medir', 'Analytics e Finanças fecham o ciclo: custo, margem e resultado por projeto.', [['Analytics', 'analytics'], ['Finanças', 'financas']]]
+];
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { j: 0 }; }
+  renderVals() {
+    const app = this.props.app || NOOP;
+    const s = this.state, self = this;
+    const seg = (arr) => arr.map((g) => ({ bg: g === 1 ? 'var(--flow)' : g === 2 ? 'var(--warning)' : 'var(--line)' }));
+    const mods = [
+      { name: 'Raio-X', d: P.search, badge: 'ativo', bcls: 'flow', what: 'Lê presença, atendimento e oferta antes de vender.', now: 'Loja da Rua · presença local', stage: 'Etapa 2 de 6 · Coleta', segs: seg([1, 2, 0, 0, 0, 0]), nums: [['2', 'casos abertos'], ['1', 'em devolutiva'], ['6', 'fechados 30d']], team: ['DD', 'CC', 'II'], actLabel: 'Novo caso', act: () => app.modal('raiox-new'), go: () => app.go('raiox') },
+      { name: 'Studio', d: P.spark, badge: 'ativo', bcls: 'flow', what: 'Produz conteúdo por perfil, com decisão antes de publicar.', now: 'Multiverso · carrossel ep. 14', stage: 'Etapa 3 de 5 · Arte', segs: seg([1, 1, 2, 0, 0]), nums: [['3', 'peças ativas'], ['2', 'checkpoints'], ['14', 'publicadas 30d']], team: ['OD', 'AA', 'IA'], actLabel: 'Nova produção', act: () => app.modal('production'), go: () => app.go('studio') },
+      { name: 'Fábrica', d: P.factory, badge: '1 gate', bcls: 'warn', what: 'Constrói landing, oferta e sistema em esteiras com QA.', now: 'Meridian · landing institucional', stage: 'Etapa 6 de 9 · QA', segs: seg([1, 1, 1, 1, 1, 2, 0, 0, 0]), nums: [['3', 'esteiras'], ['1', 'no gate'], ['4', 'entregues 30d']], team: ['YU', 'VC', 'EE'], actLabel: 'Nova esteira', act: () => app.modal('factory-new'), go: () => app.go('fabrica') },
+      { name: 'Flow', d: P.flow, badge: 'beta', bcls: '', what: 'Liga módulos em esteiras automáticas, com gate onde importa.', now: 'Publicar carrossel', stage: 'Iara → Rita → gate → Paulo', segs: seg([1, 1, 2, 0]), nums: [['4', 'workflows'], ['1', 'pausado'], ['212', 'execuções 30d']], team: ['DF', 'PP'], actLabel: 'Novo workflow', act: () => app.go('flow'), go: () => app.go('flow') },
+      { name: 'Edição', d: P.film, badge: 'beta', bcls: '', what: 'Finaliza vídeo: corte, narração, legenda e render.', now: 'Ep. 14 · reel de 45 s', stage: 'Etapa 3 de 4 · Legenda', segs: seg([1, 1, 2, 0]), nums: [['1', 'render na fila'], ['0', 'no gate'], ['6', 'entregues 30d']], team: ['VV', 'NN'], actLabel: 'Ver timeline', act: () => app.go('edicao'), go: () => app.go('edicao') }
+    ].map((m, i) => Object.assign(m, { delay: i * 60, nums: m.nums.map((n) => ({ v: n[0], k: n[1] })), team: m.team.map((t) => ({ i: t })) }));
+    const J = JOURNEY[s.j];
+    return {
+      mods: mods,
+      jw: Math.round(s.j / 4 * 92),
+      journey: JOURNEY.map((x, i) => ({ n: '0' + (i + 1), label: x[0], ring: i <= s.j ? '#1BC5BD' : 'rgba(244,246,242,.2)', bg: i === s.j ? '#1BC5BD' : '#0B1220', fg: i === s.j ? '#063b38' : (i < s.j ? '#1BC5BD' : '#aeb7c4'), pick: () => self.setState({ j: i }) })),
+      jcur: { label: J[0], text: J[1], mods: J[2].map((m) => ({ label: m[0], go: () => app.go(m[1]) })) },
+      thru: [['Studio', 14], ['Raio-X', 6], ['Edição', 6], ['Fábrica', 4], ['Flow', 3]].map((t) => ({ k: t[0], v: t[1], w: Math.round(t[1] / 14 * 100) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

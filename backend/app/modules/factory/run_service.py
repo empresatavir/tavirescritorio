@@ -83,6 +83,48 @@ async def get_latest_run(session: AsyncSession, project_id: str) -> FactoryRun |
     return result.scalars().first()
 
 
+def empty_restart_after_finish(done_stages: int) -> bool:
+    """Corrida nova sem etapa concluída não substitui um projeto já finalizado."""
+    return done_stages <= 0
+
+
+async def resolve_visible_run(
+    session: AsyncSession,
+    project: Project,
+) -> tuple[FactoryRun | None, bool]:
+    """Devolve a corrida que a tela deve mostrar.
+
+    Uma corrida finalizada permanece visível. Uma corrida posterior sem nenhuma
+    etapa concluída é o recarregamento acidental do Gate 0 e sai do estado ativo.
+    """
+    result = await session.execute(
+        select(FactoryRun)
+        .where(FactoryRun.project_id == project.id)
+        .order_by(FactoryRun.created_at.desc())
+    )
+    runs = list(result.scalars().all())
+    finished = next((run for run in runs if run.status == "done"), None)
+    changed = False
+    if finished is not None:
+        for run in runs:
+            if run.id == finished.id or run.status not in ("running", "paused"):
+                continue
+            stages = await list_stages(session, run.id)
+            done_count = sum(1 for stage in stages if stage.status == "done")
+            if not empty_restart_after_finish(done_count):
+                return run, changed
+            run.status = "abandoned"
+            changed = True
+        stages = await list_stages(session, finished.id)
+        _sync_stages_done(project, stages)
+        if project.status != "done":
+            project.status = "done"
+            changed = True
+        return finished, changed
+    active = next((run for run in runs if run.status in ("running", "paused")), None)
+    return active, False
+
+
 async def list_stages(session: AsyncSession, run_id: str) -> list[FactoryStageInstance]:
     result = await session.execute(
         select(FactoryStageInstance)
@@ -97,6 +139,8 @@ async def materialize_run_for_project(
     project: Project,
     *,
     template_code: str | None = None,
+    workspace_path: str | None = None,
+    demand_id: str | None = None,
 ) -> FactoryRun:
     """Cria run + stages a partir da esteira. Idempotente se já houver run ativo."""
     existing = await get_active_run(session, project.id)
@@ -124,10 +168,11 @@ async def materialize_run_for_project(
         template_code=code,
         status="running",
         current_stage_id=first["id"],
-        workspace_path=project.local_path,
+        workspace_path=workspace_path or project.local_path,
         meta={
             "esteira_name": esteira["name"] if esteira else code,
             "total_stages": len(defs),
+            **({"demand_id": demand_id} if demand_id else {}),
             # Defaults até o CEO redefinir na engrenagem do projeto
             "model": model,
             "effort": effort,
@@ -1048,6 +1093,17 @@ async def redo_gate_delivery(
         "force_ids": [s.stage_def_id for s in targets],
         "at": now.isoformat(),
     }
+    from app.modules.agents.lessons import propose_role_lesson
+    from app.modules.agents.prompt import agent_id_for_stage
+
+    first = targets[0]
+    await propose_role_lesson(
+        session,
+        agent_id_for_stage(first.stage_def_id, first.agent_role),
+        situation=f"Refação de {gate.stage_def_id}",
+        lesson=(note or "").strip(),
+        evidence=(note or "").strip(),
+    )
     run.meta = meta
     flag_modified(run, "meta")
 

@@ -1,6 +1,7 @@
 import { createSignal, createMemo, For, Show, onMount, onCleanup } from "solid-js";
+import { useNavigate } from "@solidjs/router";
 import { TvIcon } from "../../shared/components/TvIcon";
-import { showToast } from "../../state/store";
+import { setSelectedApprovalId, showToast } from "../../state/store";
 import {
   api,
   type Proposal,
@@ -21,185 +22,6 @@ const PROP_SEND: Record<string, ProposalSendInfo> = {
   "prop-06": { link: "PRO-006-v2-1d6b44", sentTo: "lia@vortexlabs.io", sentAt: "12/09 11:30", opened: "3 vezes", accept: ["refused", "Lia Nakamura", "15/09 14:00"] },
 };
 
-const INITIAL_PROPOSALS: Proposal[] = [
-  {
-    id: "prop-01",
-    num: "PRO-001",
-    client: "Atlas Holdings",
-    stage: "pending",
-    status: "Aceita pelo cliente · aguardando contra-assinatura",
-    tone: "wait",
-    version: 2,
-    value: 48500,
-    validity: "15/10",
-    deadline: "8 semanas",
-    taskId: "task-10",
-    summary: "Proposta de landing page institucional com integração ao CRM da Atlas e 3 meses de suporte. O cliente aceitou pela ponte Supabase; falta a contra-assinatura local (aprovação ap-05) para abrir o projeto.",
-    scope: "Landing em 5 seções com formulário de captação ligado ao CRM, painel de leads e suporte evolutivo após a entrega.",
-    items: [
-      { desc: "Landing institucional (5 seções)", value: 22000 },
-      { desc: "Integração com CRM e painel de leads", value: 16500 },
-      { desc: "Suporte evolutivo · 3 meses", value: 10000 },
-    ],
-    collected: [
-      ["Contato", "Renata Paiva · diretora de marketing"],
-      ["Objetivo", "Aumentar leads qualificados do site"],
-      ["Sistemas", "CRM próprio com API REST"],
-      ["Orçamento indicado", "até R$ 50 mil"],
-    ],
-    changes: [
-      { at: "24/09 10:12", target: "Prazos", agent: "Arquiteto", text: "Cliente pediu entrega em 8 semanas em vez de 10.", status: "Aplicada · v2" },
-    ],
-    timeline: [
-      ["20/09 09:30", "Comercial", "Reunião de descoberta registrada"],
-      ["22/09 16:00", "Comercial", "Proposta v1 enviada"],
-      ["24/09 10:12", "Você", "Alteração de prazo solicitada"],
-      ["24/09 11:40", "Arquiteto", "Cronograma refeito para 8 semanas · v2"],
-      ["27/09 11:20", "Atlas Holdings", "Aceite recebido"],
-    ],
-  },
-  {
-    id: "prop-02",
-    num: "PRO-002",
-    client: "Cobalt Group",
-    stage: "progress",
-    status: "Coletando informações com o cliente",
-    tone: "work",
-    version: 1,
-    value: null,
-    validity: "",
-    deadline: "A definir",
-    summary: "Oportunidade aberta após contato pelo site. O agente Comercial está levantando necessidades e orçamento para montar a primeira versão.",
-    scope: "Escopo tratado na próxima etapa, depois da coleta.",
-    items: [],
-    collected: [
-      ["Contato", "Marcos Lima · COO"],
-      ["Interesse", "Automação do atendimento comercial"],
-    ],
-    changes: [],
-    timeline: [
-      ["27/09 15:10", "Comercial", "Primeiro contato registrado"],
-      ["28/09 09:00", "Comercial", "Questionário de descoberta enviado"],
-    ],
-  },
-  {
-    id: "prop-03",
-    num: "PRO-003",
-    client: "Northwind Digital",
-    stage: "progress",
-    status: "Ajustando valores a pedido seu",
-    tone: "work",
-    version: 1,
-    value: 31200,
-    validity: "10/10",
-    deadline: "6 semanas",
-    summary: "Proposta de conteúdo recorrente para blog e LinkedIn, com 12 artigos por mês e relatório de desempenho.",
-    scope: "Produção editorial mensal com pauta aprovada pelo cliente, revisão e publicação.",
-    items: [
-      { desc: "12 artigos por mês · 3 meses", value: 24000 },
-      { desc: "Distribuição no LinkedIn", value: 4800 },
-      { desc: "Relatório mensal de desempenho", value: 2400 },
-    ],
-    collected: [
-      ["Contato", "Júlia Castro · head de growth"],
-      ["Frequência", "3 artigos por semana"],
-      ["Canais", "Blog e LinkedIn"],
-    ],
-    changes: [
-      { at: "28/09 09:45", target: "Valores", agent: "Comercial", text: "Oferecer o relatório mensal sem custo se o contrato for de 6 meses.", status: "Com o agente" },
-    ],
-    timeline: [
-      ["25/09 14:00", "Comercial", "Proposta v1 montada"],
-      ["28/09 09:45", "Você", "Alteração de valores solicitada"],
-    ],
-  },
-  {
-    id: "prop-04",
-    num: "PRO-004",
-    client: "Bluepeak Studio",
-    stage: "pending",
-    status: "Enviada · aguardando resposta do cliente",
-    tone: "wait",
-    version: 1,
-    value: 12800,
-    validity: "05/10",
-    deadline: "3 semanas",
-    summary: "Redesenho da página de portfólio do estúdio, com galeria filtrável e formulário de orçamento.",
-    scope: "Página de portfólio responsiva, galeria com filtros por categoria e formulário ligado ao e-mail do estúdio.",
-    items: [
-      { desc: "Página de portfólio com galeria", value: 9600 },
-      { desc: "Formulário de orçamento", value: 3200 },
-    ],
-    collected: [
-      ["Contato", "André Moura · sócio"],
-      ["Referências", "3 sites enviados pelo cliente"],
-    ],
-    changes: [],
-    timeline: [
-      ["23/09 10:00", "Comercial", "Proposta v1 montada"],
-      ["23/09 17:30", "Comercial", "Proposta enviada ao cliente"],
-    ],
-  },
-  {
-    id: "prop-05",
-    num: "PRO-005",
-    client: "Meridian Capital",
-    stage: "done",
-    status: "Aceita e contra-assinada",
-    tone: "ok",
-    version: 1,
-    value: 32000,
-    validity: "—",
-    deadline: "5 semanas",
-    taskId: "task-07",
-    summary: "Landing de captação para o fundo da Meridian Capital. Proposta concluída; o projeto meridian-landing foi aberto.",
-    scope: "Landing de captação com área de materiais para investidores e publicação na conta vercel · tavir.",
-    items: [
-      { desc: "Landing de captação", value: 24000 },
-      { desc: "Área de materiais para investidores", value: 8000 },
-    ],
-    collected: [
-      ["Contato", "Paulo Serra · relações com investidores"],
-      ["Prazo desejado", "antes do fim do trimestre"],
-    ],
-    changes: [],
-    timeline: [
-      ["02/09 11:00", "Comercial", "Proposta v1 enviada"],
-      ["05/09 15:20", "Meridian Capital", "Aceite recebido"],
-      ["05/09 16:00", "Você", "Contra-assinatura registrada"],
-    ],
-  },
-  {
-    id: "prop-06",
-    num: "PRO-006",
-    client: "Vortex Labs",
-    stage: "done",
-    status: "Recusada pelo cliente",
-    tone: "lost",
-    version: 2,
-    value: 21400,
-    validity: "—",
-    deadline: "4 semanas",
-    summary: "Proposta de documentação técnica da API da Vortex Labs. O cliente optou por fazer internamente.",
-    scope: "Documentação OpenAPI dos 40 endpoints públicos com portal de desenvolvedores.",
-    items: [
-      { desc: "Documentação OpenAPI · 40 endpoints", value: 16400 },
-      { desc: "Portal de desenvolvedores", value: 5000 },
-    ],
-    collected: [
-      ["Contato", "Lia Nakamura · CTO"],
-      ["Motivo da recusa", "Equipe interna vai assumir a documentação"],
-    ],
-    changes: [
-      { at: "12/09 09:10", target: "Valores", agent: "Comercial", text: "Reduzir o valor do portal para caber no orçamento.", status: "Aplicada · v2" },
-    ],
-    timeline: [
-      ["08/09 10:00", "Comercial", "Proposta v1 enviada"],
-      ["12/09 11:30", "Comercial", "Proposta v2 enviada"],
-      ["15/09 14:00", "Vortex Labs", "Recusa registrada"],
-    ],
-  },
-];
 
 const PSTAGES: [Proposal["stage"], string, string, string][] = [
   ["progress", "Propostas em andamento", "#1BC5BD", "Agente Comercial coletando, montando ou ajustando"],
@@ -225,7 +47,8 @@ const brl = (n: number | null | undefined) =>
   n == null ? "Em cálculo pelo agente" : "R$ " + n.toLocaleString("pt-BR");
 
 export function PropostasView() {
-  const [proposals, setProposals] = createSignal<Proposal[]>(INITIAL_PROPOSALS);
+  const navigate = useNavigate();
+  const [proposals, setProposals] = createSignal<Proposal[]>([]);
   const [propQ, setPropQ] = createSignal("");
   const [selectedPropId, setSelectedPropId] = createSignal<string | null>(null);
   const [propPreview, setPropPreview] = createSignal(false);
@@ -258,11 +81,9 @@ export function PropostasView() {
   const loadProposals = async () => {
     try {
       const live = await api.listProposals();
-      if (live && live.length > 0) {
-        setProposals(live);
-      }
+      setProposals(live || []);
     } catch (err) {
-      console.warn("Propostas: operando com dados locais/cache", err);
+      console.warn("Propostas: a lista não carregou", err);
     }
   };
 
@@ -429,6 +250,17 @@ export function PropostasView() {
     } catch (err) {
       showToast("Erro ao enviar proposta");
     }
+  };
+
+  const openContractDecision = async (proposal: Proposal) => {
+    const res = await fetch(`/api/v1/proposals/${proposal.id}/decision`, { method: "POST" });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      showToast(typeof body.detail === "string" ? body.detail : "Não foi possível abrir a decisão.");
+      return;
+    }
+    setSelectedApprovalId(body.id);
+    navigate(`/decisoes?approval=${body.id}`);
   };
 
   const handleAcceptProposal = async (propId: string, signerName = "Carlos (CEO TAVIR)") => {
@@ -663,7 +495,7 @@ export function PropostasView() {
                         </span>
                         <div class="text-sm leading-relaxed text-[var(--t2,#cbd3de)]">{prop().scope}</div>
                         <Show
-                          when={prop().items.length > 0}
+                          when={(prop().items || []).length > 0}
                           fallback={
                             <div class="rounded-xl border border-dashed border-[rgba(244,246,242,.34)] p-3 text-xs text-[var(--t2,#cbd3de)]">
                               O agente Comercial ainda está montando os itens e calculando o valor.
@@ -671,7 +503,7 @@ export function PropostasView() {
                           }
                         >
                           <div class="overflow-hidden rounded-xl border border-[rgba(244,246,242,.12)]">
-                            <For each={prop().items}>
+                            <For each={prop().items || []}>
                               {(it) => (
                                 <div class="flex items-center justify-between border-b border-[rgba(244,246,242,.10)] p-2.5 px-3.5 text-xs">
                                   <span class="text-[var(--cloud)]">{it.desc}</span>
@@ -693,7 +525,7 @@ export function PropostasView() {
                           Informações coletadas pelo agente
                         </span>
                         <Show
-                          when={prop().collected.length > 0}
+                          when={(prop().collected || []).length > 0}
                           fallback={
                             <div class="text-xs text-[var(--muted,#aeb7c4)]">
                               Coleta iniciada, nenhuma informação registrada ainda.
@@ -701,7 +533,7 @@ export function PropostasView() {
                           }
                         >
                           <div class="flex flex-col">
-                            <For each={prop().collected}>
+                            <For each={prop().collected || []}>
                               {([label, val]) => (
                                 <div class="grid grid-cols-[140px_1fr] gap-3 border-b border-[rgba(244,246,242,.10)] py-2 text-xs">
                                   <span class="text-[var(--muted,#aeb7c4)]">{label}</span>
@@ -745,6 +577,7 @@ export function PropostasView() {
                                   value={sendEmail()}
                                   onInput={(e) => setSendEmail(e.currentTarget.value)}
                                   placeholder="E-mail do cliente para envio"
+                                  aria-label="E-mail do cliente"
                                   class="h-8 flex-1 min-w-[200px] rounded-lg border border-[rgba(244,246,242,.16)] bg-[#0B1220] px-3 text-xs text-[var(--cloud)] outline-none focus:border-[var(--teal)]"
                                 />
                                 <button
@@ -804,6 +637,15 @@ export function PropostasView() {
                             >
                               Contra-assinar e Concluir Proposta
                             </button>
+                            <Show when={prop().status.includes("contra-assinatura")}>
+                              <button
+                                type="button"
+                                onClick={() => void openContractDecision(prop())}
+                                class="flex h-8 self-start items-center gap-1.5 rounded-full border border-[rgba(244,246,242,.34)] bg-transparent px-4 text-xs font-medium text-[var(--cloud)]"
+                              >
+                                Decidir
+                              </button>
+                            </Show>
                           </div>
                         </Show>
 
@@ -890,13 +732,13 @@ export function PropostasView() {
                           Alterações solicitadas
                         </span>
                         <Show
-                          when={prop().changes.length > 0}
+                          when={(prop().changes || []).length > 0}
                           fallback={
                             <div class="text-xs text-[var(--muted,#aeb7c4)]">Nenhuma alteração solicitada</div>
                           }
                         >
                           <div class="flex flex-col gap-2">
-                            <For each={prop().changes}>
+                            <For each={prop().changes || []}>
                               {(cg) => (
                                 <div class="flex flex-col gap-1.5 rounded-xl border border-[rgba(244,246,242,.12)] bg-[#121c30] p-3 text-xs">
                                   <div class="flex flex-wrap items-center gap-2">
@@ -931,7 +773,7 @@ export function PropostasView() {
                           Histórico
                         </span>
                         <div class="flex flex-col">
-                          <For each={prop().timeline}>
+                          <For each={prop().timeline || []}>
                             {([at, who, text]) => (
                               <div class="grid grid-cols-[86px_96px_1fr] gap-2.5 border-b border-[rgba(244,246,242,.10)] py-2 text-xs leading-snug">
                                 <span class="font-mono text-[11px] text-[var(--muted,#aeb7c4)]">{at}</span>
@@ -1072,7 +914,7 @@ export function PropostasView() {
                               Investimento
                             </div>
                             <Show
-                              when={prop().items.length > 0}
+                              when={(prop().items || []).length > 0}
                               fallback={
                                 <div class="rounded-lg border border-dashed border-[#b9c0b5] p-4 text-xs text-[#5E6878]">
                                   Valores em cálculo pelo agente Comercial.
@@ -1080,7 +922,7 @@ export function PropostasView() {
                               }
                             >
                               <div class="flex flex-col">
-                                <For each={prop().items}>
+                                <For each={prop().items || []}>
                                   {(it) => (
                                     <div class="flex items-center justify-between border-b border-[#dfe3dc] py-2.5 text-xs text-[#0B1220]">
                                       <span>{it.desc}</span>

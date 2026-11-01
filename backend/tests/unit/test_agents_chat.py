@@ -53,7 +53,11 @@ async def test_chat_flow_service(session, monkeypatch):
     async def _reply(**_kwargs):
         return "Tester, QA Automation. O build foi validado."
 
+    async def _office(_model, _effort):
+        return ("cursor", "auto-smart", "balanced", True)
+
     monkeypatch.setattr("app.modules.chat.service.chat_completion", _reply)
+    monkeypatch.setattr("app.modules.chat.service.office_call", _office)
     chat_repo = ChatRepository(session)
     conv = await chat_repo.create_conversation(
         agent_id="ag-test-1",
@@ -71,7 +75,8 @@ async def test_chat_flow_service(session, monkeypatch):
     assert user_msg.text == "Como validar o build?"
     assert assistant_msg.role == "assistant"
     assert "Tester" in assistant_msg.text or "QA Automation" in assistant_msg.text
-    assert "gpt-4o" in assistant_msg.meta
+    assert assistant_msg.meta == "Cursor · Auto"
+    assert "gpt-4o" not in assistant_msg.meta
 
     # Check conversation messages list
     messages = await chat_repo.get_messages(conv.id)

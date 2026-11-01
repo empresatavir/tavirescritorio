@@ -1,0 +1,1709 @@
+{
+  "screenId": "funil",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 48,
+        "nav": 1,
+        "button": 24,
+        "img": 2,
+        "i": 5,
+        "aside": 1,
+        "small": 7,
+        "span": 91,
+        "b": 8,
+        "header": 1,
+        "strong": 5,
+        "h1": 1,
+        "p": 2,
+        "section": 2,
+        "h3": 1,
+        "table": 1,
+        "thead": 1,
+        "tr": 6,
+        "th": 5,
+        "tbody": 1,
+        "td": 25
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Funil",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Propostas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Finanças",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Personas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Funil",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Comercial",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Funil",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Do caso aberto à proposta assinada, com conversão por etapa e o que está em aberto.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Novo caso no Raio-X",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Funil",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Propostas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Finanças",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Personas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Valor em aberto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "R$ 150,6 mil",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3 propostas vivas",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Caso → assinada",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "9%",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "últimos 90 dias",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ciclo médio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "21 d",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "do caso ao contrato",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ticket médio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "R$ 37,7 mil",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "propostas enviadas",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Funil · últimos 90 dias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dados do protótipo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Casos abertos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "22",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "—",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Devolutiva",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "12",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "55% da etapa",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Proposta enviada",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "8",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "67% da etapa",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Aceita",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "38% da etapa",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Assinada",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "67% da etapa",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "A maior perda está entre Devolutiva e Proposta: 4 de 12 casos não viraram oferta. Dora revisa os critérios de corte na sexta.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Negócios vivos",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Cliente",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Etapa",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Valor",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dono",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Próxima ação",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Atlas Holdings",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "aceita",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "R$ 48.500",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cléber Closer",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Contra-assinar hoje",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Northwind Digital",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "enviada",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "R$ 22.000",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cléber Closer",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ligar após 2ª abertura",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ateliê Norte",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "devolutiva",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "R$ 14.000 est.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dora Descoberta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Revisar devolutiva",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Clínica Sorriso Vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "jornada",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "R$ 9.600 est.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dora Descoberta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapear jornada",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Padaria Dois Irmãos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "rascunho",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "R$ 1.800/mês",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cléber Closer",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Enviar primeira versão",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO COMERCIAL Funil Propostas 2 Finanças Personas Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Propostas 2",
+          "label": null,
+          "text": "Propostas 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças",
+          "label": null,
+          "text": "Finanças",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Comercial / Funil AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Comercial / Funil AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 891,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo caso no Raio-X",
+          "label": null,
+          "text": "Novo caso no Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1239,
+            "y": 137,
+            "width": 170,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 60,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Propostas",
+          "label": null,
+          "text": "Propostas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 396,
+            "y": 201,
+            "width": 93,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças",
+          "label": null,
+          "text": "Finanças",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 493,
+            "y": 201,
+            "width": 85,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 582,
+            "y": 201,
+            "width": 87,
+            "height": 42
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "FUNIL · ÚLTIMOS 90 DIAS Dados do protótipo Casos abertos 22 — Devolutiva 12 55% da etapa Proposta enviada 8 67% da etapa Aceita 3 38% da etapa Assinada 2 67% da etapa A maior perda está entre Devolutiva e Proposta: 4 de 12 casos não viraram oferta. Dora revisa os critérios de corte na sexta.",
+          "label": null,
+          "text": "FUNIL · ÚLTIMOS 90 DIAS Dados do protótipo Casos abertos 22 — Devolutiva 12 55% da etapa Proposta enviada 8 67% da etapa Aceita 3 38% da etapa Assinada 2 67% da etapa A maior perda está entre Devolutiva e Proposta: 4 de 12 casos não viraram oferta. Dora revisa os critérios de corte na sexta.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 410,
+            "width": 1076,
+            "height": 336
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Negócios vivos CLIENTE ETAPA VALOR DONO PRÓXIMA AÇÃO Atlas Holdings ACEITA R$ 48.500 Cléber Closer Contra-assinar hoje Northwind Digital ENVIADA R$ 22.000 Cléber Closer Ligar após 2ª abertura Ateliê Norte DEVOLUTIVA R$ 14.000 est. Dora Descoberta Revisar devolutiva Clínica Sorriso Vivo JORNADA R$ 9.600 est. Dora Descoberta Mapear jornada Padaria Dois Irmãos RASCUNHO R$ 1.800/mês Cléber Closer Enviar primeira versão",
+          "label": null,
+          "text": "Negócios vivos CLIENTE ETAPA VALOR DONO PRÓXIMA AÇÃO Atlas Holdings ACEITA R$ 48.500 Cléber Closer Contra-assinar hoje Northwind Digital ENVIADA R$ 22.000 Cléber Closer Ligar após 2ª abertura Ateliê Norte DEVOLUTIVA R$ 14.000 est. Dora Descoberta Revisar devolutiva Clínica Sorriso Vivo JORNADA R$ 9.600 est. Dora Descoberta Mapear jornada Padaria Dois Irmãos RASCUNHO R$ 1.800/mês Cléber Closer Enviar primeira versão",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 770,
+            "width": 1076,
+            "height": 323
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Negócios vivos",
+          "label": null,
+          "text": "Negócios vivos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 351,
+            "y": 785,
+            "width": 98,
+            "height": 21
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Propostas 2",
+          "label": null,
+          "text": "Propostas 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças",
+          "label": null,
+          "text": "Finanças",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo caso no Raio-X",
+          "label": null,
+          "text": "Novo caso no Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1239,
+            "y": 137,
+            "width": 170,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 60,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Propostas",
+          "label": null,
+          "text": "Propostas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 396,
+            "y": 201,
+            "width": 93,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças",
+          "label": null,
+          "text": "Finanças",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 493,
+            "y": 201,
+            "width": 85,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 582,
+            "y": 201,
+            "width": 87,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

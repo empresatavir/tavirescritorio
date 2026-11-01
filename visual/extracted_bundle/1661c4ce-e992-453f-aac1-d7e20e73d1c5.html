@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Flow</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page">
+  <div class="phead">
+    <div class="grow"><div style="display: flex; gap: 8px; align-items: center"><span class="eyebrow">Módulo · Atender</span><span class="badge">beta</span></div><h1 style="margin-top: 8px">Flow</h1><p>Esteiras automáticas entre módulos. Cada workflow tem gatilho, passos com dono e gate humano onde a ação não tem volta.</p></div>
+    <div class="actions"><button class="btn secondary" onClick="{{runNow}}">Rodar agora</button><button class="btn primary" onClick="{{newFlow}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Novo workflow</button></div>
+  </div>
+  <div class="card" style="padding: 12px 16px; display: flex; gap: 10px; align-items: center; font-size: 13px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18M12 11v5M12 8h.01"></path></svg><span class="sec">Em arquitetura: o desenho, as regras e o histórico já valem. A execução automática entra na próxima versão do motor.</span></div>
+
+  <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+    <aside class="card" style="flex: 0 1 280px; min-width: 240px">
+      <div class="card-h"><h3>Workflows</h3><div class="grow"></div><span class="num muted" style="font-size: 12px">{{flowsN}}</span></div>
+      <div class="rows">
+        <sc-for list="{{flows}}" as="f" hint-placeholder-count="4">
+          <div class="row {{f.on}}" style="padding: 12px 14px">
+            <button onClick="{{f.pick}}" style="flex: 1; min-width: 0; background: transparent; border: 0; padding: 0; text-align: left; color: inherit"><div class="t" style="font-size: 13px">{{f.name}}</div><div class="m">{{f.runs}} execuções · {{f.last}}</div></button>
+            <button class="tgl {{f.tgl}}" onClick="{{f.flip}}" aria-label="Ativar {{f.name}}" aria-pressed="{{f.pressed}}"></button>
+          </div>
+        </sc-for>
+      </div>
+    </aside>
+
+    <section style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+      <div class="card" style="padding: 20px; overflow-x: auto">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px"><h3 style="font-size: 16px; font-weight: 600">{{cur.name}}</h3><span class="badge {{cur.bcls}}">{{cur.state}}</span><div class="grow"></div><span class="muted" style="font-size: 12px">{{cur.desc}}</span></div>
+        <div style="display: flex; align-items: stretch; min-width: max-content; padding: 6px 2px">
+          <sc-for list="{{nodes}}" as="n" hint-placeholder-count="5">
+            <div style="display: flex; align-items: center">
+              <sc-if value="{{n.hasLine}}" hint-placeholder-val="{{false}}">
+                <div style="position: relative; width: 44px; height: 2px; background: var(--line-strong)"><i style="position: absolute; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: {{n.dot}}; animation: flowdot 2.4s linear infinite; animation-delay: {{n.delay}}ms"></i></div>
+              </sc-if>
+              <button onClick="{{n.pick}}" style="width: 168px; text-align: left; padding: 14px; border-radius: 14px; border: 1px solid {{n.border}}; background: {{n.bg}}; color: inherit; display: flex; flex-direction: column; gap: 8px; box-shadow: {{n.shadow}}; transition: all 160ms var(--ease)">
+                <div style="display: flex; align-items: center; gap: 6px"><span style="width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; background: {{n.ibg}}; color: {{n.ifg}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg></span><span class="eyebrow" style="font-size: 9.5px">{{n.kind}}</span></div>
+                <b style="font-size: 13px; line-height: 1.3">{{n.title}}</b>
+                <span class="muted" style="font-size: 11.5px">{{n.who}}</span>
+              </button>
+            </div>
+          </sc-for>
+          <div style="display: flex; align-items: center"><div style="width: 28px; height: 2px; background: var(--line)"></div><button class="ibtn" onClick="{{addNode}}" aria-label="Adicionar passo" style="border-style: dashed"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button></div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+        <section class="card pad" style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 14px; animation: fade 200ms var(--ease) both">
+          <div style="display: flex; align-items: center"><span class="eyebrow">Passo selecionado · {{node.kind}}</span></div>
+          <label class="field"><span>Nome</span><input class="input" value="{{node.title}}" readonly></label>
+          <label class="field"><span>Dono</span><input class="input" value="{{node.who}}" readonly></label>
+          <div class="g2" style="gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr))">
+            <div class="field"><span>Entrada</span><div class="mono sec" style="font-size: 12px">{{node.inp}}</div></div>
+            <div class="field"><span>Saída</span><div class="mono sec" style="font-size: 12px">{{node.out}}</div></div>
+          </div>
+          <div class="setrow" style="border-top: 1px solid var(--line)"><div class="grow"><b style="font-size: 14px">Pode rodar sozinho</b><div class="muted" style="font-size: 12px">{{node.autoNote}}</div></div><button class="tgl {{node.auto}}" onClick="{{node.flip}}" disabled="{{node.isGate}}" aria-label="Pode rodar sozinho" aria-pressed="{{node.pressed}}"></button></div>
+        </section>
+        <section class="card" style="flex: 1 1 360px; overflow-x: auto">
+          <div class="card-h"><h3>Últimas execuções</h3><div class="grow"></div><span class="eyebrow">30 dias</span></div>
+          <table class="tbl"><thead><tr><th>Quando</th><th>Resultado</th><th>Parou em</th><th>Duração</th></tr></thead>
+            <tbody><sc-for list="{{runs}}" as="r" hint-placeholder-count="5"><tr><td class="num muted">{{r.t}}</td><td><span class="badge {{r.cls}}">{{r.st}}</span></td><td class="sec">{{r.at}}</td><td class="num muted">{{r.d}}</td></tr></sc-for></tbody>
+          </table>
+        </section>
+      </div>
+    </section>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"spot":{"editor":null},"$preview":{"width":1176,"height":1100}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const K = {
+  trigger: ['Gatilho', 'M13 3 5 14h6l-1 7 8-11h-6z', 'var(--flow-subtle)', 'var(--flow)'],
+  agent: ['Agente', 'M6 8h12v11H6zM12 8V4M9.5 12.5h.01M14.5 12.5h.01', 'var(--surface-3)', 'var(--text-secondary)'],
+  cond: ['Condição', 'M12 3l8 9-8 9-8-9z', 'var(--warning-subtle)', 'var(--warning)'],
+  gate: ['Gate humano', 'M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4', 'var(--action-subtle)', 'var(--action-subtle-text)'],
+  action: ['Ação', 'M5 12h14M13 6l6 6-6 6', 'var(--flow-subtle)', 'var(--flow)']
+};
+const FLOWS = [
+  { id: 'pub', name: 'Publicar carrossel', desc: 'Studio → Social', runs: 48, last: 'há 2 h', active: true, nodes: [['trigger', 'Peça chega em Pacote', 'Studio', 'peça + legenda', 'evento pacote.pronto'], ['agent', 'Adapta legenda e hashtags', 'Iara Instagram', 'legenda', 'legenda.final'], ['agent', 'Revisão final', 'Rita Revisora', 'legenda.final', 'parecer'], ['gate', 'Carlos aprova publicação', 'Carlos', 'parecer', 'decisão'], ['action', 'Publica e registra', 'Paulo Publicador', 'decisão', 'post + livro-razão']] },
+  { id: 'prop', name: 'Fechar proposta', desc: 'Raio-X → Comercial', runs: 9, last: 'ontem', active: true, nodes: [['trigger', 'Caso fechado com oferta', 'Raio-X', 'caso', 'evento caso.fechado'], ['agent', 'Monta escopo', 'Dora Descoberta', 'oferta', 'escopo.md'], ['agent', 'Gera proposta com link', 'Cléber Closer', 'escopo.md', 'PRO-xxx'], ['gate', 'Carlos revisa valor', 'Carlos', 'PRO-xxx', 'decisão'], ['action', 'Envia e cria checkpoint de aceite', 'Comercial', 'decisão', 'link + checkpoint']] },
+  { id: 'lead', name: 'Lead do WhatsApp', desc: 'Comunicações → Raio-X', runs: 151, last: 'há 12 min', active: true, nodes: [['trigger', 'Mensagem nova no WhatsApp', 'Comunicações', 'mensagem', 'evento msg.nova'], ['agent', 'Triagem', 'Rebeca Recepção', 'mensagem', 'categoria'], ['cond', 'É lead?', 'regra', 'categoria', 'sim / não'], ['agent', 'Abre caso em Fronteira', 'Dora Descoberta', 'lead', 'caso'], ['action', 'Responde em até 5 min', 'Rebeca Recepção', 'caso', 'resposta']] },
+  { id: 'idx', name: 'Indexar referência', desc: 'Pasta → Cérebro', runs: 4, last: 'há 6 dias', active: false, nodes: [['trigger', 'Arquivo em Referências', 'Pasta local', 'arquivo', 'evento arquivo.novo'], ['agent', 'Resume e classifica', 'Cléo Curadora', 'arquivo', 'resumo + domínio'], ['action', 'Grava no Cérebro', 'Cérebro', 'resumo', 'nota indexada']] }
+];
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { f: 'pub', n: 3, active: { pub: true, prop: true, lead: true, idx: false }, auto: {}, extra: {} }; }
+  renderVals() {
+    const app = this.props.app || NOOP;
+    const s = this.state, self = this;
+    const F = FLOWS.find((x) => x.id === s.f);
+    const nodes = F.nodes.concat(s.extra[s.f] || []);
+    const ni = Math.min(s.n, nodes.length - 1);
+    const N = nodes[ni];
+    const key = s.f + ':' + ni;
+    const isGate = N[0] === 'gate';
+    const autoOn = isGate ? false : (s.auto[key] != null ? s.auto[key] : N[0] !== 'cond');
+    const on = s.active[s.f];
+    return {
+      flowsN: FLOWS.length,
+      flows: FLOWS.map((f) => ({ name: f.name, runs: f.runs, last: f.last, on: f.id === s.f ? 'on' : '', tgl: s.active[f.id] ? 'on' : '', pressed: s.active[f.id] ? 'true' : 'false', pick: () => self.setState({ f: f.id, n: 0 }), flip: () => { const a = Object.assign({}, s.active); a[f.id] = !a[f.id]; self.setState({ active: a }); app.toast(f.name, a[f.id] ? 'Workflow ativado.' : 'Workflow pausado. Nada novo entra.'); } })),
+      cur: { name: F.name, desc: F.desc, state: on ? 'ativo' : 'pausado', bcls: on ? 'flow' : 'warn' },
+      nodes: nodes.map((n, i) => ({ kind: K[n[0]][0], icon: K[n[0]][1], ibg: K[n[0]][2], ifg: K[n[0]][3], title: n[1], who: n[2], hasLine: i > 0, delay: i * 300, dot: on ? 'var(--flow)' : 'transparent', border: i === ni ? 'var(--flow)' : 'var(--line)', bg: 'var(--surface-2)', shadow: i === ni ? '0 0 0 3px var(--flow-subtle)' : 'none', pick: () => self.setState({ n: i }) })),
+      node: { kind: K[N[0]][0], title: N[1], who: N[2], inp: N[3], out: N[4], isGate: isGate, auto: autoOn ? 'on' : '', pressed: autoOn ? 'true' : 'false', autoNote: isGate ? 'Gate humano nunca roda sozinho. É regra do escritório.' : autoOn ? 'Roda sem clique e registra no livro-razão.' : 'Espera um clique antes de seguir.', flip: () => { const a = Object.assign({}, s.auto); a[key] = !autoOn; self.setState({ auto: a }); } },
+      addNode: () => { const ex = Object.assign({}, s.extra); ex[s.f] = (ex[s.f] || []).concat([['agent', 'Novo passo', 'escolher agente', '—', '—']]); self.setState({ extra: ex, n: nodes.length }); },
+      runs: [['14:08', 'concluído', 'flow', '—', '3 min'], ['11:40', 'no gate', 'warn', 'Carlos aprova publicação', '2 h 10'], ['ontem 18:02', 'concluído', 'flow', '—', '4 min'], ['ontem 09:15', 'recusado', 'danger', 'Carlos aprova publicação', '22 min'], ['27/10 17:30', 'concluído', 'flow', '—', '3 min']].map((r) => ({ t: r[0], st: r[1], cls: r[2], at: r[3], d: r[4] })),
+      runNow: () => app.toast(F.name, on ? 'Execução de teste registrada. Para no primeiro gate.' : 'Workflow pausado. Ative para rodar.'),
+      newFlow: () => app.toast('Novo workflow', 'Começa com um gatilho. Escolha de qual módulo.')
+    };
+  }
+}
+</script>
+</body>
+</html>

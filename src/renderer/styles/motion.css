@@ -1,0 +1,61 @@
+/* TAVIR Escritório — Contrato de Movimento (17 keyframes literais extraídos do template) */
+:root {
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --fast: 120ms;
+  --std: 180ms;
+}
+
+@keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px) scale(.985) } to { opacity: 1; transform: none } }
+@keyframes slidein { from { transform: translateX(40px); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes toast { from { transform: translateY(-12px); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(27, 197, 189, .45) } 70% { box-shadow: 0 0 0 8px rgba(27, 197, 189, 0) } 100% { box-shadow: 0 0 0 0 rgba(27, 197, 189, 0) } }
+@keyframes grow { from { transform: scaleY(0) } to { transform: scaleY(1) } }
+@keyframes growx { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+@keyframes sweep { from { background-position: -60px 0 } to { background-position: calc(100% + 60px) 0 } }
+@keyframes blink { 0%, 80%, 100% { opacity: .25 } 40% { opacity: 1 } }
+@keyframes spot { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+@keyframes dash { to { stroke-dashoffset: 0 } }
+@keyframes spin { to { transform: rotate(360deg) } }
+@keyframes flowdot { 0% { left: 0; opacity: 0 } 10% { opacity: 1 } 90% { opacity: 1 } 100% { left: 100%; opacity: 0 } }
+@keyframes stamp { from { transform: scale(1.18); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+@keyframes shimmer { from { background-position: -300px 0 } to { background-position: 300px 0 } }
+@keyframes ringwarn { 0% { box-shadow: 0 0 0 0 oklch(.80 .155 78 / .55) } 70% { box-shadow: 0 0 0 12px oklch(.80 .155 78 / 0) } 100% { box-shadow: 0 0 0 0 oklch(.80 .155 78 / 0) } }
+@keyframes slideup { from { transform: translateY(14px); opacity: 0 } to { transform: none; opacity: 1 } }
+
+/* Classes utilitárias de animação do redesenho */
+.live-dot { animation: pulse 2.4s var(--ease) infinite; }
+.live-dot.warn { animation: none; }
+.screen { animation: fade var(--std) var(--ease) both; }
+.fill { transition: width 600ms var(--ease); }
+.fill.run { animation: sweep 1.8s linear infinite; }
+.chart-bars .b { animation: grow 700ms var(--ease) both; }
+.back { animation: fade var(--std) var(--ease) both; }
+.modal { animation: rise 240ms var(--ease) both; }
+.drawer { animation: slidein 260ms var(--ease) both; }
+.toast { animation: toast 280ms var(--ease) both; }
+.pal { animation: rise 200ms var(--ease) both; }
+.tour { animation: rise 260ms var(--ease) both; }
+.spot::after { animation: spot 1.8s var(--ease) infinite; }
+.bubble { animation: fade var(--std) var(--ease) both; }
+.typing i { animation: blink 1.2s infinite; }
+.typing i:nth-child(2) { animation-delay: .2s; }
+.typing i:nth-child(3) { animation-delay: .4s; }
+.log div { animation: fade 300ms var(--ease) both; }
+.kcard { animation: fade var(--std) var(--ease) both; transition: border-color var(--fast) var(--ease), transform var(--fast) var(--ease); }
+.shimmer { animation: shimmer 1.3s linear infinite; }
+.draw { animation: dash 1.4s var(--ease) forwards; }
+.spin { animation: spin 1s linear infinite; }
+.stamp-anim { animation: stamp 420ms var(--ease) both; }
+.slideup-anim { animation: slideup 220ms var(--ease) both; }
+.lift { transition: transform var(--fast) var(--ease), border-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease); }
+.lift:hover { transform: translateY(-2px); }
+
+/* Suporte à redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+  .tv *, .tv *::before, .tv *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

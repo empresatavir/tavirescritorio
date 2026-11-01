@@ -1,0 +1,2369 @@
+{
+  "screenId": "studio-esteira",
+  "side": "candidate",
+  "capturedUrl": "http://127.0.0.1:9196/studio",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:9196/studio",
+      "title": "TAVIR Escritório — Painel Operacional",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 35,
+        "nav": 1,
+        "img": 2,
+        "button": 34,
+        "span": 45,
+        "svg": 18,
+        "path": 31,
+        "polygon": 3,
+        "polyline": 4,
+        "rect": 2,
+        "circle": 5,
+        "line": 14,
+        "aside": 1,
+        "header": 2,
+        "main": 1,
+        "p": 21,
+        "h1": 1,
+        "section": 3,
+        "article": 7,
+        "h2": 2,
+        "label": 1,
+        "input": 1,
+        "h3": 3
+      },
+      "visibleText": [
+        {
+          "text": "☀️",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Visão dos módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fábrica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Edição",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Frontend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Backend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio editorial · redes sociais",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Painel do Studio",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Gerencie perfis de Instagram, YouTube e LinkedIn. Abra um workspace para decisões, esteira e prévia visual.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nova produção",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Novo perfil",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Perfis ativos",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "no total",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decisões pendentes",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "aguardando você",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Redes conectadas",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "IG · YT · LinkedIn",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Publicados no ciclo",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "peças concluídas",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Perfis",
+          "tag": "h2",
+          "id": "stu-profiles-heading",
+          "role": "heading"
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "listados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Todos",
+          "tag": "button",
+          "id": "",
+          "role": "tab"
+        },
+        {
+          "text": "Ativos",
+          "tag": "button",
+          "id": "",
+          "role": "tab"
+        },
+        {
+          "text": "Pausados",
+          "tag": "button",
+          "id": "",
+          "role": "tab"
+        },
+        {
+          "text": "Rascunhos",
+          "tag": "button",
+          "id": "",
+          "role": "tab"
+        },
+        {
+          "text": "Nenhum perfil neste filtro.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Redes suportadas",
+          "tag": "h2",
+          "id": "stu-nets-heading",
+          "role": "heading"
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "perfis",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Instagram",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Feed 4:5, carrosséis e reels com prévia no dispositivo real.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "carrossel · reel · stories",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ver perfis",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Nova produção",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "perfis",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "YouTube",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Roteiro, thumbnail e retenção — da pauta ao pacote de publicação.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "vídeo longo · short · thumb",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ver perfis",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Nova produção",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "perfis",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "LinkedIn",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Posts autorais e carrosséis B2B com tom de voz da marca.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "texto · carrossel · documento",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ver perfis",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Nova produção",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema ☀️ Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 14,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "Escritório MÓDULOS Visão dos módulos Raio-X Studio Fábrica Flow Edição Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 80,
+            "y": 13,
+            "width": 203,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão dos módulos",
+          "label": null,
+          "text": "Visão dos módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fábrica",
+          "label": null,
+          "text": "Fábrica",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow",
+          "label": null,
+          "text": "Flow",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição",
+          "label": null,
+          "text": "Edição",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 308,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Módulos / Studio office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Módulos / Studio office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": null,
+          "name": "Indicador de dados operacionais ao vivo",
+          "label": null,
+          "text": "office.py · SQLite ao vivo",
+          "placeholder": null,
+          "title": "Indicador de dados operacionais ao vivo",
+          "rect": {
+            "x": 450,
+            "y": 20,
+            "width": 156,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          }
+        },
+        {
+          "tag": "main",
+          "id": null,
+          "role": "main",
+          "name": "STUDIO EDITORIAL · REDES SOCIAIS Painel do Studio Gerencie perfis de Instagram, YouTube e LinkedIn. Abra um workspace para decisões, esteira e prévia visual. Nova produção Novo perfil Perfis ativos 0 0 no total Decisões pendentes 0 aguardando você Redes conectadas 0 IG · YT · LinkedIn Publicados no ciclo 0 peças concluídas Perfis 0 listados ⌕ Todos Ativos Pausados Rascunhos Nenhum perfil neste filtro. Redes suportadas 0 perfis Instagram Feed 4:5, carrosséis e reels com prévia no dispositivo real. carrossel · reel · stories Ver perfis Nova produção 0 perfis YouTube Roteiro, thumbnail e retenção — da pauta ao pacote de publicação. vídeo longo · short · thumb Ver perfis Nova produção 0 perfis LinkedIn Posts autorais e carrosséis B2B com tom de voz da marca. texto · carrossel · documento Ver perfis Nova produção",
+          "label": null,
+          "text": "STUDIO EDITORIAL · REDES SOCIAIS Painel do Studio Gerencie perfis de Instagram, YouTube e LinkedIn. Abra um workspace para decisões, esteira e prévia visual. Nova produção Novo perfil Perfis ativos 0 0 no total Decisões pendentes 0 aguardando você Redes conectadas 0 IG · YT · LinkedIn Publicados no ciclo 0 peças concluídas Perfis 0 listados ⌕ Todos Ativos Pausados Rascunhos Nenhum perfil neste filtro. Redes suportadas 0 perfis Instagram Feed 4:5, carrosséis e reels com prévia no dispositivo real. carrossel · reel · stories Ver perfis Nova produção 0 perfis YouTube Roteiro, thumbnail e retenção — da pauta ao pacote de publicação. vídeo longo · short · thumb Ver perfis Nova produção 0 perfis LinkedIn Posts autorais e carrosséis B2B com tom de voz da marca. texto · carrossel · documento Ver perfis Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 1140,
+            "height": 836
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "STUDIO EDITORIAL · REDES SOCIAIS Painel do Studio Gerencie perfis de Instagram, YouTube e LinkedIn. Abra um workspace para decisões, esteira e prévia visual. Nova produção Novo perfil",
+          "label": null,
+          "text": "STUDIO EDITORIAL · REDES SOCIAIS Painel do Studio Gerencie perfis de Instagram, YouTube e LinkedIn. Abra um workspace para decisões, esteira e prévia visual. Nova produção Novo perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 86,
+            "width": 1092,
+            "height": 105
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Painel do Studio",
+          "label": null,
+          "text": "Painel do Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 109,
+            "width": 560,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova produção",
+          "label": null,
+          "text": "Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1137,
+            "y": 155,
+            "width": 149,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo perfil",
+          "label": null,
+          "text": "Novo perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1295,
+            "y": 155,
+            "width": 121,
+            "height": 36
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Indicadores do studio",
+          "label": "Indicadores do studio",
+          "text": "Perfis ativos 0 0 no total Decisões pendentes 0 aguardando você Redes conectadas 0 IG · YT · LinkedIn Publicados no ciclo 0 peças concluídas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 217,
+            "width": 1092,
+            "height": 102
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Perfis ativos 0 0 no total",
+          "label": null,
+          "text": "Perfis ativos 0 0 no total",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 217,
+            "width": 264,
+            "height": 102
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Decisões pendentes 0 aguardando você",
+          "label": null,
+          "text": "Decisões pendentes 0 aguardando você",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 600,
+            "y": 217,
+            "width": 264,
+            "height": 102
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Redes conectadas 0 IG · YT · LinkedIn",
+          "label": null,
+          "text": "Redes conectadas 0 IG · YT · LinkedIn",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 876,
+            "y": 217,
+            "width": 264,
+            "height": 102
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Publicados no ciclo 0 peças concluídas",
+          "label": null,
+          "text": "Publicados no ciclo 0 peças concluídas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1152,
+            "y": 217,
+            "width": 264,
+            "height": 102
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Perfis",
+          "label": "Perfis",
+          "text": "Perfis 0 listados ⌕ Todos Ativos Pausados Rascunhos Nenhum perfil neste filtro.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 345,
+            "width": 1092,
+            "height": 165
+          }
+        },
+        {
+          "tag": "h2",
+          "id": "stu-profiles-heading",
+          "role": "heading",
+          "name": "Perfis",
+          "label": null,
+          "text": "Perfis",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 345,
+            "width": 44,
+            "height": 25
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "⌕",
+          "label": null,
+          "text": "⌕",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 382,
+            "width": 775,
+            "height": 36
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar perfis",
+          "label": "Buscar perfis",
+          "text": null,
+          "placeholder": "Buscar perfil, empresa ou nicho…",
+          "title": null,
+          "rect": {
+            "x": 353,
+            "y": 392,
+            "width": 733,
+            "height": 16
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": "tablist",
+          "name": "Filtrar por status",
+          "label": "Filtrar por status",
+          "text": "Todos Ativos Pausados Rascunhos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1109,
+            "y": 384,
+            "width": 307,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Todos",
+          "label": null,
+          "text": "Todos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1109,
+            "y": 384,
+            "width": 60,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Ativos",
+          "label": null,
+          "text": "Ativos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1175,
+            "y": 384,
+            "width": 61,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Pausados",
+          "label": null,
+          "text": "Pausados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 384,
+            "width": 80,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Rascunhos",
+          "label": null,
+          "text": "Rascunhos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1328,
+            "y": 384,
+            "width": 88,
+            "height": 32
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Redes suportadas",
+          "label": "Redes suportadas",
+          "text": "Redes suportadas 0 perfis Instagram Feed 4:5, carrosséis e reels com prévia no dispositivo real. carrossel · reel · stories Ver perfis Nova produção 0 perfis YouTube Roteiro, thumbnail e retenção — da pauta ao pacote de publicação. vídeo longo · short · thumb Ver perfis Nova produção 0 perfis LinkedIn Posts autorais e carrosséis B2B com tom de voz da marca. texto · carrossel · documento Ver perfis Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 536,
+            "width": 1092,
+            "height": 265
+          }
+        },
+        {
+          "tag": "h2",
+          "id": "stu-nets-heading",
+          "role": "heading",
+          "name": "Redes suportadas",
+          "label": null,
+          "text": "Redes suportadas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 536,
+            "width": 136,
+            "height": 25
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "0 perfis Instagram Feed 4:5, carrosséis e reels com prévia no dispositivo real. carrossel · reel · stories Ver perfis Nova produção",
+          "label": null,
+          "text": "0 perfis Instagram Feed 4:5, carrosséis e reels com prévia no dispositivo real. carrossel · reel · stories Ver perfis Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 573,
+            "width": 355,
+            "height": 228
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Instagram",
+          "label": null,
+          "text": "Instagram",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 343,
+            "y": 638,
+            "width": 317,
+            "height": 25
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver perfis",
+          "label": null,
+          "text": "Ver perfis",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 343,
+            "y": 749,
+            "width": 155,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova produção",
+          "label": null,
+          "text": "Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 506,
+            "y": 749,
+            "width": 153,
+            "height": 32
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "0 perfis YouTube Roteiro, thumbnail e retenção — da pauta ao pacote de publicação. vídeo longo · short · thumb Ver perfis Nova produção",
+          "label": null,
+          "text": "0 perfis YouTube Roteiro, thumbnail e retenção — da pauta ao pacote de publicação. vídeo longo · short · thumb Ver perfis Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 693,
+            "y": 573,
+            "width": 355,
+            "height": 228
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "YouTube",
+          "label": null,
+          "text": "YouTube",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 712,
+            "y": 638,
+            "width": 317,
+            "height": 25
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver perfis",
+          "label": null,
+          "text": "Ver perfis",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 712,
+            "y": 749,
+            "width": 155,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova produção",
+          "label": null,
+          "text": "Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 875,
+            "y": 749,
+            "width": 153,
+            "height": 32
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "0 perfis LinkedIn Posts autorais e carrosséis B2B com tom de voz da marca. texto · carrossel · documento Ver perfis Nova produção",
+          "label": null,
+          "text": "0 perfis LinkedIn Posts autorais e carrosséis B2B com tom de voz da marca. texto · carrossel · documento Ver perfis Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1061,
+            "y": 573,
+            "width": 355,
+            "height": 228
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "LinkedIn",
+          "label": null,
+          "text": "LinkedIn",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1080,
+            "y": 638,
+            "width": 317,
+            "height": 25
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver perfis",
+          "label": null,
+          "text": "Ver perfis",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1080,
+            "y": 749,
+            "width": 155,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova produção",
+          "label": null,
+          "text": "Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1244,
+            "y": 749,
+            "width": 153,
+            "height": 32
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão dos módulos",
+          "label": null,
+          "text": "Visão dos módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fábrica",
+          "label": null,
+          "text": "Fábrica",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow",
+          "label": null,
+          "text": "Flow",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição",
+          "label": null,
+          "text": "Edição",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 308,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova produção",
+          "label": null,
+          "text": "Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1137,
+            "y": 155,
+            "width": 149,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo perfil",
+          "label": null,
+          "text": "Novo perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1295,
+            "y": 155,
+            "width": 121,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "⌕",
+          "label": null,
+          "text": "⌕",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 382,
+            "width": 775,
+            "height": 36
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar perfis",
+          "label": "Buscar perfis",
+          "text": null,
+          "placeholder": "Buscar perfil, empresa ou nicho…",
+          "title": null,
+          "rect": {
+            "x": 353,
+            "y": 392,
+            "width": 733,
+            "height": 16
+          },
+          "kind": "field",
+          "type": "search",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": "tablist",
+          "name": "Filtrar por status",
+          "label": "Filtrar por status",
+          "text": "Todos Ativos Pausados Rascunhos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1109,
+            "y": 384,
+            "width": 307,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Todos",
+          "label": null,
+          "text": "Todos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1109,
+            "y": 384,
+            "width": 60,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Ativos",
+          "label": null,
+          "text": "Ativos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1175,
+            "y": 384,
+            "width": 61,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Pausados",
+          "label": null,
+          "text": "Pausados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 384,
+            "width": 80,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Rascunhos",
+          "label": null,
+          "text": "Rascunhos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1328,
+            "y": 384,
+            "width": 88,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver perfis",
+          "label": null,
+          "text": "Ver perfis",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 343,
+            "y": 749,
+            "width": 155,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova produção",
+          "label": null,
+          "text": "Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 506,
+            "y": 749,
+            "width": 153,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver perfis",
+          "label": null,
+          "text": "Ver perfis",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 712,
+            "y": 749,
+            "width": 155,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova produção",
+          "label": null,
+          "text": "Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 875,
+            "y": 749,
+            "width": 153,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver perfis",
+          "label": null,
+          "text": "Ver perfis",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1080,
+            "y": 749,
+            "width": 155,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova produção",
+          "label": null,
+          "text": "Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1244,
+            "y": 749,
+            "width": 153,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 30,
+          "height": 30
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 203,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

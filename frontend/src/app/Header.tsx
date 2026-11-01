@@ -2,6 +2,7 @@ import { createSignal } from "solid-js";
 import { DOMAINS, currentDomainId, currentScreenId, setModalOpen, setPaletteOpen, showToast } from "../state/store";
 import { TvIcon } from "../shared/components/TvIcon";
 import { api } from "../shared/api/client";
+import { NotificationBell } from "./NotificationBell";
 
 export function Header() {
   const currentDomain = () => DOMAINS.find((d) => d.id === currentDomainId()) || DOMAINS[0];
@@ -94,13 +95,14 @@ export function Header() {
 
   return (
     <header
+      class="top"
       style={{
-        height: "52px",
+        height: "64px",
         flex: "none",
         display: "flex",
         "align-items": "center",
-        gap: "16px",
-        padding: "0 20px",
+        gap: "12px",
+        padding: "0 24px",
         "border-bottom": "1px solid rgba(244,246,242,.10)",
         background: "var(--surface-0)",
         "user-select": "none",
@@ -147,7 +149,7 @@ export function Header() {
       {/* Global Command Palette Search Bar */}
       <button
         type="button"
-        aria-label="Buscar em Tasks, Cérebro, Dados (Ctrl K)"
+        aria-label="Buscar telas, tasks, agentes… (Ctrl K)"
         onClick={() => setPaletteOpen(true)}
         style={{
           display: "flex",
@@ -171,10 +173,11 @@ export function Header() {
         onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "rgba(244,246,242,.16)")}
       >
         <TvIcon name="search" width="14" height="14" />
-        <span style={{ flex: 1, "text-align": "left", overflow: "hidden", "text-overflow": "ellipsis" }}>
-          Buscar em Tasks, Cérebro, Dados…
+        <span class="search-copy" style={{ flex: 1, "text-align": "left", overflow: "hidden", "text-overflow": "ellipsis" }}>
+          Buscar telas, tasks, agentes…
         </span>
         <span
+          class="search-kbd"
           style={{
             "font-family": "var(--font-mono)",
             "font-size": "11px",
@@ -186,6 +189,8 @@ export function Header() {
           Ctrl K
         </span>
       </button>
+
+      <NotificationBell />
 
       {/* Primary Lime CTA Button: Iniciar job */}
       <button

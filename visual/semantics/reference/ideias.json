@@ -1,0 +1,1896 @@
+{
+  "screenId": "ideias",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 43,
+        "nav": 1,
+        "button": 31,
+        "img": 2,
+        "i": 8,
+        "aside": 1,
+        "small": 3,
+        "span": 59,
+        "b": 10,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 1,
+        "form": 1,
+        "input": 1,
+        "section": 3
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conhecimento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cérebro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Memória e biblioteca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ideias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conhecimento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ideias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Conhecimento",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ideias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Captura rápida antes de virar task. Votos ajudam a Paula a priorizar.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cérebro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Memória e biblioteca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ideias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Guardar",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Novas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X gratuito para quem chega pelo LinkedIn",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carlos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "hoje",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "+1 ·",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Avaliar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Template de esteira para clínicas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dora",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ontem",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "+1 ·",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Avaliar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Avaliando",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Painel do cliente com o livro-razão do projeto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Paula PM",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "24/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "+1 ·",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "8",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Virar task",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Resumo semanal por e-mail para cada cliente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cissa CS",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "20/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "+1 ·",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Virar task",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Virou task",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio com perfil de LinkedIn B2B",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carlos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "12/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "+1 ·",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "9",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO CONHECIMENTO Cérebro Memória e biblioteca Ideias Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Conhecimento / Ideias AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Conhecimento / Ideias AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 1076,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 81,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 417,
+            "y": 201,
+            "width": 162,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 583,
+            "y": 201,
+            "width": 66,
+            "height": 42
+          }
+        },
+        {
+          "tag": "form",
+          "id": null,
+          "role": "form",
+          "name": "Guardar",
+          "label": null,
+          "text": "Guardar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 268,
+            "width": 1076,
+            "height": 42
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Nova ideia",
+          "label": "Nova ideia",
+          "text": null,
+          "placeholder": "Uma ideia em uma linha. Enter para guardar.",
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 268,
+            "width": 977,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Guardar",
+          "label": null,
+          "text": "Guardar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1317,
+            "y": 268,
+            "width": 91,
+            "height": 40
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Novas 2 Raio-X gratuito para quem chega pelo LinkedIn Carlos · hoje +1 · 3 Avaliar Template de esteira para clínicas Dora · ontem +1 · 5 Avaliar",
+          "label": null,
+          "text": "Novas 2 Raio-X gratuito para quem chega pelo LinkedIn Carlos · hoje +1 · 3 Avaliar Template de esteira para clínicas Dora · ontem +1 · 5 Avaliar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 334,
+            "width": 349,
+            "height": 326
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "+1 · 3",
+          "label": null,
+          "text": "+1 · 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 360,
+            "y": 471,
+            "width": 52,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Avaliar",
+          "label": null,
+          "text": "Avaliar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 583,
+            "y": 471,
+            "width": 70,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "+1 · 5",
+          "label": null,
+          "text": "+1 · 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 360,
+            "y": 600,
+            "width": 52,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Avaliar",
+          "label": null,
+          "text": "Avaliar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 583,
+            "y": 600,
+            "width": 70,
+            "height": 32
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Avaliando 2 Painel do cliente com o livro-razão do projeto Paula PM · 24/10 +1 · 8 Virar task Resumo semanal por e-mail para cada cliente Cissa CS · 20/10 +1 · 4 Virar task",
+          "label": null,
+          "text": "Avaliando 2 Painel do cliente com o livro-razão do projeto Paula PM · 24/10 +1 · 8 Virar task Resumo semanal por e-mail para cada cliente Cissa CS · 20/10 +1 · 4 Virar task",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 695,
+            "y": 334,
+            "width": 349,
+            "height": 345
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "+1 · 8",
+          "label": null,
+          "text": "+1 · 8",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 723,
+            "y": 471,
+            "width": 53,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Virar task",
+          "label": null,
+          "text": "Virar task",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 471,
+            "width": 86,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "+1 · 4",
+          "label": null,
+          "text": "+1 · 4",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 723,
+            "y": 619,
+            "width": 53,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Virar task",
+          "label": null,
+          "text": "Virar task",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 619,
+            "width": 86,
+            "height": 32
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Virou task 1 Studio com perfil de LinkedIn B2B Carlos · 12/10 +1 · 9",
+          "label": null,
+          "text": "Virou task 1 Studio com perfil de LinkedIn B2B Carlos · 12/10 +1 · 9",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1059,
+            "y": 334,
+            "width": 349,
+            "height": 300
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "+1 · 9",
+          "label": null,
+          "text": "+1 · 9",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1087,
+            "y": 452,
+            "width": 53,
+            "height": 32
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 81,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 417,
+            "y": 201,
+            "width": 162,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 583,
+            "y": 201,
+            "width": 66,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Nova ideia",
+          "label": "Nova ideia",
+          "text": null,
+          "placeholder": "Uma ideia em uma linha. Enter para guardar.",
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 268,
+            "width": 977,
+            "height": 42
+          },
+          "kind": "field",
+          "type": "text",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Guardar",
+          "label": null,
+          "text": "Guardar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1317,
+            "y": 268,
+            "width": 91,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "+1 · 3",
+          "label": null,
+          "text": "+1 · 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 360,
+            "y": 471,
+            "width": 52,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Avaliar",
+          "label": null,
+          "text": "Avaliar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 583,
+            "y": 471,
+            "width": 70,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "+1 · 5",
+          "label": null,
+          "text": "+1 · 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 360,
+            "y": 600,
+            "width": 52,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Avaliar",
+          "label": null,
+          "text": "Avaliar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 583,
+            "y": 600,
+            "width": 70,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "+1 · 8",
+          "label": null,
+          "text": "+1 · 8",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 723,
+            "y": 471,
+            "width": 53,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Virar task",
+          "label": null,
+          "text": "Virar task",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 471,
+            "width": 86,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "+1 · 4",
+          "label": null,
+          "text": "+1 · 4",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 723,
+            "y": 619,
+            "width": 53,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Virar task",
+          "label": null,
+          "text": "Virar task",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 619,
+            "width": 86,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "+1 · 9",
+          "label": null,
+          "text": "+1 · 9",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1087,
+            "y": 452,
+            "width": 53,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

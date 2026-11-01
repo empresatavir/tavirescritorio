@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Edição</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page">
+  <div class="phead">
+    <div class="grow"><div style="display: flex; gap: 8px; align-items: center"><span class="eyebrow">Módulo · Conversar</span><span class="badge">beta</span></div><h1 style="margin-top: 8px">Edição</h1><p>Pós-produção: corte, narração, legenda e render. A revisão de legenda acontece aqui, com o vídeo parado no ponto certo.</p></div>
+    <div class="actions"><button class="btn secondary" onClick="{{exportSrt}}">Exportar .srt</button><button class="btn primary" onClick="{{render}}" disabled="{{rendering}}">{{renderLabel}}</button></div>
+  </div>
+
+  <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
+    <div class="segs"><sc-for list="{{projects}}" as="p" hint-placeholder-count="2"><button class="seg {{p.on}}" onClick="{{p.pick}}">{{p.label}}</button></sc-for></div>
+    <div class="grow"></div>
+    <div class="stepper" style="flex: 0 1 520px"><sc-for list="{{steps}}" as="st" hint-placeholder-count="4"><div class="stp {{st.cls}}" style="min-width: 90px; padding: 8px 10px"><span class="n">{{st.n}}</span><b style="font-size: 12px">{{st.label}}</b><div class="bar"></div></div></sc-for></div>
+  </div>
+
+  <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: stretch">
+    <section class="ink" style="flex: 1 1 360px; padding: 18px; display: flex; flex-direction: column; gap: 14px; align-items: center">
+      <div style="width: {{frameW}}px; height: {{frameH}}px; max-width: 100%; border-radius: 14px; background: #121c30; border: 1px solid var(--on-ink-line); position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding: 18px">
+        <span class="mono" style="position: absolute; top: 10px; left: 12px; font-size: 10px; color: var(--on-ink-muted)">prévia · {{cur.fmt}}</span>
+        <span class="mono" style="position: absolute; top: 10px; right: 12px; font-size: 10px; color: var(--lime)">{{tc}}</span>
+        <div style="position: absolute; inset: 0; display: grid; place-items: center"><span class="mono" style="font-size: 11px; color: rgba(244,246,242,.35)">quadro do corte · {{shot}}</span></div>
+        <sc-if value="{{hasSub}}" hint-placeholder-val="{{true}}"><div style="position: relative; background: rgba(7,13,24,.82); color: #F4F6F2; font-weight: 600; font-size: 14px; line-height: 1.3; padding: 6px 10px; border-radius: 6px; text-align: center; max-width: 92%; animation: fade 160ms var(--ease) both">{{subText}}</div></sc-if>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; width: 100%">
+        <button class="btn sm onink" onClick="{{toggle}}" aria-label="{{playLabel}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{playIcon}}"></path></svg>{{playLabel}}</button>
+        <div class="track" style="height: 4px"><div class="fill" style="width: {{pct}}%; transition: none; background: var(--lime)"></div></div>
+        <span class="mono" style="font-size: 11px; color: var(--on-ink-muted)">{{tc}} / {{dur}}</span>
+      </div>
+    </section>
+    <section class="card" style="flex: 1 1 380px; display: flex; flex-direction: column">
+      <div class="card-h"><h3>Revisão de legenda</h3><span class="badge warn">{{flags}} alertas</span><div class="grow"></div><span class="muted" style="font-size: 12px">Rita Revisora</span></div>
+      <div class="rows" style="overflow: auto; max-height: 360px">
+        <sc-for list="{{subs}}" as="sb" hint-placeholder-count="6">
+          <button class="row {{sb.on}}" onClick="{{sb.seek}}" style="align-items: flex-start">
+            <span class="num muted" style="font-size: 11px; width: 74px; flex: none; padding-top: 2px">{{sb.range}}</span>
+            <div class="grow"><div style="font-size: 13px">{{sb.t}}</div><sc-if value="{{sb.hasFlag}}" hint-placeholder-val="{{false}}"><div style="font-size: 11.5px; color: var(--warning); margin-top: 3px">{{sb.flag}}</div></sc-if></div>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; align-items: center"><h3 style="font-size: 14px; font-weight: 600">Timeline</h3><div class="grow"></div><span class="muted" style="font-size: 12px">Clique numa trilha para mover o cursor</span></div>
+    <div style="display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 6px 12px; align-items: center">
+      <span></span>
+      <div style="display: flex; justify-content: space-between" class="mono muted"><sc-for list="{{ruler}}" as="r" hint-placeholder-count="6"><span style="font-size: 10px">{{r.t}}</span></sc-for></div>
+      <sc-for list="{{tracks}}" as="tr" hint-placeholder-count="4">
+        <span class="sec" style="font-size: 12px">{{tr.name}}</span>
+        <div onClick="{{seekTrack}}" style="position: relative; height: 34px; border-radius: 8px; background: var(--surface-0); border: 1px solid var(--line); cursor: pointer">
+          <sc-for list="{{tr.clips}}" as="c" hint-placeholder-count="3"><div style="position: absolute; top: 4px; bottom: 4px; left: {{c.l}}%; width: {{c.w}}%; border-radius: 5px; background: {{c.bg}}; border: 1px solid {{c.bd}}; overflow: hidden; padding: 0 6px; display: flex; align-items: center; pointer-events: none"><span style="font-size: 10.5px; white-space: nowrap; color: {{c.fg}}">{{c.t}}</span></div></sc-for>
+          <div style="position: absolute; top: -4px; bottom: -4px; left: {{pct}}%; width: 2px; background: var(--lime); pointer-events: none"></div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-h"><h3>Fila de render</h3><div class="grow"></div><span class="eyebrow">motor local · ffmpeg</span></div>
+    <div class="rows">
+      <sc-for list="{{queue}}" as="q" hint-placeholder-count="3">
+        <div class="row" style="cursor: default"><span class="mono" style="font-size: 12px; width: 60px">{{q.f}}</span><div class="grow"><div class="t" style="font-size: 13px">{{q.name}}</div><div style="display: flex; align-items: center; gap: 8px; margin-top: 6px"><div class="track" style="height: 4px"><div class="fill {{q.cls}}" style="width: {{q.p}}%"></div></div><span class="num muted" style="font-size: 11px; width: 36px">{{q.p}}%</span></div></div><span class="badge {{q.bcls}}">{{q.st}}</span></div>
+      </sc-for>
+    </div>
+  </section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"spot":{"editor":null},"$preview":{"width":1176,"height":1100}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const PROJ = {
+  reel: { label: 'Ep. 14 · reel 45 s', fmt: '9:16 · 1080p', dur: 45, w: 196, h: 348, subs: [[0, 3, 'Todo mapa escolhe o que mostrar.'], [3, 7, 'Este escolheu esconder uma cidade inteira.', 'Linha com 41 caracteres. Limite: 32.'], [7, 12, 'Em 1953, ela sumiu da carta oficial.'], [12, 18, 'Ninguém mudou de endereço.'], [18, 26, 'Mas o correio parou de chegar.', 'Sobrepõe a narração em 0,4 s.'], [26, 34, 'Três versões contam essa história.'], [34, 40, 'Só uma tem documento.'], [40, 45, 'Fontes na legenda do post.']], shots: [[0, 7, 'mapa'], [7, 18, 'arquivo'], [18, 34, 'ruínas'], [34, 45, 'fontes']] },
+  yt: { label: 'IA Livros · vídeo 12 min', fmt: '16:9 · 1080p', dur: 720, w: 340, h: 192, subs: [[0, 40, 'Como escrever um livro com IA sem perder a sua voz.'], [40, 120, 'Primeiro: a IA não decide o que você pensa.'], [120, 260, 'Ela organiza, sugere e revisa. Você assina.', 'Linha com 44 caracteres. Limite: 42.'], [260, 480, 'Mostramos o método em três capítulos reais.'], [480, 720, 'O roteiro completo está na descrição.']], shots: [[0, 120, 'abertura'], [120, 480, 'tela'], [480, 720, 'fechamento']] }
+};
+function tc(s) { const m = Math.floor(s / 60), x = Math.floor(s % 60); return String(m).padStart(2, '0') + ':' + String(x).padStart(2, '0'); }
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { p: 'reel', t: 4, playing: false, rq: [100, 0, 0], rendering: false }; }
+  componentWillUnmount() { clearInterval(this.pl); clearInterval(this.rd); }
+  play(on) {
+    clearInterval(this.pl);
+    if (on) this.pl = setInterval(() => { const P = PROJ[this.state.p]; const nt = this.state.t + P.dur / 90; if (nt >= P.dur) { clearInterval(this.pl); this.setState({ t: P.dur, playing: false }); } else this.setState({ t: nt }); }, 120);
+    this.setState({ playing: on });
+  }
+  renderVals() {
+    const app = this.props.app || NOOP;
+    const s = this.state, self = this;
+    const P = PROJ[s.p];
+    const cur = P.subs.find((x) => s.t >= x[0] && s.t < x[1]);
+    const shot = P.shots.find((x) => s.t >= x[0] && s.t < x[1]) || P.shots[P.shots.length - 1];
+    const pct = Math.min(100, s.t / P.dur * 100);
+    const clip = (a, b, t, bg, bd, fg) => ({ l: a / P.dur * 100, w: (b - a) / P.dur * 100, t: t, bg: bg, bd: bd, fg: fg });
+    const flagged = P.subs.filter((x) => x[3]).length;
+    return {
+      projects: Object.keys(PROJ).map((k) => ({ label: PROJ[k].label, on: s.p === k ? 'on' : '', pick: () => { clearInterval(self.pl); self.setState({ p: k, t: 0, playing: false }); } })),
+      steps: [['Corte', 'done'], ['Narração', 'done'], ['Legenda', 'now'], ['Render', '']].map((x, i) => ({ n: '0' + (i + 1), label: x[0], cls: x[1] })),
+      cur: { fmt: P.fmt }, frameW: P.w, frameH: P.h, shot: shot[2],
+      tc: tc(s.t), dur: tc(P.dur), pct: pct.toFixed(2),
+      hasSub: !!cur, subText: cur ? cur[2] : '',
+      playLabel: s.playing ? 'Pausar' : 'Tocar', playIcon: s.playing ? 'M7 5h4v14H7zM13 5h4v14h-4z' : 'M7 5v14l11-7z',
+      toggle: () => self.play(!s.playing),
+      flags: flagged,
+      subs: P.subs.map((x) => ({ range: tc(x[0]) + '–' + tc(x[1]), t: x[2], hasFlag: !!x[3], flag: x[3] || '', on: cur === x ? 'on' : '', seek: () => { self.play(false); self.setState({ t: x[0] + 0.1 }); } })),
+      ruler: [0, 0.2, 0.4, 0.6, 0.8, 1].map((f) => ({ t: tc(P.dur * f) })),
+      seekTrack: (e) => { const r = e.currentTarget.getBoundingClientRect(); const f = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)); self.play(false); self.setState({ t: f * P.dur }); },
+      tracks: [
+        { name: 'Vídeo', clips: P.shots.map((x) => clip(x[0], x[1], x[2], 'var(--flow-subtle)', 'var(--flow-subtle-line)', 'var(--flow-subtle-text)')) },
+        { name: 'Narração', clips: [clip(0.4, P.dur * 0.94, 'Nara Narração · voz 2', 'var(--surface-3)', 'var(--line-strong)', 'var(--text-secondary)')] },
+        { name: 'Legenda', clips: P.subs.map((x) => clip(x[0], x[1], '', x[3] ? 'var(--warning-subtle)' : 'var(--surface-3)', x[3] ? 'var(--warning)' : 'var(--line)', 'var(--text-secondary)')) },
+        { name: 'Trilha', clips: [clip(0, P.dur, 'trilha · arquivo licenciado', 'var(--surface-3)', 'var(--line)', 'var(--text-muted)')] }
+      ],
+      queue: [['9:16', 'Reel 1080 × 1920'], ['4:5', 'Feed 1080 × 1350'], ['16:9', 'YouTube 1920 × 1080']].map((q, i) => ({ f: q[0], name: q[1], p: Math.round(s.rq[i]), cls: s.rq[i] >= 100 ? '' : 'run', st: s.rq[i] >= 100 ? 'pronto' : s.rq[i] > 0 ? 'renderizando' : 'na fila', bcls: s.rq[i] >= 100 ? 'flow' : s.rq[i] > 0 ? 'warn' : '' })),
+      rendering: s.rendering, renderLabel: s.rendering ? 'Renderizando…' : 'Renderizar',
+      render: () => {
+        if (flagged > 0) app.toast('Render com alertas', flagged + ' legendas fora do padrão. Rita vê no checkpoint.');
+        self.setState({ rendering: true, rq: [100, 0, 0] });
+        clearInterval(self.rd);
+        self.rd = setInterval(() => {
+          const rq = self.state.rq.slice();
+          const i = rq.findIndex((x) => x < 100);
+          if (i < 0) { clearInterval(self.rd); self.setState({ rendering: false }); app.toast('Render concluído', 'Os 3 formatos foram para o Pacote do Studio.'); return; }
+          rq[i] = Math.min(100, rq[i] + 9);
+          self.setState({ rq: rq });
+        }, 220);
+      },
+      exportSrt: () => app.toast('Legenda exportada', 'ep14-reel.srt com ' + P.subs.length + ' blocos.')
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Agentes</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page">
+  <div class="phead">
+    <div class="grow"><div class="eyebrow">Operação · equipe canônica</div><h1 style="margin-top: 8px">Agentes</h1><p>{{total}} no roster, {{busyN}} trabalhando agora. Cada agente tem ofício, modelo padrão e lições que voltam das execuções revisadas.</p></div>
+    <div class="actions"><button class="btn secondary" onClick="{{goOrg}}">Org Chart</button><button class="btn secondary" onClick="{{goChat}}">Conversar</button></div>
+  </div>
+
+  <div class="g4">
+    <div class="metric"><span class="eyebrow">No roster</span><strong>{{total}}</strong><small>{{sectorsN}} setores</small></div>
+    <div class="metric"><span class="eyebrow">Ocupados agora</span><strong style="color: var(--flow)">{{busyN}}</strong><small>{{busyPct}}% da equipe</small></div>
+    <div class="metric"><span class="eyebrow">Modelo mais usado</span><strong style="font-size: 18px; padding: 6px 0">claude-sonnet-4</strong><small>{{sonnetN}} agentes</small></div>
+    <div class="metric"><span class="eyebrow">Lições novas</span><strong>7</strong><small>últimos 7 dias</small></div>
+  </div>
+
+  <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+    <div style="position: relative; flex: 1 1 280px; max-width: 360px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 14px; top: 13px"><path d="M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13M20 20l-4.8-4.8"></path></svg>
+      <input class="input" style="padding-left: 40px; border-radius: 999px" value="{{q}}" onChange="{{onQ}}" placeholder="Nome, papel, setor ou modelo" aria-label="Buscar agente">
+    </div>
+    <div class="segs"><sc-for list="{{stFilters}}" as="f" hint-placeholder-count="3"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+    <div class="grow"></div>
+    <div class="segs"><sc-for list="{{views}}" as="f" hint-placeholder-count="2"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}</button></sc-for></div>
+  </div>
+  <div class="segs"><sc-for list="{{sectors}}" as="f" hint-placeholder-count="10"><button class="seg {{f.on}}" onClick="{{f.pick}}" style="height: 28px; font-size: 12px">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+
+  <sc-if value="{{grid}}" hint-placeholder-val="{{true}}">
+    <div class="g4" style="grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr))">
+      <sc-for list="{{list}}" as="a" hint-placeholder-count="12">
+        <button class="card click" onClick="{{a.open}}" style="padding: 16px; display: flex; flex-direction: column; gap: 12px; animation: fade 220ms var(--ease) both">
+          <div style="display: flex; gap: 12px; align-items: center"><span class="av {{a.busy}}">{{a.ini}}</span><div class="grow" style="min-width: 0"><div style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{a.name}}</div><div class="muted" style="font-size: 12px">{{a.sector}}</div></div></div>
+          <p class="sec" style="font-size: 13px; line-height: 1.4; min-height: 36px">{{a.role}}</p>
+          <div style="display: flex; align-items: center; gap: 8px"><span class="badge {{a.scls}}"><i></i>{{a.status}}</span><div class="grow"></div><span class="mono muted" style="font-size: 11px">{{a.model}}</span></div>
+          <div style="display: flex; align-items: center; gap: 8px"><span class="muted" style="font-size: 11px; width: 34px">carga</span><div class="track" style="height: 4px"><div class="fill {{a.lcls}}" style="width: {{a.load}}%"></div></div><span class="num muted" style="font-size: 11px">{{a.load}}%</span></div>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{table}}" hint-placeholder-val="{{false}}">
+    <div class="card" style="overflow-x: auto">
+      <table class="tbl"><thead><tr><th>Agente</th><th>Papel</th><th>Setor</th><th>Modelo</th><th>Status</th><th>Carga</th></tr></thead>
+        <tbody><sc-for list="{{list}}" as="a" hint-placeholder-count="12"><tr onClick="{{a.open}}" style="cursor: pointer"><td><div style="display: flex; gap: 10px; align-items: center"><span class="av {{a.busy}}" style="width: 28px; height: 28px; font-size: 10px">{{a.ini}}</span><b>{{a.name}}</b></div></td><td class="sec">{{a.role}}</td><td class="muted">{{a.sector}}</td><td class="mono muted" style="font-size: 12px">{{a.model}}</td><td><span class="badge {{a.scls}}">{{a.status}}</span></td><td class="num muted">{{a.load}}%</td></tr></sc-for></tbody>
+      </table>
+    </div>
+  </sc-if>
+  <sc-if value="{{empty}}" hint-placeholder-val="{{false}}"><div class="card muted" style="padding: 32px; text-align: center">Ninguém com esse filtro. Limpe a busca ou troque o setor.</div></sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"spot":{"editor":null},"$preview":{"width":1176,"height":1000}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const AG = [["Maicon","Arquiteto de Integrações & Análise de Ferramentas","Engenharia",0,"claude-opus-4","MI"],["Adriano Arte","Direção de Arte & Assets","Conteúdo",1,"dall-e-3","AA"],["Íris Instagram","Auditoria & Métricas Instagram","Social",0,"gpt-4o","II"],["Atlas Web","Auditoria Web & Performance","Qualidade",0,"gpt-4o","AW"],["Yuri YouTube","Inteligência & Métricas YouTube","Conhecimento",0,"gpt-4o","YY"],["Arquiteto de Nicho","Arquitetura de Soluções","Engenharia",0,"claude-opus-4","AN"],["Atena Compliance","Compliance & Política YouTube","Conteúdo",0,"claude-sonnet-4","AC"],["Auditor Seg/LGPD","Auditoria de Segurança & LGPD","Qualidade",0,"claude-opus-4","AS"],["Bruno Sócio","Conselho Estratégico","Estratégia",0,"claude-opus-4","BS"],["Cléber Closer","Fechamento Comercial","Comercial",0,"claude-sonnet-4","CC"],["Vitor Construtor (Nuxt/Vue)","Dev Frontend Sênior (Nuxt/Vue)","Engenharia",1,"claude-sonnet-4","VC"],["Nando Construtor (.NET/Angular)","Engenharia Enterprise (.NET/Angular)","Engenharia",0,"claude-sonnet-4","NC"],["Ícaro Construtor (Flutter/Dart)","Engenharia Mobile (Flutter/Dart)","Engenharia",0,"claude-sonnet-4","IC"],["Rafa Construtor (Next.js/React)","Dev Fullstack (Next.js/React)","Engenharia",0,"claude-sonnet-4","RC"],["Jussara Jurídico","Assessoria Jurídica & Contratos","Qualidade",0,"claude-opus-4","JJ"],["Iara Instagram","Produção de Conteúdo Instagram","Social",0,"claude-sonnet-4","IA"],["Ciro LinkedIn","Produção Editorial LinkedIn","Social",0,"claude-sonnet-4","CL"],["Bento YouTube","Otimização & SEO YouTube","Social",0,"claude-sonnet-4","BY"],["Cissa CS","Customer Success & Onboarding","Comercial",0,"gpt-4o","CS"],["CTO (Stack & Infra)","CTO (Stack, Infra & Decisões)","Estratégia",0,"claude-opus-4","CT"],["Cléo Curadora","Curadoria & Indexação de Conhecimento","Conhecimento",0,"claude-sonnet-4","CC"],["Dora Dados","DBA & Modelagem de Dados","Engenharia",0,"claude-sonnet-4","DD"],["Dora Descoberta","Gate 0 & Intake Descoberta","Comercial",1,"claude-sonnet-4","DD"],["Davi DevOps","CI/CD & Infraestrutura","Engenharia",0,"claude-sonnet-4","DV"],["Diego Flow","Direção & Automação Flow","Conteúdo",1,"claude-sonnet-4","DF"],["Dario Diretor Comercial","Estratégia Comercial & Funil","Comercial",0,"claude-sonnet-4","DC"],["Dante Documentação","Manuais Técnicos & OpenAPI","Documentação",0,"claude-sonnet-4","DT"],["Lia Loja","Especialista em E-commerce","Engenharia",0,"claude-sonnet-4","LL"],["Vini Vídeo","Edição & Pós-Produção","Conteúdo",0,"claude-sonnet-4","VV"],["Ema E-mail","Copywriting & Régua de E-mails","Social",0,"claude-sonnet-4","EM"],["Elisa Escritora","Ghostwriter & Produção de Texto","Conteúdo",0,"claude-sonnet-4","EE"],["Sofia Estilo","Estilo & Tom de Voz","Conteúdo",0,"claude-sonnet-4","SE"],["Otto Estruturador","Estrutura Narrativa & Capítulos","Conteúdo",0,"claude-sonnet-4","OE"],["Fábio Finanças","Controle Financeiro & Cobrança","Finanças",0,"claude-sonnet-4","FF"],["Tainá Tráfego","Gestão de Tráfego Pago","Social",0,"claude-sonnet-4","TT"],["Gael Growth","Estratégias de Aquisição & Growth","Social",0,"gpt-4o","GG"],["Jane","Coordenação Operacional","Operação",0,"claude-sonnet-4","JA"],["Jano NexLev","Otimização & Performance de Vídeo","Conteúdo",0,"claude-sonnet-4","JN"],["Lucas Lapidador","Revisão Fina & Polimento","Conteúdo",0,"claude-sonnet-4","LL"],["Marina Marca","Identidade Visual & Design System","Design",0,"claude-sonnet-4","MM"],["Marcos Marketing","Marketing de Crescimento","Conteúdo",0,"claude-sonnet-4","MK"],["Nara Narração","Locução & Síntese de Voz","Conteúdo",0,"claude-sonnet-4","NN"],["Oráculo Diretor","Diretor Editorial & Produção","Conteúdo",0,"claude-opus-4","OD"],["Paula PM","Orquestradora & Planejamento","Operação",1,"claude-opus-4","PP"],["Priscila Preços","Modelagem de Preços & Margem","Finanças",0,"claude-sonnet-4","PR"],["Paulo Publicador","Publicação Governada & Release","Operação",0,"claude-sonnet-4","PU"],["Edna E2E","QA End-to-End & Regressão","Qualidade",0,"claude-sonnet-4","EE"],["Rafael Roteiro","Roteirista Sênior","Conteúdo",0,"claude-sonnet-4","RR"],["Rebeca Recepção","Triagem & Recepção","Operação",0,"claude-sonnet-4","RB"],["Rita Revisora","QA Editorial & Gramatical","Conteúdo",0,"claude-sonnet-4","RV"],["Renato Roteirista","Roteiros Especializados YouTube","Conteúdo",0,"claude-sonnet-4","RT"],["Nina SEO","SEO Técnico & Distribuição","Social",1,"claude-sonnet-4","NS"],["Sami Social","Gestão & Interação Social","Social",0,"claude-sonnet-4","SS"],["Sofia Storyboard","Storyboard & Direção de Arte","Conteúdo",0,"dall-e-3","SB"],["Sônia Suporte","Triagem de Suporte & FAQ","Suporte",0,"gpt-4o","SN"],["Théo Tech Lead","Liderança Técnica & Padrões","Engenharia",0,"claude-sonnet-4","TL"],["Yuri UX","UX Research & Prova Visual","Design",1,"claude-sonnet-4","YU"],["Victor VideoLens","Análise Visual de Vídeo","Conteúdo",0,"claude-sonnet-4","VL"]];
+function loadOf(a) { let h = 0; for (let i = 0; i < a[0].length; i++) h = (h * 31 + a[0].charCodeAt(i)) % 997; return a[3] ? 62 + h % 30 : 4 + h % 26; }
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { q: '', sector: 'Todos', st: 'all', view: 'grid' }; }
+  renderVals() {
+    const app = this.props.app || NOOP;
+    const s = this.state, self = this;
+    const secs = Array.from(new Set(AG.map((a) => a[2]))).sort();
+    const q = s.q.toLowerCase();
+    const base = AG.filter((a) => (s.st === 'all' || (s.st === 'busy' ? a[3] : !a[3])) && (!q || (a[0] + ' ' + a[1] + ' ' + a[2] + ' ' + a[4]).toLowerCase().indexOf(q) >= 0));
+    const list = base.filter((a) => s.sector === 'Todos' || a[2] === s.sector);
+    const busyN = AG.filter((a) => a[3]).length;
+    return {
+      total: AG.length, busyN: busyN, busyPct: Math.round(busyN / AG.length * 100), sectorsN: secs.length, sonnetN: AG.filter((a) => a[4] === 'claude-sonnet-4').length,
+      goOrg: () => app.go('org'), goChat: () => app.go('chat'),
+      q: s.q, onQ: (e) => self.setState({ q: e.target.value }),
+      stFilters: [['all', 'Todos', AG.length], ['busy', 'Ocupados', busyN], ['idle', 'Ociosos', AG.length - busyN]].map((f) => ({ label: f[1], n: f[2], on: s.st === f[0] ? 'on' : '', pick: () => self.setState({ st: f[0] }) })),
+      views: [['grid', 'Cartões'], ['table', 'Lista']].map((f) => ({ label: f[1], on: s.view === f[0] ? 'on' : '', pick: () => self.setState({ view: f[0] }) })),
+      sectors: ['Todos'].concat(secs).map((x) => ({ label: x, n: x === 'Todos' ? base.length : base.filter((a) => a[2] === x).length, on: s.sector === x ? 'on' : '', pick: () => self.setState({ sector: x }) })),
+      grid: s.view === 'grid' && list.length > 0, table: s.view === 'table' && list.length > 0, empty: list.length === 0,
+      list: list.map((a) => { const load = loadOf(a); return { name: a[0], role: a[1], sector: a[2], model: a[4], ini: a[5], busy: a[3] ? 'busy' : '', status: a[3] ? 'ocupado' : 'ocioso', scls: a[3] ? 'flow' : '', load: load, lcls: load > 85 ? 'warn' : '', open: () => app.modal('soul', { name: a[0], role: a[1], sector: a[2], ini: a[5], busy: !!a[3], model: a[4] }) }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

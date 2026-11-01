@@ -76,6 +76,8 @@ class ChatRepository:
         text: str,
         meta: str | None = None,
         msg_id: str | None = None,
+        images: list | None = None,
+        actions: list | None = None,
     ) -> ChatMessage:
         msg = ChatMessage(
             id=msg_id or f"m-{str(uuid.uuid4())[:8]}",
@@ -83,6 +85,8 @@ class ChatRepository:
             role=role,
             text=text,
             meta=meta,
+            images=images or None,
+            actions=actions or None,
         )
         self.session.add(msg)
 

@@ -1,0 +1,23 @@
+{
+  "source": "TAVIR Escritório — redesenho.html",
+  "note": "17 @keyframes extraidos do <style> do template. Espacos removidos so para comparacao.",
+  "keyframes": {
+    "fade": "from{opacity:0}to{opacity:1}",
+    "rise": "from{opacity:0;transform:translateY(10px)scale(.985)}to{opacity:1;transform:none}",
+    "slidein": "from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}",
+    "toast": "from{transform:translateY(-12px);opacity:0}to{transform:none;opacity:1}",
+    "pulse": "0%{box-shadow:0000rgba(27,197,189,.45)}70%{box-shadow:0008pxrgba(27,197,189,0)}100%{box-shadow:0000rgba(27,197,189,0)}",
+    "grow": "from{transform:scaleY(0)}to{transform:scaleY(1)}",
+    "growx": "from{transform:scaleX(0)}to{transform:scaleX(1)}",
+    "sweep": "from{background-position:-60px0}to{background-position:calc(100%+60px)0}",
+    "blink": "0%,80%,100%{opacity:.25}40%{opacity:1}",
+    "spot": "0%,100%{opacity:1}50%{opacity:.35}",
+    "dash": "to{stroke-dashoffset:0}",
+    "spin": "to{transform:rotate(360deg)}",
+    "flowdot": "0%{left:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:100%;opacity:0}",
+    "stamp": "from{transform:scale(1.18);opacity:0}to{transform:scale(1);opacity:1}",
+    "shimmer": "from{background-position:-300px0}to{background-position:300px0}",
+    "ringwarn": "0%{box-shadow:0000oklch(.80.15578/.55)}70%{box-shadow:00012pxoklch(.80.15578/0)}100%{box-shadow:0000oklch(.80.15578/0)}",
+    "slideup": "from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}"
+  }
+}

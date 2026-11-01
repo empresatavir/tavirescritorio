@@ -1,0 +1,2055 @@
+{
+  "screenId": "raiox-lista",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 81,
+        "nav": 1,
+        "button": 30,
+        "img": 2,
+        "i": 29,
+        "aside": 1,
+        "small": 3,
+        "span": 116,
+        "b": 6,
+        "em": 2,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 8,
+        "h2": 4
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Visão dos módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fábrica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "beta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Edição",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "beta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Módulo · Encontrar",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Leitura de presença, atendimento e oferta antes de vender. Nenhuma proposta sai sem caso aberto e evidência classificada.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Novo caso",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "01",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Estudo rápido",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1 dia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Presença e primeira impressão. Bom para triagem.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "02",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Diagnóstico",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3 dias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Jornada completa com evidências classificadas.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "03",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Completo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "7 dias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Diagnóstico, concorrentes e oferta com preço.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Todos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Abertos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Devolutiva",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fechados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Maps entra na varredura só se for loja física.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Coleta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "amigo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "aberto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Loja da Rua",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Loja física de roupas no centro. Instagram ativo, sem catálogo.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "31",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "nota / 100",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Negócio local",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "confiança",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "média",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Continuar coleta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "→",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Devolutiva",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "formulário",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "devolutiva",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ateliê Norte",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Moda autoral vendida só online. Quer oferta de catálogo.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "52",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "nota / 100",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Loja online",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "confiança",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Revisar devolutiva",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "→",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Jornada",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "indicação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "aberto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Clínica Sorriso Vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Odontologia de bairro. Agenda pelo WhatsApp, sem confirmação.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "44",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "nota / 100",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Clínica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "confiança",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "média",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapear jornada",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "→",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fechado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "rua",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "fechado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Padaria Dois Irmãos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Encomendas por telefone. Virou proposta de presença local.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "70",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "nota / 100",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Negócio local",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "confiança",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ver proposta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "→",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO MÓDULOS Visão dos módulos Raio-X Studio Fábrica 1 Flow BETA Edição BETA Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão dos módulos",
+          "label": null,
+          "text": "Visão dos módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fábrica 1",
+          "label": null,
+          "text": "Fábrica 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow BETA",
+          "label": null,
+          "text": "Flow BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição BETA",
+          "label": null,
+          "text": "Edição BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Módulos / Raio-X AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Módulos / Raio-X AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 932,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo caso",
+          "label": null,
+          "text": "Novo caso",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1280,
+            "y": 158,
+            "width": 128,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Todos 4",
+          "label": null,
+          "text": "Todos 4",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 345,
+            "width": 82,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abertos 2",
+          "label": null,
+          "text": "Abertos 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 420,
+            "y": 345,
+            "width": 95,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Devolutiva 1",
+          "label": null,
+          "text": "Devolutiva 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 520,
+            "y": 345,
+            "width": 111,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fechados 1",
+          "label": null,
+          "text": "Fechados 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 637,
+            "y": 345,
+            "width": 105,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "COLETA · AMIGO ABERTO Loja da Rua Loja física de roupas no centro. Instagram ativo, sem catálogo. 31 nota / 100 Negócio local · confiança média Continuar coleta →",
+          "label": null,
+          "text": "COLETA · AMIGO ABERTO Loja da Rua Loja física de roupas no centro. Instagram ativo, sem catálogo. 31 nota / 100 Negócio local · confiança média Continuar coleta →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 401,
+            "width": 530,
+            "height": 184
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Loja da Rua",
+          "label": null,
+          "text": "Loja da Rua",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 353,
+            "y": 459,
+            "width": 421,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "DEVOLUTIVA · FORMULÁRIO DEVOLUTIVA Ateliê Norte Moda autoral vendida só online. Quer oferta de catálogo. 52 nota / 100 Loja online · confiança alta Revisar devolutiva →",
+          "label": null,
+          "text": "DEVOLUTIVA · FORMULÁRIO DEVOLUTIVA Ateliê Norte Moda autoral vendida só online. Quer oferta de catálogo. 52 nota / 100 Loja online · confiança alta Revisar devolutiva →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 878,
+            "y": 401,
+            "width": 530,
+            "height": 184
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Ateliê Norte",
+          "label": null,
+          "text": "Ateliê Norte",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 899,
+            "y": 459,
+            "width": 421,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "JORNADA · INDICAÇÃO ABERTO Clínica Sorriso Vivo Odontologia de bairro. Agenda pelo WhatsApp, sem confirmação. 44 nota / 100 Clínica · confiança média Mapear jornada →",
+          "label": null,
+          "text": "JORNADA · INDICAÇÃO ABERTO Clínica Sorriso Vivo Odontologia de bairro. Agenda pelo WhatsApp, sem confirmação. 44 nota / 100 Clínica · confiança média Mapear jornada →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 600,
+            "width": 530,
+            "height": 184
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Clínica Sorriso Vivo",
+          "label": null,
+          "text": "Clínica Sorriso Vivo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 353,
+            "y": 658,
+            "width": 421,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "FECHADO · RUA FECHADO Padaria Dois Irmãos Encomendas por telefone. Virou proposta de presença local. 70 nota / 100 Negócio local · confiança alta Ver proposta →",
+          "label": null,
+          "text": "FECHADO · RUA FECHADO Padaria Dois Irmãos Encomendas por telefone. Virou proposta de presença local. 70 nota / 100 Negócio local · confiança alta Ver proposta →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 878,
+            "y": 600,
+            "width": 530,
+            "height": 184
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Padaria Dois Irmãos",
+          "label": null,
+          "text": "Padaria Dois Irmãos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 899,
+            "y": 658,
+            "width": 421,
+            "height": 30
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão dos módulos",
+          "label": null,
+          "text": "Visão dos módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fábrica 1",
+          "label": null,
+          "text": "Fábrica 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow BETA",
+          "label": null,
+          "text": "Flow BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição BETA",
+          "label": null,
+          "text": "Edição BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo caso",
+          "label": null,
+          "text": "Novo caso",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1280,
+            "y": 158,
+            "width": 128,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Todos 4",
+          "label": null,
+          "text": "Todos 4",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 345,
+            "width": 82,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abertos 2",
+          "label": null,
+          "text": "Abertos 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 420,
+            "y": 345,
+            "width": 95,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Devolutiva 1",
+          "label": null,
+          "text": "Devolutiva 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 520,
+            "y": 345,
+            "width": 111,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fechados 1",
+          "label": null,
+          "text": "Fechados 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 637,
+            "y": 345,
+            "width": 105,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "COLETA · AMIGO ABERTO Loja da Rua Loja física de roupas no centro. Instagram ativo, sem catálogo. 31 nota / 100 Negócio local · confiança média Continuar coleta →",
+          "label": null,
+          "text": "COLETA · AMIGO ABERTO Loja da Rua Loja física de roupas no centro. Instagram ativo, sem catálogo. 31 nota / 100 Negócio local · confiança média Continuar coleta →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 401,
+            "width": 530,
+            "height": 184
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "DEVOLUTIVA · FORMULÁRIO DEVOLUTIVA Ateliê Norte Moda autoral vendida só online. Quer oferta de catálogo. 52 nota / 100 Loja online · confiança alta Revisar devolutiva →",
+          "label": null,
+          "text": "DEVOLUTIVA · FORMULÁRIO DEVOLUTIVA Ateliê Norte Moda autoral vendida só online. Quer oferta de catálogo. 52 nota / 100 Loja online · confiança alta Revisar devolutiva →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 878,
+            "y": 401,
+            "width": 530,
+            "height": 184
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "JORNADA · INDICAÇÃO ABERTO Clínica Sorriso Vivo Odontologia de bairro. Agenda pelo WhatsApp, sem confirmação. 44 nota / 100 Clínica · confiança média Mapear jornada →",
+          "label": null,
+          "text": "JORNADA · INDICAÇÃO ABERTO Clínica Sorriso Vivo Odontologia de bairro. Agenda pelo WhatsApp, sem confirmação. 44 nota / 100 Clínica · confiança média Mapear jornada →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 600,
+            "width": 530,
+            "height": 184
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "FECHADO · RUA FECHADO Padaria Dois Irmãos Encomendas por telefone. Virou proposta de presença local. 70 nota / 100 Negócio local · confiança alta Ver proposta →",
+          "label": null,
+          "text": "FECHADO · RUA FECHADO Padaria Dois Irmãos Encomendas por telefone. Virou proposta de presença local. 70 nota / 100 Negócio local · confiança alta Ver proposta →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 878,
+            "y": 600,
+            "width": 530,
+            "height": 184
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Fábrica</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+
+<!-- ================= LISTA DE ESTEIRAS ================= -->
+<sc-if value="{{listView}}" hint-placeholder-val="{{true}}">
+<div class="page" style="max-width: 1520px">
+  <div class="phead">
+    <div class="grow"><div class="eyebrow">Módulo · Vender</div><h1 style="margin-top: 8px">Fábrica</h1><p>Landing, oferta e sistema em esteiras. Cada etapa tem dono, artefato e critério de pronto. O Completion Guard decide quando acabou, e você assina.</p></div>
+    <div class="actions"><button class="btn primary" onClick="{{newLine}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Nova esteira</button></div>
+  </div>
+  <div class="g4">
+    <div class="metric"><span class="eyebrow">Esteiras ativas</span><strong>3</strong><small>2 criação · 1 manutenção</small></div>
+    <div class="metric"><span class="eyebrow">No gate</span><strong style="color: var(--warning)">{{gateN}}</strong><small>{{gateNote}}</small></div>
+    <div class="metric"><span class="eyebrow">Entregues em 30 dias</span><strong>4</strong><small>todas com QA na 1ª ou 2ª rodada</small></div>
+    <div class="metric"><span class="eyebrow">Lead time médio</span><strong>4,2 d</strong><small>meta: menos de 4 dias</small></div>
+  </div>
+  <section class="card">
+    <div class="card-h"><h3>Esteiras ao vivo</h3><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>concluída</span><span><i style="background: var(--warning)"></i>agora</span><span><i style="background: var(--line-strong)"></i>a seguir</span></div></div>
+    <div class="rows">
+      <sc-for list="{{lines}}" as="l" hint-placeholder-count="3">
+        <button class="row" onClick="{{l.open}}" style="padding: 20px 18px; gap: 20px; flex-wrap: wrap">
+          <div style="flex: 0 0 230px; min-width: 0"><div class="t" style="font-size: 15px">{{l.name}}</div><div class="m">{{l.kind}} · {{l.client}}</div><div class="mono" style="font-size: 11px; margin-top: 6px; color: {{l.dueColor}}">{{l.due}}</div></div>
+          <div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; align-items: center">
+              <sc-for list="{{l.nodes}}" as="n" hint-placeholder-count="9">
+                <div style="display: flex; align-items: center; flex: {{n.flex}}">
+                  <sc-if value="{{n.hasLine}}" hint-placeholder-val="{{true}}"><i style="flex: 1; height: 2px; background: {{n.line}}; min-width: 4px"></i></sc-if>
+                  <span style="width: {{n.size}}px; height: {{n.size}}px; border-radius: 50%; flex: none; display: grid; place-items: center; background: {{n.bg}}; border: 2px solid {{n.bd}}; color: var(--surface-1); animation: {{n.anim}}"><sc-if value="{{n.done}}" hint-placeholder-val="{{true}}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></sc-if></span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; font-size: 12px"><span class="muted">Agora:</span><b>{{l.stage}}</b><span class="muted">· {{l.owner}}</span></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 14px"><span class="num" style="font-size: 22px">{{l.pct}}%</span><span class="badge {{l.cls}}">{{l.state}}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></div>
+        </button>
+      </sc-for>
+    </div>
+  </section>
+  <div class="sec-title"><h2>Templates de esteira</h2><span class="muted" style="font-size: 13px">Começam com etapas, donos e critérios prontos</span></div>
+  <div class="g3">
+    <sc-for list="{{tpls}}" as="t" hint-placeholder-count="3">
+      <article class="card lift" style="padding: 20px; display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; align-items: center"><span class="eyebrow">{{t.k}}</span><div class="grow"></div><span class="badge">{{t.n}}</span></div>
+        <h3 style="font-size: 18px; font-weight: 600">{{t.name}}</h3>
+        <p class="sec" style="font-size: 13px">{{t.x}}</p>
+        <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap"><sc-for list="{{t.st}}" as="x" hint-placeholder-count="5"><span class="mono" style="font-size: 10.5px; padding: 3px 7px; border-radius: 6px; background: var(--surface-0); border: 1px solid var(--line); color: var(--text-secondary)">{{x.t}}</span></sc-for></div>
+        <div style="display: flex; align-items: center; margin-top: auto; padding-top: 6px"><span class="muted" style="font-size: 12px">{{t.lead}}</span><div class="grow"></div><button class="btn sm secondary" onClick="{{newLine}}">Usar esteira</button></div>
+      </article>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= CONSOLE DO PROJETO ================= -->
+<sc-if value="{{consoleView}}" hint-placeholder-val="{{false}}">
+<div class="page" style="max-width: 1520px; gap: 18px; padding-bottom: 110px">
+  <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+    <button class="link" onClick="{{back}}">← Esteiras</button>
+    <span class="muted">/</span><span style="font-size: 14px; font-weight: 600">Meridian</span>
+    <div class="grow"></div>
+    <button class="btn sm ghost" onClick="{{control}}">Controle do projeto</button>
+    <button class="btn sm secondary" onClick="{{askChange}}">Pedir alteração</button>
+  </div>
+
+  <section class="ink" style="padding: 24px 26px; display: flex; gap: 28px; flex-wrap: wrap; align-items: stretch">
+    <div style="flex: 2 1 340px; display: flex; flex-direction: column; gap: 12px">
+      <span class="eyebrow">LP · Criação · Meridian Capital</span>
+      <h1 style="font-size: 30px; font-weight: 600; letter-spacing: -.03em; line-height: 1.1">Meridian — landing institucional</h1>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap"><span class="badge">entrega 04/11 · faltam 6 dias</span><span class="badge flow">PRO-005 assinada</span><span class="badge">6 agentes</span></div>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: auto; padding-top: 10px">
+        <div><div class="eyebrow" style="font-size: 10px">Progresso</div><div class="num" style="font-size: 28px; margin-top: 4px; color: var(--lime)">{{pct}}%</div></div>
+        <div><div class="eyebrow" style="font-size: 10px">Etapa</div><div class="num" style="font-size: 28px; margin-top: 4px">{{stageN}}<span style="font-size: 14px; color: var(--on-ink-muted)"> / 9</span></div></div>
+        <div><div class="eyebrow" style="font-size: 10px">Custo / orçamento</div><div class="num" style="font-size: 16px; margin-top: 8px">US$ {{spent}} <span style="color: var(--on-ink-muted)">/ 25</span></div><div class="track" style="margin-top: 6px; height: 4px"><div class="fill" style="width: {{spentPct}}%"></div></div></div>
+      </div>
+    </div>
+    <div style="flex: 1 1 280px; border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; background: {{now.bg}}; border: 1px solid {{now.bd}}">
+      <div style="display: flex; align-items: center; gap: 10px"><span style="width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: {{now.ibg}}; color: {{now.ifg}}; animation: {{now.anim}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{now.icon}}"></path></svg></span><span class="eyebrow" style="color: {{now.ifg}}">Agora</span></div>
+      <b style="font-size: 17px">{{now.t}}</b>
+      <p style="font-size: 13px; color: var(--on-ink-muted)">{{now.d}}</p>
+      <div style="margin-top: auto"><button class="btn sm {{now.btnCls}}" onClick="{{now.go}}">{{now.btn}}</button></div>
+    </div>
+  </section>
+
+  <!-- topologia -->
+  <section class="card {{spotTopo}}" style="padding: 18px 20px 16px">
+    <div style="display: flex; align-items: center; margin-bottom: 14px"><h3 style="font-size: 14px; font-weight: 600">Topologia da esteira</h3><div class="grow"></div><span class="muted" style="font-size: 12px">Clique numa etapa para abrir o painel dela</span></div>
+    <div class="noscroll" style="display: flex; align-items: flex-start; overflow-x: auto">
+      <sc-for list="{{nodes}}" as="n" hint-placeholder-count="9">
+        <div style="display: flex; align-items: flex-start; flex: {{n.flex}}; min-width: 0">
+          <sc-if value="{{n.hasLine}}" hint-placeholder-val="{{true}}"><div style="flex: 1; min-width: 8px; height: 2px; margin-top: 21px; background: {{n.line}}; position: relative"><sc-if value="{{n.flow}}" hint-placeholder-val="{{false}}"><i style="position: absolute; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--warning); animation: flowdot 1.8s linear infinite"></i></sc-if></div></sc-if>
+          <button onClick="{{n.pick}}" aria-pressed="{{n.pressed}}" style="flex: none; width: 84px; display: flex; flex-direction: column; align-items: center; gap: 6px; background: transparent; border: 0; color: inherit; padding: 0 0 8px; text-align: center; position: relative">
+            <span style="width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: {{n.bg}}; color: {{n.fg}}; border: 2px solid {{n.bd}}; box-shadow: {{n.sh}}; animation: {{n.anim}}; transition: all 220ms var(--ease)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{n.icon}}"></path></svg></span>
+            <b style="font-size: 12px; color: {{n.tc}}; white-space: nowrap">{{n.label}}</b>
+            <span class="mono" style="font-size: 10px; color: var(--text-muted); white-space: nowrap">{{n.meta}}</span>
+            <i style="position: absolute; bottom: 0; left: 22px; right: 22px; height: 3px; border-radius: 3px; background: {{n.under}}; transition: background 200ms var(--ease)"></i>
+          </button>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- painel da etapa -->
+  <section class="card" style="overflow: hidden; animation: fade 200ms var(--ease) both">
+    <div style="padding: 18px 20px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap">
+      <span style="width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; background: {{sel.ibg}}; color: {{sel.ifg}}; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{sel.icon}}"></path></svg></span>
+      <div class="grow" style="min-width: 200px"><div class="eyebrow">Etapa {{sel.n}} de 09 · {{sel.state}}</div><h2 style="font-size: 22px; font-weight: 600; letter-spacing: -.02em; margin-top: 4px">{{sel.label}}</h2></div>
+      <div style="display: flex; gap: 10px; align-items: center"><span class="av {{sel.busy}}" style="width: 34px; height: 34px; font-size: 10px">{{sel.ini}}</span><div><b style="font-size: 13px">{{sel.owner}}</b><div class="muted" style="font-size: 11.5px">{{sel.role}}</div></div></div>
+      <div style="display: flex; gap: 18px; padding: 0 18px; border-left: 1px solid var(--line); border-right: 1px solid var(--line)">
+        <div><div class="eyebrow" style="font-size: 9.5px">Duração</div><div class="num" style="font-size: 14px; margin-top: 3px">{{sel.dur}}</div></div>
+        <div><div class="eyebrow" style="font-size: 9.5px">Custo</div><div class="num" style="font-size: 14px; margin-top: 3px">{{sel.cost}}</div></div>
+        <div><div class="eyebrow" style="font-size: 9.5px">Arquivos</div><div class="num" style="font-size: 14px; margin-top: 3px">{{sel.fileN}}</div></div>
+      </div>
+      <button class="btn sm secondary" onClick="{{redoSel}}" disabled="{{sel.locked}}">Refazer etapa</button>
+    </div>
+    <sc-if value="{{sel.waiting}}" hint-placeholder-val="{{false}}"><div style="margin: 0 20px 14px; padding: 10px 14px; border-radius: 10px; background: var(--surface-0); border: 1px dashed var(--line-strong); font-size: 13px" class="sec">Esta etapa começa quando <b style="color: var(--text-primary)">{{sel.prev}}</b> fechar. O que aparece abaixo é o plano dela.</div></sc-if>
+    <div class="tabs" style="padding: 0 12px"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.hasN}}" hint-placeholder-val="{{false}}"><span class="badge {{t.ncls}}" style="height: 18px; padding: 0 7px">{{t.n}}</span></sc-if></button></sc-for></div>
+  </section>
+
+  <!-- RESUMO -->
+  <sc-if value="{{t.resumo}}" hint-placeholder-val="{{false}}">
+    <div class="g4"><sc-for list="{{rs.facts}}" as="f" hint-placeholder-count="4"><div class="card" style="padding: 16px 18px"><div class="eyebrow" style="font-size: 10px">{{f.k}}</div><div style="font-size: 15px; font-weight: 600; margin-top: 6px; line-height: 1.35">{{f.v}}</div></div></sc-for></div>
+    <section class="card"><div class="card-h"><h3>{{rs.title}}</h3></div><div class="rows"><sc-for list="{{rs.items}}" as="i" hint-placeholder-count="3"><div class="row" style="cursor: default; align-items: flex-start; flex-direction: column; gap: 4px"><b style="font-size: 14px">{{i.q}}</b><span class="sec" style="font-size: 13px">{{i.a}}</span></div></sc-for></div></section>
+  </sc-if>
+
+  <!-- CONCORRENTES -->
+  <sc-if value="{{t.concorrentes}}" hint-placeholder-val="{{false}}">
+    <div class="card" style="overflow-x: auto"><table class="tbl"><thead><tr><th>Concorrente</th><th>Promessa na hero</th><th>Problema</th><th>Espaço para a Meridian</th></tr></thead><tbody><sc-for list="{{comps}}" as="c" hint-placeholder-count="5"><tr><td><b>{{c.n}}</b></td><td class="sec">“{{c.h}}”</td><td><span class="badge {{c.cls}}">{{c.p}}</span></td><td class="sec">{{c.e}}</td></tr></sc-for></tbody></table></div>
+  </sc-if>
+
+  <!-- CLAIMS -->
+  <sc-if value="{{t.claims}}" hint-placeholder-val="{{false}}">
+    <div class="card" style="overflow-x: auto"><table class="tbl"><thead><tr><th>Claim</th><th>Pode usar</th><th>Fonte</th></tr></thead><tbody><sc-for list="{{claims}}" as="c" hint-placeholder-count="5"><tr><td><b>{{c.c}}</b></td><td><span class="badge {{c.cls}}"><i></i>{{c.ok}}</span></td><td class="mono muted" style="font-size: 12px">{{c.f}}</td></tr></sc-for></tbody></table></div>
+  </sc-if>
+
+  <!-- ARQUITETURA -->
+  <sc-if value="{{t.arq}}" hint-placeholder-val="{{false}}">
+    <section class="card pad" style="display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; align-items: stretch; gap: 0; flex-wrap: wrap">
+        <sc-for list="{{arch}}" as="a" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; flex: 1 1 180px">
+            <sc-if value="{{a.hasArrow}}" hint-placeholder-val="{{true}}"><div style="width: 34px; flex: none; display: grid; place-items: center; color: var(--flow)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div></sc-if>
+            <div style="flex: 1; padding: 16px; border-radius: 14px; border: 1px solid {{a.bd}}; background: {{a.bg}}; display: flex; flex-direction: column; gap: 6px; min-height: 110px"><span class="eyebrow" style="font-size: 10px">{{a.k}}</span><b style="font-size: 15px">{{a.t}}</b><span class="muted" style="font-size: 12px">{{a.d}}</span></div>
+          </div>
+        </sc-for>
+      </div>
+      <div><span class="eyebrow">Seções da página</span><div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px"><sc-for list="{{sections}}" as="x" hint-placeholder-count="5"><span class="badge flow">{{x.n}} · {{x.t}}</span></sc-for></div></div>
+    </section>
+  </sc-if>
+
+  <!-- DECISÕES TÉCNICAS -->
+  <sc-if value="{{t.decisoes}}" hint-placeholder-val="{{false}}">
+    <section class="card"><div class="rows"><sc-for list="{{techs}}" as="d" hint-placeholder-count="3"><div class="row" style="cursor: default; align-items: flex-start"><span style="width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><div class="grow"><div class="t" style="font-size: 14px">{{d.t}}</div><div class="m">{{d.w}}</div></div><span class="mono muted" style="font-size: 11px">{{d.s}}</span></div></sc-for></div></section>
+  </sc-if>
+
+  <!-- PRÉVIA (Construção) -->
+  <sc-if value="{{t.preview}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><div class="segs"><sc-for list="{{vps}}" as="o" hint-placeholder-count="2"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><div class="grow"></div><span class="muted" style="font-size: 12px">Site do cliente gerado do branch atual · {{prevNote}}</span></div>
+    <div class="card" style="overflow: hidden; background: var(--surface-0)">
+      <div style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2)"><i style="width: 10px; height: 10px; border-radius: 50%; background: var(--line-strong)"></i><i style="width: 10px; height: 10px; border-radius: 50%; background: var(--line-strong)"></i><i style="width: 10px; height: 10px; border-radius: 50%; background: var(--line-strong)"></i><span class="mono" style="margin-left: 10px; font-size: 11px; padding: 4px 12px; border-radius: 999px; background: var(--surface-0); border: 1px solid var(--line); color: var(--text-secondary)">preview.meridian.tavir.local · {{vpLabel}}</span><div class="grow"></div><span class="badge {{prevBadgeCls}}">{{prevBadge}}</span></div>
+      <div style="padding: 24px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; align-items: flex-start">
+        <sc-if value="{{isDesk}}" hint-placeholder-val="{{true}}">
+          <div style="width: 100%; max-width: 760px; background: #f6f3ee; color: #13233d; border-radius: 8px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.18); font-family: Georgia, 'Times New Roman', serif; animation: fade 240ms var(--ease) both">
+            <div style="display: flex; align-items: center; gap: 22px; padding: 16px 26px; border-bottom: 1px solid rgba(19,35,61,.12); font-family: var(--font-body)"><b style="letter-spacing: .28em; font-size: 13px">MERIDIAN</b><div style="flex: 1"></div><span style="font-size: 12px">Serviços</span><span style="font-size: 12px">Método</span><span style="font-size: 12px">Time</span><span style="font-size: 11px; padding: 7px 12px; border-radius: 999px; background: #13233d; color: #f6f3ee">Fale com um consultor</span></div>
+            <div style="display: flex; gap: 24px; padding: 34px 26px; align-items: center"><div style="flex: 1.2"><span style="font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; color: #8a6b3e">GESTÃO PATRIMONIAL</span><h2 style="font-size: 30px; line-height: 1.1; margin-top: 10px; font-weight: 600">Patrimônio com método, não com promessa.</h2><p style="font-family: var(--font-body); font-size: 13px; color: #44526a; margin-top: 10px">Planejamento, sucessão e investimento para famílias que preferem critério a palpite.</p><span style="display: inline-block; margin-top: 14px; font-family: var(--font-body); font-size: 12px; padding: 9px 16px; border-radius: 999px; background: #13233d; color: #f6f3ee">Agendar conversa</span></div><div style="flex: 1; height: 170px; border-radius: 6px; background: #dfd7c9; display: grid; place-items: center; font-family: var(--font-mono); font-size: 10px; color: #6d6253">foto do time · aguarda cliente</div></div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 0 26px 26px; font-family: var(--font-body)"><sc-for list="{{services}}" as="x" hint-placeholder-count="3"><div style="padding: 14px; border-radius: 6px; background: #fff; border: 1px solid rgba(19,35,61,.1)"><b style="font-size: 13px">{{x.t}}</b><p style="font-size: 11.5px; color: #5b6880; margin-top: 4px">{{x.d}}</p></div></sc-for></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{isMob}}" hint-placeholder-val="{{false}}">
+          <div style="width: 300px; height: 540px; border-radius: 28px; padding: 10px; background: #070d18; box-shadow: 0 10px 30px rgba(0,0,0,.25); animation: fade 240ms var(--ease) both; flex: none">
+            <div style="width: 100%; height: 100%; border-radius: 20px; overflow: hidden; background: #f6f3ee; color: #13233d; font-family: Georgia, 'Times New Roman', serif; position: relative">
+              <sc-if value="{{broken}}" hint-placeholder-val="{{true}}">
+                <div style="padding: 14px 16px; font-family: var(--font-body); display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; background: rgba(246,243,238,.92); position: relative; z-index: 2"><b style="letter-spacing: .24em; font-size: 12px; width: 100%">MERIDIAN</b><span style="font-size: 12px">Serviços</span><span style="font-size: 12px">Método</span><span style="font-size: 12px">Time</span><span style="font-size: 10.5px; padding: 6px 10px; border-radius: 999px; background: #13233d; color: #f6f3ee">Fale com um consultor</span></div>
+                <div style="padding: 0 16px; margin-top: -26px; position: relative; z-index: 1"><span style="font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; color: #8a6b3e">GESTÃO PATRIMONIAL</span><h2 style="font-size: 30px; line-height: 1.05; margin-top: 6px; font-weight: 600">Patrimônio com método, não com promessa.</h2><p style="font-family: var(--font-body); font-size: 12px; color: #44526a; margin-top: 8px">Planejamento, sucessão e investimento para famílias que preferem critério a palpite.</p></div>
+                <div style="position: absolute; top: 74px; right: 14px; z-index: 3; width: 26px; height: 26px; border-radius: 50%; background: oklch(.635 .185 27); color: #fff; display: grid; place-items: center; font-family: var(--font-mono); font-size: 12px; box-shadow: 0 0 0 4px rgba(225,91,74,.25)">1</div>
+                <div style="position: absolute; top: 60px; left: 10px; right: 46px; height: 64px; border: 2px dashed oklch(.635 .185 27); border-radius: 8px; z-index: 3"></div>
+              </sc-if>
+              <sc-if value="{{fixedView}}" hint-placeholder-val="{{false}}">
+                <div style="padding: 14px 16px; font-family: var(--font-body); display: flex; align-items: center; border-bottom: 1px solid rgba(19,35,61,.1)"><b style="letter-spacing: .24em; font-size: 12px">MERIDIAN</b><div style="flex: 1"></div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#13233d" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></div>
+                <div style="padding: 22px 16px; animation: fade 300ms var(--ease) both"><span style="font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; color: #8a6b3e">GESTÃO PATRIMONIAL</span><h2 style="font-size: 26px; line-height: 1.1; margin-top: 8px; font-weight: 600">Patrimônio com método, não com promessa.</h2><p style="font-family: var(--font-body); font-size: 12px; color: #44526a; margin-top: 10px">Planejamento, sucessão e investimento com critério.</p><span style="display: inline-block; margin-top: 14px; font-family: var(--font-body); font-size: 12px; padding: 9px 16px; border-radius: 999px; background: #13233d; color: #f6f3ee">Agendar conversa</span><div style="margin-top: 18px; height: 150px; border-radius: 6px; background: #dfd7c9; display: grid; place-items: center; font-family: var(--font-mono); font-size: 10px; color: #6d6253">foto do time</div></div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="flex: 1 1 240px; max-width: 320px; display: flex; flex-direction: column; gap: 12px">
+            <div class="card" style="padding: 14px; display: flex; flex-direction: column; gap: 8px; border-color: {{annBd}}">
+              <div style="display: flex; gap: 8px; align-items: center"><span style="width: 22px; height: 22px; border-radius: 50%; background: {{annDot}}; color: #fff; display: grid; place-items: center; font-family: var(--font-mono); font-size: 11px">1</span><b style="font-size: 13px">Yuri UX · 14:22</b><div class="grow"></div><span class="badge {{annCls}}">{{annState}}</span></div>
+              <p style="font-size: 13px" class="sec">A hero compete com o menu em 390 px. Os links quebram em duas linhas e cobrem o título.</p>
+              <div class="bubble ag" style="max-width: 100%; font-size: 13px; padding: 10px 12px"><div class="eyebrow" style="font-size: 10px; margin-bottom: 4px">Vitor Construtor</div>Ajuste pronto no branch hero-390: menu vira ícone abaixo de 768 px.</div>
+            </div>
+            <sc-if value="{{broken}}" hint-placeholder-val="{{true}}"><button class="btn primary" onClick="{{applyFix}}" disabled="{{fixing}}">{{fixLabel}}</button></sc-if>
+            <sc-if value="{{fixedView}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 12px 14px; display: flex; gap: 10px; align-items: center; font-size: 13px; background: var(--flow-subtle); border-color: var(--flow-subtle-line)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg><span>Prova em 390 px aprovada. Critério marcado no Guard do QA.</span></div><button class="btn secondary" onClick="{{toGuard}}">Voltar para o Guard do QA</button></sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- BUILD -->
+  <sc-if value="{{t.build}}" hint-placeholder-val="{{false}}">
+    <div class="g4"><sc-for list="{{buildStats}}" as="b" hint-placeholder-count="4"><div class="metric"><span class="eyebrow">{{b.k}}</span><strong style="font-size: 24px; color: {{b.c}}">{{b.v}}</strong><small>{{b.n}}</small></div></sc-for></div>
+    <section class="ink" style="border-radius: 14px; overflow: hidden">
+      <div style="display: flex; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--on-ink-line)"><span class="mono" style="font-size: 12px">build.log</span><div class="grow"></div><button class="btn sm onink-sec" onClick="{{openBuildLog}}">Abrir no visualizador</button></div>
+      <div class="log" style="max-height: none"><sc-for list="{{buildLog}}" as="l" hint-placeholder-count="4"><div><span class="ts">{{l.ts}}</span><span class="{{l.cls}}">{{l.t}}</span></div></sc-for></div>
+    </section>
+  </sc-if>
+
+  <!-- COMPLETION GUARD -->
+  <sc-if value="{{t.guard}}" hint-placeholder-val="{{true}}">
+    <div class="card" style="padding: 16px 18px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap">
+      <div style="width: 64px; height: 64px; border-radius: 50%; background: conic-gradient({{guardColor}} 0 {{guardPct}}%, var(--line) 0); display: grid; place-items: center; flex: none"><div style="width: 50px; height: 50px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center"><span class="num" style="font-size: 13px">{{guardN}}/{{guardT}}</span></div></div>
+      <div class="grow" style="min-width: 220px"><b style="font-size: 16px">{{guardTitle}}</b><p class="sec" style="font-size: 13px; margin-top: 2px">{{guardNote}}</p></div>
+      <button class="btn primary" onClick="{{sign}}" disabled="{{guardBlocked}}">{{signLabel}}</button>
+    </div>
+    <div class="g2">
+      <sc-for list="{{guardGroups}}" as="g" hint-placeholder-count="4">
+        <section class="card">
+          <div class="card-h"><h3>{{g.label}}</h3><div class="grow"></div><span class="num muted" style="font-size: 12px">{{g.ok}} de {{g.n}}</span></div>
+          <div class="rows">
+            <sc-for list="{{g.items}}" as="i" hint-placeholder-count="2">
+              <div class="row" style="cursor: default">
+                <span style="width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: {{i.bg}}; color: {{i.fg}}; flex: none"><sc-if value="{{i.spin}}" hint-placeholder-val="{{false}}"><i class="spin" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow)"></i></sc-if><sc-if value="{{i.still}}" hint-placeholder-val="{{true}}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{i.icon}}"></path></svg></sc-if></span>
+                <div class="grow"><div class="t" style="font-size: 14px">{{i.t}}</div><div class="m">{{i.m}}</div></div>
+                <sc-if value="{{i.hasEv}}" hint-placeholder-val="{{false}}"><button class="link" style="font-size: 12px" onClick="{{i.openEv}}">evidência</button></sc-if>
+                <sc-if value="{{i.hasAct}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{i.act}}" disabled="{{i.spin}}">{{i.actLabel}}</button></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- CHECKLIST (Security, SEO) -->
+  <sc-if value="{{t.checklist}}" hint-placeholder-val="{{false}}">
+    <section class="card"><div class="rows"><sc-for list="{{checklist}}" as="i" hint-placeholder-count="4"><div class="row" style="cursor: default"><span style="width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: {{i.bg}}; flex: none"><sc-if value="{{i.spin}}" hint-placeholder-val="{{false}}"><i class="spin" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow)"></i></sc-if></span><div class="grow"><div class="t" style="font-size: 14px">{{i.t}}</div><div class="m">{{i.m}}</div></div><span class="badge {{i.cls}}">{{i.st}}</span></div></sc-for></div></section>
+  </sc-if>
+
+  <!-- PACOTE -->
+  <sc-if value="{{t.pacote}}" hint-placeholder-val="{{false}}">
+    <section class="card"><div class="rows"><sc-for list="{{pacote}}" as="i" hint-placeholder-count="5"><div class="row" style="cursor: default"><span class="num muted" style="font-size: 12px; width: 24px">{{i.n}}</span><div class="grow"><div class="t" style="font-size: 14px">{{i.t}}</div><div class="m">{{i.m}}</div></div><span class="badge">aguardando</span></div></sc-for></div></section>
+  </sc-if>
+
+  <!-- ARQUIVOS -->
+  <sc-if value="{{t.files}}" hint-placeholder-val="{{false}}">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 14px">
+      <sc-for list="{{stageFiles}}" as="f" hint-placeholder-count="4">
+        <button class="card lift" onClick="{{f.open}}" style="padding: 12px; display: flex; flex-direction: column; gap: 10px; text-align: left; color: inherit; width: 100%">
+          <div style="height: 120px; border-radius: 10px; overflow: hidden; position: relative; background: {{f.thumbBg}}; border: 1px solid var(--line)">
+            <sc-if value="{{f.isImg}}" hint-placeholder-val="{{false}}"><div style="position: absolute; inset: 10px; border-radius: 6px; background: {{f.imgPaper}}; display: flex; flex-direction: column; gap: 6px; padding: 8px"><i style="height: 6px; width: 40%; border-radius: 3px; background: {{f.imgInk}}"></i><i style="height: 12px; width: 80%; border-radius: 3px; background: {{f.imgInk}}; opacity: .8"></i><i style="height: 6px; width: 60%; border-radius: 3px; background: {{f.imgInk}}; opacity: .4"></i><i style="flex: 1; border-radius: 4px; background: {{f.imgInk}}; opacity: .12"></i></div></sc-if>
+            <sc-if value="{{f.isText}}" hint-placeholder-val="{{true}}"><pre class="mono" style="margin: 0; padding: 10px 12px; font-size: 10px; line-height: 1.6; color: var(--text-secondary); white-space: pre; overflow: hidden">{{f.snip}}</pre></sc-if>
+            <span class="mono" style="position: absolute; right: 8px; bottom: 8px; font-size: 10px; padding: 2px 7px; border-radius: 6px; background: var(--surface-ink); color: #1BC5BD">{{f.ext}}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px"><b style="font-size: 13.5px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{f.name}}</b><sc-if value="{{f.dirty}}" hint-placeholder-val="{{false}}"><span class="badge warn">não salvo</span></sc-if></div>
+          <span class="muted" style="font-size: 11.5px">{{f.meta}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- LIVRO-RAZÃO -->
+  <sc-if value="{{t.ledger}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><div class="segs"><sc-for list="{{lfs}}" as="f" hint-placeholder-count="3"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div><div class="grow"></div><button class="btn sm secondary" onClick="{{download}}">Exportar JSON</button></div>
+    <section class="card" style="padding: 6px 18px">
+      <sc-for list="{{ledger}}" as="e" hint-placeholder-count="6">
+        <div style="display: flex; gap: 14px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--line); animation: fade 260ms var(--ease) both">
+          <span class="num muted" style="font-size: 12px; width: 44px; flex: none; padding-top: 2px">{{e.t}}</span>
+          <span style="width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: {{e.bg}}; color: {{e.fg}}; flex: none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{e.icon}}"></path></svg></span>
+          <div class="grow"><div style="font-size: 14px; font-weight: 600">{{e.x}}</div><div class="muted" style="font-size: 12px; margin-top: 2px">{{e.w}} · {{e.st}}</div></div>
+          <span class="num muted" style="font-size: 12px">{{e.c}}</span>
+        </div>
+      </sc-for>
+      <sc-if value="{{ledgerEmpty}}" hint-placeholder-val="{{false}}"><p class="muted" style="padding: 18px 0; font-size: 13px">Nada registrado nesta etapa ainda.</p></sc-if>
+    </section>
+  </sc-if>
+</div>
+
+<!-- botão flutuante do chat -->
+<sc-if value="{{chatClosed}}" hint-placeholder-val="{{true}}">
+  <button onClick="{{openChat}}" aria-label="Abrir chat do projeto" style="position: fixed; right: 28px; bottom: 28px; z-index: 45; width: 60px; height: 60px; border-radius: 50%; border: 1px solid rgba(27,197,189,.45); background: #0B1220; color: #1BC5BD; display: grid; place-items: center; box-shadow: 0 14px 40px rgba(0,0,0,.35); animation: rise 260ms var(--ease) both">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14v11H9l-4 3z"></path></svg>
+    <sc-if value="{{hasUnread}}" hint-placeholder-val="{{true}}"><span class="mono" style="position: absolute; top: -3px; right: -3px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 999px; background: #B7F34A; color: #25360a; font-size: 11px; display: grid; place-items: center; border: 2px solid var(--surface-0)">{{unread}}</span></sc-if>
+  </button>
+</sc-if>
+<sc-if value="{{chatOpen}}" hint-placeholder-val="{{false}}">
+  <section role="dialog" aria-label="Chat do projeto" style="position: fixed; right: 28px; bottom: 28px; z-index: 46; width: min(400px, calc(100vw - 32px)); height: min(560px, calc(100vh - 120px)); display: flex; flex-direction: column; background: var(--surface-1); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-elevated); overflow: hidden; animation: rise 220ms var(--ease) both">
+    <div class="ink" style="border-radius: 0; border: 0; padding: 14px 16px; display: flex; gap: 12px; align-items: center">
+      <div style="display: flex"><sc-for list="{{chatPeople}}" as="p" hint-placeholder-count="3"><span class="av" style="width: 28px; height: 28px; font-size: 9px; margin-right: -8px; border: 2px solid #0B1220">{{p.i}}</span></sc-for></div>
+      <div class="grow" style="padding-left: 6px"><b style="font-size: 14px">Chat do projeto</b><div style="font-size: 12px; color: var(--on-ink-muted)">Meridian · 4 participantes</div></div>
+      <button class="ibtn sm" onClick="{{closeChat}}" aria-label="Fechar chat" style="border-color: var(--on-ink-line); color: var(--on-ink-muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+    </div>
+    <div style="padding: 8px 14px; border-bottom: 1px solid var(--line); display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span class="eyebrow" style="font-size: 10px">Contexto</span><span class="badge flow">etapa {{sel.label}}</span><span class="badge warn">não reabre a esteira</span></div>
+    <div style="flex: 1; overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{msgs}}" as="m" hint-placeholder-count="3"><div class="bubble {{m.cls}}" style="font-size: 13px; max-width: 86%"><div class="eyebrow" style="font-size: 9.5px; margin-bottom: 4px">{{m.who}}</div>{{m.t}}</div></sc-for>
+      <sc-if value="{{typing}}" hint-placeholder-val="{{false}}"><div class="typing"><i></i><i></i><i></i></div></sc-if>
+    </div>
+    <div style="padding: 10px 14px 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px">
+      <div class="segs noscroll" style="flex-wrap: nowrap; overflow-x: auto"><sc-for list="{{sugs}}" as="g" hint-placeholder-count="3"><button class="seg" onClick="{{g.pick}}" style="height: 28px; font-size: 12px; white-space: nowrap; flex: none">{{g.t}}</button></sc-for></div>
+      <form onSubmit="{{send}}" style="display: flex; gap: 8px"><input class="input" style="border-radius: 999px; height: 40px" value="{{draft}}" onChange="{{onDraft}}" placeholder="Pedido para a esteira" aria-label="Pedido para a esteira"><button type="submit" class="ibtn" aria-label="Enviar" style="background: var(--action-bg); color: var(--action-fg); border: 0; flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 20 4l-6 16-3-7z"></path></svg></button></form>
+    </div>
+  </section>
+</sc-if>
+
+<!-- visualizador de arquivos -->
+<sc-if value="{{vw.open}}" hint-placeholder-val="{{false}}">
+<div class="back" onClick="{{vwBack}}" onKeyDown="{{vwKey}}" style="padding: 3vh 3vw; align-items: stretch; z-index: 60">
+  <div role="dialog" aria-modal="true" aria-label="Visualizador de arquivo" style="flex: 1; max-width: 1280px; margin: 0 auto; background: var(--surface-1); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-elevated); display: flex; flex-direction: column; overflow: hidden; animation: rise 240ms var(--ease) both">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap">
+      <span class="mono" style="font-size: 11px; padding: 6px 9px; border-radius: 8px; background: var(--surface-ink); color: #1BC5BD">{{vw.ext}}</span>
+      <div style="min-width: 0"><b style="font-size: 15px">{{vw.name}}</b><div class="mono muted" style="font-size: 11px">{{vw.path}} · {{vw.by}} · v{{vw.ver}}</div></div>
+      <sc-if value="{{vw.dirty}}" hint-placeholder-val="{{false}}"><span class="badge warn">alterações não salvas</span></sc-if>
+      <sc-if value="{{vw.ro}}" hint-placeholder-val="{{false}}"><span class="badge">somente leitura</span></sc-if>
+      <div class="grow"></div>
+      <sc-if value="{{vw.hasModes}}" hint-placeholder-val="{{true}}"><div class="segs"><sc-for list="{{vw.modes}}" as="o" hint-placeholder-count="3"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></sc-if>
+      <sc-if value="{{vw.isImg}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; gap: 6px; align-items: center"><button class="ibtn sm" onClick="{{vw.zoomOut}}" aria-label="Diminuir zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button><span class="num" style="font-size: 12px; width: 44px; text-align: center">{{vw.zoomLabel}}</span><button class="ibtn sm" onClick="{{vw.zoomIn}}" aria-label="Aumentar zoom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button><button class="btn sm ghost" onClick="{{vw.zoomReset}}">100%</button></div>
+        <div class="segs"><sc-for list="{{vw.bgs}}" as="o" hint-placeholder-count="3"><button class="seg {{o.on}}" onClick="{{o.pick}}" style="height: 28px; font-size: 12px">{{o.label}}</button></sc-for></div>
+      </sc-if>
+      <button class="ibtn sm" onClick="{{closeViewer}}" aria-label="Fechar visualizador"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+    </div>
+
+    <div style="flex: 1; min-height: 0; overflow: auto; display: flex">
+      <!-- imagem -->
+      <sc-if value="{{vw.isImg}}" hint-placeholder-val="{{false}}">
+        <div style="flex: 1; display: grid; place-items: center; padding: 40px; background: {{vw.stageBg}}; overflow: auto">
+          <div style="transform: scale({{vw.zoom}}); transform-origin: center; transition: transform 200ms var(--ease)">
+            <sc-if value="{{vw.imgDesk}}" hint-placeholder-val="{{true}}">
+              <div style="width: 760px; background: #f6f3ee; color: #13233d; border-radius: 6px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.25); font-family: Georgia, 'Times New Roman', serif">
+                <div style="display: flex; align-items: center; gap: 22px; padding: 16px 26px; border-bottom: 1px solid rgba(19,35,61,.12); font-family: var(--font-body)"><b style="letter-spacing: .28em; font-size: 13px">MERIDIAN</b><div style="flex: 1"></div><span style="font-size: 12px">Serviços</span><span style="font-size: 12px">Método</span><span style="font-size: 12px">Time</span><span style="font-size: 11px; padding: 7px 12px; border-radius: 999px; background: #13233d; color: #f6f3ee">Fale com um consultor</span></div>
+                <div style="display: flex; gap: 24px; padding: 34px 26px; align-items: center"><div style="flex: 1.2"><span style="font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; color: #8a6b3e">GESTÃO PATRIMONIAL</span><h2 style="font-size: 30px; line-height: 1.1; margin-top: 10px; font-weight: 600">Patrimônio com método, não com promessa.</h2><p style="font-family: var(--font-body); font-size: 13px; color: #44526a; margin-top: 10px">Planejamento, sucessão e investimento para famílias que preferem critério a palpite.</p></div><div style="flex: 1; height: 170px; border-radius: 6px; background: #dfd7c9"></div></div>
+                <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 0 26px 26px; font-family: var(--font-body)"><sc-for list="{{services}}" as="x" hint-placeholder-count="3"><div style="padding: 14px; border-radius: 6px; background: #fff; border: 1px solid rgba(19,35,61,.1)"><b style="font-size: 13px">{{x.t}}</b><p style="font-size: 11.5px; color: #5b6880; margin-top: 4px">{{x.d}}</p></div></sc-for></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{vw.imgMob}}" hint-placeholder-val="{{false}}">
+              <div style="width: 300px; height: 560px; border-radius: 28px; padding: 10px; background: #070d18; box-shadow: 0 10px 30px rgba(0,0,0,.3)"><div style="width: 100%; height: 100%; border-radius: 20px; overflow: hidden; background: #f6f3ee; color: #13233d; font-family: Georgia, 'Times New Roman', serif; position: relative">
+                <sc-if value="{{broken}}" hint-placeholder-val="{{true}}"><div style="padding: 14px 16px; font-family: var(--font-body); display: flex; flex-wrap: wrap; gap: 6px 12px; position: relative; z-index: 2; background: rgba(246,243,238,.92)"><b style="letter-spacing: .24em; font-size: 12px; width: 100%">MERIDIAN</b><span style="font-size: 12px">Serviços</span><span style="font-size: 12px">Método</span><span style="font-size: 12px">Time</span><span style="font-size: 10.5px; padding: 6px 10px; border-radius: 999px; background: #13233d; color: #f6f3ee">Fale com um consultor</span></div><div style="padding: 0 16px; margin-top: -26px; position: relative"><h2 style="font-size: 30px; line-height: 1.05; margin-top: 6px; font-weight: 600">Patrimônio com método, não com promessa.</h2></div><div style="position: absolute; top: 60px; left: 10px; right: 10px; height: 64px; border: 2px dashed oklch(.635 .185 27); border-radius: 8px; z-index: 3"></div></sc-if>
+                <sc-if value="{{fixedView}}" hint-placeholder-val="{{false}}"><div style="padding: 14px 16px; font-family: var(--font-body); display: flex; align-items: center; border-bottom: 1px solid rgba(19,35,61,.1)"><b style="letter-spacing: .24em; font-size: 12px">MERIDIAN</b><div style="flex: 1"></div><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#13233d" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></div><div style="padding: 22px 16px"><h2 style="font-size: 26px; line-height: 1.1; font-weight: 600">Patrimônio com método, não com promessa.</h2><div style="margin-top: 18px; height: 150px; border-radius: 6px; background: #dfd7c9"></div></div></sc-if>
+              </div></div>
+            </sc-if>
+            <sc-if value="{{vw.imgComp}}" hint-placeholder-val="{{false}}">
+              <div style="width: 720px; background: #ffffff; color: #1f2937; border-radius: 6px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.25); font-family: Arial, sans-serif; position: relative">
+                <div style="display: flex; align-items: center; padding: 14px 24px; background: #1f2937; color: #fff"><b style="letter-spacing: .2em; font-size: 13px">PATRIMONIA</b><div style="flex: 1"></div><span style="font-size: 12px">Abra sua conta</span></div>
+                <div style="padding: 40px 24px; background: #f3f4f6"><h2 style="font-size: 34px; line-height: 1.1; font-weight: 700">Rentabilidade acima do CDI, garantida.</h2><p style="font-size: 14px; color: #4b5563; margin-top: 10px">Invista com quem mais rende no mercado.</p></div>
+                <div style="position: absolute; top: 76px; right: 20px; padding: 6px 10px; border-radius: 8px; background: oklch(.635 .185 27); color: #fff; font-family: var(--font-mono); font-size: 11px">claim proibido · CVM 175</div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- editor de texto -->
+      <sc-if value="{{vw.showEditor}}" hint-placeholder-val="{{false}}">
+        <div style="flex: 1; min-width: 0; display: flex; font-family: var(--font-mono); font-size: 12.5px; line-height: 21px; background: var(--surface-0); border-right: {{vw.splitBorder}}">
+          <div aria-hidden="true" style="padding: 16px 12px 16px 18px; text-align: right; color: var(--text-muted); user-select: none; border-right: 1px solid var(--line); min-width: 52px"><sc-for list="{{vw.nums}}" as="n" hint-placeholder-count="12"><div>{{n.n}}</div></sc-for></div>
+          <textarea value="{{vw.text}}" onChange="{{vw.onText}}" rows="{{vw.rows}}" wrap="off" spellcheck="false" aria-label="Conteúdo de {{vw.name}}" style="flex: 1; min-width: 0; border: 0; outline: none; resize: none; background: transparent; color: var(--text-primary); font: inherit; line-height: 21px; padding: 16px 18px; white-space: pre; overflow-x: auto; overflow-y: hidden; caret-color: var(--flow)"></textarea>
+        </div>
+      </sc-if>
+
+      <!-- markdown renderizado -->
+      <sc-if value="{{vw.showMd}}" hint-placeholder-val="{{false}}">
+        <article style="flex: 1; min-width: 0; padding: 36px 48px; max-width: 820px; margin: 0 auto">
+          <sc-for list="{{vw.blocks}}" as="b" hint-placeholder-count="8">
+            <sc-if value="{{b.h1}}" hint-placeholder-val="{{false}}"><h1 style="font-size: 28px; font-weight: 600; letter-spacing: -.03em; margin: 0 0 14px; line-height: 1.15">{{b.text}}</h1></sc-if>
+            <sc-if value="{{b.h2}}" hint-placeholder-val="{{false}}"><h2 style="font-size: 17px; font-weight: 600; margin: 22px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line)">{{b.text}}</h2></sc-if>
+            <sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="sec" style="font-size: 15px; line-height: 1.7; margin: 0 0 10px">{{b.text}}</p></sc-if>
+            <sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 10px; font-size: 15px; line-height: 1.65; padding: 2px 0"><span style="color: var(--flow); flex: none">•</span><span>{{b.text}}</span></div></sc-if>
+            <sc-if value="{{b.task}}" hint-placeholder-val="{{false}}"><button onClick="{{b.toggle}}" style="display: flex; gap: 10px; align-items: center; width: 100%; padding: 5px 0; border: 0; background: transparent; color: inherit; text-align: left; font-size: 15px"><span style="width: 18px; height: 18px; border-radius: 5px; border: 2px solid {{b.bd}}; background: {{b.bg}}; color: var(--surface-1); display: grid; place-items: center; flex: none"><sc-if value="{{b.checked}}" hint-placeholder-val="{{false}}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></sc-if></span><span style="text-decoration: {{b.deco}}; color: {{b.tc}}">{{b.text}}</span></button></sc-if>
+            <sc-if value="{{b.quote}}" hint-placeholder-val="{{false}}"><div style="margin: 12px 0; padding: 12px 16px; border-radius: 10px; background: var(--flow-subtle); font-size: 14px">{{b.text}}</div></sc-if>
+          </sc-for>
+        </article>
+      </sc-if>
+
+      <!-- tabela csv -->
+      <sc-if value="{{vw.showTable}}" hint-placeholder-val="{{false}}">
+        <div style="flex: 1; padding: 24px; overflow: auto"><div class="card" style="overflow-x: auto"><table class="tbl"><thead><tr><sc-for list="{{vw.head}}" as="h" hint-placeholder-count="3"><th>{{h.t}}</th></sc-for></tr></thead><tbody><sc-for list="{{vw.trows}}" as="r" hint-placeholder-count="3"><tr><sc-for list="{{r.cells}}" as="c" hint-placeholder-count="3"><td>{{c.t}}</td></sc-for></tr></sc-for></tbody></table></div></div>
+      </sc-if>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--line); flex-wrap: wrap">
+      <span class="mono muted" style="font-size: 11px">{{vw.status}}</span>
+      <sc-if value="{{vw.hasValid}}" hint-placeholder-val="{{false}}"><span class="badge {{vw.validCls}}">{{vw.valid}}</span></sc-if>
+      <div class="grow"></div>
+      <sc-if value="{{vw.editable}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{vw.discard}}" disabled="{{vw.clean}}">Desfazer alterações</button><button class="btn sm primary" onClick="{{vw.save}}" disabled="{{vw.clean}}">Salvar · v{{vw.nextVer}}</button></sc-if>
+      <sc-if value="{{vw.isImg}}" hint-placeholder-val="{{false}}"><span class="muted" style="font-size: 12px">{{vw.imgNote}}</span></sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"spot":{"editor":null},"$preview":{"width":1176,"height":1800}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const IC = { check: 'M5 12.5l4.5 4.5L19 7', dot: 'M12 7v6M12 17h.01', shield: 'M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4', clock: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18M12 7v5l3 2', run: 'M13 3 5 14h6l-1 7 8-11h-6z', gate: 'M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6z', chat: 'M5 5h14v11H9l-4 3z' };
+const STG = [
+  ['Entender', 'Paula PM', 'PP', 'Orquestradora', '40 min', 'US$ 0,30', [['resumo', 'Resumo'], ['files', 'Arquivos'], ['ledger', 'Livro-razão']]],
+  ['Refinar', 'Arquiteto de Nicho', 'AN', 'Arquitetura de soluções', '1 h 10', 'US$ 0,90', [['resumo', 'Resumo'], ['files', 'Arquivos'], ['ledger', 'Livro-razão']]],
+  ['Dossiê', 'Dora Descoberta', 'DD', 'Intake e descoberta', '2 h', 'US$ 1,40', [['concorrentes', 'Concorrentes'], ['claims', 'Claims'], ['files', 'Arquivos'], ['ledger', 'Livro-razão']]],
+  ['Arquitetura', 'Théo Tech Lead', 'TL', 'Liderança técnica', '50 min', 'US$ 0,60', [['arq', 'Arquitetura'], ['decisoes', 'Decisões técnicas'], ['files', 'Arquivos'], ['ledger', 'Livro-razão']]],
+  ['Construção', 'Vitor Construtor', 'VC', 'Dev frontend sênior', '5 h 20', 'US$ 5,44', [['preview', 'Prévia'], ['build', 'Build'], ['files', 'Arquivos'], ['ledger', 'Livro-razão']]],
+  ['QA', 'Edna E2E', 'EE', 'QA end-to-end', '1 h 30', 'US$ 1,10', [['guard', 'Completion Guard'], ['files', 'Evidências'], ['ledger', 'Livro-razão']]],
+  ['Security', 'Auditor Seg/LGPD', 'AS', 'Segurança e LGPD', '—', '—', [['checklist', 'Checklist de segurança'], ['ledger', 'Livro-razão']]],
+  ['SEO', 'Nina SEO', 'NS', 'SEO técnico', '—', '—', [['checklist', 'Checklist de SEO'], ['ledger', 'Livro-razão']]],
+  ['Handoff', 'Paulo Publicador', 'PU', 'Publicação e release', '—', '—', [['pacote', 'Pacote de entrega'], ['ledger', 'Livro-razão']]]
+];
+const GUARD = [
+  ['Build e código', 'Build sem erro', 'build.log · 14:02', true, 'build'], ['Build e código', 'Links internos', '38 links, nenhum quebrado', true, 'qa'], ['Build e código', 'Lighthouse acima de 90', 'Performance 92 · Acessibilidade 96', true, 'lh'],
+  ['Prova visual', 'Prova visual em 1440 px', 'Yuri UX · 13:50', true, 'p1440'], ['Prova visual', 'Prova visual em 390 px', 'a hero compete com o menu', false, 'p390', 'preview'],
+  ['SEO e segurança', 'SEO assinado', 'Nina termina o job-014', false, null, 'seo'], ['SEO e segurança', 'Headers de segurança', 'CSP, HSTS e X-Frame', true, null], ['SEO e segurança', 'Acessibilidade AA', 'contraste e foco verificados', true, 'qa']
+];
+const FILES = [
+  { id: 'brief', name: 'briefing.md', dir: 'workspace/', stage: 0, kind: 'md', by: 'Paula PM', when: '26/10', size: '1,2 KB', text: '# Briefing · Meridian Capital\n\n## Quem é o cliente\nGestora patrimonial com 14 anos de mercado e 3 gerações de famílias atendidas.\n\n## Público\n- Famílias com patrimônio acima de R$ 5 mi\n- Herdeiros que vão assumir a gestão nos próximos 5 anos\n\n## Objetivo da landing\nAgendar uma conversa com um consultor.\n\n## Restrições\n- Nenhuma promessa de rentabilidade\n- Textos regulatórios passam pelo jurídico da Meridian\n\n> Prazo combinado: 04/11' },
+  { id: 'perg', name: 'perguntas.md', dir: 'workspace/', stage: 0, kind: 'md', by: 'Paula PM', when: '26/10', size: '0,6 KB', text: '# Perguntas ao cliente\n\n## 1. Quem decide a contratação?\nO patriarca ou a matriarca, quase sempre com um filho junto.\n\n## 2. Qual a principal objeção?\n"Meu banco já faz isso."\n\n## 3. O que não pode aparecer?\nRentabilidade, comparação com CDI e nome de clientes.' },
+  { id: 'refino', name: 'refino.md', dir: 'workspace/', stage: 1, kind: 'md', by: 'Arquiteto de Nicho', when: '26/10', size: '0,8 KB', text: '# Refino\n\n## Promessa\nPatrimônio com método, não com promessa.\n\n## Prova\n- 14 anos de mercado\n- 3 gerações atendidas\n- Relatório mensal para toda a família\n\n## Ângulos descartados\n- "Seu dinheiro rende mais": claim proibido\n- "O banco da sua família": soa como instituição financeira' },
+  { id: 'dossie', name: 'dossie.md', dir: 'workspace/', stage: 2, kind: 'md', by: 'Dora Descoberta', when: '27/10', size: '1,4 KB', text: '# Dossiê\n\n## O que os concorrentes fazem\n- 5 sites lidos\n- 4 prometem rentabilidade na primeira dobra\n- Nenhum fala de sucessão\n\n## Espaço livre\nFalar de método e de sucessão, com linguagem sóbria.\n\n> Ver claims.csv para o que pode e o que não pode ser dito.' },
+  { id: 'claims', name: 'claims.csv', dir: 'workspace/', stage: 2, kind: 'csv', by: 'Dora Descoberta', when: '27/10', size: '0,4 KB', text: 'claim,permitido,fonte\n14 anos de mercado,sim,contrato social\n3 gerações atendidas,sim,carteira de clientes\nRelatório mensal,sim,contrato padrão\nRentabilidade acima do CDI,não,CVM 175\nMelhor gestora do país,não,sem fonte' },
+  { id: 'comp', name: 'concorrente-patrimonia.png', dir: 'workspace/refs/', stage: 2, kind: 'img', img: 'comp', by: 'Dora Descoberta', when: '27/10', size: '420 KB · 1440 × 900' },
+  { id: 'arq', name: 'arquitetura.md', dir: 'workspace/', stage: 3, kind: 'md', by: 'Théo Tech Lead', when: '27/10', size: '0,7 KB', text: '# Arquitetura\n\n## Stack\n- Nuxt 3 estático\n- Formulário com Supabase na conta do cliente\n- Hospedagem na conta da Meridian\n\n## Seções\n- Hero\n- Prova social\n- Serviços\n- Time\n- Contato\n\n> Aprovada por Carlos no gate de 10:05.' },
+  { id: 'nuxt', name: 'nuxt.config.ts', dir: '', stage: 3, kind: 'code', lang: 'TypeScript', by: 'Théo Tech Lead', when: '27/10', size: '41 linhas', text: "export default defineNuxtConfig({\n  ssr: true,\n  nitro: { preset: 'static' },\n  app: {\n    head: { htmlAttrs: { lang: 'pt-BR' } },\n  },\n  runtimeConfig: {\n    supabaseUrl: process.env.SUPABASE_URL,\n  },\n})" },
+  { id: 'index', name: 'index.vue', dir: 'src/pages/', stage: 4, kind: 'code', lang: 'Vue', by: 'Vitor Construtor', when: 'hoje 11:30', size: '412 linhas', text: '<template>\n  <main>\n    <SiteNav :links="links" />\n    <Hero\n      eyebrow="Gestão patrimonial"\n      title="Patrimônio com método, não com promessa."\n    />\n    <Proof />\n    <Services :items="services" />\n    <Team />\n    <Contact />\n  </main>\n</template>' },
+  { id: 'hero', name: 'Hero.vue', dir: 'src/components/', stage: 4, kind: 'code', lang: 'Vue', by: 'Vitor Construtor', when: 'hoje 14:20', size: '88 linhas', text: '<script setup>\ndefineProps({ eyebrow: String, title: String })\n<\/script>\n\n<template>\n  <section class="hero">\n    <p class="eyebrow">{{ eyebrow }}</p>\n    <h1>{{ title }}</h1>\n    <!-- hero-390: menu vira ícone abaixo de 768 px -->\n    <CtaButton>Agendar conversa</CtaButton>\n  </section>\n</template>' },
+  { id: 'build', name: 'build.log', dir: 'workspace/', stage: 4, kind: 'code', lang: 'Log', ro: true, by: 'Vitor Construtor', when: 'hoje 14:02', size: '6 linhas', text: '[14:01:12] nuxi generate\n[14:01:31] 5 rotas pré-renderizadas\n[14:01:44] imagens otimizadas · 1,1 MB economizados\n[14:02:03] build ok · 4,2 MB\n[14:02:03] aviso: SUPABASE_URL ausente no ambiente de deploy' },
+  { id: 'env', name: '.env.example', dir: '', stage: 4, kind: 'code', lang: 'Env', by: 'Davi DevOps', when: 'hoje 12:31', size: '3 linhas', text: 'NUXT_PUBLIC_SITE=meridian.com.br\nSUPABASE_ANON_KEY=\nSUPABASE_URL=' },
+  { id: 'p1440', name: 'prova-1440.png', dir: 'workspace/provas/', stage: 4, kind: 'img', img: 'desk', by: 'Yuri UX', when: 'hoje 13:50', size: '612 KB · 1440 × 2200' },
+  { id: 'qa', name: 'qa.md', dir: 'workspace/', stage: 5, kind: 'md', by: 'Edna E2E', when: 'hoje 14:16', size: '0,5 KB', dyn: true },
+  { id: 'lh', name: 'lighthouse.json', dir: 'workspace/', stage: 5, kind: 'json', lang: 'JSON', by: 'Edna E2E', when: 'hoje 14:10', size: '6 linhas', text: '{\n  "performance": 92,\n  "accessibility": 96,\n  "best-practices": 100,\n  "seo": 91\n}' },
+  { id: 'p390', name: 'prova-390.png', dir: 'workspace/provas/', stage: 5, kind: 'img', img: 'mob', by: 'Yuri UX', when: 'hoje 14:22', size: '388 KB · 390 × 1600' }
+];
+const LEDGER = [
+  ['14:22', 'chat', 'Pedido de ajuste na hero em 390 px', 'Yuri UX', '—', 5],
+  ['14:18', 'gate', 'QA aguardando assinatura humana', 'Completion Guard', '—', 6],
+  ['14:16', 'run', 'Regressão: 38 de 38 links ok', 'Edna E2E', 'US$ 0,22', 6],
+  ['14:10', 'run', 'Lighthouse 92 · acessibilidade 96', 'Edna E2E', 'US$ 0,14', 6],
+  ['14:02', 'run', 'Build gerado sem erro', 'Vitor Construtor', 'US$ 0,64', 5],
+  ['13:50', 'run', 'Prova visual em 1440 px aprovada', 'Yuri UX', 'US$ 0,18', 6],
+  ['28/10', 'run', 'Construção concluída · 412 linhas', 'Vitor Construtor', 'US$ 4,80', 5],
+  ['27/10', 'gate', 'Arquitetura aprovada por Carlos', 'Carlos', '—', 4],
+  ['27/10', 'run', 'Dossiê com 5 concorrentes e 5 claims', 'Dora Descoberta', 'US$ 1,40', 3],
+  ['26/10', 'run', 'Promessa e prova definidas · 2 ângulos descartados', 'Arquiteto de Nicho', 'US$ 0,90', 2],
+  ['26/10', 'chat', 'Cliente respondeu as 3 perguntas do briefing', 'Meridian', '—', 1],
+  ['26/10', 'run', 'Esteira aceita · template LP', 'Paula PM', 'US$ 0,30', 1]
+];
+const KC = { run: ['var(--flow-subtle)', 'var(--flow)', IC.run], gate: ['var(--action-subtle)', 'var(--action-subtle-text)', IC.gate], chat: ['var(--surface-3)', 'var(--text-secondary)', IC.chat] };
+function hm() { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function qaText(g) { const L = ['Build sem erro', 'Links internos (38)', 'Lighthouse 92 / 96', 'Prova visual 1440 px', 'Prova visual 390 px', 'SEO assinado', 'Headers de segurança', 'Acessibilidade AA']; return '# QA · Meridian\n\n## Critérios de pronto\n' + L.map((l, i) => '- [' + (g[i] ? 'x' : ' ') + '] ' + l).join('\n') + '\n\n> Responsável: Edna E2E. O gate só assina com todos marcados.'; }
+function csvRows(t) { return t.split('\n').filter((l) => l.trim()).map((l) => (l.match(/("[^"]*"|[^,]+)/g) || []).map((c) => c.replace(/^"|"$/g, ''))); }
+function mdBlocks(t, toggle) {
+  return t.split('\n').map((l, i) => {
+    const b = { h1: false, h2: false, p: false, li: false, task: false, quote: false, checked: false, text: '' };
+    let m;
+    if (!l.trim()) return null;
+    if ((m = l.match(/^# (.*)/))) { b.h1 = true; b.text = m[1]; }
+    else if ((m = l.match(/^## (.*)/))) { b.h2 = true; b.text = m[1]; }
+    else if ((m = l.match(/^- \[( |x)\] (.*)/))) { b.task = true; b.checked = m[1] === 'x'; b.text = m[2]; b.toggle = () => toggle(i); }
+    else if ((m = l.match(/^- (.*)/))) { b.li = true; b.text = m[1]; }
+    else if ((m = l.match(/^> (.*)/))) { b.quote = true; b.text = m[1]; }
+    else { b.p = true; b.text = l; }
+    b.text = b.text.replace(/\*\*/g, '');
+    b.bd = b.checked ? 'var(--flow)' : 'var(--line-strong)'; b.bg = b.checked ? 'var(--flow)' : 'transparent';
+    b.deco = b.checked ? 'line-through' : 'none'; b.tc = b.checked ? 'var(--text-muted)' : 'var(--text-primary)';
+    return b;
+  }).filter(Boolean);
+}
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { open: false, stage: 5, tabs: {}, guard: GUARD.map((g) => g[3]), loading: {}, signed: false, signedAt: '', vp: 'desk', fixing: false, lf: 'stage', extra: [],
+      viewer: null, zoom: 1, imgBg: 'dark', mdMode: 'view', csvMode: 'table', edits: {}, saved: {}, ver: {},
+      chat: false, unread: 2, typing: false, draft: '', msgs: [['Yuri UX', 'A hero ainda compete com o menu em 390 px. Proponho cortar o subtítulo e virar o menu ícone.', 'ag'], ['Vitor Construtor', 'Ajuste pronto no branch hero-390. Preciso da prova visual de novo.', 'ag']] };
+  }
+  componentWillUnmount() { clearTimeout(this.t1); clearTimeout(this.t2); clearTimeout(this.t3); }
+  check(i, by) { const g = this.state.guard.slice(); g[i] = true; this.setState({ guard: g, extra: [[hm(), 'run', GUARD[i][1] + ' verificado', by, '—', 6]].concat(this.state.extra) }); }
+  baseText(f) { return f.dyn ? qaText(this.state.guard) : (f.text || ''); }
+  textOf(f) { const s = this.state; return s.edits[f.id] != null ? s.edits[f.id] : (s.saved[f.id] != null ? s.saved[f.id] : this.baseText(f)); }
+  savedOf(f) { const s = this.state; return s.saved[f.id] != null ? s.saved[f.id] : this.baseText(f); }
+  renderVals() {
+    const app = this.props.app || NOOP;
+    const spot = this.props.spot || '';
+    const s = this.state, self = this;
+    const isOpen = s.open || spot === 'topology';
+    const cur = s.signed ? 6 : 5;
+    const gN = s.guard.filter(Boolean).length, gT = GUARD.length, allOk = gN === gT, pending = gT - gN;
+    const S = STG[s.stage];
+    const tabKeys = S[6];
+    const tab = s.tabs[s.stage] && tabKeys.some((t) => t[0] === s.tabs[s.stage]) ? s.tabs[s.stage] : tabKeys[0][0];
+    const goStage = (i, t) => { const tb = Object.assign({}, s.tabs); if (t) tb[i] = t; self.setState({ stage: i, tabs: tb, open: true }); };
+    const ledgerAll = (s.signed ? [[s.signedAt, 'gate', 'Gate de QA assinado por Carlos', 'Carlos', '—', 6]] : []).concat(s.extra).concat(LEDGER);
+    const lfFn = { stage: (e) => e[5] === s.stage + 1, all: () => true, gate: (e) => e[1] === 'gate' };
+    const ledger = ledgerAll.filter(lfFn[s.lf]);
+    const filesOf = (i) => FILES.filter((f) => f.stage === i);
+    const openFile = (id) => self.setState({ viewer: id, zoom: 1, mdMode: 'view', csvMode: 'table' });
+    const t = {}; ['resumo', 'concorrentes', 'claims', 'arq', 'decisoes', 'preview', 'build', 'guard', 'checklist', 'pacote', 'files', 'ledger'].forEach((k) => { t[k] = tab === k; });
+
+    const nodeOf = (i) => {
+      const done = i < cur, now = i === cur, sel = i === s.stage;
+      return { label: STG[i][0], meta: done ? STG[i][4] : now ? (s.signed ? 'em andamento' : 'no gate') : STG[i][2],
+        icon: done ? IC.check : now ? (s.signed ? IC.clock : IC.shield) : IC.clock,
+        bg: done ? 'var(--flow-subtle)' : now ? 'var(--warning-subtle)' : 'var(--surface-0)', fg: done ? 'var(--flow)' : now ? 'var(--warning)' : 'var(--text-muted)',
+        bd: sel ? 'var(--flow)' : done ? 'var(--flow-subtle-line)' : now ? 'var(--warning)' : 'var(--line)', sh: sel ? '0 0 0 4px var(--flow-subtle)' : 'none',
+        anim: now ? 'ringwarn 2s var(--ease) infinite' : 'none', tc: sel ? 'var(--flow)' : (done || now ? 'var(--text-primary)' : 'var(--text-muted)'),
+        under: sel ? 'var(--flow)' : 'transparent', pressed: sel ? 'true' : 'false',
+        hasLine: i > 0, flex: i > 0 ? '1 1 0' : '0 0 auto', line: i <= cur ? 'var(--flow)' : 'var(--line)', flow: i === cur, pick: () => goStage(i) };
+    };
+    const now = s.signed
+      ? { t: 'Security em andamento', d: 'QA assinado às ' + s.signedAt + '. O Auditor confere headers, segredos e LGPD.', icon: IC.clock, bg: 'rgba(27,197,189,.08)', bd: 'rgba(27,197,189,.3)', ibg: 'rgba(27,197,189,.16)', ifg: '#1BC5BD', anim: 'none', btn: 'Abrir Security', btnCls: 'onink-sec', go: () => goStage(6) }
+      : { t: 'Gate de QA · ' + pending + (pending === 1 ? ' critério aberto' : ' critérios abertos'), d: pending ? 'Prova em 390 px e assinatura de SEO seguram a entrega. O resto passou.' : 'Tudo verificado. Falta a sua assinatura.', icon: IC.shield, bg: 'rgba(230,177,90,.08)', bd: 'oklch(.80 .155 78 / .35)', ibg: 'oklch(.80 .155 78 / .18)', ifg: 'oklch(.80 .155 78)', anim: 'ringwarn 2s var(--ease) infinite', btn: pending ? 'Resolver gate' : 'Assinar gate', btnCls: 'onink', go: () => goStage(5, 'guard') };
+    const groups = [];
+    GUARD.forEach((g, i) => { let G = groups.find((x) => x.label === g[0]); if (!G) { G = { label: g[0], items: [] }; groups.push(G); } G.items.push(i); });
+
+    // visualizador
+    const VF = s.viewer ? FILES.find((f) => f.id === s.viewer) : null;
+    let vw = { open: false, modes: [], nums: [], blocks: [], head: [], trows: [], bgs: [] };
+    if (VF) {
+      const text = this.textOf(VF), saved = this.savedOf(VF), dirty = text !== saved;
+      const lines = text.split('\n');
+      const isImg = VF.kind === 'img', isMd = VF.kind === 'md', isCsv = VF.kind === 'csv', isJson = VF.kind === 'json', isCode = VF.kind === 'code';
+      const setText = (v) => { const e = Object.assign({}, self.state.edits); e[VF.id] = v; self.setState({ edits: e }); };
+      const ver = (s.ver[VF.id] || 1);
+      let valid = '', validCls = '';
+      if (isJson) { try { JSON.parse(text); valid = 'JSON válido'; validCls = 'flow'; } catch (er) { valid = 'JSON inválido'; validCls = 'danger'; } }
+      const modes = isMd ? [['view', 'Visualizar'], ['split', 'Lado a lado'], ['edit', 'Editar']].map((o) => ({ label: o[1], on: s.mdMode === o[0] ? 'on' : '', pick: () => self.setState({ mdMode: o[0] }) }))
+        : isCsv ? [['table', 'Tabela'], ['text', 'Texto']].map((o) => ({ label: o[1], on: s.csvMode === o[0] ? 'on' : '', pick: () => self.setState({ csvMode: o[0] }) })) : [];
+      const rows = isCsv ? csvRows(text) : [];
+      const imgKind = VF.img;
+      vw = {
+        open: true, name: VF.name, path: VF.dir + VF.name, by: VF.by + ' · ' + VF.when, ver: ver, nextVer: ver + 1, ext: VF.name.split('.').pop(),
+        dirty: dirty, clean: !dirty, ro: !!VF.ro, editable: !isImg && !VF.ro,
+        isImg: isImg, hasModes: modes.length > 0, modes: modes,
+        imgDesk: imgKind === 'desk', imgMob: imgKind === 'mob', imgComp: imgKind === 'comp',
+        zoom: s.zoom, zoomLabel: Math.round(s.zoom * 100) + '%',
+        zoomIn: () => self.setState({ zoom: Math.min(2, +(s.zoom + 0.25).toFixed(2)) }), zoomOut: () => self.setState({ zoom: Math.max(0.5, +(s.zoom - 0.25).toFixed(2)) }), zoomReset: () => self.setState({ zoom: 1 }),
+        bgs: [['dark', 'Escuro'], ['light', 'Claro'], ['grid', 'Xadrez']].map((o) => ({ label: o[1], on: s.imgBg === o[0] ? 'on' : '', pick: () => self.setState({ imgBg: o[0] }) })),
+        stageBg: s.imgBg === 'dark' ? '#070d18' : s.imgBg === 'light' ? '#e9ece6' : 'repeating-conic-gradient(#d9dcd6 0 25%, #f4f6f2 0 50%) 0 0 / 22px 22px',
+        imgNote: imgKind === 'mob' ? (s.guard[4] ? 'Versão após o ajuste hero-390.' : 'Apontamento 1: menu cobre o título.') : imgKind === 'comp' ? 'Referência do dossiê. Não é do cliente.' : 'Prova aprovada por Yuri UX.',
+        showEditor: isCode || isJson || (isMd && s.mdMode !== 'view') || (isCsv && s.csvMode === 'text'),
+        splitBorder: isMd && s.mdMode === 'split' ? '1px solid var(--line)' : '0',
+        showMd: isMd && s.mdMode !== 'edit', showTable: isCsv && s.csvMode === 'table',
+        text: text, rows: lines.length + 1, nums: lines.map((_, i) => ({ n: i + 1 })),
+        onText: (e) => { if (VF.ro) { app.toast('Somente leitura', 'Logs não são editados. Gere um novo build.'); return; } setText(e.target.value); },
+        blocks: isMd ? mdBlocks(text, (i) => { const ls = text.split('\n'); ls[i] = ls[i].indexOf('- [x]') === 0 ? ls[i].replace('- [x]', '- [ ]') : ls[i].replace('- [ ]', '- [x]'); setText(ls.join('\n')); }) : [],
+        head: rows.length ? rows[0].map((c) => ({ t: c })) : [], trows: rows.slice(1).map((r) => ({ cells: r.map((c) => ({ t: c })) })),
+        hasValid: isJson, valid: valid, validCls: validCls,
+        status: isImg ? VF.size : (VF.lang || (isMd ? 'Markdown' : 'CSV')) + ' · ' + lines.length + ' linhas · ' + text.length + ' caracteres · UTF-8' + (dirty ? ' · modificado' : ''),
+        discard: () => { const e = Object.assign({}, s.edits); delete e[VF.id]; self.setState({ edits: e }); },
+        save: () => { const sv = Object.assign({}, s.saved); sv[VF.id] = text; const e = Object.assign({}, s.edits); delete e[VF.id]; const vv = Object.assign({}, s.ver); vv[VF.id] = ver + 1; self.setState({ saved: sv, edits: e, ver: vv, extra: [[hm(), 'run', VF.name + ' editado e salvo · v' + (ver + 1), 'Carlos', '—', VF.stage + 1]].concat(s.extra) }); app.toast(VF.name + ' salvo', 'Versão ' + (ver + 1) + ' registrada no livro-razão.'); }
+      };
+    }
+
+    return {
+      listView: !isOpen, consoleView: isOpen, spotTopo: spot === 'topology' ? 'spot' : '',
+      newLine: () => app.modal('factory-new'),
+      gateN: s.signed ? 0 : 1, gateNote: s.signed ? 'nenhum gate aberto' : 'Meridian · QA',
+      lines: [
+        { name: 'Meridian — landing institucional', kind: 'LP · Criação', client: 'Meridian Capital', due: 'entrega 04/11 · faltam 6 dias', dueColor: 'var(--text-muted)', n: 9, cur: cur, gate: !s.signed, stage: STG[cur][0], owner: STG[cur][1], pct: s.signed ? 72 : 64, cls: s.signed ? 'flow' : 'warn', state: s.signed ? 'rodando' : 'gate', open: () => goStage(cur) },
+        { name: 'Escritório — painel local', kind: 'Sistema · Manutenção', client: 'interno', due: 'contínuo', dueColor: 'var(--text-muted)', n: 12, cur: 7, gate: false, stage: 'Testes', owner: 'Edna E2E', pct: 71, cls: 'flow', state: 'rodando', open: () => app.toast('Escritório', 'O console de manutenção segue o mesmo formato.') },
+        { name: 'Atlas — landing comercial', kind: 'LP · Criação', client: 'Atlas Holdings', due: 'aguarda contra-assinatura', dueColor: 'var(--warning)', n: 16, cur: 0, gate: true, stage: 'Entender', owner: 'Paula PM', pct: 4, cls: '', state: 'aguarda contrato', open: () => app.go('decisions', { approvalId: 'ap-05' }) }
+      ].map((l) => Object.assign(l, { nodes: Array.from({ length: l.n }, (_, i) => ({ hasLine: i > 0, flex: i > 0 ? '1' : '0 0 auto', line: i <= l.cur ? 'var(--flow)' : 'var(--line)', done: i < l.cur, size: i === l.cur ? 18 : 14, bg: i < l.cur ? 'var(--flow)' : i === l.cur ? 'var(--warning-subtle)' : 'var(--surface-2)', bd: i < l.cur ? 'var(--flow)' : i === l.cur ? 'var(--warning)' : 'var(--line-strong)', anim: i === l.cur && l.gate ? 'ringwarn 2s var(--ease) infinite' : 'none' })) })),
+      tpls: [['LP · Criação e manutenção', 'Landing Pages', 'Prova visual, comercial, construção, QA, SEO e handoff.', 'até 16 etapas', ['Entender', 'Prova visual', 'Construção', 'QA', 'SEO', 'Handoff'], 'lead time 4,2 dias'], ['Ofertas · Produto e preço', 'Ofertas', 'Evidência de público, viabilidade e claims.', '6–8 etapas', ['Público', 'Evidência', 'Preço', 'Claims', 'Página'], 'lead time 2,5 dias'], ['Sistemas · Criação e manutenção', 'Sistemas', 'Do zero, com especificação, ou manutenção do que já existe.', '12–15 etapas', ['Spec', 'Arquitetura', 'Construção', 'Testes', 'Security', 'Deploy'], 'lead time 9 dias']].map((x) => ({ k: x[0], name: x[1], x: x[2], n: x[3], st: x[4].map((y) => ({ t: y })), lead: x[5] })),
+      back: () => self.setState({ open: false }),
+      control: () => app.modal('control', { name: 'Meridian' }), askChange: () => app.modal('ai'),
+      pct: s.signed ? 72 : 64, stageN: cur + 1, spent: s.signed ? '9,96' : '9,74', spentPct: s.signed ? 40 : 39,
+      now: now, nodes: STG.map((_, i) => nodeOf(i)),
+      sel: { n: '0' + (s.stage + 1), label: S[0], owner: S[1], ini: S[2], role: S[3], dur: s.stage === cur && s.signed ? 'em curso' : S[4], cost: S[5], fileN: filesOf(s.stage).length, busy: s.stage === cur ? 'busy' : '',
+        state: s.stage < cur ? 'concluída' : s.stage === cur ? (s.signed ? 'em andamento' : 'no gate') : 'aguardando', locked: s.stage >= cur, waiting: s.stage > cur, prev: STG[Math.max(0, s.stage - 1)][0],
+        icon: s.stage < cur ? IC.check : s.stage === cur ? (s.signed ? IC.clock : IC.shield) : IC.clock,
+        ibg: s.stage < cur ? 'var(--flow-subtle)' : s.stage === cur ? 'var(--warning-subtle)' : 'var(--surface-0)', ifg: s.stage < cur ? 'var(--flow)' : s.stage === cur ? 'var(--warning)' : 'var(--text-muted)' },
+      redoSel: () => app.modal('redo', { stage: S[0] }),
+      tabs: tabKeys.map((x) => { const n = x[0] === 'guard' && !s.signed ? pending : x[0] === 'files' ? filesOf(s.stage).length : x[0] === 'ledger' ? ledgerAll.filter((e) => e[5] === s.stage + 1).length : null; return { label: x[1], hasN: n != null && n > 0, n: x[0] === 'guard' ? n + ' abertos' : n, ncls: x[0] === 'guard' ? 'warn' : '', on: tab === x[0] ? 'on' : '', pick: () => goStage(s.stage, x[0]) }; }),
+      t: t,
+      rs: s.stage === 0 ? { facts: [['Público', 'Famílias com patrimônio acima de R$ 5 mi'], ['Objetivo', 'Agendar conversa com um consultor'], ['Restrição', 'Nenhuma promessa de rentabilidade'], ['Prazo', '04/11']].map((f) => ({ k: f[0], v: f[1] })), title: 'Perguntas respondidas pelo cliente', items: [['Quem decide a contratação?', 'O patriarca ou a matriarca, quase sempre com um filho junto.'], ['Qual a principal objeção?', '"Meu banco já faz isso."'], ['O que não pode aparecer?', 'Rentabilidade, comparação com CDI e nome de clientes.']].map((i) => ({ q: i[0], a: i[1] })) }
+        : { facts: [['Promessa', 'Patrimônio com método, não com promessa'], ['Prova', '14 anos · 3 gerações atendidas'], ['Tom', 'Sóbrio, sem jargão de mercado'], ['Chamada', 'Agendar conversa']].map((f) => ({ k: f[0], v: f[1] })), title: 'Ângulos descartados e por quê', items: [['"Seu dinheiro rende mais"', 'Claim de rentabilidade, proibido pela CVM.'], ['"O banco da sua família"', 'Soa como instituição financeira, o que a Meridian não é.']].map((i) => ({ q: i[0], a: i[1] })) },
+      comps: [['Patrimonia', 'Rentabilidade acima do CDI, garantida', 'claim proibido', 'danger', 'Falar de método, não de retorno'], ['Vértice Wealth', 'Seu patrimônio rende mais aqui', 'claim proibido', 'danger', 'Mostrar o relatório mensal'], ['Lume Family Office', 'Cuidamos do seu futuro', 'genérico', 'warn', 'Ser específico sobre sucessão'], ['Atrio Capital', 'Gestão de alta performance', 'jargão', 'warn', 'Linguagem sem jargão'], ['Nobre Investimentos', 'Invista com quem entende', 'genérico', 'warn', 'Prova: 3 gerações atendidas']].map((c) => ({ n: c[0], h: c[1], p: c[2], cls: c[3], e: c[4] })),
+      claims: csvRows(this.textOf(FILES.find((f) => f.id === 'claims'))).slice(1).map((r) => ({ c: r[0], ok: r[1], cls: r[1] === 'sim' ? 'flow' : 'danger', f: r[2] })),
+      arch: [['Front', 'Nuxt 3 estático', '5 rotas pré-renderizadas', true], ['Captação', 'Formulário de lead', 'validação e consentimento LGPD', false], ['Dados', 'Supabase', 'na conta do cliente', false], ['Hospedagem', 'Conta da Meridian', 'domínio meridian.com.br', false]].map((a, i) => ({ k: a[0], t: a[1], d: a[2], hasArrow: i > 0, bd: a[3] ? 'var(--flow-subtle-line)' : 'var(--line)', bg: a[3] ? 'var(--flow-subtle)' : 'var(--surface-0)' })),
+      sections: ['Hero', 'Prova social', 'Serviços', 'Time', 'Contato'].map((x, i) => ({ n: '0' + (i + 1), t: x })),
+      techs: [['Nuxt estático em vez de SSR', 'Mais barato e rápido. O conteúdo muda pouco.', 'aprovada 27/10'], ['Supabase na conta do cliente', 'Os dados de lead ficam com a Meridian.', 'aprovada 27/10'], ['Sem CMS na primeira versão', 'Edições pedidas pelo chat do projeto.', 'aprovada 27/10']].map((d) => ({ t: d[0], w: d[1], s: d[2] })),
+      // prévia
+      vps: [['desk', 'Desktop 1440'], ['mob', 'Celular 390']].map((o) => ({ label: o[1], on: s.vp === o[0] ? 'on' : '', pick: () => self.setState({ vp: o[0] }) })),
+      vpLabel: s.vp === 'desk' ? '1440 px' : '390 px', isDesk: s.vp === 'desk', isMob: s.vp === 'mob',
+      prevNote: 'build de hoje 14:02',
+      broken: !s.guard[4], fixedView: s.guard[4], fixing: s.fixing, fixLabel: s.fixing ? 'Aplicando hero-390…' : 'Aplicar ajuste do Vitor (hero-390)',
+      prevBadge: s.guard[4] ? 'sem pendências' : '1 apontamento', prevBadgeCls: s.guard[4] ? 'flow' : 'danger',
+      annBd: s.guard[4] ? 'var(--line)' : 'var(--danger)', annDot: s.guard[4] ? '#1BC5BD' : 'oklch(.635 .185 27)', annCls: s.guard[4] ? 'flow' : 'danger', annState: s.guard[4] ? 'resolvido' : 'aberto',
+      applyFix: () => { self.setState({ fixing: true }); clearTimeout(self.t1); self.t1 = setTimeout(() => { self.setState({ fixing: false }); self.check(4, 'Yuri UX'); app.toast('Prova visual aprovada', 'Hero em 390 px corrigida. Critério marcado no Guard.'); }, 1400); },
+      toGuard: () => goStage(5, 'guard'),
+      services: [['Planejamento', 'Metas da família em 10, 20 e 30 anos.'], ['Sucessão', 'Holding, testamento e governança.'], ['Investimento', 'Carteira com critério e relatório mensal.']].map((x) => ({ t: x[0], d: x[1] })),
+      buildStats: [['Tempo de build', '51 s', 'nuxi generate', 'var(--text-primary)'], ['Tamanho', '4,2 MB', '1,1 MB economizados', 'var(--text-primary)'], ['Rotas', '5', 'pré-renderizadas', 'var(--text-primary)'], ['Avisos', '1', 'variável de deploy', 'var(--warning)']].map((b) => ({ k: b[0], v: b[1], n: b[2], c: b[3] })),
+      buildLog: FILES.find((f) => f.id === 'build').text.split('\n').map((l) => { const m = l.match(/^\[(.*?)\] (.*)/); return { ts: m[1], t: m[2], cls: /aviso/.test(l) ? 'wn' : /ok/.test(l) ? 'ok' : 'info' }; }),
+      openBuildLog: () => openFile('build'),
+      // guard
+      guardN: gN, guardT: gT, guardPct: Math.round(gN / gT * 100), guardColor: allOk ? 'var(--flow)' : 'var(--warning)',
+      guardTitle: s.signed ? 'Gate de QA assinado' : allOk ? 'Tudo verificado' : pending + (pending === 1 ? ' critério segura a entrega' : ' critérios seguram a entrega'),
+      guardNote: s.signed ? 'Assinado por Carlos às ' + s.signedAt + '. A esteira seguiu para Security.' : allOk ? 'Assinar libera a etapa 7 e registra no livro-razão.' : 'Resolva os itens em âmbar. Cada um tem a ação ao lado.',
+      guardBlocked: !allOk || s.signed, signLabel: s.signed ? 'Assinado' : 'Assinar gate de QA',
+      sign: () => { self.setState({ signed: true, signedAt: hm(), stage: 6 }); app.toast('Gate de QA assinado', 'Meridian seguiu para Security.'); if (app.log) app.log('Carlos', 'assinou o gate de QA da Meridian', '#B7F34A'); },
+      guardGroups: groups.map((G) => ({ label: G.label, n: G.items.length, ok: G.items.filter((i) => s.guard[i]).length, items: G.items.map((i) => {
+        const g = GUARD[i], ok = s.guard[i], load = !!s.loading[i];
+        const act = g[5] === 'preview' ? () => { self.setState({ vp: 'mob' }); goStage(4, 'preview'); } : g[5] === 'seo' ? () => { const L = Object.assign({}, s.loading); L[i] = true; self.setState({ loading: L }); clearTimeout(self.t2); self.t2 = setTimeout(() => { const L2 = Object.assign({}, self.state.loading); delete L2[i]; self.setState({ loading: L2 }); self.check(i, 'Nina SEO'); app.toast('SEO assinado', 'Nina conferiu meta, schema e sitemap.'); }, 1600); } : null;
+        return { t: g[1], m: ok ? g[2].replace('Nina termina o job-014', 'assinado por Nina SEO').replace('a hero compete com o menu', 'aprovada após o ajuste hero-390') : g[2], bg: ok ? 'var(--flow-subtle)' : 'var(--warning-subtle)', fg: ok ? 'var(--flow)' : 'var(--warning)', icon: ok ? IC.check : IC.dot, spin: load, still: !load, hasAct: !ok && !!act, actLabel: g[5] === 'preview' ? 'Ver na prévia' : load ? 'Pedindo…' : 'Pedir assinatura à Nina', act: act || (() => {}), hasEv: !!g[4], openEv: () => openFile(g[4]) };
+      }) })),
+      checklist: (s.stage === 6 ? [['Headers de segurança', 'CSP, HSTS e X-Frame'], ['Segredos fora do pacote', 'varredura do build e do .env'], ['Consentimento LGPD', 'texto do formulário e registro do aceite'], ['Dependências', 'sem vulnerabilidade crítica']] : [['Meta title e description', 'todas as rotas'], ['Schema Organization', 'dados da gestora'], ['Sitemap e robots', 'gerados no build'], ['Open Graph', 'imagem e texto para compartilhamento']]).map((x, i) => { const running = s.signed && s.stage === 6 && i === 0; const queued = s.signed && s.stage === 6 && i > 0; return { t: x[0], m: x[1], spin: running, bg: running ? 'var(--flow-subtle)' : 'var(--surface-3)', st: running ? 'em andamento' : queued ? 'na fila' : 'aguardando', cls: running ? 'flow' : '' }; }),
+      pacote: [['Deploy na conta do cliente', 'Paulo Publicador'], ['Domínio meridian.com.br apontado', 'Davi DevOps'], ['Manual de edição do conteúdo', 'Dante Documentação'], ['Livro-razão do projeto em PDF', 'gerado no handoff'], ['Acesso do cliente ao painel', 'leitura do projeto']].map((x, i) => ({ n: '0' + (i + 1), t: x[0], m: x[1] })),
+      stageFiles: filesOf(s.stage).map((f) => { const txt = f.kind === 'img' ? '' : this.textOf(f); return { name: f.name, ext: f.name.split('.').pop(), meta: f.by + ' · ' + f.when + ' · ' + f.size, dirty: !!s.edits[f.id] && s.edits[f.id] !== this.savedOf(f), isImg: f.kind === 'img', isText: f.kind !== 'img', snip: txt.split('\n').slice(0, 7).join('\n'), thumbBg: f.kind === 'img' ? (f.img === 'comp' ? '#d1d5db' : '#1a2438') : 'var(--surface-0)', imgPaper: f.img === 'comp' ? '#ffffff' : '#f6f3ee', imgInk: f.img === 'comp' ? '#1f2937' : '#13233d', open: () => openFile(f.id) }; }),
+      lfs: [['stage', 'Esta etapa'], ['all', 'Toda a esteira'], ['gate', 'Só gates']].map((f) => ({ label: f[1], n: ledgerAll.filter(lfFn[f[0]]).length, on: s.lf === f[0] ? 'on' : '', pick: () => self.setState({ lf: f[0] }) })),
+      ledger: ledger.map((e) => ({ t: e[0], x: e[2], w: e[3], c: e[4], st: STG[e[5] - 1][0], bg: KC[e[1]][0], fg: KC[e[1]][1], icon: KC[e[1]][2] })), ledgerEmpty: ledger.length === 0,
+      download: () => app.toast('Livro-razão exportado', 'ledger-meridian.json com ' + ledgerAll.length + ' eventos.'),
+      // chat
+      chatOpen: s.chat, chatClosed: !s.chat, hasUnread: s.unread > 0, unread: s.unread,
+      openChat: () => self.setState({ chat: true, unread: 0 }), closeChat: () => self.setState({ chat: false }),
+      chatPeople: ['PP', 'YU', 'VC', 'EE'].map((i) => ({ i: i })),
+      msgs: s.msgs.map((m) => ({ who: m[0], t: m[1], cls: m[2] })), typing: s.typing, draft: s.draft,
+      onDraft: (e) => self.setState({ draft: e.target.value }),
+      sugs: (s.stage === 4 ? ['O que mudou no último build?', 'A prévia já está no ar?'] : s.stage === 5 ? ['Quem está bloqueando o QA?', 'Quanto falta para entregar?'] : ['Resuma esta etapa', 'Quanto falta para entregar?']).concat(['Mostre o que mudou hoje']).map((x) => ({ t: x, pick: () => self.setState({ draft: x }) })),
+      send: (e) => {
+        e.preventDefault(); const txt = s.draft.trim(); if (!txt) return;
+        self.setState({ msgs: s.msgs.concat([['Carlos', txt, 'me']]), draft: '', typing: true });
+        clearTimeout(self.t3);
+        self.t3 = setTimeout(() => { const st = self.state; const left = GUARD.length - st.guard.filter(Boolean).length; const reply = st.signed ? 'QA assinado. Security deve fechar hoje e SEO amanhã. Entrega mantida para 04/11.' : left ? 'Faltam ' + left + ' critérios de QA. Depois vêm Security, SEO e Handoff. Com o gate assinado hoje, a entrega fica em 04/11.' : 'O Guard está verde. Só falta a sua assinatura para seguir para Security.'; self.setState({ msgs: st.msgs.concat([['Paula PM', reply, 'ag']]), typing: false }); }, 1200);
+      },
+      // visualizador
+      vw: vw,
+      closeViewer: () => self.setState({ viewer: null }),
+      vwBack: (e) => { if (e.target === e.currentTarget) self.setState({ viewer: null }); },
+      vwKey: (e) => { if (e.key === 'Escape') { e.stopPropagation(); self.setState({ viewer: null }); } if ((e.ctrlKey || e.metaKey) && String(e.key).toLowerCase() === 's') { e.preventDefault(); if (vw.editable && vw.dirty) vw.save(); } }
+    };
+  }
+}
+</script>
+</body>
+</html>

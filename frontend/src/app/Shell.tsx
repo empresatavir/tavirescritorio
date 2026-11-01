@@ -10,21 +10,22 @@ import { AiLinkAlert } from "./AiLinkAlert";
 export function Shell(props: ParentProps) {
   return (
     <div
+      class="shell"
       style={{
         height: "100vh",
         width: "100vw",
         display: "grid",
-        "grid-template-columns": "56px 212px minmax(0, 1fr)",
+        "grid-template-columns": "64px 236px minmax(0, 1fr)",
         background: "var(--surface-0)",
         color: "var(--text-primary)",
         "font-size": "13px",
         overflow: "hidden",
       }}
     >
-      {/* Coluna 1: Rail de Domínios (56px) */}
+      {/* Coluna 1: Rail de Domínios (64px) */}
       <Rail />
 
-      {/* Coluna 2: Sub-navegação e status local (212px) */}
+      {/* Coluna 2: Sub-navegação (236px) */}
       <SubNav />
 
       {/* Coluna 3: Header e Área Principal */}

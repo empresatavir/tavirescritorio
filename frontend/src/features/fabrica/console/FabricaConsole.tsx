@@ -134,6 +134,7 @@ export function FabricaConsole(props: {
   createEffect(() => {
     if (bootPumped || factory.loading() || !factory.run()) return;
     bootPumped = true;
+    if (factory.run()?.status === "done") return;
     const checkpoint = factory.run()?.meta?.checkpoint as { status?: string } | undefined;
     if (checkpoint?.status === "error") return;
     if (autoOn()) void pumpAuto();
@@ -177,6 +178,7 @@ export function FabricaConsole(props: {
     const cur = factory.currentStage();
     const done = r?.stages_done ?? stages().filter((s) => s.status === "done").length;
     const total = r?.total_stages ?? stages().length;
+    const maintenance = r?.meta?.maintenance === true;
     const status =
       r?.status === "paused"
         ? ("paused" as const)
@@ -187,7 +189,13 @@ export function FabricaConsole(props: {
       code: (r?.template_code || "—").toUpperCase(),
       status,
       statusLabel:
-        status === "done" ? "Concluído" : status === "paused" ? "Pausado" : "Em andamento",
+        status === "done"
+          ? maintenance
+            ? "Finalizado · manutenção"
+            : "Finalizado"
+          : status === "paused"
+            ? "Pausado"
+            : "Em andamento",
       stagesDone: done,
       totalStages: total,
       company: props.projectCompany || "—",
@@ -525,6 +533,20 @@ export function FabricaConsole(props: {
               pendencies={factory.pendencies()}
               current={overviewCurrent()}
               runStatus={factory.run()?.status}
+              maintenance={factory.run()?.meta?.maintenance === true}
+              onOpenQa={() => switchSubview("qa")}
+              onOpenSecurity={() => switchSubview("security")}
+              onOpenChat={() => switchView("chat")}
+              onEnterMaintenance={async () => {
+                try {
+                  await api.openFactoryMaintenance(props.projectId);
+                  await factory.reload();
+                  showToast("Modo manutenção ligado. O pedido de alteração fica no chat.");
+                  switchView("chat");
+                } catch (err) {
+                  showToast(err instanceof Error ? err.message : "Não foi possível entrar em manutenção.");
+                }
+              }}
               canAuthorize={factory.canAuthorize()}
               canComplete={factory.canComplete()}
               canExecute={factory.canExecute()}
@@ -1002,7 +1024,7 @@ export function FabricaConsole(props: {
                     <h1>Acessos</h1>
                   </div>
                 </div>
-                <AccessPanel projectId={props.projectId} onToast={showToast} />
+                <AccessPanel projectId={props.projectId} stages={stages()} onToast={showToast} />
               </Show>
 
               <Show when={subview() === "qa"}>
@@ -1022,7 +1044,7 @@ export function FabricaConsole(props: {
                     <h1>Segurança & LGPD</h1>
                   </div>
                 </div>
-                <SecurityPanel />
+                <SecurityPanel projectId={props.projectId} onToast={showToast} />
               </Show>
 
               <Show when={subview() === "agents"}>
@@ -1114,8 +1136,13 @@ export function FabricaConsole(props: {
               projectId={props.projectId}
               projectName={props.projectName}
               stages={stages()}
-              currentAgent={factory.currentStage()?.agent}
+              finished={factory.run()?.status === "done"}
+              maintenance={factory.run()?.meta?.maintenance === true}
               onToast={showToast}
+              onApply={async (message) => {
+                const res = await api.applyFactoryMaintenance(props.projectId, { message });
+                return res.messages || [];
+              }}
             />
           </div>
         </section>

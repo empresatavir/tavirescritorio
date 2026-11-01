@@ -41,6 +41,7 @@ frontend/.vite/
 # Environment & Secrets
 .env
 .env.*
+backend/data/engine_secrets.json
 !.env.example
 
 # IDE
@@ -79,3 +80,8 @@ nul
 .serena/cache/
 .serena/memories/
 .serena/project.local.yml
+
+# Runtime logs e testes temporários
+logs/
+frontend/test-results/
+visual/*_test.png

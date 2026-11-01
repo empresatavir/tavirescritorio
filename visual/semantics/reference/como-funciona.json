@@ -1,0 +1,2131 @@
+{
+  "screenId": "como-funciona",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 65,
+        "nav": 1,
+        "button": 34,
+        "img": 2,
+        "i": 16,
+        "aside": 1,
+        "small": 3,
+        "span": 113,
+        "b": 20,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 8,
+        "section": 3,
+        "h2": 1
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sala de Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Execuções",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tasks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "7",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decisões",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Chat",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Como funciona",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Do pedido ao resultado, em oito passos",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Todo trabalho no escritório segue o mesmo ciclo, seja uma landing, um carrossel ou um diagnóstico. Clique num passo para ver o que acontece, quem atua e onde acompanhar.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Reproduzir o ciclo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "01",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Pedido",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sala, Chat, Raio-X ou Comunicações",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "02",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Plano",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Paula PM quebra em tasks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "03",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Task",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "card no Kanban",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "04",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Job",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "motor, modelo e teto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "05",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Execução",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "log ao vivo e livro-razão",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "06",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gate humano",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "você decide",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "07",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Entrega",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fábrica, Studio ou Edição",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "08",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Medir",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "custo, margem e resultado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "as lições voltam para o ofício dos agentes, via Cérebro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Passo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "01",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "de 08",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "entrada",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Pedido",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Toda demanda entra por um lugar conhecido: você na Sala ou no Chat, um caso novo no Raio-X ou uma mensagem triada pela Rebeca em Comunicações.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Quem atua",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Você, Rebeca Recepção, Dora Descoberta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Regra",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nada entra sem origem registrada.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Hoje, no escritório",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Marcos, da Oficina Silva, pediu preço pelo WhatsApp às 14:12.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Onde acompanhar:",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sala de Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "→",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Comunicações",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "→",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Anterior",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Próximo passo",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Três regras que não mudam",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "01",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Local-first",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "O escritório roda em 127.0.0.1. Chaves e dados ficam nesta máquina.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "02",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Teto antes de rodar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Todo job nasce com custo estimado e teto de gasto. Passou, para.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "03",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gate antes do irreversível",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Publicar, pagar, apagar ou mudar escopo sempre espera uma pessoa.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como ler as cores",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Lima",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "a ação decisiva da tela, uma por vez",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Teal",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "fluxo, estado e o que está rodando",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Âmbar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "gate aberto ou atenção",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Vermelho",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "bloqueio ou falha",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO ESCRITÓRIO Sala de Operação Execuções 2 Tasks 7 Decisões 5 Agentes Chat Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 2",
+          "label": null,
+          "text": "Execuções 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks 7",
+          "label": null,
+          "text": "Tasks 7",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Escritório / Como funciona AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Escritório / Como funciona AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Do pedido ao resultado, em oito passos",
+          "label": null,
+          "text": "Do pedido ao resultado, em oito passos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 886,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reproduzir o ciclo",
+          "label": null,
+          "text": "Reproduzir o ciclo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1234,
+            "y": 158,
+            "width": 174,
+            "height": 40
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "01 Pedido Sala, Chat, Raio-X ou Comunicações 02 Plano Paula PM quebra em tasks 03 Task card no Kanban 04 Job motor, modelo e teto 05 Execução log ao vivo e livro-razão 06 Gate humano você decide 07 Entrega Fábrica, Studio ou Edição 08 Medir custo, margem e resultado as lições voltam para o ofício dos agentes, via Cérebro",
+          "label": null,
+          "text": "01 Pedido Sala, Chat, Raio-X ou Comunicações 02 Plano Paula PM quebra em tasks 03 Task card no Kanban 04 Job motor, modelo e teto 05 Execução log ao vivo e livro-razão 06 Gate humano você decide 07 Entrega Fábrica, Studio ou Edição 08 Medir custo, margem e resultado as lições voltam para o ofício dos agentes, via Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 222,
+            "width": 1076,
+            "height": 258
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "01 Pedido Sala, Chat, Raio-X ou Comunicações",
+          "label": null,
+          "text": "01 Pedido Sala, Chat, Raio-X ou Comunicações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 357,
+            "y": 251,
+            "width": 112,
+            "height": 154
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "02 Plano Paula PM quebra em tasks",
+          "label": null,
+          "text": "02 Plano Paula PM quebra em tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 505,
+            "y": 251,
+            "width": 112,
+            "height": 154
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "03 Task card no Kanban",
+          "label": null,
+          "text": "03 Task card no Kanban",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 652,
+            "y": 251,
+            "width": 112,
+            "height": 137
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "04 Job motor, modelo e teto",
+          "label": null,
+          "text": "04 Job motor, modelo e teto",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 800,
+            "y": 251,
+            "width": 112,
+            "height": 137
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "05 Execução log ao vivo e livro-razão",
+          "label": null,
+          "text": "05 Execução log ao vivo e livro-razão",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 947,
+            "y": 251,
+            "width": 112,
+            "height": 154
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "06 Gate humano você decide",
+          "label": null,
+          "text": "06 Gate humano você decide",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1095,
+            "y": 251,
+            "width": 112,
+            "height": 137
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "07 Entrega Fábrica, Studio ou Edição",
+          "label": null,
+          "text": "07 Entrega Fábrica, Studio ou Edição",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 251,
+            "width": 112,
+            "height": 154
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "08 Medir custo, margem e resultado",
+          "label": null,
+          "text": "08 Medir custo, margem e resultado",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1390,
+            "y": 251,
+            "width": 148,
+            "height": 154
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "PASSO 01 DE 08 ENTRADA Pedido Toda demanda entra por um lugar conhecido: você na Sala ou no Chat, um caso novo no Raio-X ou uma mensagem triada pela Rebeca em Comunicações. QUEM ATUA Você, Rebeca Recepção, Dora Descoberta REGRA Nada entra sem origem registrada. HOJE, NO ESCRITÓRIO Marcos, da Oficina Silva, pediu preço pelo WhatsApp às 14:12. Onde acompanhar: Sala de Operação → Comunicações → Anterior Próximo passo",
+          "label": null,
+          "text": "PASSO 01 DE 08 ENTRADA Pedido Toda demanda entra por um lugar conhecido: você na Sala ou no Chat, um caso novo no Raio-X ou uma mensagem triada pela Rebeca em Comunicações. QUEM ATUA Você, Rebeca Recepção, Dora Descoberta REGRA Nada entra sem origem registrada. HOJE, NO ESCRITÓRIO Marcos, da Oficina Silva, pediu preço pelo WhatsApp às 14:12. Onde acompanhar: Sala de Operação → Comunicações → Anterior Próximo passo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 503,
+            "width": 644,
+            "height": 531
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Pedido",
+          "label": null,
+          "text": "Pedido",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 357,
+            "y": 566,
+            "width": 594,
+            "height": 39
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação →",
+          "label": null,
+          "text": "Sala de Operação →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 480,
+            "y": 899,
+            "width": 155,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comunicações →",
+          "label": null,
+          "text": "Comunicações →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 642,
+            "y": 899,
+            "width": 141,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Anterior",
+          "label": null,
+          "text": "Anterior",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 872,
+            "y": 899,
+            "width": 79,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Próximo passo",
+          "label": null,
+          "text": "Próximo passo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 357,
+            "y": 939,
+            "width": 118,
+            "height": 32
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "TRÊS REGRAS QUE NÃO MUDAM 01 Local-first O escritório roda em 127.0.0.1. Chaves e dados ficam nesta máquina. 02 Teto antes de rodar Todo job nasce com custo estimado e teto de gasto. Passou, para. 03 Gate antes do irreversível Publicar, pagar, apagar ou mudar escopo sempre espera uma pessoa. COMO LER AS CORES Lima a ação decisiva da tela, uma por vez Teal fluxo, estado e o que está rodando Âmbar gate aberto ou atenção Vermelho bloqueio ou falha",
+          "label": null,
+          "text": "TRÊS REGRAS QUE NÃO MUDAM 01 Local-first O escritório roda em 127.0.0.1. Chaves e dados ficam nesta máquina. 02 Teto antes de rodar Todo job nasce com custo estimado e teto de gasto. Passou, para. 03 Gate antes do irreversível Publicar, pagar, apagar ou mudar escopo sempre espera uma pessoa. COMO LER AS CORES Lima a ação decisiva da tela, uma por vez Teal fluxo, estado e o que está rodando Âmbar gate aberto ou atenção Vermelho bloqueio ou falha",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 992,
+            "y": 503,
+            "width": 416,
+            "height": 531
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 2",
+          "label": null,
+          "text": "Execuções 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks 7",
+          "label": null,
+          "text": "Tasks 7",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reproduzir o ciclo",
+          "label": null,
+          "text": "Reproduzir o ciclo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1234,
+            "y": 158,
+            "width": 174,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "01 Pedido Sala, Chat, Raio-X ou Comunicações",
+          "label": null,
+          "text": "01 Pedido Sala, Chat, Raio-X ou Comunicações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 357,
+            "y": 251,
+            "width": 112,
+            "height": 154
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "02 Plano Paula PM quebra em tasks",
+          "label": null,
+          "text": "02 Plano Paula PM quebra em tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 505,
+            "y": 251,
+            "width": 112,
+            "height": 154
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "03 Task card no Kanban",
+          "label": null,
+          "text": "03 Task card no Kanban",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 652,
+            "y": 251,
+            "width": 112,
+            "height": 137
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "04 Job motor, modelo e teto",
+          "label": null,
+          "text": "04 Job motor, modelo e teto",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 800,
+            "y": 251,
+            "width": 112,
+            "height": 137
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "05 Execução log ao vivo e livro-razão",
+          "label": null,
+          "text": "05 Execução log ao vivo e livro-razão",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 947,
+            "y": 251,
+            "width": 112,
+            "height": 154
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "06 Gate humano você decide",
+          "label": null,
+          "text": "06 Gate humano você decide",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1095,
+            "y": 251,
+            "width": 112,
+            "height": 137
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "07 Entrega Fábrica, Studio ou Edição",
+          "label": null,
+          "text": "07 Entrega Fábrica, Studio ou Edição",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 251,
+            "width": 112,
+            "height": 154
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "08 Medir custo, margem e resultado",
+          "label": null,
+          "text": "08 Medir custo, margem e resultado",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1390,
+            "y": 251,
+            "width": 148,
+            "height": 154
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação →",
+          "label": null,
+          "text": "Sala de Operação →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 480,
+            "y": 899,
+            "width": 155,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comunicações →",
+          "label": null,
+          "text": "Comunicações →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 642,
+            "y": 899,
+            "width": 141,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Anterior",
+          "label": null,
+          "text": "Anterior",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 872,
+            "y": 899,
+            "width": 79,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Próximo passo",
+          "label": null,
+          "text": "Próximo passo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 357,
+            "y": 939,
+            "width": 118,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

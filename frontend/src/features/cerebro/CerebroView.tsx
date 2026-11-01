@@ -6,7 +6,7 @@ import { api, type KnowledgeEntry } from "../../shared/api/client";
 interface TreeNode {
   id: string;
   label: string;
-  type: "root" | "sector" | "card" | "agent" | "tool";
+  type: "root" | "sector" | "card" | "agent" | "tool" | "note";
   meta: string;
   children?: TreeNode[];
 }
@@ -95,6 +95,9 @@ export function CerebroView() {
   const [searchVault, setSearchVault] = createSignal<string>("");
   const [selectedDomain, setSelectedDomain] = createSignal<string>("Todos");
   const [quickCaptureText, setQuickCaptureText] = createSignal<string>("");
+  const [noteScope, setNoteScope] = createSignal("comercial");
+  const [noteError, setNoteError] = createSignal("");
+  const [graphNotes, setGraphNotes] = createSignal<Array<{ id: string; label: string; scope?: string }>>([]);
   const [collapsedNodes, setCollapsedNodes] = createSignal<Record<string, boolean>>({});
   const [vaultEntries, setVaultEntries] = createSignal<KnowledgeEntry[]>([]);
   const [loadingEntries, setLoadingEntries] = createSignal<boolean>(true);
@@ -112,8 +115,16 @@ export function CerebroView() {
     }
   };
 
+  const loadGraph = async () => {
+    const res = await fetch("/api/v1/knowledge/graph");
+    if (!res.ok) return;
+    const body = (await res.json()) as { nodes: Array<{ id: string; label: string; type: string; scope?: string }> };
+    setGraphNotes(body.nodes.filter((node) => node.type === "note"));
+  };
+
   onMount(() => {
-    fetchKnowledge();
+    void fetchKnowledge();
+    void loadGraph();
   });
 
   const toggleNode = (id: string) => {
@@ -156,6 +167,7 @@ export function CerebroView() {
       case "card": return "var(--slate, #cbd3de)";
       case "agent": return "var(--teal, #1BC5BD)";
       case "tool": return "var(--text-muted, #5E6878)";
+      case "note": return "var(--lime, #B7F34A)";
     }
   };
 
@@ -174,8 +186,40 @@ export function CerebroView() {
     };
 
     walk(GRAPH_DATA, 0);
+    const notes = graphNotes();
+    if (notes.length > 0) {
+      res.push({ node: { id: "notas", label: "Notas", type: "sector", meta: String(notes.length) }, depth: 0 });
+      for (const note of notes) {
+        res.push({
+          node: { id: note.id, label: note.label, type: "note", meta: note.scope || "nota" },
+          depth: 1,
+        });
+      }
+    }
     return res;
   });
+
+  const handleSaveNote = async () => {
+    const text = quickCaptureText().trim();
+    if (!text) {
+      setNoteError("Informe a nota.");
+      return;
+    }
+    setNoteError("");
+    const res = await fetch("/api/v1/knowledge", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: text, content: text, scope: noteScope() }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      setNoteError(typeof body.detail === "string" ? body.detail : "A nota não foi gravada.");
+      return;
+    }
+    setQuickCaptureText("");
+    await fetchKnowledge();
+    await loadGraph();
+  };
 
   const domainsList = [
     "Todos",
@@ -228,6 +272,8 @@ export function CerebroView() {
               return (
                 <button
                   type="button"
+                  data-graph-node={node.type}
+                  data-graph-id={node.id}
                   onClick={() => toggleNode(node.id)}
                   style={{
                     width: "100%",
@@ -385,6 +431,7 @@ export function CerebroView() {
               const src = p.extra_metadata?.source || p.source_path || "Vault";
               return (
                 <article
+                  data-note={p.id}
                   onClick={() => setSelectedArticle(p)}
                   style={{
                     padding: "14px 0",
@@ -484,7 +531,19 @@ export function CerebroView() {
             }}
           />
 
-          <div style={{ display: "flex", "justify-content": "flex-end", "margin-top": "8px" }}>
+          <label style={{ display: "flex", "flex-direction": "column", gap: "6px", "margin-top": "8px", "font-size": "12px", color: "var(--text-muted, #aeb7c4)" }}>
+            Escopo
+            <select aria-label="Escopo" value={noteScope()} onChange={(event) => setNoteScope(event.currentTarget.value)}>
+              <option value="comercial">comercial</option>
+              <option value="psicologia">psicologia</option>
+              <option value="engenharia">engenharia</option>
+            </select>
+          </label>
+          <Show when={noteError()}>
+            <p role="alert">{noteError()}</p>
+          </Show>
+          <div style={{ display: "flex", "justify-content": "flex-end", gap: "8px", "margin-top": "8px" }}>
+            <button type="button" onClick={() => void handleSaveNote()}>Guardar nota</button>
             <button
               type="button"
               onClick={handleSaveCapture}

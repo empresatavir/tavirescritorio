@@ -1,8 +1,10 @@
-import { createSignal, createMemo, createEffect, onCleanup, For, Show } from "solid-js";
+import { createSignal, createMemo, createEffect, onCleanup, onMount, For, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { TvIcon } from "../../shared/components/TvIcon";
-import { cockpitData, syncCockpit, setSelectedJobId } from "../../state/store";
+import { cockpitData, syncCockpit, setSelectedJobId, showToast } from "../../state/store";
+import { api } from "../../shared/api/client";
 import { CreateProjectModal } from "../projetos/CreateProjectModal";
+import { CreateTaskModal } from "../tasks/CreateTaskModal";
 
 export interface RunningJob {
   id: string;
@@ -45,6 +47,19 @@ export interface NeedItem {
 export function SalaOperacaoView() {
   const navigate = useNavigate();
   const [isProjectModalOpen, setIsProjectModalOpen] = createSignal(false);
+  const [taskOpen, setTaskOpen] = createSignal(false);
+  const [greeting, setGreeting] = createSignal("");
+  const [asOf, setAsOf] = createSignal("");
+  const [blockOrder, setBlockOrder] = createSignal(["jobs", "escalados", "cards", "precisa"]);
+  const place = (id: string) => ({ order: String(Math.max(0, blockOrder().indexOf(id))) });
+
+  onMount(() => {
+    void api.getOfficeSettings().then((data) => {
+      setGreeting(data.greeting || "");
+      setAsOf(data.as_of || "");
+      if (data.overview.ordem?.length) setBlockOrder(data.overview.ordem);
+    }).catch(() => undefined);
+  });
 
   createEffect(() => {
     syncCockpit();
@@ -88,6 +103,43 @@ export function SalaOperacaoView() {
     return parts.length ? parts.join(" · ") : "sem fila crítica";
   });
 
+  const dateLine = () => {
+    const parts = new Intl.DateTimeFormat("pt-BR", {
+      timeZone: "America/Sao_Paulo",
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    }).formatToParts(asOf() ? new Date(asOf()) : new Date());
+    const pick = (type: string) => parts.find((part) => part.type === type)?.value || "";
+    return `${pick("weekday")}, ${pick("day")} de ${pick("month")} · Sala de Operação`.toUpperCase();
+  };
+
+  const createTask = async (payload: {
+    title: string;
+    description: string;
+    priority: string;
+    sector: string;
+    dependsOn: string[];
+    file: File | null;
+  }) => {
+    const prioMap: Record<string, string> = { Baixa: "low", baixa: "low", Normal: "normal", normal: "normal", Alta: "high", alta: "high" };
+    const created = await api.createTask({
+      project_id: "tavir-core",
+      title: payload.title,
+      description: payload.description || null,
+      priority: prioMap[payload.priority] || "normal",
+      assignee_agent_id: "pm-projetos",
+      sector: payload.sector || "Estratégia",
+      status: "to_plan",
+      depends_on: payload.dependsOn.length ? payload.dependsOn : null,
+      tags: [],
+    });
+    if (payload.file && created?.id) await api.uploadTaskAttachment(created.id, payload.file);
+    setTaskOpen(false);
+    syncCockpit();
+    showToast("Task criada", "Sala", "success");
+  };
+
   return (
     <div
       data-screen-label="Sala de Operação"
@@ -95,22 +147,30 @@ export function SalaOperacaoView() {
     >
       <div class="flex w-full flex-col gap-5 p-6 pb-12">
         {/* Header */}
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-end justify-between gap-3">
           <div class="min-w-[240px] flex-1">
-            <h1 class="m-0 text-xl font-semibold tracking-tight">Sala de Operação</h1>
+            <p class="m-0 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{dateLine()}</p>
+            <Show when={greeting()}>
+              <p class="m-0 mt-1 text-[30px] font-semibold tracking-[-0.03em]" data-greeting>{greeting()}</p>
+            </Show>
             <p class="m-0 mt-1 text-sm text-[var(--text-secondary)]">{summary()}</p>
           </div>
-          <button
-            type="button"
-            onClick={() => setIsProjectModalOpen(true)}
-            class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#0B1220] transition-opacity hover:opacity-90 shadow-sm cursor-pointer"
-            style={{
-              background: "var(--lime, #B7F34A)",
-            }}
-          >
-            <TvIcon name="plus" width="13" height="13" />
-            <span>Novo Projeto</span>
-          </button>
+          <div class="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setIsProjectModalOpen(true)}
+              class="cursor-pointer rounded-full border border-[rgba(244,246,242,.2)] bg-transparent px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)]"
+            >
+              Novo projeto
+            </button>
+            <button
+              type="button"
+              onClick={() => setTaskOpen(true)}
+              class="cursor-pointer rounded-full border border-[rgba(244,246,242,.2)] bg-transparent px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)]"
+            >
+              Nova task
+            </button>
+          </div>
         </div>
 
         {/* 3 KPI Cards */}
@@ -173,7 +233,7 @@ export function SalaOperacaoView() {
         {/* 4 Big Operational Sections */}
         <div class="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2">
           {/* Section 1: Jobs rodando */}
-          <section class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729]">
+          <section data-sala-block="jobs" style={place("jobs")} class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729]">
             <div class="flex items-center gap-2.5 border-b border-[rgba(244,246,242,.10)] p-3 px-4">
               <span class="text-sm font-semibold text-[var(--cloud)]">Jobs rodando</span>
               <span class="font-mono text-xs text-[var(--muted,#aeb7c4)]">{runningJobs().length}</span>
@@ -233,7 +293,7 @@ export function SalaOperacaoView() {
           </section>
 
           {/* Section 2: Escalados */}
-          <section class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(239,68,68,.35)] bg-[#0f1729]">
+          <section data-sala-block="escalados" style={place("escalados")} class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(239,68,68,.35)] bg-[#0f1729]">
             <div class="flex items-center gap-2.5 border-b border-[rgba(244,246,242,.10)] p-3 px-4">
               <span class="text-sm font-semibold text-[var(--cloud)]">Escalados</span>
               <span class="font-mono text-xs text-[var(--muted,#aeb7c4)]">{escalatedTasks().length}</span>
@@ -282,7 +342,7 @@ export function SalaOperacaoView() {
           </section>
 
           {/* Section 3: Cards ativos */}
-          <section class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729]">
+          <section data-sala-block="cards" style={place("cards")} class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729]">
             <div class="flex items-center gap-2.5 border-b border-[rgba(244,246,242,.10)] p-3 px-4">
               <span class="text-sm font-semibold text-[var(--cloud)]">Cards ativos</span>
               <span class="font-mono text-xs text-[var(--muted,#aeb7c4)]">{activeTasks().length}</span>
@@ -320,7 +380,7 @@ export function SalaOperacaoView() {
           </section>
 
           {/* Section 4: Precisa de você */}
-          <section class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729]">
+          <section data-sala-block="precisa" style={place("precisa")} class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729]">
             <div class="border-b border-[rgba(244,246,242,.10)] p-3 px-4 text-sm font-semibold text-[var(--cloud)]">
               Precisa de você
             </div>
@@ -355,6 +415,11 @@ export function SalaOperacaoView() {
         onCreated={() => {
           syncCockpit();
         }}
+      />
+      <CreateTaskModal
+        isOpen={taskOpen()}
+        onClose={() => setTaskOpen(false)}
+        onCreate={createTask}
       />
     </div>
   );

@@ -1,46 +1,51 @@
-import { createSignal, For, Show } from "solid-js";
-import { modalOpen, setModalOpen, jobs, setJobs, setSelectedJobId, setCurrentScreenId, setCurrentDomainId, showToast, type UiJob } from "../state/store";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import { modalOpen, setModalOpen, setSelectedJobId, setCurrentScreenId, setCurrentDomainId, showToast, syncLiveJobs } from "../state/store";
 import { api } from "../shared/api/client";
 import { TvIcon } from "../shared/components/TvIcon";
 
-const ENGINES = [
-  { id: "Anthropic", logo: "anthropic", hint: "claude-opus-4 · claude-sonnet-4" },
-  { id: "OpenAI", logo: "openai", hint: "gpt-4o · dall-e-3" },
-];
-
-const MODELS: Record<string, Array<[string, string]>> = {
-  Anthropic: [
-    ["claude-opus-4", "Raciocínio longo · mais caro"],
-    ["claude-sonnet-4", "Padrão da operação · equilibrado"],
-  ],
-  OpenAI: [
-    ["gpt-4o", "Uso geral · rápido"],
-    ["dall-e-3", "Geração de imagem"],
-  ],
-};
-
-const EFFORTS = [
-  ["baixo", "Resposta direta, sem revisão interna"],
-  ["médio", "Planeja antes de executar"],
-  ["alto", "Planeja, executa e revisa com checkpoint"],
-];
-
 export function JobModal() {
   const [step, setStep] = createSignal(0);
-  const [engine, setEngine] = createSignal("Anthropic");
-  const [model, setModel] = createSignal("claude-sonnet-4");
-  const [effort, setEffort] = createSignal("médio");
+  const [engine, setEngine] = createSignal("");
+  const [engineLabel, setEngineLabel] = createSignal("Motor padrão");
+  const [models, setModels] = createSignal<Array<{ id: string; label: string; efforts: Array<{ id: string; label: string }> }>>([]);
+  const [model, setModel] = createSignal("");
+  const [effort, setEffort] = createSignal("");
+  const [engineOn, setEngineOn] = createSignal(false);
   const [ceiling, setCeiling] = createSignal("5.00");
+  const [ceilingError, setCeilingError] = createSignal("");
   const [title, setTitle] = createSignal("");
   const [loading, setLoading] = createSignal(false);
+  const efforts = createMemo(() => models().find((item) => item.id === model())?.efforts || []);
+
+  createEffect(() => {
+    if (!modalOpen()) return;
+    void api.getOfficeAi().then((office) => {
+      const chosen = office.engines.find((item) => item.id === office.provider) || office.engines[0];
+      const list = chosen?.models || [];
+      setEngine(chosen?.id || office.provider);
+      setEngineLabel(office.provider_label || chosen?.label || office.provider);
+      setModels(list);
+      setEngineOn(office.engine_enabled !== false && list.length > 0);
+      const nextModel = list.find((item) => item.id === office.model) || list[0];
+      setModel(nextModel?.id || "");
+      const nextEffort = nextModel?.efforts.find((item) => item.id === office.effort) || nextModel?.efforts[0];
+      setEffort(nextModel?.id === "auto-smart" ? "" : nextEffort?.id || "");
+    }).catch(() => setEngineOn(false));
+  });
 
   const resetForm = () => {
     setStep(0);
-    setEngine("Anthropic");
-    setModel("claude-sonnet-4");
-    setEffort("médio");
     setCeiling("5.00");
+    setCeilingError("");
     setTitle("");
+  };
+
+  const ceilingValue = () => {
+    const raw = ceiling().trim();
+    if (!raw) return null;
+    const value = Number(raw);
+    if (!Number.isFinite(value) || value <= 0) return null;
+    return value;
   };
 
   const handleClose = () => {
@@ -54,51 +59,30 @@ export function JobModal() {
       return;
     }
 
-    // Terminal step: Create job
+    const teto = ceilingValue();
+    if (teto == null) {
+      setCeilingError("Informe o teto para continuar.");
+      return;
+    }
+    setCeilingError("");
     setLoading(true);
     try {
-      const jobTitle = title().trim() || `Novo job — ${model()}`;
-      let createdJobId = `job-${String(jobs().length + 1).padStart(3, "0")}`;
-
-      // Call FastAPI backend
-      try {
-        const resp = await api.createJob({
-          command: "echo 'Executando novo job com sucesso'",
-          timeout: 30,
-        });
-        if (resp && resp.id) {
-          createdJobId = resp.id;
-        }
-      } catch (err) {
-        console.warn("Backend job call fallback to local UI job:", err);
-      }
-
-      const newJob: UiJob = {
-        id: createdJobId,
-        title: jobTitle,
-        agentName: "Orquestrador",
-        status: "running" as const,
-        priority: "normal" as const,
-        progress: 10,
-        startedAt: "agora",
-        model: model(),
-        effort: effort(),
-        cost: 0.12,
-        ceiling: parseFloat(ceiling()) || 5.0,
-        log: [
-          ["agora", "info" as const, `Job iniciado no motor ${engine()} (${model()})`],
-          ["agora", "info" as const, `Esforço: ${effort()} · Teto: US$ ${ceiling()}`],
-        ],
-      };
-
-      setJobs([newJob, ...jobs()]);
-      setSelectedJobId(createdJobId);
+      const resp = await api.createJob({
+        command: "echo hello-tavir",
+        timeout: 30,
+        model_name: model() || undefined,
+        effort: effort() || undefined,
+        model_provider: engine() || undefined,
+        budget_ceiling: teto,
+      });
+      setSelectedJobId(resp.id);
       setCurrentDomainId("op");
       setCurrentScreenId("exec");
-      showToast(`Job iniciado com sucesso: ${createdJobId}`, "Job em execução", "action");
+      showToast("Job em execução", "Job em execução", "action");
       handleClose();
+      await syncLiveJobs();
     } catch (e: any) {
-      showToast(e.message || "Erro ao iniciar job", "Erro", "danger");
+      setCeilingError(e.message || "Erro ao iniciar job");
     } finally {
       setLoading(false);
     }
@@ -121,6 +105,10 @@ export function JobModal() {
         onClick={handleClose}
       >
         <div
+          class="modal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Iniciar novo job"
           onClick={(e) => e.stopPropagation()}
           style={{
             width: "520px",
@@ -207,44 +195,32 @@ export function JobModal() {
 
           {/* Step Contents */}
           <div style={{ "min-height": "180px" }}>
-            {/* Step 0: Motor */}
+            {/* Step 0: Motor padrão do escritório */}
             <Show when={step() === 0}>
               <div style={{ display: "flex", "flex-direction": "column", gap: "10px" }}>
                 <p style={{ "font-size": "13px", color: "var(--text-secondary)", margin: 0 }}>
-                  Qual motor de IA executará o job?
+                  Este job usa o motor padrão definido em Integrações.
                 </p>
-                <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
-                  <For each={ENGINES}>
-                    {(eng) => {
-                      const sel = () => engine() === eng.id;
-                      return (
-                        <div
-                          onClick={() => {
-                            setEngine(eng.id);
-                            setModel(MODELS[eng.id][0][0]);
-                          }}
-                          style={{
-                            display: "flex",
-                            "align-items": "center",
-                            gap: "12px",
-                            padding: "12px 14px",
-                            "border-radius": "var(--radius-md)",
-                            border: `1px solid ${sel() ? "var(--lime)" : "var(--border-default)"}`,
-                            background: sel() ? "rgba(183,243,74,.08)" : "var(--surface-0)",
-                            cursor: "pointer",
-                            transition: "all var(--duration-fast) var(--ease-standard)",
-                          }}
-                        >
-                          <TvIcon logo={eng.logo} width="22" height="22" />
-                          <div style={{ flex: 1 }}>
-                            <div style={{ "font-weight": 600, color: "var(--text-primary)" }}>{eng.id}</div>
-                            <div style={{ "font-size": "11.5px", color: "var(--text-muted)" }}>{eng.hint}</div>
-                          </div>
-                          {sel() && <span style={{ color: "var(--lime)", "font-weight": 700 }}>✓</span>}
-                        </div>
-                      );
-                    }}
-                  </For>
+                <div
+                  style={{
+                    display: "flex",
+                    "align-items": "center",
+                    gap: "12px",
+                    padding: "12px 14px",
+                    "border-radius": "var(--radius-md)",
+                    border: "1px solid var(--lime)",
+                    background: "rgba(183,243,74,.08)",
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div style={{ "font-weight": 600, color: "var(--text-primary)" }}>{engineLabel()}</div>
+                    <div style={{ "font-size": "11.5px", color: "var(--text-muted)" }}>
+                      {engineOn()
+                        ? "Modelos e esforços vêm deste motor."
+                        : "O motor padrão está desligado. Ligue-o em Integrações."}
+                    </div>
+                  </div>
+                  <span style={{ color: "var(--lime)", "font-weight": 700 }}>✓</span>
                 </div>
               </div>
             </Show>
@@ -253,15 +229,19 @@ export function JobModal() {
             <Show when={step() === 1}>
               <div style={{ display: "flex", "flex-direction": "column", gap: "10px" }}>
                 <p style={{ "font-size": "13px", color: "var(--text-secondary)", margin: 0 }}>
-                  Selecione o modelo do provedor {engine()}:
+                  Modelos de {engineLabel()}:
                 </p>
                 <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
-                  <For each={MODELS[engine()] || []}>
-                    {([mId, mDesc]) => {
-                      const sel = () => model() === mId;
+                  <For each={models()}>
+                    {(item) => {
+                      const sel = () => model() === item.id;
                       return (
                         <div
-                          onClick={() => setModel(mId)}
+                          onClick={() => {
+                            setModel(item.id);
+                            const next = item.efforts.find((entry) => entry.id === effort()) || item.efforts[0];
+                            setEffort(item.id === "auto-smart" ? "" : next?.id || "");
+                          }}
                           style={{
                             display: "flex",
                             "align-items": "center",
@@ -275,10 +255,10 @@ export function JobModal() {
                           }}
                         >
                           <div style={{ flex: 1 }}>
-                            <div style={{ "font-family": "var(--font-mono)", "font-weight": 600, color: "var(--text-primary)" }}>
-                              {mId}
+                            <div style={{ "font-weight": 600, color: "var(--text-primary)" }}>{item.label}</div>
+                            <div style={{ "font-family": "var(--font-mono)", "font-size": "11.5px", color: "var(--text-muted)" }}>
+                              {item.id}
                             </div>
-                            <div style={{ "font-size": "11.5px", color: "var(--text-muted)" }}>{mDesc}</div>
                           </div>
                           {sel() && <span style={{ color: "var(--lime)", "font-weight": 700 }}>✓</span>}
                         </div>
@@ -292,40 +272,46 @@ export function JobModal() {
             {/* Step 2: Esforço */}
             <Show when={step() === 2}>
               <div style={{ display: "flex", "flex-direction": "column", gap: "10px" }}>
-                <p style={{ "font-size": "13px", color: "var(--text-secondary)", margin: 0 }}>
-                  Quanto esforço operacional deve ser dedicado?
-                </p>
-                <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
-                  <For each={EFFORTS}>
-                    {([eId, eDesc]) => {
-                      const sel = () => effort() === eId;
-                      return (
-                        <div
-                          onClick={() => setEffort(eId)}
-                          style={{
-                            display: "flex",
-                            "align-items": "center",
-                            gap: "12px",
-                            padding: "12px 14px",
-                            "border-radius": "var(--radius-md)",
-                            border: `1px solid ${sel() ? "var(--lime)" : "var(--border-default)"}`,
-                            background: sel() ? "rgba(183,243,74,.08)" : "var(--surface-0)",
-                            cursor: "pointer",
-                            transition: "all var(--duration-fast) var(--ease-standard)",
-                          }}
-                        >
-                          <div style={{ flex: 1 }}>
-                            <div style={{ "font-weight": 600, color: "var(--text-primary)", "text-transform": "capitalize" }}>
-                              {eId}
+                <Show
+                  when={model() !== "auto-smart" && efforts().length > 0}
+                  fallback={
+                    <p style={{ "font-size": "13px", color: "var(--text-secondary)", margin: 0 }}>
+                      O modelo é Auto. Esta instalação não aplica Cost, Balance ou Intelligence.
+                    </p>
+                  }
+                >
+                  <p style={{ "font-size": "13px", color: "var(--text-secondary)", margin: 0 }}>
+                    Esforços disponíveis neste modelo:
+                  </p>
+                  <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
+                    <For each={efforts()}>
+                      {(item) => {
+                        const sel = () => effort() === item.id;
+                        return (
+                          <div
+                            onClick={() => setEffort(item.id)}
+                            style={{
+                              display: "flex",
+                              "align-items": "center",
+                              gap: "12px",
+                              padding: "12px 14px",
+                              "border-radius": "var(--radius-md)",
+                              border: `1px solid ${sel() ? "var(--lime)" : "var(--border-default)"}`,
+                              background: sel() ? "rgba(183,243,74,.08)" : "var(--surface-0)",
+                              cursor: "pointer",
+                              transition: "all var(--duration-fast) var(--ease-standard)",
+                            }}
+                          >
+                            <div style={{ flex: 1 }}>
+                              <div style={{ "font-weight": 600, color: "var(--text-primary)" }}>{item.label}</div>
                             </div>
-                            <div style={{ "font-size": "11.5px", color: "var(--text-muted)" }}>{eDesc}</div>
+                            {sel() && <span style={{ color: "var(--lime)", "font-weight": 700 }}>✓</span>}
                           </div>
-                          {sel() && <span style={{ color: "var(--lime)", "font-weight": 700 }}>✓</span>}
-                        </div>
-                      );
-                    }}
-                  </For>
-                </div>
+                        );
+                      }}
+                    </For>
+                  </div>
+                </Show>
               </div>
             </Show>
 
@@ -366,8 +352,12 @@ export function JobModal() {
                       type="number"
                       step="0.5"
                       min="0.5"
+                      aria-label="Teto de gasto"
                       value={ceiling()}
-                      onInput={(e) => setCeiling(e.currentTarget.value)}
+                      onInput={(e) => {
+                        setCeiling(e.currentTarget.value);
+                        setCeilingError("");
+                      }}
                       style={{
                         width: "120px",
                         height: "40px",
@@ -385,6 +375,11 @@ export function JobModal() {
                   <span style={{ "font-size": "11px", color: "var(--text-muted)", "margin-top": "4px", display: "block" }}>
                     O job será interrompido automaticamente caso ultrapasse este orçamento.
                   </span>
+                  <Show when={ceilingError()}>
+                    <span style={{ "font-size": "12px", color: "var(--danger, #ef4444)", "margin-top": "6px", display: "block" }}>
+                      {ceilingError()}
+                    </span>
+                  </Show>
                 </div>
               </div>
             </Show>
@@ -410,7 +405,7 @@ export function JobModal() {
 
             <button
               onClick={handleNext}
-              disabled={loading()}
+              disabled={loading() || !engineOn() || !model()}
               style={{
                 height: "36px",
                 padding: "0 20px",

@@ -6,3 +6,4 @@
 - **Themes:** Always use semantic tokens (`var(--text-primary)`, `var(--text-secondary)`, `var(--surface-0)`) instead of hardcoded white/cloud text in generic views.
 - **Ports:** FastAPI backend runs on port **9001** and Vite frontend on port **9002**. Before starting the dev stack, ensure old processes on these ports are killed with `parar_escritorio.bat`. Do not reference ports 8000 or 5173 in docs or scripts; `.claude/launch.json` is intentionally left unchanged.
 - **Windows Batch Scripts:** All `.bat` files MUST use CRLF (`\r\n`) and UTF-8 (`chcp 65001`).
+- **Shell:** Rail `64px` (botões `44×44`, marca `30px`, ícone `20px`), SubNav `236px` (item `40px`, ícone `18px`, wordmark altura `15px`), header `64px`. Até `860px` a SubNav some e o texto da busca fica oculto. Não altere `.claude/launch.json`.

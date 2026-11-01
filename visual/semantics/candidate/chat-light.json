@@ -1,0 +1,1914 @@
+{
+  "screenId": "chat-light",
+  "side": "candidate",
+  "capturedUrl": "http://127.0.0.1:9196/chat",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:9196/chat",
+      "title": "TAVIR Escritório — Painel Operacional",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 33,
+        "nav": 1,
+        "img": 2,
+        "button": 32,
+        "span": 65,
+        "svg": 19,
+        "path": 37,
+        "polygon": 3,
+        "polyline": 2,
+        "rect": 3,
+        "circle": 5,
+        "line": 14,
+        "aside": 2,
+        "header": 1,
+        "main": 1,
+        "input": 1,
+        "section": 1,
+        "textarea": 1
+      },
+      "visibleText": [
+        {
+          "text": "🌙",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Tema escuro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sala de Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Execuções",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tasks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decisões",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Chat",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Chat",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Frontend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Backend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nova conversa",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Histórico",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AG",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Variável SUPABASE_URL no deploy Meridian",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agente · há 1 h",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Apagar",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "AG",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Priorização do roadmap Q4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agente · ontem",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Apagar",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "MI",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Maicon",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Arquiteto de Integrações & Análise de Ferramentas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Engenharia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "▾",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Claude",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "gpt-4o",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "médio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Apagar",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Configurações",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Por que o deploy da landing Meridian falhou?",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "MI",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Maicon",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "gpt-4o · esforço médio · inspiração 30",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "O build parou ao ler SUPABASE_URL, que não está cadastrada na conta vercel · tavir travada no projeto meridian-landing. O checkpoint ficou em 45%. Assim que a variável for cadastrada, refaço o build a partir desse ponto.",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Imagem",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Shift + Enter para pular linha · Enter para enviar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Enviar",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema 🌙 Tema escuro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 14,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "🌙 Tema escuro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: light)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "Escritório OPERAÇÃO Sala de Operação Execuções 3 Tasks Decisões 5 Agentes Chat Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 80,
+            "y": 13,
+            "width": 203,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 3",
+          "label": null,
+          "text": "Execuções 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks",
+          "label": null,
+          "text": "Tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 308,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Operação / Chat office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Operação / Chat office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": null,
+          "name": "Indicador de dados operacionais ao vivo",
+          "label": null,
+          "text": "office.py · SQLite ao vivo",
+          "placeholder": null,
+          "title": "Indicador de dados operacionais ao vivo",
+          "rect": {
+            "x": 446,
+            "y": 20,
+            "width": 156,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          }
+        },
+        {
+          "tag": "main",
+          "id": null,
+          "role": "main",
+          "name": "Nova conversa HISTÓRICO AG Variável SUPABASE_URL no deploy Meridian Agente · há 1 h Apagar AG Priorização do roadmap Q4 Agente · ontem Apagar MI Maicon Arquiteto de Integrações & Análise de Ferramentas · Engenharia ▾ Claude · gpt-4o médio Apagar Configurações Por que o deploy da landing Meridian falhou? MI Maicon gpt-4o · esforço médio · inspiração 30 O build parou ao ler SUPABASE_URL, que não está cadastrada na conta vercel · tavir travada no projeto meridian-landing. O checkpoint ficou em 45%. Assim que a variável for cadastrada, refaço o build a partir desse ponto. Imagem Shift + Enter para pular linha · Enter para enviar Enviar",
+          "label": null,
+          "text": "Nova conversa HISTÓRICO AG Variável SUPABASE_URL no deploy Meridian Agente · há 1 h Apagar AG Priorização do roadmap Q4 Agente · ontem Apagar MI Maicon Arquiteto de Integrações & Análise de Ferramentas · Engenharia ▾ Claude · gpt-4o médio Apagar Configurações Por que o deploy da landing Meridian falhou? MI Maicon gpt-4o · esforço médio · inspiração 30 O build parou ao ler SUPABASE_URL, que não está cadastrada na conta vercel · tavir travada no projeto meridian-landing. O checkpoint ficou em 45%. Assim que a variável for cadastrada, refaço o build a partir desse ponto. Imagem Shift + Enter para pular linha · Enter para enviar Enviar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 1140,
+            "height": 836
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Histórico de conversas",
+          "label": "Histórico de conversas",
+          "text": "Nova conversa HISTÓRICO AG Variável SUPABASE_URL no deploy Meridian Agente · há 1 h Apagar AG Priorização do roadmap Q4 Agente · ontem Apagar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 240,
+            "height": 836
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova conversa",
+          "label": null,
+          "text": "Nova conversa",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 312,
+            "y": 78,
+            "width": 215,
+            "height": 34
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar conversas",
+          "label": "Buscar conversas",
+          "text": null,
+          "placeholder": "Buscar no histórico",
+          "title": null,
+          "rect": {
+            "x": 312,
+            "y": 120,
+            "width": 215,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AG Variável SUPABASE_URL no deploy Meridian Agente · há 1 h",
+          "label": null,
+          "text": "AG Variável SUPABASE_URL no deploy Meridian Agente · há 1 h",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 312,
+            "y": 193,
+            "width": 156,
+            "height": 39
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Apagar Variável SUPABASE_URL no deploy Meridian",
+          "label": "Apagar Variável SUPABASE_URL no deploy Meridian",
+          "text": "Apagar",
+          "placeholder": null,
+          "title": "Apagar conversa",
+          "rect": {
+            "x": 472,
+            "y": 199,
+            "width": 55,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AG Priorização do roadmap Q4 Agente · ontem",
+          "label": null,
+          "text": "AG Priorização do roadmap Q4 Agente · ontem",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 312,
+            "y": 242,
+            "width": 156,
+            "height": 39
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Apagar Priorização do roadmap Q4",
+          "label": "Apagar Priorização do roadmap Q4",
+          "text": "Apagar",
+          "placeholder": null,
+          "title": "Apagar conversa",
+          "rect": {
+            "x": 472,
+            "y": 248,
+            "width": 55,
+            "height": 28
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "MI Maicon Arquiteto de Integrações & Análise de Ferramentas · Engenharia ▾ Claude · gpt-4o médio Apagar Configurações Por que o deploy da landing Meridian falhou? MI Maicon gpt-4o · esforço médio · inspiração 30 O build parou ao ler SUPABASE_URL, que não está cadastrada na conta vercel · tavir travada no projeto meridian-landing. O checkpoint ficou em 45%. Assim que a variável for cadastrada, refaço o build a partir desse ponto. Imagem Shift + Enter para pular linha · Enter para enviar Enviar",
+          "label": null,
+          "text": "MI Maicon Arquiteto de Integrações & Análise de Ferramentas · Engenharia ▾ Claude · gpt-4o médio Apagar Configurações Por que o deploy da landing Meridian falhou? MI Maicon gpt-4o · esforço médio · inspiração 30 O build parou ao ler SUPABASE_URL, que não está cadastrada na conta vercel · tavir travada no projeto meridian-landing. O checkpoint ficou em 45%. Assim que a variável for cadastrada, refaço o build a partir desse ponto. Imagem Shift + Enter para pular linha · Enter para enviar Enviar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 540,
+            "y": 64,
+            "width": 900,
+            "height": 836
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Selecionar agente",
+          "label": "Selecionar agente",
+          "text": "MI Maicon Arquiteto de Integrações & Análise de Ferramentas · Engenharia ▾",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 560,
+            "y": 76,
+            "width": 433,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Apagar",
+          "label": null,
+          "text": "Apagar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1217,
+            "y": 81,
+            "width": 67,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1293,
+            "y": 81,
+            "width": 127,
+            "height": 32
+          }
+        },
+        {
+          "tag": "textarea",
+          "id": null,
+          "role": "textbox",
+          "name": "Mensagem",
+          "label": "Mensagem",
+          "text": null,
+          "placeholder": "Solicitação para Maicon…",
+          "title": null,
+          "rect": {
+            "x": 593,
+            "y": 764,
+            "width": 794,
+            "height": 65
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Anexar imagem",
+          "label": "Anexar imagem",
+          "text": "Imagem",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 593,
+            "y": 837,
+            "width": 72,
+            "height": 34
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Enviar",
+          "label": "Enviar",
+          "text": "Enviar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 837,
+            "width": 93,
+            "height": 34
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "🌙 Tema escuro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: light)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 3",
+          "label": null,
+          "text": "Execuções 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks",
+          "label": null,
+          "text": "Tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 308,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova conversa",
+          "label": null,
+          "text": "Nova conversa",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 312,
+            "y": 78,
+            "width": 215,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar conversas",
+          "label": "Buscar conversas",
+          "text": null,
+          "placeholder": "Buscar no histórico",
+          "title": null,
+          "rect": {
+            "x": 312,
+            "y": 120,
+            "width": 215,
+            "height": 32
+          },
+          "kind": "field",
+          "type": "text",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AG Variável SUPABASE_URL no deploy Meridian Agente · há 1 h",
+          "label": null,
+          "text": "AG Variável SUPABASE_URL no deploy Meridian Agente · há 1 h",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 312,
+            "y": 193,
+            "width": 156,
+            "height": 39
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Apagar Variável SUPABASE_URL no deploy Meridian",
+          "label": "Apagar Variável SUPABASE_URL no deploy Meridian",
+          "text": "Apagar",
+          "placeholder": null,
+          "title": "Apagar conversa",
+          "rect": {
+            "x": 472,
+            "y": 199,
+            "width": 55,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AG Priorização do roadmap Q4 Agente · ontem",
+          "label": null,
+          "text": "AG Priorização do roadmap Q4 Agente · ontem",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 312,
+            "y": 242,
+            "width": 156,
+            "height": 39
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Apagar Priorização do roadmap Q4",
+          "label": "Apagar Priorização do roadmap Q4",
+          "text": "Apagar",
+          "placeholder": null,
+          "title": "Apagar conversa",
+          "rect": {
+            "x": 472,
+            "y": 248,
+            "width": 55,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Selecionar agente",
+          "label": "Selecionar agente",
+          "text": "MI Maicon Arquiteto de Integrações & Análise de Ferramentas · Engenharia ▾",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 560,
+            "y": 76,
+            "width": 433,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Apagar",
+          "label": null,
+          "text": "Apagar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1217,
+            "y": 81,
+            "width": 67,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1293,
+            "y": 81,
+            "width": 127,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "textarea",
+          "id": null,
+          "role": "textbox",
+          "name": "Mensagem",
+          "label": "Mensagem",
+          "text": null,
+          "placeholder": "Solicitação para Maicon…",
+          "title": null,
+          "rect": {
+            "x": 593,
+            "y": 764,
+            "width": 794,
+            "height": 65
+          },
+          "kind": "field",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Anexar imagem",
+          "label": "Anexar imagem",
+          "text": "Imagem",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 593,
+            "y": 837,
+            "width": 72,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Enviar",
+          "label": "Enviar",
+          "text": "Enviar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 837,
+            "width": 93,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": true,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 30,
+          "height": 30
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 203,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

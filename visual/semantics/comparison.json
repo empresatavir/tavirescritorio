@@ -1,0 +1,5349 @@
+{
+  "metric": "exact_normalized_multiset_comparison_of_visible_text_controls_and_dialog_names",
+  "records": [
+    {
+      "screenId": "sala-dark",
+      "referencePresent": true,
+      "candidatePresent": true,
+      "text": {
+        "missing": [
+          {
+            "value": "2",
+            "count": 1
+          },
+          {
+            "value": "7",
+            "count": 1
+          },
+          {
+            "value": "ao vivo",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "☀️",
+            "count": 1
+          },
+          {
+            "value": "3",
+            "count": 1
+          },
+          {
+            "value": "office.py · SQLite ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Frontend",
+            "count": 1
+          },
+          {
+            "value": "Backend",
+            "count": 1
+          },
+          {
+            "value": "QUINTA-FEIRA, 29 DE OUTUBRO · SALA DE OPERAÇÃO",
+            "count": 1
+          },
+          {
+            "value": "Boa tarde, Carlos.",
+            "count": 1
+          },
+          {
+            "value": "0 cards ativos · 0 escalados · 0 jobs rodando",
+            "count": 1
+          },
+          {
+            "value": "Novo projeto",
+            "count": 1
+          },
+          {
+            "value": "Nova task",
+            "count": 1
+          },
+          {
+            "value": "Cards ativos",
+            "count": 2
+          },
+          {
+            "value": "Tasks →",
+            "count": 2
+          },
+          {
+            "value": "0",
+            "count": 10
+          },
+          {
+            "value": "fluxo em dia",
+            "count": 1
+          },
+          {
+            "value": "Escalados",
+            "count": 2
+          },
+          {
+            "value": "Bloqueios →",
+            "count": 2
+          },
+          {
+            "value": "sem gate humano aberto",
+            "count": 1
+          },
+          {
+            "value": "Jobs rodando",
+            "count": 2
+          },
+          {
+            "value": "Execuções →",
+            "count": 2
+          },
+          {
+            "value": "sem fila crítica",
+            "count": 1
+          },
+          {
+            "value": "Nenhum job rodando agora",
+            "count": 1
+          },
+          {
+            "value": "Precisa de você",
+            "count": 1
+          },
+          {
+            "value": "Aprovações pendentes",
+            "count": 1
+          },
+          {
+            "value": "0 autorizações aguardando decisão",
+            "count": 1
+          },
+          {
+            "value": "Execuções com falha",
+            "count": 1
+          },
+          {
+            "value": "0 jobs com erro requerem remediação",
+            "count": 1
+          },
+          {
+            "value": "Bloqueios",
+            "count": 1
+          },
+          {
+            "value": "tarefas com escalação ativa",
+            "count": 1
+          },
+          {
+            "value": "Alterações pendentes",
+            "count": 1
+          },
+          {
+            "value": "0 homologações aguardando decisão",
+            "count": 1
+          }
+        ],
+        "matchedCount": 22,
+        "referenceCount": 25,
+        "candidateCount": 67
+      },
+      "controls": {
+        "missing": [
+          {
+            "value": "control | button | TAVIR, ir para a Sala de Operação | TAVIR, ir para a Sala de Operação |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Carlos, CEO. Sessão | Carlos, CEO. Sessão |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 2 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks 7 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… Ctrl K |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar job |  |  | ",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "control | button | Gerenciar sessão do operador | Gerenciar sessão do operador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 3 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Frontend | Reiniciar Frontend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Backend | Reiniciar Backend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… (Ctrl K) | Buscar telas, tasks, agentes… (Ctrl K) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar novo job operacional | Iniciar novo job operacional |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Novo projeto |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Nova task |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | CARDS ATIVOS Tasks → 0 fluxo em dia |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | ESCALADOS Bloqueios → 0 sem gate humano aberto |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | JOBS RODANDO Execuções → 0 sem fila crítica |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Bloqueios → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Aprovações pendentes 0 autorizações aguardando decisão 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções com falha 0 jobs com erro requerem remediação 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Bloqueios tarefas com escalação ativa 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Alterações pendentes 0 homologações aguardando decisão 0 |  |  | ",
+            "count": 1
+          }
+        ],
+        "matchedCount": 15,
+        "referenceCount": 21,
+        "candidateCount": 34
+      },
+      "dialogs": {
+        "missing": [],
+        "extra": [],
+        "matchedCount": 0,
+        "referenceCount": 0,
+        "candidateCount": 0
+      }
+    },
+    {
+      "screenId": "sala-light",
+      "referencePresent": true,
+      "candidatePresent": true,
+      "text": {
+        "missing": [
+          {
+            "value": "2",
+            "count": 3
+          },
+          {
+            "value": "7",
+            "count": 2
+          },
+          {
+            "value": "5",
+            "count": 3
+          },
+          {
+            "value": "ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Quinta, 29 de outubro · Sala de Operação",
+            "count": 1
+          },
+          {
+            "value": "2 jobs rodando, 5 decisões esperando você, 2 cards em gate. O resto segue sem bloqueio.",
+            "count": 1
+          },
+          {
+            "value": "O que pede você",
+            "count": 1
+          },
+          {
+            "value": "pendentes",
+            "count": 1
+          },
+          {
+            "value": "Abrir Decisões →",
+            "count": 1
+          },
+          {
+            "value": "DD",
+            "count": 1
+          },
+          {
+            "value": "Deploy landing Meridian — variável ausente",
+            "count": 1
+          },
+          {
+            "value": "Davi DevOps",
+            "count": 2
+          },
+          {
+            "value": "·",
+            "count": 11
+          },
+          {
+            "value": "Checkpoint",
+            "count": 1
+          },
+          {
+            "value": "há 2 h",
+            "count": 1
+          },
+          {
+            "value": "impacto alto",
+            "count": 2
+          },
+          {
+            "value": "Decidir",
+            "count": 3
+          },
+          {
+            "value": "AN",
+            "count": 1
+          },
+          {
+            "value": "Roadmap Q4 IA Livros — aprovar priorização",
+            "count": 1
+          },
+          {
+            "value": "Arquiteto de Nicho",
+            "count": 1
+          },
+          {
+            "value": "Autorização",
+            "count": 2
+          },
+          {
+            "value": "há 3 h",
+            "count": 1
+          },
+          {
+            "value": "PP",
+            "count": 1
+          },
+          {
+            "value": "Gasto mensal acima do teto — modelo opus-4",
+            "count": 1
+          },
+          {
+            "value": "Paula PM",
+            "count": 1
+          },
+          {
+            "value": "há 40 min",
+            "count": 1
+          },
+          {
+            "value": "impacto médio",
+            "count": 1
+          },
+          {
+            "value": "Teto do mês · outubro",
+            "count": 1
+          },
+          {
+            "value": "Finanças →",
+            "count": 1
+          },
+          {
+            "value": "US$ 212",
+            "count": 1
+          },
+          {
+            "value": "de US$ 300",
+            "count": 1
+          },
+          {
+            "value": "Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62.",
+            "count": 1
+          },
+          {
+            "value": "Custo diário · últimos 14 dias · dados do protótipo",
+            "count": 1
+          },
+          {
+            "value": "1 na fila · 1 com falha",
+            "count": 1
+          },
+          {
+            "value": "3 em execução",
+            "count": 1
+          },
+          {
+            "value": "Gates abertos",
+            "count": 1
+          },
+          {
+            "value": "mais antigo há 5 h",
+            "count": 1
+          },
+          {
+            "value": "Custo hoje",
+            "count": 1
+          },
+          {
+            "value": "US$ 8,40",
+            "count": 1
+          },
+          {
+            "value": "teto diário US$ 12",
+            "count": 1
+          },
+          {
+            "value": "Jobs ao vivo",
+            "count": 1
+          },
+          {
+            "value": "rodando",
+            "count": 2
+          },
+          {
+            "value": "NS",
+            "count": 1
+          },
+          {
+            "value": "SEO da landing principal",
+            "count": 1
+          },
+          {
+            "value": "Nina SEO",
+            "count": 2
+          },
+          {
+            "value": "claude-sonnet-4",
+            "count": 2
+          },
+          {
+            "value": "64",
+            "count": 1
+          },
+          {
+            "value": "%",
+            "count": 2
+          },
+          {
+            "value": "US$",
+            "count": 2
+          },
+          {
+            "value": "1,88",
+            "count": 1
+          },
+          {
+            "value": "de",
+            "count": 2
+          },
+          {
+            "value": "8",
+            "count": 1
+          },
+          {
+            "value": "AA",
+            "count": 1
+          },
+          {
+            "value": "Carrossel Multiverso ep. 14",
+            "count": 1
+          },
+          {
+            "value": "Adriano Arte",
+            "count": 2
+          },
+          {
+            "value": "42",
+            "count": 1
+          },
+          {
+            "value": "0,95",
+            "count": 1
+          },
+          {
+            "value": "Esteiras dos módulos",
+            "count": 1
+          },
+          {
+            "value": "Módulos →",
+            "count": 1
+          },
+          {
+            "value": "Meridian — landing institucional",
+            "count": 1
+          },
+          {
+            "value": "Fábrica",
+            "count": 2
+          },
+          {
+            "value": "etapa 6 de 9 · QA",
+            "count": 1
+          },
+          {
+            "value": "gate",
+            "count": 1
+          },
+          {
+            "value": "Multiverso · carrossel ep. 14",
+            "count": 1
+          },
+          {
+            "value": "Studio",
+            "count": 1
+          },
+          {
+            "value": "etapa 3 de 5 · Arte",
+            "count": 1
+          },
+          {
+            "value": "Loja da Rua · presença local",
+            "count": 1
+          },
+          {
+            "value": "Raio-X",
+            "count": 1
+          },
+          {
+            "value": "etapa 2 de 6 · Coleta",
+            "count": 1
+          },
+          {
+            "value": "coleta",
+            "count": 1
+          },
+          {
+            "value": "Livro-razão da sala",
+            "count": 1
+          },
+          {
+            "value": "hoje",
+            "count": 1
+          },
+          {
+            "value": "Toda ação humana ou de agente vira linha aqui.",
+            "count": 1
+          },
+          {
+            "value": "14:22",
+            "count": 1
+          },
+          {
+            "value": "Yuri UX",
+            "count": 1
+          },
+          {
+            "value": "pediu ajuste na hero da Meridian pelo chat do projeto",
+            "count": 1
+          },
+          {
+            "value": "14:18",
+            "count": 1
+          },
+          {
+            "value": "parou Meridian no gate de QA · prova visual em 390 px aberta",
+            "count": 1
+          },
+          {
+            "value": "13:55",
+            "count": 1
+          },
+          {
+            "value": "iniciou job-011 · carrossel ep. 14",
+            "count": 1
+          },
+          {
+            "value": "13:41",
+            "count": 1
+          },
+          {
+            "value": "iniciou job-014 · SEO da landing principal",
+            "count": 1
+          },
+          {
+            "value": "12:31",
+            "count": 1
+          },
+          {
+            "value": "teve job-007 parado · SUPABASE_URL ausente",
+            "count": 1
+          },
+          {
+            "value": "09:52",
+            "count": 1
+          },
+          {
+            "value": "Atlas Web",
+            "count": 1
+          },
+          {
+            "value": "entregou a auditoria da API · 2 recomendações",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "🌙",
+            "count": 1
+          },
+          {
+            "value": "3",
+            "count": 1
+          },
+          {
+            "value": "office.py · SQLite ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Frontend",
+            "count": 1
+          },
+          {
+            "value": "Backend",
+            "count": 1
+          },
+          {
+            "value": "QUINTA-FEIRA, 29 DE OUTUBRO · SALA DE OPERAÇÃO",
+            "count": 1
+          },
+          {
+            "value": "0 cards ativos · 0 escalados · 0 jobs rodando",
+            "count": 1
+          },
+          {
+            "value": "Cards ativos",
+            "count": 1
+          },
+          {
+            "value": "Tasks →",
+            "count": 2
+          },
+          {
+            "value": "0",
+            "count": 10
+          },
+          {
+            "value": "fluxo em dia",
+            "count": 1
+          },
+          {
+            "value": "Escalados",
+            "count": 2
+          },
+          {
+            "value": "Bloqueios →",
+            "count": 2
+          },
+          {
+            "value": "sem gate humano aberto",
+            "count": 1
+          },
+          {
+            "value": "Jobs rodando",
+            "count": 1
+          },
+          {
+            "value": "Execuções →",
+            "count": 1
+          },
+          {
+            "value": "sem fila crítica",
+            "count": 1
+          },
+          {
+            "value": "Nenhum job rodando agora",
+            "count": 1
+          },
+          {
+            "value": "Precisa de você",
+            "count": 1
+          },
+          {
+            "value": "Aprovações pendentes",
+            "count": 1
+          },
+          {
+            "value": "0 autorizações aguardando decisão",
+            "count": 1
+          },
+          {
+            "value": "Execuções com falha",
+            "count": 1
+          },
+          {
+            "value": "0 jobs com erro requerem remediação",
+            "count": 1
+          },
+          {
+            "value": "Bloqueios",
+            "count": 1
+          },
+          {
+            "value": "tarefas com escalação ativa",
+            "count": 1
+          },
+          {
+            "value": "Alterações pendentes",
+            "count": 1
+          },
+          {
+            "value": "0 homologações aguardando decisão",
+            "count": 1
+          }
+        ],
+        "matchedCount": 29,
+        "referenceCount": 144,
+        "candidateCount": 68
+      },
+      "controls": {
+        "missing": [
+          {
+            "value": "control | button | TAVIR, ir para a Sala de Operação | TAVIR, ir para a Sala de Operação |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Carlos, CEO. Sessão | Carlos, CEO. Sessão |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 2 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks 7 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… Ctrl K |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar job |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir Decisões → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Decidir |  |  | ",
+            "count": 3
+          },
+          {
+            "value": "control | button | Finanças → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | JOBS RODANDO 2 1 na fila · 1 com falha |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | CARDS ATIVOS 7 3 em execução |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | GATES ABERTOS 5 mais antigo há 5 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | CUSTO HOJE US$ 8,40 teto diário US$ 12 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | NS SEO da landing principal Nina SEO · claude-sonnet-4 64% US$ 1,88 de 8 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 42% US$ 0,95 de 5 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Módulos → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Meridian — landing institucional Fábrica · etapa 6 de 9 · QA GATE |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Multiverso · carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Loja da Rua · presença local Raio-X · etapa 2 de 6 · Coleta COLETA |  |  | ",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "control | button | Gerenciar sessão do operador | Gerenciar sessão do operador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 3 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Frontend | Reiniciar Frontend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Backend | Reiniciar Backend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… (Ctrl K) | Buscar telas, tasks, agentes… (Ctrl K) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar novo job operacional | Iniciar novo job operacional |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | CARDS ATIVOS Tasks → 0 fluxo em dia |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | ESCALADOS Bloqueios → 0 sem gate humano aberto |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | JOBS RODANDO Execuções → 0 sem fila crítica |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Bloqueios → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Aprovações pendentes 0 autorizações aguardando decisão 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções com falha 0 jobs com erro requerem remediação 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Bloqueios tarefas com escalação ativa 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Alterações pendentes 0 homologações aguardando decisão 0 |  |  | ",
+            "count": 1
+          }
+        ],
+        "matchedCount": 18,
+        "referenceCount": 39,
+        "candidateCount": 34
+      },
+      "dialogs": {
+        "missing": [],
+        "extra": [],
+        "matchedCount": 0,
+        "referenceCount": 0,
+        "candidateCount": 0
+      }
+    },
+    {
+      "screenId": "sala-estreita",
+      "referencePresent": true,
+      "candidatePresent": true,
+      "text": {
+        "missing": [
+          {
+            "value": "ao vivo",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "☀️",
+            "count": 1
+          },
+          {
+            "value": "office.py · SQLite ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Frontend",
+            "count": 1
+          },
+          {
+            "value": "Backend",
+            "count": 1
+          },
+          {
+            "value": "QUINTA-FEIRA, 29 DE OUTUBRO · SALA DE OPERAÇÃO",
+            "count": 1
+          },
+          {
+            "value": "Boa tarde, Carlos.",
+            "count": 1
+          },
+          {
+            "value": "0 cards ativos · 0 escalados · 0 jobs rodando",
+            "count": 1
+          },
+          {
+            "value": "Novo projeto",
+            "count": 1
+          },
+          {
+            "value": "Nova task",
+            "count": 1
+          },
+          {
+            "value": "Cards ativos",
+            "count": 2
+          },
+          {
+            "value": "Tasks →",
+            "count": 2
+          },
+          {
+            "value": "0",
+            "count": 10
+          },
+          {
+            "value": "fluxo em dia",
+            "count": 1
+          },
+          {
+            "value": "Escalados",
+            "count": 2
+          },
+          {
+            "value": "Bloqueios →",
+            "count": 2
+          },
+          {
+            "value": "sem gate humano aberto",
+            "count": 1
+          },
+          {
+            "value": "Jobs rodando",
+            "count": 2
+          },
+          {
+            "value": "Execuções →",
+            "count": 2
+          },
+          {
+            "value": "sem fila crítica",
+            "count": 1
+          },
+          {
+            "value": "Nenhum job rodando agora",
+            "count": 1
+          },
+          {
+            "value": "Precisa de você",
+            "count": 1
+          },
+          {
+            "value": "Aprovações pendentes",
+            "count": 1
+          },
+          {
+            "value": "0 autorizações aguardando decisão",
+            "count": 1
+          },
+          {
+            "value": "Execuções com falha",
+            "count": 1
+          },
+          {
+            "value": "0 jobs com erro requerem remediação",
+            "count": 1
+          },
+          {
+            "value": "Bloqueios",
+            "count": 1
+          },
+          {
+            "value": "tarefas com escalação ativa",
+            "count": 1
+          },
+          {
+            "value": "Alterações pendentes",
+            "count": 1
+          },
+          {
+            "value": "0 homologações aguardando decisão",
+            "count": 1
+          }
+        ],
+        "matchedCount": 5,
+        "referenceCount": 6,
+        "candidateCount": 49
+      },
+      "controls": {
+        "missing": [
+          {
+            "value": "control | button | TAVIR, ir para a Sala de Operação | TAVIR, ir para a Sala de Operação |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Carlos, CEO. Sessão | Carlos, CEO. Sessão |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes…Ctrl K |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar job |  |  | ",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "control | button | Gerenciar sessão do operador | Gerenciar sessão do operador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Frontend | Reiniciar Frontend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Backend | Reiniciar Backend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… (Ctrl K) | Buscar telas, tasks, agentes… (Ctrl K) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar novo job operacional | Iniciar novo job operacional |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Novo projeto |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Nova task |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | CARDS ATIVOS Tasks → 0 fluxo em dia |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | ESCALADOS Bloqueios → 0 sem gate humano aberto |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | JOBS RODANDO Execuções → 0 sem fila crítica |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Bloqueios → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Aprovações pendentes 0 autorizações aguardando decisão 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções com falha 0 jobs com erro requerem remediação 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Bloqueios tarefas com escalação ativa 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Alterações pendentes 0 homologações aguardando decisão 0 |  |  | ",
+            "count": 1
+          }
+        ],
+        "matchedCount": 9,
+        "referenceCount": 13,
+        "candidateCount": 26
+      },
+      "dialogs": {
+        "missing": [],
+        "extra": [],
+        "matchedCount": 0,
+        "referenceCount": 0,
+        "candidateCount": 0
+      }
+    },
+    {
+      "screenId": "exec-lista",
+      "referencePresent": true,
+      "candidatePresent": true,
+      "text": {
+        "missing": [
+          {
+            "value": "2",
+            "count": 2
+          },
+          {
+            "value": "7",
+            "count": 1
+          },
+          {
+            "value": "ao vivo",
+            "count": 1
+          },
+          {
+            "value": "6",
+            "count": 3
+          },
+          {
+            "value": "jobs",
+            "count": 1
+          },
+          {
+            "value": "Todos",
+            "count": 1
+          },
+          {
+            "value": "Rodando",
+            "count": 3
+          },
+          {
+            "value": "Fila",
+            "count": 1
+          },
+          {
+            "value": "1",
+            "count": 4
+          },
+          {
+            "value": "Falha",
+            "count": 1
+          },
+          {
+            "value": "Pausados",
+            "count": 1
+          },
+          {
+            "value": "SEO da landing principal",
+            "count": 2
+          },
+          {
+            "value": "job-014",
+            "count": 2
+          },
+          {
+            "value": "·",
+            "count": 14
+          },
+          {
+            "value": "Nina SEO",
+            "count": 2
+          },
+          {
+            "value": "64",
+            "count": 2
+          },
+          {
+            "value": "%",
+            "count": 7
+          },
+          {
+            "value": "Carrossel Multiverso ep. 14",
+            "count": 1
+          },
+          {
+            "value": "job-011",
+            "count": 1
+          },
+          {
+            "value": "Adriano Arte",
+            "count": 1
+          },
+          {
+            "value": "42",
+            "count": 1
+          },
+          {
+            "value": "Detalhar roadmap Q4",
+            "count": 1
+          },
+          {
+            "value": "job-009",
+            "count": 1
+          },
+          {
+            "value": "Arquiteto de Nicho",
+            "count": 1
+          },
+          {
+            "value": "Deploy landing Meridian",
+            "count": 1
+          },
+          {
+            "value": "job-007",
+            "count": 1
+          },
+          {
+            "value": "Davi DevOps",
+            "count": 1
+          },
+          {
+            "value": "Falhou",
+            "count": 1
+          },
+          {
+            "value": "70",
+            "count": 1
+          },
+          {
+            "value": "Auditoria API — hardening",
+            "count": 1
+          },
+          {
+            "value": "job-006",
+            "count": 1
+          },
+          {
+            "value": "Atlas Web",
+            "count": 1
+          },
+          {
+            "value": "Concluído",
+            "count": 1
+          },
+          {
+            "value": "100",
+            "count": 1
+          },
+          {
+            "value": "Revisão headline LP advocacia",
+            "count": 1
+          },
+          {
+            "value": "job-003",
+            "count": 1
+          },
+          {
+            "value": "Rita Revisora",
+            "count": 1
+          },
+          {
+            "value": "Pausado",
+            "count": 1
+          },
+          {
+            "value": "80",
+            "count": 1
+          },
+          {
+            "value": "· task",
+            "count": 1
+          },
+          {
+            "value": "#30",
+            "count": 1
+          },
+          {
+            "value": "claude-sonnet-4",
+            "count": 1
+          },
+          {
+            "value": "· iniciado às",
+            "count": 1
+          },
+          {
+            "value": "13:41",
+            "count": 4
+          },
+          {
+            "value": "Ver evidência",
+            "count": 1
+          },
+          {
+            "value": "Pausar",
+            "count": 1
+          },
+          {
+            "value": "Cancelar",
+            "count": 1
+          },
+          {
+            "value": "Progresso",
+            "count": 1
+          },
+          {
+            "value": "Custo / teto",
+            "count": 1
+          },
+          {
+            "value": "US$",
+            "count": 1
+          },
+          {
+            "value": "1,86",
+            "count": 1
+          },
+          {
+            "value": "teto US$",
+            "count": 1
+          },
+          {
+            "value": "8",
+            "count": 1
+          },
+          {
+            "value": "23",
+            "count": 1
+          },
+          {
+            "value": "% usado",
+            "count": 1
+          },
+          {
+            "value": "Tokens",
+            "count": 1
+          },
+          {
+            "value": "412k",
+            "count": 1
+          },
+          {
+            "value": "entrada + saída",
+            "count": 1
+          },
+          {
+            "value": "Motor",
+            "count": 1
+          },
+          {
+            "value": "Cursor",
+            "count": 1
+          },
+          {
+            "value": "esforço",
+            "count": 1
+          },
+          {
+            "value": "equilibrado",
+            "count": 1
+          },
+          {
+            "value": "01",
+            "count": 1
+          },
+          {
+            "value": "Aceito",
+            "count": 1
+          },
+          {
+            "value": "02",
+            "count": 1
+          },
+          {
+            "value": "Contexto",
+            "count": 1
+          },
+          {
+            "value": "03",
+            "count": 1
+          },
+          {
+            "value": "Plano",
+            "count": 1
+          },
+          {
+            "value": "04",
+            "count": 1
+          },
+          {
+            "value": "Execução",
+            "count": 1
+          },
+          {
+            "value": "05",
+            "count": 1
+          },
+          {
+            "value": "Verificação",
+            "count": 1
+          },
+          {
+            "value": "06",
+            "count": 1
+          },
+          {
+            "value": "Entrega",
+            "count": 1
+          },
+          {
+            "value": "Log ao vivo",
+            "count": 1
+          },
+          {
+            "value": "SSE",
+            "count": 1
+          },
+          {
+            "value": "linhas · livro-razão",
+            "count": 1
+          },
+          {
+            "value": "info",
+            "count": 3
+          },
+          {
+            "value": "Job aceito no motor Cursor · claude-sonnet-4",
+            "count": 1
+          },
+          {
+            "value": "Contexto da task #30 carregado · 14 arquivos",
+            "count": 1
+          },
+          {
+            "value": "plan",
+            "count": 1
+          },
+          {
+            "value": "Plano em 5 passos aprovado pela Paula PM",
+            "count": 1
+          },
+          {
+            "value": "13:49",
+            "count": 1
+          },
+          {
+            "value": "ok",
+            "count": 2
+          },
+          {
+            "value": "Passo 1/5 registrado no livro-razão",
+            "count": 1
+          },
+          {
+            "value": "13:58",
+            "count": 1
+          },
+          {
+            "value": "Passo 2/5 registrado no livro-razão",
+            "count": 1
+          },
+          {
+            "value": "11:02",
+            "count": 1
+          },
+          {
+            "value": "Comparando com 3 concorrentes do nicho",
+            "count": 1
+          },
+          {
+            "value": "▍",
+            "count": 1
+          },
+          {
+            "value": "aguardando próximo passo",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "☀️",
+            "count": 1
+          },
+          {
+            "value": "office.py · SQLite ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Frontend",
+            "count": 1
+          },
+          {
+            "value": "Backend",
+            "count": 1
+          },
+          {
+            "value": "0",
+            "count": 7
+          },
+          {
+            "value": "em execução ·",
+            "count": 1
+          },
+          {
+            "value": "na fila ·",
+            "count": 1
+          },
+          {
+            "value": "concluídos",
+            "count": 1
+          },
+          {
+            "value": "Todas",
+            "count": 1
+          },
+          {
+            "value": "Com erro",
+            "count": 1
+          },
+          {
+            "value": "Nenhum job neste filtro.",
+            "count": 1
+          }
+        ],
+        "matchedCount": 27,
+        "referenceCount": 155,
+        "candidateCount": 44
+      },
+      "controls": {
+        "missing": [
+          {
+            "value": "control | button | TAVIR, ir para a Sala de Operação | TAVIR, ir para a Sala de Operação |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Carlos, CEO. Sessão | Carlos, CEO. Sessão |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 2 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks 7 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… Ctrl K |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar job |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Todos 6 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Rodando 2 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Fila 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Falha 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Pausados 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Concluídos 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | SEO da landing principal job-014 · Nina SEO · Rodando 64% |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Carrossel Multiverso ep. 14 job-011 · Adriano Arte · Rodando 42% |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Detalhar roadmap Q4 job-009 · Arquiteto de Nicho · Na fila 0% |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Deploy landing Meridian job-007 · Davi DevOps · Falhou 70% |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Auditoria API — hardening job-006 · Atlas Web · Concluído 100% |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Revisão headline LP advocacia job-003 · Rita Revisora · Pausado 80% |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Ver evidência |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Pausar |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Cancelar |  |  | ",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "control | button | Gerenciar sessão do operador | Gerenciar sessão do operador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Frontend | Reiniciar Frontend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Backend | Reiniciar Backend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… (Ctrl K) | Buscar telas, tasks, agentes… (Ctrl K) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar novo job operacional | Iniciar novo job operacional |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tablist | Todas 0 Rodando 0 Na fila 0 Concluídos 0 Com erro 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Todas 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Rodando 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Na fila 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Concluídos 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Com erro 0 |  |  | ",
+            "count": 1
+          }
+        ],
+        "matchedCount": 15,
+        "referenceCount": 36,
+        "candidateCount": 28
+      },
+      "dialogs": {
+        "missing": [],
+        "extra": [],
+        "matchedCount": 0,
+        "referenceCount": 0,
+        "candidateCount": 0
+      }
+    },
+    {
+      "screenId": "tasks-kanban",
+      "referencePresent": true,
+      "candidatePresent": true,
+      "text": {
+        "missing": [
+          {
+            "value": "2",
+            "count": 4
+          },
+          {
+            "value": "7",
+            "count": 1
+          },
+          {
+            "value": "5",
+            "count": 1
+          },
+          {
+            "value": "ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Kanban · SQLite",
+            "count": 1
+          },
+          {
+            "value": "Planejado → Em execução inicia o job. Card com gate não avança sem decisão.",
+            "count": 1
+          },
+          {
+            "value": "Todos",
+            "count": 1
+          },
+          {
+            "value": "8",
+            "count": 1
+          },
+          {
+            "value": "Com gate",
+            "count": 1
+          },
+          {
+            "value": "Engenharia",
+            "count": 2
+          },
+          {
+            "value": "1",
+            "count": 2
+          },
+          {
+            "value": "sem limite",
+            "count": 1
+          },
+          {
+            "value": "#",
+            "count": 8
+          },
+          {
+            "value": "21",
+            "count": 1
+          },
+          {
+            "value": "Alta",
+            "count": 3
+          },
+          {
+            "value": "Roadmap Q4 IA Livros — priorizar 3 frentes",
+            "count": 1
+          },
+          {
+            "value": "PP",
+            "count": 1
+          },
+          {
+            "value": "Paula PM",
+            "count": 1
+          },
+          {
+            "value": "·",
+            "count": 8
+          },
+          {
+            "value": "Estratégia",
+            "count": 1
+          },
+          {
+            "value": "planejando",
+            "count": 1
+          },
+          {
+            "value": "31",
+            "count": 1
+          },
+          {
+            "value": "Normal",
+            "count": 4
+          },
+          {
+            "value": "Oferta de presença local — claims e preço",
+            "count": 1
+          },
+          {
+            "value": "DD",
+            "count": 2
+          },
+          {
+            "value": "Dora Descoberta",
+            "count": 1
+          },
+          {
+            "value": "Comercial",
+            "count": 2
+          },
+          {
+            "value": "wip 6",
+            "count": 1
+          },
+          {
+            "value": "Plano da Paula pronto · aguarda início",
+            "count": 1
+          },
+          {
+            "value": "24",
+            "count": 1
+          },
+          {
+            "value": "Proposta Atlas — contra-assinatura local",
+            "count": 1
+          },
+          {
+            "value": "CC",
+            "count": 1
+          },
+          {
+            "value": "Cléber Closer",
+            "count": 1
+          },
+          {
+            "value": "30",
+            "count": 1
+          },
+          {
+            "value": "SEO da landing principal",
+            "count": 1
+          },
+          {
+            "value": "NS",
+            "count": 1
+          },
+          {
+            "value": "Nina SEO",
+            "count": 1
+          },
+          {
+            "value": "Social",
+            "count": 1
+          },
+          {
+            "value": "3",
+            "count": 1
+          },
+          {
+            "value": "wip 4",
+            "count": 1
+          },
+          {
+            "value": "Jobs ativos · gate em vermelho",
+            "count": 1
+          },
+          {
+            "value": "12",
+            "count": 1
+          },
+          {
+            "value": "Headline da LP de advocacia passou de 60 caracteres",
+            "count": 1
+          },
+          {
+            "value": "80",
+            "count": 1
+          },
+          {
+            "value": "%",
+            "count": 3
+          },
+          {
+            "value": "RR",
+            "count": 1
+          },
+          {
+            "value": "Rita Revisora",
+            "count": 1
+          },
+          {
+            "value": "Conteúdo",
+            "count": 2
+          },
+          {
+            "value": "gate",
+            "count": 2
+          },
+          {
+            "value": "18",
+            "count": 1
+          },
+          {
+            "value": "Crítica",
+            "count": 1
+          },
+          {
+            "value": "Deploy landing Meridian — SUPABASE_URL ausente",
+            "count": 1
+          },
+          {
+            "value": "70",
+            "count": 1
+          },
+          {
+            "value": "Davi DevOps",
+            "count": 1
+          },
+          {
+            "value": "27",
+            "count": 1
+          },
+          {
+            "value": "Carrossel Multiverso — 7 frames do episódio 14",
+            "count": 1
+          },
+          {
+            "value": "41",
+            "count": 1
+          },
+          {
+            "value": "AA",
+            "count": 1
+          },
+          {
+            "value": "Adriano Arte",
+            "count": 1
+          },
+          {
+            "value": "7 dias",
+            "count": 1
+          },
+          {
+            "value": "9",
+            "count": 1
+          },
+          {
+            "value": "Auditoria de segurança da API",
+            "count": 1
+          },
+          {
+            "value": "AW",
+            "count": 1
+          },
+          {
+            "value": "Atlas Web",
+            "count": 1
+          },
+          {
+            "value": "Qualidade",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "☀️",
+            "count": 1
+          },
+          {
+            "value": "office.py · SQLite ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Frontend",
+            "count": 1
+          },
+          {
+            "value": "Backend",
+            "count": 1
+          },
+          {
+            "value": "0",
+            "count": 9
+          },
+          {
+            "value": "abertas ·",
+            "count": 1
+          },
+          {
+            "value": "a planejar ·",
+            "count": 1
+          },
+          {
+            "value": "planejadas ·",
+            "count": 1
+          },
+          {
+            "value": "em execução ·",
+            "count": 1
+          },
+          {
+            "value": "concluídas",
+            "count": 1
+          },
+          {
+            "value": "↓ Desc",
+            "count": 1
+          },
+          {
+            "value": "Nova task",
+            "count": 1
+          },
+          {
+            "value": "Arraste o card entre colunas — o fluxo é respeitado (ex.: Planejado → Em execução inicia o job). Gate humano fica em",
+            "count": 1
+          },
+          {
+            "value": "vermelho",
+            "count": 1
+          },
+          {
+            "value": "dentro de Em execução.",
+            "count": 1
+          },
+          {
+            "value": "Nenhuma task nesta coluna",
+            "count": 4
+          },
+          {
+            "value": "Plano da Paula pronto — aguarda início",
+            "count": 1
+          },
+          {
+            "value": "Jobs ativos · gate em vermelho no card",
+            "count": 1
+          }
+        ],
+        "matchedCount": 29,
+        "referenceCount": 124,
+        "candidateCount": 58
+      },
+      "controls": {
+        "missing": [
+          {
+            "value": "control | button | TAVIR, ir para a Sala de Operação | TAVIR, ir para a Sala de Operação |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Carlos, CEO. Sessão | Carlos, CEO. Sessão |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 2 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks 7 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Decisões 5 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… Ctrl K |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar job |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Todos 8 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Com gate 2 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Engenharia 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | #21 ALTA Roadmap Q4 IA Livros — priorizar 3 frentes PP Paula PM · Estratégia PLANEJANDO |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | #31 NORMAL Oferta de presença local — claims e preço DD Dora Descoberta · Comercial |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | #24 ALTA Proposta Atlas — contra-assinatura local CC Cléber Closer · Comercial |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | #30 NORMAL SEO da landing principal NS Nina SEO · Social |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | #12 ALTA Headline da LP de advocacia passou de 60 caracteres 80% RR Rita Revisora · Conteúdo GATE |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | #18 CRÍTICA Deploy landing Meridian — SUPABASE_URL ausente 70% DD Davi DevOps · Engenharia GATE |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | #27 NORMAL Carrossel Multiverso — 7 frames do episódio 14 41% AA Adriano Arte · Conteúdo |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | #9 NORMAL Auditoria de segurança da API AW Atlas Web · Qualidade |  |  | ",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "control | button | Gerenciar sessão do operador | Gerenciar sessão do operador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Decisões |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Frontend | Reiniciar Frontend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Backend | Reiniciar Backend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… (Ctrl K) | Buscar telas, tasks, agentes… (Ctrl K) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar novo job operacional | Iniciar novo job operacional |  | ",
+            "count": 1
+          },
+          {
+            "value": "field | textbox | Buscar #ID, título ou descrição |  | Buscar #ID, título ou descrição | text",
+            "count": 1
+          },
+          {
+            "value": "field | combobox | Filtrar por prioridade | Filtrar por prioridade |  | ",
+            "count": 1
+          },
+          {
+            "value": "field | combobox | Filtrar por setor | Filtrar por setor |  | ",
+            "count": 1
+          },
+          {
+            "value": "field | combobox | Ordenar por | Ordenar por |  | ",
+            "count": 1
+          },
+          {
+            "value": "field | combobox | Segundo critério | Segundo critério |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Decrescente |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Nova task |  |  | ",
+            "count": 1
+          }
+        ],
+        "matchedCount": 15,
+        "referenceCount": 33,
+        "candidateCount": 30
+      },
+      "dialogs": {
+        "missing": [],
+        "extra": [],
+        "matchedCount": 0,
+        "referenceCount": 0,
+        "candidateCount": 0
+      }
+    },
+    {
+      "screenId": "decisoes-lista",
+      "referencePresent": true,
+      "candidatePresent": true,
+      "text": {
+        "missing": [
+          {
+            "value": "CH",
+            "count": 1
+          },
+          {
+            "value": "2",
+            "count": 1
+          },
+          {
+            "value": "7",
+            "count": 1
+          },
+          {
+            "value": "5",
+            "count": 2
+          },
+          {
+            "value": "ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Operação · caixa de decisões",
+            "count": 1
+          },
+          {
+            "value": "5 decisões esperam você. Uma bloqueia a entrega. Cada uma mostra a pergunta, a evidência e o que acontece em cada resposta.",
+            "count": 1
+          },
+          {
+            "value": "38",
+            "count": 1
+          },
+          {
+            "value": "%",
+            "count": 1
+          },
+          {
+            "value": "Hoje",
+            "count": 1
+          },
+          {
+            "value": "3",
+            "count": 2
+          },
+          {
+            "value": "de",
+            "count": 1
+          },
+          {
+            "value": "8",
+            "count": 1
+          },
+          {
+            "value": "decididas",
+            "count": 1
+          },
+          {
+            "value": "Espera mais longa",
+            "count": 1
+          },
+          {
+            "value": "ontem · ap-05",
+            "count": 1
+          },
+          {
+            "value": "Pendentes",
+            "count": 1
+          },
+          {
+            "value": "Bloqueiam entrega",
+            "count": 2
+          },
+          {
+            "value": "1",
+            "count": 5
+          },
+          {
+            "value": "Escopo e custo",
+            "count": 1
+          },
+          {
+            "value": "Revisões",
+            "count": 2
+          },
+          {
+            "value": "Decididas",
+            "count": 1
+          },
+          {
+            "value": "J",
+            "count": 1
+          },
+          {
+            "value": "K",
+            "count": 1
+          },
+          {
+            "value": "navegar",
+            "count": 1
+          },
+          {
+            "value": "A",
+            "count": 2
+          },
+          {
+            "value": "aprovar",
+            "count": 1
+          },
+          {
+            "value": "R",
+            "count": 2
+          },
+          {
+            "value": "recusar",
+            "count": 1
+          },
+          {
+            "value": "C",
+            "count": 2
+          },
+          {
+            "value": "contexto",
+            "count": 1
+          },
+          {
+            "value": "Checkpoint",
+            "count": 3
+          },
+          {
+            "value": "·",
+            "count": 6
+          },
+          {
+            "value": "ap-02",
+            "count": 2
+          },
+          {
+            "value": "há 2 h",
+            "count": 4
+          },
+          {
+            "value": "Deploy landing Meridian — variável ausente",
+            "count": 2
+          },
+          {
+            "value": "DD",
+            "count": 3
+          },
+          {
+            "value": "Davi DevOps",
+            "count": 4
+          },
+          {
+            "value": "alto",
+            "count": 4
+          },
+          {
+            "value": "SLA ·",
+            "count": 5
+          },
+          {
+            "value": "restam 22 h",
+            "count": 2
+          },
+          {
+            "value": "Escopo, custo ou contrato",
+            "count": 1
+          },
+          {
+            "value": "Autorização",
+            "count": 2
+          },
+          {
+            "value": "ap-01",
+            "count": 1
+          },
+          {
+            "value": "há 3 h",
+            "count": 1
+          },
+          {
+            "value": "Roadmap Q4 IA Livros — aprovar priorização",
+            "count": 1
+          },
+          {
+            "value": "AN",
+            "count": 1
+          },
+          {
+            "value": "Arquiteto de Nicho",
+            "count": 1
+          },
+          {
+            "value": "restam 21 h",
+            "count": 1
+          },
+          {
+            "value": "ap-04",
+            "count": 1
+          },
+          {
+            "value": "há 40 min",
+            "count": 1
+          },
+          {
+            "value": "Gasto mensal acima do teto — modelo opus-4",
+            "count": 1
+          },
+          {
+            "value": "PP",
+            "count": 1
+          },
+          {
+            "value": "Paula PM",
+            "count": 1
+          },
+          {
+            "value": "médio",
+            "count": 2
+          },
+          {
+            "value": "restam 23 h",
+            "count": 1
+          },
+          {
+            "value": "ap-05",
+            "count": 1
+          },
+          {
+            "value": "ontem",
+            "count": 1
+          },
+          {
+            "value": "Proposta Atlas — contra-assinatura",
+            "count": 1
+          },
+          {
+            "value": "CC",
+            "count": 1
+          },
+          {
+            "value": "Cléber Closer",
+            "count": 1
+          },
+          {
+            "value": "restam 4 h",
+            "count": 1
+          },
+          {
+            "value": "Revisão",
+            "count": 1
+          },
+          {
+            "value": "ap-03",
+            "count": 1
+          },
+          {
+            "value": "há 5 h",
+            "count": 1
+          },
+          {
+            "value": "Headline LP acima do limite — manter ou cortar?",
+            "count": 1
+          },
+          {
+            "value": "RR",
+            "count": 1
+          },
+          {
+            "value": "Rita Revisora",
+            "count": 1
+          },
+          {
+            "value": "baixo",
+            "count": 1
+          },
+          {
+            "value": "restam 19 h",
+            "count": 1
+          },
+          {
+            "value": "· task",
+            "count": 1
+          },
+          {
+            "value": "#18",
+            "count": 1
+          },
+          {
+            "value": "bloqueia entrega",
+            "count": 1
+          },
+          {
+            "value": "impacto",
+            "count": 1
+          },
+          {
+            "value": "pede sua decisão · aberto",
+            "count": 1
+          },
+          {
+            "value": "SLA 24 h ·",
+            "count": 1
+          },
+          {
+            "value": "A pergunta",
+            "count": 1
+          },
+          {
+            "value": "Registrar SUPABASE_URL no cofre local e refazer o deploy da Meridian?",
+            "count": 1
+          },
+          {
+            "value": "Contexto e evidência",
+            "count": 1
+          },
+          {
+            "value": "Abrir artefato completo →",
+            "count": 1
+          },
+          {
+            "value": "O build da landing passou, mas o deploy parou porque SUPABASE_URL não existe na conta da Meridian. Nada foi publicado e o site atual continua no ar.",
+            "count": 1
+          },
+          {
+            "value": "12:24",
+            "count": 1
+          },
+          {
+            "value": "ok",
+            "count": 1
+          },
+          {
+            "value": "Build gerado · 4,2 MB",
+            "count": 1
+          },
+          {
+            "value": "12:28",
+            "count": 1
+          },
+          {
+            "value": "info",
+            "count": 1
+          },
+          {
+            "value": "Lendo variáveis da conta Meridian",
+            "count": 1
+          },
+          {
+            "value": "12:31",
+            "count": 2
+          },
+          {
+            "value": "erro",
+            "count": 1
+          },
+          {
+            "value": "Variável obrigatória ausente: SUPABASE_URL",
+            "count": 1
+          },
+          {
+            "value": "gate",
+            "count": 1
+          },
+          {
+            "value": "Deploy parado antes de publicar · gate ap-02 aberto",
+            "count": 1
+          },
+          {
+            "value": ".env da conta Meridian · hoje",
+            "count": 1
+          },
+          {
+            "value": "NUXT_PUBLIC_SITE=meridian.com.br",
+            "count": 1
+          },
+          {
+            "value": "SUPABASE_ANON_KEY=••••••••••••",
+            "count": 1
+          },
+          {
+            "value": "SUPABASE_URL= ← ausente",
+            "count": 1
+          },
+          {
+            "value": "Se aprovar · vai para o cofre local",
+            "count": 1
+          },
+          {
+            "value": "Valor de SUPABASE_URL",
+            "count": 1
+          },
+          {
+            "value": "Fica só nesta máquina. Não entra no livro-razão nem no chat.",
+            "count": 1
+          },
+          {
+            "value": "Sua decisão",
+            "count": 1
+          },
+          {
+            "value": "Escolha um caminho para ver o que acontece em seguida",
+            "count": 1
+          },
+          {
+            "value": "Aprovar",
+            "count": 1
+          },
+          {
+            "value": "01",
+            "count": 3
+          },
+          {
+            "value": "A variável é gravada no cofre local",
+            "count": 1
+          },
+          {
+            "value": "02",
+            "count": 3
+          },
+          {
+            "value": "O job-007 refaz o deploy a partir do passo 4",
+            "count": 1
+          },
+          {
+            "value": "03",
+            "count": 3
+          },
+          {
+            "value": "Edna roda a regressão antes de publicar",
+            "count": 1
+          },
+          {
+            "value": "Recusar",
+            "count": 1
+          },
+          {
+            "value": "O deploy continua parado",
+            "count": 1
+          },
+          {
+            "value": "O card #18 volta para Planejado",
+            "count": 1
+          },
+          {
+            "value": "Davi recebe o seu motivo no chat do card",
+            "count": 1
+          },
+          {
+            "value": "Pedir contexto",
+            "count": 1
+          },
+          {
+            "value": "Davi responde no chat do card",
+            "count": 1
+          },
+          {
+            "value": "A decisão continua na caixa",
+            "count": 1
+          },
+          {
+            "value": "O SLA não é reiniciado",
+            "count": 1
+          },
+          {
+            "value": "Impacto",
+            "count": 1
+          },
+          {
+            "value": "Escopo",
+            "count": 1
+          },
+          {
+            "value": "1 variável",
+            "count": 1
+          },
+          {
+            "value": "Custo",
+            "count": 1
+          },
+          {
+            "value": "US$ 0,40",
+            "count": 1
+          },
+          {
+            "value": "Prazo",
+            "count": 1
+          },
+          {
+            "value": "+15 min",
+            "count": 1
+          },
+          {
+            "value": "Envolvidos",
+            "count": 1
+          },
+          {
+            "value": "pediu a decisão",
+            "count": 1
+          },
+          {
+            "value": "Carlos",
+            "count": 1
+          },
+          {
+            "value": "decide · CEO",
+            "count": 1
+          },
+          {
+            "value": "EE",
+            "count": 1
+          },
+          {
+            "value": "Edna E2E",
+            "count": 1
+          },
+          {
+            "value": "roda a regressão depois",
+            "count": 1
+          },
+          {
+            "value": "Linha do tempo do pedido",
+            "count": 1
+          },
+          {
+            "value": "Pedido aberto por Davi DevOps",
+            "count": 1
+          },
+          {
+            "value": "Evidência anexada ao pedido",
+            "count": 1
+          },
+          {
+            "value": "agora",
+            "count": 1
+          },
+          {
+            "value": "Esperando a sua decisão",
+            "count": 1
+          },
+          {
+            "value": "Conversar com",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "☀️",
+            "count": 1
+          },
+          {
+            "value": "office.py · SQLite ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Frontend",
+            "count": 1
+          },
+          {
+            "value": "Backend",
+            "count": 1
+          },
+          {
+            "value": "0",
+            "count": 6
+          },
+          {
+            "value": "aguardando ·",
+            "count": 1
+          },
+          {
+            "value": "resolvidas",
+            "count": 1
+          },
+          {
+            "value": "Todas",
+            "count": 1
+          },
+          {
+            "value": "Urgentes",
+            "count": 1
+          },
+          {
+            "value": "Gates",
+            "count": 1
+          },
+          {
+            "value": "Alterações",
+            "count": 1
+          },
+          {
+            "value": "Nada neste filtro.",
+            "count": 1
+          },
+          {
+            "value": "Selecione uma aprovação na lista",
+            "count": 1
+          }
+        ],
+        "matchedCount": 23,
+        "referenceCount": 204,
+        "candidateCount": 41
+      },
+      "controls": {
+        "missing": [
+          {
+            "value": "control | button | TAVIR, ir para a Sala de Operação | TAVIR, ir para a Sala de Operação |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Carlos, CEO. Sessão | Carlos, CEO. Sessão |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 2 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks 7 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Decisões 5 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… Ctrl K |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar job |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Pendentes 5 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Bloqueiam entrega 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Escopo e custo 3 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Revisões 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Decididas 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | CHECKPOINT · AP-02 há 2 h Deploy landing Meridian — variável ausente DD Davi DevOps ALTO SLA · restam 22 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | AUTORIZAÇÃO · AP-01 há 3 h Roadmap Q4 IA Livros — aprovar priorização AN Arquiteto de Nicho ALTO SLA · restam 21 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | AUTORIZAÇÃO · AP-04 há 40 min Gasto mensal acima do teto — modelo opus-4 PP Paula PM MÉDIO SLA · restam 23 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | CHECKPOINT · AP-05 ontem Proposta Atlas — contra-assinatura CC Cléber Closer MÉDIO SLA · restam 4 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | REVISÃO · AP-03 há 5 h Headline LP acima do limite — manter ou cortar? RR Rita Revisora BAIXO SLA · restam 19 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir artefato completo → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "label |  | Valor de SUPABASE_URL |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "field | textbox | Valor de SUPABASE_URL | Valor de SUPABASE_URL | https://xxxx.supabase.co | text",
+            "count": 1
+          },
+          {
+            "value": "control | button | Aprovar A 01 A variável é gravada no cofre local 02 O job-007 refaz o deploy a partir do passo 4 03 Edna roda a regressão antes de publicar |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Recusar R 01 O deploy continua parado 02 O card #18 volta para Planejado 03 Davi recebe o seu motivo no chat do card |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Pedir contexto C 01 Davi responde no chat do card 02 A decisão continua na caixa 03 O SLA não é reiniciado |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Conversar com Davi DevOps |  |  | ",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "control | button | Gerenciar sessão do operador | Gerenciar sessão do operador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 3 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Decisões |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Frontend | Reiniciar Frontend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Backend | Reiniciar Backend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… (Ctrl K) | Buscar telas, tasks, agentes… (Ctrl K) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar novo job operacional | Iniciar novo job operacional |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tablist | Todas 0 Urgentes 0 Gates 0 Alterações 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tab | Todas 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tab | Urgentes 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tab | Gates 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tab | Alterações 0 |  |  | ",
+            "count": 1
+          }
+        ],
+        "matchedCount": 14,
+        "referenceCount": 38,
+        "candidateCount": 27
+      },
+      "dialogs": {
+        "missing": [],
+        "extra": [],
+        "matchedCount": 0,
+        "referenceCount": 0,
+        "candidateCount": 0
+      }
+    },
+    {
+      "screenId": "decisoes-light",
+      "referencePresent": true,
+      "candidatePresent": true,
+      "text": {
+        "missing": [
+          {
+            "value": "CH",
+            "count": 1
+          },
+          {
+            "value": "2",
+            "count": 1
+          },
+          {
+            "value": "7",
+            "count": 1
+          },
+          {
+            "value": "5",
+            "count": 2
+          },
+          {
+            "value": "ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Operação · caixa de decisões",
+            "count": 1
+          },
+          {
+            "value": "5 decisões esperam você. Uma bloqueia a entrega. Cada uma mostra a pergunta, a evidência e o que acontece em cada resposta.",
+            "count": 1
+          },
+          {
+            "value": "38",
+            "count": 1
+          },
+          {
+            "value": "%",
+            "count": 1
+          },
+          {
+            "value": "Hoje",
+            "count": 1
+          },
+          {
+            "value": "3",
+            "count": 2
+          },
+          {
+            "value": "de",
+            "count": 1
+          },
+          {
+            "value": "8",
+            "count": 1
+          },
+          {
+            "value": "decididas",
+            "count": 1
+          },
+          {
+            "value": "Espera mais longa",
+            "count": 1
+          },
+          {
+            "value": "ontem · ap-05",
+            "count": 1
+          },
+          {
+            "value": "Pendentes",
+            "count": 1
+          },
+          {
+            "value": "Bloqueiam entrega",
+            "count": 2
+          },
+          {
+            "value": "1",
+            "count": 5
+          },
+          {
+            "value": "Escopo e custo",
+            "count": 1
+          },
+          {
+            "value": "Revisões",
+            "count": 2
+          },
+          {
+            "value": "Decididas",
+            "count": 1
+          },
+          {
+            "value": "J",
+            "count": 1
+          },
+          {
+            "value": "K",
+            "count": 1
+          },
+          {
+            "value": "navegar",
+            "count": 1
+          },
+          {
+            "value": "A",
+            "count": 2
+          },
+          {
+            "value": "aprovar",
+            "count": 1
+          },
+          {
+            "value": "R",
+            "count": 2
+          },
+          {
+            "value": "recusar",
+            "count": 1
+          },
+          {
+            "value": "C",
+            "count": 2
+          },
+          {
+            "value": "contexto",
+            "count": 1
+          },
+          {
+            "value": "Checkpoint",
+            "count": 3
+          },
+          {
+            "value": "·",
+            "count": 6
+          },
+          {
+            "value": "ap-02",
+            "count": 2
+          },
+          {
+            "value": "há 2 h",
+            "count": 4
+          },
+          {
+            "value": "Deploy landing Meridian — variável ausente",
+            "count": 2
+          },
+          {
+            "value": "DD",
+            "count": 3
+          },
+          {
+            "value": "Davi DevOps",
+            "count": 4
+          },
+          {
+            "value": "alto",
+            "count": 4
+          },
+          {
+            "value": "SLA ·",
+            "count": 5
+          },
+          {
+            "value": "restam 22 h",
+            "count": 2
+          },
+          {
+            "value": "Escopo, custo ou contrato",
+            "count": 1
+          },
+          {
+            "value": "Autorização",
+            "count": 2
+          },
+          {
+            "value": "ap-01",
+            "count": 1
+          },
+          {
+            "value": "há 3 h",
+            "count": 1
+          },
+          {
+            "value": "Roadmap Q4 IA Livros — aprovar priorização",
+            "count": 1
+          },
+          {
+            "value": "AN",
+            "count": 1
+          },
+          {
+            "value": "Arquiteto de Nicho",
+            "count": 1
+          },
+          {
+            "value": "restam 21 h",
+            "count": 1
+          },
+          {
+            "value": "ap-04",
+            "count": 1
+          },
+          {
+            "value": "há 40 min",
+            "count": 1
+          },
+          {
+            "value": "Gasto mensal acima do teto — modelo opus-4",
+            "count": 1
+          },
+          {
+            "value": "PP",
+            "count": 1
+          },
+          {
+            "value": "Paula PM",
+            "count": 1
+          },
+          {
+            "value": "médio",
+            "count": 2
+          },
+          {
+            "value": "restam 23 h",
+            "count": 1
+          },
+          {
+            "value": "ap-05",
+            "count": 1
+          },
+          {
+            "value": "ontem",
+            "count": 1
+          },
+          {
+            "value": "Proposta Atlas — contra-assinatura",
+            "count": 1
+          },
+          {
+            "value": "CC",
+            "count": 1
+          },
+          {
+            "value": "Cléber Closer",
+            "count": 1
+          },
+          {
+            "value": "restam 4 h",
+            "count": 1
+          },
+          {
+            "value": "Revisão",
+            "count": 1
+          },
+          {
+            "value": "ap-03",
+            "count": 1
+          },
+          {
+            "value": "há 5 h",
+            "count": 1
+          },
+          {
+            "value": "Headline LP acima do limite — manter ou cortar?",
+            "count": 1
+          },
+          {
+            "value": "RR",
+            "count": 1
+          },
+          {
+            "value": "Rita Revisora",
+            "count": 1
+          },
+          {
+            "value": "baixo",
+            "count": 1
+          },
+          {
+            "value": "restam 19 h",
+            "count": 1
+          },
+          {
+            "value": "· task",
+            "count": 1
+          },
+          {
+            "value": "#18",
+            "count": 1
+          },
+          {
+            "value": "bloqueia entrega",
+            "count": 1
+          },
+          {
+            "value": "impacto",
+            "count": 1
+          },
+          {
+            "value": "pede sua decisão · aberto",
+            "count": 1
+          },
+          {
+            "value": "SLA 24 h ·",
+            "count": 1
+          },
+          {
+            "value": "A pergunta",
+            "count": 1
+          },
+          {
+            "value": "Registrar SUPABASE_URL no cofre local e refazer o deploy da Meridian?",
+            "count": 1
+          },
+          {
+            "value": "Contexto e evidência",
+            "count": 1
+          },
+          {
+            "value": "Abrir artefato completo →",
+            "count": 1
+          },
+          {
+            "value": "O build da landing passou, mas o deploy parou porque SUPABASE_URL não existe na conta da Meridian. Nada foi publicado e o site atual continua no ar.",
+            "count": 1
+          },
+          {
+            "value": "12:24",
+            "count": 1
+          },
+          {
+            "value": "ok",
+            "count": 1
+          },
+          {
+            "value": "Build gerado · 4,2 MB",
+            "count": 1
+          },
+          {
+            "value": "12:28",
+            "count": 1
+          },
+          {
+            "value": "info",
+            "count": 1
+          },
+          {
+            "value": "Lendo variáveis da conta Meridian",
+            "count": 1
+          },
+          {
+            "value": "12:31",
+            "count": 2
+          },
+          {
+            "value": "erro",
+            "count": 1
+          },
+          {
+            "value": "Variável obrigatória ausente: SUPABASE_URL",
+            "count": 1
+          },
+          {
+            "value": "gate",
+            "count": 1
+          },
+          {
+            "value": "Deploy parado antes de publicar · gate ap-02 aberto",
+            "count": 1
+          },
+          {
+            "value": ".env da conta Meridian · hoje",
+            "count": 1
+          },
+          {
+            "value": "NUXT_PUBLIC_SITE=meridian.com.br",
+            "count": 1
+          },
+          {
+            "value": "SUPABASE_ANON_KEY=••••••••••••",
+            "count": 1
+          },
+          {
+            "value": "SUPABASE_URL= ← ausente",
+            "count": 1
+          },
+          {
+            "value": "Se aprovar · vai para o cofre local",
+            "count": 1
+          },
+          {
+            "value": "Valor de SUPABASE_URL",
+            "count": 1
+          },
+          {
+            "value": "Fica só nesta máquina. Não entra no livro-razão nem no chat.",
+            "count": 1
+          },
+          {
+            "value": "Sua decisão",
+            "count": 1
+          },
+          {
+            "value": "Escolha um caminho para ver o que acontece em seguida",
+            "count": 1
+          },
+          {
+            "value": "Aprovar",
+            "count": 1
+          },
+          {
+            "value": "01",
+            "count": 3
+          },
+          {
+            "value": "A variável é gravada no cofre local",
+            "count": 1
+          },
+          {
+            "value": "02",
+            "count": 3
+          },
+          {
+            "value": "O job-007 refaz o deploy a partir do passo 4",
+            "count": 1
+          },
+          {
+            "value": "03",
+            "count": 3
+          },
+          {
+            "value": "Edna roda a regressão antes de publicar",
+            "count": 1
+          },
+          {
+            "value": "Recusar",
+            "count": 1
+          },
+          {
+            "value": "O deploy continua parado",
+            "count": 1
+          },
+          {
+            "value": "O card #18 volta para Planejado",
+            "count": 1
+          },
+          {
+            "value": "Davi recebe o seu motivo no chat do card",
+            "count": 1
+          },
+          {
+            "value": "Pedir contexto",
+            "count": 1
+          },
+          {
+            "value": "Davi responde no chat do card",
+            "count": 1
+          },
+          {
+            "value": "A decisão continua na caixa",
+            "count": 1
+          },
+          {
+            "value": "O SLA não é reiniciado",
+            "count": 1
+          },
+          {
+            "value": "Impacto",
+            "count": 1
+          },
+          {
+            "value": "Escopo",
+            "count": 1
+          },
+          {
+            "value": "1 variável",
+            "count": 1
+          },
+          {
+            "value": "Custo",
+            "count": 1
+          },
+          {
+            "value": "US$ 0,40",
+            "count": 1
+          },
+          {
+            "value": "Prazo",
+            "count": 1
+          },
+          {
+            "value": "+15 min",
+            "count": 1
+          },
+          {
+            "value": "Envolvidos",
+            "count": 1
+          },
+          {
+            "value": "pediu a decisão",
+            "count": 1
+          },
+          {
+            "value": "Carlos",
+            "count": 1
+          },
+          {
+            "value": "decide · CEO",
+            "count": 1
+          },
+          {
+            "value": "EE",
+            "count": 1
+          },
+          {
+            "value": "Edna E2E",
+            "count": 1
+          },
+          {
+            "value": "roda a regressão depois",
+            "count": 1
+          },
+          {
+            "value": "Linha do tempo do pedido",
+            "count": 1
+          },
+          {
+            "value": "Pedido aberto por Davi DevOps",
+            "count": 1
+          },
+          {
+            "value": "Evidência anexada ao pedido",
+            "count": 1
+          },
+          {
+            "value": "agora",
+            "count": 1
+          },
+          {
+            "value": "Esperando a sua decisão",
+            "count": 1
+          },
+          {
+            "value": "Conversar com",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "🌙",
+            "count": 1
+          },
+          {
+            "value": "office.py · SQLite ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Frontend",
+            "count": 1
+          },
+          {
+            "value": "Backend",
+            "count": 1
+          },
+          {
+            "value": "0",
+            "count": 6
+          },
+          {
+            "value": "aguardando ·",
+            "count": 1
+          },
+          {
+            "value": "resolvidas",
+            "count": 1
+          },
+          {
+            "value": "Todas",
+            "count": 1
+          },
+          {
+            "value": "Urgentes",
+            "count": 1
+          },
+          {
+            "value": "Gates",
+            "count": 1
+          },
+          {
+            "value": "Alterações",
+            "count": 1
+          },
+          {
+            "value": "Nada neste filtro.",
+            "count": 1
+          },
+          {
+            "value": "Selecione uma aprovação na lista",
+            "count": 1
+          }
+        ],
+        "matchedCount": 24,
+        "referenceCount": 205,
+        "candidateCount": 42
+      },
+      "controls": {
+        "missing": [
+          {
+            "value": "control | button | TAVIR, ir para a Sala de Operação | TAVIR, ir para a Sala de Operação |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Carlos, CEO. Sessão | Carlos, CEO. Sessão |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 2 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks 7 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Decisões 5 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… Ctrl K |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar job |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Pendentes 5 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Bloqueiam entrega 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Escopo e custo 3 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Revisões 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Decididas 1 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | CHECKPOINT · AP-02 há 2 h Deploy landing Meridian — variável ausente DD Davi DevOps ALTO SLA · restam 22 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | AUTORIZAÇÃO · AP-01 há 3 h Roadmap Q4 IA Livros — aprovar priorização AN Arquiteto de Nicho ALTO SLA · restam 21 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | AUTORIZAÇÃO · AP-04 há 40 min Gasto mensal acima do teto — modelo opus-4 PP Paula PM MÉDIO SLA · restam 23 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | CHECKPOINT · AP-05 ontem Proposta Atlas — contra-assinatura CC Cléber Closer MÉDIO SLA · restam 4 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | REVISÃO · AP-03 há 5 h Headline LP acima do limite — manter ou cortar? RR Rita Revisora BAIXO SLA · restam 19 h |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir artefato completo → |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "label |  | Valor de SUPABASE_URL |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "field | textbox | Valor de SUPABASE_URL | Valor de SUPABASE_URL | https://xxxx.supabase.co | text",
+            "count": 1
+          },
+          {
+            "value": "control | button | Aprovar A 01 A variável é gravada no cofre local 02 O job-007 refaz o deploy a partir do passo 4 03 Edna roda a regressão antes de publicar |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Recusar R 01 O deploy continua parado 02 O card #18 volta para Planejado 03 Davi recebe o seu motivo no chat do card |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Pedir contexto C 01 Davi responde no chat do card 02 A decisão continua na caixa 03 O SLA não é reiniciado |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Conversar com Davi DevOps |  |  | ",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "control | button | Gerenciar sessão do operador | Gerenciar sessão do operador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 3 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Decisões |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Frontend | Reiniciar Frontend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Backend | Reiniciar Backend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… (Ctrl K) | Buscar telas, tasks, agentes… (Ctrl K) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar novo job operacional | Iniciar novo job operacional |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tablist | Todas 0 Urgentes 0 Gates 0 Alterações 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tab | Todas 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tab | Urgentes 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tab | Gates 0 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | tab | Alterações 0 |  |  | ",
+            "count": 1
+          }
+        ],
+        "matchedCount": 14,
+        "referenceCount": 38,
+        "candidateCount": 27
+      },
+      "dialogs": {
+        "missing": [],
+        "extra": [],
+        "matchedCount": 0,
+        "referenceCount": 0,
+        "candidateCount": 0
+      }
+    },
+    {
+      "screenId": "agentes-roster",
+      "referencePresent": true,
+      "candidatePresent": true,
+      "text": {
+        "missing": [
+          {
+            "value": "2",
+            "count": 1
+          },
+          {
+            "value": "7",
+            "count": 1
+          },
+          {
+            "value": "ao vivo",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "☀️",
+            "count": 1
+          },
+          {
+            "value": "Operação",
+            "count": 5
+          },
+          {
+            "value": "3",
+            "count": 1
+          },
+          {
+            "value": "5",
+            "count": 1
+          },
+          {
+            "value": "Agentes",
+            "count": 1
+          },
+          {
+            "value": "Chat",
+            "count": 58
+          },
+          {
+            "value": "office.py · SQLite ao vivo",
+            "count": 1
+          },
+          {
+            "value": "Frontend",
+            "count": 1
+          },
+          {
+            "value": "Backend",
+            "count": 1
+          },
+          {
+            "value": "Iniciar job",
+            "count": 58
+          },
+          {
+            "value": "58",
+            "count": 1
+          },
+          {
+            "value": "de 47 carregados ·",
+            "count": 1
+          },
+          {
+            "value": "ocupados ·",
+            "count": 1
+          },
+          {
+            "value": "0",
+            "count": 2
+          },
+          {
+            "value": "com erro",
+            "count": 1
+          },
+          {
+            "value": "Todos",
+            "count": 1
+          },
+          {
+            "value": "Engenharia",
+            "count": 11
+          },
+          {
+            "value": "Conteúdo",
+            "count": 18
+          },
+          {
+            "value": "Social",
+            "count": 10
+          },
+          {
+            "value": "Qualidade",
+            "count": 5
+          },
+          {
+            "value": "Conhecimento",
+            "count": 3
+          },
+          {
+            "value": "Estratégia",
+            "count": 3
+          },
+          {
+            "value": "Comercial",
+            "count": 5
+          },
+          {
+            "value": "Documentação",
+            "count": 2
+          },
+          {
+            "value": "Finanças",
+            "count": 3
+          },
+          {
+            "value": "Design",
+            "count": 3
+          },
+          {
+            "value": "Suporte",
+            "count": 2
+          },
+          {
+            "value": "Agente",
+            "count": 1
+          },
+          {
+            "value": "Setor",
+            "count": 1
+          },
+          {
+            "value": "Status",
+            "count": 1
+          },
+          {
+            "value": "Modelo",
+            "count": 1
+          },
+          {
+            "value": "Última exec.",
+            "count": 1
+          },
+          {
+            "value": "Jobs",
+            "count": 1
+          },
+          {
+            "value": "Custo",
+            "count": 1
+          },
+          {
+            "value": "MI",
+            "count": 1
+          },
+          {
+            "value": "Maicon",
+            "count": 1
+          },
+          {
+            "value": "Arquiteto de Integrações & Análise de Ferramentas",
+            "count": 1
+          },
+          {
+            "value": "Ocioso",
+            "count": 53
+          },
+          {
+            "value": "claude-opus-4",
+            "count": 8
+          },
+          {
+            "value": "recente",
+            "count": 1
+          },
+          {
+            "value": "US$",
+            "count": 58
+          },
+          {
+            "value": "0.00",
+            "count": 1
+          },
+          {
+            "value": "AA",
+            "count": 1
+          },
+          {
+            "value": "Adriano Arte",
+            "count": 1
+          },
+          {
+            "value": "Direção de Arte & Assets",
+            "count": 1
+          },
+          {
+            "value": "dall-e-3",
+            "count": 2
+          },
+          {
+            "value": "15 min",
+            "count": 52
+          },
+          {
+            "value": "438",
+            "count": 1
+          },
+          {
+            "value": "91.34",
+            "count": 1
+          },
+          {
+            "value": "II",
+            "count": 2
+          },
+          {
+            "value": "Íris Instagram",
+            "count": 1
+          },
+          {
+            "value": "Auditoria & Métricas Instagram",
+            "count": 1
+          },
+          {
+            "value": "gpt-4o",
+            "count": 6
+          },
+          {
+            "value": "371",
+            "count": 1
+          },
+          {
+            "value": "79.28",
+            "count": 1
+          },
+          {
+            "value": "AW",
+            "count": 1
+          },
+          {
+            "value": "Atlas Web",
+            "count": 1
+          },
+          {
+            "value": "Auditoria Web & Performance",
+            "count": 1
+          },
+          {
+            "value": "197",
+            "count": 1
+          },
+          {
+            "value": "47.96",
+            "count": 1
+          },
+          {
+            "value": "YY",
+            "count": 1
+          },
+          {
+            "value": "Yuri YouTube",
+            "count": 1
+          },
+          {
+            "value": "Inteligência & Métricas YouTube",
+            "count": 1
+          },
+          {
+            "value": "295",
+            "count": 1
+          },
+          {
+            "value": "65.60",
+            "count": 1
+          },
+          {
+            "value": "AD",
+            "count": 1
+          },
+          {
+            "value": "Arquiteto de Nicho",
+            "count": 1
+          },
+          {
+            "value": "Arquitetura de Soluções",
+            "count": 1
+          },
+          {
+            "value": "111",
+            "count": 2
+          },
+          {
+            "value": "32.48",
+            "count": 2
+          },
+          {
+            "value": "AC",
+            "count": 1
+          },
+          {
+            "value": "Atena Compliance",
+            "count": 1
+          },
+          {
+            "value": "Compliance & Política YouTube",
+            "count": 1
+          },
+          {
+            "value": "claude-sonnet-4",
+            "count": 42
+          },
+          {
+            "value": "163",
+            "count": 1
+          },
+          {
+            "value": "41.84",
+            "count": 1
+          },
+          {
+            "value": "AS",
+            "count": 1
+          },
+          {
+            "value": "Auditor Seg/LGPD",
+            "count": 1
+          },
+          {
+            "value": "Auditoria de Segurança & LGPD",
+            "count": 1
+          },
+          {
+            "value": "70",
+            "count": 1
+          },
+          {
+            "value": "25.10",
+            "count": 1
+          },
+          {
+            "value": "BS",
+            "count": 1
+          },
+          {
+            "value": "Bruno Sócio",
+            "count": 1
+          },
+          {
+            "value": "Conselho Estratégico",
+            "count": 1
+          },
+          {
+            "value": "255",
+            "count": 1
+          },
+          {
+            "value": "58.40",
+            "count": 1
+          },
+          {
+            "value": "CC",
+            "count": 3
+          },
+          {
+            "value": "Cléber Closer",
+            "count": 1
+          },
+          {
+            "value": "Fechamento Comercial",
+            "count": 1
+          },
+          {
+            "value": "389",
+            "count": 1
+          },
+          {
+            "value": "82.52",
+            "count": 1
+          },
+          {
+            "value": "VC",
+            "count": 1
+          },
+          {
+            "value": "Vitor Construtor (Nuxt/Vue)",
+            "count": 1
+          },
+          {
+            "value": "Dev Frontend Sênior (Nuxt/Vue)",
+            "count": 1
+          },
+          {
+            "value": "Ocupado",
+            "count": 5
+          },
+          {
+            "value": "1 min",
+            "count": 5
+          },
+          {
+            "value": "284",
+            "count": 1
+          },
+          {
+            "value": "63.62",
+            "count": 1
+          },
+          {
+            "value": "NC",
+            "count": 1
+          },
+          {
+            "value": "Nando Construtor (.NET/Angular)",
+            "count": 1
+          },
+          {
+            "value": "Engenharia Enterprise (.NET/Angular)",
+            "count": 1
+          },
+          {
+            "value": "416",
+            "count": 1
+          },
+          {
+            "value": "87.38",
+            "count": 1
+          },
+          {
+            "value": "IC",
+            "count": 1
+          },
+          {
+            "value": "Ícaro Construtor (Flutter/Dart)",
+            "count": 1
+          },
+          {
+            "value": "Engenharia Mobile (Flutter/Dart)",
+            "count": 1
+          },
+          {
+            "value": "315",
+            "count": 1
+          },
+          {
+            "value": "69.20",
+            "count": 1
+          },
+          {
+            "value": "RC",
+            "count": 1
+          },
+          {
+            "value": "Rafa Construtor (Next.js/React)",
+            "count": 1
+          },
+          {
+            "value": "Dev Fullstack (Next.js/React)",
+            "count": 1
+          },
+          {
+            "value": "66",
+            "count": 1
+          },
+          {
+            "value": "24.38",
+            "count": 1
+          },
+          {
+            "value": "JJ",
+            "count": 1
+          },
+          {
+            "value": "Jussara Jurídico",
+            "count": 1
+          },
+          {
+            "value": "Assessoria Jurídica & Contratos",
+            "count": 1
+          },
+          {
+            "value": "430",
+            "count": 1
+          },
+          {
+            "value": "89.90",
+            "count": 1
+          },
+          {
+            "value": "Iara Instagram",
+            "count": 1
+          },
+          {
+            "value": "Produção de Conteúdo Instagram",
+            "count": 1
+          },
+          {
+            "value": "215",
+            "count": 1
+          },
+          {
+            "value": "51.20",
+            "count": 1
+          },
+          {
+            "value": "CL",
+            "count": 1
+          },
+          {
+            "value": "Ciro LinkedIn",
+            "count": 1
+          },
+          {
+            "value": "Produção Editorial LinkedIn",
+            "count": 1
+          },
+          {
+            "value": "229",
+            "count": 1
+          },
+          {
+            "value": "53.72",
+            "count": 1
+          },
+          {
+            "value": "BY",
+            "count": 1
+          },
+          {
+            "value": "Bento YouTube",
+            "count": 1
+          },
+          {
+            "value": "Otimização & SEO YouTube",
+            "count": 1
+          },
+          {
+            "value": "322",
+            "count": 1
+          },
+          {
+            "value": "70.46",
+            "count": 1
+          },
+          {
+            "value": "Cissa CS",
+            "count": 1
+          },
+          {
+            "value": "Customer Success & Onboarding",
+            "count": 1
+          },
+          {
+            "value": "362",
+            "count": 1
+          },
+          {
+            "value": "77.66",
+            "count": 1
+          },
+          {
+            "value": "CS",
+            "count": 1
+          },
+          {
+            "value": "CTO (Stack & Infra)",
+            "count": 1
+          },
+          {
+            "value": "CTO (Stack, Infra & Decisões)",
+            "count": 1
+          },
+          {
+            "value": "387",
+            "count": 2
+          },
+          {
+            "value": "82.16",
+            "count": 2
+          },
+          {
+            "value": "Cléo Curadora",
+            "count": 1
+          },
+          {
+            "value": "Curadoria & Indexação de Conhecimento",
+            "count": 1
+          },
+          {
+            "value": "266",
+            "count": 1
+          },
+          {
+            "value": "60.38",
+            "count": 1
+          },
+          {
+            "value": "DD",
+            "count": 5
+          },
+          {
+            "value": "Dora Dados",
+            "count": 1
+          },
+          {
+            "value": "DBA & Modelagem de Dados",
+            "count": 1
+          },
+          {
+            "value": "399",
+            "count": 1
+          },
+          {
+            "value": "84.32",
+            "count": 1
+          },
+          {
+            "value": "Dora Descoberta",
+            "count": 1
+          },
+          {
+            "value": "Gate 0 & Intake Descoberta",
+            "count": 1
+          },
+          {
+            "value": "Davi DevOps",
+            "count": 1
+          },
+          {
+            "value": "CI/CD & Infraestrutura",
+            "count": 1
+          },
+          {
+            "value": "212",
+            "count": 1
+          },
+          {
+            "value": "50.66",
+            "count": 1
+          },
+          {
+            "value": "DF",
+            "count": 1
+          },
+          {
+            "value": "Diego Flow",
+            "count": 1
+          },
+          {
+            "value": "Direção & Automação Flow",
+            "count": 1
+          },
+          {
+            "value": "73",
+            "count": 1
+          },
+          {
+            "value": "25.64",
+            "count": 1
+          },
+          {
+            "value": "Dario Diretor Comercial",
+            "count": 1
+          },
+          {
+            "value": "Estratégia Comercial & Funil",
+            "count": 1
+          },
+          {
+            "value": "213",
+            "count": 1
+          },
+          {
+            "value": "50.84",
+            "count": 1
+          },
+          {
+            "value": "Dante Documentação",
+            "count": 1
+          },
+          {
+            "value": "Manuais Técnicos & OpenAPI",
+            "count": 1
+          },
+          {
+            "value": "309",
+            "count": 1
+          },
+          {
+            "value": "68.12",
+            "count": 1
+          },
+          {
+            "value": "LL",
+            "count": 2
+          },
+          {
+            "value": "Lia Loja",
+            "count": 1
+          },
+          {
+            "value": "Especialista em E-commerce",
+            "count": 1
+          },
+          {
+            "value": "161",
+            "count": 1
+          },
+          {
+            "value": "41.48",
+            "count": 1
+          },
+          {
+            "value": "VV",
+            "count": 2
+          },
+          {
+            "value": "Vini Vídeo",
+            "count": 1
+          },
+          {
+            "value": "Edição & Pós-Produção",
+            "count": 1
+          },
+          {
+            "value": "350",
+            "count": 1
+          },
+          {
+            "value": "75.50",
+            "count": 1
+          },
+          {
+            "value": "EE",
+            "count": 3
+          },
+          {
+            "value": "Ema E-mail",
+            "count": 1
+          },
+          {
+            "value": "Copywriting & Régua de E-mails",
+            "count": 1
+          },
+          {
+            "value": "275",
+            "count": 2
+          },
+          {
+            "value": "62.00",
+            "count": 2
+          },
+          {
+            "value": "Elisa Escritora",
+            "count": 1
+          },
+          {
+            "value": "Ghostwriter & Produção de Texto",
+            "count": 1
+          },
+          {
+            "value": "SE",
+            "count": 1
+          },
+          {
+            "value": "Sofia Estilo",
+            "count": 1
+          },
+          {
+            "value": "Estilo & Tom de Voz",
+            "count": 1
+          },
+          {
+            "value": "76",
+            "count": 1
+          },
+          {
+            "value": "26.18",
+            "count": 1
+          },
+          {
+            "value": "OE",
+            "count": 1
+          },
+          {
+            "value": "Otto Estruturador",
+            "count": 1
+          },
+          {
+            "value": "Estrutura Narrativa & Capítulos",
+            "count": 1
+          },
+          {
+            "value": "113",
+            "count": 1
+          },
+          {
+            "value": "32.84",
+            "count": 1
+          },
+          {
+            "value": "FF",
+            "count": 1
+          },
+          {
+            "value": "Fábio Finanças",
+            "count": 1
+          },
+          {
+            "value": "Controle Financeiro & Cobrança",
+            "count": 1
+          },
+          {
+            "value": "TT",
+            "count": 2
+          },
+          {
+            "value": "Tainá Tráfego",
+            "count": 1
+          },
+          {
+            "value": "Gestão de Tráfego Pago",
+            "count": 1
+          },
+          {
+            "value": "217",
+            "count": 1
+          },
+          {
+            "value": "51.56",
+            "count": 1
+          },
+          {
+            "value": "GG",
+            "count": 1
+          },
+          {
+            "value": "Gael Growth",
+            "count": 1
+          },
+          {
+            "value": "Estratégias de Aquisição & Growth",
+            "count": 1
+          },
+          {
+            "value": "310",
+            "count": 1
+          },
+          {
+            "value": "68.30",
+            "count": 1
+          },
+          {
+            "value": "JA",
+            "count": 1
+          },
+          {
+            "value": "Jane",
+            "count": 1
+          },
+          {
+            "value": "Coordenação Operacional",
+            "count": 1
+          },
+          {
+            "value": "392",
+            "count": 1
+          },
+          {
+            "value": "83.06",
+            "count": 1
+          },
+          {
+            "value": "JN",
+            "count": 1
+          },
+          {
+            "value": "Jano NexLev",
+            "count": 1
+          },
+          {
+            "value": "Otimização & Performance de Vídeo",
+            "count": 1
+          },
+          {
+            "value": "269",
+            "count": 1
+          },
+          {
+            "value": "60.92",
+            "count": 1
+          },
+          {
+            "value": "Lucas Lapidador",
+            "count": 1
+          },
+          {
+            "value": "Revisão Fina & Polimento",
+            "count": 1
+          },
+          {
+            "value": "396",
+            "count": 1
+          },
+          {
+            "value": "83.78",
+            "count": 1
+          },
+          {
+            "value": "MM",
+            "count": 2
+          },
+          {
+            "value": "Marina Marca",
+            "count": 1
+          },
+          {
+            "value": "Identidade Visual & Design System",
+            "count": 1
+          },
+          {
+            "value": "408",
+            "count": 2
+          },
+          {
+            "value": "85.94",
+            "count": 2
+          },
+          {
+            "value": "Marcos Marketing",
+            "count": 1
+          },
+          {
+            "value": "Marketing de Crescimento",
+            "count": 1
+          },
+          {
+            "value": "440",
+            "count": 1
+          },
+          {
+            "value": "91.70",
+            "count": 1
+          },
+          {
+            "value": "NN",
+            "count": 1
+          },
+          {
+            "value": "Nara Narração",
+            "count": 1
+          },
+          {
+            "value": "Locução & Síntese de Voz",
+            "count": 1
+          },
+          {
+            "value": "55",
+            "count": 1
+          },
+          {
+            "value": "22.40",
+            "count": 1
+          },
+          {
+            "value": "OD",
+            "count": 1
+          },
+          {
+            "value": "Oráculo Diretor",
+            "count": 1
+          },
+          {
+            "value": "Diretor Editorial & Produção",
+            "count": 1
+          },
+          {
+            "value": "94",
+            "count": 1
+          },
+          {
+            "value": "29.42",
+            "count": 1
+          },
+          {
+            "value": "PP",
+            "count": 3
+          },
+          {
+            "value": "Paula PM",
+            "count": 1
+          },
+          {
+            "value": "Orquestradora & Planejamento",
+            "count": 1
+          },
+          {
+            "value": "278",
+            "count": 1
+          },
+          {
+            "value": "62.54",
+            "count": 1
+          },
+          {
+            "value": "Priscila Preços",
+            "count": 1
+          },
+          {
+            "value": "Modelagem de Preços & Margem",
+            "count": 1
+          },
+          {
+            "value": "159",
+            "count": 1
+          },
+          {
+            "value": "41.12",
+            "count": 1
+          },
+          {
+            "value": "Paulo Publicador",
+            "count": 1
+          },
+          {
+            "value": "Publicação Governa & Release",
+            "count": 1
+          },
+          {
+            "value": "68",
+            "count": 1
+          },
+          {
+            "value": "24.74",
+            "count": 1
+          },
+          {
+            "value": "Edna E2E",
+            "count": 1
+          },
+          {
+            "value": "QA End-to-End & Regressão",
+            "count": 1
+          },
+          {
+            "value": "60",
+            "count": 1
+          },
+          {
+            "value": "23.30",
+            "count": 1
+          },
+          {
+            "value": "RR",
+            "count": 4
+          },
+          {
+            "value": "Rafael Roteiro",
+            "count": 1
+          },
+          {
+            "value": "Roteirista Sênior",
+            "count": 1
+          },
+          {
+            "value": "178",
+            "count": 1
+          },
+          {
+            "value": "44.54",
+            "count": 1
+          },
+          {
+            "value": "Rebeca Recepção",
+            "count": 1
+          },
+          {
+            "value": "Triagem & Recepção",
+            "count": 1
+          },
+          {
+            "value": "280",
+            "count": 1
+          },
+          {
+            "value": "62.90",
+            "count": 1
+          },
+          {
+            "value": "Rita Revisora",
+            "count": 1
+          },
+          {
+            "value": "QA Editorial & Gramatical",
+            "count": 1
+          },
+          {
+            "value": "158",
+            "count": 1
+          },
+          {
+            "value": "40.94",
+            "count": 1
+          },
+          {
+            "value": "Renato Roteirista",
+            "count": 1
+          },
+          {
+            "value": "Roteiros Especializados YouTube",
+            "count": 1
+          },
+          {
+            "value": "169",
+            "count": 1
+          },
+          {
+            "value": "42.92",
+            "count": 1
+          },
+          {
+            "value": "NS",
+            "count": 1
+          },
+          {
+            "value": "Nina SEO",
+            "count": 1
+          },
+          {
+            "value": "SEO Técnico & Distribuição",
+            "count": 1
+          },
+          {
+            "value": "361",
+            "count": 1
+          },
+          {
+            "value": "77.48",
+            "count": 1
+          },
+          {
+            "value": "SS",
+            "count": 3
+          },
+          {
+            "value": "Sami Social",
+            "count": 1
+          },
+          {
+            "value": "Gestão & Interação Social",
+            "count": 1
+          },
+          {
+            "value": "Sofia Storyboard",
+            "count": 1
+          },
+          {
+            "value": "Storyboard & Direção de Arte",
+            "count": 1
+          },
+          {
+            "value": "107",
+            "count": 1
+          },
+          {
+            "value": "31.76",
+            "count": 1
+          },
+          {
+            "value": "Sônia Suporte",
+            "count": 1
+          },
+          {
+            "value": "Triagem de Suporte & FAQ",
+            "count": 1
+          },
+          {
+            "value": "257",
+            "count": 1
+          },
+          {
+            "value": "58.76",
+            "count": 1
+          },
+          {
+            "value": "Théo Tech Lead",
+            "count": 1
+          },
+          {
+            "value": "Liderança Técnica & Padrões",
+            "count": 1
+          },
+          {
+            "value": "443",
+            "count": 1
+          },
+          {
+            "value": "92.24",
+            "count": 1
+          },
+          {
+            "value": "YU",
+            "count": 1
+          },
+          {
+            "value": "Yuri UX",
+            "count": 1
+          },
+          {
+            "value": "UX Research & Prova Visual",
+            "count": 1
+          },
+          {
+            "value": "172",
+            "count": 1
+          },
+          {
+            "value": "43.46",
+            "count": 1
+          },
+          {
+            "value": "Victor VideoLens",
+            "count": 1
+          },
+          {
+            "value": "Análise Visual de Vídeo",
+            "count": 1
+          },
+          {
+            "value": "106",
+            "count": 1
+          },
+          {
+            "value": "31.58",
+            "count": 1
+          }
+        ],
+        "matchedCount": 22,
+        "referenceCount": 25,
+        "candidateCount": 750
+      },
+      "controls": {
+        "missing": [
+          {
+            "value": "control | button | TAVIR, ir para a Sala de Operação | TAVIR, ir para a Sala de Operação |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Carlos, CEO. Sessão | Carlos, CEO. Sessão |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 2 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks 7 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… Ctrl K |  |  | ",
+            "count": 1
+          }
+        ],
+        "extra": [
+          {
+            "value": "control | button | Gerenciar sessão do operador | Gerenciar sessão do operador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Execuções 3 |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Tasks |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Frontend | Reiniciar Frontend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Reiniciar Backend | Reiniciar Backend |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Buscar telas, tasks, agentes… (Ctrl K) | Buscar telas, tasks, agentes… (Ctrl K) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar novo job operacional | Iniciar novo job operacional |  | ",
+            "count": 1
+          },
+          {
+            "value": "field | textbox | Buscar agentes | Buscar agentes | Nome, papel ou setor… | text",
+            "count": 1
+          },
+          {
+            "value": "control | button | Todos |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Engenharia |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Conteúdo |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Social |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Qualidade |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Conhecimento |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Estratégia |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Comercial |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Documentação |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Finanças |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Operação |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Design |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Suporte |  |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Ver detalhamento da alma do agente |  |  | ",
+            "count": 58
+          },
+          {
+            "value": "control | button | Abrir chat de Maicon | Abrir chat de Maicon |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Iniciar job |  |  | ",
+            "count": 57
+          },
+          {
+            "value": "control | button | Abrir chat de Adriano Arte | Abrir chat de Adriano Arte |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Íris Instagram | Abrir chat de Íris Instagram |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Atlas Web | Abrir chat de Atlas Web |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Yuri YouTube | Abrir chat de Yuri YouTube |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Arquiteto de Nicho | Abrir chat de Arquiteto de Nicho |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Atena Compliance | Abrir chat de Atena Compliance |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Auditor Seg/LGPD | Abrir chat de Auditor Seg/LGPD |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Bruno Sócio | Abrir chat de Bruno Sócio |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Cléber Closer | Abrir chat de Cléber Closer |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Vitor Construtor (Nuxt/Vue) | Abrir chat de Vitor Construtor (Nuxt/Vue) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Nando Construtor (.NET/Angular) | Abrir chat de Nando Construtor (.NET/Angular) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Ícaro Construtor (Flutter/Dart) | Abrir chat de Ícaro Construtor (Flutter/Dart) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Rafa Construtor (Next.js/React) | Abrir chat de Rafa Construtor (Next.js/React) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Jussara Jurídico | Abrir chat de Jussara Jurídico |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Iara Instagram | Abrir chat de Iara Instagram |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Ciro LinkedIn | Abrir chat de Ciro LinkedIn |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Bento YouTube | Abrir chat de Bento YouTube |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Cissa CS | Abrir chat de Cissa CS |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de CTO (Stack & Infra) | Abrir chat de CTO (Stack & Infra) |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Cléo Curadora | Abrir chat de Cléo Curadora |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Dora Dados | Abrir chat de Dora Dados |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Dora Descoberta | Abrir chat de Dora Descoberta |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Davi DevOps | Abrir chat de Davi DevOps |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Diego Flow | Abrir chat de Diego Flow |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Dario Diretor Comercial | Abrir chat de Dario Diretor Comercial |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Dante Documentação | Abrir chat de Dante Documentação |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Lia Loja | Abrir chat de Lia Loja |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Vini Vídeo | Abrir chat de Vini Vídeo |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Ema E-mail | Abrir chat de Ema E-mail |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Elisa Escritora | Abrir chat de Elisa Escritora |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Sofia Estilo | Abrir chat de Sofia Estilo |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Otto Estruturador | Abrir chat de Otto Estruturador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Fábio Finanças | Abrir chat de Fábio Finanças |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Tainá Tráfego | Abrir chat de Tainá Tráfego |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Gael Growth | Abrir chat de Gael Growth |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Jane | Abrir chat de Jane |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Jano NexLev | Abrir chat de Jano NexLev |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Lucas Lapidador | Abrir chat de Lucas Lapidador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Marina Marca | Abrir chat de Marina Marca |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Marcos Marketing | Abrir chat de Marcos Marketing |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Nara Narração | Abrir chat de Nara Narração |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Oráculo Diretor | Abrir chat de Oráculo Diretor |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Paula PM | Abrir chat de Paula PM |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Priscila Preços | Abrir chat de Priscila Preços |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Paulo Publicador | Abrir chat de Paulo Publicador |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Edna E2E | Abrir chat de Edna E2E |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Rafael Roteiro | Abrir chat de Rafael Roteiro |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Rebeca Recepção | Abrir chat de Rebeca Recepção |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Rita Revisora | Abrir chat de Rita Revisora |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Renato Roteirista | Abrir chat de Renato Roteirista |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Nina SEO | Abrir chat de Nina SEO |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Sami Social | Abrir chat de Sami Social |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Sofia Storyboard | Abrir chat de Sofia Storyboard |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Sônia Suporte | Abrir chat de Sônia Suporte |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Théo Tech Lead | Abrir chat de Théo Tech Lead |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Yuri UX | Abrir chat de Yuri UX |  | ",
+            "count": 1
+          },
+          {
+            "value": "control | button | Abrir chat de Victor VideoLens | Abrir chat de Victor VideoLens |  | ",
+            "count": 1
+          }
+        ],
+        "matchedCount": 16,
+        "referenceCount": 21,
+        "candidateCount": 210
+      },
+      "dialogs": {
+        "missing": [],
+        "extra": [],
+        "matchedCount": 0,
+        "referenceCount": 0,
+        "candidateCount": 0
+      }
+    }
+  ]
+}

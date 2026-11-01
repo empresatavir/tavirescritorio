@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Conhecimento</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page">
+  <div class="phead"><div class="grow"><div class="eyebrow">Conhecimento</div><h1 style="margin-top: 8px">{{title}}</h1><p>{{lead}}</p></div></div>
+  <div class="tabs"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div>
+
+  <!-- CÉREBRO -->
+  <sc-if value="{{v.cerebro}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: stretch">
+      <section class="ink" style="flex: 3 1 520px; padding: 18px; min-height: 460px; position: relative; overflow: hidden">
+        <div style="display: flex; align-items: center; position: relative; z-index: 2"><span class="eyebrow">Grafo operacional · a partir de você</span><div class="grow"></div><span class="mono" style="font-size: 11px; color: var(--on-ink-muted)">{{nodesN}} setores · 58 agentes · 1.204 notas</span></div>
+        <div style="position: relative; height: 410px">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true" style="position: absolute; inset: 0">
+            <path d="{{linesD}}" fill="none" stroke="rgba(244,246,242,.2)" stroke-width="1" vector-effect="non-scaling-stroke" stroke-dasharray="4 4"></path><path d="{{selD}}" fill="none" stroke="#B7F34A" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+          </svg>
+          <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 88px; height: 88px; border-radius: 50%; background: #B7F34A; color: #25360a; display: grid; place-items: center; font-weight: 700; box-shadow: 0 0 0 10px rgba(183,243,74,.10)">Você</div>
+          <sc-for list="{{nodes}}" as="n" hint-placeholder-count="6">
+            <button onClick="{{n.pick}}" style="position: absolute; left: {{n.x}}%; top: {{n.y}}%; transform: translate(-50%, -50%); padding: 10px 14px; border-radius: 14px; border: 1px solid {{n.border}}; background: {{n.bg}}; color: #F4F6F2; text-align: left; min-width: 128px; transition: all 180ms var(--ease)">
+              <b style="font-size: 13px; display: block">{{n.label}}</b><span class="mono" style="font-size: 10.5px; color: #aeb7c4">{{n.meta}}</span>
+            </button>
+          </sc-for>
+        </div>
+      </section>
+      <section class="card" style="flex: 2 1 340px; display: flex; flex-direction: column">
+        <div class="card-h"><span class="eyebrow">Você →</span><h3>{{node.label}}</h3></div>
+        <div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 14px">
+          <p class="sec" style="font-size: 13px">{{node.about}}</p>
+          <div><span class="eyebrow">Agentes</span><div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px"><sc-for list="{{node.agents}}" as="a" hint-placeholder-count="3"><span class="badge">{{a.t}}</span></sc-for></div></div>
+          <div class="g3" style="grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+            <div><div class="num" style="font-size: 20px">{{node.cards}}</div><div class="muted" style="font-size: 11px">cards ativos</div></div>
+            <div><div class="num" style="font-size: 20px">{{node.notes}}</div><div class="muted" style="font-size: 11px">notas</div></div>
+            <div><div class="num" style="font-size: 20px">{{node.tools}}</div><div class="muted" style="font-size: 11px">ferramentas</div></div>
+          </div>
+          <form onSubmit="{{saveNote}}" class="field" style="border-top: 1px solid var(--line); padding-top: 14px"><span>Capturar nota em {{node.label}}</span><textarea class="input" rows="3" value="{{draft}}" onChange="{{onDraft}}" placeholder="Uma decisão, uma lição, um link"></textarea><button type="submit" class="btn primary" style="align-self: flex-start">Guardar nota</button></form>
+          <sc-if value="{{hasNotes}}" hint-placeholder-val="{{false}}"><div class="rows card"><sc-for list="{{notes}}" as="x" hint-placeholder-count="2"><div class="row" style="cursor: default"><span class="num muted" style="font-size: 11px">{{x.t}}</span><span class="grow" style="font-size: 13px">{{x.text}}</span></div></sc-for></div></sc-if>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+
+  <!-- MEMÓRIA -->
+  <sc-if value="{{v.memoria}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+      <div class="segs"><sc-for list="{{scopes}}" as="f" hint-placeholder-count="5"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+      <div class="grow"></div>
+      <input class="input" style="max-width: 280px; border-radius: 999px" value="{{mq}}" onChange="{{onMq}}" placeholder="Buscar na memória" aria-label="Buscar na memória">
+    </div>
+    <div class="segs"><sc-for list="{{domains}}" as="f" hint-placeholder-count="8"><button class="seg {{f.on}}" onClick="{{f.pick}}" style="height: 28px; font-size: 12px">{{f.label}}</button></sc-for></div>
+    <div class="card" style="overflow-x: auto">
+      <table class="tbl"><thead><tr><th>Item</th><th>Escopo</th><th>Domínio</th><th>Fonte</th><th>Confiança</th><th>Atualizado</th></tr></thead>
+        <tbody><sc-for list="{{mem}}" as="m" hint-placeholder-count="8"><tr><td><b>{{m.t}}</b></td><td class="sec">{{m.sc}}</td><td><span class="badge">{{m.d}}</span></td><td class="mono muted" style="font-size: 12px">{{m.src}}</td><td><span class="badge {{m.cls}}">{{m.conf}}</span></td><td class="num muted">{{m.when}}</td></tr></sc-for></tbody>
+      </table>
+      <sc-if value="{{memEmpty}}" hint-placeholder-val="{{false}}"><p class="muted" style="padding: 20px">Nada com esse filtro.</p></sc-if>
+    </div>
+  </sc-if>
+
+  <!-- IDEIAS -->
+  <sc-if value="{{v.ideias}}" hint-placeholder-val="{{false}}">
+    <form onSubmit="{{addIdea}}" style="display: flex; gap: 8px"><input class="input" style="border-radius: 999px" value="{{idea}}" onChange="{{onIdea}}" placeholder="Uma ideia em uma linha. Enter para guardar." aria-label="Nova ideia"><button type="submit" class="btn primary">Guardar</button></form>
+    <div class="kanban" style="grid-template-columns: repeat(3, minmax(250px, 1fr))">
+      <sc-for list="{{icols}}" as="c" hint-placeholder-count="3">
+        <section class="kcol" style="min-height: 300px">
+          <div class="kcol-h"><i style="background: {{c.color}}"></i><b>{{c.label}}</b><span class="num muted" style="font-size: 12px">{{c.n}}</span></div>
+          <sc-for list="{{c.items}}" as="i" hint-placeholder-count="2">
+            <div class="kcard" style="cursor: default">
+              <b style="font-size: 14px; font-weight: 600; line-height: 1.35">{{i.t}}</b>
+              <span class="muted" style="font-size: 12px">{{i.who}} · {{i.when}}</span>
+              <div style="display: flex; gap: 6px; align-items: center"><button class="btn sm ghost" onClick="{{i.vote}}" style="padding: 0 10px">+1 · {{i.votes}}</button><div class="grow"></div><sc-if value="{{i.canMove}}" hint-placeholder-val="{{true}}"><button class="btn sm secondary" onClick="{{i.move}}">{{i.moveLabel}}</button></sc-if></div>
+            </div>
+          </sc-for>
+        </section>
+      </sc-for>
+    </div>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"view":{"editor":"enum","options":["cerebro","memoria","ideias"],"default":"cerebro"},"spot":{"editor":null},"$preview":{"width":1176,"height":1000}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const VIEWS = [['cerebro', 'Cérebro', 'O grafo operacional a partir de você: setores, agentes e o que cada um guarda. A busca do Ctrl K alcança tudo isso.'], ['memoria', 'Memória e biblioteca', 'Notas, referências e dados que os agentes consultam, com fonte e grau de confiança.'], ['ideias', 'Ideias', 'Captura rápida antes de virar task. Votos ajudam a Paula a priorizar.']];
+const NODES = [
+  ['op', 'Operação', 18, 22, 'Paula, Jane, Rebeca', 'Orquestração, triagem e publicação. Tudo que vira job passa por aqui.', ['Paula PM', 'Jane', 'Rebeca Recepção', 'Paulo Publicador'], 6, 214, 5],
+  ['eng', 'Engenharia', 82, 22, 'Vitor, Davi, Théo +6', 'Construção, infraestrutura e padrões técnicos da Fábrica.', ['Vitor Construtor', 'Davi DevOps', 'Théo Tech Lead', 'Maicon'], 3, 318, 12],
+  ['con', 'Conteúdo', 12, 62, 'Oráculo, Adriano +14', 'Roteiro, arte, narração e revisão do Studio e da Edição.', ['Oráculo Diretor', 'Adriano Arte', 'Rita Revisora', 'Nara Narração'], 4, 402, 9],
+  ['com', 'Comercial', 88, 62, 'Dora, Cléber, Dario', 'Raio-X, propostas e funil. Do caso aberto ao contrato.', ['Dora Descoberta', 'Cléber Closer', 'Dario Diretor Comercial'], 3, 96, 4],
+  ['soc', 'Social', 30, 88, 'Íris, Iara, Nina +5', 'Perfis, tráfego e SEO. A leitura recente de cada rede.', ['Iara Instagram', 'Nina SEO', 'Ciro LinkedIn'], 2, 121, 6],
+  ['qa', 'Qualidade', 70, 88, 'Edna, Auditor, Jussara', 'QA, segurança, LGPD e jurídico. Quem assina antes de sair.', ['Edna E2E', 'Auditor Seg/LGPD', 'Jussara Jurídico', 'Atlas Web'], 1, 53, 7]
+];
+const MEM = [
+  ['Limite editorial de headline: 60 caracteres', 'Casa', 'copywriting', 'canon/editorial.md', 'alta', '27/10'],
+  ['Clínicas respondem melhor a confirmação 24 h antes', 'Casa', 'negócios', 'raiox/clinicas.csv', 'média', '22/10'],
+  ['Meridian: textos regulatórios passam pelo jurídico', 'Projeto', 'negócios', 'meridian/briefing.md', 'alta', '02/10'],
+  ['Hook visual antes da narração', 'Agente', 'design', 'lições/oraculo', 'alta', '26/10'],
+  ['Viés de ancoragem em tabela de preço', 'Biblioteca', 'psicologia', 'Kahneman, cap. 11', 'alta', '14/09'],
+  ['Jobs-to-be-done para oferta local', 'Biblioteca', 'frameworks', 'Christensen, 2016', 'alta', '03/09'],
+  ['Telemetria de custo por modelo · 90 dias', 'Dados', 'mercados', 'sqlite/telemetry', 'observado', 'hoje'],
+  ['Padrão de API REST do escritório', 'Projeto', 'engenharia', 'escritorio/api.md', 'alta', '19/10'],
+  ['Contraste mínimo 4,5:1 em todo texto', 'Casa', 'design', 'tavir-ds/readme', 'alta', '18/09'],
+  ['Concorrentes de presença local em SP', 'Dados', 'mercados', 'raiox/concorrentes', 'inferido', '11/10']
+];
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { v: 'cerebro', node: 'eng', draft: '', notes: [], scope: 'Todos', dom: 'todos', mq: '', idea: '', ideas: [['Raio-X gratuito para quem chega pelo LinkedIn', 'nova', 'Carlos', 'hoje', 3], ['Template de esteira para clínicas', 'nova', 'Dora', 'ontem', 5], ['Painel do cliente com o livro-razão do projeto', 'avaliando', 'Paula PM', '24/10', 8], ['Resumo semanal por e-mail para cada cliente', 'avaliando', 'Cissa CS', '20/10', 4], ['Studio com perfil de LinkedIn B2B', 'task', 'Carlos', '12/10', 9]] }; }
+  renderVals() {
+    const app = this.props.app;
+    const A = app || NOOP;
+    const s = this.state, self = this;
+    const pv = this.props.view;
+    const view = app && VIEWS.some((x) => x[0] === pv) ? pv : s.v;
+    const V = VIEWS.find((x) => x[0] === view);
+    const v = {}; VIEWS.forEach((x) => { v[x[0]] = view === x[0]; });
+    const N = NODES.find((n) => n[0] === s.node);
+    const scopes = ['Todos', 'Casa', 'Projeto', 'Agente', 'Biblioteca', 'Dados'];
+    const doms = ['todos', 'psicologia', 'copywriting', 'negócios', 'engenharia', 'mercados', 'frameworks', 'design'];
+    const mq = s.mq.toLowerCase();
+    const mem = MEM.filter((m) => (s.scope === 'Todos' || m[1] === s.scope) && (s.dom === 'todos' || m[2] === s.dom) && (!mq || m[0].toLowerCase().indexOf(mq) >= 0));
+    const confCls = { alta: 'flow', 'média': 'warn', observado: 'flow', inferido: 'warn' };
+    const COLS = [['nova', 'Novas', 'oklch(.80 .155 78)', 'Avaliar'], ['avaliando', 'Avaliando', '#1BC5BD', 'Virar task'], ['task', 'Virou task', '#B7F34A', '']];
+    return {
+      title: V[1], lead: V[2], v: v,
+      tabs: VIEWS.map((x) => ({ label: x[1], on: view === x[0] ? 'on' : '', pick: () => app ? app.go(x[0]) : self.setState({ v: x[0] }) })),
+      nodesN: NODES.length,
+      linesD: NODES.filter((n) => n[0] !== s.node).map((n) => 'M50 50 L' + n[2] + ' ' + n[3]).join(' '),
+      selD: 'M50 50 L' + N[2] + ' ' + N[3],
+      nodes: NODES.map((n) => ({ x: n[2], y: n[3], label: n[1], meta: n[4], line: n[0] === s.node ? '#B7F34A' : 'rgba(244,246,242,.18)', lw: n[0] === s.node ? 2 : 1, dash: n[0] === s.node ? '0' : '4 4', border: n[0] === s.node ? '#B7F34A' : 'rgba(244,246,242,.16)', bg: n[0] === s.node ? '#17223a' : '#0f1729', pick: () => self.setState({ node: n[0] }) })),
+      node: { label: N[1], about: N[5], agents: N[6].map((t) => ({ t: t })), cards: N[7], notes: N[8] + s.notes.filter((x) => x.node === N[0]).length, tools: N[9] },
+      draft: s.draft, onDraft: (e) => self.setState({ draft: e.target.value }),
+      saveNote: (e) => { e.preventDefault(); if (!s.draft.trim()) return; self.setState({ notes: [{ node: N[0], text: s.draft, t: 'agora' }].concat(s.notes), draft: '' }); A.toast('Nota guardada', 'Entrou no Cérebro em ' + N[1] + '.'); },
+      hasNotes: s.notes.filter((x) => x.node === N[0]).length > 0,
+      notes: s.notes.filter((x) => x.node === N[0]).slice(0, 4),
+      scopes: scopes.map((x) => ({ label: x, n: x === 'Todos' ? MEM.length : MEM.filter((m) => m[1] === x).length, on: s.scope === x ? 'on' : '', pick: () => self.setState({ scope: x }) })),
+      domains: doms.map((x) => ({ label: x, on: s.dom === x ? 'on' : '', pick: () => self.setState({ dom: x }) })),
+      mq: s.mq, onMq: (e) => self.setState({ mq: e.target.value }),
+      mem: mem.map((m) => ({ t: m[0], sc: m[1], d: m[2], src: m[3], conf: m[4], cls: confCls[m[4]] || '', when: m[5] })), memEmpty: mem.length === 0,
+      idea: s.idea, onIdea: (e) => self.setState({ idea: e.target.value }),
+      addIdea: (e) => { e.preventDefault(); if (!s.idea.trim()) return; self.setState({ ideas: [[s.idea, 'nova', 'Carlos', 'agora', 0]].concat(s.ideas), idea: '' }); },
+      icols: COLS.map((c) => { const items = s.ideas.map((x, i) => ({ x: x, i: i })).filter((o) => o.x[1] === c[0]); return { label: c[1], color: c[2], n: items.length, items: items.map((o) => ({ t: o.x[0], who: o.x[2], when: o.x[3], votes: o.x[4], canMove: !!c[3], moveLabel: c[3], vote: () => { const ideas = s.ideas.slice(); ideas[o.i] = ideas[o.i].slice(); ideas[o.i][4] += 1; self.setState({ ideas: ideas }); }, move: () => { const ideas = s.ideas.slice(); ideas[o.i] = ideas[o.i].slice(); ideas[o.i][1] = c[0] === 'nova' ? 'avaliando' : 'task'; self.setState({ ideas: ideas }); if (c[0] === 'avaliando') A.modal('task'); } })) }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

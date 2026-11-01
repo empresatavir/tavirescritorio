@@ -227,6 +227,11 @@ export function OverviewPanel(props: {
   checkpoint?: { at?: string; title?: string; status?: string; note?: string; action?: string; problem?: string; solution?: string } | null;
   checkpoints?: { at?: string; title?: string; status?: string; note?: string; action?: string }[];
   onContinue?: () => void;
+  maintenance?: boolean;
+  onOpenQa?: () => void;
+  onOpenSecurity?: () => void;
+  onOpenChat?: () => void;
+  onEnterMaintenance?: () => void;
   connected: boolean;
   onAuthorize: () => void;
   onComplete: () => void;
@@ -368,6 +373,37 @@ export function OverviewPanel(props: {
   return (
     <div class="fc-ov">
       <div class="fc-ov-main">
+        <Show when={props.runStatus === "done"}>
+          <section class="fc-ov-card">
+            <div class="fc-checkpoint">
+              <p class="fc-micro">Projeto finalizado</p>
+              <strong>A esteira permanece em 100%.</strong>
+              <p>
+                A vistoria de testes e a de segurança leem as regras já gravadas. A manutenção pede alteração pelo chat, sem voltar ao início.
+              </p>
+              <div class="fc-btn-row">
+                <button type="button" class="fc-btn" onClick={() => props.onOpenQa?.()}>
+                  Abrir testes (QA)
+                </button>
+                <button type="button" class="fc-btn-sec" onClick={() => props.onOpenSecurity?.()}>
+                  Abrir segurança
+                </button>
+                <Show
+                  when={props.maintenance}
+                  fallback={
+                    <button type="button" class="fc-btn-sec" onClick={() => props.onEnterMaintenance?.()}>
+                      Entrar em manutenção
+                    </button>
+                  }
+                >
+                  <button type="button" class="fc-btn-sec" onClick={() => props.onOpenChat?.()}>
+                    Pedir alteração no chat
+                  </button>
+                </Show>
+              </div>
+            </div>
+          </section>
+        </Show>
         <section class="fc-ov-card">
           <div class="fc-ov-card-head">
             <div>
@@ -377,6 +413,8 @@ export function OverviewPanel(props: {
                   ? "Carregando esteira…"
                   : props.runStatus === "paused"
                     ? "Esteira pausada · retome para continuar."
+                    : props.runStatus === "done"
+                    ? "Esteira encerrada. O percentual permanece no que foi entregue."
                     : props.connected
                       ? "Esteira ao vivo · SSE conectado."
                       : props.current
@@ -452,10 +490,14 @@ export function OverviewPanel(props: {
           <Show
             when={props.current}
             fallback={
-              <EmptyState
-                title={props.loading ? "Carregando…" : "Sem run ativo"}
-                text="Crie o projeto com um template de esteira para materializar as etapas."
-              />
+              props.runStatus === "done" ? (
+                <p class="fc-micro">Todas as etapas desta esteira estão concluídas.</p>
+              ) : (
+                <EmptyState
+                  title={props.loading ? "Carregando…" : "Sem run ativo"}
+                  text="Crie o projeto com um template de esteira para materializar as etapas."
+                />
+              )
             }
           >
             {(cur) => (
@@ -704,7 +746,8 @@ export function OverviewPanel(props: {
                 role="menuitem"
                 onClick={() => {
                   setMenu(null);
-                  if (item().stage.stage_def_id) props.onRedoStage?.(item().stage.stage_def_id);
+                  const stageId = item().stage.stage_def_id;
+                  if (stageId) props.onRedoStage?.(stageId);
                 }}
               >
                 Refazer entrega

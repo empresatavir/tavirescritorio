@@ -1,0 +1,2494 @@
+{
+  "screenId": "fabrica-esteiras",
+  "side": "candidate",
+  "capturedUrl": "http://127.0.0.1:9196/fabrica",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:9196/fabrica",
+      "title": "TAVIR Escritório — Painel Operacional",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 38,
+        "nav": 1,
+        "img": 2,
+        "button": 33,
+        "span": 45,
+        "svg": 16,
+        "path": 31,
+        "polygon": 3,
+        "polyline": 4,
+        "rect": 2,
+        "circle": 5,
+        "line": 10,
+        "aside": 1,
+        "header": 2,
+        "main": 1,
+        "p": 25,
+        "h1": 1,
+        "section": 4,
+        "article": 7,
+        "h2": 3,
+        "h3": 3,
+        "label": 2,
+        "input": 1,
+        "select": 1
+      },
+      "visibleText": [
+        {
+          "text": "☀️",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Visão dos módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fábrica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Edição",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fábrica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Frontend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Backend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fábrica de software · esteiras ao vivo",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Painel da Fábrica",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Acompanhe cada esteira, destrave gates e veja o QA em tempo real.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Projetos ativos",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "no total",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Pendências abertas",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "aguardando você",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Progresso médio",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "de todas as esteiras",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Completion Guard 8/8",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "projetos aprovados no QA",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Templates de Esteira",
+          "tag": "h2",
+          "id": "fab-templates-heading",
+          "role": "heading"
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "projetos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Landing Pages",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "LP · Criação e manutenção",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Esteira com prova visual, comercial, construção, QA, SEO e handoff documentado.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "até 16 etapas · gates humanos",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ver projetos",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Usar esteira",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "projetos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ofertas",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Ofertas · Produto e preço",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Criação ou revisão de oferta com evidência de público, viabilidade e claims.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "6–8 etapas · growth + jurídico",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ver projetos",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Usar esteira",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "projetos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistemas",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Sistemas · Criação e manutenção",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Criação do zero, criação com especificação pronta, ou manutenção de um sistema que já existe.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "criação 15 etapas · manutenção 12 etapas",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ver projetos",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Usar esteira",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Precisa da sua ação",
+          "tag": "h2",
+          "id": "fab-actions-heading",
+          "role": "heading"
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "itens",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nenhuma pendência no momento.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Projetos",
+          "tag": "h2",
+          "id": "fab-projects-heading",
+          "role": "heading"
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "listados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Todos",
+          "tag": "button",
+          "id": "",
+          "role": "tab"
+        },
+        {
+          "text": "Em andamento",
+          "tag": "button",
+          "id": "",
+          "role": "tab"
+        },
+        {
+          "text": "Com pendências",
+          "tag": "button",
+          "id": "",
+          "role": "tab"
+        },
+        {
+          "text": "Pausados",
+          "tag": "button",
+          "id": "",
+          "role": "tab"
+        },
+        {
+          "text": "Concluídos",
+          "tag": "button",
+          "id": "",
+          "role": "tab"
+        },
+        {
+          "text": "Ordenar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nenhum projeto neste filtro.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema ☀️ Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 14,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "Escritório MÓDULOS Visão dos módulos Raio-X Studio Fábrica Flow Edição Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 80,
+            "y": 13,
+            "width": 203,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão dos módulos",
+          "label": null,
+          "text": "Visão dos módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fábrica",
+          "label": null,
+          "text": "Fábrica",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow",
+          "label": null,
+          "text": "Flow",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição",
+          "label": null,
+          "text": "Edição",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 308,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Módulos / Fábrica office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Módulos / Fábrica office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": null,
+          "name": "Indicador de dados operacionais ao vivo",
+          "label": null,
+          "text": "office.py · SQLite ao vivo",
+          "placeholder": null,
+          "title": "Indicador de dados operacionais ao vivo",
+          "rect": {
+            "x": 455,
+            "y": 20,
+            "width": 156,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          }
+        },
+        {
+          "tag": "main",
+          "id": null,
+          "role": "main",
+          "name": "Fábrica de software · esteiras ao vivo Painel da Fábrica Acompanhe cada esteira, destrave gates e veja o QA em tempo real. Projetos ativos 0 0 no total Pendências abertas 0 aguardando você Progresso médio 0% de todas as esteiras Completion Guard 8/8 0 projetos aprovados no QA TEMPLATES DE ESTEIRA 0 projetos Landing Pages LP · CRIAÇÃO E MANUTENÇÃO Esteira com prova visual, comercial, construção, QA, SEO e handoff documentado. até 16 etapas · gates humanos Ver projetos Usar esteira 0 projetos Ofertas OFERTAS · PRODUTO E PREÇO Criação ou revisão de oferta com evidência de público, viabilidade e claims. 6–8 etapas · growth + jurídico Ver projetos Usar esteira 0 projetos Sistemas SISTEMAS · CRIAÇÃO E MANUTENÇÃO Criação do zero, criação com especificação pronta, ou manutenção de um sistema que já existe. criação 15 etapas · manutenção 12 etapas Ver projetos Usar esteira PRECISA DA SUA AÇÃO 0 itens Nenhuma pendência no momento. PROJETOS 0 listados ⌕ Todos Em andamento Com pendências Pausados Concluídos Ordenar Ordenar por progresso Ordenar por nome Nenhum projeto neste filtro.",
+          "label": null,
+          "text": "Fábrica de software · esteiras ao vivo Painel da Fábrica Acompanhe cada esteira, destrave gates e veja o QA em tempo real. Projetos ativos 0 0 no total Pendências abertas 0 aguardando você Progresso médio 0% de todas as esteiras Completion Guard 8/8 0 projetos aprovados no QA TEMPLATES DE ESTEIRA 0 projetos Landing Pages LP · CRIAÇÃO E MANUTENÇÃO Esteira com prova visual, comercial, construção, QA, SEO e handoff documentado. até 16 etapas · gates humanos Ver projetos Usar esteira 0 projetos Ofertas OFERTAS · PRODUTO E PREÇO Criação ou revisão de oferta com evidência de público, viabilidade e claims. 6–8 etapas · growth + jurídico Ver projetos Usar esteira 0 projetos Sistemas SISTEMAS · CRIAÇÃO E MANUTENÇÃO Criação do zero, criação com especificação pronta, ou manutenção de um sistema que já existe. criação 15 etapas · manutenção 12 etapas Ver projetos Usar esteira PRECISA DA SUA AÇÃO 0 itens Nenhuma pendência no momento. PROJETOS 0 listados ⌕ Todos Em andamento Com pendências Pausados Concluídos Ordenar Ordenar por progresso Ordenar por nome Nenhum projeto neste filtro.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 1140,
+            "height": 836
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Fábrica de software · esteiras ao vivo Painel da Fábrica Acompanhe cada esteira, destrave gates e veja o QA em tempo real.",
+          "label": null,
+          "text": "Fábrica de software · esteiras ao vivo Painel da Fábrica Acompanhe cada esteira, destrave gates e veja o QA em tempo real.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 90,
+            "width": 1084,
+            "height": 66
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Painel da Fábrica",
+          "label": null,
+          "text": "Painel da Fábrica",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 111,
+            "width": 385,
+            "height": 25
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Indicadores da fábrica",
+          "label": "Indicadores da fábrica",
+          "text": "Projetos ativos 0 0 no total Pendências abertas 0 aguardando você Progresso médio 0% de todas as esteiras Completion Guard 8/8 0 projetos aprovados no QA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 180,
+            "width": 1084,
+            "height": 106
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Projetos ativos 0 0 no total",
+          "label": null,
+          "text": "Projetos ativos 0 0 no total",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 180,
+            "width": 261,
+            "height": 106
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Pendências abertas 0 aguardando você",
+          "label": null,
+          "text": "Pendências abertas 0 aguardando você",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 603,
+            "y": 180,
+            "width": 261,
+            "height": 106
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Progresso médio 0% de todas as esteiras",
+          "label": null,
+          "text": "Progresso médio 0% de todas as esteiras",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 877,
+            "y": 180,
+            "width": 261,
+            "height": 106
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Completion Guard 8/8 0 projetos aprovados no QA",
+          "label": null,
+          "text": "Completion Guard 8/8 0 projetos aprovados no QA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1152,
+            "y": 180,
+            "width": 261,
+            "height": 106
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "TEMPLATES DE ESTEIRA",
+          "label": "TEMPLATES DE ESTEIRA",
+          "text": "TEMPLATES DE ESTEIRA 0 projetos Landing Pages LP · CRIAÇÃO E MANUTENÇÃO Esteira com prova visual, comercial, construção, QA, SEO e handoff documentado. até 16 etapas · gates humanos Ver projetos Usar esteira 0 projetos Ofertas OFERTAS · PRODUTO E PREÇO Criação ou revisão de oferta com evidência de público, viabilidade e claims. 6–8 etapas · growth + jurídico Ver projetos Usar esteira 0 projetos Sistemas SISTEMAS · CRIAÇÃO E MANUTENÇÃO Criação do zero, criação com especificação pronta, ou manutenção de um sistema que já existe. criação 15 etapas · manutenção 12 etapas Ver projetos Usar esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 310,
+            "width": 1084,
+            "height": 281
+          }
+        },
+        {
+          "tag": "h2",
+          "id": "fab-templates-heading",
+          "role": "heading",
+          "name": "TEMPLATES DE ESTEIRA",
+          "label": null,
+          "text": "TEMPLATES DE ESTEIRA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 310,
+            "width": 176,
+            "height": 19
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "0 projetos Landing Pages LP · CRIAÇÃO E MANUTENÇÃO Esteira com prova visual, comercial, construção, QA, SEO e handoff documentado. até 16 etapas · gates humanos Ver projetos Usar esteira",
+          "label": null,
+          "text": "0 projetos Landing Pages LP · CRIAÇÃO E MANUTENÇÃO Esteira com prova visual, comercial, construção, QA, SEO e handoff documentado. até 16 etapas · gates humanos Ver projetos Usar esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 340,
+            "width": 352,
+            "height": 251
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Landing Pages",
+          "label": null,
+          "text": "Landing Pages",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 405,
+            "width": 314,
+            "height": 25
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver projetos",
+          "label": null,
+          "text": "Ver projetos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 538,
+            "width": 154,
+            "height": 34
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Usar esteira",
+          "label": null,
+          "text": "Usar esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 509,
+            "y": 538,
+            "width": 152,
+            "height": 34
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "0 projetos Ofertas OFERTAS · PRODUTO E PREÇO Criação ou revisão de oferta com evidência de público, viabilidade e claims. 6–8 etapas · growth + jurídico Ver projetos Usar esteira",
+          "label": null,
+          "text": "0 projetos Ofertas OFERTAS · PRODUTO E PREÇO Criação ou revisão de oferta com evidência de público, viabilidade e claims. 6–8 etapas · growth + jurídico Ver projetos Usar esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 694,
+            "y": 340,
+            "width": 352,
+            "height": 251
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Ofertas",
+          "label": null,
+          "text": "Ofertas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 713,
+            "y": 405,
+            "width": 314,
+            "height": 25
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver projetos",
+          "label": null,
+          "text": "Ver projetos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 713,
+            "y": 538,
+            "width": 154,
+            "height": 34
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Usar esteira",
+          "label": null,
+          "text": "Usar esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 875,
+            "y": 538,
+            "width": 152,
+            "height": 34
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "0 projetos Sistemas SISTEMAS · CRIAÇÃO E MANUTENÇÃO Criação do zero, criação com especificação pronta, ou manutenção de um sistema que já existe. criação 15 etapas · manutenção 12 etapas Ver projetos Usar esteira",
+          "label": null,
+          "text": "0 projetos Sistemas SISTEMAS · CRIAÇÃO E MANUTENÇÃO Criação do zero, criação com especificação pronta, ou manutenção de um sistema que já existe. criação 15 etapas · manutenção 12 etapas Ver projetos Usar esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1060,
+            "y": 340,
+            "width": 352,
+            "height": 251
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Sistemas",
+          "label": null,
+          "text": "Sistemas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1079,
+            "y": 405,
+            "width": 314,
+            "height": 25
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver projetos",
+          "label": null,
+          "text": "Ver projetos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1079,
+            "y": 538,
+            "width": 154,
+            "height": 34
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Usar esteira",
+          "label": null,
+          "text": "Usar esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1241,
+            "y": 538,
+            "width": 152,
+            "height": 34
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "PRECISA DA SUA AÇÃO",
+          "label": "PRECISA DA SUA AÇÃO",
+          "text": "PRECISA DA SUA AÇÃO 0 itens Nenhuma pendência no momento.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 615,
+            "width": 1084,
+            "height": 51
+          }
+        },
+        {
+          "tag": "h2",
+          "id": "fab-actions-heading",
+          "role": "heading",
+          "name": "PRECISA DA SUA AÇÃO",
+          "label": null,
+          "text": "PRECISA DA SUA AÇÃO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 615,
+            "width": 198,
+            "height": 22
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "PROJETOS",
+          "label": "PROJETOS",
+          "text": "PROJETOS 0 listados ⌕ Todos Em andamento Com pendências Pausados Concluídos Ordenar Ordenar por progresso Ordenar por nome Nenhum projeto neste filtro.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 690,
+            "width": 1084,
+            "height": 161
+          }
+        },
+        {
+          "tag": "h2",
+          "id": "fab-projects-heading",
+          "role": "heading",
+          "name": "PROJETOS",
+          "label": null,
+          "text": "PROJETOS",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 690,
+            "width": 83,
+            "height": 19
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "⌕",
+          "label": null,
+          "text": "⌕",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 722,
+            "width": 367,
+            "height": 36
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar projetos",
+          "label": "Buscar projetos",
+          "text": null,
+          "placeholder": "Buscar projeto, cliente ou código…",
+          "title": null,
+          "rect": {
+            "x": 357,
+            "y": 732,
+            "width": 325,
+            "height": 16
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": "tablist",
+          "name": "Filtrar por status",
+          "label": "Filtrar por status",
+          "text": "Todos Em andamento Com pendências Pausados Concluídos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 705,
+            "y": 721,
+            "width": 515,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Todos",
+          "label": null,
+          "text": "Todos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 709,
+            "y": 725,
+            "width": 65,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Em andamento",
+          "label": null,
+          "text": "Em andamento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 777,
+            "y": 725,
+            "width": 121,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Com pendências",
+          "label": null,
+          "text": "Com pendências",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 899,
+            "y": 725,
+            "width": 130,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Pausados",
+          "label": null,
+          "text": "Pausados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1031,
+            "y": 725,
+            "width": 86,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Concluídos",
+          "label": null,
+          "text": "Concluídos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1119,
+            "y": 725,
+            "width": 97,
+            "height": 28
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Ordenar Ordenar por progresso Ordenar por nome",
+          "label": null,
+          "text": "Ordenar Ordenar por progresso Ordenar por nome",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1230,
+            "y": 721,
+            "width": 182,
+            "height": 38
+          }
+        },
+        {
+          "tag": "select",
+          "id": null,
+          "role": "combobox",
+          "name": "Ordenar",
+          "label": "Ordenar",
+          "text": "Ordenar por progresso Ordenar por nome",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1230,
+            "y": 721,
+            "width": 182,
+            "height": 38
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão dos módulos",
+          "label": null,
+          "text": "Visão dos módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fábrica",
+          "label": null,
+          "text": "Fábrica",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow",
+          "label": null,
+          "text": "Flow",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição",
+          "label": null,
+          "text": "Edição",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 308,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver projetos",
+          "label": null,
+          "text": "Ver projetos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 347,
+            "y": 538,
+            "width": 154,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Usar esteira",
+          "label": null,
+          "text": "Usar esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 509,
+            "y": 538,
+            "width": 152,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver projetos",
+          "label": null,
+          "text": "Ver projetos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 713,
+            "y": 538,
+            "width": 154,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Usar esteira",
+          "label": null,
+          "text": "Usar esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 875,
+            "y": 538,
+            "width": 152,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver projetos",
+          "label": null,
+          "text": "Ver projetos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1079,
+            "y": 538,
+            "width": 154,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Usar esteira",
+          "label": null,
+          "text": "Usar esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1241,
+            "y": 538,
+            "width": 152,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "⌕",
+          "label": null,
+          "text": "⌕",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 328,
+            "y": 722,
+            "width": 367,
+            "height": 36
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar projetos",
+          "label": "Buscar projetos",
+          "text": null,
+          "placeholder": "Buscar projeto, cliente ou código…",
+          "title": null,
+          "rect": {
+            "x": 357,
+            "y": 732,
+            "width": 325,
+            "height": 16
+          },
+          "kind": "field",
+          "type": "search",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": "tablist",
+          "name": "Filtrar por status",
+          "label": "Filtrar por status",
+          "text": "Todos Em andamento Com pendências Pausados Concluídos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 705,
+            "y": 721,
+            "width": 515,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Todos",
+          "label": null,
+          "text": "Todos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 709,
+            "y": 725,
+            "width": 65,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Em andamento",
+          "label": null,
+          "text": "Em andamento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 777,
+            "y": 725,
+            "width": 121,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Com pendências",
+          "label": null,
+          "text": "Com pendências",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 899,
+            "y": 725,
+            "width": 130,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Pausados",
+          "label": null,
+          "text": "Pausados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1031,
+            "y": 725,
+            "width": 86,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "tab",
+          "name": "Concluídos",
+          "label": null,
+          "text": "Concluídos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1119,
+            "y": 725,
+            "width": 97,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Ordenar Ordenar por progresso Ordenar por nome",
+          "label": null,
+          "text": "Ordenar Ordenar por progresso Ordenar por nome",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1230,
+            "y": 721,
+            "width": 182,
+            "height": 38
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "select",
+          "id": null,
+          "role": "combobox",
+          "name": "Ordenar",
+          "label": "Ordenar",
+          "text": "Ordenar por progresso Ordenar por nome",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1230,
+            "y": 721,
+            "width": 182,
+            "height": 38
+          },
+          "kind": "field",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": [
+            {
+              "label": "Ordenar por progresso"
+            }
+          ],
+          "hasValue": true
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 30,
+          "height": 30
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 203,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Como o escritório funciona</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page" style="max-width: 1440px">
+  <div class="phead">
+    <div class="grow"><div class="eyebrow">Como funciona</div><h1 style="margin-top: 8px">Do pedido ao resultado, em oito passos</h1><p>Todo trabalho no escritório segue o mesmo ciclo, seja uma landing, um carrossel ou um diagnóstico. Clique num passo para ver o que acontece, quem atua e onde acompanhar.</p></div>
+    <div class="actions"><button class="btn secondary" onClick="{{toggleAuto}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{autoIcon}}"></path></svg>{{autoLabel}}</button></div>
+  </div>
+
+  <section class="ink" style="padding: 28px 24px 22px; display: flex; flex-direction: column; gap: 18px; overflow-x: auto">
+    <div style="display: flex; align-items: flex-start; min-width: 1180px">
+      <sc-for list="{{steps}}" as="st" hint-placeholder-count="8">
+        <div style="display: flex; align-items: flex-start; flex: 1">
+          <button onClick="{{st.pick}}" style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; background: transparent; border: 0; color: inherit; padding: 0; text-align: center">
+            <span style="width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; border: 2px solid {{st.ring}}; background: {{st.bg}}; color: {{st.fg}}; transition: all 220ms var(--ease); box-shadow: {{st.glow}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{st.icon}}"></path></svg></span>
+            <span class="mono" style="font-size: 11px; color: {{st.numc}}">{{st.n}}</span>
+            <b style="font-size: 14px; line-height: 1.2">{{st.t}}</b>
+            <span style="font-size: 11.5px; color: #aeb7c4; max-width: 130px">{{st.s}}</span>
+          </button>
+          <sc-if value="{{st.hasLine}}" hint-placeholder-val="{{true}}">
+            <div style="width: 36px; flex: none; height: 2px; margin-top: 28px; background: {{st.line}}; position: relative"><i style="position: absolute; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #1BC5BD; animation: flowdot 2s linear infinite; animation-delay: {{st.delay}}ms"></i></div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <div style="min-width: 1180px; position: relative; height: 34px; margin: 0 6%">
+      <div style="position: absolute; left: 12%; right: 0; top: 0; height: 18px; border: 2px dashed rgba(183,243,74,.45); border-top: 0; border-radius: 0 0 14px 14px"></div>
+      <span class="mono" style="position: absolute; left: 50%; top: 22px; transform: translateX(-50%); font-size: 11px; color: #B7F34A; white-space: nowrap">as lições voltam para o ofício dos agentes, via Cérebro</span>
+    </div>
+  </section>
+
+  <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: stretch">
+    <section class="card" style="flex: 3 1 560px; padding: 24px; display: flex; flex-direction: column; gap: 16px; animation: fade 240ms var(--ease) both">
+      <div style="display: flex; align-items: center; gap: 10px"><span class="eyebrow">Passo {{cur.n}} de 08</span><div class="grow"></div><span class="badge {{cur.bcls}}">{{cur.tag}}</span></div>
+      <h2 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em">{{cur.t}}</h2>
+      <p style="font-size: 15px" class="sec">{{cur.what}}</p>
+      <div class="g3" style="gap: 12px">
+        <div class="card" style="padding: 14px; background: var(--surface-0)"><div class="eyebrow">Quem atua</div><p style="margin-top: 6px; font-size: 14px">{{cur.who}}</p></div>
+        <div class="card" style="padding: 14px; background: var(--surface-0)"><div class="eyebrow">Regra</div><p style="margin-top: 6px; font-size: 14px">{{cur.rule}}</p></div>
+        <div class="card" style="padding: 14px; background: var(--surface-0)"><div class="eyebrow">Hoje, no escritório</div><p style="margin-top: 6px; font-size: 14px">{{cur.ex}}</p></div>
+      </div>
+      <div class="actions"><span class="muted" style="font-size: 13px">Onde acompanhar:</span><sc-for list="{{cur.where}}" as="w" hint-placeholder-count="2"><button class="btn sm secondary" onClick="{{w.go}}">{{w.label}} →</button></sc-for><div class="grow"></div><button class="btn sm ghost" onClick="{{prev}}">Anterior</button><button class="btn sm primary" onClick="{{next}}">Próximo passo</button></div>
+    </section>
+    <section style="flex: 2 1 360px; display: flex; flex-direction: column; gap: 12px">
+      <span class="eyebrow">Três regras que não mudam</span>
+      <sc-for list="{{rules}}" as="r" hint-placeholder-count="3">
+        <div class="card" style="padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start"><span class="num" style="font-size: 12px; color: var(--flow); padding-top: 2px">{{r.n}}</span><div><b>{{r.t}}</b><p class="sec" style="font-size: 13px; margin-top: 4px">{{r.d}}</p></div></div>
+      </sc-for>
+      <span class="eyebrow" style="margin-top: 6px">Como ler as cores</span>
+      <div class="card" style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px">
+        <sc-for list="{{legend}}" as="l" hint-placeholder-count="4"><div style="display: flex; gap: 10px; align-items: center; font-size: 13px"><i style="width: 12px; height: 12px; border-radius: 4px; background: {{l.c}}; flex: none"></i><b style="width: 64px">{{l.k}}</b><span class="sec">{{l.d}}</span></div></sc-for>
+      </div>
+    </section>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"spot":{"editor":null},"$preview":{"width":1440,"height":1180}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const STEPS = [
+  { t: 'Pedido', s: 'Sala, Chat, Raio-X ou Comunicações', icon: 'M3 13h5l2 3h4l2-3h5M5 5h14l2 8v6H3v-6z', tag: 'entrada', bcls: 'flow', what: 'Toda demanda entra por um lugar conhecido: você na Sala ou no Chat, um caso novo no Raio-X ou uma mensagem triada pela Rebeca em Comunicações.', who: 'Você, Rebeca Recepção, Dora Descoberta', rule: 'Nada entra sem origem registrada.', ex: 'Marcos, da Oficina Silva, pediu preço pelo WhatsApp às 14:12.', where: [['Sala de Operação', 'room'], ['Comunicações', 'comms']] },
+  { t: 'Plano', s: 'Paula PM quebra em tasks', icon: 'M4 6h9M8 12h12M6 18h8', tag: 'planejamento', bcls: 'flow', what: 'A Paula PM lê o pedido, o histórico e o Cérebro, e devolve um plano: passos, agentes, estimativa de custo e onde vão estar os gates.', who: 'Paula PM, Arquiteto de Nicho', rule: 'Plano chega com custo estimado antes de qualquer execução.', ex: 'Roadmap Q4 de IA Livros está em planejamento.', where: [['Tasks', 'tasks']] },
+  { t: 'Task', s: 'card no Kanban', icon: 'M4 4h6v16H4zM14 4h6v10h-6z', tag: 'organização', bcls: '', what: 'Cada passo vira um card com dono, prioridade e setor. Mover de Planejado para Em execução inicia o job ligado.', who: 'Paula PM e o agente dono', rule: 'Card com gate aberto não sai de Em execução.', ex: '8 cards no quadro, 2 com gate.', where: [['Tasks', 'tasks']] },
+  { t: 'Job', s: 'motor, modelo e teto', icon: 'M7 5v14l11-7z', tag: 'custo previsto', bcls: 'action', what: 'O job define motor, modelo, esforço e teto de gasto. O assistente mostra a estimativa antes de rodar.', who: 'Você ou a Paula PM', rule: 'Teto obrigatório. Ao atingir, o job para e abre gate.', ex: 'job-014 roda com teto de US$ 8.', where: [['Execuções', 'exec']] },
+  { t: 'Execução', s: 'log ao vivo e livro-razão', icon: 'M3 12h4l2-6 4 12 2-6h6', tag: 'ao vivo', bcls: 'flow', what: 'O agente trabalha no workspace local. Cada passo chega por SSE e vira linha no livro-razão, com custo acumulado.', who: 'O agente dono e o motor escolhido', rule: 'Tudo fica registrado, inclusive o que deu errado.', ex: 'job-007 parou: SUPABASE_URL ausente.', where: [['Execuções', 'exec'], ['Livro-razão da Fábrica', 'fabrica']] },
+  { t: 'Gate humano', s: 'você decide', icon: 'M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4', tag: 'decisão', bcls: 'warn', what: 'Antes de publicar, pagar, apagar ou mudar escopo, o job para. Você vê contexto, impacto e o que acontece em cada resposta.', who: 'Você', rule: 'Ação irreversível nunca roda sozinha.', ex: '5 decisões pendentes, a mais antiga há 5 h.', where: [['Decisões', 'decisions']] },
+  { t: 'Entrega', s: 'Fábrica, Studio ou Edição', icon: 'M5 12.5l4.5 4.5L19 7', tag: 'critério de pronto', bcls: 'flow', what: 'O módulo certo empacota a entrega: landing no ar, carrossel publicado, vídeo renderizado. O Completion Guard confere os critérios.', who: 'Agentes do módulo, Paulo Publicador', rule: 'Entregue é o que passou no critério, não o que parece pronto.', ex: 'Meridian com 6 de 8 critérios de QA.', where: [['Fábrica', 'fabrica'], ['Studio', 'studio']] },
+  { t: 'Medir', s: 'custo, margem e resultado', icon: 'M4 19V5M4 19h16M8 15v-4M12 15V8M16 15v-6', tag: 'resultado', bcls: 'action', what: 'Analytics e Finanças fecham o ciclo: quanto custou, quanto rendeu, o que a meta pedia. O que se aprende volta para o ofício dos agentes.', who: 'Paula PM, Fábio Finanças, Cléo Curadora', rule: 'Resultado definido antes da promessa e conferido depois.', ex: 'Outubro em US$ 212 de US$ 300. Margem de 74%.', where: [['Analytics', 'analytics'], ['Finanças', 'financas']] }
+];
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { i: 0, auto: false }; }
+  componentWillUnmount() { clearInterval(this.at); }
+  toggle() {
+    clearInterval(this.at);
+    if (this.state.auto) { this.setState({ auto: false }); return; }
+    this.setState({ auto: true });
+    this.at = setInterval(() => this.setState((s) => ({ i: (s.i + 1) % STEPS.length })), 2600);
+  }
+  renderVals() {
+    const app = this.props.app || NOOP;
+    const s = this.state, self = this;
+    const C = STEPS[s.i];
+    return {
+      autoLabel: s.auto ? 'Pausar' : 'Reproduzir o ciclo', autoIcon: s.auto ? 'M7 5h4v14H7zM13 5h4v14h-4z' : 'M7 5v14l11-7z', toggleAuto: () => self.toggle(),
+      steps: STEPS.map((x, i) => ({ n: '0' + (i + 1), t: x.t, s: x.s, icon: x.icon, hasLine: i < STEPS.length - 1, delay: i * 250, ring: i === s.i ? '#B7F34A' : i < s.i ? '#1BC5BD' : 'rgba(244,246,242,.2)', bg: i === s.i ? '#B7F34A' : 'transparent', fg: i === s.i ? '#25360a' : i < s.i ? '#1BC5BD' : '#aeb7c4', glow: i === s.i ? '0 0 0 8px rgba(183,243,74,.12)' : 'none', numc: i === s.i ? '#B7F34A' : '#aeb7c4', line: i < s.i ? '#1BC5BD' : 'rgba(244,246,242,.16)', pick: () => { clearInterval(self.at); self.setState({ i: i, auto: false }); } })),
+      cur: { n: '0' + (s.i + 1), t: C.t, tag: C.tag, bcls: C.bcls, what: C.what, who: C.who, rule: C.rule, ex: C.ex, where: C.where.map((w) => ({ label: w[0], go: () => app.go(w[1]) })) },
+      prev: () => self.setState({ i: (s.i + STEPS.length - 1) % STEPS.length }), next: () => self.setState({ i: (s.i + 1) % STEPS.length }),
+      rules: [['01', 'Local-first', 'O escritório roda em 127.0.0.1. Chaves e dados ficam nesta máquina.'], ['02', 'Teto antes de rodar', 'Todo job nasce com custo estimado e teto de gasto. Passou, para.'], ['03', 'Gate antes do irreversível', 'Publicar, pagar, apagar ou mudar escopo sempre espera uma pessoa.']].map((r) => ({ n: r[0], t: r[1], d: r[2] })),
+      legend: [['#B7F34A', 'Lima', 'a ação decisiva da tela, uma por vez'], ['#1BC5BD', 'Teal', 'fluxo, estado e o que está rodando'], ['oklch(.80 .155 78)', 'Âmbar', 'gate aberto ou atenção'], ['oklch(.635 .185 27)', 'Vermelho', 'bloqueio ou falha']].map((l) => ({ c: l[0], k: l[1], d: l[2] }))
+    };
+  }
+}
+</script>
+</body>
+</html>

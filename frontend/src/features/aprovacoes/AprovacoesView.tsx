@@ -1,4 +1,5 @@
 import { createSignal, createMemo, createEffect, onCleanup, For, Show } from "solid-js";
+import { useSearchParams } from "@solidjs/router";
 import {
   approvals,
   selectedApprovalId,
@@ -11,7 +12,18 @@ import {
 import { TvIcon } from "../../shared/components/TvIcon";
 
 export function AprovacoesView() {
+  const [searchParams] = useSearchParams();
   const [tabFilter, setTabFilter] = createSignal<"all" | "urgent" | "gates" | "changes">("all");
+  const [contextOpen, setContextOpen] = createSignal(false);
+  const [vaultValue, setVaultValue] = createSignal("");
+  const [vaultError, setVaultError] = createSignal("");
+  const [rejectNote, setRejectNote] = createSignal("");
+
+  createEffect(() => {
+    const raw = searchParams.approval;
+    const id = Array.isArray(raw) ? raw[0] : raw;
+    if (id) setSelectedApprovalId(id);
+  });
 
   createEffect(() => {
     void syncApprovals();
@@ -49,12 +61,6 @@ export function AprovacoesView() {
     return approvals().find((a) => a.id === id) || null;
   });
 
-  const linkedTask = createMemo(() => {
-    const ap = currentApproval();
-    if (!ap?.taskId) return null;
-    return tasks().find((t) => t.id === ap.taskId) || null;
-  });
-
   const pendingCount = createMemo(() => approvals().filter((a) => a.status === "pending").length);
   const urgentCount = createMemo(
     () => approvals().filter((a) => a.impact === "high" && a.status === "pending").length
@@ -70,6 +76,52 @@ export function AprovacoesView() {
   const changesCount = createMemo(
     () => approvals().filter((a) => a.status === "pending" && isAlteracao(a)).length
   );
+
+  const approveCurrent = async () => {
+    const ap = currentApproval();
+    if (!ap || ap.status !== "pending") return;
+    if (ap.kind === "deploy") {
+      const value = vaultValue().trim();
+      if (!value) {
+        setVaultError("Informe o valor do cofre.");
+        return;
+      }
+      setVaultError("");
+      await decideApprovalPersistent(ap.id, "approve", "Pode publicar.", {
+        name: "SUPABASE_URL",
+        value,
+      });
+      return;
+    }
+    await decideApprovalPersistent(ap.id, "approve", "Aprovado na tela de Decisões");
+  };
+
+  const rejectCurrent = async () => {
+    const ap = currentApproval();
+    if (!ap || ap.status !== "pending") return;
+    const note = rejectNote().trim() || "Recusado na tela de Decisões";
+    await decideApprovalPersistent(ap.id, "reject", note);
+  };
+
+  createEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+      const key = event.key.toLowerCase();
+      if (!["j", "k", "a", "r", "c"].includes(key)) return;
+      event.preventDefault();
+      const list = filteredApprovals();
+      const index = list.findIndex((item) => item.id === activeApprovalId());
+      if (key === "j" && index >= 0 && index < list.length - 1) setSelectedApprovalId(list[index + 1].id);
+      if (key === "k" && index > 0) setSelectedApprovalId(list[index - 1].id);
+      if (key === "a") void approveCurrent();
+      if (key === "r") void rejectCurrent();
+      if (key === "c") setContextOpen((open) => !open);
+    };
+    window.addEventListener("keydown", onKey);
+    onCleanup(() => window.removeEventListener("keydown", onKey));
+  });
 
   const impactMeta = (impact: UiApproval["impact"]) => {
     switch (impact) {
@@ -141,7 +193,7 @@ export function AprovacoesView() {
       >
         <div style={{ padding: "20px 20px 12px" }}>
           <h1 style={{ margin: 0, "font-size": "20px", "font-weight": 600, "letter-spacing": "-0.01em" }}>
-            Aprovações
+            Decisões
           </h1>
           <p style={{ margin: "4px 0 12px", color: "var(--text-secondary)", "font-size": "13px" }}>
             {pendingCount()} aguardando · {approvals().length - pendingCount()} resolvidas
@@ -216,6 +268,8 @@ export function AprovacoesView() {
               return (
                 <button
                   type="button"
+                  data-approval-id={ap.id}
+                  aria-selected={selected()}
                   onClick={() => setSelectedApprovalId(ap.id)}
                   style={{
                     "text-align": "left",
@@ -245,6 +299,10 @@ export function AprovacoesView() {
                     <span style={{ color: imp.color, "font-weight": 600 }}>{imp.label}</span>
                     <span>·</span>
                     <span>{typeLabel(ap.type)}</span>
+                    <Show when={ap.group}>
+                      <span>·</span>
+                      <span>{ap.group}</span>
+                    </Show>
                     <span style={{ flex: 1 }} />
                     <span style={{ "font-family": "var(--font-mono)" }}>{ap.requestedAt}</span>
                   </div>
@@ -315,7 +373,7 @@ export function AprovacoesView() {
                 "font-size": "13px",
               }}
             >
-              Nenhuma decisão nesta fila
+              Nada neste filtro.
             </div>
           </Show>
         </div>
@@ -636,12 +694,40 @@ export function AprovacoesView() {
                   background: "var(--surface-ink, #0f1729)",
                 }}
               >
+                <Show when={ap().status === "pending" && ap().kind === "deploy"}>
+                  <label style={{ display: "flex", "flex-direction": "column", gap: "6px", "font-size": "12px", color: "var(--text-secondary)" }}>
+                    SUPABASE_URL
+                    <input
+                      type="password"
+                      aria-label="Valor do cofre"
+                      value={vaultValue()}
+                      onInput={(event) => {
+                        setVaultValue(event.currentTarget.value);
+                        setVaultError("");
+                      }}
+                      style={{
+                        height: "36px",
+                        padding: "0 12px",
+                        "border-radius": "8px",
+                        border: "1px solid rgba(244,246,242,.16)",
+                        background: "var(--surface-0)",
+                        color: "var(--text-primary)",
+                      }}
+                    />
+                  </label>
+                  <Show when={vaultError()}>
+                    <span style={{ color: "oklch(.78 .16 27)", "font-size": "12px" }}>{vaultError()}</span>
+                  </Show>
+                </Show>
+                <Show when={contextOpen()}>
+                  <div role="region" aria-label="Contexto da decisão" style={{ "font-size": "13px", color: "var(--text-secondary)" }}>
+                    {ap().question || ap().reason || ap().description}
+                  </div>
+                </Show>
                 <Show when={ap().status === "pending"}>
                   <button
                     type="button"
-                    onClick={() =>
-                      decideApprovalPersistent(ap().id, "approve", "Aprovado via cockpit de operações")
-                    }
+                    onClick={() => void approveCurrent()}
                     style={{
                       height: "36px",
                       padding: "0 18px",
@@ -662,9 +748,7 @@ export function AprovacoesView() {
                   </button>
                   <button
                     type="button"
-                    onClick={() =>
-                      decideApprovalPersistent(ap().id, "reject", "Rejeitado via cockpit de operações")
-                    }
+                    onClick={() => void rejectCurrent()}
                     style={{
                       height: "36px",
                       padding: "0 18px",
@@ -684,13 +768,29 @@ export function AprovacoesView() {
                     Rejeitar
                     <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", opacity: 0.7 }}>R</span>
                   </button>
+                  <input
+                    type="text"
+                    aria-label="Comentário da recusa"
+                    value={rejectNote()}
+                    onInput={(event) => setRejectNote(event.currentTarget.value)}
+                    placeholder="Comentário da recusa"
+                    style={{
+                      height: "36px",
+                      "min-width": "180px",
+                      padding: "0 12px",
+                      "border-radius": "8px",
+                      border: "1px solid rgba(244,246,242,.16)",
+                      background: "transparent",
+                      color: "var(--text-primary)",
+                    }}
+                  />
                   <span style={{ flex: 1 }} />
                   <span style={{ "font-size": "12px", color: "var(--text-muted)" }}>
                     Decisão fica nesta tela
                   </span>
                 </Show>
                 <Show when={ap().status !== "pending"}>
-                  <span style={{ "font-weight": 600, color: st().color, "font-size": "14px" }}>
+                  <span class="stamp" style={{ "font-weight": 600, color: st().color, "font-size": "14px" }}>
                     Decisão registrada: {st().label}
                   </span>
                 </Show>

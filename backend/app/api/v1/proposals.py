@@ -2,13 +2,17 @@
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any
 import uuid
 
 from app.shared.database import get_session
 from app.modules.commercial.repository import ProposalRepository
+from app.api.v1.approvals import ApprovalResponse
 from app.models.proposal import Proposal
+from app.models.approval import Approval
+from app.modules.commercial.funnel import money_label
 
 router = APIRouter(prefix="/api/v1/proposals", tags=["proposals"])
 
@@ -33,6 +37,7 @@ class ProposalResponse(BaseModel):
     deadline: str | None = None
     task_id: str | None = None
     project_id: str | None = None
+    raiox_case_id: str | None = None
     summary: str | None = None
     scope: str | None = None
     items: Any | None = None
@@ -55,6 +60,7 @@ class CreateProposalRequest(BaseModel):
     scope: str | None = None
     items: list[ProposalItemSchema] | None = None
     collected: list[list[str]] | None = None
+    raiox_case_id: str | None = None
 
 
 class UpdateProposalRequest(BaseModel):
@@ -93,10 +99,11 @@ class AcceptProposalRequest(BaseModel):
 async def list_proposals(
     stage: str | None = Query(None),
     q: str | None = Query(None),
+    raiox_case_id: str | None = Query(None),
     session: AsyncSession = Depends(get_session),
 ):
     repo = ProposalRepository(session)
-    return await repo.list_all(stage=stage, search=q)
+    return await repo.list_all(stage=stage, search=q, raiox_case_id=raiox_case_id)
 
 
 @router.get("/{proposal_id}", response_model=ProposalResponse)
@@ -146,6 +153,7 @@ async def create_proposal(
         changes=[],
         timeline=timeline_data,
         send_info=None,
+        raiox_case_id=(req.raiox_case_id or "").strip() or None,
     )
 
     created = await repo.create(proposal)
@@ -194,6 +202,46 @@ async def request_proposal_change(
     await session.commit()
     await session.refresh(updated)
     return updated
+
+
+@router.post("/{proposal_id}/decision", response_model=ApprovalResponse)
+async def open_contract_decision(proposal_id: str, session: AsyncSession = Depends(get_session)):
+    """Abre a decisão de contra-assinatura. Repetir o clique devolve a mesma decisão."""
+    repo = ProposalRepository(session)
+    proposal = await repo.get_by_id(proposal_id)
+    if not proposal:
+        raise HTTPException(status_code=404, detail=f"Proposal {proposal_id} not found")
+    if "contra-assinatura" not in (proposal.status or "").lower():
+        raise HTTPException(
+            status_code=409,
+            detail="A decisão abre quando a proposta aguarda contra-assinatura.",
+        )
+    existing = (
+        await session.scalars(
+            select(Approval).where(Approval.kind == "contract", Approval.question == proposal.id)
+        )
+    ).first()
+    if existing:
+        return existing
+    value = money_label(float(proposal.value)) if proposal.value is not None else "em cálculo"
+    summary = (proposal.summary or "").strip()
+    approval = Approval(
+        id=f"ap-{uuid.uuid4().hex[:8]}",
+        title=f"Contra-assinatura · {proposal.client}",
+        type="checkpoint",
+        status="pending",
+        impact="medium",
+        kind="contract",
+        question=proposal.id,
+        description=f"Contrato de {proposal.client}. Valor {value}. {summary}".strip(),
+        reason=proposal.status,
+        on_approve_text="A proposta é contra-assinada e o contrato segue.",
+        on_reject_text="A proposta volta para o Comercial renegociar.",
+    )
+    session.add(approval)
+    await session.commit()
+    await session.refresh(approval)
+    return approval
 
 
 @router.post("/{proposal_id}/send", response_model=ProposalResponse)

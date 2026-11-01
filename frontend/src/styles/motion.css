@@ -1,0 +1,93 @@
+/* Copiado de TAVIR Escritório — redesenho.html. Conferido por frontend/tests/motion.spec.ts */
+
+:root {
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  --fast: 120ms;
+  --std: 180ms;
+}
+
+@keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px) scale(.985) } to { opacity: 1; transform: none } }
+@keyframes slidein { from { transform: translateX(40px); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes toast { from { transform: translateY(-12px); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(27, 197, 189, .45) }
+  70% { box-shadow: 0 0 0 8px rgba(27, 197, 189, 0) }
+  100% { box-shadow: 0 0 0 0 rgba(27, 197, 189, 0) }
+}
+@keyframes grow { from { transform: scaleY(0) } to { transform: scaleY(1) } }
+@keyframes growx { from { transform: scaleX(0) } to { transform: scaleX(1) } }
+@keyframes sweep { from { background-position: -60px 0 } to { background-position: calc(100% + 60px) 0 } }
+@keyframes blink { 0%, 80%, 100% { opacity: .25 } 40% { opacity: 1 } }
+@keyframes spot { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+@keyframes dash { to { stroke-dashoffset: 0 } }
+@keyframes spin { to { transform: rotate(360deg) } }
+@keyframes flowdot {
+  0% { left: 0; opacity: 0 }
+  10% { opacity: 1 }
+  90% { opacity: 1 }
+  100% { left: 100%; opacity: 0 }
+}
+@keyframes stamp { from { transform: scale(1.18); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+@keyframes shimmer { from { background-position: -300px 0 } to { background-position: 300px 0 } }
+@keyframes ringwarn {
+  0% { box-shadow: 0 0 0 0 oklch(.80 .155 78 / .55) }
+  70% { box-shadow: 0 0 0 12px oklch(.80 .155 78 / 0) }
+  100% { box-shadow: 0 0 0 0 oklch(.80 .155 78 / 0) }
+}
+@keyframes slideup { from { transform: translateY(14px); opacity: 0 } to { transform: none; opacity: 1 } }
+
+.rail-btn { position: relative; transition: background var(--fast) var(--ease), color var(--fast) var(--ease); }
+.rail-tip {
+  position: absolute;
+  left: 54px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--cloud);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--fast) var(--ease);
+  z-index: 20;
+}
+.rail-btn:hover .rail-tip { opacity: 1; }
+.nav-item { transition: background var(--fast) var(--ease), color var(--fast) var(--ease); }
+.live-dot { width: 8px; height: 8px; border-radius: 50%; animation: pulse 2.4s var(--ease) infinite; }
+.live-dot.warn { animation: none; }
+.screen, .back, .bubble, .kcard { animation: fade var(--std) var(--ease) both; }
+.fill { transition: width 600ms var(--ease); }
+.fill.run { animation: sweep 1.8s linear infinite; }
+.chart-bars .b { transform-origin: bottom; animation: grow 700ms var(--ease) both; }
+.tgl { transition: background var(--std) var(--ease); }
+.tgl::after { transition: transform var(--std) var(--ease); }
+.modal { animation: rise 240ms var(--ease) both; }
+.drawer { animation: slidein 260ms var(--ease) both; }
+.toast { animation: toast 280ms var(--ease) both; }
+.stamp { animation: stamp 420ms var(--ease) both; }
+.pal { animation: rise 200ms var(--ease) both; }
+.tour { animation: rise 260ms var(--ease) both; }
+.spot { position: relative; }
+.spot::after { content: ""; position: absolute; inset: -5px; animation: spot 1.8s var(--ease) infinite; }
+.typing i { animation: blink 1.2s infinite; }
+.typing i:nth-child(2) { animation-delay: .2s; }
+.typing i:nth-child(3) { animation-delay: .4s; }
+.log div { animation: fade 300ms var(--ease) both; }
+.shimmer { animation: shimmer 1.3s linear infinite; }
+.lift { transition: transform var(--std) var(--ease), border-color var(--std) var(--ease), box-shadow var(--std) var(--ease); }
+.lift:hover { transform: translateY(-2px); }
+.draw { animation: dash 1.4s var(--ease) forwards; }
+.spin { animation: spin 1s linear infinite; }
+.row { transition: background var(--fast) var(--ease); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tv *, .tv *::before, .tv *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

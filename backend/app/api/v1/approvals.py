@@ -1,5 +1,5 @@
 """Approvals API router — human-in-the-loop decisions and governance."""
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,12 +26,20 @@ class CreateApprovalRequest(BaseModel):
     description: str | None = None
     on_approve_text: str | None = None
     on_reject_text: str | None = None
+    group: str | None = None
+    kind: str | None = None
+    question: str | None = None
+    yes_steps: str | None = None
+    no_steps: str | None = None
+    sla_hours: int | None = None
 
 
 class DecideApprovalRequest(BaseModel):
     decision: str  # "approve" | "reject"
     decided_by: str = "CEO"
     justification: str | None = None
+    vault_name: str | None = None
+    vault_value: str | None = None
 
 
 class ApprovalResponse(BaseModel):
@@ -47,6 +55,13 @@ class ApprovalResponse(BaseModel):
     description: str | None = None
     on_approve_text: str | None = None
     on_reject_text: str | None = None
+    group: str | None = None
+    kind: str | None = None
+    question: str | None = None
+    yes_steps: str | None = None
+    no_steps: str | None = None
+    sla_hours: int | None = None
+    opened_at: datetime | None = None
     decided_by: str | None = None
     justification: str | None = None
     decided_at: datetime | None = None
@@ -85,6 +100,13 @@ async def create_approval(
         description=req.description,
         on_approve_text=req.on_approve_text,
         on_reject_text=req.on_reject_text,
+        group=req.group,
+        kind=req.kind,
+        question=req.question,
+        yes_steps=req.yes_steps,
+        no_steps=req.no_steps,
+        sla_hours=req.sla_hours,
+        opened_at=datetime.now(timezone.utc),
         status="pending",
     )
     await repo.create(approval)
@@ -117,6 +139,30 @@ async def decide_approval(
     )
     if not approval:
         raise HTTPException(status_code=404, detail=f"Approval {approval_id} not found")
+
+    from app.modules.office.decisions import apply_decision
+    from app.modules.office.vault import store_secret
+
+    if req.decision.lower() in ("approve", "approved") and req.vault_name and req.vault_value:
+        await store_secret(
+            session,
+            name=req.vault_name,
+            value=req.vault_value,
+            approval_id=approval.id,
+        )
+
+    await apply_decision(session, approval, req.decision)
+
+    from app.modules.agents.lessons import propose_role_lesson
+
+    await propose_role_lesson(
+        session,
+        approval.requester_agent_id,
+        situation=approval.title or "Decisão de gate",
+        lesson=req.justification or approval.justification or "",
+        evidence=req.justification,
+        approval_id=approval.id,
+    )
 
     # If approved and linked to a job that was failed, auto-retry the job
     if req.decision.lower() in ("approve", "approved") and approval.job_id:

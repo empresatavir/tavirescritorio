@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Raio-X</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+
+<sc-if value="{{listView}}" hint-placeholder-val="{{true}}">
+<div class="page">
+  <div class="phead">
+    <div class="grow">
+      <div class="eyebrow">Módulo · Encontrar</div>
+      <h1 style="margin-top: 8px">Raio-X</h1>
+      <p>Leitura de presença, atendimento e oferta antes de vender. Nenhuma proposta sai sem caso aberto e evidência classificada.</p>
+    </div>
+    <div class="actions"><button class="btn primary {{spotCases}}" onClick="{{newCase}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Novo caso</button></div>
+  </div>
+
+  <div class="g3">
+    <sc-for list="{{modes}}" as="m" hint-placeholder-count="3">
+      <div class="card" style="padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start">
+        <span class="num" style="font-size: 12px; color: var(--flow); padding-top: 2px">{{m.n}}</span>
+        <div class="grow"><div style="display: flex; gap: 8px; align-items: center"><b>{{m.t}}</b><div class="grow"></div><span class="badge">{{m.d}}</span></div><p class="muted" style="font-size: 13px; margin-top: 4px">{{m.x}}</p></div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
+    <div class="segs"><sc-for list="{{filters}}" as="f" hint-placeholder-count="4"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+    <div class="grow"></div>
+    <span class="muted" style="font-size: 12px">Maps entra na varredura só se for loja física.</span>
+  </div>
+
+  <div class="g2 {{spotCases}}" style="border-radius: 16px">
+    <sc-for list="{{cases}}" as="c" hint-placeholder-count="4">
+      <button class="card click" onClick="{{c.open}}" style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; gap: 8px; align-items: center"><span class="eyebrow">{{c.stage}} · {{c.orig}}</span><div class="grow"></div><span class="badge {{c.cls}}">{{c.state}}</span></div>
+        <div style="display: flex; gap: 16px; align-items: center">
+          <div class="grow"><h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.02em">{{c.name}}</h2><p class="sec" style="font-size: 13px; margin-top: 4px">{{c.desc}}</p></div>
+          <div style="text-align: right"><div class="num" style="font-size: 26px; color: {{c.scoreColor}}">{{c.score}}</div><div class="muted" style="font-size: 11px">nota / 100</div></div>
+        </div>
+        <div style="display: flex; gap: 3px"><sc-for list="{{c.segs}}" as="g" hint-placeholder-count="6"><i style="flex: 1; height: 4px; border-radius: 2px; background: {{g.bg}}"></i></sc-for></div>
+        <div style="display: flex; gap: 8px; align-items: center; font-size: 12px" class="muted"><span>{{c.seg}}</span><span>·</span><span>confiança {{c.conf}}</span><div class="grow"></div><span style="color: var(--flow); font-weight: 600">{{c.next}} →</span></div>
+      </button>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{caseView}}" hint-placeholder-val="{{false}}">
+<div class="page">
+  <button class="link" onClick="{{back}}" style="align-self: flex-start">← Todos os casos</button>
+  <div class="phead" style="margin-top: -8px">
+    <div class="grow">
+      <div class="eyebrow">Caso · origem amigo · negócio local · diagnóstico</div>
+      <h1 style="margin-top: 8px">Loja da Rua</h1>
+      <p>Loja física de roupas no centro. O dono quer vender mais pelo Instagram e responder o WhatsApp mais rápido.</p>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" onClick="{{openEvidence}}">Abrir evidência</button>
+      <button class="btn secondary" onClick="{{goProposal}}">Gerar proposta</button>
+      <button class="btn primary" onClick="{{openOffer}}">Registrar oferta</button>
+    </div>
+  </div>
+
+  <div class="stepper">
+    <sc-for list="{{stages}}" as="st" hint-placeholder-count="6">
+      <button class="stp {{st.cls}}" onClick="{{st.pick}}"><span class="n">{{st.n}}</span><b>{{st.label}}</b><div class="bar"></div></button>
+    </sc-for>
+  </div>
+  <div class="card" style="padding: 12px 16px; font-size: 13px; display: flex; gap: 10px; align-items: center"><span class="eyebrow">{{stageCur.label}}</span><span class="sec">{{stageCur.note}}</span></div>
+
+  <div style="display: flex; gap: 16px; flex-wrap: wrap">
+    <section class="ink" style="flex: 2 1 480px; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; align-items: center"><span class="eyebrow">Nota por etapa da jornada</span><div class="grow"></div><span class="mono" style="font-size: 11px; color: var(--on-ink-muted)">rodada 1 · 0 a 100</span></div>
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <sc-for list="{{jscore}}" as="j" hint-placeholder-count="5">
+          <div style="display: grid; grid-template-columns: 90px minmax(0, 1fr) 40px; gap: 12px; align-items: center">
+            <span style="font-size: 13px">{{j.k}}</span>
+            <div class="track" style="height: 10px"><div style="height: 100%; border-radius: 999px; width: {{j.v}}%; background: {{j.color}}; transform-origin: left; animation: growx 700ms var(--ease) both; animation-delay: {{j.delay}}ms"></div></div>
+            <span class="num" style="text-align: right; color: {{j.color}}">{{j.v}}</span>
+          </div>
+        </sc-for>
+      </div>
+      <p style="font-size: 13px; color: var(--on-ink-muted)">O cliente é encontrado, mas perde gente em Vender: não há link de compra nem catálogo no Instagram. Medir está no zero.</p>
+    </section>
+    <section class="card" style="flex: 1 1 280px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px">
+      <span class="eyebrow">Confiança da rodada</span>
+      <div style="display: flex; align-items: center; gap: 16px">
+        <div style="width: 84px; height: 84px; border-radius: 50%; background: conic-gradient(var(--flow) 0 56%, var(--line) 0); display: grid; place-items: center; flex: none"><div style="width: 66px; height: 66px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center"><span class="num" style="font-size: 18px">56%</span></div></div>
+        <div><b>Média</b><p class="muted" style="font-size: 12px; margin-top: 2px">4 de 9 evidências observadas diretamente.</p></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{classes}}" as="c" hint-placeholder-count="4"><div style="display: flex; align-items: center; gap: 10px; font-size: 13px"><i style="width: 10px; height: 10px; border-radius: 3px; background: {{c.color}}"></i><span class="grow">{{c.k}}</span><span class="num">{{c.n}}</span></div></sc-for>
+      </div>
+    </section>
+  </div>
+
+  <div class="tabs {{spotEv}}" style="border-radius: 10px"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}<span class="n">{{t.n}}</span></button></sc-for></div>
+
+  <sc-if value="{{tEv}}" hint-placeholder-val="{{true}}">
+    <div class="segs"><sc-for list="{{evFilters}}" as="f" hint-placeholder-count="5"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}</button></sc-for></div>
+    <div class="card" style="overflow-x: auto">
+      <table class="tbl">
+        <thead><tr><th>Fonte</th><th>O que vimos</th><th>Classe</th><th>Etapa</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ev}}" as="e" hint-placeholder-count="6">
+            <tr><td><b>{{e.src}}</b></td><td class="sec">{{e.what}}</td><td><span class="badge {{e.cls}}">{{e.cl}}</span></td><td class="muted">{{e.stage}}</td></tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+  </sc-if>
+  <sc-if value="{{tDev}}" hint-placeholder-val="{{false}}">
+    <section class="card pad" style="display: flex; flex-direction: column; gap: 14px; max-width: 760px">
+      <div style="display: flex; align-items: center"><span class="eyebrow">Rascunho da devolutiva · Dora Descoberta</span><div class="grow"></div><span class="badge warn">aguarda Prioridade</span></div>
+      <h3 style="font-size: 18px; font-weight: 600">Três achados, uma recomendação</h3>
+      <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14px">
+        <li>Quem acha a loja no Google não vê horário. Parte das visitas chega com a porta fechada.</li>
+        <li>O Instagram mostra produto, mas não tem link de compra nem catálogo.</li>
+        <li>O WhatsApp responde em cerca de 3 horas, segundo o dono. Ainda não medimos.</li>
+      </ol>
+      <p class="sec" style="font-size: 14px"><b style="color: var(--text-primary)">Recomendação.</b> Começar por presença local: Google completo, catálogo no Instagram e WhatsApp com resposta inicial automática. Medir 30 dias antes de qualquer página de vendas.</p>
+      <div class="actions"><button class="btn secondary" onClick="{{sendDev}}">Enviar devolutiva</button><span class="muted" style="font-size: 12px">O envio vira checkpoint em Decisões.</span></div>
+    </section>
+  </sc-if>
+  <sc-if value="{{tCon}}" hint-placeholder-val="{{false}}">
+    <div class="card" style="padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; border-style: dashed">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13M20 20l-4.8-4.8"></path></svg>
+      <b>Concorrentes ainda não varridos</b>
+      <p class="muted" style="max-width: 420px; font-size: 13px">A varredura lê até 5 lojas do mesmo segmento num raio de 2 km: Google, Instagram e preço de vitrine.</p>
+      <button class="btn secondary" onClick="{{scan}}">Pedir varredura</button>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"spot":{"editor":null},"$preview":{"width":1176,"height":1100}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const CASES = [
+  { id: 'loja', name: 'Loja da Rua', desc: 'Loja física de roupas no centro. Instagram ativo, sem catálogo.', stage: 'Coleta', st: 1, orig: 'amigo', seg: 'Negócio local', score: 31, conf: 'média', state: 'aberto', cls: 'flow', next: 'Continuar coleta', status: 'open' },
+  { id: 'atelie', name: 'Ateliê Norte', desc: 'Moda autoral vendida só online. Quer oferta de catálogo.', stage: 'Devolutiva', st: 4, orig: 'formulário', seg: 'Loja online', score: 52, conf: 'alta', state: 'devolutiva', cls: 'warn', next: 'Revisar devolutiva', status: 'dev' },
+  { id: 'clinica', name: 'Clínica Sorriso Vivo', desc: 'Odontologia de bairro. Agenda pelo WhatsApp, sem confirmação.', stage: 'Jornada', st: 2, orig: 'indicação', seg: 'Clínica', score: 44, conf: 'média', state: 'aberto', cls: 'flow', next: 'Mapear jornada', status: 'open' },
+  { id: 'padaria', name: 'Padaria Dois Irmãos', desc: 'Encomendas por telefone. Virou proposta de presença local.', stage: 'Fechado', st: 5, orig: 'rua', seg: 'Negócio local', score: 70, conf: 'alta', state: 'fechado', cls: '', next: 'Ver proposta', status: 'closed' }
+];
+const STAGES = [
+  ['Fronteira', 'Origem, segmento e modo definidos. Caso aceito por Dora.'],
+  ['Coleta', 'Site, Instagram, Google e opinião de cliente. 7 de 9 fontes lidas.'],
+  ['Jornada', 'Notas por etapa: encontrar, conversar, atender, vender e medir.'],
+  ['Prioridade', 'O que resolver primeiro, com custo e esforço estimados.'],
+  ['Devolutiva', 'Documento curto para o cliente, com achados e recomendação.'],
+  ['Fechado', 'Virou proposta, ficou para depois ou foi descartado.']
+];
+const EV = [
+  ['Instagram @lojadarua', '42 posts. Último há 19 dias. Sem link na bio.', 'obs', 'Conversar'],
+  ['Google Perfil', 'Sem horário cadastrado. 11 avaliações, nota 4,1.', 'obs', 'Encontrar'],
+  ['Vitrine e preço', 'Fotografados na visita. Faixa de R$ 79 a R$ 189.', 'obs', 'Vender'],
+  ['Opinião de cliente', '3 clientes ouvidos na porta. Gostam do atendimento.', 'obs', 'Atender'],
+  ['Site próprio', 'Informado pelo dono. Não abriu no teste de hoje.', 'inf', 'Encontrar'],
+  ['WhatsApp', 'Responde em cerca de 3 h, segundo o dono.', 'inf', 'Atender'],
+  ['Ticket médio', 'Estimado em R$ 120 pelo mix de vitrine.', 'inr', 'Vender'],
+  ['Recompra', 'Clientes voltam na troca de estação.', 'inr', 'Medir'],
+  ['Concorrentes', 'Ainda não varridos.', 'ind', 'Encontrar']
+];
+const CL = { obs: ['Observado', 'flow', 'var(--flow)'], inf: ['Informado', '', 'var(--text-muted)'], inr: ['Inferido', 'warn', 'var(--warning)'], ind: ['Indisponível', 'danger', 'var(--danger)'] };
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { caseId: null, filter: 'all', stage: 1, tab: 0, ev: 'all' }; }
+  renderVals() {
+    const app = this.props.app || NOOP;
+    const spot = this.props.spot || '';
+    const s = this.state, self = this;
+    const caseOpen = s.caseId || (spot === 'evidence' ? 'loja' : null);
+    const segOf = (st) => [0, 1, 2, 3, 4, 5].map((i) => ({ bg: i < st ? 'var(--flow)' : i === st ? 'var(--warning)' : 'var(--line)' }));
+    const fdef = { all: () => true, open: (c) => c.status === 'open', dev: (c) => c.status === 'dev', closed: (c) => c.status === 'closed' };
+    const evList = EV.filter((e) => s.ev === 'all' || e[2] === s.ev);
+    return {
+      listView: !caseOpen, caseView: !!caseOpen,
+      spotCases: spot === 'cases' ? 'spot' : '', spotEv: spot === 'evidence' ? 'spot' : '',
+      newCase: () => app.modal('raiox-new'),
+      modes: [['01', 'Estudo rápido', '1 dia', 'Presença e primeira impressão. Bom para triagem.'], ['02', 'Diagnóstico', '3 dias', 'Jornada completa com evidências classificadas.'], ['03', 'Completo', '7 dias', 'Diagnóstico, concorrentes e oferta com preço.']].map((m) => ({ n: m[0], t: m[1], d: m[2], x: m[3] })),
+      filters: [['all', 'Todos'], ['open', 'Abertos'], ['dev', 'Devolutiva'], ['closed', 'Fechados']].map((f) => ({ label: f[1], n: CASES.filter(fdef[f[0]]).length, on: s.filter === f[0] ? 'on' : '', pick: () => self.setState({ filter: f[0] }) })),
+      cases: CASES.filter(fdef[s.filter]).map((c) => ({ name: c.name, desc: c.desc, stage: c.stage, orig: c.orig, seg: c.seg, score: c.score, conf: c.conf, state: c.state, cls: c.cls, next: c.next, segs: segOf(c.st), scoreColor: c.score < 40 ? 'var(--warning)' : 'var(--flow)', open: () => c.id === 'padaria' ? app.go('propostas') : self.setState({ caseId: 'loja', tab: 0 }) })),
+      back: () => self.setState({ caseId: null }),
+      openEvidence: () => app.modal('evidence'), openOffer: () => app.modal('raiox-offer'), goProposal: () => app.go('propostas'),
+      stages: STAGES.map((x, i) => ({ n: '0' + (i + 1), label: x[0], cls: (i < 1 ? 'done' : i === 1 ? 'now' : '') + (s.stage === i ? ' sel' : ''), pick: () => self.setState({ stage: i }) })),
+      stageCur: { label: STAGES[s.stage][0], note: STAGES[s.stage][1] },
+      jscore: [['Encontrar', 42], ['Conversar', 30], ['Atender', 55], ['Vender', 20], ['Medir', 8]].map((j, i) => ({ k: j[0], v: j[1], delay: i * 80, color: j[1] < 35 ? 'oklch(.80 .155 78)' : '#1BC5BD' })),
+      classes: Object.keys(CL).map((k) => ({ k: CL[k][0], color: CL[k][2], n: EV.filter((e) => e[2] === k).length })),
+      tabs: [['Evidências', EV.length], ['Devolutiva', 1], ['Concorrentes', 0]].map((t, i) => ({ label: t[0], n: t[1], on: s.tab === i ? 'on' : '', pick: () => self.setState({ tab: i }) })),
+      tEv: s.tab === 0, tDev: s.tab === 1, tCon: s.tab === 2,
+      evFilters: [['all', 'Todas']].concat(Object.keys(CL).map((k) => [k, CL[k][0]])).map((f) => ({ label: f[1], on: s.ev === f[0] ? 'on' : '', pick: () => self.setState({ ev: f[0] }) })),
+      ev: evList.map((e) => ({ src: e[0], what: e[1], cl: CL[e[2]][0], cls: CL[e[2]][1], stage: e[3] })),
+      sendDev: () => app.toast('Devolutiva em checkpoint', 'Vai para Decisões antes de sair para o cliente.'),
+      scan: () => app.toast('Varredura pedida', 'Dora lê os concorrentes na próxima rodada.')
+    };
+  }
+}
+</script>
+</body>
+</html>

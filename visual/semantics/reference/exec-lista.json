@@ -1,0 +1,2571 @@
+{
+  "screenId": "exec-lista",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 94,
+        "nav": 1,
+        "button": 36,
+        "img": 2,
+        "i": 13,
+        "aside": 2,
+        "small": 6,
+        "span": 155,
+        "b": 12,
+        "header": 1,
+        "strong": 5,
+        "h2": 1,
+        "section": 2,
+        "h1": 1,
+        "p": 1
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sala de Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Execuções",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tasks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "7",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decisões",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Chat",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Execuções",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Execuções",
+          "tag": "h2",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "6",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "jobs",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Todos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "6",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rodando",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fila",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Falha",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Pausados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Concluídos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "SEO da landing principal",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "job-014",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nina SEO",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rodando",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "62",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carrossel Multiverso ep. 14",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "job-011",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Adriano Arte",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rodando",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "41",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Detalhar roadmap Q4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "job-009",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Arquiteto de Nicho",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Na fila",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Deploy landing Meridian",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "job-007",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Davi DevOps",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Falhou",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "70",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Auditoria API — hardening",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "job-006",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Atlas Web",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Concluído",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "100",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Revisão headline LP advocacia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "job-003",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rita Revisora",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Pausado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "80",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "job-014",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "· task",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "#30",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rodando",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "SEO da landing principal",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nina SEO",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "claude-sonnet-4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "· iniciado às",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "13:41",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ver evidência",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Pausar",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Cancelar",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Progresso",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "62",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Custo / teto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "US$",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1,84",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "teto US$",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "8",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "23",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "% usado",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tokens",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "412k",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "entrada + saída",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Motor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cursor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "esforço",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "equilibrado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "01",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Aceito",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "02",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Contexto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "03",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Plano",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "04",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Execução",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "05",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Verificação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "06",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Entrega",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Log ao vivo",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "SSE",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "linhas · livro-razão",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "13:41",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "info",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Job aceito no motor Cursor · claude-sonnet-4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "13:41",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "info",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Contexto da task #30 carregado · 14 arquivos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "13:41",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "plan",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Plano em 5 passos aprovado pela Paula PM",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "13:49",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ok",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Passo 1/5 registrado no livro-razão",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "13:58",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ok",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Passo 2/5 registrado no livro-razão",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "▍",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "aguardando próximo passo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO OPERAÇÃO Sala de Operação Execuções 2 Tasks 7 Decisões 5 Agentes Chat Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 2",
+          "label": null,
+          "text": "Execuções 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks 7",
+          "label": null,
+          "text": "Tasks 7",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Operação / Execuções AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Operação / Execuções AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Execuções 6 jobs Todos 6 Rodando 2 Fila 1 Falha 1 Pausados 1 Concluídos 1 SEO da landing principal job-014 · Nina SEO · Rodando 62% Carrossel Multiverso ep. 14 job-011 · Adriano Arte · Rodando 41% Detalhar roadmap Q4 job-009 · Arquiteto de Nicho · Na fila 0% Deploy landing Meridian job-007 · Davi DevOps · Falhou 70% Auditoria API — hardening job-006 · Atlas Web · Concluído 100% Revisão headline LP advocacia job-003 · Rita Revisora · Pausado 80%",
+          "label": null,
+          "text": "Execuções 6 jobs Todos 6 Rodando 2 Fila 1 Falha 1 Pausados 1 Concluídos 1 SEO da landing principal job-014 · Nina SEO · Rodando 62% Carrossel Multiverso ep. 14 job-011 · Adriano Arte · Rodando 41% Detalhar roadmap Q4 job-009 · Arquiteto de Nicho · Na fila 0% Deploy landing Meridian job-007 · Davi DevOps · Falhou 70% Auditoria API — hardening job-006 · Atlas Web · Concluído 100% Revisão headline LP advocacia job-003 · Rita Revisora · Pausado 80%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 340,
+            "height": 836
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Execuções",
+          "label": null,
+          "text": "Execuções",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 318,
+            "y": 84,
+            "width": 92,
+            "height": 27
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Todos 6",
+          "label": null,
+          "text": "Todos 6",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 318,
+            "y": 123,
+            "width": 82,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Rodando 2",
+          "label": null,
+          "text": "Rodando 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 406,
+            "y": 123,
+            "width": 101,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fila 1",
+          "label": null,
+          "text": "Fila 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 512,
+            "y": 123,
+            "width": 65,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Falha 1",
+          "label": null,
+          "text": "Falha 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 318,
+            "y": 161,
+            "width": 77,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Pausados 1",
+          "label": null,
+          "text": "Pausados 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 401,
+            "y": 161,
+            "width": 105,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Concluídos 1",
+          "label": null,
+          "text": "Concluídos 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 318,
+            "y": 199,
+            "width": 115,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "SEO da landing principal job-014 · Nina SEO · Rodando 62%",
+          "label": null,
+          "text": "SEO da landing principal job-014 · Nina SEO · Rodando 62%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 246,
+            "width": 339,
+            "height": 88
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carrossel Multiverso ep. 14 job-011 · Adriano Arte · Rodando 41%",
+          "label": null,
+          "text": "Carrossel Multiverso ep. 14 job-011 · Adriano Arte · Rodando 41%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 334,
+            "width": 339,
+            "height": 88
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Detalhar roadmap Q4 job-009 · Arquiteto de Nicho · Na fila 0%",
+          "label": null,
+          "text": "Detalhar roadmap Q4 job-009 · Arquiteto de Nicho · Na fila 0%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 423,
+            "width": 339,
+            "height": 88
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Deploy landing Meridian job-007 · Davi DevOps · Falhou 70%",
+          "label": null,
+          "text": "Deploy landing Meridian job-007 · Davi DevOps · Falhou 70%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 511,
+            "width": 339,
+            "height": 88
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Auditoria API — hardening job-006 · Atlas Web · Concluído 100%",
+          "label": null,
+          "text": "Auditoria API — hardening job-006 · Atlas Web · Concluído 100%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 600,
+            "width": 339,
+            "height": 88
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Revisão headline LP advocacia job-003 · Rita Revisora · Pausado 80%",
+          "label": null,
+          "text": "Revisão headline LP advocacia job-003 · Rita Revisora · Pausado 80%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 688,
+            "width": 339,
+            "height": 87
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "JOB-014 · TASK #30 RODANDO SEO da landing principal Nina SEO · claude-sonnet-4 · iniciado às 13:41 Ver evidência Pausar Cancelar PROGRESSO 62% CUSTO / TETO US$ 1,84 teto US$ 8 · 23% usado TOKENS 412k entrada + saída MOTOR Cursor esforço equilibrado 01 Aceito 02 Contexto 03 Plano 04 Execução 05 Verificação 06 Entrega Log ao vivo SSE 5 LINHAS · LIVRO-RAZÃO 13:41 info Job aceito no motor Cursor · claude-sonnet-4 13:41 info Contexto da task #30 carregado · 14 arquivos 13:41 plan Plano em 5 passos aprovado pela Paula PM 13:49 ok Passo 1/5 registrado no livro-razão 13:58 ok Passo 2/5 registrado no livro-razão ▍ aguardando próximo passo",
+          "label": null,
+          "text": "JOB-014 · TASK #30 RODANDO SEO da landing principal Nina SEO · claude-sonnet-4 · iniciado às 13:41 Ver evidência Pausar Cancelar PROGRESSO 62% CUSTO / TETO US$ 1,84 teto US$ 8 · 23% usado TOKENS 412k entrada + saída MOTOR Cursor esforço equilibrado 01 Aceito 02 Contexto 03 Plano 04 Execução 05 Verificação 06 Entrega Log ao vivo SSE 5 LINHAS · LIVRO-RAZÃO 13:41 info Job aceito no motor Cursor · claude-sonnet-4 13:41 info Contexto da task #30 carregado · 14 arquivos 13:41 plan Plano em 5 passos aprovado pela Paula PM 13:49 ok Passo 1/5 registrado no livro-razão 13:58 ok Passo 2/5 registrado no livro-razão ▍ aguardando próximo passo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 640,
+            "y": 64,
+            "width": 800,
+            "height": 836
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "SEO da landing principal",
+          "label": null,
+          "text": "SEO da landing principal",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 672,
+            "y": 122,
+            "width": 378,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver evidência",
+          "label": null,
+          "text": "Ver evidência",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1066,
+            "y": 142,
+            "width": 124,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Pausar",
+          "label": null,
+          "text": "Pausar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1199,
+            "y": 142,
+            "width": 106,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cancelar",
+          "label": null,
+          "text": "Cancelar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1313,
+            "y": 142,
+            "width": 95,
+            "height": 40
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Log ao vivo SSE 5 LINHAS · LIVRO-RAZÃO 13:41 info Job aceito no motor Cursor · claude-sonnet-4 13:41 info Contexto da task #30 carregado · 14 arquivos 13:41 plan Plano em 5 passos aprovado pela Paula PM 13:49 ok Passo 1/5 registrado no livro-razão 13:58 ok Passo 2/5 registrado no livro-razão ▍ aguardando próximo passo",
+          "label": null,
+          "text": "Log ao vivo SSE 5 LINHAS · LIVRO-RAZÃO 13:41 info Job aceito no motor Cursor · claude-sonnet-4 13:41 info Contexto da task #30 carregado · 14 arquivos 13:41 plan Plano em 5 passos aprovado pela Paula PM 13:49 ok Passo 1/5 registrado no livro-razão 13:58 ok Passo 2/5 registrado no livro-razão ▍ aguardando próximo passo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 672,
+            "y": 580,
+            "width": 736,
+            "height": 213
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 2",
+          "label": null,
+          "text": "Execuções 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks 7",
+          "label": null,
+          "text": "Tasks 7",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Todos 6",
+          "label": null,
+          "text": "Todos 6",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 318,
+            "y": 123,
+            "width": 82,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Rodando 2",
+          "label": null,
+          "text": "Rodando 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 406,
+            "y": 123,
+            "width": 101,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fila 1",
+          "label": null,
+          "text": "Fila 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 512,
+            "y": 123,
+            "width": 65,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Falha 1",
+          "label": null,
+          "text": "Falha 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 318,
+            "y": 161,
+            "width": 77,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Pausados 1",
+          "label": null,
+          "text": "Pausados 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 401,
+            "y": 161,
+            "width": 105,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Concluídos 1",
+          "label": null,
+          "text": "Concluídos 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 318,
+            "y": 199,
+            "width": 115,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "SEO da landing principal job-014 · Nina SEO · Rodando 62%",
+          "label": null,
+          "text": "SEO da landing principal job-014 · Nina SEO · Rodando 62%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 246,
+            "width": 339,
+            "height": 88
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carrossel Multiverso ep. 14 job-011 · Adriano Arte · Rodando 41%",
+          "label": null,
+          "text": "Carrossel Multiverso ep. 14 job-011 · Adriano Arte · Rodando 41%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 334,
+            "width": 339,
+            "height": 88
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Detalhar roadmap Q4 job-009 · Arquiteto de Nicho · Na fila 0%",
+          "label": null,
+          "text": "Detalhar roadmap Q4 job-009 · Arquiteto de Nicho · Na fila 0%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 423,
+            "width": 339,
+            "height": 88
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Deploy landing Meridian job-007 · Davi DevOps · Falhou 70%",
+          "label": null,
+          "text": "Deploy landing Meridian job-007 · Davi DevOps · Falhou 70%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 511,
+            "width": 339,
+            "height": 88
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Auditoria API — hardening job-006 · Atlas Web · Concluído 100%",
+          "label": null,
+          "text": "Auditoria API — hardening job-006 · Atlas Web · Concluído 100%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 600,
+            "width": 339,
+            "height": 88
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Revisão headline LP advocacia job-003 · Rita Revisora · Pausado 80%",
+          "label": null,
+          "text": "Revisão headline LP advocacia job-003 · Rita Revisora · Pausado 80%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 688,
+            "width": 339,
+            "height": 87
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver evidência",
+          "label": null,
+          "text": "Ver evidência",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1066,
+            "y": 142,
+            "width": 124,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Pausar",
+          "label": null,
+          "text": "Pausar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1199,
+            "y": 142,
+            "width": 106,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cancelar",
+          "label": null,
+          "text": "Cancelar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1313,
+            "y": 142,
+            "width": 95,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

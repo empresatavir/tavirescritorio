@@ -875,18 +875,25 @@
 }
 
 .fc-rm2-label i {
-  width: 28px;
-  height: 28px;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
-  display: grid;
-  place-content: center;
-  background: rgba(183, 243, 74, 0.12);
-  color: var(--lime);
-  font-style: normal;
-  font-size: 9px;
-  font-family: var(--font-mono);
-  font-weight: 650;
+  display: block;
+  background: #3ecf96;
   flex-shrink: 0;
+}
+
+.fc-rm2-label i.is-active {
+  background: var(--lime, #b7f34a);
+  box-shadow: 0 0 0 3px rgba(183, 243, 74, 0.16);
+}
+
+.fc-rm2-label i.is-blocked {
+  background: var(--warning, #f2bc59);
+}
+
+.fc-rm2-label i.is-idle {
+  background: rgba(244, 246, 242, 0.28);
 }
 
 .fc-rm2-label span {
@@ -1262,6 +1269,12 @@ button.fc-qa3-run svg path {
 
 .fc-qa3-ring-value.is-running {
   stroke: var(--warning, #f2bc59);
+}
+
+.fc-qa3-state.is-ready {
+  color: var(--lime, #b7f34a);
+  border-color: color-mix(in oklab, var(--lime, #b7f34a) 45%, transparent);
+  background: rgba(183, 243, 74, 0.12);
 }
 
 .fc-qa3-state.is-running {
@@ -1854,6 +1867,14 @@ button.fc-qa3-run svg path {
   transition: stroke-dashoffset 0.35s ease;
 }
 
+.fc-ac2-ring-value.is-ok {
+  stroke: var(--lime, #b7f34a);
+}
+
+.fc-ac2-ring-value.is-empty {
+  stroke: rgba(244, 246, 242, 0.16);
+}
+
 .fc-ac2-ring-label {
   position: absolute;
   inset: 0;
@@ -1986,21 +2007,21 @@ button.fc-qa3-run svg path {
 .fc-ac-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 80;
+  z-index: 120;
   display: grid;
   place-items: center;
   padding: 24px;
-  background: rgba(7, 13, 24, 0.72);
+  background: color-mix(in srgb, var(--ink) 58%, transparent);
   backdrop-filter: blur(2px);
 }
 
 .fc-ac-modal {
   position: relative;
-  width: min(420px, 100%);
-  padding: 22px 22px 18px;
-  border-radius: 16px;
-  border: 1px solid var(--fc-line);
-  background: var(--surface-1, #0f1729);
+  width: min(440px, 94vw);
+  padding: 18px 22px;
+  border-radius: 14px;
+  border: 1px solid var(--border-default);
+  background: var(--surface-1);
   color: var(--text-primary);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
 }
@@ -2268,13 +2289,19 @@ button.fc-qa3-run svg path {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
   gap: 12px;
-  align-items: start;
+  align-items: stretch;
+  height: min(520px, 62vh);
+  min-height: 320px;
 }
 
 .fc-ev-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
+  align-content: start;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
 }
 
 .fc-ev-card {
@@ -2335,6 +2362,10 @@ button.fc-qa3-run svg path {
 .fc-ev-note {
   font-size: 11px;
   color: var(--text-muted);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .fc-ev-card footer {
@@ -2345,11 +2376,45 @@ button.fc-qa3-run svg path {
 }
 
 .fc-ev-preview {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
   border: 1px solid var(--fc-line);
   border-radius: 14px;
   background: var(--surface-1);
   padding: 14px;
-  min-height: 260px;
+}
+
+.fc-ev-preview-body {
+  flex: 1;
+  min-height: 0;
+  margin-top: 12px;
+  overflow: auto;
+}
+
+.fc-ev-preview-body pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.fc-ev-preview-body img {
+  display: block;
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+.fc-ev-preview-body iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-0);
 }
 
 .fc-ev-preview h4 {
@@ -2414,9 +2479,11 @@ button.fc-qa3-run svg path {
 
 .fc-chat2 {
   flex: 1;
+  height: 100%;
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   border: 1px solid var(--fc-line);
   border-radius: 16px;
   overflow: hidden;
@@ -2470,17 +2537,32 @@ button.fc-qa3-run svg path {
   gap: 4px;
 }
 
+.fc-chat2-kicker {
+  padding: 10px 8px 2px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.fc-chat2-miss {
+  padding: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
 .fc-chat2-agent {
   width: 100%;
   display: grid;
-  grid-template-columns: 36px 1fr auto;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
   padding: 8px;
   border-radius: 10px;
   border: 1px solid transparent;
   background: transparent;
-  color: inherit;
+  color: var(--text-primary);
+  font: inherit;
   text-align: left;
   cursor: pointer;
 }
@@ -2518,14 +2600,26 @@ button.fc-qa3-run svg path {
   color: var(--text-muted);
 }
 
+.fc-chat2-agent-body {
+  min-width: 0;
+}
+
 .fc-chat2-agent-body strong {
   display: block;
   font-size: 12px;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fc-chat2-agent-body span {
+  display: block;
   font-size: 10px;
   color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fc-chat2-count {
@@ -2605,6 +2699,10 @@ button.fc-qa3-run svg path {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.fc-chat2-log:has(.fc-empty) {
+  justify-content: center;
 }
 
 .fc-chat2-msg {
@@ -2703,6 +2801,19 @@ button.fc-qa3-run svg path {
   flex-wrap: wrap;
 }
 
+.fc-chat2-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.fc-chat2-actions .fc-btn:disabled,
+.fc-chat2-actions .fc-btn-sec:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 @media (max-width: 800px) {
   .fc-chat2 {
     grid-template-columns: 1fr;
@@ -2747,22 +2858,25 @@ button.fc-qa3-run svg path {
 .fc-modal-back {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: 120;
   display: grid;
   place-items: center;
   padding: 24px;
-  background: color-mix(in srgb, var(--ink, #0b1220) 55%, transparent);
+  background: color-mix(in srgb, var(--ink) 58%, transparent);
+  backdrop-filter: blur(2px);
 }
 .fc-modal {
-  width: min(520px, 100%);
+  width: min(440px, 94vw);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 20px;
-  border-radius: 16px;
-  background: var(--surface-0, #f4f6f2);
+  padding: 18px 22px 14px;
+  border-radius: 14px;
+  background: var(--surface-1);
   color: var(--text-primary);
-  border: 1px solid color-mix(in srgb, var(--text-primary) 12%, transparent);
+  border: 1px solid var(--border-default);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
 }
 .fc-modal h2 {
   margin: 0;
@@ -2778,11 +2892,11 @@ button.fc-qa3-run svg path {
 .fc-modal-field textarea,
 .fc-modal-field select {
   width: 100%;
-  border-radius: 10px;
-  border: 1px solid color-mix(in srgb, var(--text-primary) 16%, transparent);
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
   background: var(--surface-0);
   color: var(--text-primary);
-  padding: 8px 10px;
+  padding: 9px 12px;
   font: inherit;
 }
 .fc-modal-row {
@@ -3034,14 +3148,15 @@ button.fc-qa3-run svg path {
 .fc-stage-menu {
   position: fixed;
   z-index: 31;
-  min-width: 180px;
-  padding: 6px;
-  border-radius: 10px;
-  border: 1px solid var(--fc-line);
-  background: var(--surface-0);
+  min-width: 224px;
+  padding: 5px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-elevated, 0 12px 32px rgba(0, 0, 0, 0.28));
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
 }
 .fc-stage-menu button {
   text-align: left;
@@ -3049,7 +3164,8 @@ button.fc-qa3-run svg path {
   background: transparent;
   color: var(--text-primary);
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: 6px;
+  font-size: 13px;
   cursor: pointer;
 }
 .fc-exec {

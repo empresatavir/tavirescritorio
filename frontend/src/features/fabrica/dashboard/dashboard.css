@@ -7,62 +7,74 @@
 }
 
 .fab-dash-inner {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 22px 24px 56px;
+  margin: 0;
+  padding: 26px 28px 40px;
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 24px;
 }
 
 .fab-dash-header {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  align-items: center;
   gap: 16px;
-  flex-wrap: wrap;
+  padding: 0;
 }
 
 .fab-dash-eyebrow {
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12.5px;
   font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted, #aeb7c4);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-secondary);
 }
 
 .fab-dash-title {
-  margin: 6px 0 0;
-  font-size: 28px;
-  font-weight: 650;
+  margin: 2px 0 0;
+  font-size: 20px;
+  font-weight: 680;
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: 1.25;
 }
 
 .fab-dash-lead {
-  margin: 8px 0 0;
-  max-width: 560px;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--text-secondary, #cbd3de);
+  margin: 2px 0 0;
+  max-width: none;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fab-dash-kpis {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
+  gap: 14px;
+  margin-bottom: 0;
 }
 
 .fab-dash-kpi {
+  position: relative;
   display: flex;
   gap: 12px;
   align-items: flex-start;
-  padding: 14px 16px;
-  border-radius: 16px;
-  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.12));
-  background: var(--surface-1, #0f1729);
+  min-width: 0;
+  padding: 17px 18px 15px;
+  border-radius: 12px;
+  border: 1px solid var(--border-default);
+  background: var(--surface-1);
+  overflow: hidden;
+}
+
+.fab-dash-kpi::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--lime);
 }
 
 .fab-dash-kpi-ico {
@@ -122,11 +134,22 @@
 
 .fab-dash-section-head h2 {
   margin: 0;
-  font-size: 16px;
-  font-weight: 650;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+
+.fab-dash-section-head h2::before {
+  content: "";
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--lime);
 }
 
 .fab-dash-section-ico {
@@ -262,38 +285,43 @@
 }
 
 .fab-dash-tabs {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 6px;
+  align-self: flex-start;
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-0);
+  border: 1px solid var(--border-default);
+  border-radius: 9px;
 }
 
 .fab-dash-tab {
-  height: 32px;
-  padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.12));
+  height: auto;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 0;
   background: transparent;
-  color: var(--text-secondary, #cbd3de);
-  font-size: 12px;
-  font-weight: 550;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
 }
 
 .fab-dash-tab.is-active,
 .fab-dash-tab[aria-selected="true"] {
-  background: rgba(183, 243, 74, 0.14);
-  border-color: color-mix(in oklab, var(--lime, #b7f34a) 40%, transparent);
-  color: var(--lime, #b7f34a);
+  background: var(--surface-1);
+  color: var(--lime);
+  font-weight: 600;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--ink) 40%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--lime) 22%, transparent);
 }
 
 .fab-dash-sort select {
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 12px;
-  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.14));
-  background: var(--surface-1, #0f1729);
-  color: var(--text-primary, #f4f6f2);
-  font-size: 12px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-size: 13px;
 }
 
 .fab-dash .sr-only {
@@ -485,9 +513,10 @@
   flex-direction: column;
   gap: 8px;
   padding: 18px;
-  border-radius: 18px;
-  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.12));
-  background: var(--surface-1, #0f1729);
+  border-radius: 12px;
+  border: 1px solid var(--border-default);
+  background: var(--surface-1);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--ink) 40%, transparent);
 }
 
 .fab-dash-card.is-active {
@@ -558,10 +587,11 @@
 .fab-dash-btn-ghost,
 .fab-dash-btn-solid {
   flex: 1;
-  height: 32px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 600;
+  height: auto;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 550;
   cursor: pointer;
 }
 
@@ -606,6 +636,17 @@
   }
 
   .fab-dash-title {
-    font-size: 24px;
+    font-size: 20px;
   }
+}
+
+[data-theme="light"] .fab-dash-kpi::before,
+[data-theme="light"] .fab-dash-section-head h2::before {
+  background: var(--ink);
+}
+
+[data-theme="light"] .fab-dash-tab.is-active,
+[data-theme="light"] .fab-dash-tab[aria-selected="true"] {
+  color: var(--ink);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--ink) 8%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--ink) 22%, transparent);
 }

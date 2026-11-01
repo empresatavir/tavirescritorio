@@ -16,52 +16,11 @@ from app.shared.database import get_session
 
 router = APIRouter(prefix="/api/v1/integrations", tags=["integrations"])
 
-_GHOST_EFFORTS = [
-    {"id": "low", "label": "Baixo"},
-    {"id": "medium", "label": "Médio"},
-    {"id": "high", "label": "Alto"},
-    {"id": "xhigh", "label": "Máximo"},
-]
-_CURSOR_EFFORTS = [
-    {"id": "low", "label": "Baixo"},
-    {"id": "medium", "label": "Médio"},
-    {"id": "high", "label": "Alto"},
-    {"id": "xhigh", "label": "Máximo"},
-]
-_CURSOR_AUTO_EFFORTS = [
-    {"id": "cost", "label": "Cost"},
-    {"id": "balanced", "label": "Balance"},
-    {"id": "intelligence", "label": "Intelligence"},
-]
-ENGINES = [
-    {
-        "id": "ghostcli",
-        "label": "Ghost",
-        "models": [
-            {"id": "claude-opus-5-5", "label": "Opus", "efforts": _GHOST_EFFORTS},
-            {"id": "claude-sonnet-5", "label": "Sonnet", "efforts": _GHOST_EFFORTS},
-            {"id": "claude-fable-5.1", "label": "Fable", "efforts": _GHOST_EFFORTS},
-        ],
-    },
-    {
-        "id": "cursor",
-        "label": "Cursor",
-        "models": [
-            {"id": "auto-smart", "label": "Auto", "efforts": _CURSOR_AUTO_EFFORTS},
-            {"id": "composer-2.5", "label": "Composer", "efforts": _CURSOR_EFFORTS},
-            {"id": "gpt-5", "label": "GPT-5", "efforts": _CURSOR_EFFORTS},
-            {"id": "sonnet-4-thinking", "label": "Sonnet Thinking", "efforts": _CURSOR_EFFORTS},
-        ],
-    },
-]
 
+def _model_spec(model_id: str):
+    from app.modules.factory.engine_prefs import model_owner
 
-def _model_spec(model_id: str) -> tuple[dict, dict] | None:
-    for engine in ENGINES:
-        for model in engine["models"]:
-            if model["id"] == model_id:
-                return engine, model
-    return None
+    return model_owner(model_id)
 
 
 class CursorToggle(BaseModel):
@@ -72,6 +31,63 @@ class AiSettingsBody(BaseModel):
     model: str
     effort: str = "xhigh"
     provider: str | None = None
+
+
+class PlugBody(BaseModel):
+    api_key: str = ""
+    base_url: str | None = None
+
+
+@router.get("/motors")
+async def get_motors() -> dict:
+    from app.modules.factory.engine_prefs import list_motors
+
+    return {"motors": await list_motors()}
+
+
+@router.post("/motors/{engine_id}/plug")
+async def post_motor_plug(
+    engine_id: str,
+    body: PlugBody,
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    import json
+
+    from app.modules.factory.engine_prefs import MOTOR_ENGINES, list_motors
+    from app.modules.factory.motor_secrets import save_plug
+    from app.modules.office.ledger import record_event
+
+    if engine_id not in MOTOR_ENGINES or engine_id == "cursor":
+        raise HTTPException(status_code=404, detail="Esse motor se pluga pelo login, não por chave.")
+    key = (body.api_key or "").strip()
+    if len(key) < 8:
+        raise HTTPException(status_code=400, detail="A chave está curta demais.")
+    if engine_id == "antigravity" and not (body.base_url or "").strip():
+        raise HTTPException(status_code=400, detail="O Antigravity precisa do endereço da API.")
+    save_plug(engine_id, key, body.base_url)
+    record_event(
+        session,
+        action="motor.plug",
+        details=json.dumps({"engine": engine_id, "api_key": key}, ensure_ascii=False),
+    )
+    await session.commit()
+    return {"motors": await list_motors()}
+
+
+@router.post("/motors/{engine_id}/login")
+async def post_motor_login(engine_id: str) -> dict:
+    import asyncio
+
+    from app.modules.factory.engine_prefs import MOTOR_ENGINES, list_motors
+    from app.modules.factory.motor_install import start_login
+
+    if engine_id not in MOTOR_ENGINES:
+        raise HTTPException(status_code=404, detail="Motor desconhecido")
+    try:
+        login = await asyncio.to_thread(start_login, engine_id)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    return {"login": login, "motors": await list_motors()}
 
 
 @router.get("/engines")
@@ -92,7 +108,8 @@ async def put_engine(engine_id: str, body: EngineToggle) -> dict:
     try:
         payload = await set_engine_enabled(engine_id, body.enabled)
     except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        status = 404 if "desconhecido" in str(exc).lower() else 400
+        raise HTTPException(status_code=status, detail=str(exc)) from exc
     if engine_id == "cursor":
         await set_enabled(body.enabled)
     return payload
@@ -106,6 +123,26 @@ async def put_engine_default(engine_id: str) -> dict:
         return await set_default_engine(engine_id)
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@router.get("/office-ai")
+async def get_office_ai() -> dict:
+    """Motor padrão do escritório, com os modelos e esforços que a tela pode escolher."""
+    from app.modules.factory.engine_prefs import engine_catalog, list_engines, office_call
+
+    flags = await list_engines()
+    provider, model, effort, enabled = await office_call(None, None)
+    enabled_ids = {item["id"] for item in flags["engines"] if item["enabled"]}
+    engines = engine_catalog(enabled_ids, provider)
+    label = next((item["label"] for item in engines if item["id"] == provider), provider)
+    return {
+        "provider": provider,
+        "provider_label": label,
+        "model": model,
+        "effort": effort,
+        "engine_enabled": enabled,
+        "engines": engines,
+    }
 
 
 @router.get("/cursor")
@@ -144,16 +181,15 @@ async def get_project_ai_settings(
         stored.get("model") or meta.get("model"),
         stored.get("effort") or meta.get("effort"),
     )
-    cursor = await status()
-    from app.modules.factory.engine_prefs import list_engines
+    try:
+        cursor = await asyncio.wait_for(status(), timeout=3)
+    except (TimeoutError, OSError, RuntimeError):
+        cursor = {"enabled": False}
+    from app.modules.factory.engine_prefs import engine_catalog, list_engines
 
     flags = await list_engines()
     enabled_ids = {item["id"] for item in flags["engines"] if item["enabled"]}
-    engines = [
-        {**engine, "enabled": True, "is_default": engine["id"] == provider}
-        for engine in ENGINES
-        if engine["id"] in enabled_ids
-    ]
+    engines = engine_catalog(enabled_ids, provider)
     return {
         "model": model,
         "effort": effort,
@@ -176,14 +212,13 @@ async def put_project_ai_settings(
     spec = _model_spec(body.model)
     if spec is None:
         raise HTTPException(status_code=400, detail="Modelo desconhecido para este motor")
-    engine, model_spec = spec
-    allowed = {item["id"] for item in model_spec["efforts"]}
+    engine_id, allowed = spec
     if body.effort not in allowed:
         raise HTTPException(status_code=400, detail="Esforço indisponível para este modelo")
     from app.modules.factory.engine_prefs import office_call
 
     provider, _model, _effort, enabled = await office_call(None, None)
-    if engine["id"] != provider:
+    if engine_id != provider:
         raise HTTPException(status_code=409, detail="O escritório usa o motor padrão definido em Integrações.")
     if not enabled:
         raise HTTPException(status_code=409, detail="Ligue o motor padrão em Integrações.")

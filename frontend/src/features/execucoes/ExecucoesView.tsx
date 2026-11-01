@@ -64,6 +64,7 @@ function JobRow(props: {
 
   return (
     <div
+      data-job-id={props.job.id}
       onClick={props.onSelect}
       style={{
         width: "100%",
@@ -221,6 +222,9 @@ function JobDetailsPanel(props: {
         <div style={{ "margin-top": "4px", "font-size": "12px", color: "#cbd3de" }}>
           {props.job.agentName} · iniciado {props.job.startedAt}
         </div>
+        <Show when={props.job.errorMessage}>
+          <p style={{ margin: "8px 0 0", "font-size": "13px", color: "var(--text-primary)" }}>{props.job.errorMessage}</p>
+        </Show>
 
         <div style={{ display: "flex", gap: "8px", "margin-top": "10px", "flex-wrap": "wrap" }}>
           {props.job.taskId && (
@@ -298,16 +302,83 @@ function JobDetailsPanel(props: {
             <span>Resultado & evidências</span>
           </button>
 
-          {(props.job.status === "failed" || props.job.status === "paused") && (
+          {props.job.status === "queued" && (
             <button
               type="button"
+              aria-label="Iniciar agora"
               onClick={async () => {
                 try {
-                  await api.retryJob(props.job.id);
-                  showToast(props.job.status === "paused" ? "Job retomado com sucesso" : "Job re-enfileirado com sucesso", "Execução", "success");
-                  syncLiveJobs();
+                  await api.startJob(props.job.id);
+                  showToast("Job iniciado", "Execução", "success");
+                  await syncLiveJobs();
                 } catch {
-                  showToast("Erro ao processar job", "Erro", "error");
+                  showToast("Erro ao iniciar job", "Erro", "error");
+                }
+              }}
+              style={{
+                display: "flex",
+                "align-items": "center",
+                gap: "6px",
+                height: "30px",
+                padding: "0 12px",
+                "border-radius": "var(--radius-pill)",
+                border: "1px solid rgba(183,243,74,.4)",
+                background: "rgba(183,243,74,.12)",
+                color: "var(--lime)",
+                cursor: "pointer",
+                "font-size": "12px",
+                "font-weight": 500,
+              }}
+            >
+              <TvIcon name="play" width="12" height="12" />
+              <span>Iniciar agora</span>
+            </button>
+          )}
+
+          {props.job.status === "paused" && (
+            <button
+              type="button"
+              aria-label="Retomar"
+              onClick={async () => {
+                try {
+                  await api.resumeJob(props.job.id);
+                  showToast("Job retomado", "Execução", "success");
+                  await syncLiveJobs();
+                } catch {
+                  showToast("Erro ao retomar job", "Erro", "error");
+                }
+              }}
+              style={{
+                display: "flex",
+                "align-items": "center",
+                gap: "6px",
+                height: "30px",
+                padding: "0 12px",
+                "border-radius": "var(--radius-pill)",
+                border: "1px solid rgba(183,243,74,.4)",
+                background: "rgba(183,243,74,.12)",
+                color: "var(--lime)",
+                cursor: "pointer",
+                "font-size": "12px",
+                "font-weight": 500,
+              }}
+            >
+              <TvIcon name="play" width="12" height="12" />
+              <span>Retomar</span>
+            </button>
+          )}
+
+          {(props.job.status === "failed" || props.job.status === "completed") && (
+            <button
+              type="button"
+              aria-label="Refazer"
+              onClick={async () => {
+                try {
+                  await api.redoJob(props.job.id);
+                  showToast("Job refeito", "Execução", "success");
+                  await syncLiveJobs();
+                } catch {
+                  showToast("Erro ao refazer job", "Erro", "error");
                 }
               }}
               style={{
@@ -326,19 +397,20 @@ function JobDetailsPanel(props: {
               }}
             >
               <TvIcon name="refresh-cw" width="12" height="12" />
-              <span>{props.job.status === "paused" ? "Retomar job" : "Tentar novamente"}</span>
+              <span>Refazer</span>
             </button>
           )}
 
-          {(props.job.status === "running" || props.job.status === "queued") && (
+          {props.job.status === "running" && (
             <div style={{ display: "flex", gap: "8px" }}>
               <button
                 type="button"
+                aria-label="Pausar"
                 onClick={async () => {
                   try {
                     await api.pauseJob(props.job.id);
                     showToast("Job pausado com checkpoint gerado", "Pausa", "info");
-                    syncLiveJobs();
+                    await syncLiveJobs();
                   } catch {
                     showToast("Erro ao pausar job", "Erro", "error");
                   }
@@ -359,16 +431,17 @@ function JobDetailsPanel(props: {
                 }}
               >
                 <TvIcon name="circle-pause" width="12" height="12" />
-                <span>Pausar / Checkpoint</span>
+                <span>Pausar</span>
               </button>
 
               <button
                 type="button"
+                aria-label="Cancelar"
                 onClick={async () => {
                   try {
                     await api.cancelJob(props.job.id);
                     showToast("Job cancelado", "Cancelamento", "warning");
-                    syncLiveJobs();
+                    await syncLiveJobs();
                   } catch {
                     showToast("Erro ao cancelar job", "Erro", "error");
                   }
@@ -389,7 +462,7 @@ function JobDetailsPanel(props: {
                 }}
               >
                 <TvIcon name="circle-x" width="12" height="12" />
-                <span>Cancelar job</span>
+                <span>Cancelar</span>
               </button>
             </div>
           )}
@@ -448,7 +521,7 @@ function JobDetailsPanel(props: {
               <span style={{ "font-family": "var(--font-mono)" }}>US$ {props.job.cost.toFixed(2)}</span>
             </div>
             <div style={{ "margin-top": "4px", height: "5px", "border-radius": "3px", background: "rgba(244,246,242,.12)", overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${Math.min(100, (props.job.cost / props.job.ceiling) * 100)}%`, background: "oklch(.80 .155 78)", transition: "width 300ms ease" }} />
+              <div style={{ height: "100%", width: `${props.job.ceiling > 0 ? Math.min(100, (props.job.cost / props.job.ceiling) * 100) : 0}%`, background: "oklch(.80 .155 78)", transition: "width 300ms ease" }} />
             </div>
           </div>
         </div>
@@ -463,6 +536,8 @@ function JobDetailsPanel(props: {
           </div>
 
           <div
+            role="log"
+            aria-label="Log ao vivo"
             style={{
               background: "#070c16",
               border: "1px solid rgba(244,246,242,.10)",
@@ -641,6 +716,7 @@ export function ExecucoesView() {
 
   return (
     <div
+      class="exec-split"
       style={{
         height: "100%",
         display: "grid",
@@ -650,6 +726,7 @@ export function ExecucoesView() {
     >
       {/* Coluna Esquerda: Lista de Execuções e Filtros */}
       <section
+        class="exec-list"
         style={{
           display: "flex",
           "flex-direction": "column",
@@ -740,6 +817,14 @@ export function ExecucoesView() {
               background: "var(--surface-0)",
             }}
           >
+            <Show
+              when={filteredJobs().length > 0}
+              fallback={
+                <p style={{ margin: "24px 0", color: "var(--text-muted)", "font-size": "13px" }}>
+                  Nenhum job neste filtro.
+                </p>
+              }
+            >
             <For each={filteredJobs()}>
               {(j) => (
                 <JobRow
@@ -753,12 +838,14 @@ export function ExecucoesView() {
                 />
               )}
             </For>
+            </Show>
           </div>
         </div>
       </section>
 
       {/* Coluna Direita: Detalhe do Job Selecionado & Log SSE ao Vivo */}
       <aside
+        class="exec-side"
         aria-label="Detalhe do job"
         style={{
           display: "flex",

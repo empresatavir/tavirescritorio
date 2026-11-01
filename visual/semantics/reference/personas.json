@@ -1,0 +1,1588 @@
+{
+  "screenId": "personas",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 53,
+        "nav": 1,
+        "button": 23,
+        "img": 2,
+        "i": 5,
+        "aside": 1,
+        "small": 3,
+        "span": 83,
+        "b": 6,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 11,
+        "article": 3,
+        "section": 1,
+        "h3": 1
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Funil",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Propostas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Finanças",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Personas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Personas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Comercial",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Personas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Para quem a TAVIR fala, o que essa pessoa valoriza e o que nunca dizer.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Funil",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Propostas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Finanças",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Personas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "DL",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dono de negócio local",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "loja, padaria, oficina · 1 a 15 pessoas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Perde cliente que chama no WhatsApp fora de hora e não sabe quanto perde.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Valoriza",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Resposta rápida, preço claro e alguém que mostre o número.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Não dizer",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Transformação digital, revolução, inteligência artificial que faz tudo.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "GC",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gestora de clínica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "odontologia, estética, fisioterapia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Faltas na agenda e confirmação manual tomam a manhã da recepção.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Valoriza",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agenda cheia, privacidade do paciente e processo que não depende de uma pessoa.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Não dizer",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Robô, substituir a recepção, garantia de lotação.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fábrica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CN",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Criador de nicho",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "canal de 20 a 200 mil seguidores",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Produz sozinho e não consegue manter frequência sem cair a qualidade.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Valoriza",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Voz preservada, decisão final dele, constância.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Não dizer",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Viralizar, hack de algoritmo, conteúdo infinito.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Edição",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Voz da marca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Direta, calma, comprovável",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Toda promessa carrega critério, condição e responsável. Números em fonte mono, separados da prosa.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Evitar em qualquer persona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "revolucionário",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "disruptivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "mágica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "garantido",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "sem esforço",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "100% automático",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO COMERCIAL Funil Propostas 2 Finanças Personas Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Propostas 2",
+          "label": null,
+          "text": "Propostas 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças",
+          "label": null,
+          "text": "Finanças",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Comercial / Personas AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Comercial / Personas AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 1060,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 59,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Propostas",
+          "label": null,
+          "text": "Propostas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 395,
+            "y": 201,
+            "width": 93,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças",
+          "label": null,
+          "text": "Finanças",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 492,
+            "y": 201,
+            "width": 85,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 582,
+            "y": 201,
+            "width": 89,
+            "height": 42
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "DL Dono de negócio local loja, padaria, oficina · 1 a 15 pessoas DOR Perde cliente que chama no WhatsApp fora de hora e não sabe quanto perde. VALORIZA Resposta rápida, preço claro e alguém que mostre o número. NÃO DIZER Transformação digital, revolução, inteligência artificial que faz tudo. RAIO-X FLOW",
+          "label": null,
+          "text": "DL Dono de negócio local loja, padaria, oficina · 1 a 15 pessoas DOR Perde cliente que chama no WhatsApp fora de hora e não sabe quanto perde. VALORIZA Resposta rápida, preço claro e alguém que mostre o número. NÃO DIZER Transformação digital, revolução, inteligência artificial que faz tudo. RAIO-X FLOW",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 268,
+            "width": 348,
+            "height": 391
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "GC Gestora de clínica odontologia, estética, fisioterapia DOR Faltas na agenda e confirmação manual tomam a manhã da recepção. VALORIZA Agenda cheia, privacidade do paciente e processo que não depende de uma pessoa. NÃO DIZER Robô, substituir a recepção, garantia de lotação. RAIO-X FLOW FÁBRICA",
+          "label": null,
+          "text": "GC Gestora de clínica odontologia, estética, fisioterapia DOR Faltas na agenda e confirmação manual tomam a manhã da recepção. VALORIZA Agenda cheia, privacidade do paciente e processo que não depende de uma pessoa. NÃO DIZER Robô, substituir a recepção, garantia de lotação. RAIO-X FLOW FÁBRICA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 696,
+            "y": 268,
+            "width": 348,
+            "height": 391
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "CN Criador de nicho canal de 20 a 200 mil seguidores DOR Produz sozinho e não consegue manter frequência sem cair a qualidade. VALORIZA Voz preservada, decisão final dele, constância. NÃO DIZER Viralizar, hack de algoritmo, conteúdo infinito. STUDIO EDIÇÃO",
+          "label": null,
+          "text": "CN Criador de nicho canal de 20 a 200 mil seguidores DOR Produz sozinho e não consegue manter frequência sem cair a qualidade. VALORIZA Voz preservada, decisão final dele, constância. NÃO DIZER Viralizar, hack de algoritmo, conteúdo infinito. STUDIO EDIÇÃO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1060,
+            "y": 268,
+            "width": 348,
+            "height": 391
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "VOZ DA MARCA Direta, calma, comprovável Toda promessa carrega critério, condição e responsável. Números em fonte mono, separados da prosa. EVITAR EM QUALQUER PERSONA REVOLUCIONÁRIO DISRUPTIVO MÁGICA GARANTIDO SEM ESFORÇO 100% AUTOMÁTICO",
+          "label": null,
+          "text": "VOZ DA MARCA Direta, calma, comprovável Toda promessa carrega critério, condição e responsável. Números em fonte mono, separados da prosa. EVITAR EM QUALQUER PERSONA REVOLUCIONÁRIO DISRUPTIVO MÁGICA GARANTIDO SEM ESFORÇO 100% AUTOMÁTICO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 683,
+            "width": 1076,
+            "height": 144
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Direta, calma, comprovável",
+          "label": null,
+          "text": "Direta, calma, comprovável",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 353,
+            "y": 731,
+            "width": 505,
+            "height": 27
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Propostas 2",
+          "label": null,
+          "text": "Propostas 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças",
+          "label": null,
+          "text": "Finanças",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 59,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Propostas",
+          "label": null,
+          "text": "Propostas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 395,
+            "y": 201,
+            "width": 93,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças",
+          "label": null,
+          "text": "Finanças",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 492,
+            "y": 201,
+            "width": 85,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 582,
+            "y": 201,
+            "width": 89,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

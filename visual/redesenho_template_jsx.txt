@@ -1,0 +1,853 @@
+
+
+<div className="tv" data-theme="{{theme}}" onKeyDown="{{onKey}}" style={{ height: '100vh', position: 'relative', overflow: 'hidden' }} data-canvas-width="1440" data-canvas-height="900" data-document-role="page" data-label="Escritório TAVIR · protótipo completo">
+
+<!-- ================= LOGIN ================= -->
+<sc-if value="{{is.login}}" hint-placeholder-val="{{false}}">
+<div className="screen" style={{ height: '100vh', overflow: 'auto', display: 'flex', flexWrap: 'wrap', background: 'var(--surface-0)' }}>
+  <section className="ink" style={{ flex: '1 1 520px', borderRadius: '0', border: '0', padding: '56px', display: 'flex', flexDirection: 'column', gap: '28px', position: 'relative', overflow: 'hidden', minHeight: '560px' }}>
+    <svg viewBox="0 0 400 400" width="420" height="420" aria-hidden="true" style={{ position: 'absolute', right: '-90px', top: '-60px', opacity: '.5' }}>
+      <path className="draw" d="M20 40 C 160 60, 200 180, 210 200" fill="none" stroke="#1BC5BD" strokeWidth="2" strokeLinecap="round"></path>
+      <path className="draw" d="M20 200 C 120 200, 160 200, 210 200" fill="none" stroke="#1BC5BD" strokeWidth="2" strokeLinecap="round"></path>
+      <path className="draw" d="M20 360 C 160 340, 200 220, 210 200" fill="none" stroke="#1BC5BD" strokeWidth="2" strokeLinecap="round"></path>
+      <path className="draw" d="M210 200 L 380 200" fill="none" stroke="#B7F34A" strokeWidth="2" strokeLinecap="round"></path>
+      <circle cx="210" cy="200" r="7" fill="#B7F34A"></circle>
+    </svg>
+    <img src="227c1932-4195-4442-a2b3-2d71d172d289" alt="TAVIR" style={{ width: '56px', height: 'auto', position: 'relative' }}>
+    <div style={{ marginTop: 'auto', position: 'relative' }}>
+      <div className="eyebrow">TAVIR Escritório · local-first</div>
+      <h1 style={{ fontSize: '52px', fontWeight: '600', letterSpacing: '-.04em', lineHeight: '1.02', marginTop: '14px', maxWidth: '540px' }}>Inteligência que entra em operação.</h1>
+      <p style={{ color: 'var(--on-ink-muted)', marginTop: '16px', maxWidth: '460px', fontSize: '16px' }}>Orquestre agentes, tasks e entregas a partir desta máquina. Cada passo fica registrado. Cada ação irreversível espera você.</p>
+    </div>
+    <div style={{ display: 'flex', gap: '28px', flexWrap: 'wrap', position: 'relative' }}>
+      <div><div className="eyebrow">Endereço</div><div className="mono" style={{ marginTop: '6px', color: 'var(--teal)' }}>127.0.0.1:9002</div></div>
+      <div><div className="eyebrow">Registro</div><div className="mono" style={{ marginTop: '6px', color: 'var(--teal)' }}>SQLite auditável</div></div>
+      <div><div className="eyebrow">Regra</div><div className="mono" style={{ marginTop: '6px', color: 'var(--lime)' }}>gate humano</div></div>
+    </div>
+  </section>
+  <section style={{ flex: '1 1 420px', display: 'grid', placeItems: 'center', padding: '48px 24px' }}>
+    <sc-if value="{{noSession}}" hint-placeholder-val="{{true}}">
+    <form className="{{sp.login}}" sc-camel-on-submit="{{doLogin}}" style={{ width: 'min(400px, 100%)', display: 'flex', flexDirection: 'column', gap: '18px', borderRadius: '16px' }}>
+      <div>
+        <div className="eyebrow">Loopback · 127.0.0.1</div>
+        <h2 style={{ fontSize: '28px', fontWeight: '600', letterSpacing: '-.03em', marginTop: '8px' }}>Entrar no escritório</h2>
+        <p className="sec" style={{ marginTop: '6px' }}>Use a chave local do operador.</p>
+      </div>
+      <label className="field"><span>Chave de acesso</span>
+        <div style={{ position: 'relative' }}>
+          <input className="input" type="{{pwType}}" value="{{secret}}" sc-camel-on-change="{{onSecret}}" placeholder="Digite a chave local" autocomplete="current-password" style={{ paddingRight: '80px' }}>
+          <button type="button" className="link" style={{ position: 'absolute', right: '14px', top: '12px' }} sc-camel-on-click="{{togglePw}}">{{pwLabel}}</button>
+        </div>
+        <sc-if value="{{loginErr}}" hint-placeholder-val="{{false}}"><small style={{ color: 'var(--danger)' }}>Informe a chave local para continuar.</small></sc-if>
+      </label>
+      <button type="submit" className="btn primary" style={{ height: '46px' }}>Acessar painel</button>
+      <div className="card" style={{ padding: '12px 14px', display: 'flex', gap: '10px', fontSize: '13px', alignItems: 'flex-start' }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.lock}}"></path></svg>
+        <span className="sec">A chave não sai desta máquina. A sessão expira depois de 12 h sem uso.</span>
+      </div>
+    </form>
+    </sc-if>
+    <sc-if value="{{session}}" hint-placeholder-val="{{false}}">
+    <div className="card pad" style={{ width: 'min(400px, 100%)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}><span className="av lg">CH</span><div><div className="eyebrow">Sessão ativa</div><b style={{ fontSize: '18px' }}>Carlos · CEO</b></div></div>
+      <p className="sec">Aberta às 08:12 nesta máquina. Último job iniciado às 13:55.</p>
+      <div className="actions"><button className="btn primary" sc-camel-on-click="{{goRoom}}">Entrar na Sala</button><button className="btn secondary" sc-camel-on-click="{{logout}}">Encerrar sessão</button></div>
+    </div>
+    </sc-if>
+  </section>
+</div>
+</sc-if>
+
+<!-- ================= ONBOARDING ================= -->
+<sc-if value="{{is.onboarding}}" hint-placeholder-val="{{false}}">
+<div className="screen" style={{ height: '100vh', overflow: 'auto', display: 'grid', placeItems: 'center', padding: '32px 16px', background: 'var(--surface-0)' }}>
+  <div className="{{sp.onb}}" style={{ width: 'min(980px, 100%)', display: 'flex', flexWrap: 'wrap', borderRadius: '22px', overflow: 'hidden', border: '1px solid var(--line)', background: 'var(--surface-1)' }}>
+    <div className="ink" style={{ flex: '1 1 380px', borderRadius: '0', border: '0', padding: '36px', minHeight: '420px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+      <div className="eyebrow">{{onb.eyebrow}}</div>
+      <div style={{ flex: '1', display: 'grid', placeItems: 'center' }}>
+        <sc-if value="{{onb.v0}}" hint-placeholder-val="{{true}}">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '18px', animation: 'rise 400ms var(--ease) both' }}>
+            <img src="227c1932-4195-4442-a2b3-2d71d172d289" alt="" style={{ width: '96px' }}>
+            <div className="segs" style={{ justifyContent: 'center' }}><span className="badge flow">SQLite</span><span className="badge flow">API :9001</span><span className="badge action">gate humano</span></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{onb.v1}}" hint-placeholder-val="{{false}}">
+          <div style={{ display: 'flex', gap: '6px', width: '300px', height: '200px', animation: 'rise 400ms var(--ease) both' }}>
+            <div style={{ width: '26px', borderRadius: '8px', background: '#070d18', border: '1px solid var(--on-ink-line)', display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'center', paddingTop: '8px' }}><i style={{ width: '12px', height: '12px', borderRadius: '4px', background: 'var(--lime)' }}></i><i style={{ width: '12px', height: '12px', borderRadius: '4px', background: 'rgba(244,246,242,.2)' }}></i><i style={{ width: '12px', height: '12px', borderRadius: '4px', background: 'rgba(244,246,242,.2)' }}></i></div>
+            <div style={{ width: '74px', borderRadius: '8px', border: '1px solid var(--on-ink-line)', padding: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}><i style={{ height: '8px', borderRadius: '4px', background: 'rgba(244,246,242,.3)' }}></i><i style={{ height: '8px', borderRadius: '4px', background: 'rgba(27,197,189,.5)' }}></i><i style={{ height: '8px', borderRadius: '4px', background: 'rgba(244,246,242,.15)' }}></i></div>
+            <div style={{ flex: '1', borderRadius: '8px', border: '1px dashed rgba(183,243,74,.45)', display: 'grid', placeItems: 'center' }}><span className="mono" style={{ fontSize: '11px', color: 'var(--lime)' }}>miolo</span></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{onb.v2}}" hint-placeholder-val="{{false}}">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'center', animation: 'rise 400ms var(--ease) both' }}>
+            <span className="badge flow">Planejar</span><span className="muted">→</span><span className="badge flow">Executar</span><span className="muted">→</span><span className="badge action">Gate</span><span className="muted">→</span><span className="badge flow">Entregar</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{onb.v3}}" hint-placeholder-val="{{false}}">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '8px', width: '320px', animation: 'rise 400ms var(--ease) both' }}>
+            <span className="badge flow" style={{ justifyContent: 'center' }}>Raio-X</span><span className="badge flow" style={{ justifyContent: 'center' }}>Studio</span><span className="badge action" style={{ justifyContent: 'center' }}>Fábrica</span><span className="badge" style={{ justifyContent: 'center' }}>Flow</span><span className="badge" style={{ justifyContent: 'center' }}>Edição</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{onb.v4}}" hint-placeholder-val="{{false}}">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '280px', animation: 'rise 400ms var(--ease) both' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><span className="mono muted" style={{ width: '70px', fontSize: '11px' }}>custo</span><div className="track"><div className="fill" style={{ width: '71%' }}></div></div></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><span className="mono muted" style={{ width: '70px', fontSize: '11px' }}>saúde</span><div className="track"><div className="fill" style={{ width: '96%' }}></div></div></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><span className="mono muted" style={{ width: '70px', fontSize: '11px' }}>memória</span><div className="track"><div className="fill lime" style={{ width: '58%' }}></div></div></div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+    <div style={{ flex: '1 1 420px', padding: '36px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div className="tour-prog" style={{ padding: '0' }}><sc-for list="{{onb.dots}}" as="d" hint-placeholder-count="5"><i className="{{d.cls}}" style={{ flex: '1', height: '3px', borderRadius: '3px', background: '{{d.bg}}' }}></i></sc-for></div>
+      <div className="eyebrow">Passo {{onb.pos}}</div>
+      <h2 style={{ fontSize: '30px', fontWeight: '600', letterSpacing: '-.03em', lineHeight: '1.1' }}>{{onb.title}}</h2>
+      <p className="sec" style={{ fontSize: '15px' }}>{{onb.text}}</p>
+      <div className="rows" style={{ marginTop: '4px' }}>
+        <sc-for list="{{onb.points}}" as="pt" hint-placeholder-count="3">
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', padding: '8px 0', fontSize: '14px' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.check}}"></path></svg><span>{{pt.t}}</span></div>
+        </sc-for>
+      </div>
+      <div className="actions" style={{ marginTop: 'auto', paddingTop: '12px' }}>
+        <button className="btn ghost" sc-camel-on-click="{{goRoom}}">Pular</button>
+        <div className="grow"></div>
+        <sc-if value="{{onb.notFirst}}" hint-placeholder-val="{{false}}"><button className="btn secondary" sc-camel-on-click="{{onbPrev}}">Voltar</button></sc-if>
+        <button className="btn primary" sc-camel-on-click="{{onbNext}}">{{onb.next}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= SHELL ================= -->
+<sc-if value="{{is.shell}}" hint-placeholder-val="{{true}}">
+<div className="shell">
+  <nav className="rail" aria-label="Domínios">
+    <button className="rail-mark" sc-camel-on-click="{{goRoom}}" aria-label="TAVIR, ir para a Sala de Operação"><img src="227c1932-4195-4442-a2b3-2d71d172d289" alt=""></button>
+    <sc-for list="{{rail}}" as="d" hint-placeholder-count="7">
+      <button className="rail-btn {{d.on}}" sc-camel-on-click="{{d.pick}}" aria-label="{{d.label}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{d.d}}"></path></svg>
+        <sc-if value="{{d.dot}}" hint-placeholder-val="{{false}}"><i className="dotc"></i></sc-if>
+        <span className="rail-tip">{{d.label}}</span>
+      </button>
+    </sc-for>
+    <div className="grow"></div>
+    <button className="rail-btn" sc-camel-on-click="{{toggleTheme}}" aria-label="Alternar tema">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{themeIcon}}"></path></svg>
+      <span className="rail-tip">{{themeTip}}</span>
+    </button>
+    <button className="avatar" sc-camel-on-click="{{goLogin}}" aria-label="Carlos, CEO. Sessão" style={{ marginTop: '8px' }}>CH</button>
+  </nav>
+
+  <aside className="sub" aria-label="Menu da área">
+    <div className="sub-brand"><img src="27c91494-3a2e-4981-a469-9c0c80f72d77" alt="TAVIR"><small>Escritório</small></div>
+    <div className="sub-label">{{dom.label}}</div>
+    <div className="sub-nav">
+      <sc-for list="{{subItems}}" as="it" hint-placeholder-count="6">
+        <button className="nav-item {{it.on}}" sc-camel-on-click="{{it.pick}}">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{it.d}}"></path></svg>
+          <span>{{it.label}}</span>
+          <sc-if value="{{it.hasBadge}}" hint-placeholder-val="{{false}}"><b className="{{it.hot}}">{{it.badge}}</b></sc-if>
+          <sc-if value="{{it.hasTag}}" hint-placeholder-val="{{false}}"><em>{{it.tag}}</em></sc-if>
+        </button>
+      </sc-for>
+    </div>
+    <div className="sub-foot">
+      <button className="tour-cta {{sp.tourcta}}" sc-camel-on-click="{{startTour}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B7F34A" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.compass}}"></path></svg>
+        <span><b style={{ fontSize: '13px' }}>Fluxo guiado</b><small>Dois percursos explicados</small></span>
+      </button>
+      <button className="tour-cta" sc-camel-on-click="{{goFluxo}}" style={{ borderColor: 'var(--on-ink-line)', background: 'transparent' }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1BC5BD" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.diagram}}"></path></svg>
+        <span><b style={{ fontSize: '13px' }}>Como funciona</b><small>Mapa do ciclo completo</small></span>
+      </button>
+      <div className="health" style={{ marginTop: '4px' }}><i className="live-dot"></i>office.py · SQLite</div>
+      <div className="health"><i className="live-dot"></i>Sincron Brain MCP</div>
+    </div>
+  </aside>
+
+  <div className="main">
+    <header className="top">
+      <div className="crumbs"><span className="dim">{{dom.label}}</span><span className="sep">/</span><strong>{{crumb}}</strong></div>
+      <span className="badge flow" style={{ marginLeft: '4px' }}><i className="live-dot" style={{ width: '6px', height: '6px' }}></i>ao vivo</span>
+      <div className="grow"></div>
+      <button className="search" sc-camel-on-click="{{openPalette}}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.search}}"></path></svg>
+        <span>Buscar telas, tasks, agentes…</span><span className="kbd">Ctrl K</span>
+      </button>
+      <div style={{ position: 'relative' }}>
+        <button className="ibtn" sc-camel-on-click="{{toggleNotif}}" aria-label="Notificações" style={{ position: 'relative' }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.bell}}"></path></svg>
+          <i style={{ position: 'absolute', top: '8px', right: '9px', width: '8px', height: '8px', borderRadius: '50%', background: 'var(--danger)' }}></i>
+        </button>
+        <sc-if value="{{notifOpen}}" hint-placeholder-val="{{false}}">
+          <div className="card" style={{ position: 'absolute', right: '0', top: '50px', width: '360px', zIndex: '40', boxShadow: 'var(--shadow-elevated)', background: 'var(--surface-1)', animation: 'rise 200ms var(--ease) both' }}>
+            <div className="card-h"><h3>Notificações</h3><div className="grow"></div><span className="eyebrow">3 novas</span></div>
+            <div className="rows">
+              <sc-for list="{{notifs}}" as="n" hint-placeholder-count="3">
+                <button className="row" sc-camel-on-click="{{n.go}}"><i style={{ width: '8px', height: '8px', borderRadius: '50%', background: '{{n.color}}', flex: 'none' }}></i><div className="grow"><div className="t" style={{ fontSize: '13px' }}>{{n.t}}</div><div className="m">{{n.m}}</div></div></button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <button className="btn secondary {{sp.jobbtn}}" sc-camel-on-click="{{openJob}}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{ic.play}}"></path></svg>Iniciar job
+      </button>
+    </header>
+
+    <div className="content">
+
+<!-- ========== SALA ========== -->
+<sc-if value="{{is.room}}" hint-placeholder-val="{{true}}">
+<div className="page screen">
+  <div className="phead">
+    <div className="grow">
+      <div className="eyebrow">Quinta, 29 de outubro · Sala de Operação</div>
+      <h1 style={{ marginTop: '8px' }}>Boa tarde, Carlos.</h1>
+      <p>{{room.summary}}</p>
+    </div>
+    <div className="actions">
+      <button className="btn secondary" sc-camel-on-click="{{openProject}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Novo projeto</button>
+      <button className="btn secondary" sc-camel-on-click="{{openTask}}">Nova task</button>
+    </div>
+  </div>
+
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+    <section className="ink {{sp.ask}}" style={{ flex: '2 1 560px', padding: '22px 24px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <span className="eyebrow">O que pede você</span>
+        <span className="badge danger">{{room.pendingN}} pendentes</span>
+        <div className="grow"></div>
+        <button className="link" style={{ color: 'var(--teal)' }} sc-camel-on-click="{{goDecisions}}">Abrir Decisões →</button>
+      </div>
+      <div className="rows" style={{ marginTop: '8px' }}>
+        <sc-for list="{{room.asks}}" as="a" hint-placeholder-count="3">
+          <div className="row" style={{ padding: '14px 0' }}>
+            <span className="av">{{a.ini}}</span>
+            <div className="grow" style={{ minWidth: '0' }}><div className="t">{{a.title}}</div><div className="m">{{a.who}} · {{a.type}} · {{a.age}}</div></div>
+            <span className="badge {{a.impCls}}">{{a.impact}}</span>
+            <button className="btn sm {{a.btn}}" sc-camel-on-click="{{a.open}}">Decidir</button>
+          </div>
+        </sc-for>
+        <sc-if value="{{room.noAsk}}" hint-placeholder-val="{{false}}"><p className="muted" style={{ padding: '16px 0' }}>Nada depende de você agora. A sala segue sozinha.</p></sc-if>
+      </div>
+    </section>
+    <section className="ink" style={{ flex: '1 1 300px', padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}><span className="eyebrow">Teto do mês · outubro</span><div className="grow"></div><button className="link" style={{ color: 'var(--teal)' }} sc-camel-on-click="{{goFinancas}}">Finanças →</button></div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}><strong className="num" style={{ fontSize: '36px', fontWeight: '500', color: 'var(--lime)' }}>US$ 212</strong><span className="muted num">de US$ 300</span></div>
+      <div className="track"><div className="fill lime" style={{ width: '71%' }}></div></div>
+      <p className="muted" style={{ fontSize: '13px' }}>Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62.</p>
+      <div className="chart-bars" style={{ height: '56px', gap: '4px' }}>
+        <sc-for list="{{room.spend}}" as="b" hint-placeholder-count="14"><div className="b {{b.cls}}" style={{ height: '{{b.h}}%', animationDelay: '{{b.delay}}ms' }} title="{{b.tip}}"></div></sc-for>
+      </div>
+      <div className="eyebrow" style={{ fontSize: '10px' }}>Custo diário · últimos 14 dias · dados do protótipo</div>
+    </section>
+  </div>
+
+  <div className="g4">
+    <sc-for list="{{room.kpis}}" as="k" hint-placeholder-count="4">
+      <button className="metric click" sc-camel-on-click="{{k.go}}">
+        <span className="eyebrow" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><i style={{ width: '8px', height: '8px', borderRadius: '50%', background: '{{k.color}}' }}></i>{{k.label}}</span>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px' }}><strong style={{ color: '{{k.vcolor}}' }}>{{k.v}}</strong><div className="grow"></div>
+          <svg width="88" height="28" viewBox="0 0 88 28" aria-hidden="true"><polyline points="{{k.spark}}" fill="none" stroke="{{k.color}}" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"></polyline></svg>
+        </div>
+        <small>{{k.note}}</small>
+      </button>
+    </sc-for>
+  </div>
+
+  <div className="g2">
+    <section className="card">
+      <div className="card-h"><h3>Jobs ao vivo</h3><span className="badge flow">{{room.runN}} rodando</span><div className="grow"></div><button className="link" sc-camel-on-click="{{goExec}}">Execuções →</button></div>
+      <div className="rows">
+        <sc-for list="{{room.jobs}}" as="j" hint-placeholder-count="3">
+          <button className="row" sc-camel-on-click="{{j.open}}">
+            <span className="av busy">{{j.ini}}</span>
+            <div className="grow" style={{ minWidth: '0' }}>
+              <div className="t">{{j.title}}</div>
+              <div className="m">{{j.who}} · {{j.model}}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '8px' }}><div className="track"><div className="fill run" style={{ width: '{{j.progress}}%' }}></div></div><span className="num" style={{ fontSize: '12px', width: '36px', textAlign: 'right' }}>{{j.progress}}%</span></div>
+            </div>
+            <span className="num muted" style={{ fontSize: '12px', textAlign: 'right', width: '84px' }}>US$ {{j.costTxt}}<br>de {{j.ceiling}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+    <section className="card">
+      <div className="card-h"><h3>Esteiras dos módulos</h3><div className="grow"></div><button className="link" sc-camel-on-click="{{goModhub}}">Módulos →</button></div>
+      <div className="rows">
+        <sc-for list="{{room.lines}}" as="l" hint-placeholder-count="3">
+          <button className="row" sc-camel-on-click="{{l.go}}">
+            <span style={{ width: '36px', height: '36px', borderRadius: '10px', display: 'grid', placeItems: 'center', background: 'var(--flow-subtle)', color: 'var(--flow)', flex: 'none' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{l.d}}"></path></svg></span>
+            <div className="grow" style={{ minWidth: '0' }}><div className="t">{{l.title}}</div><div className="m">{{l.mod}} · {{l.stage}}</div>
+              <div style={{ display: 'flex', gap: '3px', marginTop: '8px' }}><sc-for list="{{l.segs}}" as="g" hint-placeholder-count="6"><i style={{ flex: '1', height: '4px', borderRadius: '2px', background: '{{g.bg}}' }}></i></sc-for></div>
+            </div>
+            <span className="badge {{l.cls}}">{{l.state}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+
+  <section className="card">
+    <div className="card-h"><h3>Livro-razão da sala</h3><span className="eyebrow">hoje</span><div className="grow"></div><span className="muted" style={{ fontSize: '12px' }}>Toda ação humana ou de agente vira linha aqui.</span></div>
+    <div style={{ padding: '8px 18px 14px', display: 'flex', flexDirection: 'column' }}>
+      <sc-for list="{{room.activity}}" as="e" hint-placeholder-count="6">
+        <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', padding: '8px 0', animation: 'fade 300ms var(--ease) both' }}>
+          <span className="num muted" style={{ fontSize: '12px', width: '44px', flex: 'none', paddingTop: '1px' }}>{{e.t}}</span>
+          <i style={{ width: '8px', height: '8px', borderRadius: '50%', background: '{{e.color}}', marginTop: '6px', flex: 'none' }}></i>
+          <span style={{ fontSize: '13px' }}><b>{{e.who}}</b> <span className="sec">{{e.text}}</span></span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<!-- ========== EXECUÇÕES ========== -->
+<sc-if value="{{is.exec}}" hint-placeholder-val="{{false}}">
+<div className="split screen">
+  <aside className="split-side">
+    <div style={{ padding: '20px 18px 14px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}><h2 style={{ fontSize: '18px', fontWeight: '600' }}>Execuções</h2><div className="grow"></div><span className="num muted" style={{ fontSize: '12px' }}>{{exec.total}} jobs</span></div>
+      <div className="segs"><sc-for list="{{exec.filters}}" as="f" hint-placeholder-count="5"><button className="seg {{f.on}}" sc-camel-on-click="{{f.pick}}">{{f.label}}<span className="c">{{f.n}}</span></button></sc-for></div>
+    </div>
+    <div className="rows" style={{ borderTop: '1px solid var(--line)' }}>
+      <sc-for list="{{exec.list}}" as="j" hint-placeholder-count="5">
+        <button className="row {{j.on}}" sc-camel-on-click="{{j.pick}}" style={{ alignItems: 'flex-start' }}>
+          <i style={{ width: '8px', height: '8px', borderRadius: '50%', background: '{{j.color}}', marginTop: '7px', flex: 'none' }}></i>
+          <div className="grow" style={{ minWidth: '0' }}>
+            <div className="t">{{j.title}}</div><div className="m">{{j.id}} · {{j.who}} · {{j.label}}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}><div className="track" style={{ height: '4px' }}><div className="fill {{j.fillCls}}" style={{ width: '{{j.progress}}%' }}></div></div><span className="num muted" style={{ fontSize: '11px', width: '32px', textAlign: 'right' }}>{{j.progress}}%</span></div>
+          </div>
+        </button>
+      </sc-for>
+      <sc-if value="{{exec.empty}}" hint-placeholder-val="{{false}}"><p className="muted" style={{ padding: '24px 18px' }}>Nenhum job neste filtro.</p></sc-if>
+    </div>
+  </aside>
+  <section className="split-main">
+    <div className="page">
+      <div className="phead">
+        <div className="grow" style={{ minWidth: '260px' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><span className="eyebrow">{{job.id}} · task {{job.task}}</span><span className="badge {{job.cls}}"><i></i>{{job.label}}</span></div>
+          <h1 style={{ marginTop: '8px' }}>{{job.title}}</h1>
+          <p>{{job.who}} · {{job.model}} · iniciado às {{job.started}}</p>
+        </div>
+        <div className="actions">
+          <button className="btn ghost" sc-camel-on-click="{{openEvidence}}">Ver evidência</button>
+          <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{true}}"><button className="btn secondary" sc-camel-on-click="{{jobPause}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><path d="{{ic.pause}}"></path></svg>Pausar</button><button className="btn danger" sc-camel-on-click="{{jobCancel}}">Cancelar</button></sc-if>
+          <sc-if value="{{job.isPaused}}" hint-placeholder-val="{{false}}"><button className="btn primary" sc-camel-on-click="{{jobResume}}">Retomar</button></sc-if>
+          <sc-if value="{{job.isQueued}}" hint-placeholder-val="{{false}}"><button className="btn primary" sc-camel-on-click="{{jobResume}}">Iniciar agora</button></sc-if>
+          <sc-if value="{{job.isFailed}}" hint-placeholder-val="{{false}}"><button className="btn secondary" sc-camel-on-click="{{jobRetry}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.retry}}"></path></svg>Refazer</button><button className="btn primary" sc-camel-on-click="{{goGate}}">Abrir gate</button></sc-if>
+        </div>
+      </div>
+
+      <div className="g4">
+        <div className="metric"><span className="eyebrow">Progresso</span><strong>{{job.progress}}%</strong><div className="track"><div className="fill {{job.fillCls}}" style={{ width: '{{job.progress}}%' }}></div></div></div>
+        <div className="metric"><span className="eyebrow">Custo / teto</span><strong>US$ {{job.costTxt}}</strong><div className="track"><div className="fill {{job.costCls}}" style={{ width: '{{job.costPct}}%' }}></div></div><small>teto US$ {{job.ceiling}} · {{job.costPct}}% usado</small></div>
+        <div className="metric"><span className="eyebrow">Tokens</span><strong>{{job.tokens}}</strong><small>entrada + saída</small></div>
+        <div className="metric"><span className="eyebrow">Motor</span><strong style={{ fontSize: '20px' }}>{{job.motor}}</strong><small>esforço {{job.effort}}</small></div>
+      </div>
+
+      <div className="stepper">
+        <sc-for list="{{job.steps}}" as="st" hint-placeholder-count="6">
+          <div className="stp {{st.cls}}"><span className="n">{{st.n}}</span><b>{{st.label}}</b><div className="bar"></div></div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{job.isFailed}}" hint-placeholder-val="{{false}}">
+        <div className="card" style={{ padding: '16px 18px', display: 'flex', gap: '14px', alignItems: 'flex-start', borderColor: 'var(--danger)' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.alert}}"></path></svg>
+          <div className="grow"><b>O job parou antes do deploy.</b><p className="sec" style={{ marginTop: '4px', fontSize: '13px' }}>Variável obrigatória ausente: SUPABASE_URL. Nada foi publicado. O gate ap-02 espera sua decisão para registrar a variável e refazer.</p></div>
+        </div>
+      </sc-if>
+
+      <section className="ink {{sp.log}}">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 18px', borderBottom: '1px solid var(--on-ink-line)' }}>
+          <b style={{ fontSize: '14px' }}>Log ao vivo</b>
+          <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{true}}"><span className="badge flow"><i className="live-dot" style={{ width: '6px', height: '6px' }}></i>SSE</span></sc-if>
+          <div className="grow"></div><span className="eyebrow">{{job.logN}} linhas · livro-razão</span>
+        </div>
+        <div className="log">
+          <sc-for list="{{job.log}}" as="l" hint-placeholder-count="6"><div><span className="ts">{{l.ts}}</span><span className="{{l.cls}}" style={{ width: '44px', flex: 'none' }}>{{l.lvl}}</span><span>{{l.text}}</span></div></sc-for>
+          <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{true}}"><div><span className="ts">     </span><span className="ok">▍</span><span style={{ color: 'var(--on-ink-muted)' }}>aguardando próximo passo</span></div></sc-if>
+        </div>
+      </section>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<!-- ========== TASKS ========== -->
+<sc-if value="{{is.tasks}}" hint-placeholder-val="{{false}}">
+<div className="page screen" style={{ maxWidth: 'none' }}>
+  <div className="phead">
+    <div className="grow"><div className="eyebrow">Kanban · SQLite</div><h1 style={{ marginTop: '8px' }}>Tasks</h1><p>Planejado → Em execução inicia o job. Card com gate não avança sem decisão.</p></div>
+    <div className="actions">
+      <div className="segs"><sc-for list="{{tk.filters}}" as="f" hint-placeholder-count="3"><button className="seg {{f.on}}" sc-camel-on-click="{{f.pick}}">{{f.label}}<span className="c">{{f.n}}</span></button></sc-for></div>
+      <button className="btn primary" sc-camel-on-click="{{openTask}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Nova task</button>
+    </div>
+  </div>
+  <div className="kanban">
+    <sc-for list="{{tk.cols}}" as="c" hint-placeholder-count="4">
+      <section className="kcol" aria-label="{{c.label}}">
+        <div className="kcol-h"><i style={{ background: '{{c.color}}' }}></i><b>{{c.label}}</b><span className="num muted" style={{ fontSize: '12px' }}>{{c.n}}</span><div className="grow"></div><span className="eyebrow" style={{ fontSize: '10px' }}>{{c.wip}}</span></div>
+        <p className="muted" style={{ fontSize: '12px', padding: '0 4px' }}>{{c.hint}}</p>
+        <sc-for list="{{c.cards}}" as="t" hint-placeholder-count="2">
+          <button className="kcard {{t.gateCls}}" sc-camel-on-click="{{t.open}}">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><span className="num muted" style={{ fontSize: '12px' }}>#{{t.seq}}</span><div className="grow"></div><span className="badge {{t.prioCls}}">{{t.prio}}</span></div>
+            <b style={{ fontSize: '14px', lineHeight: '1.35', fontWeight: '600' }}>{{t.title}}</b>
+            <sc-if value="{{t.hasJob}}" hint-placeholder-val="{{false}}"><div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><div className="track" style={{ height: '4px' }}><div className="fill {{t.fillCls}}" style={{ width: '{{t.jobPct}}%' }}></div></div><span className="num muted" style={{ fontSize: '11px' }}>{{t.jobPct}}%</span></div></sc-if>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><span className="av" style={{ width: '24px', height: '24px', fontSize: '9px' }}>{{t.ini}}</span><span className="muted" style={{ fontSize: '12px' }}>{{t.who}} · {{t.sector}}</span><div className="grow"></div>
+              <sc-if value="{{t.gate}}" hint-placeholder-val="{{false}}"><span className="badge danger">gate</span></sc-if>
+              <sc-if value="{{t.planning}}" hint-placeholder-val="{{false}}"><span className="badge warn">planejando</span></sc-if>
+            </div>
+          </button>
+        </sc-for>
+        <sc-if value="{{c.empty}}" hint-placeholder-val="{{false}}"><div style={{ border: '1px dashed var(--line-strong)', borderRadius: '12px', padding: '18px', textAlign: 'center' }} className="muted">Sem cards aqui.</div></sc-if>
+      </section>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- ========== DECISÕES ========== -->
+<sc-if value="{{is.decisions}}" hint-placeholder-val="{{false}}">
+<div className="screen" style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+  <div style={{ padding: '24px 32px 0', display: 'flex', gap: '24px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+    <div className="grow" style={{ minWidth: '280px' }}>
+      <div className="eyebrow">Operação · caixa de decisões</div>
+      <h1 style={{ fontSize: '30px', fontWeight: '600', letterSpacing: '-.03em', marginTop: '8px' }}>Decisões</h1>
+      <p className="sec" style={{ marginTop: '6px' }}>{{dc.summary}}</p>
+    </div>
+    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+      <div className="card" style={{ padding: '12px 16px', display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'conic-gradient(var(--flow) 0 {{dc.dayPct}}%, var(--line) 0)', display: 'grid', placeItems: 'center', transition: 'background 400ms var(--ease)' }}><div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'var(--surface-2)', display: 'grid', placeItems: 'center' }}><span className="num" style={{ fontSize: '10.5px' }}>{{dc.dayPct}}%</span></div></div>
+        <div><div className="eyebrow" style={{ fontSize: '10px' }}>Hoje</div><div className="num" style={{ fontSize: '14px', marginTop: '2px' }}>{{dc.dayDone}} de {{dc.dayTotal}} decididas</div></div>
+      </div>
+      <div className="card" style={{ padding: '12px 16px' }}><div className="eyebrow" style={{ fontSize: '10px' }}>Espera mais longa</div><div className="num" style={{ fontSize: '14px', marginTop: '4px', color: '{{dc.oldColor}}' }}>{{dc.oldest}}</div></div>
+    </div>
+  </div>
+  <div style={{ padding: '16px 32px', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', borderBottom: '1px solid var(--line)' }}>
+    <div className="segs"><sc-for list="{{dc.filters}}" as="f" hint-placeholder-count="5"><button className="seg {{f.on}}" sc-camel-on-click="{{f.pick}}">{{f.label}}<span className="c">{{f.n}}</span></button></sc-for></div>
+    <div className="grow"></div>
+    <span className="muted" style={{ fontSize: '12px', display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}><span className="kbd">J</span><span className="kbd">K</span>navegar<span className="kbd" style={{ marginLeft: '8px' }}>A</span>aprovar<span className="kbd" style={{ marginLeft: '8px' }}>R</span>recusar<span className="kbd" style={{ marginLeft: '8px' }}>C</span>contexto</span>
+  </div>
+  <div style={{ display: 'flex', flex: '1', flexWrap: 'wrap', alignItems: 'stretch' }}>
+    <aside style={{ flex: '1 1 360px', maxWidth: '400px', minWidth: '300px', padding: '18px', display: 'flex', flexDirection: 'column', gap: '20px', borderRight: '1px solid var(--line)', background: 'var(--surface-0)' }}>
+      <sc-for list="{{dc.groups}}" as="g" hint-placeholder-count="3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><i style={{ width: '8px', height: '8px', borderRadius: '50%', background: '{{g.color}}' }}></i><span className="eyebrow">{{g.label}}</span><span className="num muted" style={{ fontSize: '11px' }}>{{g.n}}</span></div>
+          <sc-for list="{{g.items}}" as="q" hint-placeholder-count="2">
+            <button className="lift" sc-camel-on-click="{{q.pick}}" style={{ textAlign: 'left', color: 'inherit', padding: '14px', borderRadius: '14px', border: '1px solid {{q.bd}}', background: 'var(--surface-2)', boxShadow: '{{q.sh}}', display: 'flex', gap: '12px', alignItems: 'flex-start', width: '100%', animation: 'fade 240ms var(--ease) both' }}>
+              <span style={{ width: '36px', height: '36px', borderRadius: '10px', display: 'grid', placeItems: 'center', background: '{{q.tbg}}', color: '{{q.tfg}}', flex: 'none' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{q.icon}}"></path></svg></span>
+              <div className="grow" style={{ minWidth: '0', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span className="eyebrow" style={{ fontSize: '10px' }}>{{q.type}} · {{q.id}}</span><div className="grow"></div><span className="num muted" style={{ fontSize: '11px' }}>{{q.age}}</span></div>
+                <b style={{ fontSize: '14px', lineHeight: '1.35', fontWeight: '600' }}>{{q.title}}</b>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><span className="av" style={{ width: '22px', height: '22px', fontSize: '8px' }}>{{q.ini}}</span><span className="muted" style={{ fontSize: '12px' }}>{{q.who}}</span><div className="grow"></div><span className="badge {{q.bcls}}">{{q.blabel}}</span></div>
+                <sc-if value="{{q.pending}}" hint-placeholder-val="{{true}}"><div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><div className="track" style={{ height: '3px' }}><div className="fill" style={{ width: '{{q.slaPct}}%', background: '{{q.slaColor}}' }}></div></div><span className="num muted" style={{ fontSize: '10.5px', whiteSpace: 'nowrap' }}>SLA · {{q.slaLeft}}</span></div></sc-if>
+              </div>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+      <sc-if value="{{dc.listEmpty}}" hint-placeholder-val="{{false}}"><div style={{ border: '1px dashed var(--line-strong)', borderRadius: '14px', padding: '24px', textAlign: 'center' }} className="muted">Nada neste filtro.</div></sc-if>
+    </aside>
+
+    <section style={{ flex: '999 1 560px', minWidth: '0' }}>
+      <!-- dossiê -->
+      <sc-if value="{{dc.showDossier}}" hint-placeholder-val="{{true}}">
+      <div className="page" style={{ maxWidth: 'none', gap: '18px' }}>
+      <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+      <div style={{ flex: '999 1 560px', minWidth: '0', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        <section className="ink" style={{ padding: '26px 28px', display: 'flex', flexDirection: 'column', gap: '16px', animation: 'fade 240ms var(--ease) both' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}><span className="eyebrow">{{cur.type}} · {{cur.id}} · task {{cur.task}}</span><div className="grow"></div><sc-if value="{{cur.block}}" hint-placeholder-val="{{false}}"><span className="badge danger">bloqueia entrega</span></sc-if><sc-if value="{{cur.scopeChange}}" hint-placeholder-val="{{false}}"><span className="badge warn">muda escopo ou custo</span></sc-if><span className="badge {{cur.impCls}}">impacto {{cur.impact}}</span></div>
+          <h1 style={{ fontSize: '28px', fontWeight: '600', letterSpacing: '-.03em', lineHeight: '1.15' }}>{{cur.title}}</h1>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}><span className="av">{{cur.ini}}</span><span style={{ fontSize: '14px' }}><b>{{cur.who}}</b> <span className="muted">pede sua decisão · aberto {{cur.age}}</span></span><div className="grow"></div><sc-if value="{{cur.pending}}" hint-placeholder-val="{{true}}"><span className="mono" style={{ fontSize: '12px', color: '{{cur.slaInk}}' }}>SLA 24 h · {{cur.slaLeft}}</span></sc-if></div>
+          <div style={{ padding: '16px 18px', borderRadius: '14px', background: 'rgba(183,243,74,.07)', border: '1px solid rgba(183,243,74,.28)' }}><span className="eyebrow" style={{ color: 'var(--lime)' }}>A pergunta</span><p style={{ fontSize: '19px', fontWeight: '600', letterSpacing: '-.01em', marginTop: '6px', lineHeight: '1.35' }}>{{cur.question}}</p></div>
+        </section>
+
+        <section className="card pad" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}><span className="eyebrow">Contexto e evidência</span><div className="grow"></div><button className="link" sc-camel-on-click="{{openEvidence}}">Abrir artefato completo →</button></div>
+          <p style={{ fontSize: '15px', lineHeight: '1.6' }}>{{cur.reason}}</p>
+          <sc-if value="{{ev.deploy}}" hint-placeholder-val="{{false}}">
+            <div className="ink" style={{ borderRadius: '12px', overflow: 'hidden' }}>
+              <div className="log" style={{ maxHeight: 'none', padding: '10px 0' }}><sc-for list="{{ev.log}}" as="l" hint-placeholder-count="5"><div style={{ background: '{{l.bg}}', padding: '2px 18px' }}><span className="ts">{{l.ts}}</span><span className="{{l.cls}}" style={{ width: '44px', flex: 'none' }}>{{l.lvl}}</span><span>{{l.text}}</span></div></sc-for></div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(260px, 100%), 1fr))', gap: '12px' }}>
+              <div className="card" style={{ padding: '12px 14px', background: 'var(--surface-0)' }}><div className="eyebrow" style={{ fontSize: '10px' }}>.env da conta Meridian · hoje</div><div className="mono" style={{ fontSize: '12px', marginTop: '8px', lineHeight: '1.9' }}><sc-for list="{{ev.env}}" as="x" hint-placeholder-count="3"><div style={{ color: '{{x.c}}' }}>{{x.t}}</div></sc-for></div></div>
+              <div className="card" style={{ padding: '12px 14px', background: 'var(--surface-0)', display: 'flex', flexDirection: 'column', gap: '8px' }}><div className="eyebrow" style={{ fontSize: '10px' }}>Se aprovar · vai para o cofre local</div><label className="field"><span style={{ fontSize: '12px' }}>Valor de SUPABASE_URL</span><input className="input mono" style={{ height: '36px', fontSize: '12px' }} value="{{secretVal}}" sc-camel-on-change="{{onSecretVal}}" placeholder="https://xxxx.supabase.co"></label><small className="muted" style={{ fontSize: '11px' }}>Fica só nesta máquina. Não entra no livro-razão nem no chat.</small></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ev.roadmap}}" hint-placeholder-val="{{false}}">
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 32px minmax(0, 1fr)', gap: '8px', alignItems: 'center' }}>
+              <span className="eyebrow">Ordem atual</span><span></span><span className="eyebrow" style={{ color: 'var(--flow)' }}>Ordem proposta</span>
+              <sc-for list="{{ev.rows}}" as="r" hint-placeholder-count="3">
+                <div className="card" style={{ padding: '12px 14px', display: 'flex', gap: '10px', background: 'var(--surface-0)' }}><span className="num muted">{{r.n}}</span><span style={{ fontSize: '14px' }}>{{r.a}}</span></div>
+                <span style={{ textAlign: 'center', color: '{{r.ac}}', fontSize: '18px' }}>→</span>
+                <div className="card" style={{ padding: '12px 14px', display: 'flex', gap: '10px', alignItems: 'center', borderColor: '{{r.bd}}' }}><span className="num" style={{ color: 'var(--flow)' }}>{{r.n}}</span><span style={{ fontSize: '14px' }}>{{r.b}}</span><div className="grow"></div><sc-if value="{{r.moved}}" hint-placeholder-val="{{false}}"><span className="badge {{r.mcls}}">{{r.mv}}</span></sc-if></div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ev.ceiling}}" hint-placeholder-val="{{false}}">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', paddingTop: '6px' }}>
+              <sc-for list="{{ev.bars}}" as="b" hint-placeholder-count="3">
+                <div style={{ display: 'grid', gridTemplateColumns: '200px minmax(0, 1fr) 76px', gap: '12px', alignItems: 'center' }}><span className="sec" style={{ fontSize: '13px' }}>{{b.k}}</span><div style={{ position: 'relative', height: '14px', borderRadius: '999px', background: 'var(--line)' }}><div style={{ height: '100%', width: '{{b.w}}%', borderRadius: '999px', background: '{{b.c}}', transformOrigin: 'left', animation: 'growx 600ms var(--ease) both' }}></div><i style={{ position: 'absolute', top: '-5px', bottom: '-5px', left: '{{ev.m300}}%', width: '2px', background: 'var(--danger)' }}></i><i style={{ position: 'absolute', top: '-5px', bottom: '-5px', left: '{{ev.m340}}%', width: '2px', background: 'var(--text-muted)' }}></i></div><span className="num" style={{ textAlign: 'right', fontSize: '13px' }}>{{b.v}}</span></div>
+              </sc-for>
+              <div className="legend"><span><i style={{ background: 'var(--danger)', width: '3px' }}></i>teto atual · US$ 300</span><span><i style={{ background: 'var(--text-muted)', width: '3px' }}></i>teto pedido · US$ 340</span></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ev.contract}}" hint-placeholder-val="{{false}}">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(190px, 100%), 1fr))', gap: '10px' }}>
+              <sc-for list="{{ev.facts}}" as="x" hint-placeholder-count="4"><div className="card" style={{ padding: '12px 14px', background: 'var(--surface-0)' }}><div className="eyebrow" style={{ fontSize: '10px' }}>{{x.k}}</div><div style={{ marginTop: '6px', fontSize: '14px', fontWeight: '600' }}>{{x.v}}</div></div></sc-for>
+            </div>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <sc-for list="{{ev.signs}}" as="x" hint-placeholder-count="2"><div className="card" style={{ flex: '1 1 220px', padding: '14px', display: 'flex', gap: '12px', alignItems: 'center', borderColor: '{{x.bd}}' }}><span style={{ width: '30px', height: '30px', borderRadius: '50%', display: 'grid', placeItems: 'center', background: '{{x.bg}}', color: '{{x.fg}}', flex: 'none' }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{x.icon}}"></path></svg></span><div><b style={{ fontSize: '14px' }}>{{x.who}}</b><div className="muted" style={{ fontSize: '12px' }}>{{x.st}}</div></div></div></sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ev.text}}" hint-placeholder-val="{{false}}">
+            <sc-for list="{{ev.texts}}" as="x" hint-placeholder-count="2">
+              <div className="card" style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '10px', borderColor: '{{x.bd}}', background: 'var(--surface-0)' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}><span className="eyebrow" style={{ fontSize: '10px' }}>{{x.k}}</span><div className="grow"></div><span className="num" style={{ fontSize: '12px', color: '{{x.c}}' }}>{{x.len}} / 60 caracteres</span></div>
+                <p style={{ fontSize: '18px', fontWeight: '600', letterSpacing: '-.01em' }}>{{x.t}}</p>
+                <div style={{ position: 'relative' }} className="track"><div className="fill" style={{ width: '{{x.w}}%', background: '{{x.c}}' }}></div></div>
+              </div>
+            </sc-for>
+          </sc-if>
+        </section>
+
+        <sc-if value="{{cur.pending}}" hint-placeholder-val="{{true}}">
+        <div className="{{sp.decide}}" style={{ display: 'flex', flexDirection: 'column', gap: '12px', borderRadius: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}><span className="eyebrow">Sua decisão</span><div className="grow"></div><span className="muted" style={{ fontSize: '12px' }}>Escolha um caminho para ver o que acontece em seguida</span></div>
+          <div className="g3" style={{ gap: '12px' }}>
+            <sc-for list="{{chs}}" as="c" hint-placeholder-count="3">
+              <button className="lift" sc-camel-on-click="{{c.pick}}" aria-pressed="{{c.pressed}}" style={{ textAlign: 'left', color: 'inherit', padding: '16px', borderRadius: '14px', border: '1.5px solid {{c.bd}}', background: '{{c.bg}}', display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><span style={{ width: '32px', height: '32px', borderRadius: '50%', display: 'grid', placeItems: 'center', background: '{{c.ibg}}', color: '{{c.ifg}}', transition: 'all 160ms var(--ease)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg></span><b style={{ fontSize: '15px' }}>{{c.label}}</b><div className="grow"></div><span className="kbd">{{c.key}}</span></div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}><sc-for list="{{c.steps}}" as="t" hint-placeholder-count="3"><div style={{ display: 'flex', gap: '8px', fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.4' }}><span className="num" style={{ color: '{{c.tone}}', fontSize: '11px', paddingTop: '2px' }}>{{t.n}}</span><span>{{t.t}}</span></div></sc-for></div>
+              </button>
+            </sc-for>
+          </div>
+          <sc-if value="{{dcConfirm.show}}" hint-placeholder-val="{{false}}">
+            <div className="card" style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '12px', animation: 'slideup 220ms var(--ease) both', border: '1.5px solid {{dcConfirm.bd}}' }}>
+              <p style={{ fontSize: '14px' }}><b>{{dcConfirm.head}}</b> <span className="sec">{{dcConfirm.text}}</span></p>
+              <textarea className="input" rows="2" value="{{decNote}}" sc-camel-on-change="{{onDecNote}}" placeholder="{{dcConfirm.ph}}" aria-label="Comentário da decisão"></textarea>
+              <sc-if value="{{decErr}}" hint-placeholder-val="{{false}}"><small style={{ color: 'var(--danger)' }}>Uma recusa precisa de motivo. O agente usa isso para refazer.</small></sc-if>
+              <div className="actions"><button className="btn ghost" sc-camel-on-click="{{decCancel}}">Voltar</button><div className="grow"></div><span className="muted" style={{ fontSize: '12px' }}>Fica registrado no livro-razão com seu nome</span><button className="btn {{dcConfirm.cls}}" sc-camel-on-click="{{decConfirm}}">{{dcConfirm.label}}</button></div>
+            </div>
+          </sc-if>
+        </div>
+        </sc-if>
+        <sc-if value="{{cur.decided}}" hint-placeholder-val="{{false}}">
+          <div className="card pad" style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+            <span style={{ width: '40px', height: '40px', borderRadius: '50%', display: 'grid', placeItems: 'center', background: '{{cur.recBg}}', color: '{{cur.recFg}}' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{cur.recIcon}}"></path></svg></span>
+            <div className="grow"><b>Decisão: {{cur.stLabel}}</b><div className="muted" style={{ fontSize: '13px' }}>{{cur.decidedAt}} · por Carlos · registrada no livro-razão</div></div>
+          </div>
+        </sc-if>
+      </div>
+      <aside style={{ flex: '1 1 280px', maxWidth: '380px', display: 'flex', flexDirection: 'column', gap: '14px', position: 'sticky', top: '16px' }}>
+        <section className="card">
+          <div className="card-h"><h3>Impacto</h3><div className="grow"></div><span className="badge {{cur.impCls}}">{{cur.impact}}</span></div>
+          <div className="rows"><sc-for list="{{cur.impacts}}" as="m" hint-placeholder-count="3"><div className="row" style={{ cursor: 'default' }}><span className="eyebrow grow" style={{ fontSize: '10px' }}>{{m.k}}</span><b style={{ fontSize: '14px' }}>{{m.v}}</b></div></sc-for></div>
+        </section>
+        <section className="card">
+          <div className="card-h"><h3>Envolvidos</h3></div>
+          <div className="rows"><sc-for list="{{cur.people}}" as="p" hint-placeholder-count="3"><div className="row" style={{ cursor: 'default' }}><span className="av {{p.busy}}" style={{ width: '30px', height: '30px', fontSize: '10px' }}>{{p.ini}}</span><div className="grow"><div className="t" style={{ fontSize: '13px' }}>{{p.n}}</div><div className="m">{{p.r}}</div></div></div></sc-for></div>
+        </section>
+        <section className="card">
+          <div className="card-h"><h3>Linha do tempo do pedido</h3></div>
+          <div style={{ padding: '8px 18px 12px' }}><sc-for list="{{cur.tl}}" as="t" hint-placeholder-count="3"><div style={{ display: 'flex', gap: '12px', padding: '8px 0', alignItems: 'flex-start' }}><span className="num muted" style={{ fontSize: '11px', width: '52px', flex: 'none', paddingTop: '1px' }}>{{t.t}}</span><i style={{ width: '8px', height: '8px', borderRadius: '50%', background: '{{t.c}}', marginTop: '5px', flex: 'none' }}></i><span style={{ fontSize: '13px' }}>{{t.x}}</span></div></sc-for></div>
+        </section>
+        <button className="btn secondary" sc-camel-on-click="{{chatWithReq}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.msg}}"></path></svg>Conversar com {{cur.who}}</button>
+      </aside>
+      </div>
+      </div>
+      </sc-if>
+
+      <!-- decisão registrada -->
+      <sc-if value="{{dc.showDone}}" hint-placeholder-val="{{false}}">
+      <div className="page" style={{ maxWidth: '720px', margin: '0 auto', alignItems: 'center', textAlign: 'center', paddingTop: '56px' }}>
+        <div style={{ width: '96px', height: '96px', borderRadius: '50%', display: 'grid', placeItems: 'center', background: '{{done.bg}}', color: '{{done.fg}}', animation: 'stamp 420ms var(--ease) both' }}><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{done.icon}}"></path></svg></div>
+        <div className="eyebrow">Decisão registrada · {{done.time}} · livro-razão</div>
+        <h1 style={{ fontSize: '30px', fontWeight: '600', letterSpacing: '-.03em' }}>{{done.verb}}</h1>
+        <p className="sec" style={{ fontSize: '16px', maxWidth: '520px' }}>{{done.title}}</p>
+        <div className="card" style={{ width: '100%', textAlign: 'left', padding: '4px 18px' }}>
+          <sc-for list="{{done.steps}}" as="t" hint-placeholder-count="3"><div style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--line)', animation: 'slideup 320ms var(--ease) both', animationDelay: '{{t.d}}ms' }}><span style={{ width: '22px', height: '22px', borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--flow-subtle)', color: 'var(--flow)', flex: 'none' }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.check}}"></path></svg></span><span style={{ fontSize: '14px' }}>{{t.t}}</span><div className="grow"></div><span className="num muted" style={{ fontSize: '11px' }}>{{t.when}}</span></div></sc-for>
+        </div>
+        <sc-if value="{{done.hasNote}}" hint-placeholder-val="{{false}}"><p className="muted" style={{ fontSize: '13px' }}>Seu comentário: “{{done.note}}”</p></sc-if>
+        <div className="actions" style={{ justifyContent: 'center' }}><button className="btn secondary" sc-camel-on-click="{{done.link}}">{{done.linkLabel}}</button><button className="btn primary" sc-camel-on-click="{{done.next}}">{{done.nextLabel}}</button></div>
+      </div>
+      </sc-if>
+
+      <!-- caixa zerada -->
+      <sc-if value="{{dc.showEmpty}}" hint-placeholder-val="{{false}}">
+      <div className="page" style={{ maxWidth: '520px', margin: '0 auto', alignItems: 'center', textAlign: 'center', paddingTop: '80px' }}>
+        <div style={{ width: '88px', height: '88px', borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'var(--action-bg)', color: 'var(--action-fg)', animation: 'stamp 420ms var(--ease) both' }}><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.check}}"></path></svg></div>
+        <h1 style={{ fontSize: '28px', fontWeight: '600', letterSpacing: '-.03em' }}>Caixa zerada</h1>
+        <p className="sec">Nada neste filtro depende de você agora. Novas decisões aparecem aqui e no topo da Sala.</p>
+        <div className="actions" style={{ justifyContent: 'center' }}><button className="btn secondary" sc-camel-on-click="{{dcSeeDone}}">Ver decididas</button><button className="btn primary" sc-camel-on-click="{{goRoom}}">Voltar para a Sala</button></div>
+      </div>
+      </sc-if>
+    </section>
+  </div>
+</div>
+</sc-if>
+
+<!-- ========== CHAT ========== -->
+<sc-if value="{{is.chat}}" hint-placeholder-val="{{false}}">
+<div className="split screen" style={{ height: '100%' }}>
+  <aside className="split-side">
+    <div style={{ padding: '18px', display: 'flex', alignItems: 'center', gap: '8px' }}><h2 style={{ fontSize: '18px', fontWeight: '600' }}>Conversas</h2><div className="grow"></div><button className="btn sm secondary" sc-camel-on-click="{{openPick}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Nova</button></div>
+    <div className="rows" style={{ borderTop: '1px solid var(--line)' }}>
+      <sc-for list="{{ch.convs}}" as="c" hint-placeholder-count="3">
+        <button className="row {{c.on}}" sc-camel-on-click="{{c.pick}}">
+          <span className="av {{c.busy}}">{{c.ini}}</span>
+          <div className="grow" style={{ minWidth: '0' }}><div style={{ display: 'flex', gap: '8px' }}><span className="t">{{c.title}}</span><div className="grow"></div><span className="num muted" style={{ fontSize: '11px' }}>{{c.time}}</span></div><div className="m" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{{c.agent}} · {{c.last}}</div></div>
+        </button>
+      </sc-for>
+    </div>
+  </aside>
+  <section className="split-main" style={{ display: 'flex', flexDirection: 'column', minHeight: '0' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 24px', borderBottom: '1px solid var(--line)' }}>
+      <span className="av">{{ch.ini}}</span>
+      <div className="grow"><b>{{ch.agent}}</b><div className="muted" style={{ fontSize: '12px' }}>{{ch.role}}</div></div>
+      <span className="badge">{{ch.model}}</span>
+      <button className="ibtn sm" sc-camel-on-click="{{openChatSettings}}" aria-label="Ajustes da conversa"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><path d="{{ic.sliders}}"></path></svg></button>
+      <button className="ibtn sm" sc-camel-on-click="{{openDeleteChat}}" aria-label="Apagar conversa"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.trash}}"></path></svg></button>
+    </div>
+    <div style={{ display: 'flex', gap: '6px', padding: '10px 24px', borderBottom: '1px solid var(--line)', flexWrap: 'wrap' }}><span className="eyebrow" style={{ alignSelf: 'center', marginRight: '4px' }}>Contexto</span><span className="badge flow">Sala de Operação</span><span className="badge">Livro-razão de hoje</span><span className="badge">Memória: ligada</span></div>
+    <div style={{ flex: '1', overflow: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px', minHeight: '280px' }}>
+      <sc-for list="{{ch.msgs}}" as="m" hint-placeholder-count="3">
+        <div className="bubble {{m.cls}}"><div className="eyebrow" style={{ fontSize: '10px', marginBottom: '4px' }}>{{m.who}}</div>{{m.text}}</div>
+      </sc-for>
+      <sc-if value="{{ch.empty}}" hint-placeholder-val="{{false}}"><p className="muted" style={{ textAlign: 'center', margin: 'auto' }}>Conversa vazia. Pergunte algo ou use uma sugestão.</p></sc-if>
+      <sc-if value="{{typing}}" hint-placeholder-val="{{false}}"><div className="typing" aria-label="digitando"><i></i><i></i><i></i></div></sc-if>
+    </div>
+    <div style={{ padding: '12px 24px 20px', display: 'flex', flexDirection: 'column', gap: '10px', borderTop: '1px solid var(--line)' }}>
+      <div className="segs"><sc-for list="{{ch.sugs}}" as="g" hint-placeholder-count="3"><button className="seg" sc-camel-on-click="{{g.pick}}">{{g.t}}</button></sc-for></div>
+      <form sc-camel-on-submit="{{sendChat}}" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <button type="button" className="ibtn" sc-camel-on-click="{{openAttach}}" aria-label="Anexar imagem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.clip}}"></path></svg></button>
+        <input className="input" style={{ borderRadius: '999px' }} value="{{chatDraft}}" sc-camel-on-change="{{onDraft}}" placeholder="Mensagem para {{ch.agent}}" aria-label="Mensagem">
+        <button type="submit" className="btn primary">Enviar<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.send}}"></path></svg></button>
+      </form>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<!-- ========== FILHOS (módulos e demais áreas) ========== -->
+<sc-if value="{{is.Modulos}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Modulos" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.RaioX}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="RaioX" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Studio}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Studio" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Fabrica}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Fabrica" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Flow}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Flow" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Edicao}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Edicao" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Agentes}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Agentes" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Comercial}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Comercial" app="{{app}}" view="{{screen}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Social}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Social" app="{{app}}" view="{{screen}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Conhecimento}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Conhecimento" app="{{app}}" view="{{screen}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Estrategia}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Estrategia" app="{{app}}" view="{{screen}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Sistema}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Sistema" app="{{app}}" view="{{screen}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Config}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Config" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Fluxo}}" hint-placeholder-val="{{false}}"><div className="screen"><dc-import name="Fluxo" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1100px"></dc-import></div></sc-if>
+
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= MODAL: INICIAR JOB ================= -->
+<sc-if value="{{m.job}}" hint-placeholder-val="{{false}}">
+<div className="back" sc-camel-on-click="{{closeBack}}">
+  <div className="modal lg {{sp.wizard}}" role="dialog" aria-modal="true" aria-label="Iniciar job">
+    <div className="mhead">
+      <div className="grow"><div className="eyebrow">Novo job · passo {{wz.pos}}</div><h2 style={{ marginTop: '6px' }}>Iniciar job</h2><p>{{wz.lead}}</p></div>
+      <button className="ibtn sm" sc-camel-on-click="{{closeModal}}" aria-label="Fechar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button>
+    </div>
+    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+      <div style={{ padding: '18px 0 18px 24px', display: 'flex', flexDirection: 'column', gap: '6px', width: '210px', flex: 'none' }}>
+        <sc-for list="{{wz.steps}}" as="st" hint-placeholder-count="4">
+          <button className="choice {{st.on}}" style={{ padding: '10px 12px' }} sc-camel-on-click="{{st.pick}}"><span className="num" style={{ fontSize: '11px', color: '{{st.color}}' }}>{{st.n}}</span><span className="grow"><b style={{ fontSize: '13px', display: 'block' }}>{{st.label}}</b><small>{{st.val}}</small></span></button>
+        </sc-for>
+      </div>
+      <div className="mbody grow" style={{ minWidth: '280px' }}>
+        <sc-if value="{{wz.s0}}" hint-placeholder-val="{{true}}">
+          <sc-for list="{{wz.motors}}" as="o" hint-placeholder-count="4"><button className="choice {{o.on}}" sc-camel-on-click="{{o.pick}}" disabled="{{o.off}}"><span className="rd"></span><span className="grow"><b style={{ display: 'block' }}>{{o.label}}</b><small>{{o.sub}}</small></span><span className="badge {{o.bcls}}">{{o.meta}}</span></button></sc-for>
+        </sc-if>
+        <sc-if value="{{wz.s1}}" hint-placeholder-val="{{false}}">
+          <sc-for list="{{wz.models}}" as="o" hint-placeholder-count="3"><button className="choice {{o.on}}" sc-camel-on-click="{{o.pick}}"><span className="rd"></span><span className="grow"><b style={{ display: 'block' }} className="mono">{{o.label}}</b><small>{{o.sub}}</small></span><span className="badge">{{o.meta}}</span></button></sc-for>
+        </sc-if>
+        <sc-if value="{{wz.s2}}" hint-placeholder-val="{{false}}">
+          <sc-for list="{{wz.efforts}}" as="o" hint-placeholder-count="3"><button className="choice {{o.on}}" sc-camel-on-click="{{o.pick}}"><span className="rd"></span><span className="grow"><b style={{ display: 'block' }}>{{o.label}}</b><small>{{o.sub}}</small></span><span className="badge">{{o.meta}}</span></button></sc-for>
+        </sc-if>
+        <sc-if value="{{wz.s3}}" hint-placeholder-val="{{false}}">
+          <label className="field"><span>Título do job</span><input className="input" value="{{jobTitle}}" sc-camel-on-change="{{onJobTitle}}" placeholder="Ex.: Revisar SEO da landing Atlas"></label>
+          <label className="field"><span>Teto de gasto (US$)</span><input className="input num" value="{{jobCeiling}}" sc-camel-on-change="{{onJobCeiling}}" inputmode="decimal"><small>O job para sozinho ao atingir o teto e abre um gate.</small>
+            <sc-if value="{{wz.ceilErr}}" hint-placeholder-val="{{false}}"><small style={{ color: 'var(--danger)' }}>{{wz.ceilErrText}}</small></sc-if>
+          </label>
+          <div className="ink" style={{ padding: '16px', display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <div className="grow"><div className="eyebrow">Estimativa</div><div className="num" style={{ fontSize: '22px', color: 'var(--lime)', marginTop: '4px' }}>US$ {{wz.est}}</div><div className="muted" style={{ fontSize: '12px' }}>com base nos últimos 30 jobs parecidos</div></div>
+            <div style={{ width: '140px' }}><div className="track"><div className="fill lime" style={{ width: '{{wz.estPct}}%' }}></div></div><div className="muted num" style={{ fontSize: '11px', marginTop: '6px' }}>{{wz.estPct}}% do teto</div></div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+    <div className="mfoot"><span className="muted grow" style={{ fontSize: '12px' }}>{{wz.summary}}</span><button className="btn ghost" sc-camel-on-click="{{wzBack}}">{{wz.backLabel}}</button><button className="btn primary" sc-camel-on-click="{{wzNext}}">{{wz.nextLabel}}</button></div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= MODAL GENÉRICO ================= -->
+<sc-if value="{{m.form}}" hint-placeholder-val="{{false}}">
+<div className="back" sc-camel-on-click="{{closeBack}}">
+  <form className="modal {{fm.size}}" role="dialog" aria-modal="true" aria-label="{{fm.title}}" sc-camel-on-submit="{{fmSubmit}}">
+    <div className="mhead">
+      <div className="grow"><sc-if value="{{fm.hasEyebrow}}" hint-placeholder-val="{{false}}"><div className="eyebrow" style={{ marginBottom: '6px' }}>{{fm.eyebrow}}</div></sc-if><h2>{{fm.title}}</h2><p>{{fm.lead}}</p></div>
+      <button type="button" className="ibtn sm" sc-camel-on-click="{{closeModal}}" aria-label="Fechar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button>
+    </div>
+    <div className="mbody">
+      <sc-for list="{{fm.fields}}" as="f" hint-placeholder-count="2">
+        <sc-if value="{{f.isText}}" hint-placeholder-val="{{true}}"><label className="field"><span>{{f.label}}</span><input className="input" type="{{f.itype}}" value="{{f.val}}" placeholder="{{f.ph}}" sc-camel-on-change="{{f.onInput}}"><sc-if value="{{f.err}}" hint-placeholder-val="{{false}}"><small style={{ color: 'var(--danger)' }}>{{f.errText}}</small></sc-if><sc-if value="{{f.hasHelp}}" hint-placeholder-val="{{false}}"><small>{{f.help}}</small></sc-if></label></sc-if>
+        <sc-if value="{{f.isArea}}" hint-placeholder-val="{{false}}"><label className="field"><span>{{f.label}}</span><textarea className="input" rows="{{f.rows}}" placeholder="{{f.ph}}" value="{{f.val}}" sc-camel-on-change="{{f.onInput}}"></textarea><sc-if value="{{f.err}}" hint-placeholder-val="{{false}}"><small style={{ color: 'var(--danger)' }}>{{f.errText}}</small></sc-if></label></sc-if>
+        <sc-if value="{{f.isSegs}}" hint-placeholder-val="{{false}}"><div className="field"><span>{{f.label}}</span><div className="segs"><sc-for list="{{f.opts}}" as="o" hint-placeholder-count="3"><button type="button" className="seg {{o.on}}" sc-camel-on-click="{{o.pick}}">{{o.label}}</button></sc-for></div></div></sc-if>
+        <sc-if value="{{f.isChoice}}" hint-placeholder-val="{{false}}"><div className="field"><span>{{f.label}}</span><div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}><sc-for list="{{f.opts}}" as="o" hint-placeholder-count="3"><button type="button" className="choice {{o.on}}" sc-camel-on-click="{{o.pick}}"><span className="rd"></span><span className="grow"><b style={{ display: 'block', fontSize: '14px' }}>{{o.label}}</b><small>{{o.sub}}</small></span><sc-if value="{{o.hasMeta}}" hint-placeholder-val="{{false}}"><span className="badge">{{o.meta}}</span></sc-if></button></sc-for></div></div></sc-if>
+        <sc-if value="{{f.isToggle}}" hint-placeholder-val="{{false}}"><div className="setrow"><div className="grow"><b style={{ fontSize: '14px' }}>{{f.label}}</b><div className="muted" style={{ fontSize: '12px' }}>{{f.sub}}</div></div><button type="button" className="tgl {{f.on}}" sc-camel-on-click="{{f.flip}}" aria-label="{{f.label}}" aria-pressed="{{f.pressed}}"></button></div></sc-if>
+        <sc-if value="{{f.isNote}}" hint-placeholder-val="{{false}}"><div className="card" style={{ padding: '12px 14px', fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', gap: '10px', alignItems: 'flex-start', background: 'var(--surface-0)' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{f.color}}" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.text}}</span></div></sc-if>
+        <sc-if value="{{f.isCode}}" hint-placeholder-val="{{false}}"><div className="ink" style={{ padding: '14px 16px', borderRadius: '12px' }}><pre className="mono" style={{ margin: '0', fontSize: '12px', whiteSpace: 'pre-wrap', color: 'var(--on-ink)' }}>{{f.text}}</pre></div></sc-if>
+      </sc-for>
+    </div>
+    <div className="mfoot">
+      <sc-if value="{{fm.hasSecondary}}" hint-placeholder-val="{{false}}"><button type="button" className="btn ghost" sc-camel-on-click="{{fmSecondary}}">{{fm.secondary}}</button></sc-if>
+      <div className="grow"></div>
+      <button type="button" className="btn secondary" sc-camel-on-click="{{closeModal}}">{{fm.cancel}}</button>
+      <button type="submit" className="btn {{fm.primaryCls}}">{{fm.primary}}</button>
+    </div>
+  </form>
+</div>
+</sc-if>
+
+<!-- ================= PALETA ================= -->
+<sc-if value="{{m.palette}}" hint-placeholder-val="{{false}}">
+<div className="back" sc-camel-on-click="{{closeBack}}">
+  <div className="pal" role="dialog" aria-modal="true" aria-label="Busca">
+    <div style={{ position: 'relative' }}>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true" style={{ position: 'absolute', left: '20px', top: '20px' }}><path d="{{ic.search}}"></path></svg>
+      <input value="{{palQ}}" sc-camel-on-change="{{onPalQ}}" onKeyDown="{{onPalKey}}" placeholder="Buscar telas, tasks, agentes, ações…" aria-label="Buscar">
+    </div>
+    <div style={{ maxHeight: '420px', overflow: 'auto', padding: '8px 0' }}>
+      <sc-for list="{{pal.hits}}" as="h" hint-placeholder-count="8">
+        <button className="hit" sc-camel-on-click="{{h.go}}" style={{ background: '{{h.bg}}' }}><span className="k">{{h.k}}</span><span className="grow"><b style={{ fontSize: '14px', fontWeight: '600' }}>{{h.t}}</b><span className="muted" style={{ fontSize: '12px', marginLeft: '8px' }}>{{h.m}}</span></span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.arrow}}"></path></svg></button>
+      </sc-for>
+      <sc-if value="{{pal.empty}}" hint-placeholder-val="{{false}}"><p className="muted" style={{ padding: '20px' }}>Nada com esse termo.</p></sc-if>
+    </div>
+    <div style={{ display: 'flex', gap: '14px', padding: '10px 20px', borderTop: '1px solid var(--line)', fontSize: '12px' }} className="muted"><span><span className="kbd">↑↓</span> navegar</span><span><span className="kbd">Enter</span> abrir</span><span><span className="kbd">Esc</span> fechar</span></div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= DRAWER: TASK ================= -->
+<sc-if value="{{m.taskdetail}}" hint-placeholder-val="{{false}}">
+<div className="back right" sc-camel-on-click="{{closeBack}}">
+  <aside className="drawer" role="dialog" aria-modal="true" aria-label="Detalhe da task">
+    <div className="mhead" style={{ paddingBottom: '16px', borderBottom: '1px solid var(--line)' }}>
+      <div className="grow"><div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}><span className="eyebrow">Task #{{td.seq}}</span><span className="badge {{td.prioCls}}">{{td.prio}}</span><sc-if value="{{td.gate}}" hint-placeholder-val="{{false}}"><span className="badge danger">gate</span></sc-if></div><h2 style={{ marginTop: '8px' }}>{{td.title}}</h2><p>{{td.who}} · {{td.sector}}</p></div>
+      <button className="ibtn sm" sc-camel-on-click="{{closeModal}}" aria-label="Fechar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button>
+    </div>
+    <div className="mbody" style={{ gap: '20px' }}>
+      <div className="field"><span>Coluna</span><div className="segs"><sc-for list="{{td.moves}}" as="mv" hint-placeholder-count="4"><button className="seg {{mv.on}}" sc-camel-on-click="{{mv.pick}}">{{mv.label}}</button></sc-for></div><small>{{td.moveHint}}</small></div>
+      <sc-if value="{{td.gate}}" hint-placeholder-val="{{false}}"><div className="card" style={{ padding: '14px', display: 'flex', gap: '10px', borderColor: 'var(--danger)' }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.alert}}"></path></svg><div className="grow" style={{ fontSize: '13px' }}><b>Card em gate.</b> A decisão mora em Decisões e trava o avanço até ser tomada.</div><button className="link" sc-camel-on-click="{{goDecisions}}">Decidir →</button></div></sc-if>
+      <div className="field"><span>Histórico</span>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <sc-for list="{{td.hist}}" as="h" hint-placeholder-count="3"><div style={{ display: 'flex', gap: '12px', padding: '8px 0', borderBottom: '1px solid var(--line)', fontSize: '13px' }}><span className="num muted" style={{ width: '44px' }}>{{h.t}}</span><span>{{h.text}}</span></div></sc-for>
+        </div>
+      </div>
+      <div className="actions"><button className="btn secondary" sc-camel-on-click="{{openPlan}}">Planejar com Paula</button><sc-if value="{{td.hasJob}}" hint-placeholder-val="{{false}}"><button className="btn primary" sc-camel-on-click="{{tdGoJob}}">Ver execução</button></sc-if></div>
+    </div>
+  </aside>
+</div>
+</sc-if>
+
+<!-- ================= DRAWER: OFÍCIO DO AGENTE ================= -->
+<sc-if value="{{m.soul}}" hint-placeholder-val="{{false}}">
+<div className="back right" sc-camel-on-click="{{closeBack}}">
+  <aside className="drawer" role="dialog" aria-modal="true" aria-label="Ofício do agente">
+    <div className="ink" style={{ borderRadius: '0', border: '0', padding: '24px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+      <span className="av lg {{ag.busy}}">{{ag.ini}}</span>
+      <div className="grow"><div className="eyebrow">{{ag.sector}} · {{ag.statusLabel}}</div><h2 style={{ fontSize: '22px', fontWeight: '600', marginTop: '6px' }}>{{ag.name}}</h2><p className="muted" style={{ fontSize: '13px', marginTop: '2px' }}>{{ag.role}}</p><div style={{ marginTop: '10px' }}><span className="badge flow">{{ag.model}}</span></div></div>
+      <button className="ibtn sm" sc-camel-on-click="{{closeModal}}" aria-label="Fechar" style={{ color: 'var(--on-ink-muted)', borderColor: 'var(--on-ink-line)' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button>
+    </div>
+    <div className="tabs" style={{ padding: '0 16px' }}><sc-for list="{{ag.tabs}}" as="t" hint-placeholder-count="3"><button className="tab {{t.on}}" sc-camel-on-click="{{t.pick}}">{{t.label}}</button></sc-for></div>
+    <div className="mbody" style={{ flex: '1' }}>
+      <sc-if value="{{ag.t0}}" hint-placeholder-val="{{true}}">
+        <label className="field"><span>Ofício</span><textarea className="input mono" rows="12" style={{ fontSize: '12.5px' }} value="{{soulText}}" sc-camel-on-change="{{onSoul}}"></textarea><small>Lugar, critério, conflito, voz e limite. O ofício entra no contexto de todo job deste agente.</small></label>
+      </sc-if>
+      <sc-if value="{{ag.t1}}" hint-placeholder-val="{{false}}">
+        <sc-for list="{{ag.lessons}}" as="l" hint-placeholder-count="3"><div className="card" style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '6px' }}><span className="eyebrow">{{l.when}} · {{l.src}}</span><p style={{ fontSize: '14px' }}>{{l.text}}</p></div></sc-for>
+      </sc-if>
+      <sc-if value="{{ag.t2}}" hint-placeholder-val="{{false}}">
+        <div className="g3" style={{ gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+          <div className="metric" style={{ padding: '14px' }}><span className="eyebrow">Jobs 30d</span><strong style={{ fontSize: '24px' }}>{{ag.jobs}}</strong></div>
+          <div className="metric" style={{ padding: '14px' }}><span className="eyebrow">Aprov. 1ª</span><strong style={{ fontSize: '24px' }}>{{ag.first}}</strong></div>
+          <div className="metric" style={{ padding: '14px' }}><span className="eyebrow">Custo médio</span><strong style={{ fontSize: '24px' }}>{{ag.avg}}</strong></div>
+        </div>
+        <p className="muted" style={{ fontSize: '12px' }}>Dados do protótipo. No escritório real vêm da telemetria local.</p>
+      </sc-if>
+    </div>
+    <div className="mfoot"><button className="btn ghost" sc-camel-on-click="{{soulChat}}">Abrir chat</button><div className="grow"></div><button className="btn primary" sc-camel-on-click="{{soulSave}}">Salvar ofício</button></div>
+  </aside>
+</div>
+</sc-if>
+
+<!-- ================= ESCOLHER AGENTE ================= -->
+<sc-if value="{{m.pick}}" hint-placeholder-val="{{false}}">
+<div className="back" sc-camel-on-click="{{closeBack}}">
+  <div className="modal" role="dialog" aria-modal="true" aria-label="Escolher agente">
+    <div className="mhead"><div className="grow"><h2>Nova conversa</h2><p>Escolha alguém do roster. O ofício do agente vem junto.</p></div><button className="ibtn sm" sc-camel-on-click="{{closeModal}}" aria-label="Fechar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></div>
+    <div className="mbody">
+      <input className="input" value="{{pickQ}}" sc-camel-on-change="{{onPickQ}}" placeholder="Buscar por nome ou setor" aria-label="Buscar agente">
+      <div className="card" style={{ maxHeight: '340px', overflow: 'auto' }}>
+        <div className="rows"><sc-for list="{{pk}}" as="a" hint-placeholder-count="6"><button className="row" sc-camel-on-click="{{a.pick}}"><span className="av {{a.busy}}">{{a.ini}}</span><div className="grow"><div className="t">{{a.name}}</div><div className="m">{{a.role}}</div></div><span className="badge">{{a.sector}}</span></button></sc-for></div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= TOAST ================= -->
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+<div className="toast" role="status" aria-live="polite">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1BC5BD" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.check}}"></path></svg>
+  <div className="grow"><b>{{toast.t}}</b><span>{{toast.m}}</span></div>
+</div>
+</sc-if>
+
+<!-- ================= FLUXO GUIADO ================= -->
+<sc-if value="{{tour.on}}" hint-placeholder-val="{{false}}">
+<div className="tour" role="dialog" aria-label="Fluxo guiado" style={{ left: '{{tour.left}}' }}>
+  <sc-if value="{{tour.picking}}" hint-placeholder-val="{{true}}">
+    <div style={{ padding: '18px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center' }}><span className="eyebrow">Fluxo guiado</span><div className="grow"></div><button className="ibtn sm" style={{ borderColor: 'var(--on-ink-line)', color: 'var(--on-ink-muted)' }} sc-camel-on-click="{{endTour}}" aria-label="Fechar fluxo guiado"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></div>
+      <h3>Escolha um percurso</h3>
+      <p>O protótipo navega sozinho. Você lê o porquê de cada tela e pode clicar em tudo no caminho.</p>
+      <button className="tour-cta" sc-camel-on-click="{{tourExec}}" style={{ padding: '14px' }}><span className="grow"><b>Ciclo de execução</b><small>Do login à medição · 8 passos</small></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B7F34A" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.arrow}}"></path></svg></button>
+      <button className="tour-cta" sc-camel-on-click="{{tourClient}}" style={{ padding: '14px', borderColor: 'rgba(27,197,189,.4)', background: 'rgba(27,197,189,.08)' }}><span className="grow"><b>Jornada do cliente</b><small>Encontrar, conversar, vender, medir · 6 passos</small></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1BC5BD" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.arrow}}"></path></svg></button>
+    </div>
+  </sc-if>
+  <sc-if value="{{tour.running}}" hint-placeholder-val="{{false}}">
+    <div className="tour-prog"><sc-for list="{{tour.dots}}" as="d" hint-placeholder-count="8"><i className="{{d.cls}}"></i></sc-for></div>
+    <div style={{ padding: '14px 18px 18px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><span className="eyebrow">{{tour.name}} · {{tour.pos}}</span><div className="grow"></div><button className="ibtn sm" style={{ borderColor: 'var(--on-ink-line)', color: 'var(--on-ink-muted)' }} sc-camel-on-click="{{endTour}}" aria-label="Sair do fluxo guiado"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></div>
+      <h3>{{tour.title}}</h3>
+      <p>{{tour.body}}</p>
+      <div className="why"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B7F34A" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="{{ic.spark}}"></path></svg><span><b style={{ color: 'var(--lime)' }}>Por que importa.</b> {{tour.why}}</span></div>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '4px' }}>
+        <span className="mono" style={{ fontSize: '11px', color: 'var(--on-ink-muted)' }}>{{tour.where}}</span>
+        <div className="grow"></div>
+        <button className="btn sm onink-sec" sc-camel-on-click="{{tourPrev}}" disabled="{{tour.first}}">Anterior</button>
+        <button className="btn sm onink" sc-camel-on-click="{{tourNext}}">{{tour.nextLabel}}</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+</div>

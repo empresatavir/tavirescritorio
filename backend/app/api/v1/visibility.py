@@ -19,6 +19,8 @@ from app.modules.visibility.repository import (
     KnowledgeEntryRepository,
 )
 from app.models.workflow import Workflow
+from app.models.workflow_run import WorkflowRun
+from app.models.approval import Approval
 from app.models.idea import Idea
 from app.models.integration_check import IntegrationCheck
 from app.models.knowledge_entry import KnowledgeEntry
@@ -148,12 +150,15 @@ async def get_workflow(workflow_id: str, session: AsyncSession = Depends(get_ses
 
 @router.post("/workflows", response_model=WorkflowResponse, status_code=201)
 async def create_workflow(req: dict, session: AsyncSession = Depends(get_session)):
+    name = str(req.get("name") or "").strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Informe o nome do workflow.")
     workflow = Workflow(
         id=str(uuid.uuid4()),
-        name=req["name"],
+        name=name,
         category=req.get("category", "general"),
         description=req.get("description"),
-        steps=req.get("steps"),
+        steps=req.get("steps") or [{"action": "rever", "gate": "Gate humano", "arrow": False}],
         trigger_type=req.get("trigger_type", "manual"),
         sort_order=req.get("sort_order", 0),
     )
@@ -161,6 +166,84 @@ async def create_workflow(req: dict, session: AsyncSession = Depends(get_session
     created = await repo.create(workflow)
     await session.commit()
     return created
+
+
+def _steps(raw: object) -> list[dict]:
+    if isinstance(raw, dict):
+        raw = raw.get("steps") or []
+    if not isinstance(raw, list):
+        return []
+    return [step for step in raw if isinstance(step, dict)]
+
+
+def _first_gate(steps: list[dict]) -> tuple[int, str] | None:
+    for index, step in enumerate(steps):
+        gate = str(step.get("gate") or "").strip()
+        if gate:
+            return index, gate
+    return None
+
+
+@router.post("/workflows/{workflow_id}/run")
+async def run_workflow(workflow_id: str, session: AsyncSession = Depends(get_session)):
+    """Uma passada manual. Para no primeiro gate e não dispara motor contínuo."""
+    workflow = await session.get(Workflow, workflow_id)
+    if workflow is None:
+        raise HTTPException(status_code=404, detail="Workflow não encontrado")
+    found = _first_gate(_steps(workflow.steps))
+    if found is None:
+        raise HTTPException(status_code=409, detail="Este workflow não tem gate.")
+    index, gate = found
+    approval = Approval(
+        id=str(uuid.uuid4()),
+        title=gate,
+        type="workflow",
+        status="pending",
+        kind="gate",
+        reason=gate,
+        question=gate,
+    )
+    session.add(approval)
+    run = WorkflowRun(
+        id=str(uuid.uuid4()),
+        workflow_id=workflow.id,
+        status="waiting_gate",
+        step_index=index,
+        gate=gate,
+        approval_id=approval.id,
+    )
+    session.add(run)
+    await session.commit()
+    return {
+        "id": run.id,
+        "workflow_id": run.workflow_id,
+        "status": run.status,
+        "step_index": run.step_index,
+        "gate": run.gate,
+        "approval_id": run.approval_id,
+        "engine": "manual",
+    }
+
+
+@router.get("/workflows/{workflow_id}/runs")
+async def list_workflow_runs(workflow_id: str, session: AsyncSession = Depends(get_session)):
+    rows = (
+        await session.scalars(
+            select(WorkflowRun).where(WorkflowRun.workflow_id == workflow_id).order_by(WorkflowRun.created_at.asc())
+        )
+    ).all()
+    return [
+        {
+            "id": row.id,
+            "workflow_id": row.workflow_id,
+            "status": row.status,
+            "step_index": row.step_index,
+            "gate": row.gate,
+            "approval_id": row.approval_id,
+            "engine": "manual",
+        }
+        for row in rows
+    ]
 
 
 # --- Ideas ---
@@ -171,19 +254,28 @@ async def list_ideas(session: AsyncSession = Depends(get_session)):
     return await repo.list_all()
 
 
+class CreateIdeaRequest(BaseModel):
+    title: str
+    description: str | None = None
+    source: str | None = None
+    priority: str | None = None
+
+
 @router.post("/ideas", response_model=IdeaResponse, status_code=201)
-async def create_idea(req: dict, session: AsyncSession = Depends(get_session)):
+async def create_idea(req: CreateIdeaRequest, session: AsyncSession = Depends(get_session)):
+    title = req.title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Informe a ideia.")
     idea = Idea(
         id=str(uuid.uuid4()),
-        title=req["title"],
-        description=req.get("description"),
-        source=req.get("source", "Captura rápida Cérebro"),
-        priority=req.get("priority", "medium"),
-        project_id=req.get("project_id"),
+        title=title,
+        description=(req.description or "").strip() or None,
+        source=(req.source or "Ideias").strip() or "Ideias",
+        priority=(req.priority or "medium").strip() or "medium",
     )
-    repo = IdeaRepository(session)
-    created = await repo.create(idea)
+    created = await IdeaRepository(session).create(idea)
     await session.commit()
+    await session.refresh(created)
     return created
 
 
@@ -305,6 +397,54 @@ async def list_knowledge(
 ):
     repo = KnowledgeEntryRepository(session)
     return await repo.search(query=q, domain=domain, limit=limit, offset=offset)
+
+
+class CreateKnowledgeRequest(BaseModel):
+    title: str
+    content: str | None = None
+    scope: str
+
+
+@router.post("/knowledge", response_model=KnowledgeEntryResponse)
+async def create_knowledge(body: CreateKnowledgeRequest, session: AsyncSession = Depends(get_session)):
+    title = body.title.strip()
+    scope = body.scope.strip().lower()
+    if not title:
+        raise HTTPException(status_code=400, detail="Informe a nota.")
+    if not scope:
+        raise HTTPException(status_code=400, detail="Informe o escopo.")
+    entry = KnowledgeEntry(
+        id=str(uuid.uuid4()),
+        title=title,
+        content=(body.content or title).strip() or title,
+        source_type="manual",
+        tags=[],
+        extra_metadata={"domain": scope, "source": "nota"},
+        status="indexed",
+    )
+    await KnowledgeEntryRepository(session).create(entry)
+    await session.commit()
+    await session.refresh(entry)
+    return entry
+
+
+@router.get("/knowledge/graph")
+async def knowledge_graph(session: AsyncSession = Depends(get_session)):
+    entries = await KnowledgeEntryRepository(session).list_all(limit=500)
+    nodes: list[dict[str, str]] = [{"id": "root", "label": "Você (CEO)", "type": "root"}]
+    edges: list[dict[str, str]] = []
+    seen_scopes: set[str] = set()
+    for entry in entries:
+        meta = entry.extra_metadata or {}
+        scope = str(meta.get("domain") or "geral").strip().lower() or "geral"
+        scope_id = f"scope:{scope}"
+        if scope_id not in seen_scopes:
+            seen_scopes.add(scope_id)
+            nodes.append({"id": scope_id, "label": scope, "type": "scope"})
+            edges.append({"from": "root", "to": scope_id})
+        nodes.append({"id": entry.id, "label": entry.title, "type": "note", "scope": scope})
+        edges.append({"from": scope_id, "to": entry.id})
+    return {"nodes": nodes, "edges": edges}
 
 
 @router.get("/knowledge/{entry_id}", response_model=KnowledgeEntryResponse)
