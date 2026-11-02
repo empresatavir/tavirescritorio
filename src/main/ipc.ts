@@ -206,5 +206,29 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   ipcMain.handle('vault:search', (_e, query: string) => {
     return vaultIndexer.search(query);
   });
+
+  // Proposals
+  ipcMain.handle('proposals:list', () => {
+    try {
+      const sqlite = new (require('node:sqlite').DatabaseSync)(require('node:path').join(process.cwd(), 'backend', 'tavir.db'));
+      const rows = sqlite.prepare('SELECT id, num, client, stage, status, value FROM proposals').all();
+      sqlite.close();
+      return rows;
+    } catch {
+      return [];
+    }
+  });
+
+  // Agents
+  ipcMain.handle('agents:list', () => {
+    try {
+      const sqlite = new (require('node:sqlite').DatabaseSync)(require('node:path').join(process.cwd(), 'backend', 'tavir.db'));
+      const rows = sqlite.prepare('SELECT id, name, role, sector, status, model_provider, total_jobs, total_cost FROM agents').all();
+      sqlite.close();
+      return rows;
+    } catch {
+      return [];
+    }
+  });
 }
 

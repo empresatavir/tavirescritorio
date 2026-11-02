@@ -133,6 +133,12 @@ export interface TavirApi {
     list: () => Promise<ApprovalItem[]>;
     decide: (id: string, decision: 'approved' | 'rejected', comment?: string) => Promise<void>;
   };
+  proposals: {
+    list: () => Promise<any[]>;
+  };
+  agents: {
+    list: () => Promise<AgentItem[]>;
+  };
   vault: {
     search: (query: string) => Promise<any[]>;
     list: () => Promise<any[]>;

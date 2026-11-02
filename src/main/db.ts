@@ -1,10 +1,7 @@
-import { existsSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import type { JobItem, TaskItem, ApprovalItem, SessionState } from '../shared/types';
-
-// Banco leve e sem dependências externas compiladas nativas, usando sqlite via CLI ou arquivo json seguro
-// com formato compatível com SQLite WAL.
-import { readFileSync, writeFileSync } from 'node:fs';
 
 export interface DatabaseState {
   session: SessionState;
@@ -19,59 +16,138 @@ export interface DatabaseState {
   }>;
 }
 
-const defaultState: DatabaseState = {
-  session: {
-    authenticated: true,
-    operatorName: 'Carlos',
-    expiresAt: null,
-    onboardingCompleted: true,
-    theme: 'dark',
-  },
-  jobs: [
-    { id: 'job-014', title: 'SEO da landing principal', who: 'Nina SEO', ini: 'NS', status: 'running', progress: 62, model: 'claude-sonnet-4', motor: 'Cursor', effort: 'equilibrado', task: '#30', cost: 1.84, ceiling: 8, started: '13:41', tokens: '412k' },
-    { id: 'job-011', title: 'Carrossel Multiverso ep. 14', who: 'Adriano Arte', ini: 'AA', status: 'running', progress: 41, model: 'claude-sonnet-4', motor: 'Cursor', effort: 'equilibrado', task: '#27', cost: 0.92, ceiling: 5, started: '13:55', tokens: '188k' },
-    { id: 'job-009', title: 'Detalhar roadmap Q4', who: 'Arquiteto de Nicho', ini: 'AN', status: 'queued', progress: 0, model: 'claude-opus-4', motor: 'Claude', effort: 'profundo', task: '#21', cost: 0, ceiling: 12, started: '—', tokens: '0' },
-    { id: 'job-007', title: 'Deploy landing Meridian', who: 'Davi DevOps', ini: 'DD', status: 'failed', progress: 70, model: 'claude-sonnet-4', motor: 'Cursor', effort: 'rápido', task: '#18', cost: 2.10, ceiling: 6, started: '12:20', tokens: '530k' },
-    { id: 'job-006', title: 'Auditoria API — hardening', who: 'Atlas Web', ini: 'AW', status: 'completed', progress: 100, model: 'gpt-4o', motor: 'Codex', effort: 'profundo', task: '#9', cost: 3.40, ceiling: 10, started: '09:12', tokens: '1,1M' },
-    { id: 'job-003', title: 'Revisão headline LP advocacia', who: 'Rita Revisora', ini: 'RR', status: 'paused', progress: 80, model: 'claude-sonnet-4', motor: 'Cursor', effort: 'rápido', task: '#12', cost: 0.44, ceiling: 2, started: '11:05', tokens: '96k' },
-  ],
-  tasks: [
-    { id: 't1', seq: 12, title: 'Headline da LP de advocacia passou de 60 caracteres', status: 'in_progress', who: 'Rita Revisora', ini: 'RR', prio: 'Alta', sector: 'Conteúdo', gate: true, job: 'job-003' },
-    { id: 't2', seq: 18, title: 'Deploy landing Meridian — SUPABASE_URL ausente', status: 'in_progress', who: 'Davi DevOps', ini: 'DD', prio: 'Crítica', sector: 'Engenharia', gate: true, job: 'job-007' },
-    { id: 't3', seq: 21, title: 'Roadmap Q4 IA Livros — priorizar 3 frentes', status: 'to_plan', who: 'Paula PM', ini: 'PP', prio: 'Alta', sector: 'Estratégia', planning: true, job: 'job-009' },
-    { id: 't4', seq: 9, title: 'Auditoria de segurança da API', status: 'done', who: 'Atlas Web', ini: 'AW', prio: 'Normal', sector: 'Qualidade', job: 'job-006' },
-    { id: 't5', seq: 24, title: 'Proposta Atlas — contra-assinatura local', status: 'planned', who: 'Cléber Closer', ini: 'CC', prio: 'Alta', sector: 'Comercial' },
-    { id: 't6', seq: 27, title: 'Carrossel Multiverso — 7 frames do episódio 14', status: 'in_progress', who: 'Adriano Arte', ini: 'AA', prio: 'Normal', sector: 'Conteúdo', job: 'job-011' },
-    { id: 't7', seq: 30, title: 'SEO da landing principal', status: 'planned', who: 'Nina SEO', ini: 'NS', prio: 'Normal', sector: 'Social', job: 'job-014' },
-    { id: 't8', seq: 31, title: 'Oferta de presença local — claims e preço', status: 'to_plan', who: 'Dora Descoberta', ini: 'DD', prio: 'Normal', sector: 'Comercial' },
-  ],
-  approvals: [
-    { id: 'ap-02', group: 'block', kind: 'deploy', title: 'Deploy landing Meridian — variável ausente', who: 'Davi DevOps', ini: 'DD', type: 'Checkpoint', status: 'pending', impact: 'alto', task: '#18', age: 'há 2 h', reason: 'O build da landing passou, mas o deploy parou porque SUPABASE_URL não existe na conta da Meridian.', question: 'Registrar SUPABASE_URL no cofre local e refazer o deploy da Meridian?', yes: ['A variável é gravada no cofre local', 'O job-007 refaz o deploy a partir do passo 4'], no: ['O deploy continua parado', 'O card #18 volta para Planejado'] },
-    { id: 'ap-01', group: 'scope', kind: 'roadmap', title: 'Roadmap Q4 IA Livros — aprovar priorização', who: 'Arquiteto de Nicho', ini: 'AN', type: 'Autorização', status: 'pending', impact: 'alto', task: '#21', age: 'há 3 h', reason: 'O livro guia do método sobe para a primeira frente.', question: 'Aprovar a nova ordem das três frentes de IA Livros para o Q4?', yes: ['Paula reordena as frentes no Roadmap', 'O job-009 sai da fila'], no: ['A ordem atual continua valendo'] },
-  ],
-  events: [],
-};
+const dbSqlitePath = join(process.cwd(), 'backend', 'tavir.db');
+let sqliteDb: DatabaseSync | null = null;
 
-function caminhoDb(): string {
+function getSqlite(): DatabaseSync | null {
+  if (sqliteDb) return sqliteDb;
+  if (existsSync(dbSqlitePath)) {
+    try {
+      sqliteDb = new DatabaseSync(dbSqlitePath);
+      return sqliteDb;
+    } catch (e) {
+      console.error('[TAVIR DB] Erro ao conectar com SQLite:', e);
+    }
+  }
+  return null;
+}
+
+function caminhoStoreJson(): string {
   const dir = join(process.cwd(), 'db');
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   return join(dir, 'tavir_store.json');
 }
 
 export function carregarDb(): DatabaseState {
-  const arq = caminhoDb();
-  if (!existsSync(arq)) {
-    salvarDb(defaultState);
-    return defaultState;
+  const sqlite = getSqlite();
+
+  // Carrega session básica
+  let session: SessionState = {
+    authenticated: true,
+    operatorName: 'Carlos',
+    expiresAt: null,
+    onboardingCompleted: true,
+    theme: 'dark',
+  };
+
+  const storeFile = caminhoStoreJson();
+  if (existsSync(storeFile)) {
+    try {
+      const data = JSON.parse(readFileSync(storeFile, 'utf8'));
+      if (data.session) session = data.session;
+    } catch {}
   }
-  try {
-    return JSON.parse(readFileSync(arq, 'utf8'));
-  } catch {
-    return defaultState;
+
+  // Se tiver conexão SQLite ativa, carrega dados REAIS do banco
+  if (sqlite) {
+    try {
+      const tasksRows = sqlite.prepare('SELECT id, title, status, project_id FROM tasks').all() as any[];
+      const tasks: TaskItem[] = tasksRows.map((t, idx) => ({
+        id: t.id || `task-${idx + 1}`,
+        seq: idx + 1,
+        title: t.title || 'Sem título',
+        status: (t.status || 'to_plan') as any,
+        who: 'Paula PM',
+        ini: 'PP',
+        prio: 'Normal',
+        sector: 'Operação',
+        planning: t.status === 'to_plan'
+      }));
+
+      const jobsRows = sqlite.prepare('SELECT id, task_id, status, agent_id, origin FROM jobs').all() as any[];
+      const jobs: JobItem[] = jobsRows.map((j, idx) => ({
+        id: j.id || `job-${idx + 1}`,
+        title: `Job ${j.id}`,
+        who: j.agent_id || 'Agente',
+        ini: (j.agent_id || 'AG').slice(0, 2).toUpperCase(),
+        status: (j.status || 'completed') as any,
+        progress: j.status === 'running' ? 50 : 100,
+        model: 'claude-sonnet-4',
+        motor: 'Cursor',
+        effort: 'equilibrado',
+        task: `#${idx + 1}`,
+        cost: 0,
+        ceiling: 10,
+        started: '—',
+        tokens: '0'
+      }));
+
+      const approvalsRows = sqlite.prepare('SELECT id, kind, title, status FROM approvals').all() as any[];
+      const approvals: ApprovalItem[] = approvalsRows.map((a) => ({
+        id: a.id,
+        group: 'block',
+        kind: a.kind || 'deploy',
+        title: a.title || 'Aprovação pendente',
+        who: 'Revisor',
+        ini: 'RV',
+        type: 'Checkpoint',
+        status: (a.status || 'pending') as any,
+        impact: 'médio',
+        task: '#1',
+        age: 'recente',
+        reason: 'Verificação de gate necessária.',
+        question: 'Autorizar execução?',
+        yes: ['Autorizado'],
+        no: ['Rejeitado']
+      }));
+
+      return {
+        session,
+        jobs,
+        tasks,
+        approvals,
+        events: []
+      };
+    } catch (e) {
+      console.error('[TAVIR DB] Erro ao consultar SQLite:', e);
+    }
   }
+
+  // Fallback limpo (sem nenhum dado fictício!)
+  return {
+    session,
+    jobs: [],
+    tasks: [],
+    approvals: [],
+    events: []
+  };
 }
 
 export function salvarDb(estado: DatabaseState): void {
-  const arq = caminhoDb();
+  // Salva no JSON de sessão
+  const arq = caminhoStoreJson();
   writeFileSync(arq, JSON.stringify(estado, null, 2), 'utf8');
+
+  // Sincroniza tarefas no SQLite se houver conexão
+  const sqlite = getSqlite();
+  if (sqlite) {
+    try {
+      const stmtTask = sqlite.prepare('INSERT OR REPLACE INTO tasks (id, title, status) VALUES (?, ?, ?)');
+      for (const t of estado.tasks) {
+        stmtTask.run(t.id, t.title, t.status);
+      }
+    } catch (e) {
+      console.error('[TAVIR DB] Erro ao sincronizar tasks com SQLite:', e);
+    }
+  }
 }

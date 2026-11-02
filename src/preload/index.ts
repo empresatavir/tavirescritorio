@@ -36,6 +36,12 @@ const api: TavirApi = {
     decide: (id: string, decision: 'approved' | 'rejected', comment?: string) =>
       ipcRenderer.invoke('approvals:decide', id, decision, comment),
   },
+  proposals: {
+    list: () => ipcRenderer.invoke('proposals:list'),
+  },
+  agents: {
+    list: () => ipcRenderer.invoke('agents:list'),
+  },
   vault: {
     search: (query: string) => ipcRenderer.invoke('vault:search', query),
     list: () => ipcRenderer.invoke('vault:list'),
