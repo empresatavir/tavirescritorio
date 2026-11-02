@@ -1,11 +1,11 @@
 {
   "screenId": "analytics",
   "side": "candidate",
-  "capturedUrl": "http://127.0.0.1:9196/analytics",
+  "capturedUrl": "http://127.0.0.1:9200/analytics",
   "frames": [
     {
       "name": null,
-      "url": "http://127.0.0.1:9196/analytics",
+      "url": "http://127.0.0.1:9200/analytics",
       "title": "TAVIR Escritório — Painel Operacional",
       "viewport": {
         "width": 1440,
@@ -15,11 +15,11 @@
       "visibleElementCountsByTag": {
         "html": 1,
         "body": 1,
-        "div": 17,
+        "div": 73,
         "nav": 1,
         "img": 2,
-        "button": 21,
-        "span": 39,
+        "button": 22,
+        "span": 63,
         "svg": 15,
         "path": 32,
         "polygon": 2,
@@ -32,9 +32,13 @@
         "main": 1,
         "h1": 1,
         "p": 1,
-        "article": 2,
-        "strong": 2,
-        "section": 1
+        "a": 4,
+        "article": 4,
+        "strong": 4,
+        "small": 4,
+        "section": 3,
+        "h2": 3,
+        "i": 8
       },
       "visibleText": [
         {
@@ -146,22 +150,10 @@
           "role": null
         },
         {
-          "text": "office.py · SQLite ao vivo",
+          "text": "AO VIVO",
           "tag": "span",
           "id": "",
           "role": null
-        },
-        {
-          "text": "Frontend",
-          "tag": "button",
-          "id": "",
-          "role": "button"
-        },
-        {
-          "text": "Backend",
-          "tag": "button",
-          "id": "",
-          "role": "button"
         },
         {
           "text": "Buscar telas, tasks, agentes…",
@@ -182,19 +174,85 @@
           "role": null
         },
         {
+          "text": "Sistema",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
           "text": "Analytics",
           "tag": "h1",
           "id": "",
           "role": "heading"
         },
         {
-          "text": "Custo de motor dos últimos 14 dias.",
+          "text": "Custo por dia, por modelo e por projeto, lido da telemetria local. O teto aparece no próprio gráfico.",
           "tag": "p",
           "id": "",
           "role": null
         },
         {
-          "text": "Custo de motor",
+          "text": "7",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "dias",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "14",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "dias",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "30",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "dias",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Analytics",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Doctor",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Skills",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Org Chart",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Custo no período",
           "tag": "span",
           "id": "",
           "role": null
@@ -206,8 +264,44 @@
           "role": null
         },
         {
-          "text": "0",
+          "text": "103,30",
           "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "14",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "dias · todos os modelos",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Média diária",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "US$",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "7,38",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "teto diário US$ 12",
+          "tag": "small",
           "id": "",
           "role": null
         },
@@ -218,8 +312,242 @@
           "role": null
         },
         {
-          "text": "0",
+          "text": "21,7",
           "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "M",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "entrada + saída",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Jobs concluídos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "41",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "86% sem retrabalho",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Custo por dia",
+          "tag": "h2",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "US$ ·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "14",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "dias · dados do protótipo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "dentro do teto · acima de US$ 9",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "teto diário US$ 12",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "16/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "29/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Por modelo",
+          "tag": "h2",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "claude-sonnet-4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "53",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "claude-opus-4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "27",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "gpt-4o",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "15",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "dall-e-3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Por projeto",
+          "tag": "h2",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Meridian",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "34",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Multiverso",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "28",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "22",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X e comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "16",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
           "id": "",
           "role": null
         }
@@ -549,9 +877,9 @@
           "tag": "header",
           "id": null,
           "role": null,
-          "name": "Sistema / Analytics office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "name": "Sistema / Analytics AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
           "label": null,
-          "text": "Sistema / Analytics office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "text": "Sistema / Analytics AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
           "placeholder": null,
           "title": null,
           "rect": {
@@ -567,46 +895,14 @@
           "role": null,
           "name": "Indicador de dados operacionais ao vivo",
           "label": null,
-          "text": "office.py · SQLite ao vivo",
+          "text": "AO VIVO",
           "placeholder": null,
           "title": "Indicador de dados operacionais ao vivo",
           "rect": {
             "x": 463,
             "y": 20,
-            "width": 156,
+            "width": 81,
             "height": 24
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Frontend",
-          "label": "Reiniciar Frontend",
-          "text": "Frontend",
-          "placeholder": null,
-          "title": "Reinicia o Frontend do escritório",
-          "rect": {
-            "x": 782,
-            "y": 16,
-            "width": 74,
-            "height": 32
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Backend",
-          "label": "Reiniciar Backend",
-          "text": "Backend",
-          "placeholder": null,
-          "title": "Reinicia o Backend do escritório",
-          "rect": {
-            "x": 868,
-            "y": 16,
-            "width": 71,
-            "height": 32
           }
         },
         {
@@ -661,9 +957,9 @@
           "tag": "main",
           "id": null,
           "role": "main",
-          "name": "Analytics Custo de motor dos últimos 14 dias. Custo de motor US$ 0 Tokens 0",
+          "name": "SISTEMA Analytics Custo por dia, por modelo e por projeto, lido da telemetria local. O teto aparece no próprio gráfico. 7 dias 14 dias 30 dias Analytics Doctor Skills Org Chart CUSTO NO PERÍODO US$ 103,30 14 dias · todos os modelos MÉDIA DIÁRIA US$ 7,38 teto diário US$ 12 TOKENS 21,7 M entrada + saída JOBS CONCLUÍDOS 41 86% sem retrabalho Custo por dia US$ · 14 DIAS · DADOS DO PROTÓTIPO dentro do teto · acima de US$ 9 teto diário US$ 12 16/10 29/10 Por modelo claude-sonnet-4 53% claude-opus-4 27% gpt-4o 15% dall-e-3 5% Por projeto Meridian 34% Multiverso 28% Escritório 22% Raio-X e comercial 16%",
           "label": null,
-          "text": "Analytics Custo de motor dos últimos 14 dias. Custo de motor US$ 0 Tokens 0",
+          "text": "SISTEMA Analytics Custo por dia, por modelo e por projeto, lido da telemetria local. O teto aparece no próprio gráfico. 7 dias 14 dias 30 dias Analytics Doctor Skills Org Chart CUSTO NO PERÍODO US$ 103,30 14 dias · todos os modelos MÉDIA DIÁRIA US$ 7,38 teto diário US$ 12 TOKENS 21,7 M entrada + saída JOBS CONCLUÍDOS 41 86% sem retrabalho Custo por dia US$ · 14 DIAS · DADOS DO PROTÓTIPO dentro do teto · acima de US$ 9 teto diário US$ 12 16/10 29/10 Por modelo claude-sonnet-4 53% claude-opus-4 27% gpt-4o 15% dall-e-3 5% Por projeto Meridian 34% Multiverso 28% Escritório 22% Raio-X e comercial 16%",
           "placeholder": null,
           "title": null,
           "rect": {
@@ -684,41 +980,185 @@
           "title": null,
           "rect": {
             "x": 332,
-            "y": 92,
-            "width": 1076,
+            "y": 117,
+            "width": 851,
             "height": 47
           }
         },
         {
-          "tag": "article",
+          "tag": "button",
           "id": null,
-          "role": null,
-          "name": "Custo de motor US$ 0",
+          "role": "button",
+          "name": "7 dias",
           "label": null,
-          "text": "Custo de motor US$ 0",
+          "text": "7 dias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1199,
+            "y": 158,
+            "width": 60,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "14 dias",
+          "label": null,
+          "text": "14 dias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1266,
+            "y": 158,
+            "width": 66,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "30 dias",
+          "label": null,
+          "text": "30 dias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1338,
+            "y": 158,
+            "width": 70,
+            "height": 32
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
           "placeholder": null,
           "title": null,
           "rect": {
             "x": 332,
-            "y": 191,
-            "width": 120,
-            "height": 96
+            "y": 206,
+            "width": 57,
+            "height": 38
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Doctor",
+          "label": null,
+          "text": "Doctor",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 407,
+            "y": 206,
+            "width": 41,
+            "height": 38
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 467,
+            "y": 206,
+            "width": 30,
+            "height": 38
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 515,
+            "y": 206,
+            "width": 60,
+            "height": 38
           }
         },
         {
           "tag": "article",
           "id": null,
           "role": null,
-          "name": "Tokens 0",
+          "name": "CUSTO NO PERÍODO US$ 103,30 14 dias · todos os modelos",
           "label": null,
-          "text": "Tokens 0",
+          "text": "CUSTO NO PERÍODO US$ 103,30 14 dias · todos os modelos",
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 468,
-            "y": 191,
-            "width": 73,
-            "height": 96
+            "x": 332,
+            "y": 261,
+            "width": 260,
+            "height": 111
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "MÉDIA DIÁRIA US$ 7,38 teto diário US$ 12",
+          "label": null,
+          "text": "MÉDIA DIÁRIA US$ 7,38 teto diário US$ 12",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 604,
+            "y": 261,
+            "width": 260,
+            "height": 111
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "TOKENS 21,7 M entrada + saída",
+          "label": null,
+          "text": "TOKENS 21,7 M entrada + saída",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 876,
+            "y": 261,
+            "width": 260,
+            "height": 111
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "JOBS CONCLUÍDOS 41 86% sem retrabalho",
+          "label": null,
+          "text": "JOBS CONCLUÍDOS 41 86% sem retrabalho",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1148,
+            "y": 261,
+            "width": 260,
+            "height": 111
           }
         },
         {
@@ -727,14 +1167,94 @@
           "role": null,
           "name": "Série de custo",
           "label": "Série de custo",
-          "text": null,
+          "text": "Custo por dia US$ · 14 DIAS · DADOS DO PROTÓTIPO dentro do teto · acima de US$ 9 teto diário US$ 12 16/10 29/10",
           "placeholder": null,
           "title": null,
           "rect": {
             "x": 332,
-            "y": 303,
+            "y": 388,
             "width": 1076,
-            "height": 0
+            "height": 298
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Custo por dia",
+          "label": null,
+          "text": "Custo por dia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 351,
+            "y": 405,
+            "width": 89,
+            "height": 22
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Por modelo claude-sonnet-4 53% claude-opus-4 27% gpt-4o 15% dall-e-3 5%",
+          "label": null,
+          "text": "Por modelo claude-sonnet-4 53% claude-opus-4 27% gpt-4o 15% dall-e-3 5%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 702,
+            "width": 530,
+            "height": 210
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Por modelo",
+          "label": null,
+          "text": "Por modelo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 351,
+            "y": 719,
+            "width": 492,
+            "height": 22
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Por projeto Meridian 34% Multiverso 28% Escritório 22% Raio-X e comercial 16%",
+          "label": null,
+          "text": "Por projeto Meridian 34% Multiverso 28% Escritório 22% Raio-X e comercial 16%",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 878,
+            "y": 702,
+            "width": 530,
+            "height": 210
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Por projeto",
+          "label": null,
+          "text": "Por projeto",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 897,
+            "y": 719,
+            "width": 492,
+            "height": 22
           }
         }
       ],
@@ -1127,54 +1647,6 @@
           "tag": "button",
           "id": null,
           "role": "button",
-          "name": "Reiniciar Frontend",
-          "label": "Reiniciar Frontend",
-          "text": "Frontend",
-          "placeholder": null,
-          "title": "Reinicia o Frontend do escritório",
-          "rect": {
-            "x": 782,
-            "y": 16,
-            "width": 74,
-            "height": 32
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Backend",
-          "label": "Reiniciar Backend",
-          "text": "Backend",
-          "placeholder": null,
-          "title": "Reinicia o Backend do escritório",
-          "rect": {
-            "x": 868,
-            "y": 16,
-            "width": 71,
-            "height": 32
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
           "name": "Buscar telas, tasks, agentes… (Ctrl K)",
           "label": "Buscar telas, tasks, agentes… (Ctrl K)",
           "text": "Buscar telas, tasks, agentes… Ctrl K",
@@ -1242,6 +1714,174 @@
           "checked": null,
           "selected": null,
           "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "7 dias",
+          "label": null,
+          "text": "7 dias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1199,
+            "y": 158,
+            "width": 60,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "14 dias",
+          "label": null,
+          "text": "14 dias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1266,
+            "y": 158,
+            "width": 66,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "30 dias",
+          "label": null,
+          "text": "30 dias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1338,
+            "y": 158,
+            "width": 70,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 206,
+            "width": 57,
+            "height": 38
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Doctor",
+          "label": null,
+          "text": "Doctor",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 407,
+            "y": 206,
+            "width": 41,
+            "height": 38
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 467,
+            "y": 206,
+            "width": 30,
+            "height": 38
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 515,
+            "y": 206,
+            "width": 60,
+            "height": 38
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
         }
       ],
       "dialogs": [],

@@ -506,7 +506,7 @@ A busca do header passou a “Buscar telas, tasks, agentes…”. A subnav mostr
 
 Comando: `node .claude/skills/reference-fidelity-frontend/scripts/capture_playwright.mjs --manifest visual/playwright-screens.json` e `python .claude/skills/reference-fidelity-frontend/scripts/compare_screens.py --reference visual/reference --candidate visual/actual --output visual/report --threshold 12`
 
-Resultado: 36 telas nos dois lados, sem tela faltando e sem diferença de tamanho. A média ficou em 87,57%. O relatório está em `visual/report/report.html`. A barra de 97% ainda não foi atingida. Execuções em 860 px não entrou neste lote porque, nessa largura, o menu some e o runner não consegue abrir a tela antes da foto.
+Resultado inicial: 36 telas, média 87,57%. Depois do tema claro, a média foi para 88,42%. Com o miolo da Sala no fixture, 88,81%. Edição e Analytics no mesmo fixture levaram a média a 88,97%: Edição 87,99% e Analytics 85,85%. Decisões clara permanece em 71,94% e a Sala clara em 82,81%. O relatório está em `visual/report/report.html`. Nenhuma tela chegou a 97%. Execuções em 860 px não entrou neste lote.
 
 ## O que ainda não foi executado
 

@@ -1,11 +1,11 @@
 {
   "screenId": "sala-light",
   "side": "candidate",
-  "capturedUrl": "http://127.0.0.1:9196/sala-operacao",
+  "capturedUrl": "http://127.0.0.1:9198/sala-operacao",
   "frames": [
     {
       "name": null,
-      "url": "http://127.0.0.1:9196/sala-operacao",
+      "url": "http://127.0.0.1:9198/sala-operacao",
       "title": "TAVIR Escritório — Painel Operacional",
       "viewport": {
         "width": 1440,
@@ -15,23 +15,27 @@
       "visibleElementCountsByTag": {
         "html": 1,
         "body": 1,
-        "div": 36,
+        "div": 52,
         "nav": 1,
         "img": 2,
-        "button": 34,
-        "span": 89,
-        "svg": 20,
-        "path": 45,
+        "button": 38,
+        "span": 106,
+        "svg": 16,
+        "path": 37,
         "polygon": 2,
         "polyline": 2,
         "rect": 3,
-        "circle": 8,
-        "line": 3,
+        "circle": 5,
+        "line": 2,
         "aside": 1,
         "header": 1,
         "main": 1,
-        "p": 3,
-        "section": 4
+        "p": 4,
+        "section": 6,
+        "strong": 5,
+        "i": 17,
+        "small": 4,
+        "br": 2
       },
       "visibleText": [
         {
@@ -167,22 +171,10 @@
           "role": null
         },
         {
-          "text": "office.py · SQLite ao vivo",
+          "text": "AO VIVO",
           "tag": "span",
           "id": "",
           "role": null
-        },
-        {
-          "text": "Frontend",
-          "tag": "button",
-          "id": "",
-          "role": "button"
-        },
-        {
-          "text": "Backend",
-          "tag": "button",
-          "id": "",
-          "role": "button"
         },
         {
           "text": "Buscar telas, tasks, agentes…",
@@ -215,7 +207,7 @@
           "role": null
         },
         {
-          "text": "0 cards ativos · 0 escalados · 0 jobs rodando",
+          "text": "2 jobs rodando, 5 decisões esperando você, 2 cards em gate. O resto segue sem bloqueio.",
           "tag": "p",
           "id": "",
           "role": null
@@ -233,49 +225,145 @@
           "role": "button"
         },
         {
-          "text": "Cards ativos",
+          "text": "O que pede você",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "Tasks →",
+          "text": "6 pendentes",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "0",
+          "text": "Abrir Decisões →",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "DD",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "fluxo em dia",
+          "text": "Deploy landing Meridian — variável ausente",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "Escalados",
+          "text": "Davi DevOps · Checkpoint · há 21h",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "Bloqueios →",
+          "text": "Impacto alto",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "0",
+          "text": "Decidir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "AN",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "sem gate humano aberto",
+          "text": "Roadmap Q4 IA Livros — aprovar priorização",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Arquiteto de Nicho · Autorização · há 3h",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Impacto alto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decidir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "PP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gasto mensal acima do teto — modelo opus-4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Paula PM · Autorização · há 40 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Impacto médio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decidir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Teto do mês · outubro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Finanças →",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "US$ 212",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "de US$ 300",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Custo diário · últimos 14 dias · dados do protótipo",
           "tag": "span",
           "id": "",
           "role": null
@@ -287,31 +375,79 @@
           "role": null
         },
         {
-          "text": "Execuções →",
+          "text": "2",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1 na fila · 1 com falha",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cards ativos",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "0",
+          "text": "7",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3 em execução",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gates abertos",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "sem fila crítica",
+          "text": "5",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "mais antigo há 5 h",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Custo hoje",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "Jobs rodando",
+          "text": "US$ 8,40",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "teto diário US$ 12",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Jobs ao vivo",
           "tag": "span",
           "id": "",
           "role": null
         },
         {
-          "text": "0",
+          "text": "2 rodando",
           "tag": "span",
           "id": "",
           "role": null
@@ -323,8 +459,158 @@
           "role": "button"
         },
         {
-          "text": "Nenhum job rodando agora",
-          "tag": "div",
+          "text": "NS",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "SEO da landing principal",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nina SEO · claude-sonnet-4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "62",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "US$",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1,84",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "de",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "8",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carrossel Multiverso ep. 14",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Adriano Arte · claude-sonnet-4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "41",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "US$",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0,92",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "de",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Esteiras dos módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos →",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Meridian — landing institucional",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio · etapa 6 de 8 · QA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gate",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Multiverso — carrossel ep. 14",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio · etapa 3 de 5 · Arte",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rodando",
+          "tag": "span",
           "id": "",
           "role": null
         },
@@ -339,12 +625,6 @@
           "tag": "span",
           "id": "",
           "role": null
-        },
-        {
-          "text": "Bloqueios →",
-          "tag": "button",
-          "id": "",
-          "role": "button"
         },
         {
           "text": "Cards ativos",
@@ -363,84 +643,6 @@
           "tag": "button",
           "id": "",
           "role": "button"
-        },
-        {
-          "text": "Precisa de você",
-          "tag": "div",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "Aprovações pendentes",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "0 autorizações aguardando decisão",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "0",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "Execuções com falha",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "0 jobs com erro requerem remediação",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "0",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "Bloqueios",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "tarefas com escalação ativa",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "0",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "Alterações pendentes",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "0 homologações aguardando decisão",
-          "tag": "span",
-          "id": "",
-          "role": null
-        },
-        {
-          "text": "0",
-          "tag": "span",
-          "id": "",
-          "role": null
         }
       ],
       "semanticElements": [
@@ -784,9 +986,9 @@
           "tag": "header",
           "id": null,
           "role": null,
-          "name": "Operação / Sala de Operação office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "name": "Operação / Sala de Operação AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
           "label": null,
-          "text": "Operação / Sala de Operação office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "text": "Operação / Sala de Operação AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
           "placeholder": null,
           "title": null,
           "rect": {
@@ -802,46 +1004,14 @@
           "role": null,
           "name": "Indicador de dados operacionais ao vivo",
           "label": null,
-          "text": "office.py · SQLite ao vivo",
+          "text": "AO VIVO",
           "placeholder": null,
           "title": "Indicador de dados operacionais ao vivo",
           "rect": {
             "x": 523,
             "y": 20,
-            "width": 156,
+            "width": 81,
             "height": 24
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Frontend",
-          "label": "Reiniciar Frontend",
-          "text": "Frontend",
-          "placeholder": null,
-          "title": "Reinicia o Frontend do escritório",
-          "rect": {
-            "x": 782,
-            "y": 16,
-            "width": 74,
-            "height": 32
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Backend",
-          "label": "Reiniciar Backend",
-          "text": "Backend",
-          "placeholder": null,
-          "title": "Reinicia o Backend do escritório",
-          "rect": {
-            "x": 868,
-            "y": 16,
-            "width": 71,
-            "height": 32
           }
         },
         {
@@ -896,9 +1066,9 @@
           "tag": "main",
           "id": null,
           "role": "main",
-          "name": "QUINTA-FEIRA, 29 DE OUTUBRO · SALA DE OPERAÇÃO Boa tarde, Carlos. 0 cards ativos · 0 escalados · 0 jobs rodando Novo projeto Nova task CARDS ATIVOS Tasks → 0 fluxo em dia ESCALADOS Bloqueios → 0 sem gate humano aberto JOBS RODANDO Execuções → 0 sem fila crítica Jobs rodando 0 Execuções → Nenhum job rodando agora Escalados 0 Bloqueios → Cards ativos 0 Tasks → Precisa de você Aprovações pendentes 0 autorizações aguardando decisão 0 Execuções com falha 0 jobs com erro requerem remediação 0 Bloqueios tarefas com escalação ativa 0 Alterações pendentes 0 homologações aguardando decisão 0",
+          "name": "QUINTA-FEIRA, 29 DE OUTUBRO · SALA DE OPERAÇÃO Boa tarde, Carlos. 2 jobs rodando, 5 decisões esperando você, 2 cards em gate. O resto segue sem bloqueio. Novo projeto Nova task O QUE PEDE VOCÊ 6 PENDENTES Abrir Decisões → DD Deploy landing Meridian — variável ausente Davi DevOps · Checkpoint · há 21h IMPACTO ALTO Decidir AN Roadmap Q4 IA Livros — aprovar priorização Arquiteto de Nicho · Autorização · há 3h IMPACTO ALTO Decidir PP Gasto mensal acima do teto — modelo opus-4 Paula PM · Autorização · há 40 min IMPACTO MÉDIO Decidir TETO DO MÊS · OUTUBRO Finanças → US$ 212 de US$ 300 Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62. CUSTO DIÁRIO · ÚLTIMOS 14 DIAS · DADOS DO PROTÓTIPO JOBS RODANDO 2 1 na fila · 1 com falha CARDS ATIVOS 7 3 em execução GATES ABERTOS 5 mais antigo há 5 h CUSTO HOJE US$ 8,40 teto diário US$ 12 Jobs ao vivo 2 RODANDO Execuções → NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8 AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5 Esteiras dos módulos Módulos → Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO Escalados 0 Cards ativos 0 Tasks →",
           "label": null,
-          "text": "QUINTA-FEIRA, 29 DE OUTUBRO · SALA DE OPERAÇÃO Boa tarde, Carlos. 0 cards ativos · 0 escalados · 0 jobs rodando Novo projeto Nova task CARDS ATIVOS Tasks → 0 fluxo em dia ESCALADOS Bloqueios → 0 sem gate humano aberto JOBS RODANDO Execuções → 0 sem fila crítica Jobs rodando 0 Execuções → Nenhum job rodando agora Escalados 0 Bloqueios → Cards ativos 0 Tasks → Precisa de você Aprovações pendentes 0 autorizações aguardando decisão 0 Execuções com falha 0 jobs com erro requerem remediação 0 Bloqueios tarefas com escalação ativa 0 Alterações pendentes 0 homologações aguardando decisão 0",
+          "text": "QUINTA-FEIRA, 29 DE OUTUBRO · SALA DE OPERAÇÃO Boa tarde, Carlos. 2 jobs rodando, 5 decisões esperando você, 2 cards em gate. O resto segue sem bloqueio. Novo projeto Nova task O QUE PEDE VOCÊ 6 PENDENTES Abrir Decisões → DD Deploy landing Meridian — variável ausente Davi DevOps · Checkpoint · há 21h IMPACTO ALTO Decidir AN Roadmap Q4 IA Livros — aprovar priorização Arquiteto de Nicho · Autorização · há 3h IMPACTO ALTO Decidir PP Gasto mensal acima do teto — modelo opus-4 Paula PM · Autorização · há 40 min IMPACTO MÉDIO Decidir TETO DO MÊS · OUTUBRO Finanças → US$ 212 de US$ 300 Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62. CUSTO DIÁRIO · ÚLTIMOS 14 DIAS · DADOS DO PROTÓTIPO JOBS RODANDO 2 1 na fila · 1 com falha CARDS ATIVOS 7 3 em execução GATES ABERTOS 5 mais antigo há 5 h CUSTO HOJE US$ 8,40 teto diário US$ 12 Jobs ao vivo 2 RODANDO Execuções → NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8 AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5 Esteiras dos módulos Módulos → Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO Escalados 0 Cards ativos 0 Tasks →",
           "placeholder": null,
           "title": null,
           "rect": {
@@ -941,67 +1111,195 @@
           }
         },
         {
-          "tag": "button",
+          "tag": "section",
           "id": null,
-          "role": "button",
-          "name": "CARDS ATIVOS Tasks → 0 fluxo em dia",
+          "role": null,
+          "name": "O QUE PEDE VOCÊ 6 PENDENTES Abrir Decisões → DD Deploy landing Meridian — variável ausente Davi DevOps · Checkpoint · há 21h IMPACTO ALTO Decidir AN Roadmap Q4 IA Livros — aprovar priorização Arquiteto de Nicho · Autorização · há 3h IMPACTO ALTO Decidir PP Gasto mensal acima do teto — modelo opus-4 Paula PM · Autorização · há 40 min IMPACTO MÉDIO Decidir",
           "label": null,
-          "text": "CARDS ATIVOS Tasks → 0 fluxo em dia",
+          "text": "O QUE PEDE VOCÊ 6 PENDENTES Abrir Decisões → DD Deploy landing Meridian — variável ausente Davi DevOps · Checkpoint · há 21h IMPACTO ALTO Decidir AN Roadmap Q4 IA Livros — aprovar priorização Arquiteto de Nicho · Autorização · há 3h IMPACTO ALTO Decidir PP Gasto mensal acima do teto — modelo opus-4 Paula PM · Autorização · há 40 min IMPACTO MÉDIO Decidir",
           "placeholder": null,
           "title": null,
           "rect": {
             "x": 324,
             "y": 200,
-            "width": 356,
-            "height": 109
+            "width": 704,
+            "height": 267
           }
         },
         {
           "tag": "button",
           "id": null,
           "role": "button",
-          "name": "ESCALADOS Bloqueios → 0 sem gate humano aberto",
+          "name": "Abrir Decisões →",
           "label": null,
-          "text": "ESCALADOS Bloqueios → 0 sem gate humano aberto",
+          "text": "Abrir Decisões →",
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 692,
-            "y": 200,
-            "width": 356,
-            "height": 109
+            "x": 909,
+            "y": 223,
+            "width": 95,
+            "height": 16
           }
         },
         {
           "tag": "button",
           "id": null,
           "role": "button",
-          "name": "JOBS RODANDO Execuções → 0 sem fila crítica",
+          "name": "Decidir",
           "label": null,
-          "text": "JOBS RODANDO Execuções → 0 sem fila crítica",
+          "text": "Decidir",
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 1060,
-            "y": 200,
-            "width": 356,
-            "height": 109
+            "x": 939,
+            "y": 267,
+            "width": 65,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 937,
+            "y": 331,
+            "width": 67,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 937,
+            "y": 396,
+            "width": 67,
+            "height": 30
           }
         },
         {
           "tag": "section",
           "id": null,
           "role": null,
-          "name": "Jobs rodando 0 Execuções → Nenhum job rodando agora",
+          "name": "TETO DO MÊS · OUTUBRO Finanças → US$ 212 de US$ 300 Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62. CUSTO DIÁRIO · ÚLTIMOS 14 DIAS · DADOS DO PROTÓTIPO",
           "label": null,
-          "text": "Jobs rodando 0 Execuções → Nenhum job rodando agora",
+          "text": "TETO DO MÊS · OUTUBRO Finanças → US$ 212 de US$ 300 Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62. CUSTO DIÁRIO · ÚLTIMOS 14 DIAS · DADOS DO PROTÓTIPO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1044,
+            "y": 200,
+            "width": 372,
+            "height": 304
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças →",
+          "label": null,
+          "text": "Finanças →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1329,
+            "y": 222,
+            "width": 63,
+            "height": 16
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "JOBS RODANDO 2 1 na fila · 1 com falha",
+          "label": null,
+          "text": "JOBS RODANDO 2 1 na fila · 1 com falha",
           "placeholder": null,
           "title": null,
           "rect": {
             "x": 324,
-            "y": 328,
-            "width": 538,
-            "height": 380
+            "y": 520,
+            "width": 264,
+            "height": 116
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CARDS ATIVOS 7 3 em execução",
+          "label": null,
+          "text": "CARDS ATIVOS 7 3 em execução",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 600,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "GATES ABERTOS 5 mais antigo há 5 h",
+          "label": null,
+          "text": "GATES ABERTOS 5 mais antigo há 5 h",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 876,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CUSTO HOJE US$ 8,40 teto diário US$ 12",
+          "label": null,
+          "text": "CUSTO HOJE US$ 8,40 teto diário US$ 12",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1152,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Jobs ao vivo 2 RODANDO Execuções → NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8 AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "label": null,
+          "text": "Jobs ao vivo 2 RODANDO Execuções → NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8 AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 652,
+            "width": 522,
+            "height": 217
           }
         },
         {
@@ -1014,42 +1312,122 @@
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 772,
-            "y": 343,
-            "width": 73,
+            "x": 755,
+            "y": 667,
+            "width": 74,
             "height": 16
-          }
-        },
-        {
-          "tag": "section",
-          "id": null,
-          "role": null,
-          "name": "Escalados 0 Bloqueios →",
-          "label": null,
-          "text": "Escalados 0 Bloqueios →",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 878,
-            "y": 328,
-            "width": 538,
-            "height": 380
           }
         },
         {
           "tag": "button",
           "id": null,
           "role": "button",
-          "name": "Bloqueios →",
+          "name": "NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8",
           "label": null,
-          "text": "Bloqueios →",
+          "text": "NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8",
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 1331,
-            "y": 343,
-            "width": 68,
+            "x": 325,
+            "y": 698,
+            "width": 520,
+            "height": 85
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "label": null,
+          "text": "AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 325,
+            "y": 783,
+            "width": 520,
+            "height": 85
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Esteiras dos módulos Módulos → Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "label": null,
+          "text": "Esteiras dos módulos Módulos → Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 862,
+            "y": 652,
+            "width": 522,
+            "height": 193
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos →",
+          "label": null,
+          "text": "Módulos →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1305,
+            "y": 667,
+            "width": 62,
             "height": 16
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE",
+          "label": null,
+          "text": "Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 863,
+            "y": 698,
+            "width": 520,
+            "height": 73
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "label": null,
+          "text": "Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 863,
+            "y": 771,
+            "width": 520,
+            "height": 73
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Escalados 0",
+          "label": null,
+          "text": "Escalados 0",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1400,
+            "y": 652,
+            "width": 0,
+            "height": 0
           }
         },
         {
@@ -1062,10 +1440,10 @@
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 324,
-            "y": 724,
-            "width": 538,
-            "height": 380
+            "x": 1416,
+            "y": 652,
+            "width": 0,
+            "height": 0
           }
         },
         {
@@ -1078,90 +1456,10 @@
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 801,
-            "y": 739,
-            "width": 44,
-            "height": 16
-          }
-        },
-        {
-          "tag": "section",
-          "id": null,
-          "role": null,
-          "name": "Precisa de você Aprovações pendentes 0 autorizações aguardando decisão 0 Execuções com falha 0 jobs com erro requerem remediação 0 Bloqueios tarefas com escalação ativa 0 Alterações pendentes 0 homologações aguardando decisão 0",
-          "label": null,
-          "text": "Precisa de você Aprovações pendentes 0 autorizações aguardando decisão 0 Execuções com falha 0 jobs com erro requerem remediação 0 Bloqueios tarefas com escalação ativa 0 Alterações pendentes 0 homologações aguardando decisão 0",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 878,
-            "y": 724,
-            "width": 538,
-            "height": 380
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Aprovações pendentes 0 autorizações aguardando decisão 0",
-          "label": null,
-          "text": "Aprovações pendentes 0 autorizações aguardando decisão 0",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 879,
-            "y": 770,
-            "width": 536,
-            "height": 59
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Execuções com falha 0 jobs com erro requerem remediação 0",
-          "label": null,
-          "text": "Execuções com falha 0 jobs com erro requerem remediação 0",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 879,
-            "y": 829,
-            "width": 536,
-            "height": 59
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Bloqueios tarefas com escalação ativa 0",
-          "label": null,
-          "text": "Bloqueios tarefas com escalação ativa 0",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 879,
-            "y": 888,
-            "width": 536,
-            "height": 59
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Alterações pendentes 0 homologações aguardando decisão 0",
-          "label": null,
-          "text": "Alterações pendentes 0 homologações aguardando decisão 0",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 879,
-            "y": 947,
-            "width": 536,
-            "height": 59
+            "x": 1508,
+            "y": 668,
+            "width": 31,
+            "height": 32
           }
         }
       ],
@@ -1578,54 +1876,6 @@
           "tag": "button",
           "id": null,
           "role": "button",
-          "name": "Reiniciar Frontend",
-          "label": "Reiniciar Frontend",
-          "text": "Frontend",
-          "placeholder": null,
-          "title": "Reinicia o Frontend do escritório",
-          "rect": {
-            "x": 782,
-            "y": 16,
-            "width": 74,
-            "height": 32
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Backend",
-          "label": "Reiniciar Backend",
-          "text": "Backend",
-          "placeholder": null,
-          "title": "Reinicia o Backend do escritório",
-          "rect": {
-            "x": 868,
-            "y": 16,
-            "width": 71,
-            "height": 32
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
           "name": "Buscar telas, tasks, agentes… (Ctrl K)",
           "label": "Buscar telas, tasks, agentes… (Ctrl K)",
           "text": "Buscar telas, tasks, agentes… Ctrl K",
@@ -1746,16 +1996,136 @@
           "tag": "button",
           "id": null,
           "role": "button",
-          "name": "CARDS ATIVOS Tasks → 0 fluxo em dia",
+          "name": "Abrir Decisões →",
           "label": null,
-          "text": "CARDS ATIVOS Tasks → 0 fluxo em dia",
+          "text": "Abrir Decisões →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 909,
+            "y": 223,
+            "width": 95,
+            "height": 16
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 939,
+            "y": 267,
+            "width": 65,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 937,
+            "y": 331,
+            "width": 67,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 937,
+            "y": 396,
+            "width": 67,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças →",
+          "label": null,
+          "text": "Finanças →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1329,
+            "y": 222,
+            "width": 63,
+            "height": 16
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "JOBS RODANDO 2 1 na fila · 1 com falha",
+          "label": null,
+          "text": "JOBS RODANDO 2 1 na fila · 1 com falha",
           "placeholder": null,
           "title": null,
           "rect": {
             "x": 324,
-            "y": 200,
-            "width": 356,
-            "height": 109
+            "y": 520,
+            "width": 264,
+            "height": 116
           },
           "kind": "control",
           "type": null,
@@ -1770,16 +2140,16 @@
           "tag": "button",
           "id": null,
           "role": "button",
-          "name": "ESCALADOS Bloqueios → 0 sem gate humano aberto",
+          "name": "CARDS ATIVOS 7 3 em execução",
           "label": null,
-          "text": "ESCALADOS Bloqueios → 0 sem gate humano aberto",
+          "text": "CARDS ATIVOS 7 3 em execução",
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 692,
-            "y": 200,
-            "width": 356,
-            "height": 109
+            "x": 600,
+            "y": 520,
+            "width": 264,
+            "height": 116
           },
           "kind": "control",
           "type": null,
@@ -1794,16 +2164,40 @@
           "tag": "button",
           "id": null,
           "role": "button",
-          "name": "JOBS RODANDO Execuções → 0 sem fila crítica",
+          "name": "GATES ABERTOS 5 mais antigo há 5 h",
           "label": null,
-          "text": "JOBS RODANDO Execuções → 0 sem fila crítica",
+          "text": "GATES ABERTOS 5 mais antigo há 5 h",
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 1060,
-            "y": 200,
-            "width": 356,
-            "height": 109
+            "x": 876,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CUSTO HOJE US$ 8,40 teto diário US$ 12",
+          "label": null,
+          "text": "CUSTO HOJE US$ 8,40 teto diário US$ 12",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1152,
+            "y": 520,
+            "width": 264,
+            "height": 116
           },
           "kind": "control",
           "type": null,
@@ -1824,9 +2218,9 @@
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 772,
-            "y": 343,
-            "width": 73,
+            "x": 755,
+            "y": 667,
+            "width": 74,
             "height": 16
           },
           "kind": "control",
@@ -1842,16 +2236,112 @@
           "tag": "button",
           "id": null,
           "role": "button",
-          "name": "Bloqueios →",
+          "name": "NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8",
           "label": null,
-          "text": "Bloqueios →",
+          "text": "NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8",
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 1331,
-            "y": 343,
-            "width": 68,
+            "x": 325,
+            "y": 698,
+            "width": 520,
+            "height": 85
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "label": null,
+          "text": "AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 325,
+            "y": 783,
+            "width": 520,
+            "height": 85
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos →",
+          "label": null,
+          "text": "Módulos →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1305,
+            "y": 667,
+            "width": 62,
             "height": 16
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE",
+          "label": null,
+          "text": "Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 863,
+            "y": 698,
+            "width": 520,
+            "height": 73
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "label": null,
+          "text": "Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 863,
+            "y": 771,
+            "width": 520,
+            "height": 73
           },
           "kind": "control",
           "type": null,
@@ -1872,106 +2362,10 @@
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 801,
-            "y": 739,
-            "width": 44,
-            "height": 16
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Aprovações pendentes 0 autorizações aguardando decisão 0",
-          "label": null,
-          "text": "Aprovações pendentes 0 autorizações aguardando decisão 0",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 879,
-            "y": 770,
-            "width": 536,
-            "height": 59
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Execuções com falha 0 jobs com erro requerem remediação 0",
-          "label": null,
-          "text": "Execuções com falha 0 jobs com erro requerem remediação 0",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 879,
-            "y": 829,
-            "width": 536,
-            "height": 59
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Bloqueios tarefas com escalação ativa 0",
-          "label": null,
-          "text": "Bloqueios tarefas com escalação ativa 0",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 879,
-            "y": 888,
-            "width": 536,
-            "height": 59
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Alterações pendentes 0 homologações aguardando decisão 0",
-          "label": null,
-          "text": "Alterações pendentes 0 homologações aguardando decisão 0",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 879,
-            "y": 947,
-            "width": 536,
-            "height": 59
+            "x": 1508,
+            "y": 668,
+            "width": 31,
+            "height": 32
           },
           "kind": "control",
           "type": null,

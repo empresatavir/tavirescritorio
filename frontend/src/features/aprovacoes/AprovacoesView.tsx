@@ -187,8 +187,8 @@ export function AprovacoesView() {
           "min-height": 0,
           "min-width": 0,
           overflow: "hidden",
-          "border-right": "1px solid rgba(244,246,242,.10)",
-          background: "var(--surface-ink, #0f1729)",
+          "border-right": "1px solid var(--line)",
+          background: "var(--surface-1)",
         }}
       >
         <div style={{ padding: "20px 20px 12px" }}>
@@ -206,8 +206,8 @@ export function AprovacoesView() {
               "flex-wrap": "wrap",
               gap: "2px",
               padding: "2px",
-              background: "#121c30",
-              border: "1px solid rgba(244,246,242,.12)",
+              background: "var(--surface-1)",
+              border: "1px solid var(--line)",
               "border-radius": "999px",
               width: "max-content",
               "max-width": "100%",
@@ -233,7 +233,7 @@ export function AprovacoesView() {
                       display: "flex",
                       gap: "6px",
                       "align-items": "center",
-                      background: active() ? "#17223a" : "transparent",
+                      background: active() ? "var(--surface-3)" : "transparent",
                       color: active() ? "var(--text-primary)" : "var(--text-muted)",
                     }}
                   >
@@ -277,13 +277,13 @@ export function AprovacoesView() {
                     "border-radius": "12px",
                     border: selected()
                       ? "1px solid rgba(27,197,189,.55)"
-                      : "1px solid rgba(244,246,242,.08)",
+                      : "1px solid var(--line)",
                     cursor: "pointer",
                     color: "var(--text-primary)",
                     display: "flex",
                     "flex-direction": "column",
                     gap: "6px",
-                    background: selected() ? "#17223a" : "transparent",
+                    background: selected() ? "var(--surface-3)" : "transparent",
                     transition: "background 0.12s ease, border-color 0.12s ease",
                   }}
                 >
@@ -462,7 +462,7 @@ export function AprovacoesView() {
                         "border-radius": "999px",
                         color: imp().color,
                         background: "rgba(244,246,242,.06)",
-                        border: "1px solid rgba(244,246,242,.10)",
+                        border: "1px solid var(--line)",
                       }}
                     >
                       {imp().label}
@@ -475,7 +475,7 @@ export function AprovacoesView() {
                         "border-radius": "999px",
                         color: "var(--text-secondary)",
                         background: "rgba(244,246,242,.04)",
-                        border: "1px solid rgba(244,246,242,.10)",
+                        border: "1px solid var(--line)",
                       }}
                     >
                       {typeLabel(ap().type)}
@@ -526,9 +526,9 @@ export function AprovacoesView() {
                       </span>
                       <div
                         style={{
-                          border: "1px solid rgba(244,246,242,.12)",
+                          border: "1px solid var(--line)",
                           "border-radius": "14px",
-                          background: "var(--surface-ink, #0f1729)",
+                          background: "var(--surface-1)",
                           padding: "14px 16px",
                           display: "grid",
                           gap: "10px",
@@ -686,12 +686,12 @@ export function AprovacoesView() {
               <div
                 style={{
                   padding: "14px 28px",
-                  "border-top": "1px solid rgba(244,246,242,.10)",
+                  "border-top": "1px solid var(--line)",
                   display: "flex",
                   "flex-wrap": "wrap",
                   gap: "10px",
                   "align-items": "center",
-                  background: "var(--surface-ink, #0f1729)",
+                  background: "var(--surface-1)",
                 }}
               >
                 <Show when={ap().status === "pending" && ap().kind === "deploy"}>
@@ -709,7 +709,7 @@ export function AprovacoesView() {
                         height: "36px",
                         padding: "0 12px",
                         "border-radius": "8px",
-                        border: "1px solid rgba(244,246,242,.16)",
+                        border: "1px solid var(--line)",
                         background: "var(--surface-0)",
                         color: "var(--text-primary)",
                       }}
@@ -779,7 +779,7 @@ export function AprovacoesView() {
                       "min-width": "180px",
                       padding: "0 12px",
                       "border-radius": "8px",
-                      border: "1px solid rgba(244,246,242,.16)",
+                      border: "1px solid var(--line)",
                       background: "transparent",
                       color: "var(--text-primary)",
                     }}

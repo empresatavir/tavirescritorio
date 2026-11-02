@@ -1,13 +1,13 @@
 {
   "metric": "pixel_agreement_within_mean_absolute_rgb_threshold",
   "threshold": 12,
-  "overall_macro_average_percent": 87.57,
+  "overall_macro_average_percent": 88.97,
   "reference_screens": 36,
-  "candidate_images": 36,
+  "candidate_images": 45,
   "compared_screens": 36,
   "missing_candidate_screens": 0,
   "dimension_mismatches": 0,
-  "unexpected_candidate_images": 0,
+  "unexpected_candidate_images": 9,
   "records": [
     {
       "key": "agentes-roster",
@@ -37,16 +37,16 @@
       "candidate_image": "assets/002-analytics-implementation.png",
       "candidate_source": "visual/actual/analytics.png",
       "status": "compared",
-      "similarity_percent": 84.37,
+      "similarity_percent": 85.85,
       "metrics": {
         "width": 1440,
         "height": 900,
         "pixels": 1296000,
-        "similarity_percent": 84.37,
-        "exact_pixel_percent": 32.49,
-        "mean_absolute_error_rgb": 20.271,
-        "changed_pixels": 202512,
-        "changed_pixel_percent": 15.63
+        "similarity_percent": 85.85,
+        "exact_pixel_percent": 34.45,
+        "mean_absolute_error_rgb": 16.921,
+        "changed_pixels": 183333,
+        "changed_pixel_percent": 14.15
       },
       "overlay_image": "assets/002-analytics-overlay.png",
       "difference_image": "assets/002-analytics-difference.png"
@@ -100,16 +100,16 @@
       "candidate_image": "assets/005-chat-light-implementation.png",
       "candidate_source": "visual/actual/chat-light.png",
       "status": "compared",
-      "similarity_percent": 89.37,
+      "similarity_percent": 90.13,
       "metrics": {
         "width": 1440,
         "height": 900,
         "pixels": 1296000,
-        "similarity_percent": 89.37,
-        "exact_pixel_percent": 50.95,
-        "mean_absolute_error_rgb": 14.511,
-        "changed_pixels": 137725,
-        "changed_pixel_percent": 10.63
+        "similarity_percent": 90.13,
+        "exact_pixel_percent": 51.39,
+        "mean_absolute_error_rgb": 12.795,
+        "changed_pixels": 127918,
+        "changed_pixel_percent": 9.87
       },
       "overlay_image": "assets/005-chat-light-overlay.png",
       "difference_image": "assets/005-chat-light-difference.png"
@@ -142,16 +142,16 @@
       "candidate_image": "assets/007-config-light-implementation.png",
       "candidate_source": "visual/actual/config-light.png",
       "status": "compared",
-      "similarity_percent": 92.05,
+      "similarity_percent": 92.81,
       "metrics": {
         "width": 1440,
         "height": 900,
         "pixels": 1296000,
-        "similarity_percent": 92.05,
-        "exact_pixel_percent": 53.63,
-        "mean_absolute_error_rgb": 11.737,
-        "changed_pixels": 103054,
-        "changed_pixel_percent": 7.95
+        "similarity_percent": 92.81,
+        "exact_pixel_percent": 54.07,
+        "mean_absolute_error_rgb": 10.018,
+        "changed_pixels": 93245,
+        "changed_pixel_percent": 7.19
       },
       "overlay_image": "assets/007-config-light-overlay.png",
       "difference_image": "assets/007-config-light-difference.png"
@@ -178,31 +178,39 @@
       "difference_image": "assets/008-config-perfil-difference.png"
     },
     {
+      "key": "decisoes",
+      "candidate_image": "assets/009-decisoes-implementation.png",
+      "candidate_source": "visual/actual/decisoes.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
       "key": "decisoes-light",
-      "reference_image": "assets/009-decisoes-light-reference.png",
+      "reference_image": "assets/010-decisoes-light-reference.png",
       "reference_source": "visual/reference/decisoes-light.png",
-      "candidate_image": "assets/009-decisoes-light-implementation.png",
+      "candidate_image": "assets/010-decisoes-light-implementation.png",
       "candidate_source": "visual/actual/decisoes-light.png",
       "status": "compared",
-      "similarity_percent": 51.62,
+      "similarity_percent": 71.94,
       "metrics": {
         "width": 1440,
         "height": 900,
         "pixels": 1296000,
-        "similarity_percent": 51.62,
-        "exact_pixel_percent": 29.6,
-        "mean_absolute_error_rgb": 101.815,
-        "changed_pixels": 627011,
-        "changed_pixel_percent": 48.38
+        "similarity_percent": 71.94,
+        "exact_pixel_percent": 40.39,
+        "mean_absolute_error_rgb": 53.195,
+        "changed_pixels": 363642,
+        "changed_pixel_percent": 28.06
       },
-      "overlay_image": "assets/009-decisoes-light-overlay.png",
-      "difference_image": "assets/009-decisoes-light-difference.png"
+      "overlay_image": "assets/010-decisoes-light-overlay.png",
+      "difference_image": "assets/010-decisoes-light-difference.png"
     },
     {
       "key": "decisoes-lista",
-      "reference_image": "assets/010-decisoes-lista-reference.png",
+      "reference_image": "assets/011-decisoes-lista-reference.png",
       "reference_source": "visual/reference/decisoes-lista.png",
-      "candidate_image": "assets/010-decisoes-lista-implementation.png",
+      "candidate_image": "assets/011-decisoes-lista-implementation.png",
       "candidate_source": "visual/actual/decisoes-lista.png",
       "status": "compared",
       "similarity_percent": 88.98,
@@ -216,14 +224,14 @@
         "changed_pixels": 142758,
         "changed_pixel_percent": 11.02
       },
-      "overlay_image": "assets/010-decisoes-lista-overlay.png",
-      "difference_image": "assets/010-decisoes-lista-difference.png"
+      "overlay_image": "assets/011-decisoes-lista-overlay.png",
+      "difference_image": "assets/011-decisoes-lista-difference.png"
     },
     {
       "key": "doctor",
-      "reference_image": "assets/011-doctor-reference.png",
+      "reference_image": "assets/012-doctor-reference.png",
       "reference_source": "visual/reference/doctor.png",
-      "candidate_image": "assets/011-doctor-implementation.png",
+      "candidate_image": "assets/012-doctor-implementation.png",
       "candidate_source": "visual/actual/doctor.png",
       "status": "compared",
       "similarity_percent": 91.2,
@@ -237,35 +245,43 @@
         "changed_pixels": 114026,
         "changed_pixel_percent": 8.8
       },
-      "overlay_image": "assets/011-doctor-overlay.png",
-      "difference_image": "assets/011-doctor-difference.png"
+      "overlay_image": "assets/012-doctor-overlay.png",
+      "difference_image": "assets/012-doctor-difference.png"
     },
     {
       "key": "edicao-timeline",
-      "reference_image": "assets/012-edicao-timeline-reference.png",
+      "reference_image": "assets/013-edicao-timeline-reference.png",
       "reference_source": "visual/reference/edicao-timeline.png",
-      "candidate_image": "assets/012-edicao-timeline-implementation.png",
+      "candidate_image": "assets/013-edicao-timeline-implementation.png",
       "candidate_source": "visual/actual/edicao-timeline.png",
       "status": "compared",
-      "similarity_percent": 83.38,
+      "similarity_percent": 87.99,
       "metrics": {
         "width": 1440,
         "height": 900,
         "pixels": 1296000,
-        "similarity_percent": 83.38,
-        "exact_pixel_percent": 33.54,
-        "mean_absolute_error_rgb": 13.322,
-        "changed_pixels": 215417,
-        "changed_pixel_percent": 16.62
+        "similarity_percent": 87.99,
+        "exact_pixel_percent": 46.64,
+        "mean_absolute_error_rgb": 11.733,
+        "changed_pixels": 155628,
+        "changed_pixel_percent": 12.01
       },
-      "overlay_image": "assets/012-edicao-timeline-overlay.png",
-      "difference_image": "assets/012-edicao-timeline-difference.png"
+      "overlay_image": "assets/013-edicao-timeline-overlay.png",
+      "difference_image": "assets/013-edicao-timeline-difference.png"
+    },
+    {
+      "key": "electron_capture",
+      "candidate_image": "assets/014-electron-capture-implementation.png",
+      "candidate_source": "visual/actual/electron_capture.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
     },
     {
       "key": "exec-lista",
-      "reference_image": "assets/013-exec-lista-reference.png",
+      "reference_image": "assets/015-exec-lista-reference.png",
       "reference_source": "visual/reference/exec-lista.png",
-      "candidate_image": "assets/013-exec-lista-implementation.png",
+      "candidate_image": "assets/015-exec-lista-implementation.png",
       "candidate_source": "visual/actual/exec-lista.png",
       "status": "compared",
       "similarity_percent": 89.26,
@@ -279,14 +295,38 @@
         "changed_pixels": 139128,
         "changed_pixel_percent": 10.74
       },
-      "overlay_image": "assets/013-exec-lista-overlay.png",
-      "difference_image": "assets/013-exec-lista-difference.png"
+      "overlay_image": "assets/015-exec-lista-overlay.png",
+      "difference_image": "assets/015-exec-lista-difference.png"
+    },
+    {
+      "key": "execucoes",
+      "candidate_image": "assets/016-execucoes-implementation.png",
+      "candidate_source": "visual/actual/execucoes.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "execucoes_clicado",
+      "candidate_image": "assets/017-execucoes-clicado-implementation.png",
+      "candidate_source": "visual/actual/execucoes_clicado.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "fabrica",
+      "candidate_image": "assets/018-fabrica-implementation.png",
+      "candidate_source": "visual/actual/fabrica.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
     },
     {
       "key": "fabrica-esteiras",
-      "reference_image": "assets/014-fabrica-esteiras-reference.png",
+      "reference_image": "assets/019-fabrica-esteiras-reference.png",
       "reference_source": "visual/reference/fabrica-esteiras.png",
-      "candidate_image": "assets/014-fabrica-esteiras-implementation.png",
+      "candidate_image": "assets/019-fabrica-esteiras-implementation.png",
       "candidate_source": "visual/actual/fabrica-esteiras.png",
       "status": "compared",
       "similarity_percent": 87.64,
@@ -300,14 +340,14 @@
         "changed_pixels": 160245,
         "changed_pixel_percent": 12.36
       },
-      "overlay_image": "assets/014-fabrica-esteiras-overlay.png",
-      "difference_image": "assets/014-fabrica-esteiras-difference.png"
+      "overlay_image": "assets/019-fabrica-esteiras-overlay.png",
+      "difference_image": "assets/019-fabrica-esteiras-difference.png"
     },
     {
       "key": "financas",
-      "reference_image": "assets/015-financas-reference.png",
+      "reference_image": "assets/020-financas-reference.png",
       "reference_source": "visual/reference/financas.png",
-      "candidate_image": "assets/015-financas-implementation.png",
+      "candidate_image": "assets/020-financas-implementation.png",
       "candidate_source": "visual/actual/financas.png",
       "status": "compared",
       "similarity_percent": 90.34,
@@ -321,14 +361,14 @@
         "changed_pixels": 125199,
         "changed_pixel_percent": 9.66
       },
-      "overlay_image": "assets/015-financas-overlay.png",
-      "difference_image": "assets/015-financas-difference.png"
+      "overlay_image": "assets/020-financas-overlay.png",
+      "difference_image": "assets/020-financas-difference.png"
     },
     {
       "key": "flow-beta",
-      "reference_image": "assets/016-flow-beta-reference.png",
+      "reference_image": "assets/021-flow-beta-reference.png",
       "reference_source": "visual/reference/flow-beta.png",
-      "candidate_image": "assets/016-flow-beta-implementation.png",
+      "candidate_image": "assets/021-flow-beta-implementation.png",
       "candidate_source": "visual/actual/flow-beta.png",
       "status": "compared",
       "similarity_percent": 87.41,
@@ -342,14 +382,14 @@
         "changed_pixels": 163229,
         "changed_pixel_percent": 12.59
       },
-      "overlay_image": "assets/016-flow-beta-overlay.png",
-      "difference_image": "assets/016-flow-beta-difference.png"
+      "overlay_image": "assets/021-flow-beta-overlay.png",
+      "difference_image": "assets/021-flow-beta-difference.png"
     },
     {
       "key": "funil",
-      "reference_image": "assets/017-funil-reference.png",
+      "reference_image": "assets/022-funil-reference.png",
       "reference_source": "visual/reference/funil.png",
-      "candidate_image": "assets/017-funil-implementation.png",
+      "candidate_image": "assets/022-funil-implementation.png",
       "candidate_source": "visual/actual/funil.png",
       "status": "compared",
       "similarity_percent": 88.29,
@@ -363,14 +403,14 @@
         "changed_pixels": 151728,
         "changed_pixel_percent": 11.71
       },
-      "overlay_image": "assets/017-funil-overlay.png",
-      "difference_image": "assets/017-funil-difference.png"
+      "overlay_image": "assets/022-funil-overlay.png",
+      "difference_image": "assets/022-funil-difference.png"
     },
     {
       "key": "ideias",
-      "reference_image": "assets/018-ideias-reference.png",
+      "reference_image": "assets/023-ideias-reference.png",
       "reference_source": "visual/reference/ideias.png",
-      "candidate_image": "assets/018-ideias-implementation.png",
+      "candidate_image": "assets/023-ideias-implementation.png",
       "candidate_source": "visual/actual/ideias.png",
       "status": "compared",
       "similarity_percent": 91.35,
@@ -384,14 +424,14 @@
         "changed_pixels": 112165,
         "changed_pixel_percent": 8.65
       },
-      "overlay_image": "assets/018-ideias-overlay.png",
-      "difference_image": "assets/018-ideias-difference.png"
+      "overlay_image": "assets/023-ideias-overlay.png",
+      "difference_image": "assets/023-ideias-difference.png"
     },
     {
       "key": "mapa",
-      "reference_image": "assets/019-mapa-reference.png",
+      "reference_image": "assets/024-mapa-reference.png",
       "reference_source": "visual/reference/mapa.png",
-      "candidate_image": "assets/019-mapa-implementation.png",
+      "candidate_image": "assets/024-mapa-implementation.png",
       "candidate_source": "visual/actual/mapa.png",
       "status": "compared",
       "similarity_percent": 93.62,
@@ -405,14 +445,14 @@
         "changed_pixels": 82748,
         "changed_pixel_percent": 6.38
       },
-      "overlay_image": "assets/019-mapa-overlay.png",
-      "difference_image": "assets/019-mapa-difference.png"
+      "overlay_image": "assets/024-mapa-overlay.png",
+      "difference_image": "assets/024-mapa-difference.png"
     },
     {
       "key": "memoria",
-      "reference_image": "assets/020-memoria-reference.png",
+      "reference_image": "assets/025-memoria-reference.png",
       "reference_source": "visual/reference/memoria.png",
-      "candidate_image": "assets/020-memoria-implementation.png",
+      "candidate_image": "assets/025-memoria-implementation.png",
       "candidate_source": "visual/actual/memoria.png",
       "status": "compared",
       "similarity_percent": 89.51,
@@ -426,14 +466,14 @@
         "changed_pixels": 135992,
         "changed_pixel_percent": 10.49
       },
-      "overlay_image": "assets/020-memoria-overlay.png",
-      "difference_image": "assets/020-memoria-difference.png"
+      "overlay_image": "assets/025-memoria-overlay.png",
+      "difference_image": "assets/025-memoria-difference.png"
     },
     {
       "key": "mission",
-      "reference_image": "assets/021-mission-reference.png",
+      "reference_image": "assets/026-mission-reference.png",
       "reference_source": "visual/reference/mission.png",
-      "candidate_image": "assets/021-mission-implementation.png",
+      "candidate_image": "assets/026-mission-implementation.png",
       "candidate_source": "visual/actual/mission.png",
       "status": "compared",
       "similarity_percent": 93.26,
@@ -447,14 +487,14 @@
         "changed_pixels": 87293,
         "changed_pixel_percent": 6.74
       },
-      "overlay_image": "assets/021-mission-overlay.png",
-      "difference_image": "assets/021-mission-difference.png"
+      "overlay_image": "assets/026-mission-overlay.png",
+      "difference_image": "assets/026-mission-difference.png"
     },
     {
       "key": "modulos-hub",
-      "reference_image": "assets/022-modulos-hub-reference.png",
+      "reference_image": "assets/027-modulos-hub-reference.png",
       "reference_source": "visual/reference/modulos-hub.png",
-      "candidate_image": "assets/022-modulos-hub-implementation.png",
+      "candidate_image": "assets/027-modulos-hub-implementation.png",
       "candidate_source": "visual/actual/modulos-hub.png",
       "status": "compared",
       "similarity_percent": 90.75,
@@ -468,14 +508,14 @@
         "changed_pixels": 119899,
         "changed_pixel_percent": 9.25
       },
-      "overlay_image": "assets/022-modulos-hub-overlay.png",
-      "difference_image": "assets/022-modulos-hub-difference.png"
+      "overlay_image": "assets/027-modulos-hub-overlay.png",
+      "difference_image": "assets/027-modulos-hub-difference.png"
     },
     {
       "key": "org",
-      "reference_image": "assets/023-org-reference.png",
+      "reference_image": "assets/028-org-reference.png",
       "reference_source": "visual/reference/org.png",
-      "candidate_image": "assets/023-org-implementation.png",
+      "candidate_image": "assets/028-org-implementation.png",
       "candidate_source": "visual/actual/org.png",
       "status": "compared",
       "similarity_percent": 93.59,
@@ -489,14 +529,14 @@
         "changed_pixels": 83037,
         "changed_pixel_percent": 6.41
       },
-      "overlay_image": "assets/023-org-overlay.png",
-      "difference_image": "assets/023-org-difference.png"
+      "overlay_image": "assets/028-org-overlay.png",
+      "difference_image": "assets/028-org-difference.png"
     },
     {
       "key": "personas",
-      "reference_image": "assets/024-personas-reference.png",
+      "reference_image": "assets/029-personas-reference.png",
       "reference_source": "visual/reference/personas.png",
-      "candidate_image": "assets/024-personas-implementation.png",
+      "candidate_image": "assets/029-personas-implementation.png",
       "candidate_source": "visual/actual/personas.png",
       "status": "compared",
       "similarity_percent": 87.8,
@@ -510,14 +550,14 @@
         "changed_pixels": 158050,
         "changed_pixel_percent": 12.2
       },
-      "overlay_image": "assets/024-personas-overlay.png",
-      "difference_image": "assets/024-personas-difference.png"
+      "overlay_image": "assets/029-personas-overlay.png",
+      "difference_image": "assets/029-personas-difference.png"
     },
     {
       "key": "propostas",
-      "reference_image": "assets/025-propostas-reference.png",
+      "reference_image": "assets/030-propostas-reference.png",
       "reference_source": "visual/reference/propostas.png",
-      "candidate_image": "assets/025-propostas-implementation.png",
+      "candidate_image": "assets/030-propostas-implementation.png",
       "candidate_source": "visual/actual/propostas.png",
       "status": "compared",
       "similarity_percent": 89.96,
@@ -531,14 +571,22 @@
         "changed_pixels": 130127,
         "changed_pixel_percent": 10.04
       },
-      "overlay_image": "assets/025-propostas-overlay.png",
-      "difference_image": "assets/025-propostas-difference.png"
+      "overlay_image": "assets/030-propostas-overlay.png",
+      "difference_image": "assets/030-propostas-difference.png"
+    },
+    {
+      "key": "raiox",
+      "candidate_image": "assets/031-raiox-implementation.png",
+      "candidate_source": "visual/actual/raiox.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
     },
     {
       "key": "raiox-lista",
-      "reference_image": "assets/026-raiox-lista-reference.png",
+      "reference_image": "assets/032-raiox-lista-reference.png",
       "reference_source": "visual/reference/raiox-lista.png",
-      "candidate_image": "assets/026-raiox-lista-implementation.png",
+      "candidate_image": "assets/032-raiox-lista-implementation.png",
       "candidate_source": "visual/actual/raiox-lista.png",
       "status": "compared",
       "similarity_percent": 88.07,
@@ -552,14 +600,14 @@
         "changed_pixels": 154636,
         "changed_pixel_percent": 11.93
       },
-      "overlay_image": "assets/026-raiox-lista-overlay.png",
-      "difference_image": "assets/026-raiox-lista-difference.png"
+      "overlay_image": "assets/032-raiox-lista-overlay.png",
+      "difference_image": "assets/032-raiox-lista-difference.png"
     },
     {
       "key": "roadmap",
-      "reference_image": "assets/027-roadmap-reference.png",
+      "reference_image": "assets/033-roadmap-reference.png",
       "reference_source": "visual/reference/roadmap.png",
-      "candidate_image": "assets/027-roadmap-implementation.png",
+      "candidate_image": "assets/033-roadmap-implementation.png",
       "candidate_source": "visual/actual/roadmap.png",
       "status": "compared",
       "similarity_percent": 90.44,
@@ -573,35 +621,35 @@
         "changed_pixels": 123934,
         "changed_pixel_percent": 9.56
       },
-      "overlay_image": "assets/027-roadmap-overlay.png",
-      "difference_image": "assets/027-roadmap-difference.png"
+      "overlay_image": "assets/033-roadmap-overlay.png",
+      "difference_image": "assets/033-roadmap-difference.png"
     },
     {
       "key": "sala-dark",
-      "reference_image": "assets/028-sala-dark-reference.png",
+      "reference_image": "assets/034-sala-dark-reference.png",
       "reference_source": "visual/reference/sala-dark.png",
-      "candidate_image": "assets/028-sala-dark-implementation.png",
+      "candidate_image": "assets/034-sala-dark-implementation.png",
       "candidate_source": "visual/actual/sala-dark.png",
       "status": "compared",
-      "similarity_percent": 88.33,
+      "similarity_percent": 86.37,
       "metrics": {
         "width": 1440,
         "height": 900,
         "pixels": 1296000,
-        "similarity_percent": 88.33,
-        "exact_pixel_percent": 46.91,
-        "mean_absolute_error_rgb": 12.235,
-        "changed_pixels": 151279,
-        "changed_pixel_percent": 11.67
+        "similarity_percent": 86.37,
+        "exact_pixel_percent": 43.71,
+        "mean_absolute_error_rgb": 14.571,
+        "changed_pixels": 176633,
+        "changed_pixel_percent": 13.63
       },
-      "overlay_image": "assets/028-sala-dark-overlay.png",
-      "difference_image": "assets/028-sala-dark-difference.png"
+      "overlay_image": "assets/034-sala-dark-overlay.png",
+      "difference_image": "assets/034-sala-dark-difference.png"
     },
     {
       "key": "sala-estreita",
-      "reference_image": "assets/029-sala-estreita-reference.png",
+      "reference_image": "assets/035-sala-estreita-reference.png",
       "reference_source": "visual/reference/sala-estreita.png",
-      "candidate_image": "assets/029-sala-estreita-implementation.png",
+      "candidate_image": "assets/035-sala-estreita-implementation.png",
       "candidate_source": "visual/actual/sala-estreita.png",
       "status": "compared",
       "similarity_percent": 86.17,
@@ -615,35 +663,43 @@
         "changed_pixels": 107006,
         "changed_pixel_percent": 13.83
       },
-      "overlay_image": "assets/029-sala-estreita-overlay.png",
-      "difference_image": "assets/029-sala-estreita-difference.png"
+      "overlay_image": "assets/035-sala-estreita-overlay.png",
+      "difference_image": "assets/035-sala-estreita-difference.png"
     },
     {
       "key": "sala-light",
-      "reference_image": "assets/030-sala-light-reference.png",
+      "reference_image": "assets/036-sala-light-reference.png",
       "reference_source": "visual/reference/sala-light.png",
-      "candidate_image": "assets/030-sala-light-implementation.png",
+      "candidate_image": "assets/036-sala-light-implementation.png",
       "candidate_source": "visual/actual/sala-light.png",
       "status": "compared",
-      "similarity_percent": 58.33,
+      "similarity_percent": 82.81,
       "metrics": {
         "width": 1440,
         "height": 900,
         "pixels": 1296000,
-        "similarity_percent": 58.33,
-        "exact_pixel_percent": 22.21,
-        "mean_absolute_error_rgb": 83.249,
-        "changed_pixels": 540050,
-        "changed_pixel_percent": 41.67
+        "similarity_percent": 82.81,
+        "exact_pixel_percent": 57.3,
+        "mean_absolute_error_rgb": 21.27,
+        "changed_pixels": 222788,
+        "changed_pixel_percent": 17.19
       },
-      "overlay_image": "assets/030-sala-light-overlay.png",
-      "difference_image": "assets/030-sala-light-difference.png"
+      "overlay_image": "assets/036-sala-light-overlay.png",
+      "difference_image": "assets/036-sala-light-difference.png"
+    },
+    {
+      "key": "sala_operacao",
+      "candidate_image": "assets/037-sala-operacao-implementation.png",
+      "candidate_source": "visual/actual/sala_operacao.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
     },
     {
       "key": "skills",
-      "reference_image": "assets/031-skills-reference.png",
+      "reference_image": "assets/038-skills-reference.png",
       "reference_source": "visual/reference/skills.png",
-      "candidate_image": "assets/031-skills-implementation.png",
+      "candidate_image": "assets/038-skills-implementation.png",
       "candidate_source": "visual/actual/skills.png",
       "status": "compared",
       "similarity_percent": 91.22,
@@ -657,14 +713,14 @@
         "changed_pixels": 113799,
         "changed_pixel_percent": 8.78
       },
-      "overlay_image": "assets/031-skills-overlay.png",
-      "difference_image": "assets/031-skills-difference.png"
+      "overlay_image": "assets/038-skills-overlay.png",
+      "difference_image": "assets/038-skills-difference.png"
     },
     {
       "key": "social-inbox",
-      "reference_image": "assets/032-social-inbox-reference.png",
+      "reference_image": "assets/039-social-inbox-reference.png",
       "reference_source": "visual/reference/social-inbox.png",
-      "candidate_image": "assets/032-social-inbox-implementation.png",
+      "candidate_image": "assets/039-social-inbox-implementation.png",
       "candidate_source": "visual/actual/social-inbox.png",
       "status": "compared",
       "similarity_percent": 91.28,
@@ -678,14 +734,14 @@
         "changed_pixels": 113037,
         "changed_pixel_percent": 8.72
       },
-      "overlay_image": "assets/032-social-inbox-overlay.png",
-      "difference_image": "assets/032-social-inbox-difference.png"
+      "overlay_image": "assets/039-social-inbox-overlay.png",
+      "difference_image": "assets/039-social-inbox-difference.png"
     },
     {
       "key": "social-perfis",
-      "reference_image": "assets/033-social-perfis-reference.png",
+      "reference_image": "assets/040-social-perfis-reference.png",
       "reference_source": "visual/reference/social-perfis.png",
-      "candidate_image": "assets/033-social-perfis-implementation.png",
+      "candidate_image": "assets/040-social-perfis-implementation.png",
       "candidate_source": "visual/actual/social-perfis.png",
       "status": "compared",
       "similarity_percent": 91.91,
@@ -699,14 +755,22 @@
         "changed_pixels": 104875,
         "changed_pixel_percent": 8.09
       },
-      "overlay_image": "assets/033-social-perfis-overlay.png",
-      "difference_image": "assets/033-social-perfis-difference.png"
+      "overlay_image": "assets/040-social-perfis-overlay.png",
+      "difference_image": "assets/040-social-perfis-difference.png"
+    },
+    {
+      "key": "studio",
+      "candidate_image": "assets/041-studio-implementation.png",
+      "candidate_source": "visual/actual/studio.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
     },
     {
       "key": "studio-esteira",
-      "reference_image": "assets/034-studio-esteira-reference.png",
+      "reference_image": "assets/042-studio-esteira-reference.png",
       "reference_source": "visual/reference/studio-esteira.png",
-      "candidate_image": "assets/034-studio-esteira-implementation.png",
+      "candidate_image": "assets/042-studio-esteira-implementation.png",
       "candidate_source": "visual/actual/studio-esteira.png",
       "status": "compared",
       "similarity_percent": 86.84,
@@ -720,14 +784,14 @@
         "changed_pixels": 170577,
         "changed_pixel_percent": 13.16
       },
-      "overlay_image": "assets/034-studio-esteira-overlay.png",
-      "difference_image": "assets/034-studio-esteira-difference.png"
+      "overlay_image": "assets/042-studio-esteira-overlay.png",
+      "difference_image": "assets/042-studio-esteira-difference.png"
     },
     {
       "key": "tasks-kanban",
-      "reference_image": "assets/035-tasks-kanban-reference.png",
+      "reference_image": "assets/043-tasks-kanban-reference.png",
       "reference_source": "visual/reference/tasks-kanban.png",
-      "candidate_image": "assets/035-tasks-kanban-implementation.png",
+      "candidate_image": "assets/043-tasks-kanban-implementation.png",
       "candidate_source": "visual/actual/tasks-kanban.png",
       "status": "compared",
       "similarity_percent": 90.1,
@@ -741,14 +805,22 @@
         "changed_pixels": 128308,
         "changed_pixel_percent": 9.9
       },
-      "overlay_image": "assets/035-tasks-kanban-overlay.png",
-      "difference_image": "assets/035-tasks-kanban-difference.png"
+      "overlay_image": "assets/043-tasks-kanban-overlay.png",
+      "difference_image": "assets/043-tasks-kanban-difference.png"
+    },
+    {
+      "key": "tasks_kanban",
+      "candidate_image": "assets/044-tasks-kanban-implementation.png",
+      "candidate_source": "visual/actual/tasks_kanban.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
     },
     {
       "key": "tour-escolha",
-      "reference_image": "assets/036-tour-escolha-reference.png",
+      "reference_image": "assets/045-tour-escolha-reference.png",
       "reference_source": "visual/reference/tour-escolha.png",
-      "candidate_image": "assets/036-tour-escolha-implementation.png",
+      "candidate_image": "assets/045-tour-escolha-implementation.png",
       "candidate_source": "visual/actual/tour-escolha.png",
       "status": "compared",
       "similarity_percent": 88.34,
@@ -762,8 +834,8 @@
         "changed_pixels": 151137,
         "changed_pixel_percent": 11.66
       },
-      "overlay_image": "assets/036-tour-escolha-overlay.png",
-      "difference_image": "assets/036-tour-escolha-difference.png"
+      "overlay_image": "assets/045-tour-escolha-overlay.png",
+      "difference_image": "assets/045-tour-escolha-difference.png"
     }
   ]
 }

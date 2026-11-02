@@ -1785,6 +1785,7 @@ export const api = {
       perfil: { nome: string; email: string; idioma?: string };
       greeting?: string;
       as_of?: string;
+      visual_fixture?: boolean;
       overview: { fabrica: boolean; aprovacoes: boolean; prazos: boolean; ordem?: string[] };
       focused_project_id: string | null;
       focused_demand_id: string | null;

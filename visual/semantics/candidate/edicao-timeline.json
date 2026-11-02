@@ -1,11 +1,11 @@
 {
   "screenId": "edicao-timeline",
   "side": "candidate",
-  "capturedUrl": "http://127.0.0.1:9196/edicao",
+  "capturedUrl": "http://127.0.0.1:9200/edicao",
   "frames": [
     {
       "name": null,
-      "url": "http://127.0.0.1:9196/edicao",
+      "url": "http://127.0.0.1:9200/edicao",
       "title": "TAVIR Escritório — Painel Operacional",
       "viewport": {
         "width": 1440,
@@ -15,11 +15,11 @@
       "visibleElementCountsByTag": {
         "html": 1,
         "body": 1,
-        "div": 32,
+        "div": 61,
         "nav": 1,
         "img": 2,
-        "button": 23,
-        "span": 53,
+        "button": 31,
+        "span": 109,
         "svg": 16,
         "path": 31,
         "polygon": 3,
@@ -31,9 +31,11 @@
         "header": 1,
         "main": 1,
         "h1": 1,
-        "section": 2,
-        "h2": 2,
-        "input": 1
+        "p": 1,
+        "b": 4,
+        "section": 4,
+        "h3": 1,
+        "h2": 2
       },
       "visibleText": [
         {
@@ -151,22 +153,10 @@
           "role": null
         },
         {
-          "text": "office.py · SQLite ao vivo",
+          "text": "AO VIVO",
           "tag": "span",
           "id": "",
           "role": null
-        },
-        {
-          "text": "Frontend",
-          "tag": "button",
-          "id": "",
-          "role": "button"
-        },
-        {
-          "text": "Backend",
-          "tag": "button",
-          "id": "",
-          "role": "button"
         },
         {
           "text": "Buscar telas, tasks, agentes…",
@@ -187,10 +177,376 @@
           "role": null
         },
         {
+          "text": "Módulo · Conversar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "beta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
           "text": "Edição",
           "tag": "h1",
           "id": "",
           "role": "heading"
+        },
+        {
+          "text": "Pós-produção: corte, narração, legenda e render. A revisão de legenda acontece aqui, com o vídeo parado no ponto certo.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Exportar .srt",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Renderizar",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Ep. 14 · reel 45 s",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "IA Livros · vídeo 12 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "01",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Corte",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "02",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Narração",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "03",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Legenda",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "04",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Render",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "prévia · 9:16 · 1080p",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:04",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "quadro do corte ·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "mapa",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Este escolheu esconder uma cidade inteira.",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tocar",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "00:04",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:45",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Revisão de legenda",
+          "tag": "h3",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "2 alertas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rita Revisora",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:00",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "–",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:03",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Todo mapa escolhe o que mostrar.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:03",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "–",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:07",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Este escolheu esconder uma cidade inteira.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Linha com 41 caracteres. Limite: 32.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:07",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "–",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:12",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Em 1953, ela sumiu da carta oficial.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:12",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "–",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:18",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ninguém mudou de endereço.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:18",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "–",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:26",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mas o correio parou de chegar.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sobrepõe a narração em 0,4 s.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:26",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "–",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:34",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Três versões contam essa história.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:34",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "–",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:40",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Só uma tem documento.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:40",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "–",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "00:45",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fontes na legenda do post.",
+          "tag": "span",
+          "id": "",
+          "role": null
         },
         {
           "text": "Timeline",
@@ -265,6 +621,30 @@
           "role": null
         },
         {
+          "text": "mapa",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "arquivo",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ruínas",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "fontes",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
           "text": "Narração",
           "tag": "span",
           "id": "",
@@ -289,10 +669,82 @@
           "role": "heading"
         },
         {
-          "text": "Enfileirar",
-          "tag": "button",
+          "text": "motor local · ffmpeg",
+          "tag": "span",
           "id": "",
-          "role": "button"
+          "role": null
+        },
+        {
+          "text": "9:16",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Reel 1080 × 1920",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "100%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "pronto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4:5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Feed 1080 × 1350",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "na fila",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "16:9",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "YouTube 1920 × 1080",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "na fila",
+          "tag": "span",
+          "id": "",
+          "role": null
         }
       ],
       "semanticElements": [
@@ -636,9 +1088,9 @@
           "tag": "header",
           "id": null,
           "role": null,
-          "name": "Módulos / Edição office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "name": "Módulos / Edição AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
           "label": null,
-          "text": "Módulos / Edição office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "text": "Módulos / Edição AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
           "placeholder": null,
           "title": null,
           "rect": {
@@ -654,46 +1106,14 @@
           "role": null,
           "name": "Indicador de dados operacionais ao vivo",
           "label": null,
-          "text": "office.py · SQLite ao vivo",
+          "text": "AO VIVO",
           "placeholder": null,
           "title": "Indicador de dados operacionais ao vivo",
           "rect": {
             "x": 451,
             "y": 20,
-            "width": 156,
+            "width": 81,
             "height": 24
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Frontend",
-          "label": "Reiniciar Frontend",
-          "text": "Frontend",
-          "placeholder": null,
-          "title": "Reinicia o Frontend do escritório",
-          "rect": {
-            "x": 782,
-            "y": 16,
-            "width": 74,
-            "height": 32
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Backend",
-          "label": "Reiniciar Backend",
-          "text": "Backend",
-          "placeholder": null,
-          "title": "Reinicia o Backend do escritório",
-          "rect": {
-            "x": 868,
-            "y": 16,
-            "width": 71,
-            "height": 32
           }
         },
         {
@@ -748,9 +1168,9 @@
           "tag": "main",
           "id": null,
           "role": "main",
-          "name": "Edição Timeline Clique numa trilha para mover o cursor 00:04 / 00:45 00:00 00:09 00:18 00:27 00:36 00:45 Vídeo Narração Legenda Trilha Fila de render Enfileirar",
+          "name": "MÓDULO · CONVERSAR BETA Edição Pós-produção: corte, narração, legenda e render. A revisão de legenda acontece aqui, com o vídeo parado no ponto certo. Exportar .srt Renderizar Ep. 14 · reel 45 s IA Livros · vídeo 12 min 01 Corte 02 Narração 03 Legenda 04 Render prévia · 9:16 · 1080p 00:04 quadro do corte · mapa Este escolheu esconder uma cidade inteira. Tocar 00:04 / 00:45 Revisão de legenda 2 alertas Rita Revisora 00:00–00:03 Todo mapa escolhe o que mostrar. 00:03–00:07 Este escolheu esconder uma cidade inteira. Linha com 41 caracteres. Limite: 32. 00:07–00:12 Em 1953, ela sumiu da carta oficial. 00:12–00:18 Ninguém mudou de endereço. 00:18–00:26 Mas o correio parou de chegar. Sobrepõe a narração em 0,4 s. 00:26–00:34 Três versões contam essa história. 00:34–00:40 Só uma tem documento. 00:40–00:45 Fontes na legenda do post. Timeline Clique numa trilha para mover o cursor 00:04 / 00:45 00:00 00:09 00:18 00:27 00:36 00:45 Vídeo mapa arquivo ruínas fontes Narração Legenda Trilha Fila de render MOTOR LOCAL · FFMPEG 9:16 Reel 1080 × 1920 100% PRONTO 4:5 Feed 1080 × 1350 0% NA FILA 16:9 YouTube 1920 × 1080 0% NA FILA",
           "label": null,
-          "text": "Edição Timeline Clique numa trilha para mover o cursor 00:04 / 00:45 00:00 00:09 00:18 00:27 00:36 00:45 Vídeo Narração Legenda Trilha Fila de render Enfileirar",
+          "text": "MÓDULO · CONVERSAR BETA Edição Pós-produção: corte, narração, legenda e render. A revisão de legenda acontece aqui, com o vídeo parado no ponto certo. Exportar .srt Renderizar Ep. 14 · reel 45 s IA Livros · vídeo 12 min 01 Corte 02 Narração 03 Legenda 04 Render prévia · 9:16 · 1080p 00:04 quadro do corte · mapa Este escolheu esconder uma cidade inteira. Tocar 00:04 / 00:45 Revisão de legenda 2 alertas Rita Revisora 00:00–00:03 Todo mapa escolhe o que mostrar. 00:03–00:07 Este escolheu esconder uma cidade inteira. Linha com 41 caracteres. Limite: 32. 00:07–00:12 Em 1953, ela sumiu da carta oficial. 00:12–00:18 Ninguém mudou de endereço. 00:18–00:26 Mas o correio parou de chegar. Sobrepõe a narração em 0,4 s. 00:26–00:34 Três versões contam essa história. 00:34–00:40 Só uma tem documento. 00:40–00:45 Fontes na legenda do post. Timeline Clique numa trilha para mover o cursor 00:04 / 00:45 00:00 00:09 00:18 00:27 00:36 00:45 Vídeo mapa arquivo ruínas fontes Narração Legenda Trilha Fila de render MOTOR LOCAL · FFMPEG 9:16 Reel 1080 × 1920 100% PRONTO 4:5 Feed 1080 × 1350 0% NA FILA 16:9 YouTube 1920 × 1080 0% NA FILA",
           "placeholder": null,
           "title": null,
           "rect": {
@@ -771,9 +1191,233 @@
           "title": null,
           "rect": {
             "x": 332,
-            "y": 92,
-            "width": 1076,
+            "y": 122,
+            "width": 851,
             "height": 47
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Exportar .srt",
+          "label": null,
+          "text": "Exportar .srt",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1199,
+            "y": 181,
+            "width": 106,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Renderizar",
+          "label": null,
+          "text": "Renderizar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1312,
+            "y": 181,
+            "width": 96,
+            "height": 36
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "prévia · 9:16 · 1080p 00:04 quadro do corte · mapa Este escolheu esconder uma cidade inteira. Tocar 00:04 / 00:45",
+          "label": null,
+          "text": "prévia · 9:16 · 1080p 00:04 quadro do corte · mapa Este escolheu esconder uma cidade inteira. Tocar 00:04 / 00:45",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 316,
+            "width": 520,
+            "height": 430
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tocar",
+          "label": "Tocar",
+          "text": "Tocar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 350,
+            "y": 696,
+            "width": 59,
+            "height": 32
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Revisão de legenda 2 alertas Rita Revisora 00:00–00:03 Todo mapa escolhe o que mostrar. 00:03–00:07 Este escolheu esconder uma cidade inteira. Linha com 41 caracteres. Limite: 32. 00:07–00:12 Em 1953, ela sumiu da carta oficial. 00:12–00:18 Ninguém mudou de endereço. 00:18–00:26 Mas o correio parou de chegar. Sobrepõe a narração em 0,4 s. 00:26–00:34 Três versões contam essa história. 00:34–00:40 Só uma tem documento. 00:40–00:45 Fontes na legenda do post.",
+          "label": null,
+          "text": "Revisão de legenda 2 alertas Rita Revisora 00:00–00:03 Todo mapa escolhe o que mostrar. 00:03–00:07 Este escolheu esconder uma cidade inteira. Linha com 41 caracteres. Limite: 32. 00:07–00:12 Em 1953, ela sumiu da carta oficial. 00:12–00:18 Ninguém mudou de endereço. 00:18–00:26 Mas o correio parou de chegar. Sobrepõe a narração em 0,4 s. 00:26–00:34 Três versões contam essa história. 00:34–00:40 Só uma tem documento. 00:40–00:45 Fontes na legenda do post.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 868,
+            "y": 316,
+            "width": 540,
+            "height": 430
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Revisão de legenda",
+          "label": null,
+          "text": "Revisão de legenda",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 885,
+            "y": 331,
+            "width": 128,
+            "height": 22
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:00–00:03 Todo mapa escolhe o que mostrar.",
+          "label": null,
+          "text": "00:00–00:03 Todo mapa escolhe o que mostrar.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 368,
+            "width": 538,
+            "height": 37
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:03–00:07 Este escolheu esconder uma cidade inteira. Linha com 41 caracteres. Limite: 32.",
+          "label": null,
+          "text": "00:03–00:07 Este escolheu esconder uma cidade inteira. Linha com 41 caracteres. Limite: 32.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 405,
+            "width": 538,
+            "height": 54
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:07–00:12 Em 1953, ela sumiu da carta oficial.",
+          "label": null,
+          "text": "00:07–00:12 Em 1953, ela sumiu da carta oficial.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 459,
+            "width": 538,
+            "height": 37
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:12–00:18 Ninguém mudou de endereço.",
+          "label": null,
+          "text": "00:12–00:18 Ninguém mudou de endereço.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 496,
+            "width": 538,
+            "height": 37
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:18–00:26 Mas o correio parou de chegar. Sobrepõe a narração em 0,4 s.",
+          "label": null,
+          "text": "00:18–00:26 Mas o correio parou de chegar. Sobrepõe a narração em 0,4 s.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 533,
+            "width": 538,
+            "height": 54
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:26–00:34 Três versões contam essa história.",
+          "label": null,
+          "text": "00:26–00:34 Três versões contam essa história.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 587,
+            "width": 538,
+            "height": 37
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:34–00:40 Só uma tem documento.",
+          "label": null,
+          "text": "00:34–00:40 Só uma tem documento.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 624,
+            "width": 538,
+            "height": 37
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:40–00:45 Fontes na legenda do post.",
+          "label": null,
+          "text": "00:40–00:45 Fontes na legenda do post.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 661,
+            "width": 538,
+            "height": 37
           }
         },
         {
@@ -782,12 +1426,12 @@
           "role": null,
           "name": "Timeline",
           "label": "Timeline",
-          "text": "Timeline Clique numa trilha para mover o cursor 00:04 / 00:45 00:00 00:09 00:18 00:27 00:36 00:45 Vídeo Narração Legenda Trilha",
+          "text": "Timeline Clique numa trilha para mover o cursor 00:04 / 00:45 00:00 00:09 00:18 00:27 00:36 00:45 Vídeo mapa arquivo ruínas fontes Narração Legenda Trilha",
           "placeholder": null,
           "title": null,
           "rect": {
             "x": 332,
-            "y": 155,
+            "y": 762,
             "width": 1076,
             "height": 241
           }
@@ -803,7 +1447,7 @@
           "title": null,
           "rect": {
             "x": 351,
-            "y": 172,
+            "y": 779,
             "width": 58,
             "height": 22
           }
@@ -814,12 +1458,12 @@
           "role": "slider",
           "name": "Vídeo",
           "label": "Vídeo",
-          "text": null,
+          "text": "mapa arquivo ruínas fontes",
           "placeholder": null,
           "title": null,
           "rect": {
             "x": 455,
-            "y": 225,
+            "y": 832,
             "width": 934,
             "height": 34
           }
@@ -835,7 +1479,7 @@
           "title": null,
           "rect": {
             "x": 455,
-            "y": 265,
+            "y": 872,
             "width": 934,
             "height": 34
           }
@@ -851,7 +1495,7 @@
           "title": null,
           "rect": {
             "x": 455,
-            "y": 305,
+            "y": 912,
             "width": 934,
             "height": 34
           }
@@ -867,7 +1511,7 @@
           "title": null,
           "rect": {
             "x": 455,
-            "y": 345,
+            "y": 952,
             "width": 934,
             "height": 34
           }
@@ -876,16 +1520,16 @@
           "tag": "section",
           "id": null,
           "role": null,
-          "name": "Fila de render Enfileirar",
+          "name": "Fila de render MOTOR LOCAL · FFMPEG 9:16 Reel 1080 × 1920 100% PRONTO 4:5 Feed 1080 × 1350 0% NA FILA 16:9 YouTube 1920 × 1080 0% NA FILA",
           "label": null,
-          "text": "Fila de render Enfileirar",
+          "text": "Fila de render MOTOR LOCAL · FFMPEG 9:16 Reel 1080 × 1920 100% PRONTO 4:5 Feed 1080 × 1350 0% NA FILA 16:9 YouTube 1920 × 1080 0% NA FILA",
           "placeholder": null,
           "title": null,
           "rect": {
             "x": 332,
-            "y": 412,
+            "y": 1019,
             "width": 1076,
-            "height": 56
+            "height": 188
           }
         },
         {
@@ -898,42 +1542,10 @@
           "placeholder": null,
           "title": null,
           "rect": {
-            "x": 332,
-            "y": 412,
-            "width": 1076,
-            "height": 28
-          }
-        },
-        {
-          "tag": "input",
-          "id": null,
-          "role": "textbox",
-          "name": "Nome do render",
-          "label": "Nome do render",
-          "text": null,
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 332,
-            "y": 448,
-            "width": 173,
-            "height": 20
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Enfileirar",
-          "label": null,
-          "text": "Enfileirar",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 513,
-            "y": 448,
-            "width": 59,
-            "height": 20
+            "x": 351,
+            "y": 1036,
+            "width": 90,
+            "height": 22
           }
         }
       ],
@@ -1350,54 +1962,6 @@
           "tag": "button",
           "id": null,
           "role": "button",
-          "name": "Reiniciar Frontend",
-          "label": "Reiniciar Frontend",
-          "text": "Frontend",
-          "placeholder": null,
-          "title": "Reinicia o Frontend do escritório",
-          "rect": {
-            "x": 782,
-            "y": 16,
-            "width": 74,
-            "height": 32
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Backend",
-          "label": "Reiniciar Backend",
-          "text": "Backend",
-          "placeholder": null,
-          "title": "Reinicia o Backend do escritório",
-          "rect": {
-            "x": 868,
-            "y": 16,
-            "width": 71,
-            "height": 32
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
           "name": "Buscar telas, tasks, agentes… (Ctrl K)",
           "label": "Buscar telas, tasks, agentes… (Ctrl K)",
           "text": "Buscar telas, tasks, agentes… Ctrl K",
@@ -1467,17 +2031,281 @@
           "hasValue": false
         },
         {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Exportar .srt",
+          "label": null,
+          "text": "Exportar .srt",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1199,
+            "y": 181,
+            "width": 106,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Renderizar",
+          "label": null,
+          "text": "Renderizar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1312,
+            "y": 181,
+            "width": 96,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tocar",
+          "label": "Tocar",
+          "text": "Tocar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 350,
+            "y": 696,
+            "width": 59,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:00–00:03 Todo mapa escolhe o que mostrar.",
+          "label": null,
+          "text": "00:00–00:03 Todo mapa escolhe o que mostrar.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 368,
+            "width": 538,
+            "height": 37
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:03–00:07 Este escolheu esconder uma cidade inteira. Linha com 41 caracteres. Limite: 32.",
+          "label": null,
+          "text": "00:03–00:07 Este escolheu esconder uma cidade inteira. Linha com 41 caracteres. Limite: 32.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 405,
+            "width": 538,
+            "height": 54
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:07–00:12 Em 1953, ela sumiu da carta oficial.",
+          "label": null,
+          "text": "00:07–00:12 Em 1953, ela sumiu da carta oficial.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 459,
+            "width": 538,
+            "height": 37
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:12–00:18 Ninguém mudou de endereço.",
+          "label": null,
+          "text": "00:12–00:18 Ninguém mudou de endereço.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 496,
+            "width": 538,
+            "height": 37
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:18–00:26 Mas o correio parou de chegar. Sobrepõe a narração em 0,4 s.",
+          "label": null,
+          "text": "00:18–00:26 Mas o correio parou de chegar. Sobrepõe a narração em 0,4 s.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 533,
+            "width": 538,
+            "height": 54
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:26–00:34 Três versões contam essa história.",
+          "label": null,
+          "text": "00:26–00:34 Três versões contam essa história.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 587,
+            "width": 538,
+            "height": 37
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:34–00:40 Só uma tem documento.",
+          "label": null,
+          "text": "00:34–00:40 Só uma tem documento.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 624,
+            "width": 538,
+            "height": 37
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "00:40–00:45 Fontes na legenda do post.",
+          "label": null,
+          "text": "00:40–00:45 Fontes na legenda do post.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 869,
+            "y": 661,
+            "width": 538,
+            "height": 37
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
           "tag": "div",
           "id": null,
           "role": "slider",
           "name": "Vídeo",
           "label": "Vídeo",
-          "text": null,
+          "text": "mapa arquivo ruínas fontes",
           "placeholder": null,
           "title": null,
           "rect": {
             "x": 455,
-            "y": 225,
+            "y": 832,
             "width": 934,
             "height": 34
           },
@@ -1501,7 +2329,7 @@
           "title": null,
           "rect": {
             "x": 455,
-            "y": 265,
+            "y": 872,
             "width": 934,
             "height": 34
           },
@@ -1525,7 +2353,7 @@
           "title": null,
           "rect": {
             "x": 455,
-            "y": 305,
+            "y": 912,
             "width": 934,
             "height": 34
           },
@@ -1549,7 +2377,7 @@
           "title": null,
           "rect": {
             "x": 455,
-            "y": 345,
+            "y": 952,
             "width": 934,
             "height": 34
           },
@@ -1561,54 +2389,6 @@
           "checked": null,
           "selected": null,
           "hasValue": null
-        },
-        {
-          "tag": "input",
-          "id": null,
-          "role": "textbox",
-          "name": "Nome do render",
-          "label": "Nome do render",
-          "text": null,
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 332,
-            "y": 448,
-            "width": 173,
-            "height": 20
-          },
-          "kind": "field",
-          "type": "text",
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": false,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Enfileirar",
-          "label": null,
-          "text": "Enfileirar",
-          "placeholder": null,
-          "title": null,
-          "rect": {
-            "x": 513,
-            "y": 448,
-            "width": 59,
-            "height": 20
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
         }
       ],
       "dialogs": [],

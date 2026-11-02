@@ -1,11 +1,11 @@
 {
   "screenId": "config-light",
   "side": "candidate",
-  "capturedUrl": "http://127.0.0.1:9196/configuracoes",
+  "capturedUrl": "http://127.0.0.1:9198/configuracoes",
   "frames": [
     {
       "name": null,
-      "url": "http://127.0.0.1:9196/configuracoes",
+      "url": "http://127.0.0.1:9198/configuracoes",
       "title": "TAVIR Escritório — Painel Operacional",
       "viewport": {
         "width": 1440,
@@ -18,7 +18,7 @@
         "div": 21,
         "nav": 2,
         "img": 2,
-        "button": 22,
+        "button": 20,
         "span": 42,
         "svg": 15,
         "path": 32,
@@ -154,22 +154,10 @@
           "role": null
         },
         {
-          "text": "office.py · SQLite ao vivo",
+          "text": "AO VIVO",
           "tag": "span",
           "id": "",
           "role": null
-        },
-        {
-          "text": "Frontend",
-          "tag": "button",
-          "id": "",
-          "role": "button"
-        },
-        {
-          "text": "Backend",
-          "tag": "button",
-          "id": "",
-          "role": "button"
         },
         {
           "text": "Buscar telas, tasks, agentes…",
@@ -605,9 +593,9 @@
           "tag": "header",
           "id": null,
           "role": null,
-          "name": "Sistema / Configurações office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "name": "Sistema / Configurações AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
           "label": null,
-          "text": "Sistema / Configurações office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "text": "Sistema / Configurações AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
           "placeholder": null,
           "title": null,
           "rect": {
@@ -623,46 +611,14 @@
           "role": null,
           "name": "Indicador de dados operacionais ao vivo",
           "label": null,
-          "text": "office.py · SQLite ao vivo",
+          "text": "AO VIVO",
           "placeholder": null,
           "title": "Indicador de dados operacionais ao vivo",
           "rect": {
             "x": 496,
             "y": 20,
-            "width": 156,
+            "width": 81,
             "height": 24
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Frontend",
-          "label": "Reiniciar Frontend",
-          "text": "Frontend",
-          "placeholder": null,
-          "title": "Reinicia o Frontend do escritório",
-          "rect": {
-            "x": 782,
-            "y": 16,
-            "width": 74,
-            "height": 32
-          }
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Backend",
-          "label": "Reiniciar Backend",
-          "text": "Backend",
-          "placeholder": null,
-          "title": "Reinicia o Backend do escritório",
-          "rect": {
-            "x": 868,
-            "y": 16,
-            "width": 71,
-            "height": 32
           }
         },
         {
@@ -1409,54 +1365,6 @@
             "y": 777,
             "width": 219,
             "height": 50
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Frontend",
-          "label": "Reiniciar Frontend",
-          "text": "Frontend",
-          "placeholder": null,
-          "title": "Reinicia o Frontend do escritório",
-          "rect": {
-            "x": 782,
-            "y": 16,
-            "width": 74,
-            "height": 32
-          },
-          "kind": "control",
-          "type": null,
-          "nameAttribute": null,
-          "required": false,
-          "disabled": false,
-          "checked": null,
-          "selected": null,
-          "hasValue": false
-        },
-        {
-          "tag": "button",
-          "id": null,
-          "role": "button",
-          "name": "Reiniciar Backend",
-          "label": "Reiniciar Backend",
-          "text": "Backend",
-          "placeholder": null,
-          "title": "Reinicia o Backend do escritório",
-          "rect": {
-            "x": 868,
-            "y": 16,
-            "width": 71,
-            "height": 32
           },
           "kind": "control",
           "type": null,

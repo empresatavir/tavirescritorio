@@ -151,6 +151,7 @@ async def get_settings(session: AsyncSession = Depends(get_session)):
         },
         "greeting": office_greeting(office_moment(), office.perfil_idioma or "pt", office.perfil_nome),
         "as_of": office_moment().isoformat(),
+        "visual_fixture": os.environ.get("TAVIR_VISUAL_FIXTURE") == "1",
         "overview": _overview(office.overview),
         "focused_project_id": office.focused_project_id,
         "focused_demand_id": office.focused_demand_id,
