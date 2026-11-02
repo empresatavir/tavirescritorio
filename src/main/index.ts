@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, Menu } from 'electron';
 import { join } from 'node:path';
 import { registrarIpcHandlers } from './ipc';
 
@@ -6,6 +6,9 @@ let mainWindow: BrowserWindow | null = null;
 const isDev = process.argv.includes('--dev');
 
 function criarJanela(): void {
+  // Remove o menu de aplicação padrão do Electron (File, Edit, View, Window)
+  Menu.setApplicationMenu(null);
+
   mainWindow = new BrowserWindow({
     width: 1440,
     height: 900,
@@ -15,6 +18,7 @@ function criarJanela(): void {
     backgroundColor: '#0B1220',
     icon: join(__dirname, '../../assets/tavir.ico'),
     frame: true,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       nodeIntegration: false,
@@ -22,6 +26,8 @@ function criarJanela(): void {
       sandbox: false,
     },
   });
+
+  mainWindow.setMenu(null);
 
   registrarIpcHandlers(mainWindow);
 

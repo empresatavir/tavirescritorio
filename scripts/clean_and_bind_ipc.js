@@ -274,6 +274,13 @@ if (templateHtml.includes(startMarker)) {
   console.log('startJob conectado com window.tavir.jobs.start!');
 }
 
+// 2.12 Remove o botão 'Iniciar job' do header
+const origHeaderBtnRegex = /<button class="btn secondary \{\{sp\.jobbtn\}\}" sc-camel-on-click="\{\{openJob\}\}">[\s\S]*?Iniciar job\s*<\/button>/i;
+if (origHeaderBtnRegex.test(templateHtml)) {
+  templateHtml = templateHtml.replace(origHeaderBtnRegex, '');
+  console.log("Botão 'Iniciar job' removido do header!");
+}
+
 // ==========================================
 // 3. RE-MONTAR ARQUIVO HTML FINAL
 // ==========================================
