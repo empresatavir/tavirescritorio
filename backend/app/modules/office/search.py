@@ -1,6 +1,7 @@
-"""Busca em telas, tasks, agentes, jobs, casos e propostas."""
+"""Busca em telas, tasks, agentes, jobs, casos, propostas e base de conhecimento indexada na abertura."""
 from __future__ import annotations
 
+from pathlib import Path
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,6 +10,57 @@ from app.models.job import Job
 from app.models.proposal import Proposal
 from app.models.raiox_case import RaioxCase
 from app.models.task import Task
+
+_BOOT_KNOWLEDGE_INDEX: list[dict] = []
+
+
+def boot_index_knowledge() -> dict:
+    """Indexa conhecimento/, sincron-brain/, agentes/escopo/ e projetos isolados na abertura do servidor."""
+    global _BOOT_KNOWLEDGE_INDEX
+    repo_root = Path(__file__).resolve().parents[4]
+    indexed: list[dict] = []
+
+    seed = repo_root / "sincron-brain" / "seed_tier1.md"
+    if seed.is_file():
+        try:
+            text = seed.read_text(encoding="utf-8", errors="ignore")
+            indexed.append({
+                "kind": "memory",
+                "id": "sincron-brain/seed_tier1.md",
+                "label": "Sincron Brain · Memórias Tier 1 (Soul, Carlos, Preferências)",
+                "href": "/memoria",
+                "blob": text.casefold(),
+            })
+        except OSError:
+            pass
+
+    for folder_name, kind_label in (("conhecimento", "knowledge"), ("agentes/escopo", "canon")):
+        base = repo_root / folder_name
+        if not base.is_dir():
+            continue
+        for md in base.rglob("*.md"):
+            if md.name.startswith("_"):
+                continue
+            try:
+                rel = md.relative_to(repo_root).as_posix()
+                content = md.read_text(encoding="utf-8", errors="ignore")
+                title = md.stem.replace("-", " ")
+                for line in content.splitlines()[:15]:
+                    if line.startswith("# "):
+                        title = line[2:].strip()
+                        break
+                indexed.append({
+                    "kind": kind_label,
+                    "id": rel,
+                    "label": f"{title} ({md.parent.name})",
+                    "href": "/memoria",
+                    "blob": f"{title} {rel} {content[:1200]}".casefold(),
+                })
+            except OSError:
+                continue
+
+    _BOOT_KNOWLEDGE_INDEX = indexed
+    return {"total_indexed": len(indexed)}
 
 SCREENS = (
     ("room", "Sala de Operação", "/sala-operacao"),
@@ -115,5 +167,15 @@ async def search_office(session: AsyncSession, q: str) -> dict:
     ).all()
     for proposal in proposals:
         items.append(_hit("proposal", proposal.id, f"{proposal.num} · {proposal.client}", "/propostas"))
+
+    if not _BOOT_KNOWLEDGE_INDEX:
+        boot_index_knowledge()
+    kn_matches = 0
+    for kn in _BOOT_KNOWLEDGE_INDEX:
+        if folded in kn["blob"]:
+            items.append(_hit(kn["kind"], kn["id"], kn["label"], kn["href"]))
+            kn_matches += 1
+            if kn_matches >= 20:
+                break
 
     return {"q": term, "items": items}

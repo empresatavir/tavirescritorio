@@ -1,0 +1,10 @@
+{
+  "anthropicEnabled": false,
+  "claudeEnabled": false,
+  "cursorEnabled": true,
+  "antigravityEnabled": false,
+  "codexEnabled": false,
+  "defaultEngine": "cursor",
+  "defaultModel": "auto-smart",
+  "defaultEffort": "cost"
+}

@@ -7,6 +7,12 @@ interface ModalsProps {
   onClose: () => void;
   onStartJob: (title: string, motor: string, model: string, ceiling: number) => void;
   onCreateTask: (title: string, prio: string, sector: string) => void;
+  onCreateProject?: (params: {
+    name: string;
+    company?: string;
+    template_category?: 'lp' | 'of' | 'sy';
+    template?: string;
+  }) => void;
   onNavigate: (screen: string, extra?: any) => void;
   tasks?: any[];
   onMoveTask?: (taskId: string, newStatus: string) => void;
@@ -18,6 +24,7 @@ export const Modals: React.FC<ModalsProps> = ({
   onClose,
   onStartJob,
   onCreateTask,
+  onCreateProject,
   onNavigate,
   tasks = [],
   onMoveTask
@@ -34,6 +41,11 @@ export const Modals: React.FC<ModalsProps> = ({
   const [taskTitle, setTaskTitle] = useState<string>('');
   const [taskPrio, setTaskPrio] = useState<string>('Normal');
   const [taskSector, setTaskSector] = useState<string>('Engenharia');
+
+  // Factory New State (só Fábrica)
+  const [projName, setProjName] = useState<string>('');
+  const [projClient, setProjClient] = useState<string>('');
+  const [projCat, setProjCat] = useState<'lp' | 'of' | 'sy'>('lp');
 
   // Palette State
   const [palQ, setPalQ] = useState<string>('');
@@ -387,6 +399,75 @@ export const Modals: React.FC<ModalsProps> = ({
 
           <div className="flex justify-end pt-2 border-t border-[var(--line)]">
             <button className="btn primary sm" onClick={onClose}>Fechar</button>
+          </div>
+        </div>
+      )}
+
+      {/* 5. NOVA ESTEIRA (Fábrica) */}
+      {(modal === 'factory-new' || modal === 'project') && (
+        <div
+          className="card pad flex flex-col gap-4"
+          style={{ width: '100%', maxWidth: '520px', background: 'var(--surface-1)' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between border-b border-[var(--line)] pb-3">
+            <div>
+              <span className="eyebrow text-[#B7F34A]">Fábrica</span>
+              <h2 className="text-[18px] font-semibold">Nova esteira</h2>
+            </div>
+            <button type="button" className="btn sm ghost" onClick={onClose}>
+              <TvIcon name="x" size={16} />
+            </button>
+          </div>
+
+          <label className="flex flex-col gap-1 text-[13px]">
+            <span className="muted">Nome do projeto</span>
+            <input
+              value={projName}
+              onChange={(e) => setProjName(e.target.value)}
+              placeholder="Ex.: Landing do cliente"
+              autoFocus
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-[13px]">
+            <span className="muted">Cliente / empresa</span>
+            <input
+              value={projClient}
+              onChange={(e) => setProjClient(e.target.value)}
+              placeholder="Ex.: Nome do cliente"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-[13px]">
+            <span className="muted">Categoria</span>
+            <select value={projCat} onChange={(e) => setProjCat(e.target.value as 'lp' | 'of' | 'sy')}>
+              <option value="lp">Landing Pages</option>
+              <option value="of">Ofertas</option>
+              <option value="sy">Sistemas</option>
+            </select>
+          </label>
+
+          <div className="flex justify-end gap-2 pt-2 border-t border-[var(--line)]">
+            <button type="button" className="btn secondary sm" onClick={onClose}>
+              Cancelar
+            </button>
+            <button
+              type="button"
+              className="btn primary sm"
+              disabled={!projName.trim() || !onCreateProject}
+              onClick={() => {
+                onCreateProject?.({
+                  name: projName.trim(),
+                  company: projClient.trim() || undefined,
+                  template_category: projCat,
+                  template: projCat === 'sy' ? 'SY-C1' : projCat === 'of' ? 'OF-C1' : 'LP-C1',
+                });
+                setProjName('');
+                setProjClient('');
+                setProjCat('lp');
+              }}
+            >
+              Criar esteira
+            </button>
           </div>
         </div>
       )}

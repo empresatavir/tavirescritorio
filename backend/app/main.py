@@ -47,6 +47,8 @@ async def lifespan(_app: FastAPI):
     try:
         await ensure_schema_patches()
         await apply_design_profiles()
+        from app.modules.office.search import boot_index_knowledge
+        boot_index_knowledge()
     except Exception as exc:
         print(f"[main] schema patch warning: {exc}")
     yield

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TvIcon } from './components/TvIcon';
-import type { DomainId, JobItem, TaskItem, ApprovalItem, SessionState, EngineSettings, RunEvent } from '../shared/types';
+import type { DomainId, JobItem, TaskItem, ApprovalItem, SessionState, EngineSettings, RunEvent, FactoryProjectItem, CreateFactoryProjectParams } from '../shared/types';
+import { ENGINE_CATALOG, callCaption, fitCall, motorById, type MotorId } from '../shared/engineCatalog';
 
 // Views Especializadas
 import { FabricaView } from './views/FabricaView';
@@ -39,13 +40,61 @@ export default function App() {
   const [jobs, setJobs] = useState<JobItem[]>([]);
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [approvals, setApprovals] = useState<ApprovalItem[]>([]);
+  const [projects, setProjects] = useState<FactoryProjectItem[]>([]);
   const [engineSettings, setEngineSettings] = useState<EngineSettings>({
     anthropicEnabled: true,
+    claudeEnabled: true,
     cursorEnabled: true,
     antigravityEnabled: true,
     codexEnabled: true,
     defaultEngine: 'cursor',
+    defaultModel: 'auto-smart',
+    defaultEffort: 'balanced',
   });
+  const [engineCatalog, setEngineCatalog] = useState(ENGINE_CATALOG);
+  const activeMotor = useMemo(
+    () => motorById(engineSettings.defaultEngine),
+    [engineSettings.defaultEngine],
+  );
+  const activeModel = useMemo(
+    () => fitCall(engineSettings.defaultEngine, engineSettings.defaultModel, engineSettings.defaultEffort),
+    [engineSettings.defaultEngine, engineSettings.defaultModel, engineSettings.defaultEffort],
+  );
+  const engineCaption = useMemo(
+    () => callCaption(engineSettings.defaultEngine, engineSettings.defaultModel, engineSettings.defaultEffort),
+    [engineSettings.defaultEngine, engineSettings.defaultModel, engineSettings.defaultEffort],
+  );
+  const enabledCount = useMemo(() => {
+    let n = 0;
+    if (engineSettings.cursorEnabled !== false) n += 1;
+    if (engineSettings.claudeEnabled !== false && engineSettings.anthropicEnabled !== false) n += 1;
+    if (engineSettings.codexEnabled !== false) n += 1;
+    if (engineSettings.antigravityEnabled !== false) n += 1;
+    return n || 1;
+  }, [engineSettings]);
+
+  const patchEngines = async (patch: Partial<EngineSettings>) => {
+    if (!window.tavir?.engines?.updateSettings) {
+      setEngineSettings((prev) => ({ ...prev, ...patch }));
+      return;
+    }
+    const saved = await window.tavir.engines.updateSettings(patch);
+    setEngineSettings(saved);
+    if (window.tavir.engines.getCatalog) {
+      const cat = await window.tavir.engines.getCatalog();
+      if (cat?.engines?.length) {
+        setEngineCatalog(
+          cat.engines.map((e) => ({
+            ...(motorById(e.id) as any),
+            id: e.id as MotorId,
+            label: e.label,
+            sdk: e.sdk,
+            models: e.models?.length ? e.models : motorById(e.id).models,
+          })),
+        );
+      }
+    }
+  };
 
   const [activeJobId, setActiveJobId] = useState<string>('job-014');
   const [jobFilter, setJobFilter] = useState<string>('all');
@@ -69,7 +118,26 @@ export default function App() {
       window.tavir.jobs.list().then(setJobs);
       window.tavir.tasks.list().then(setTasks);
       window.tavir.approvals.list().then(setApprovals);
+      if (window.tavir.projects) {
+        window.tavir.projects.list().then(setProjects);
+      }
       window.tavir.engines.getSettings().then(setEngineSettings);
+      if (window.tavir.engines.getCatalog) {
+        window.tavir.engines.getCatalog().then((cat) => {
+          if (cat?.settings) setEngineSettings(cat.settings);
+          if (cat?.engines?.length) {
+            setEngineCatalog(
+              cat.engines.map((e) => ({
+                ...(motorById(e.id) as any),
+                id: e.id as MotorId,
+                label: e.label,
+                sdk: e.sdk,
+                models: e.models?.length ? e.models : motorById(e.id).models,
+              })),
+            );
+          }
+        });
+      }
 
       const unbind = window.tavir.onEvent((evt: RunEvent) => {
         console.log('[TAVIR Live Event]', evt);
@@ -144,6 +212,24 @@ export default function App() {
     }
   };
 
+  const handleCreateProject = async (params: CreateFactoryProjectParams) => {
+    if (window.tavir && window.tavir.projects) {
+      const created = await window.tavir.projects.create(params);
+      setProjects((prev) => [created, ...prev.filter((p) => p.id !== created.id)]);
+      const cat = params.template_category || params.template || 'lp';
+      const nt = await window.tavir.tasks.create({
+        title: `Esteira (${cat === 'sy' ? 'Sistemas' : cat === 'of' ? 'Ofertas' : 'Landing Pages'}): ${created.name}`,
+        prio: 'alta',
+        sector: 'Fábrica',
+        project_id: created.id,
+      } as any);
+      setTasks((prev) => [nt, ...prev]);
+      showToast('Esteira criada', `${created.name} iniciada no Gate 0.`);
+      setModal(null);
+      setScreen('fabrica');
+    }
+  };
+
   const handleApproval = async (id: string, decision: 'approved' | 'rejected') => {
     if (window.tavir) {
       await window.tavir.approvals.decide(id, decision);
@@ -163,9 +249,11 @@ export default function App() {
     setModal(name);
   };
 
+  const fabricaMode = screen === 'fabrica';
+
   return (
     <div className="tv" data-theme={theme} style={{ height: '100vh', position: 'relative', overflow: 'hidden' }}>
-      <div className="shell">
+      <div className={`shell${fabricaMode ? ' shell--fabrica' : ''}`}>
         {/* COLUNA 1: RAIL (64px) */}
         <aside className="rail">
           <button className="rail-mark" onClick={() => setScreen('room')}>
@@ -203,8 +291,9 @@ export default function App() {
           </div>
         </aside>
 
-        {/* COLUNA 2: SUBNAV (236px) */}
-        <nav className="sub">
+        {/* COLUNA 2: SUBNAV (236px) — omitida na Fábrica */}
+        {!fabricaMode && (
+          <nav className="sub">
           <div className="sub-brand">
             <span className="font-semibold text-[15px] tracking-tight">TAVIR</span>
             <small>Escritório</small>
@@ -243,39 +332,41 @@ export default function App() {
             <button className="tour-cta" onClick={() => setScreen('config')}>
               <TvIcon name="sliders" size={16} />
               <div>
-                <strong>Motores: {engineSettings.defaultEngine.toUpperCase()}</strong>
-                <small>4 motores prontos na máquina</small>
+                <strong>Motores: {engineCaption}</strong>
+                <small>{enabledCount} motor{enabledCount === 1 ? '' : 'es'} ativo{enabledCount === 1 ? '' : 's'}</small>
               </div>
             </button>
           </div>
         </nav>
+        )}
 
         {/* COLUNA 3: MAIN (HEADER + CONTENT) */}
         <main className="main">
-          {/* Header Fixo (64px) */}
-          <header className="top">
-            <div className="crumbs">
-              <span className="dim">{currentDomain.label}</span>
-              <span className="sep">/</span>
-              <strong>{currentItem[1]}</strong>
-            </div>
+          {!fabricaMode && (
+            <header className="top">
+              <div className="crumbs">
+                <span className="dim">{currentDomain.label}</span>
+                <span className="sep">/</span>
+                <strong>{currentItem[1]}</strong>
+              </div>
 
-            <div className="grow" />
+              <div className="grow" />
 
-            <button className="search" onClick={() => setModal('palette')}>
-              <TvIcon name="search" size={16} />
-              <span>Buscar ou navegar...</span>
-              <span className="kbd">Ctrl K</span>
-            </button>
+              <button className="search" onClick={() => setModal('palette')}>
+                <TvIcon name="search" size={16} />
+                <span>Buscar ou navegar...</span>
+                <span className="kbd">Ctrl K</span>
+              </button>
 
-            <button className="btn primary sm" onClick={() => setModal('wizard-job')}>
-              <TvIcon name="plus" size={16} />
-              <span>Iniciar job</span>
-            </button>
-          </header>
+              <button className="btn primary sm" onClick={() => setModal('wizard-job')}>
+                <TvIcon name="plus" size={16} />
+                <span>Iniciar job</span>
+              </button>
+            </header>
+          )}
 
           {/* Área de Conteúdo */}
-          <div className="content">
+          <div className={`content${fabricaMode ? ' content--fabrica' : ''}`}>
             {/* 1. OPERAÇÃO: SALA DE OPERAÇÃO */}
             {screen === 'room' && (
               <div className="page screen">
@@ -500,7 +591,7 @@ export default function App() {
 
             {/* MÓDULOS */}
             {screen === 'modhub' && <ModulosView onOpenModal={openModalWithName} onNavigate={setScreen} />}
-            {screen === 'fabrica' && <FabricaView onOpenModal={openModalWithName} onNavigate={setScreen} />}
+            {screen === 'fabrica' && <FabricaView onOpenModal={openModalWithName} onNavigate={setScreen} projects={projects} />}
             {screen === 'studio' && <StudioView onOpenModal={openModalWithName} onNavigate={setScreen} />}
             {screen === 'raiox' && <RaioXView onOpenModal={openModalWithName} onNavigate={setScreen} />}
             {screen === 'flow' && <ModulosView onOpenModal={openModalWithName} onNavigate={setScreen} />}
@@ -557,7 +648,7 @@ export default function App() {
                 <div className="phead">
                   <div>
                     <h1>Configurações & Motores de IA</h1>
-                    <p>Gerencie quais motores locais assumem as esteiras de código, texto e pesquisa.</p>
+                    <p>Multi-motor: ligue os SDKs locais, escolha o padrão e defina modelo + esforço (como no Concierge).</p>
                   </div>
                 </div>
                 <div className="g2">
@@ -567,30 +658,109 @@ export default function App() {
                       <h2>Hub de Motores Locais</h2>
                     </div>
                     <div className="flex flex-col gap-4">
-                      {[
-                        { id: 'cursor', name: 'Cursor Agent (agent.exe)', desc: 'Motor local nativo de edição de código e worktrees' },
-                        { id: 'anthropic', name: 'Anthropic Claude Code', desc: 'Claude Agent SDK oficial com tool-use autônomo' },
-                        { id: 'antigravity', name: 'Google Antigravity (Gemini)', desc: 'Motor rápido com janela de contexto expandida' },
-                        { id: 'codex', name: 'OpenAI Codex', desc: 'Sandbox estruturado para tarefas automatizadas' },
-                      ].map((m) => (
-                        <div key={m.id} className="flex items-center justify-between p-3 border border-[var(--line)] rounded-xl">
-                          <div>
-                            <strong>{m.name}</strong>
-                            <div className="muted text-[12px]">{m.desc}</div>
+                      {ENGINE_CATALOG.map((m) => {
+                        const enabledKey =
+                          m.id === 'cursor'
+                            ? 'cursorEnabled'
+                            : m.id === 'claude'
+                              ? 'claudeEnabled'
+                              : m.id === 'codex'
+                                ? 'codexEnabled'
+                                : 'antigravityEnabled';
+                        const enabled = (engineSettings as any)[enabledKey] !== false;
+                        const isDefault = engineSettings.defaultEngine === m.id || (m.id === 'claude' && engineSettings.defaultEngine === 'anthropic');
+                        return (
+                          <div key={m.id} className="flex items-center justify-between gap-3 p-3 border border-[var(--line)] rounded-xl">
+                            <div className="grow">
+                              <strong>{m.label}</strong>
+                              <div className="muted text-[12px]">SDK local · {m.sdk}</div>
+                            </div>
+                            <label className="muted text-[12px] flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={enabled}
+                                onChange={(e) => {
+                                  const on = e.target.checked;
+                                  const patch: Partial<EngineSettings> = { [enabledKey]: on } as any;
+                                  if (m.id === 'claude') patch.anthropicEnabled = on;
+                                  void patchEngines(patch).then(() =>
+                                    showToast('Motor', on ? `${m.label} ligado` : `${m.label} desligado`),
+                                  );
+                                }}
+                              />
+                              Ativo
+                            </label>
+                            <button
+                              className={`btn sm ${isDefault ? 'primary' : 'secondary'}`}
+                              onClick={() => {
+                                const fitted = fitCall(m.id, m.defaultModel, m.defaultEffort);
+                                void patchEngines({
+                                  defaultEngine: m.id as any,
+                                  defaultModel: fitted.model.id,
+                                  defaultEffort: fitted.effort.id,
+                                  [enabledKey]: true,
+                                  ...(m.id === 'claude' ? { anthropicEnabled: true, claudeEnabled: true } : {}),
+                                }).then(() => showToast('Motor padrão', `${m.label} · ${fitted.model.label}`));
+                              }}
+                            >
+                              {isDefault ? 'Padrão' : 'Tornar padrão'}
+                            </button>
                           </div>
-                          <button
-                            className={`btn sm ${engineSettings.defaultEngine === m.id ? 'primary' : 'secondary'}`}
-                            onClick={() => {
-                              const patch = { defaultEngine: m.id as any };
-                              setEngineSettings((prev) => ({ ...prev, ...patch }));
-                              if (window.tavir) window.tavir.engines.updateSettings(patch);
-                              showToast('Motor alterado', `${m.name} agora é o motor padrão.`);
-                            }}
-                          >
-                            {engineSettings.defaultEngine === m.id ? 'Padrão Ativo' : 'Tornar Padrão'}
-                          </button>
-                        </div>
-                      ))}
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className="card pad">
+                    <div className="sec-title mb-4">
+                      <TvIcon name="spark" size={18} />
+                      <h2>Padrão: modelo e esforço</h2>
+                    </div>
+                    <p className="muted text-[12.5px] mb-3">
+                      Na Fábrica só aparecem os motores ativos. Padrão atual: <strong>{engineCaption}</strong>
+                    </p>
+                    <div className="flex flex-col gap-3">
+                      <label className="flex flex-col gap-1 text-[12px] font-semibold">
+                        Modelo ({activeMotor.label})
+                        <select
+                          className="input"
+                          value={activeModel.model.id}
+                          onChange={(e) => {
+                            const fitted = fitCall(activeMotor.id, e.target.value, engineSettings.defaultEffort);
+                            void patchEngines({
+                              defaultModel: fitted.model.id,
+                              defaultEffort: fitted.effort.id,
+                            });
+                          }}
+                        >
+                          {activeMotor.models.map((model) => (
+                            <option key={model.id} value={model.id}>
+                              {model.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="flex flex-col gap-1 text-[12px] font-semibold">
+                        Esforço / profundidade
+                        <select
+                          className="input"
+                          value={activeModel.effort.id}
+                          onChange={(e) => {
+                            void patchEngines({ defaultEffort: e.target.value });
+                          }}
+                        >
+                          {activeModel.model.efforts.map((effort) => (
+                            <option key={effort.id} value={effort.id}>
+                              {effort.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      {activeModel.model.id === 'auto-smart' && (
+                        <p className="muted text-[12px]">Auto não aplica Cost, Balance ou Intelligence nesta instalação.</p>
+                      )}
+                      <p className="muted text-[12px]">
+                        Catálogo filtrado na Fábrica: {engineCatalog.map((e) => e.label).join(', ') || activeMotor.label}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -607,6 +777,7 @@ export default function App() {
         onClose={() => setModal(null)}
         onStartJob={handleStartJob}
         onCreateTask={handleCreateTask}
+        onCreateProject={handleCreateProject}
         onNavigate={setScreen}
         tasks={tasks}
       />

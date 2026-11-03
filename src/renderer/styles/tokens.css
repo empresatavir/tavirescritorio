@@ -163,6 +163,8 @@ body {
 .search span { flex: 1; font-size: 13px; }
 .kbd { font-family: var(--font-mono); font-size: 11px; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--line); color: var(--text-muted); background: var(--surface-0); }
 .content { flex: 1; min-height: 0; overflow: auto; position: relative; }
+.shell--fabrica .content--fabrica { overflow: hidden; padding: 0; }
+.shell--fabrica .fab { height: 100%; }
 
 /* ---------- layout & components ---------- */
 .page { padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 24px; max-width: 1480px; }

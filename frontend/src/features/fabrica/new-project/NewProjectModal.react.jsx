@@ -22,7 +22,8 @@ function fileNames(list) {
 export function NewProjectModalReact(props) {
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
-  const [ownership, setOwnership] = useState("");
+  const [templateCategory, setTemplateCategory] = useState(props.preferredCategory || "lp");
+  const [ownership, setOwnership] = useState("interno");
   const [track, setTrack] = useState("zero");
   const [stackFrontend, setStackFrontend] = useState("");
   const [stackBackend, setStackBackend] = useState("");
@@ -45,10 +46,11 @@ export function NewProjectModalReact(props) {
   useEffect(() => {
     if (!props.open) return;
     setError(null);
+    setTemplateCategory(props.preferredCategory || "lp");
     setTrack("zero");
   }, [props.open, props.preferredCategory]);
 
-  const systemsMode = props.preferredCategory === "sy";
+  const systemsMode = templateCategory === "sy";
   const fileHint =
     track === "manutencao"
       ? " Obrigatório. Envie a especificação, o código ou as telas do sistema que já existe."
@@ -59,16 +61,17 @@ export function NewProjectModalReact(props) {
           : "";
 
   const categoryHint = useMemo(() => {
-    if (props.preferredCategory === "lp") return "Landing Pages";
-    if (props.preferredCategory === "of") return "Ofertas";
-    if (props.preferredCategory === "sy") return "Sistemas";
+    if (templateCategory === "lp") return "Landing Pages";
+    if (templateCategory === "of") return "Ofertas";
+    if (templateCategory === "sy") return "Sistemas";
     return null;
-  }, [props.preferredCategory]);
+  }, [templateCategory]);
 
   const reset = () => {
     setName("");
     setCompany("");
-    setOwnership("");
+    setTemplateCategory(props.preferredCategory || "lp");
+    setOwnership("interno");
     setTrack("zero");
     setStackFrontend("");
     setStackBackend("");
@@ -136,7 +139,7 @@ export function NewProjectModalReact(props) {
         stack_frontend: stackFrontend.trim() || undefined,
         stack_backend: stackBackend.trim() || undefined,
         stack_database: stackDatabase.trim() || undefined,
-        template_category: props.preferredCategory,
+        template_category: templateCategory,
       });
       reset();
       props.onOpenChange(false);
@@ -224,6 +227,58 @@ export function NewProjectModalReact(props) {
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                 />
+              </Flex>
+
+              <Separator size="4" />
+
+              <Flex direction="column" gap="2">
+                <Text size="2" weight="medium">
+                  Template da Esteira <Text color="red">*</Text>
+                </Text>
+                <Text size="1" color="gray">
+                  Vem pré-selecionado quando você clica em “Usar esteira” de um template, mas pode ser alterado.
+                </Text>
+                <RadioGroup.Root
+                  value={templateCategory}
+                  onValueChange={(v) => {
+                    setTemplateCategory(v);
+                    setTrack("zero");
+                  }}
+                >
+                  <Flex gap="2" wrap="wrap">
+                    {[
+                      { id: "lp", title: "Landing Pages", sub: "LP · até 16 etapas" },
+                      { id: "of", title: "Ofertas", sub: "Ofertas · 6–8 etapas" },
+                      { id: "sy", title: "Sistemas", sub: "Sistemas · 12–15 etapas" },
+                    ].map((tpl) => (
+                      <Box
+                        key={tpl.id}
+                        p="3"
+                        style={{
+                          flex: "1 1 160px",
+                          borderRadius: 12,
+                          border:
+                            templateCategory === tpl.id
+                              ? "1px solid var(--teal-8)"
+                              : "1px solid var(--gray-a5)",
+                          background: templateCategory === tpl.id ? "var(--teal-a2)" : "var(--gray-a2)",
+                        }}
+                      >
+                        <Text as="label" size="2">
+                          <Flex gap="2" align="start">
+                            <RadioGroup.Item value={tpl.id} />
+                            <Box>
+                              <Text weight="bold">{tpl.title}</Text>
+                              <Text as="p" size="1" color="gray" mt="1">
+                                {tpl.sub}
+                              </Text>
+                            </Box>
+                          </Flex>
+                        </Text>
+                      </Box>
+                    ))}
+                  </Flex>
+                </RadioGroup.Root>
               </Flex>
 
               <Separator size="4" />

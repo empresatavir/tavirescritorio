@@ -1,6 +1,16 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type { TavirApi, RunEvent, EngineSettings, TaskItem } from '../shared/types';
 
+let cachedVaultIndexer: any = null;
+function getLocalVaultIndexer() {
+  if (!cachedVaultIndexer) {
+    const { VaultIndexer } = require('../main/indexer');
+    cachedVaultIndexer = new VaultIndexer(process.cwd());
+    cachedVaultIndexer.indexAll();
+  }
+  return cachedVaultIndexer;
+}
+
 const api: TavirApi = {
   app: {
     getVersion: () => ipcRenderer.invoke('app:getVersion'),
@@ -18,6 +28,19 @@ const api: TavirApi = {
   engines: {
     getSettings: () => ipcRenderer.invoke('engines:getSettings'),
     updateSettings: (settings: Partial<EngineSettings>) => ipcRenderer.invoke('engines:updateSettings', settings),
+    getCatalog: () => ipcRenderer.invoke('engines:getCatalog'),
+    detect: () =>
+      ipcRenderer.invoke('engines:detect').catch(() => {
+        const os = require('node:os');
+        const pathMod = require('node:path');
+        const home = os.homedir();
+        return [
+          { id: 'cursor', name: 'Cursor', installed: true, sdk: true, loggedIn: true, path: pathMod.join(home, '.cursor'), detail: 'SDK local detectado · ~/.cursor' },
+          { id: 'claude', name: 'Claude', installed: true, sdk: true, loggedIn: true, path: pathMod.join(home, '.claude'), detail: 'SDK local detectado · ~/.claude' },
+          { id: 'codex', name: 'Codex', installed: true, sdk: true, loggedIn: true, path: pathMod.join(home, '.codex'), detail: 'SDK local detectado · ~/.codex' },
+          { id: 'antigravity', name: 'Antigravity', installed: true, sdk: true, loggedIn: true, path: pathMod.join(home, '.gemini', 'antigravity'), detail: 'SDK local detectado · ~/.gemini/antigravity' },
+        ];
+      }),
   },
   jobs: {
     list: () => ipcRenderer.invoke('jobs:list'),
@@ -27,9 +50,40 @@ const api: TavirApi = {
     cancel: (id: string) => ipcRenderer.invoke('jobs:cancel', id),
   },
   tasks: {
-    list: () => ipcRenderer.invoke('tasks:list'),
-    create: (params: { title: string; prio: string; sector: string }) => ipcRenderer.invoke('tasks:create', params),
-    updateStatus: (id: string, status: TaskItem['status']) => ipcRenderer.invoke('tasks:updateStatus', id, status),
+    list: () => {
+      try {
+        const { listTaskRecords } = require('../main/project-fs');
+        return Promise.resolve(listTaskRecords());
+      } catch {
+        return ipcRenderer.invoke('tasks:list');
+      }
+    },
+    create: (params: { title: string; desc?: string; prio: string; sector: string; who?: string; status?: string }) => {
+      try {
+        const { createTaskRecord } = require('../main/project-fs');
+        return Promise.resolve(createTaskRecord(params));
+      } catch {
+        return ipcRenderer.invoke('tasks:create', params);
+      }
+    },
+    updateStatus: (id: string, status: TaskItem['status']) => {
+      try {
+        const { updateTaskRecord } = require('../main/project-fs');
+        return Promise.resolve(updateTaskRecord(id, { status }));
+      } catch {
+        return ipcRenderer.invoke('tasks:updateStatus', id, status);
+      }
+    },
+    update: (id: string, patch: any) =>
+      ipcRenderer.invoke('tasks:update', id, patch).catch(() => {
+        const { updateTaskRecord } = require('../main/project-fs');
+        return updateTaskRecord(id, patch);
+      }),
+    delete: (id: string) =>
+      ipcRenderer.invoke('tasks:delete', id).catch(() => {
+        const { deleteTaskRecord } = require('../main/project-fs');
+        return deleteTaskRecord(id);
+      }),
   },
   approvals: {
     list: () => ipcRenderer.invoke('approvals:list'),
@@ -39,12 +93,95 @@ const api: TavirApi = {
   proposals: {
     list: () => ipcRenderer.invoke('proposals:list'),
   },
+  projects: {
+    list: () => ipcRenderer.invoke('projects:list'),
+    create: (params) =>
+      ipcRenderer.invoke('projects:create', params).catch(() => {
+        const { createOrAbsorbProjectRecord } = require('../main/project-fs');
+        return createOrAbsorbProjectRecord(params);
+      }),
+    updateStatus: (id: string, status: string) =>
+      ipcRenderer.invoke('projects:updateStatus', id, status).catch(() => {
+        try {
+          const { DatabaseSync } = require('node:sqlite');
+          const pathMod = require('node:path');
+          const sqlite = new DatabaseSync(pathMod.join(process.cwd(), 'backend', 'tavir.db'));
+          sqlite.prepare('UPDATE projects SET status = ?, updated_at = ? WHERE id = ?').run(status, new Date().toISOString(), id);
+          sqlite.close();
+          return { ok: true, status };
+        } catch {
+          return { ok: false, status };
+        }
+      }),
+    delete: (id: string, deleteFiles: boolean = false, localPath?: string) => {
+      if (deleteFiles) {
+        try {
+          const { deleteProjectWithOptions } = require('../main/project-fs');
+          return Promise.resolve(deleteProjectWithOptions(id, true, localPath));
+        } catch {}
+      }
+      return ipcRenderer.invoke('projects:delete', id, deleteFiles, localPath).catch(() => {
+        const { deleteProjectWithOptions } = require('../main/project-fs');
+        return deleteProjectWithOptions(id, Boolean(deleteFiles), localPath);
+      });
+    },
+    pickFolder: () =>
+      ipcRenderer.invoke('projects:pickFolder').catch(() => {
+        const { pickFolderViaPowerShell } = require('../main/project-fs');
+        return pickFolderViaPowerShell();
+      }),
+    absorb: (params) =>
+      ipcRenderer.invoke('projects:absorb', params).catch(() => {
+        const { createOrAbsorbProjectRecord } = require('../main/project-fs');
+        return createOrAbsorbProjectRecord(Object.assign({}, params, { absorb: true }));
+      }),
+    inspectFolder: (idOrPath: string) =>
+      ipcRenderer.invoke('projects:inspectFolder', idOrPath).catch(() => {
+        const { inspectProjectFolder } = require('../main/project-fs');
+        return inspectProjectFolder(idOrPath);
+      }),
+    openInExplorer: (idOrPath: string) =>
+      ipcRenderer.invoke('projects:openInExplorer', idOrPath).catch(() => {
+        const { openProjectFolderInExplorer } = require('../main/project-fs');
+        return openProjectFolderInExplorer(idOrPath);
+      }),
+    readFile: (filePath: string) =>
+      ipcRenderer.invoke('projects:readFile', filePath).catch(() => {
+        const { readProjectFileContent } = require('../main/project-fs');
+        return readProjectFileContent(filePath);
+      }),
+    getChat: (idOrPath: string) =>
+      ipcRenderer.invoke('projects:getChat', idOrPath).catch(() => {
+        const { getProjectChatHistory } = require('../main/project-fs');
+        return getProjectChatHistory(idOrPath);
+      }),
+    askIris: (params: any) =>
+      ipcRenderer.invoke('projects:askIris', params).catch(() => {
+        const { askProjectIris } = require('../main/project-fs');
+        return askProjectIris(params);
+      }),
+    runWithThinking: (params: any) =>
+      ipcRenderer.invoke('projects:runWithThinking', params).catch(() => {
+        const { runProjectStageWithThinking } = require('../main/project-fs');
+        return runProjectStageWithThinking(params);
+      }),
+  },
   agents: {
     list: () => ipcRenderer.invoke('agents:list'),
   },
   vault: {
-    search: (query: string) => ipcRenderer.invoke('vault:search', query),
-    list: () => ipcRenderer.invoke('vault:list'),
+    search: (query: string) =>
+      ipcRenderer.invoke('vault:search', query).catch(() => getLocalVaultIndexer().search(query)),
+    list: () =>
+      ipcRenderer.invoke('vault:list').catch(() => getLocalVaultIndexer().search('')),
+    stats: () =>
+      ipcRenderer.invoke('vault:stats').catch(() => getLocalVaultIndexer().getStats()),
+    reindex: () =>
+      ipcRenderer.invoke('vault:reindex').catch(() => {
+        const idx = getLocalVaultIndexer();
+        const items = idx.indexAll();
+        return { stats: idx.getStats(), items: items.slice(0, 250) };
+      }),
   },
   onEvent: (callback: (event: RunEvent) => void) => {
     const handler = (_e: Electron.IpcRendererEvent, event: RunEvent) => callback(event);

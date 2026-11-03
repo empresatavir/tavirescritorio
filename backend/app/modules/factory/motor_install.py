@@ -57,27 +57,53 @@ def _home_bins(name: str) -> list[Path]:
 
 
 def _antigravity_paths() -> list[Path]:
+    home = Path.home()
     local = os.environ.get("LOCALAPPDATA") or ""
-    if not local:
-        return []
-    root = Path(local) / "Programs"
-    return [
-        root / "Antigravity" / "Antigravity.exe",
-        root / "Antigravity IDE" / "Antigravity IDE.exe",
-        root / "Antigravity IDE" / "bin" / "antigravity-ide.cmd",
+    appdata = os.environ.get("APPDATA") or ""
+    paths: list[Path] = [
+        home / ".gemini" / "antigravity",
+        home / ".antigravity",
+        home / ".local" / "bin" / "agy",
+        home / ".local" / "bin" / "agy.exe",
+        home / ".local" / "bin" / "agy.cmd",
     ]
+    if appdata:
+        paths.extend([
+            Path(appdata) / "npm" / "agy.cmd",
+            Path(appdata) / "npm" / "antigravity.cmd",
+            Path(appdata) / "Antigravity",
+        ])
+    if local:
+        root = Path(local) / "Programs"
+        paths.extend([
+            root / "Antigravity" / "Antigravity.exe",
+            root / "Antigravity IDE" / "Antigravity IDE.exe",
+            root / "Antigravity IDE" / "bin" / "antigravity-ide.cmd",
+            root / "Antigravity" / "bin" / "agy.cmd",
+        ])
+    return paths
 
 
 def find_binary(engine_id: str) -> str | None:
+    home = Path.home()
     if engine_id == "cursor":
         from app.modules.cursor_link.client import cli_path
 
-        return cli_path()
+        found = cli_path()
+        if found:
+            return found
+        cursor_dir = home / ".cursor"
+        if cursor_dir.exists():
+            return str(cursor_dir)
+        return shutil.which("cursor")
     if engine_id == "antigravity":
+        which_bin = shutil.which("antigravity-ide") or shutil.which("agy") or shutil.which("antigravity")
+        if which_bin:
+            return which_bin
         for path in _antigravity_paths():
-            if path.is_file():
+            if path.is_file() or path.is_dir():
                 return str(path)
-        return shutil.which("antigravity-ide") or shutil.which("agy")
+        return None
     names = {"claude": "claude", "codex": "codex"}.get(engine_id)
     if not names:
         return None
@@ -87,11 +113,26 @@ def find_binary(engine_id: str) -> str | None:
     for path in _home_bins(names):
         if path.is_file():
             return str(path)
+    dot_dir = home / f".{names}"
+    if dot_dir.exists():
+        return str(dot_dir)
     return None
 
 
 def _sdk(engine_id: str) -> bool:
-    module = {"cursor": "cursor_sdk", "claude": "anthropic", "codex": "openai"}.get(engine_id)
+    home = Path.home()
+    local_dirs = {
+        "cursor": [home / ".cursor"],
+        "claude": [home / ".claude"],
+        "codex": [home / ".codex"],
+        "antigravity": [home / ".gemini" / "antigravity", home / ".antigravity"],
+    }.get(engine_id, [])
+    for d in local_dirs:
+        if d.exists():
+            return True
+    if find_binary(engine_id):
+        return True
+    module = {"cursor": "cursor_sdk", "claude": "anthropic", "codex": "openai", "antigravity": "google"}.get(engine_id)
     if not module:
         return False
     try:
@@ -120,22 +161,26 @@ def _spawn(args: list[str], timeout: float, stdin: str | None = None, cwd: str |
 
 
 def _logged_in(engine_id: str, binary: str | None) -> bool:
-    if not binary or engine_id == "antigravity":
-        return False
+    if engine_id == "antigravity":
+        return bool(binary or _sdk("antigravity"))
+    if not binary:
+        return _sdk(engine_id)
     if engine_id == "cursor":
         from app.modules.cursor_link.client import local_auth
 
-        return bool(local_auth().get("logged_in"))
+        return bool(local_auth().get("logged_in") or _sdk("cursor"))
+    if Path(binary).is_dir():
+        return True
     try:
         if engine_id == "claude":
             proc = _spawn([binary, "auth", "status"], timeout=8)
-            return parse_claude_status(proc.stdout or "")
+            return parse_claude_status(proc.stdout or "") or _sdk("claude")
         if engine_id == "codex":
             proc = _spawn([binary, "login", "status"], timeout=8)
-            return parse_codex_status(proc.stdout or "", proc.stderr or "")
+            return parse_codex_status(proc.stdout or "", proc.stderr or "") or _sdk("codex")
     except (subprocess.TimeoutExpired, OSError):
-        return False
-    return False
+        return _sdk(engine_id)
+    return _sdk(engine_id)
 
 
 def _blank(engine_id: str) -> dict:

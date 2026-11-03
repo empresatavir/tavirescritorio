@@ -74,23 +74,44 @@ export function carregarDb(): DatabaseState {
         planning: t.status === 'to_plan'
       }));
 
-      const jobsRows = sqlite.prepare('SELECT id, task_id, status, agent_id, origin FROM jobs').all() as any[];
-      const jobs: JobItem[] = jobsRows.map((j, idx) => ({
-        id: j.id || `job-${idx + 1}`,
-        title: `Job ${j.id}`,
-        who: j.agent_id || 'Agente',
-        ini: (j.agent_id || 'AG').slice(0, 2).toUpperCase(),
-        status: (j.status || 'completed') as any,
-        progress: j.status === 'running' ? 50 : 100,
-        model: 'claude-sonnet-4',
-        motor: 'Cursor',
-        effort: 'equilibrado',
-        task: `#${idx + 1}`,
-        cost: 0,
-        ceiling: 10,
-        started: '—',
-        tokens: '0'
-      }));
+      let jobsRows: any[] = [];
+      try {
+        jobsRows = sqlite
+          .prepare(
+            `SELECT j.id, j.task_id, j.status, j.agent_id, j.origin, t.title AS task_title
+             FROM jobs j
+             LEFT JOIN tasks t ON t.id = j.task_id
+             ORDER BY j.id DESC`,
+          )
+          .all() as any[];
+      } catch {
+        jobsRows = sqlite.prepare('SELECT id, task_id, status, agent_id, origin FROM jobs').all() as any[];
+      }
+      const normalizeJobStatus = (st?: string) => {
+        if (st === 'running' || st === 'queued' || st === 'failed' || st === 'completed' || st === 'paused') return st;
+        if (st === 'cancelled' || st === 'canceled') return 'failed';
+        return 'completed';
+      };
+      const jobs: JobItem[] = jobsRows.map((j, idx) => {
+        const agent = String(j.agent_id || 'Agente');
+        const shortId = String(j.id || '').slice(0, 8);
+        return {
+          id: j.id || `job-${idx + 1}`,
+          title: String(j.task_title || j.origin || `Execução ${shortId}`),
+          who: agent.length > 24 ? `${agent.slice(0, 22)}…` : agent,
+          ini: agent.slice(0, 2).toUpperCase(),
+          status: normalizeJobStatus(j.status) as any,
+          progress: j.status === 'running' ? 50 : j.status === 'queued' ? 10 : 100,
+          model: 'claude-sonnet-4',
+          motor: 'Cursor',
+          effort: 'equilibrado',
+          task: j.task_id ? `#${String(j.task_id).slice(0, 6)}` : `#${idx + 1}`,
+          cost: 0,
+          ceiling: 10,
+          started: String(j.status || '—'),
+          tokens: '0',
+        };
+      });
 
       const approvalsRows = sqlite.prepare('SELECT id, kind, title, status FROM approvals').all() as any[];
       const approvals: ApprovalItem[] = approvalsRows.map((a) => ({
@@ -105,11 +126,13 @@ export function carregarDb(): DatabaseState {
         impact: 'médio',
         task: '#1',
         age: 'recente',
+        ageH: 1,
         reason: 'Verificação de gate necessária.',
         question: 'Autorizar execução?',
         yes: ['Autorizado'],
-        no: ['Rejeitado']
-      }));
+        no: ['Rejeitado'],
+        more: ['Solicitar contexto adicional']
+      } as any));
 
       return {
         session,
@@ -138,13 +161,35 @@ export function salvarDb(estado: DatabaseState): void {
   const arq = caminhoStoreJson();
   writeFileSync(arq, JSON.stringify(estado, null, 2), 'utf8');
 
-  // Sincroniza tarefas no SQLite se houver conexão
+  // Sincroniza tarefas no SQLite se houver conexão (schema exige project_id NOT NULL)
   const sqlite = getSqlite();
   if (sqlite) {
     try {
-      const stmtTask = sqlite.prepare('INSERT OR REPLACE INTO tasks (id, title, status) VALUES (?, ?, ?)');
+      let fallbackProjectId = 'default-project';
+      try {
+        const row = sqlite.prepare('SELECT id FROM projects ORDER BY created_at ASC LIMIT 1').get() as
+          | { id?: string }
+          | undefined;
+        if (row?.id) fallbackProjectId = row.id;
+        else {
+          sqlite
+            .prepare(
+              'INSERT OR IGNORE INTO projects (id, name, company, template_category, total_stages) VALUES (?, ?, ?, ?, ?)',
+            )
+            .run(fallbackProjectId, 'Projeto Principal', 'TAVIR', 'sy', 12);
+        }
+      } catch {
+        /* schema pode variar; segue com fallback */
+      }
+
+      const stmtTask = sqlite.prepare(
+        `INSERT OR REPLACE INTO tasks (id, project_id, title, status, updated_at)
+         VALUES (?, COALESCE((SELECT project_id FROM tasks WHERE id = ?), ?), ?, ?, ?)`,
+      );
+      const nowIso = new Date().toISOString();
       for (const t of estado.tasks) {
-        stmtTask.run(t.id, t.title, t.status);
+        const projectId = (t as { project_id?: string }).project_id || fallbackProjectId;
+        stmtTask.run(t.id, t.id, projectId, t.title, t.status, nowIso);
       }
     } catch (e) {
       console.error('[TAVIR DB] Erro ao sincronizar tasks com SQLite:', e);

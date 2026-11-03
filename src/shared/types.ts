@@ -4,7 +4,7 @@
 
 export type DomainId = 'op' | 'mod' | 'com' | 'soc' | 'kn' | 'est' | 'sys';
 
-export type EngineKind = 'anthropic' | 'cursor' | 'antigravity' | 'codex';
+export type EngineKind = 'anthropic' | 'claude' | 'cursor' | 'antigravity' | 'codex';
 
 export type JobStatus = 'running' | 'queued' | 'failed' | 'completed' | 'paused';
 
@@ -77,10 +77,13 @@ export interface AgentItem {
 
 export interface EngineSettings {
   anthropicEnabled: boolean;
+  claudeEnabled: boolean;
   cursorEnabled: boolean;
   antigravityEnabled: boolean;
   codexEnabled: boolean;
   defaultEngine: EngineKind;
+  defaultModel: string;
+  defaultEffort: string;
 }
 
 export interface SessionState {
@@ -99,6 +102,52 @@ export interface RunEvent {
   meta?: Record<string, unknown>;
 }
 
+export interface FactoryProjectItem {
+  id: string;
+  slug: string;
+  name: string;
+  client: string | null;
+  company: string | null;
+  template_code: string | null;
+  stages_done: number;
+  total_stages: number;
+  status: string;
+  local_path?: string | null;
+  stack?: string | null;
+  description?: string | null;
+}
+
+export interface CreateFactoryProjectParams {
+  name: string;
+  company?: string;
+  ownership?: 'interno' | 'externo';
+  template?: string;
+  template_category?: 'lp' | 'of' | 'sy';
+  mode?: 'Criação' | 'Manutenção' | string;
+  track?: 'zero' | 'pronto' | 'especificado' | 'manutencao';
+  local_path?: string;
+  absorb?: boolean;
+  absorb_agent?: string;
+  git_profile?: string;
+  git_name?: string;
+  git_email?: string;
+  repo_url?: string;
+  deploy_target?: string;
+  stack_frontend?: string;
+  stack_backend?: string;
+  stack_database?: string;
+}
+
+export interface DetectedEngineInfo {
+  id: string;
+  name: string;
+  installed: boolean;
+  sdk: boolean;
+  loggedIn: boolean;
+  path: string;
+  detail: string;
+}
+
 export interface TavirApi {
   app: {
     getVersion: () => Promise<string>;
@@ -115,7 +164,20 @@ export interface TavirApi {
   };
   engines: {
     getSettings: () => Promise<EngineSettings>;
-    updateSettings: (settings: Partial<EngineSettings>) => Promise<void>;
+    updateSettings: (settings: Partial<EngineSettings>) => Promise<EngineSettings>;
+    detect: () => Promise<DetectedEngineInfo[]>;
+    getCatalog: () => Promise<{
+      settings: EngineSettings;
+      engines: Array<{
+        id: string;
+        label: string;
+        sdk: string;
+        enabled: boolean;
+        is_default: boolean;
+        models: Array<{ id: string; label: string; efforts: Array<{ id: string; label: string }> }>;
+      }>;
+      caption: string;
+    }>;
   };
   jobs: {
     list: () => Promise<JobItem[]>;
@@ -126,8 +188,10 @@ export interface TavirApi {
   };
   tasks: {
     list: () => Promise<TaskItem[]>;
-    create: (params: { title: string; prio: string; sector: string }) => Promise<TaskItem>;
-    updateStatus: (id: string, status: TaskItem['status']) => Promise<void>;
+    create: (params: { title: string; desc?: string; prio: string; sector: string; who?: string; status?: string }) => Promise<TaskItem>;
+    updateStatus: (id: string, status: TaskItem['status']) => Promise<any>;
+    update: (id: string, patch: any) => Promise<any>;
+    delete: (id: string) => Promise<any>;
   };
   approvals: {
     list: () => Promise<ApprovalItem[]>;
@@ -136,12 +200,28 @@ export interface TavirApi {
   proposals: {
     list: () => Promise<any[]>;
   };
+  projects: {
+    list: () => Promise<FactoryProjectItem[]>;
+    create: (params: CreateFactoryProjectParams) => Promise<FactoryProjectItem>;
+    updateStatus: (id: string, status: string) => Promise<{ ok: boolean; status: string }>;
+    delete: (id: string, deleteFiles?: boolean, localPath?: string) => Promise<{ ok: boolean; deletedFiles?: boolean; path?: string | null }>;
+    pickFolder: () => Promise<{ canceled: boolean; path: string | null }>;
+    absorb: (params: CreateFactoryProjectParams) => Promise<FactoryProjectItem>;
+    inspectFolder: (idOrPath: string) => Promise<any>;
+    openInExplorer: (idOrPath: string) => Promise<{ ok: boolean; path?: string }>;
+    readFile: (filePath: string) => Promise<{ ok: boolean; content?: string; size?: number }>;
+    getChat: (idOrPath: string) => Promise<any>;
+    askIris: (params: any) => Promise<any>;
+    runWithThinking: (params: any) => Promise<any>;
+  };
   agents: {
     list: () => Promise<AgentItem[]>;
   };
   vault: {
     search: (query: string) => Promise<any[]>;
     list: () => Promise<any[]>;
+    stats: () => Promise<any>;
+    reindex: () => Promise<{ stats: any; items: any[] }>;
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
 }

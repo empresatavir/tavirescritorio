@@ -508,6 +508,18 @@ Comando: `node .claude/skills/reference-fidelity-frontend/scripts/capture_playwr
 
 Resultado inicial: 36 telas, média 87,57%. Depois do tema claro, a média foi para 88,42%. Com o miolo da Sala no fixture, 88,81%. Edição e Analytics no mesmo fixture levaram a média a 88,97%: Edição 87,99% e Analytics 85,85%. Decisões clara permanece em 71,94% e a Sala clara em 82,81%. O relatório está em `visual/report/report.html`. Nenhuma tela chegou a 97%. Execuções em 860 px não entrou neste lote.
 
+## Checkpoint Fábrica (HTML `Referencias/Fábrica-html`) — em curso
+
+- **Painel** (`/fabrica`, fixture 9204 vs ref 4210, viewport 1440×900, shell `.fab` isolado): **99,95%** — `visual/report-fabrica/report.html`. Gate ≥97% cumprido; residual ~0,05% em AA dos anéis 100%.
+- **Console · Visão geral** (abrir Meridian): **99,34%** — `visual/report-fabrica-console/report.html`. Token `--on-ink-line`, cascade `.link` inherit, `.fb-path .btn` 28px. Capture: `visual/_capture_fabrica_console.mjs`.
+- **Console · Esteira** (Meridian → tab Esteira, scrollTop 320 para topologia + Completion Guard): **99,43%** — `visual/report-fabrica-esteira/report.html`. Topologia 9 nós, painel QA (etapa 06 · no gate), Guard 6/8 com grupos Build / Prova visual / SEO. Capture: `visual/_capture_fabrica_esteira.mjs`.
+- **Console · QA** (Meridian → tab QA, scrollTop 320): **99,14%** — `visual/report-fabrica-qa/report.html`. Completion Guard 6/8 + painel QA (QA-0142, 2 falhas, evidências e suítes). Capture: `visual/_capture_fabrica_qa.mjs`.
+- **Console · Acessos** (Meridian → tab Acessos, scrollTop 320): **99,20%** — `visual/report-fabrica-acessos/report.html`. Credenciais com `SUPABASE_URL` faltando (default), contas e pessoas. Capture: `visual/_capture_fabrica_acessos.mjs`.
+- **Console · Segurança** (Meridian → tab Segurança, scrollTop 320): **99,07%** — `visual/report-fabrica-seg/report.html`. SEC-0031, score 69, F-01 expandida, findings/checks. Capture: `visual/_capture_fabrica_seg.mjs`.
+- **Console · Kanban** (Meridian → tab Kanban): **99,58%** — `visual/report-fabrica-kanban/report.html`. 4 colunas + extras Meridian (QA subtarefas + ENV). Capture: `visual/_capture_fabrica_kanban.mjs`.
+- **Console · Roadmap** (Meridian → tab Roadmap): **98,45%** — `visual/report-fabrica-roadmap/report.html`. Gantt + miles gates [3,5,8]. Capture: `visual/_capture_fabrica_roadmap.mjs`.
+- **Console · Workspace** (Meridian → tab Workspace / pt.arquivos): **97,62%** — `visual/report-fabrica-workspace/report.html`. Tree 25 rows (cascade inherit 14px/1.5) + 18 file cards. Capture: `visual/_capture_fabrica_workspace.mjs`.
+
 ## O que ainda não foi executado
 
-Subir as telas abaixo de 97% e incluir Execuções no viewport de 860 px.
+Subir as telas abaixo de 97% e incluir Execuções no viewport de 860 px. Tabs Meridian do console da Fábrica (Painel→Workspace) já ≥97%.

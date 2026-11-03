@@ -8,7 +8,7 @@ import { promisify } from 'node:util';
 const execFileAsync = promisify(execFile);
 
 export class AnthropicDriver implements AgentEngineDriver {
-  kind = 'anthropic' as const;
+  kind = 'claude' as const;
   name = 'Anthropic Claude Agent SDK';
 
   async isAvailable(): Promise<boolean> {

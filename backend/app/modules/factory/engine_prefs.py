@@ -195,11 +195,13 @@ async def list_engines() -> dict:
 
 
 def connected(engine_id: str, info: dict | None = None) -> bool:
-    """Login da plataforma ou chave. A instalação sozinha ainda não liga o motor."""
+    """Prioriza detecção de instalação/SDK local na máquina; chave de API é fallback opcional."""
     from app.modules.factory.motor_install import installation
     from app.modules.factory.motor_secrets import antigravity_base, antigravity_key, claude_key, codex_key
 
     row = info if info is not None else installation(engine_id)
+    if row.get("local") or row.get("sdk") or row.get("logged_in"):
+        return True
     if engine_id == "cursor":
         return bool(row.get("logged_in"))
     if engine_id == "claude":
@@ -207,7 +209,7 @@ def connected(engine_id: str, info: dict | None = None) -> bool:
     if engine_id == "codex":
         return bool(codex_key() or row.get("logged_in"))
     if engine_id == "antigravity":
-        return bool(antigravity_key() and antigravity_base())
+        return bool((antigravity_key() and antigravity_base()) or row.get("local") or row.get("sdk"))
     return False
 
 
@@ -230,10 +232,10 @@ async def list_motors() -> list[dict]:
     default_id = flags["default_id"]
     infos = await asyncio.gather(*(asyncio.to_thread(installation, engine_id) for engine_id in MOTOR_ENGINES))
     labels = {
-        "cursor": ("Cursor", "O agente local. O login desta máquina pluga o motor."),
-        "claude": ("Claude", "Chave da Anthropic, ou o aplicativo já instalado."),
-        "codex": ("Codex", "Chave da OpenAI, ou o aplicativo já instalado."),
-        "antigravity": ("Antigravity", "Chave e endereço da API. O aplicativo abre o login."),
+        "cursor": ("Cursor", "SDK e instalação local detectados na máquina. Chave de API opcional."),
+        "claude": ("Claude", "SDK e CLI local detectados na máquina. Chave da Anthropic opcional."),
+        "codex": ("Codex", "SDK e CLI local detectados na máquina. Chave da OpenAI opcional."),
+        "antigravity": ("Antigravity", "SDK e instalação local (~/.gemini/antigravity) detectados na máquina. Chave opcional."),
     }
     secrets = {
         "cursor": bool(cursor_key()),

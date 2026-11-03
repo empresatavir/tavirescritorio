@@ -29,6 +29,23 @@ function criarJanela(): void {
 
   mainWindow.setMenu(null);
 
+  // Mantém os atalhos de recarga (Ctrl+R, Ctrl+Shift+R, F5) e DevTools (Ctrl+Shift+I) funcionando mesmo sem menu bar
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.type !== 'keyDown') return;
+    const ctrlOrCmd = input.control || input.meta;
+    const key = input.key.toLowerCase();
+    if ((ctrlOrCmd && key === 'r' && !input.shift) || input.key === 'F5') {
+      event.preventDefault();
+      mainWindow?.webContents.reload();
+    } else if (ctrlOrCmd && input.shift && key === 'r') {
+      event.preventDefault();
+      mainWindow?.webContents.reloadIgnoringCache();
+    } else if (ctrlOrCmd && input.shift && key === 'i') {
+      event.preventDefault();
+      mainWindow?.webContents.toggleDevTools();
+    }
+  });
+
   registrarIpcHandlers(mainWindow);
 
   if (isDev) {

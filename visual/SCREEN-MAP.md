@@ -49,8 +49,17 @@ Nenhuma captura foi feita ainda. A coluna de status abaixo é o inventário, nã
 | `studio-esteira` | Studio, peças | filha Studio | `/studio` | 1440×900 | peças | `studio-esteira.png` | |
 | `studio-pauta` | Pauta do Oráculo | mesma | abrir produção na pauta | 1440×900 | peça em pauta | `studio-pauta.png` | |
 | `studio-angulo` | Escolha de ângulo | mesma | checkpoint de ângulo | 1440×900 | decisão aberta | `studio-angulo.png` | |
-| `fabrica-esteiras` | Fábrica, lista | filha Fábrica | `/fabrica` | 1440×900 | 3 esteiras | `fabrica-esteiras.png` | |
-| `fabrica-projeto` | Esteira de um projeto | mesma | abrir projeto | 1440×900 | projeto fixture | `fabrica-projeto.png` | |
+| `fabrica-painel` | Fábrica · Painel | `Referencias/Fábrica-html/Fabrica.dc.html` (painel) | `/fabrica` fixture 9204 vs ref 4210 | 1440×900 | DEMO 7 projetos | `fabrica-painel.png` | **99,95%** · `visual/report-fabrica/` |
+| `fabrica-console` | Console · Visão geral | `Fabrica.dc.html` consoleView | abrir Meridian | 1440×900 | meridian fixture | `fabrica-console.png` | **99,34%** · `visual/report-fabrica-console/` · `_capture_fabrica_console.mjs` |
+| `fabrica-esteira` | Console · Esteira (Meridian) | `Fabrica.dc.html` pt.esteiraM | Meridian → tab Esteira; scrollTop 320 | 1440×900 | stage QA / Guard 6/8 | `fabrica-esteira.png` | **99,43%** · `visual/report-fabrica-esteira/` · `_capture_fabrica_esteira.mjs` |
+| `fabrica-qa` | Console · QA (Meridian) | `Fabrica.dc.html` pt.qa (+ Guard) | Meridian → tab QA; scrollTop 320 | 1440×900 | QA-0142 · 2 falhas | `fabrica-qa.png` | **99,14%** · `visual/report-fabrica-qa/` · `_capture_fabrica_qa.mjs` |
+| `fabrica-acessos` | Console · Acessos (Meridian) | `Fabrica.dc.html` pt.acessos | Meridian → tab Acessos; scrollTop 320 | 1440×900 | SUPABASE_URL missing · envOk false | `fabrica-acessos.png` | **99,20%** · `visual/report-fabrica-acessos/` · `_capture_fabrica_acessos.mjs` |
+| `fabrica-seg` | Console · Segurança (Meridian) | `Fabrica.dc.html` pt.seg | Meridian → tab Segurança; scrollTop 320 | 1440×900 | SEC-0031 · score 69 · F-01 aberta | `fabrica-seg.png` | **99,07%** · `visual/report-fabrica-seg/` · `_capture_fabrica_seg.mjs` |
+| `fabrica-kanban` | Console · Kanban (Meridian) | `Fabrica.dc.html` pt.kanban | Meridian → tab Kanban; landmark scroll | 1440×900 | 4 cols + QA subtarefas + ENV | `fabrica-kanban.png` | **99,58%** · `visual/report-fabrica-kanban/` · `_capture_fabrica_kanban.mjs` |
+| `fabrica-roadmap` | Console · Roadmap (Meridian) | `Fabrica.dc.html` pt.roadmap | Meridian → tab Roadmap; landmark scroll | 1440×900 | gantt · miles gates [3,5,8] | `fabrica-roadmap.png` | **98,45%** · `visual/report-fabrica-roadmap/` · `_capture_fabrica_roadmap.mjs` |
+| `fabrica-workspace` | Console · Workspace (Meridian) | `Fabrica.dc.html` pt.arquivos | Meridian → tab Workspace; landmark “Workspace isolado” | 1440×900 | tree 25 · 18 FILES | `fabrica-workspace.png` | **97,62%** · `visual/report-fabrica-workspace/` · `_capture_fabrica_workspace.mjs` |
+| `fabrica-esteiras` | Fábrica, lista | filha Fábrica (legado redesenho) | `/fabrica` | 1440×900 | 3 esteiras | `fabrica-esteiras.png` | Superseded por `fabrica-painel` |
+| `fabrica-projeto` | Console do projeto | alias de `fabrica-console` | abrir Meridian | 1440×900 | meridian fixture | `fabrica-projeto.png` | Ver `fabrica-console` |
 | `flow-beta` | Flow | filha Flow | `/flow` | 1440×900 | workflows | `flow-beta.png` | Faixa beta visível; sem motor contínuo |
 | `edicao-timeline` | Edição | filha Edição | `/edicao` | 1440×900 | projeto de corte | `edicao-timeline.png` | Timeline com transition none |
 | `funil` | Funil | filha Comercial view funil | `/funil` | 1440×900 | casos+propostas | `funil.png` | |
