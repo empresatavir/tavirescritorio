@@ -7,18 +7,20 @@ export const SCREEN_ROUTES: Record<string, string> = {
   room: "/sala-operacao",
   exec: "/execucoes",
   tasks: "/tasks",
-  approvals: "/aprovacoes",
-  blocks: "/bloqueios",
+  decisions: "/decisoes",
   agents: "/agentes",
-  changes: "/alteracoes",
   chat: "/chat",
+  modhub: "/modulos",
+  raiox: "/raiox",
   studio: "/studio",
   fabrica: "/fabrica",
   flow: "/flow",
   edicao: "/edicao",
   analytics: "/analytics",
   doctor: "/doctor",
-  integrations: "/integracoes",
+  config: "/configuracoes",
+  tour: "/fluxo-guiado",
+  guide: "/como-funciona",
   skills: "/skills",
   org: "/org-chart",
   brain: "/cerebro",
@@ -30,7 +32,7 @@ export const SCREEN_ROUTES: Record<string, string> = {
   mission: "/mission-control",
   roadmap: "/roadmap",
   reference: "/reference",
-  funnel: "/funnel",
+  funnel: "/funil",
   finances: "/finances",
   proposals: "/propostas",
   content: "/content",
@@ -111,8 +113,10 @@ export function SubNav() {
 
   return (
     <aside
+      class="sub"
+      aria-label="Menu da área"
       style={{
-        width: "212px",
+        width: "236px",
         background: "#0f1729",
         "border-right": "1px solid rgba(244,246,242,.10)",
         display: "flex",
@@ -136,9 +140,9 @@ export function SubNav() {
         <img
           src="/assets/brand/tavir-wordmark-reversed.svg"
           alt="TAVIR"
-          style={{ width: "96px", height: "auto", display: "block", "margin-bottom": "4px" }}
+          style={{ height: "15px", width: "auto", display: "block", "margin-bottom": "4px" }}
         />
-        <span style={{ "font-size": "11px", color: "#aeb7c4" }}>Escritório Virtual · localhost</span>
+        <span style={{ "font-size": "11px", color: "#aeb7c4" }}>Escritório</span>
       </div>
 
       {/* Domain Category Label */}
@@ -174,6 +178,7 @@ export function SubNav() {
 
             return (
               <button
+                class="nav-item"
                 type="button"
                 onClick={() => {
                   setCurrentScreenId(it.id);
@@ -184,7 +189,7 @@ export function SubNav() {
                   display: "flex",
                   "align-items": "center",
                   gap: "10px",
-                  height: "32px",
+                  height: "40px",
                   padding: "0 10px",
                   border: "none",
                   "border-radius": "8px",
@@ -209,7 +214,7 @@ export function SubNav() {
                   }
                 }}
               >
-                <TvIcon name={it.icon} width="15" height="15" />
+                <TvIcon name={it.icon} width="18" height="18" />
                 <span
                   style={{
                     flex: 1,
@@ -236,6 +241,49 @@ export function SubNav() {
             );
           }}
         </For>
+      </div>
+
+      <div style={{ display: "flex", "flex-direction": "column", gap: "4px", padding: "8px" }}>
+        <button
+          type="button"
+          onClick={() => navigate("/fluxo-guiado")}
+          style={{
+            display: "flex",
+            "flex-direction": "column",
+            "align-items": "flex-start",
+            gap: "2px",
+            padding: "8px 10px",
+            "border-radius": "10px",
+            border: "1px solid rgba(183,243,74,.35)",
+            background: "rgba(183,243,74,.08)",
+            color: "#F4F6F2",
+            cursor: "pointer",
+            "text-align": "left",
+          }}
+        >
+          <span style={{ "font-size": "13px", "font-weight": 600 }}>Fluxo guiado</span>
+          <span style={{ "font-size": "11px", color: "#aeb7c4" }}>Dois percursos explicados</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => navigate("/como-funciona")}
+          style={{
+            display: "flex",
+            "flex-direction": "column",
+            "align-items": "flex-start",
+            gap: "2px",
+            padding: "8px 10px",
+            "border-radius": "10px",
+            border: "1px solid rgba(244,246,242,.12)",
+            background: "transparent",
+            color: "#F4F6F2",
+            cursor: "pointer",
+            "text-align": "left",
+          }}
+        >
+          <span style={{ "font-size": "13px", "font-weight": 600 }}>Como funciona</span>
+          <span style={{ "font-size": "11px", color: "#aeb7c4" }}>Mapa do ciclo completo</span>
+        </button>
       </div>
 
       {/* Health / Connection Indicators Footer */}

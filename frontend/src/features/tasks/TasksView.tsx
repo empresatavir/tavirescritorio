@@ -298,8 +298,8 @@ export function TasksView() {
 
   const goToAprovacoes = (approvalId?: string) => {
     if (approvalId) setSelectedApprovalId(approvalId);
-    setCurrentScreenId("approvals");
-    navigate("/aprovacoes");
+    setCurrentScreenId("decisions");
+    navigate("/decisoes");
   };
 
   const handleOpenPlanModal = (task: UiTask) => {
@@ -313,8 +313,9 @@ export function TasksView() {
     taskSeq: number;
     aiModel: string;
     modelName: string;
-    effortLevel: number;
+    effortId: string;
     effortLabel: string;
+    providerId: string;
     orchestrator: string;
   }) => {
     if (actionBusy()) return;
@@ -324,11 +325,12 @@ export function TasksView() {
         task_id: payload.taskId,
         project_id: "tavir-core",
         agent_id: "pm-projetos",
-        model_name: payload.modelName,
-        effort: payload.effortLabel,
+        model_name: payload.aiModel,
+        effort: payload.effortId,
+        model_provider: payload.providerId,
         origin: "planning",
         command: `planning:#${payload.taskSeq}`,
-        timeout: payload.effortLevel === 4 ? 120 : payload.effortLevel === 3 ? 90 : 60,
+        timeout: 180,
       });
 
       if (createdJob?.id) setSelectedJobId(createdJob.id);
@@ -360,8 +362,8 @@ export function TasksView() {
     if (actionBusy()) return;
     setActionBusy(true);
     try {
-      const modelName = tagValue(task.tags, "model:") || "Fable";
-      const effortLabel = tagValue(task.tags, "effort:") || "Máximo";
+      const modelName = tagValue(task.tags, "model:") || undefined;
+      const effortLabel = tagValue(task.tags, "effort:") || undefined;
       const createdJob = await api.createJob({
         task_id: task.id,
         project_id: "tavir-core",
@@ -379,7 +381,7 @@ export function TasksView() {
       await syncLiveJobs();
       await syncCockpit();
 
-      showToast(`Execução da Task #${task.seq} iniciada com ${modelName}.`, "Execução", "success");
+      showToast(`Execução da Task #${task.seq} iniciada com ${modelName || "o motor padrão"}.`, "Execução", "success");
       goToExecucoes(createdJob?.id);
     } catch (err) {
       console.error("Erro ao iniciar execução:", err);
@@ -387,7 +389,7 @@ export function TasksView() {
       showToast(detail || "Erro ao iniciar execução", status === 409 ? "Bloqueio" : "Erro", "error");
       if (status === 409) {
         if (/aprovação|gate|altera/i.test(detail)) setTimeout(() => goToAprovacoes(), 800);
-        else if (/dependên/i.test(detail)) setTimeout(() => navigate("/bloqueios"), 800);
+        else if (/dependên/i.test(detail)) setTimeout(() => navigate("/decisoes"), 800);
       }
     } finally {
       setActionBusy(false);
@@ -448,6 +450,16 @@ export function TasksView() {
       await moveTaskPersistent(task.id, action.status);
       await syncCockpit();
     }
+  };
+
+  const handleMoveToExecution = async (task: UiTask) => {
+    if (actionBusy() || task.awaitingApproval) return;
+    await moveTaskPersistent(task.id, "in_progress");
+  };
+
+  const handleConclude = async (task: UiTask) => {
+    if (actionBusy()) return;
+    await moveTaskPersistent(task.id, "done");
   };
 
   const beginEdit = (task: UiTask) => {
@@ -784,6 +796,7 @@ export function TasksView() {
 
             return (
               <section
+                data-column={col.key}
                 class={`tv-tasks-col ${
                   isOver()
                     ? dropPreview()?.type === "blocked"
@@ -1022,6 +1035,7 @@ export function TasksView() {
               />
 
               <aside
+                class="drawer"
                 role="dialog"
                 aria-label="Detalhamento da task"
                 style={{
@@ -1108,6 +1122,20 @@ export function TasksView() {
                         {c().label}
                       </button>
                     )}
+                  </Show>
+                  <Show when={t().status === "planned" && !t().awaitingApproval}>
+                    <button
+                      type="button"
+                      disabled={actionBusy()}
+                      onClick={() => void handleMoveToExecution(t())}
+                    >
+                      Mover para Em execução
+                    </button>
+                  </Show>
+                  <Show when={t().status === "in_progress"}>
+                    <button type="button" disabled={actionBusy()} onClick={() => void handleConclude(t())}>
+                      Concluir
+                    </button>
                   </Show>
 
                   <button
@@ -1364,12 +1392,12 @@ export function TasksView() {
                         <div>
                           <div style={{ color: "var(--text-muted, #aeb7c4)", "font-size": "10px" }}>Modelo</div>
                           <div style={{ "font-weight": 600, color: "var(--teal)" }}>
-                            {tagValue(t().tags, "model:") || "Fable"}
+                            {tagValue(t().tags, "model:") || "Motor padrão"}
                           </div>
                         </div>
                         <div>
                           <div style={{ color: "var(--text-muted, #aeb7c4)", "font-size": "10px" }}>Esforço</div>
-                          <div style={{ "font-weight": 600 }}>{tagValue(t().tags, "effort:") || "Máximo"}</div>
+                          <div style={{ "font-weight": 600 }}>{tagValue(t().tags, "effort:") || "Motor padrão"}</div>
                         </div>
                         <div style={{ "grid-column": "1 / -1" }}>
                           <div style={{ color: "var(--text-muted, #aeb7c4)", "font-size": "10px" }}>Handoffs</div>

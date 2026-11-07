@@ -16,6 +16,7 @@
   --surface-ink:var(--ink);
   --on-ink:var(--cloud);
   --on-ink-muted:#aeb7c4;
+  --on-ink-line:rgba(244,246,242,.12);
   --on-ink-accent:var(--lime);
   --on-ink-flow:var(--teal);
 

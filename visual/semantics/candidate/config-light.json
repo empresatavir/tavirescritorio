@@ -1,0 +1,1834 @@
+{
+  "screenId": "config-light",
+  "side": "candidate",
+  "capturedUrl": "http://127.0.0.1:9198/configuracoes",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:9198/configuracoes",
+      "title": "TAVIR Escritório — Painel Operacional",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 21,
+        "nav": 2,
+        "img": 2,
+        "button": 20,
+        "span": 42,
+        "svg": 15,
+        "path": 32,
+        "polygon": 2,
+        "polyline": 2,
+        "rect": 4,
+        "circle": 5,
+        "line": 11,
+        "aside": 1,
+        "header": 2,
+        "main": 1,
+        "a": 8,
+        "section": 1,
+        "h2": 1,
+        "p": 1,
+        "label": 3,
+        "input": 2,
+        "select": 1
+      },
+      "visibleText": [
+        {
+          "text": "🌙",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Tema escuro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistema",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Analytics",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Doctor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Skills",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Org Chart",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Configurações",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistema",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Configurações",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AO VIVO",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Perfil",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Visão geral",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Projetos",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Integrações",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Memórias",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Motor IA",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Sistema",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        },
+        {
+          "text": "Perfil",
+          "tag": "h2",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Seu nome e idioma — a Sala usa os dois na saudação.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nome",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "E-mail",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Idioma",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "É assim que a Sala te cumprimenta.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Salvar perfil",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Exportar livro-razão",
+          "tag": "a",
+          "id": "",
+          "role": "link"
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema 🌙 Tema escuro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 14,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "🌙 Tema escuro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: light)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "Escritório SISTEMA Analytics Doctor Skills Org Chart Configurações Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 80,
+            "y": 13,
+            "width": 203,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Doctor",
+          "label": null,
+          "text": "Doctor",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Sistema / Configurações AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Sistema / Configurações AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": null,
+          "name": "Indicador de dados operacionais ao vivo",
+          "label": null,
+          "text": "AO VIVO",
+          "placeholder": null,
+          "title": "Indicador de dados operacionais ao vivo",
+          "rect": {
+            "x": 496,
+            "y": 20,
+            "width": 81,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          }
+        },
+        {
+          "tag": "main",
+          "id": null,
+          "role": "main",
+          "name": "Perfil Visão geral Projetos Integrações Memórias Motor IA Sistema Perfil Seu nome e idioma — a Sala usa os dois na saudação. Nome E-mail Idioma Português English É assim que a Sala te cumprimenta. Salvar perfil Exportar livro-razão",
+          "label": null,
+          "text": "Perfil Visão geral Projetos Integrações Memórias Motor IA Sistema Perfil Seu nome e idioma — a Sala usa os dois na saudação. Nome E-mail Idioma Português English É assim que a Sala te cumprimenta. Salvar perfil Exportar livro-razão",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 1140,
+            "height": 836
+          }
+        },
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Seções das configurações",
+          "label": "Seções das configurações",
+          "text": "Perfil Visão geral Projetos Integrações Memórias Motor IA Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 302,
+            "y": 66,
+            "width": 594,
+            "height": 40
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Perfil",
+          "label": null,
+          "text": "Perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 306,
+            "y": 70,
+            "width": 60,
+            "height": 32
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Visão geral",
+          "label": null,
+          "text": "Visão geral",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 368,
+            "y": 70,
+            "width": 94,
+            "height": 32
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Projetos",
+          "label": null,
+          "text": "Projetos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 464,
+            "y": 70,
+            "width": 78,
+            "height": 32
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Integrações",
+          "label": null,
+          "text": "Integrações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 544,
+            "y": 70,
+            "width": 98,
+            "height": 32
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Memórias",
+          "label": null,
+          "text": "Memórias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 644,
+            "y": 70,
+            "width": 88,
+            "height": 32
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Motor IA",
+          "label": null,
+          "text": "Motor IA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 734,
+            "y": 70,
+            "width": 80,
+            "height": 32
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Sistema",
+          "label": null,
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 816,
+            "y": 70,
+            "width": 76,
+            "height": 32
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Perfil Seu nome e idioma — a Sala usa os dois na saudação. Nome E-mail Idioma Português English É assim que a Sala te cumprimenta. Salvar perfil Exportar livro-razão",
+          "label": null,
+          "text": "Perfil Seu nome e idioma — a Sala usa os dois na saudação. Nome E-mail Idioma Português English É assim que a Sala te cumprimenta. Salvar perfil Exportar livro-razão",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 302,
+            "y": 130,
+            "width": 1136,
+            "height": 264
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Perfil Seu nome e idioma — a Sala usa os dois na saudação.",
+          "label": null,
+          "text": "Perfil Seu nome e idioma — a Sala usa os dois na saudação.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 303,
+            "y": 131,
+            "width": 1134,
+            "height": 73
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Perfil",
+          "label": null,
+          "text": "Perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 325,
+            "y": 147,
+            "width": 287,
+            "height": 22
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Nome",
+          "label": null,
+          "text": "Nome",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 321,
+            "y": 222,
+            "width": 355,
+            "height": 66
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Nome",
+          "label": "Nome",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 321,
+            "y": 248,
+            "width": 355,
+            "height": 40
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "E-mail",
+          "label": null,
+          "text": "E-mail",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 692,
+            "y": 222,
+            "width": 355,
+            "height": 66
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "E-mail",
+          "label": "E-mail",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 692,
+            "y": 248,
+            "width": 355,
+            "height": 40
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Idioma Português English",
+          "label": null,
+          "text": "Idioma Português English",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1064,
+            "y": 222,
+            "width": 355,
+            "height": 66
+          }
+        },
+        {
+          "tag": "select",
+          "id": null,
+          "role": "combobox",
+          "name": "Idioma",
+          "label": "Idioma",
+          "text": "Português English",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1064,
+            "y": 248,
+            "width": 355,
+            "height": 38
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Salvar perfil",
+          "label": null,
+          "text": "Salvar perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 321,
+            "y": 337,
+            "width": 105,
+            "height": 38
+          }
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Exportar livro-razão",
+          "label": null,
+          "text": "Exportar livro-razão",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 438,
+            "y": 337,
+            "width": 154,
+            "height": 38
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "🌙 Tema escuro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: light)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Doctor",
+          "label": null,
+          "text": "Doctor",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Perfil",
+          "label": null,
+          "text": "Perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 306,
+            "y": 70,
+            "width": 60,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Visão geral",
+          "label": null,
+          "text": "Visão geral",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 368,
+            "y": 70,
+            "width": 94,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Projetos",
+          "label": null,
+          "text": "Projetos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 464,
+            "y": 70,
+            "width": 78,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Integrações",
+          "label": null,
+          "text": "Integrações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 544,
+            "y": 70,
+            "width": 98,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Memórias",
+          "label": null,
+          "text": "Memórias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 644,
+            "y": 70,
+            "width": 88,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Motor IA",
+          "label": null,
+          "text": "Motor IA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 734,
+            "y": 70,
+            "width": 80,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Sistema",
+          "label": null,
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 816,
+            "y": 70,
+            "width": 76,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Nome",
+          "label": null,
+          "text": "Nome",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 321,
+            "y": 222,
+            "width": 355,
+            "height": 66
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Nome",
+          "label": "Nome",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 321,
+            "y": 248,
+            "width": 355,
+            "height": 40
+          },
+          "kind": "field",
+          "type": "text",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "E-mail",
+          "label": null,
+          "text": "E-mail",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 692,
+            "y": 222,
+            "width": 355,
+            "height": 66
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "E-mail",
+          "label": "E-mail",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 692,
+            "y": 248,
+            "width": 355,
+            "height": 40
+          },
+          "kind": "field",
+          "type": "email",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Idioma Português English",
+          "label": null,
+          "text": "Idioma Português English",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1064,
+            "y": 222,
+            "width": 355,
+            "height": 66
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "select",
+          "id": null,
+          "role": "combobox",
+          "name": "Idioma",
+          "label": "Idioma",
+          "text": "Português English",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1064,
+            "y": 248,
+            "width": 355,
+            "height": 38
+          },
+          "kind": "field",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": [
+            {
+              "label": "Português"
+            }
+          ],
+          "hasValue": true
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Salvar perfil",
+          "label": null,
+          "text": "Salvar perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 321,
+            "y": 337,
+            "width": 105,
+            "height": 38
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "a",
+          "id": null,
+          "role": "link",
+          "name": "Exportar livro-razão",
+          "label": null,
+          "text": "Exportar livro-razão",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 438,
+            "y": 337,
+            "width": 154,
+            "height": 38
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 30,
+          "height": 30
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 203,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

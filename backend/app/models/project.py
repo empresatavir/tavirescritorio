@@ -27,6 +27,7 @@ class Project(Base):
     files: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     keys: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     ai_settings: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    control: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     event_log: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
     description: Mapped[str | None] = mapped_column(Text, nullable=True)

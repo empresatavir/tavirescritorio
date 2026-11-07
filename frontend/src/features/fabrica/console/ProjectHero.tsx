@@ -89,7 +89,7 @@ export function ProjectHero(props: {
             <span class="fc-hero-pill lime">{props.meta.code}</span>
             <span class="fc-hero-pill outline">
               <TvIcon name="radio-tower" width="12" height="12" />
-              {props.running ? props.meta.statusLabel : "Pausado"}
+              {props.meta.statusLabel}
             </span>
             <Show when={props.meta.gatePending}>
               <span class="fc-hero-pill warn">Gate CEO</span>
@@ -188,6 +188,7 @@ export function ProjectHero(props: {
               Retomar
             </button>
           </Show>
+          <Show when={props.meta.status !== "done"}>
           <button
             type="button"
             class="fc-hero-btn"
@@ -198,6 +199,7 @@ export function ProjectHero(props: {
             <TvIcon name={props.running ? "pause" : "play"} width="14" height="14" />
             {props.running ? "Pausar" : "Iniciar"}
           </button>
+          </Show>
           <button type="button" class="fc-hero-btn ghost" onClick={props.onOpenFolder} title="Abrir pasta local do projeto">
             <TvIcon name="folder-kanban" width="14" height="14" />
             Pasta local

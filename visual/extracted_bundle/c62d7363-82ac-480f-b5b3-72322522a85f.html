@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Sistema</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page">
+  <div class="phead"><div class="grow"><div class="eyebrow">Sistema</div><h1 style="margin-top: 8px">{{title}}</h1><p>{{lead}}</p></div>
+    <div class="actions"><sc-if value="{{v.analytics}}" hint-placeholder-val="{{true}}"><div class="segs"><sc-for list="{{periods}}" as="p" hint-placeholder-count="3"><button class="seg {{p.on}}" onClick="{{p.pick}}">{{p.label}}</button></sc-for></div></sc-if><sc-if value="{{v.doctor}}" hint-placeholder-val="{{false}}"><button class="btn primary" onClick="{{runDoctor}}" disabled="{{running}}">{{runLabel}}</button></sc-if></div>
+  </div>
+  <div class="tabs"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div>
+
+  <!-- ANALYTICS -->
+  <sc-if value="{{v.analytics}}" hint-placeholder-val="{{true}}">
+    <div class="g4">
+      <div class="metric"><span class="eyebrow">Custo no período</span><strong>US$ {{an.total}}</strong><small>{{an.days}} dias · todos os modelos</small></div>
+      <div class="metric"><span class="eyebrow">Média diária</span><strong>US$ {{an.avg}}</strong><small>teto diário US$ 12</small></div>
+      <div class="metric"><span class="eyebrow">Tokens</span><strong>{{an.tokens}}</strong><small>entrada + saída</small></div>
+      <div class="metric"><span class="eyebrow">Jobs concluídos</span><strong>{{an.jobs}}</strong><small>{{an.okRate}} sem retrabalho</small></div>
+    </div>
+    <section class="card {{spotCost}}">
+      <div class="card-h"><h3>Custo por dia</h3><span class="eyebrow">US$ · {{an.days}} dias · dados do protótipo</span><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>dentro do teto</span><span><i style="background: var(--warning)"></i>acima de US$ 9</span></div></div>
+      <div style="padding: 18px 18px 10px; position: relative">
+        <div style="position: absolute; left: 18px; right: 18px; top: {{an.capTop}}px; border-top: 1px dashed var(--danger); z-index: 1"><span class="mono" style="position: absolute; right: 0; top: -18px; font-size: 10.5px; color: var(--danger)">teto diário US$ 12</span></div>
+        <div style="display: flex; align-items: flex-end; gap: 4px; height: 200px; position: relative">
+          <sc-for list="{{an.bars}}" as="b" hint-placeholder-count="14">
+            <div onMouseEnter="{{b.hover}}" style="flex: 1; height: 100%; display: flex; align-items: flex-end; position: relative; cursor: default">
+              <sc-if value="{{b.tip}}" hint-placeholder-val="{{false}}"><div style="position: absolute; bottom: calc({{b.h}}% + 8px); left: 50%; transform: translateX(-50%); background: var(--surface-ink); color: var(--on-ink); font-size: 11px; padding: 4px 8px; border-radius: 6px; white-space: nowrap; z-index: 3" class="mono">{{b.d}} · US$ {{b.v}}</div></sc-if>
+              <div style="width: 100%; height: {{b.h}}%; border-radius: 4px 4px 0 0; background: {{b.bg}}; opacity: {{b.op}}; transform-origin: bottom; animation: grow 600ms var(--ease) both; animation-delay: {{b.delay}}ms; transition: opacity 120ms var(--ease)"></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 8px" class="mono muted"><span style="font-size: 10.5px">{{an.first}}</span><span style="font-size: 10.5px">{{an.last}}</span></div>
+      </div>
+    </section>
+    <div class="g2">
+      <section class="card">
+        <div class="card-h"><h3>Por modelo</h3></div>
+        <div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 14px">
+          <sc-for list="{{an.models}}" as="m" hint-placeholder-count="4"><div style="display: grid; grid-template-columns: 130px minmax(0, 1fr) 46px; gap: 12px; align-items: center"><span class="mono" style="font-size: 12px">{{m.k}}</span><div class="track" style="height: 8px"><div class="fill" style="width: {{m.p}}%; transform-origin: left; animation: growx 600ms var(--ease) both"></div></div><span class="num" style="text-align: right; font-size: 13px">{{m.p}}%</span></div></sc-for>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h3>Por projeto</h3></div>
+        <div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; height: 14px; border-radius: 999px; overflow: hidden; gap: 2px"><sc-for list="{{an.projects}}" as="p" hint-placeholder-count="4"><i style="width: {{p.p}}%; background: {{p.c}}"></i></sc-for></div>
+          <sc-for list="{{an.projects}}" as="p" hint-placeholder-count="4"><div style="display: flex; align-items: center; gap: 10px; font-size: 13px"><i style="width: 10px; height: 10px; border-radius: 3px; background: {{p.c}}"></i><span class="grow">{{p.k}}</span><span class="num muted">{{p.p}}%</span></div></sc-for>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+
+  <!-- DOCTOR -->
+  <sc-if value="{{v.doctor}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <section class="card" style="flex: 2 1 520px">
+        <div class="card-h"><h3>Checagens</h3><div class="grow"></div><span class="muted" style="font-size: 12px">{{lastRun}}</span></div>
+        <div class="rows">
+          <sc-for list="{{checks}}" as="c" hint-placeholder-count="7">
+            <div class="row" style="cursor: default">
+              <span style="width: 24px; height: 24px; display: grid; place-items: center; flex: none"><sc-if value="{{c.spin}}" hint-placeholder-val="{{false}}"><i class="spin" style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow)"></i></sc-if><sc-if value="{{c.idle}}" hint-placeholder-val="{{true}}"><i style="width: 10px; height: 10px; border-radius: 50%; background: {{c.color}}"></i></sc-if></span>
+              <div class="grow"><div class="t" style="font-size: 14px">{{c.k}}</div><div class="m">{{c.m}}</div></div>
+              <span class="mono muted" style="font-size: 12px">{{c.ms}}</span>
+              <span class="badge {{c.cls}}">{{c.st}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      <section class="ink" style="flex: 1 1 280px; padding: 22px; display: flex; flex-direction: column; gap: 14px">
+        <span class="eyebrow">Saúde do escritório</span>
+        <div class="num" style="font-size: 44px; color: var(--teal)">{{health}}</div>
+        <p class="muted" style="font-size: 13px">Antigravity está sem instalação. Nenhum job depende dele hoje.</p>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px">
+          <button class="btn sm onink-sec" onClick="{{restartFront}}">Reiniciar frontend :9002</button>
+          <button class="btn sm onink-sec" onClick="{{restartBack}}">Reiniciar backend :9001</button>
+          <button class="btn sm onink-sec" onClick="{{goConfig}}">Abrir motores</button>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+
+  <!-- SKILLS -->
+  <sc-if value="{{v.skills}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center"><input class="input" style="max-width: 320px; border-radius: 999px" value="{{sq}}" onChange="{{onSq}}" placeholder="Buscar skill" aria-label="Buscar skill"><div class="segs"><sc-for list="{{scats}}" as="c" hint-placeholder-count="5"><button class="seg {{c.on}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div></div>
+    <div class="card" style="overflow-x: auto">
+      <table class="tbl"><thead><tr><th>Skill</th><th>Categoria</th><th>Usada por</th><th>Execuções 30d</th><th>Sucesso</th><th>Versão</th></tr></thead>
+        <tbody><sc-for list="{{skills}}" as="k" hint-placeholder-count="8"><tr><td><b class="mono" style="font-size: 13px">{{k.n}}</b><div class="muted" style="font-size: 12px">{{k.d}}</div></td><td><span class="badge">{{k.c}}</span></td><td class="sec">{{k.by}}</td><td class="num">{{k.runs}}</td><td style="width: 140px"><div style="display: flex; gap: 8px; align-items: center"><div class="track" style="height: 4px"><div class="fill {{k.cls}}" style="width: {{k.ok}}%"></div></div><span class="num muted" style="font-size: 11px">{{k.ok}}%</span></div></td><td class="mono muted" style="font-size: 12px">{{k.v}}</td></tr></sc-for></tbody>
+      </table>
+    </div>
+  </sc-if>
+
+  <!-- ORG -->
+  <sc-if value="{{v.org}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="padding: 28px 18px; overflow-x: auto">
+      <div style="min-width: 900px; display: flex; flex-direction: column; align-items: center">
+        <div class="ink" style="padding: 14px 20px; display: flex; gap: 12px; align-items: center; border-radius: 14px"><span class="av" style="background: #B7F34A; color: #25360a; border: 0">CH</span><div><b>Carlos</b><div class="muted" style="font-size: 12px">CEO · assina gates</div></div></div>
+        <div style="width: 2px; height: 24px; background: var(--line-strong)"></div>
+        <div style="display: flex; gap: 16px; position: relative; padding-top: 0">
+          <sc-for list="{{leads}}" as="l" hint-placeholder-count="3"><div class="card" style="padding: 12px 16px; display: flex; gap: 10px; align-items: center; border-color: {{l.bd}}"><span class="av {{l.busy}}">{{l.ini}}</span><div><b style="font-size: 14px">{{l.n}}</b><div class="muted" style="font-size: 12px">{{l.r}}</div></div></div></sc-for>
+        </div>
+        <div style="width: 2px; height: 24px; background: var(--line-strong)"></div>
+        <div style="width: 88%; height: 2px; background: var(--line-strong)"></div>
+        <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; width: 100%">
+          <sc-for list="{{orgSectors}}" as="sct" hint-placeholder-count="6">
+            <div style="display: flex; flex-direction: column; align-items: center">
+              <div style="width: 2px; height: 18px; background: var(--line-strong)"></div>
+              <button class="card click" onClick="{{sct.pick}}" style="padding: 12px; display: flex; flex-direction: column; gap: 8px; border-color: {{sct.bd}}">
+                <div style="display: flex; align-items: center; width: 100%"><b style="font-size: 13px">{{sct.n}}</b><div class="grow"></div><span class="num muted" style="font-size: 12px">{{sct.count}}</span></div>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{sct.people}}" as="p" hint-placeholder-count="4"><span class="av {{p.busy}}" title="{{p.n}}" style="width: 24px; height: 24px; font-size: 8px">{{p.i}}</span></sc-for></div>
+              </button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+    <p class="muted" style="font-size: 12px">Clique num setor para abrir os agentes dele. Contorno teal: alguém do setor está trabalhando agora.</p>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"view":{"editor":"enum","options":["analytics","doctor","skills","org"],"default":"analytics"},"spot":{"editor":null},"$preview":{"width":1176,"height":1000}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const VIEWS = [['analytics', 'Analytics', 'Custo por dia, por modelo e por projeto, lido da telemetria local. O teto aparece no próprio gráfico.'], ['doctor', 'Doctor', 'Checagens do escritório: API, SQLite, portas, SSE e motores. Um clique roda tudo de novo.'], ['skills', 'Skills', 'Catálogo de skills que os agentes podem invocar, com uso e taxa de sucesso.'], ['org', 'Org Chart', 'Quem responde a quem. Setores e o roster de cada um.']];
+const COST = [5.1, 6.4, 4.8, 7.2, 8.9, 3.1, 2.6, 6.2, 7.1, 5.4, 9.8, 9.1, 4.2, 3.1, 6.8, 6.1, 10.2, 8.4, 9.6, 3.9, 8.4, 7.7, 6.6, 5.9, 9.3, 4.4, 3.8, 7.9, 8.8, 8.4];
+const CHECKS = [['API :9001', 'office.py · FastAPI', 'ok', '12 ms'], ['SQLite', 'escritorio.db · 48 MB · WAL', 'ok', '3 ms'], ['Vite :9002', 'frontend em modo dev', 'ok', '9 ms'], ['SSE de jobs', '2 conexões abertas', 'ok', '—'], ['Motor Cursor', 'padrão do chat · login válido', 'ok', '210 ms'], ['Motor Claude', 'chave nesta máquina', 'ok', '180 ms'], ['Motor Antigravity', 'instalação ausente', 'warn', '—'], ['Sincron Brain MCP', 'vault indexado há 6 min', 'ok', '44 ms']];
+const SK = [['raiox.scan', 'Varre site, Instagram e Google de um negócio', 'Raio-X', 'Dora, Íris', 61, 94, 'v1.4'], ['lp.build', 'Gera landing Nuxt a partir da arquitetura', 'Fábrica', 'Vitor, Rafa', 14, 86, 'v2.1'], ['qa.e2e', 'Roda regressão e prova visual', 'Fábrica', 'Edna', 38, 97, 'v1.9'], ['seo.audit', 'Meta, schema e sitemap', 'Fábrica', 'Nina', 22, 91, 'v1.2'], ['carousel.frames', 'Gera frames 4:5 a partir do roteiro', 'Studio', 'Adriano, Sofia', 47, 82, 'v0.8'], ['caption.review', 'Revisa legenda contra o canon', 'Studio', 'Rita', 96, 99, 'v1.0'], ['voice.tts', 'Narração com voz do perfil', 'Edição', 'Nara', 18, 93, 'v0.6'], ['proposal.link', 'Gera proposta com link público', 'Comercial', 'Cléber', 9, 100, 'v1.1'], ['ledger.export', 'Exporta livro-razão em JSON', 'Sistema', 'Paula', 12, 100, 'v1.0'], ['brain.note', 'Resume e indexa nota no Cérebro', 'Conhecimento', 'Cléo', 140, 98, 'v1.3']];
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { v: 'analytics', period: 14, hover: -1, chk: CHECKS.map(() => 'done'), running: false, lastRun: 'última checagem às 14:10', sq: '', scat: 'Todas' }; }
+  componentWillUnmount() { clearInterval(this.dt); }
+  runDoctor() {
+    this.setState({ running: true, chk: CHECKS.map(() => 'wait') });
+    let i = 0;
+    clearInterval(this.dt);
+    this.dt = setInterval(() => {
+      const chk = this.state.chk.slice();
+      if (i > 0) chk[i - 1] = 'done';
+      if (i < CHECKS.length) chk[i] = 'run';
+      this.setState({ chk: chk });
+      i++;
+      if (i > CHECKS.length) { clearInterval(this.dt); const d = new Date(); this.setState({ running: false, lastRun: 'última checagem às ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') }); (this.props.app || NOOP).toast('Doctor', '7 de 8 checagens ok. Antigravity sem instalação.'); }
+    }, 380);
+  }
+  renderVals() {
+    const app = this.props.app;
+    const A = app || NOOP;
+    const spot = this.props.spot || '';
+    const s = this.state, self = this;
+    const pv = this.props.view;
+    const view = app && VIEWS.some((x) => x[0] === pv) ? pv : s.v;
+    const V = VIEWS.find((x) => x[0] === view);
+    const v = {}; VIEWS.forEach((x) => { v[x[0]] = view === x[0]; });
+    const data = COST.slice(-s.period);
+    const max = 12.5;
+    const total = data.reduce((a, b) => a + b, 0);
+    const day0 = 29 - s.period + 1;
+    const dlabel = (i) => { let d = day0 + i; let m = '10'; if (d <= 0) { d += 30; m = '09'; } return String(d).padStart(2, '0') + '/' + m; };
+    const sq = s.sq.toLowerCase();
+    const okN = s.chk.filter((x, i) => x === 'done' && CHECKS[i][2] === 'ok').length;
+    const SECT = [['Operação', ['PP', 1], ['JA', 0], ['RB', 0], ['PU', 0]], ['Engenharia', ['VC', 1], ['DV', 0], ['TL', 0], ['MI', 0], ['NC', 0], ['IC', 0], ['RC', 0], ['DD', 0], ['LL', 0]], ['Conteúdo', ['OD', 0], ['AA', 1], ['RV', 0], ['NN', 0], ['VV', 0], ['RR', 0], ['EE', 0], ['SE', 0]], ['Comercial', ['DD', 1], ['CC', 0], ['DC', 0], ['CS', 0]], ['Social', ['NS', 1], ['IA', 0], ['CL', 0], ['BY', 0], ['SS', 0], ['TT', 0]], ['Qualidade', ['EE', 0], ['AS', 0], ['JJ', 0], ['AW', 0]]];
+    return {
+      title: V[1], lead: V[2], v: v,
+      tabs: VIEWS.map((x) => ({ label: x[1], on: view === x[0] ? 'on' : '', pick: () => app ? app.go(x[0]) : self.setState({ v: x[0] }) })),
+      periods: [[7, '7 dias'], [14, '14 dias'], [30, '30 dias']].map((p) => ({ label: p[1], on: s.period === p[0] ? 'on' : '', pick: () => self.setState({ period: p[0], hover: -1 }) })),
+      spotCost: spot === 'cost' ? 'spot' : '',
+      an: {
+        days: s.period, total: total.toFixed(2).replace('.', ','), avg: (total / s.period).toFixed(2).replace('.', ','),
+        tokens: (total * 0.21).toFixed(1).replace('.', ',') + ' M', jobs: Math.round(s.period * 2.9), okRate: '86%',
+        capTop: Math.round(18 + 200 * (1 - 12 / max)),
+        first: dlabel(0), last: dlabel(data.length - 1),
+        bars: data.map((x, i) => ({ h: Math.round(x / max * 100), v: x.toFixed(2).replace('.', ','), d: dlabel(i), bg: x > 9 ? 'var(--warning)' : 'var(--flow)', op: s.hover < 0 || s.hover === i ? 1 : 0.45, tip: s.hover === i, delay: i * 20, hover: () => self.setState({ hover: i }) })),
+        models: [['claude-sonnet-4', 53], ['claude-opus-4', 27], ['gpt-4o', 15], ['dall-e-3', 5]].map((m) => ({ k: m[0], p: m[1] })),
+        projects: [['Meridian', 34, '#1BC5BD'], ['Multiverso', 28, '#0B6C67'], ['Escritório', 22, '#5E6878'], ['Raio-X e comercial', 16, 'oklch(.80 .155 78)']].map((p) => ({ k: p[0], p: p[1], c: p[2] }))
+      },
+      running: s.running, runLabel: s.running ? 'Checando…' : 'Rodar checagem', runDoctor: () => self.runDoctor(), lastRun: s.lastRun,
+      checks: CHECKS.map((c, i) => { const st = s.chk[i]; return { k: c[0], m: c[1], ms: st === 'done' ? c[3] : '', spin: st === 'run', idle: st !== 'run', color: st === 'wait' ? 'var(--line-strong)' : c[2] === 'ok' ? 'var(--flow)' : 'var(--warning)', st: st === 'wait' ? 'na fila' : st === 'run' ? 'checando' : c[2] === 'ok' ? 'ok' : 'atenção', cls: st === 'done' ? (c[2] === 'ok' ? 'flow' : 'warn') : '' }; }),
+      health: okN + '/' + CHECKS.length,
+      restartFront: () => A.modal('restart', { svc: 'frontend' }), restartBack: () => A.modal('restart', { svc: 'backend' }), goConfig: () => A.go('config'),
+      sq: s.sq, onSq: (e) => self.setState({ sq: e.target.value }),
+      scats: ['Todas', 'Raio-X', 'Fábrica', 'Studio', 'Comercial', 'Sistema'].map((c) => ({ label: c, on: s.scat === c ? 'on' : '', pick: () => self.setState({ scat: c }) })),
+      skills: SK.filter((k) => (s.scat === 'Todas' || k[2] === s.scat) && (!sq || (k[0] + k[1]).toLowerCase().indexOf(sq) >= 0)).map((k) => ({ n: k[0], d: k[1], c: k[2], by: k[3], runs: k[4], ok: k[5], cls: k[5] < 90 ? 'warn' : '', v: k[6] })),
+      leads: [['Paula PM', 'Orquestração', 'PP', true], ['Bruno Sócio', 'Conselho estratégico', 'BS', false], ['CTO', 'Stack e infraestrutura', 'CT', false]].map((l) => ({ n: l[0], r: l[1], ini: l[2], busy: l[3] ? 'busy' : '', bd: l[3] ? 'var(--flow-subtle-line)' : 'var(--line)' })),
+      orgSectors: SECT.map((x) => { const people = x.slice(1); return { n: x[0], count: people.length, bd: people.some((p) => p[1]) ? 'var(--flow-subtle-line)' : 'var(--line)', people: people.map((p) => ({ i: p[0], n: p[0], busy: p[1] ? 'busy' : '' })), pick: () => A.go('agents') }; })
+    };
+  }
+}
+</script>
+</body>
+</html>

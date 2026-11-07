@@ -144,5 +144,5 @@ async def test_job_payload_task68_handling():
         elif res.status_code == 201:
             data = res.json()
             assert data["task_id"] == "task-68"
-            assert data["model_name"] == "Fable"
-            assert data["effort"] == "max"
+            assert data["model_name"] in (None, "")
+            assert data["effort"] in (None, "")

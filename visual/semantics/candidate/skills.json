@@ -1,0 +1,1385 @@
+{
+  "screenId": "skills",
+  "side": "candidate",
+  "capturedUrl": "http://127.0.0.1:9196/skills",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:9196/skills",
+      "title": "TAVIR Escritório — Painel Operacional",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 17,
+        "nav": 1,
+        "img": 2,
+        "button": 21,
+        "span": 37,
+        "svg": 15,
+        "path": 32,
+        "polygon": 2,
+        "polyline": 2,
+        "rect": 4,
+        "circle": 5,
+        "line": 11,
+        "aside": 1,
+        "header": 1,
+        "main": 1,
+        "h1": 1,
+        "article": 6,
+        "strong": 6,
+        "p": 12
+      },
+      "visibleText": [
+        {
+          "text": "☀️",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistema",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Analytics",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Doctor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Skills",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Org Chart",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Configurações",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistema",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Skills",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Frontend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Backend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Skills",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Design System & Frontend Fidelity",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Inspeção e garantia de tokens CSS, hierarquia de temas claro híbrido e acessibilidade WCAG 2.1 AA.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": ".agents/skills/frontend-fidelity",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Hardening de APIs REST & OWASP",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Verificação de headers HSTS, CORS estrito, rate limiting e tipagem OpenAPI defensiva.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": ".agents/skills/api-hardening",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Copywriting de Alta Conversão & AIDA",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Geração de headlines, argumentos de prova social e ancoragem baseada nos princípios de Cialdini e Hormozi.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "absorcao-conteudo/copywriting",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cálculo de Custos & Reconciliação Financeira",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Medição de tokens por chamada, rate limit por modelo e cálculo de margem por cliente.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": ".agents/skills/cost-standard",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sintetização de Conhecimento & Indexação",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Processamento de livros, extração de conceitos-chave e formatação de notas atômicas no Vault.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "absorcao-conteudo/sinteses",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "TAVIR Tool Analyzer & Avaliação de Integrações",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Análise profunda de ferramentas de terceiros (repositórios, sites, prints, vídeos) e geração de parecer de absorção (A/B/C/D).",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": ".agents/skills/tavir-tool-analyzer",
+          "tag": "p",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema ☀️ Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 14,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "Escritório SISTEMA Analytics Doctor Skills Org Chart Configurações Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 80,
+            "y": 13,
+            "width": 203,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Doctor",
+          "label": null,
+          "text": "Doctor",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Sistema / Skills office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Sistema / Skills office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": null,
+          "name": "Indicador de dados operacionais ao vivo",
+          "label": null,
+          "text": "office.py · SQLite ao vivo",
+          "placeholder": null,
+          "title": "Indicador de dados operacionais ao vivo",
+          "rect": {
+            "x": 438,
+            "y": 20,
+            "width": 156,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          }
+        },
+        {
+          "tag": "main",
+          "id": null,
+          "role": "main",
+          "name": "Skills Design System & Frontend Fidelity Inspeção e garantia de tokens CSS, hierarquia de temas claro híbrido e acessibilidade WCAG 2.1 AA. .agents/skills/frontend-fidelity Hardening de APIs REST & OWASP Verificação de headers HSTS, CORS estrito, rate limiting e tipagem OpenAPI defensiva. .agents/skills/api-hardening Copywriting de Alta Conversão & AIDA Geração de headlines, argumentos de prova social e ancoragem baseada nos princípios de Cialdini e Hormozi. absorcao-conteudo/copywriting Cálculo de Custos & Reconciliação Financeira Medição de tokens por chamada, rate limit por modelo e cálculo de margem por cliente. .agents/skills/cost-standard Sintetização de Conhecimento & Indexação Processamento de livros, extração de conceitos-chave e formatação de notas atômicas no Vault. absorcao-conteudo/sinteses TAVIR Tool Analyzer & Avaliação de Integrações Análise profunda de ferramentas de terceiros (repositórios, sites, prints, vídeos) e geração de parecer de absorção (A/B/C/D). .agents/skills/tavir-tool-analyzer",
+          "label": null,
+          "text": "Skills Design System & Frontend Fidelity Inspeção e garantia de tokens CSS, hierarquia de temas claro híbrido e acessibilidade WCAG 2.1 AA. .agents/skills/frontend-fidelity Hardening de APIs REST & OWASP Verificação de headers HSTS, CORS estrito, rate limiting e tipagem OpenAPI defensiva. .agents/skills/api-hardening Copywriting de Alta Conversão & AIDA Geração de headlines, argumentos de prova social e ancoragem baseada nos princípios de Cialdini e Hormozi. absorcao-conteudo/copywriting Cálculo de Custos & Reconciliação Financeira Medição de tokens por chamada, rate limit por modelo e cálculo de margem por cliente. .agents/skills/cost-standard Sintetização de Conhecimento & Indexação Processamento de livros, extração de conceitos-chave e formatação de notas atômicas no Vault. absorcao-conteudo/sinteses TAVIR Tool Analyzer & Avaliação de Integrações Análise profunda de ferramentas de terceiros (repositórios, sites, prints, vídeos) e geração de parecer de absorção (A/B/C/D). .agents/skills/tavir-tool-analyzer",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 1140,
+            "height": 836
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 92,
+            "width": 1076,
+            "height": 47
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Design System & Frontend Fidelity Inspeção e garantia de tokens CSS, hierarquia de temas claro híbrido e acessibilidade WCAG 2.1 AA. .agents/skills/frontend-fidelity",
+          "label": null,
+          "text": "Design System & Frontend Fidelity Inspeção e garantia de tokens CSS, hierarquia de temas claro híbrido e acessibilidade WCAG 2.1 AA. .agents/skills/frontend-fidelity",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 155,
+            "width": 1076,
+            "height": 68
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Hardening de APIs REST & OWASP Verificação de headers HSTS, CORS estrito, rate limiting e tipagem OpenAPI defensiva. .agents/skills/api-hardening",
+          "label": null,
+          "text": "Hardening de APIs REST & OWASP Verificação de headers HSTS, CORS estrito, rate limiting e tipagem OpenAPI defensiva. .agents/skills/api-hardening",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 231,
+            "width": 1076,
+            "height": 68
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Copywriting de Alta Conversão & AIDA Geração de headlines, argumentos de prova social e ancoragem baseada nos princípios de Cialdini e Hormozi. absorcao-conteudo/copywriting",
+          "label": null,
+          "text": "Copywriting de Alta Conversão & AIDA Geração de headlines, argumentos de prova social e ancoragem baseada nos princípios de Cialdini e Hormozi. absorcao-conteudo/copywriting",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 307,
+            "width": 1076,
+            "height": 68
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Cálculo de Custos & Reconciliação Financeira Medição de tokens por chamada, rate limit por modelo e cálculo de margem por cliente. .agents/skills/cost-standard",
+          "label": null,
+          "text": "Cálculo de Custos & Reconciliação Financeira Medição de tokens por chamada, rate limit por modelo e cálculo de margem por cliente. .agents/skills/cost-standard",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 384,
+            "width": 1076,
+            "height": 68
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Sintetização de Conhecimento & Indexação Processamento de livros, extração de conceitos-chave e formatação de notas atômicas no Vault. absorcao-conteudo/sinteses",
+          "label": null,
+          "text": "Sintetização de Conhecimento & Indexação Processamento de livros, extração de conceitos-chave e formatação de notas atômicas no Vault. absorcao-conteudo/sinteses",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 460,
+            "width": 1076,
+            "height": 68
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "TAVIR Tool Analyzer & Avaliação de Integrações Análise profunda de ferramentas de terceiros (repositórios, sites, prints, vídeos) e geração de parecer de absorção (A/B/C/D). .agents/skills/tavir-tool-analyzer",
+          "label": null,
+          "text": "TAVIR Tool Analyzer & Avaliação de Integrações Análise profunda de ferramentas de terceiros (repositórios, sites, prints, vídeos) e geração de parecer de absorção (A/B/C/D). .agents/skills/tavir-tool-analyzer",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 537,
+            "width": 1076,
+            "height": 68
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Doctor",
+          "label": null,
+          "text": "Doctor",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 30,
+          "height": 30
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 203,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

@@ -63,14 +63,20 @@ export function NewProjectModalHost(props: NewProjectModalHostProps) {
           };
           for (const file of payload.context_file_blobs || []) await save("context", file);
           for (const file of payload.design_system_file_blobs || []) await save("design", file);
+          const totalBlobs =
+            (payload.context_file_blobs?.length || 0) + (payload.design_system_file_blobs?.length || 0);
           let reading = "";
-          try {
-            const scope = await api.readProjectScope(created.id);
-            reading = scope.read_ok
-              ? `A Dora leu ${scope.fontes.length} arquivo(s) e gravou o contrato da esteira.`
-              : scope.error || "A Dora não concluiu a leitura do escopo.";
-          } catch (err) {
-            reading = err instanceof Error ? err.message : "A Dora não concluiu a leitura do escopo.";
+          if (totalBlobs > 0) {
+            try {
+              const scope = await api.readProjectScope(created.id);
+              reading = scope.read_ok
+                ? `A Dora leu ${scope.fontes.length} arquivo(s) e gravou o contrato da esteira.`
+                : scope.error || "A Dora não concluiu a leitura do escopo.";
+            } catch (err) {
+              reading = err instanceof Error ? err.message : "A Dora não concluiu a leitura do escopo.";
+            }
+          } else {
+            reading = "Esteira iniciada no Gate 0.";
           }
           const skipNote = skipped.length ? ` Não entram na leitura: ${skipped.join(", ")}.` : "";
           showToast(

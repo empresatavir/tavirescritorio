@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Comercial</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page">
+  <div class="phead">
+    <div class="grow"><div class="eyebrow">Comercial</div><h1 style="margin-top: 8px">{{title}}</h1><p>{{lead}}</p></div>
+    <div class="actions"><sc-if value="{{v.propostas}}" hint-placeholder-val="{{false}}"><button class="btn secondary" onClick="{{newProposal}}">Nova proposta</button></sc-if><sc-if value="{{v.funil}}" hint-placeholder-val="{{true}}"><button class="btn secondary" onClick="{{newCase}}">Novo caso no Raio-X</button></sc-if></div>
+  </div>
+  <div class="tabs"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div>
+
+  <!-- FUNIL -->
+  <sc-if value="{{v.funil}}" hint-placeholder-val="{{true}}">
+    <div class="g4">
+      <div class="metric"><span class="eyebrow">Valor em aberto</span><strong>R$ 150,6 mil</strong><small>3 propostas vivas</small></div>
+      <div class="metric"><span class="eyebrow">Caso → assinada</span><strong>9%</strong><small>últimos 90 dias</small></div>
+      <div class="metric"><span class="eyebrow">Ciclo médio</span><strong>21 d</strong><small>do caso ao contrato</small></div>
+      <div class="metric"><span class="eyebrow">Ticket médio</span><strong>R$ 37,7 mil</strong><small>propostas enviadas</small></div>
+    </div>
+    <section class="card pad {{spotFunnel}}" style="display: flex; flex-direction: column; gap: 6px">
+      <div style="display: flex; align-items: center; margin-bottom: 10px"><span class="eyebrow">Funil · últimos 90 dias</span><div class="grow"></div><span class="muted" style="font-size: 12px">Dados do protótipo</span></div>
+      <sc-for list="{{funnel}}" as="f" hint-placeholder-count="5">
+        <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) 90px; gap: 14px; align-items: center">
+          <span style="font-size: 13px">{{f.k}}</span>
+          <div style="display: flex; justify-content: center"><div style="height: 40px; width: {{f.w}}%; border-radius: 8px; background: {{f.bg}}; display: grid; place-items: center; transform-origin: center; animation: growx 600ms var(--ease) both; animation-delay: {{f.delay}}ms"><span class="num" style="font-size: 14px; color: {{f.fg}}">{{f.n}}</span></div></div>
+          <span class="num muted" style="font-size: 12px; text-align: right">{{f.conv}}</span>
+        </div>
+      </sc-for>
+      <p class="sec" style="font-size: 13px; margin-top: 10px">A maior perda está entre Devolutiva e Proposta: 4 de 12 casos não viraram oferta. Dora revisa os critérios de corte na sexta.</p>
+    </section>
+    <section class="card" style="overflow-x: auto">
+      <div class="card-h"><h3>Negócios vivos</h3></div>
+      <table class="tbl"><thead><tr><th>Cliente</th><th>Etapa</th><th>Valor</th><th>Dono</th><th>Próxima ação</th></tr></thead>
+        <tbody><sc-for list="{{deals}}" as="d" hint-placeholder-count="5"><tr onClick="{{d.go}}" style="cursor: pointer"><td><b>{{d.c}}</b></td><td><span class="badge {{d.cls}}">{{d.st}}</span></td><td class="num">{{d.v}}</td><td class="sec">{{d.o}}</td><td class="sec">{{d.n}}</td></tr></sc-for></tbody>
+      </table>
+    </section>
+  </sc-if>
+
+  <!-- PROPOSTAS -->
+  <sc-if value="{{v.propostas}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <aside class="card" style="flex: 0 1 300px; min-width: 260px">
+        <div class="rows"><sc-for list="{{props}}" as="p" hint-placeholder-count="5"><button class="row {{p.on}}" onClick="{{p.pick}}"><div class="grow"><div class="t">{{p.client}}</div><div class="m">{{p.num}} · {{p.value}}</div></div><span class="badge {{p.cls}}">{{p.short}}</span></button></sc-for></div>
+      </aside>
+      <section class="{{spotProposal}}" style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px; border-radius: 16px">
+        <div class="ink" style="padding: 24px; display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap">
+          <div class="grow"><span class="eyebrow">{{p.num}} · versão {{p.ver}}</span><h2 style="font-size: 26px; font-weight: 600; letter-spacing: -.02em; margin-top: 8px">{{p.client}}</h2><p class="muted" style="margin-top: 6px">{{p.status}}</p><div class="mono" style="font-size: 12px; margin-top: 12px; color: var(--teal)">{{p.link}}</div></div>
+          <div style="text-align: right"><div class="eyebrow">Valor</div><div class="num" style="font-size: 30px; color: var(--lime); margin-top: 6px">{{p.value}}</div><div class="muted" style="font-size: 12px">{{p.terms}}</div></div>
+        </div>
+        <div class="card pad">
+          <span class="eyebrow">Linha do tempo</span>
+          <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 14px">
+            <sc-for list="{{p.tl}}" as="t" hint-placeholder-count="5">
+              <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 4px; border-radius: 2px; background: {{t.bg}}"></div><b style="font-size: 13px; color: {{t.fg}}">{{t.k}}</b><span class="num muted" style="font-size: 11px">{{t.d}}</span></div>
+            </sc-for>
+          </div>
+        </div>
+        <div class="g3">
+          <div class="card pad" style="display: flex; flex-direction: column; gap: 6px"><span class="eyebrow">Meta</span><p style="font-size: 14px">{{p.goal}}</p></div>
+          <div class="card pad" style="display: flex; flex-direction: column; gap: 6px"><span class="eyebrow">Condição</span><p style="font-size: 14px">{{p.cond}}</p></div>
+          <div class="card pad" style="display: flex; flex-direction: column; gap: 6px"><span class="eyebrow">Responsabilidade</span><p style="font-size: 14px">{{p.resp}}</p></div>
+        </div>
+        <div class="actions"><sc-for list="{{p.acts}}" as="a" hint-placeholder-count="2"><button class="btn {{a.cls}}" onClick="{{a.fn}}">{{a.label}}</button></sc-for></div>
+      </section>
+    </div>
+  </sc-if>
+
+  <!-- FINANÇAS -->
+  <sc-if value="{{v.financas}}" hint-placeholder-val="{{false}}">
+    <div class="g4">
+      <div class="metric"><span class="eyebrow">Receita de outubro</span><strong>R$ 61,2 mil</strong><small>Meridian assinada</small></div>
+      <div class="metric"><span class="eyebrow">Custo de motor</span><strong>US$ 212</strong><small>≈ R$ 1.170 no mês</small></div>
+      <div class="metric"><span class="eyebrow">Margem bruta</span><strong style="color: var(--flow)">74%</strong><small>depois de motor e horas</small></div>
+      <div class="metric"><span class="eyebrow">A receber</span><strong>R$ 48,5 mil</strong><small>Atlas, após contra-assinatura</small></div>
+    </div>
+    <div style="display: flex; gap: 16px; flex-wrap: wrap">
+      <section class="card" style="flex: 2 1 520px">
+        <div class="card-h"><h3>Receita e custo por mês</h3><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>receita (R$ mil)</span><span><i style="background: var(--warning)"></i>custo total (R$ mil)</span></div></div>
+        <div style="padding: 18px; display: flex; gap: 14px; align-items: flex-end; height: 220px">
+          <sc-for list="{{months}}" as="m" hint-placeholder-count="6">
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end">
+              <div style="display: flex; gap: 4px; align-items: flex-end; height: 100%; width: 100%; justify-content: center">
+                <div title="{{m.rt}}" style="width: 40%; height: {{m.r}}%; background: var(--flow); border-radius: 4px 4px 0 0; transform-origin: bottom; animation: grow 700ms var(--ease) both"></div>
+                <div title="{{m.ct}}" style="width: 40%; height: {{m.c}}%; background: var(--warning); border-radius: 4px 4px 0 0; transform-origin: bottom; animation: grow 700ms var(--ease) both; animation-delay: 120ms"></div>
+              </div>
+              <span class="mono muted" style="font-size: 11px">{{m.k}}</span>
+            </div>
+          </sc-for>
+        </div>
+        <p class="muted" style="font-size: 12px; padding: 0 18px 16px">Custo total = motor + horas de agente valoradas. Dados do protótipo.</p>
+      </section>
+      <section class="card" style="flex: 1 1 300px">
+        <div class="card-h"><h3>Gasto por modelo</h3><span class="eyebrow">outubro</span></div>
+        <div style="padding: 18px; display: flex; flex-direction: column; gap: 14px">
+          <sc-for list="{{models}}" as="m" hint-placeholder-count="4"><div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; font-size: 13px"><span class="mono grow" style="font-size: 12px">{{m.k}}</span><span class="num">US$ {{m.us}}</span></div><div class="track"><div class="fill" style="width: {{m.p}}%"></div></div></div></sc-for>
+          <div class="card" style="padding: 12px; font-size: 13px; border-color: var(--warning); display: flex; gap: 10px; align-items: flex-start; background: var(--warning-subtle)"><span class="grow">claude-opus-4 passou do teto previsto. Decisão em aberto.</span><button class="link" onClick="{{toAp04}}">Decidir →</button></div>
+        </div>
+      </section>
+    </div>
+    <section class="card {{spotMargin}}" style="overflow-x: auto">
+      <div class="card-h"><h3>Margem por projeto</h3><div class="grow"></div><span class="eyebrow">acumulado</span></div>
+      <table class="tbl"><thead><tr><th>Projeto</th><th>Receita</th><th>Motor</th><th>Horas de agente</th><th>Margem</th><th></th></tr></thead>
+        <tbody><sc-for list="{{margins}}" as="m" hint-placeholder-count="4"><tr><td><b>{{m.p}}</b></td><td class="num">{{m.r}}</td><td class="num muted">{{m.c}}</td><td class="num muted">{{m.h}}</td><td class="num" style="color: {{m.color}}">{{m.m}}</td><td style="width: 160px"><div class="track"><div class="fill" style="width: {{m.w}}%; background: {{m.color}}"></div></div></td></tr></sc-for></tbody>
+      </table>
+    </section>
+  </sc-if>
+
+  <!-- PERSONAS -->
+  <sc-if value="{{v.personas}}" hint-placeholder-val="{{false}}">
+    <div class="g3">
+      <sc-for list="{{personas}}" as="p" hint-placeholder-count="3">
+        <article class="card" style="display: flex; flex-direction: column; overflow: hidden">
+          <div class="ink" style="border-radius: 0; border: 0; padding: 20px; display: flex; gap: 14px; align-items: center"><span class="av lg">{{p.ini}}</span><div><b style="font-size: 16px">{{p.name}}</b><div class="muted" style="font-size: 12px">{{p.who}}</div></div></div>
+          <div style="padding: 18px 20px; display: flex; flex-direction: column; gap: 14px">
+            <div><span class="eyebrow">Dor</span><p style="margin-top: 4px; font-size: 14px">{{p.pain}}</p></div>
+            <div><span class="eyebrow">Valoriza</span><p style="margin-top: 4px; font-size: 14px">{{p.val}}</p></div>
+            <div><span class="eyebrow" style="color: var(--danger)">Não dizer</span><p style="margin-top: 4px; font-size: 14px">{{p.no}}</p></div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{p.mods}}" as="m" hint-placeholder-count="2"><span class="badge flow">{{m.t}}</span></sc-for></div>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+    <section class="card pad" style="display: flex; gap: 24px; flex-wrap: wrap">
+      <div style="flex: 1 1 280px"><span class="eyebrow">Voz da marca</span><h3 style="font-size: 18px; font-weight: 600; margin-top: 6px">Direta, calma, comprovável</h3><p class="sec" style="margin-top: 6px; font-size: 14px">Toda promessa carrega critério, condição e responsável. Números em fonte mono, separados da prosa.</p></div>
+      <div style="flex: 1 1 280px"><span class="eyebrow">Evitar em qualquer persona</span><div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px"><sc-for list="{{banned}}" as="b" hint-placeholder-count="6"><span class="badge danger">{{b.t}}</span></sc-for></div></div>
+    </section>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"view":{"editor":"enum","options":["funil","propostas","financas","personas"],"default":"funil"},"spot":{"editor":null},"$preview":{"width":1176,"height":1000}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const VIEWS = [['funil', 'Funil', 'Do caso aberto à proposta assinada, com conversão por etapa e o que está em aberto.'], ['propostas', 'Propostas', 'Cada proposta tem link público, linha do tempo e meta, condição e responsabilidade escritas.'], ['financas', 'Finanças', 'Receita contra custo de motor e horas de agente. Margem por projeto e teto de gasto.'], ['personas', 'Personas', 'Para quem a TAVIR fala, o que essa pessoa valoriza e o que nunca dizer.']];
+const PROPS = [
+  { id: 'p1', num: 'PRO-001', client: 'Atlas Holdings', value: 'R$ 48.500', short: 'aceita', cls: 'warn', ver: 3, status: 'Aceita pelo cliente · aguarda contra-assinatura', terms: 'em 3 parcelas', link: 'propostas.tavir.com.br/p/atlas-7f3k', step: 3, dates: ['12/10', '14/10', '15/10', '27/10', '—'], goal: 'Landing comercial com 3% de conversão em lead qualificado em 60 dias.', cond: 'Atlas entrega fotos e depoimentos até 10/11.', resp: 'TAVIR opera o atendimento por 90 dias e reporta toda segunda.' },
+  { id: 'p3', num: 'PRO-003', client: 'Northwind Digital', value: 'R$ 22.000', short: 'enviada', cls: 'flow', ver: 1, status: 'Enviada · aberta 2 vezes, última hoje 10:14', terms: 'à vista', link: 'propostas.tavir.com.br/p/northwind-2a9q', step: 2, dates: ['20/10', '22/10', '29/10', '—', '—'], goal: 'Responder 90% dos leads do WhatsApp em até 5 minutos.', cond: 'Acesso ao número comercial e ao CRM atual.', resp: 'TAVIR configura, mede e ajusta nas 4 primeiras semanas.' },
+  { id: 'p5', num: 'PRO-005', client: 'Meridian Capital', value: 'R$ 61.200', short: 'assinada', cls: 'flow', ver: 2, status: 'Assinada · projeto em andamento na Fábrica', terms: 'em 2 parcelas', link: 'propostas.tavir.com.br/p/meridian-k81z', step: 5, dates: ['01/10', '02/10', '02/10', '05/10', '06/10'], goal: 'Landing institucional no ar até 04/11, Lighthouse acima de 90.', cond: 'Textos regulatórios aprovados pelo jurídico da Meridian.', resp: 'TAVIR entrega, hospeda e mantém por 6 meses.' },
+  { id: 'p6', num: 'PRO-006', client: 'Vortex Labs', value: 'R$ 18.900', short: 'recusada', cls: 'danger', ver: 1, status: 'Recusada · motivo: orçamento do trimestre', terms: '—', link: 'propostas.tavir.com.br/p/vortex-3c2m', step: -1, dates: ['08/10', '09/10', '10/10', '—', '—'], goal: 'Oferta de produto SaaS com página de preço testada.', cond: 'Base de 200 usuários para teste de preço.', resp: 'TAVIR conduz 2 rodadas de teste.' },
+  { id: 'p7', num: 'PRO-007', client: 'Padaria Dois Irmãos', value: 'R$ 1.800/mês', short: 'rascunho', cls: '', ver: 1, status: 'Rascunho · saiu do Raio-X fechado', terms: 'mensal', link: 'ainda sem link', step: 0, dates: ['28/10', '—', '—', '—', '—'], goal: 'Encomendas pelo WhatsApp com confirmação automática.', cond: 'Cardápio e horários atualizados pelo dono.', resp: 'TAVIR opera e mede por 30 dias antes de renovar.' }
+];
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { v: 'funil', p: 'p1' }; }
+  renderVals() {
+    const app = this.props.app;
+    const A = app || NOOP;
+    const spot = this.props.spot || '';
+    const s = this.state, self = this;
+    const pv = this.props.view;
+    const view = app && VIEWS.some((x) => x[0] === pv) ? pv : (VIEWS.some((x) => x[0] === pv) && s.v === 'funil' && !this.touched ? pv : s.v);
+    const V = VIEWS.find((x) => x[0] === view);
+    const v = {}; VIEWS.forEach((x) => { v[x[0]] = view === x[0]; });
+    const P = PROPS.find((x) => x.id === s.p);
+    const TL = ['Criada', 'Enviada', 'Aberta', 'Aceita', 'Contra-assinada'];
+    const acts = [];
+    if (P.id === 'p1') acts.push({ label: 'Ver gate de contra-assinatura', cls: 'primary', fn: () => A.go('decisions', { approvalId: 'ap-05', decTab: 'pending' }) });
+    if (P.id === 'p3' || P.id === 'p7') acts.push({ label: P.id === 'p7' ? 'Enviar primeira versão' : 'Enviar nova versão', cls: 'primary', fn: () => A.modal('proposal-send', { num: P.num }) });
+    if (P.id === 'p5') acts.push({ label: 'Abrir projeto na Fábrica', cls: 'primary', fn: () => A.go('fabrica') });
+    acts.push({ label: 'Copiar link', cls: 'secondary', fn: () => A.toast('Link copiado', P.link) });
+    const funnel = [['Casos abertos', 22], ['Devolutiva', 12], ['Proposta enviada', 8], ['Aceita', 3], ['Assinada', 2]];
+    return {
+      title: V[1], lead: V[2], v: v,
+      tabs: VIEWS.map((x) => ({ label: x[1], on: view === x[0] ? 'on' : '', pick: () => { self.touched = true; if (app) app.go(x[0]); else self.setState({ v: x[0] }); } })),
+      newCase: () => A.modal('raiox-new'), newProposal: () => A.modal('proposal-send', { num: 'PRO-008', mail: '' }),
+      spotFunnel: spot === 'funnel' ? 'spot' : '', spotProposal: spot === 'proposal' ? 'spot' : '', spotMargin: spot === 'margin' ? 'spot' : '',
+      funnel: funnel.map((f, i) => ({ k: f[0], n: f[1], w: Math.max(14, Math.round(f[1] / 22 * 100)), bg: i === funnel.length - 1 ? 'var(--action-bg)' : 'var(--flow-subtle)', fg: i === funnel.length - 1 ? 'var(--action-fg)' : 'var(--flow-subtle-text)', delay: i * 80, conv: i === 0 ? '—' : Math.round(f[1] / funnel[i - 1][1] * 100) + '% da etapa' })),
+      deals: [['Atlas Holdings', 'aceita', 'warn', 'R$ 48.500', 'Cléber Closer', 'Contra-assinar hoje', 'propostas'], ['Northwind Digital', 'enviada', 'flow', 'R$ 22.000', 'Cléber Closer', 'Ligar após 2ª abertura', 'propostas'], ['Ateliê Norte', 'devolutiva', '', 'R$ 14.000 est.', 'Dora Descoberta', 'Revisar devolutiva', 'raiox'], ['Clínica Sorriso Vivo', 'jornada', '', 'R$ 9.600 est.', 'Dora Descoberta', 'Mapear jornada', 'raiox'], ['Padaria Dois Irmãos', 'rascunho', '', 'R$ 1.800/mês', 'Cléber Closer', 'Enviar primeira versão', 'propostas']].map((d) => ({ c: d[0], st: d[1], cls: d[2], v: d[3], o: d[4], n: d[5], go: () => { if (d[6] === 'propostas') { self.touched = true; if (app) app.go('propostas'); else self.setState({ v: 'propostas' }); } else A.go(d[6]); } })),
+      props: PROPS.map((x) => ({ client: x.client, num: x.num, value: x.value, short: x.short, cls: x.cls, on: x.id === s.p ? 'on' : '', pick: () => self.setState({ p: x.id }) })),
+      p: Object.assign({}, P, { acts: acts, tl: TL.map((k, i) => ({ k: k, d: P.dates[i], bg: P.step < 0 ? (i < 3 ? 'var(--line-strong)' : 'var(--danger)') : i < P.step ? 'var(--flow)' : i === P.step ? 'var(--warning)' : 'var(--line)', fg: (P.step < 0 ? i < 3 : i <= P.step) ? 'var(--text-primary)' : 'var(--text-muted)' })) }),
+      months: [['mai', 18, 4.1], ['jun', 22, 4.8], ['jul', 9, 3.9], ['ago', 31, 6.2], ['set', 40, 8.8], ['out', 61, 15.9]].map((m) => ({ k: m[0], r: Math.round(m[1] / 61 * 100), c: Math.max(2, Math.round(m[2] / 61 * 100)), rt: 'R$ ' + m[1] + ' mil', ct: 'R$ ' + m[2] + ' mil' })),
+      models: [['claude-sonnet-4', 112], ['claude-opus-4', 58], ['gpt-4o', 32], ['dall-e-3', 10]].map((m) => ({ k: m[0], us: m[1], p: Math.round(m[1] / 112 * 100) })),
+      toAp04: () => A.go('decisions', { approvalId: 'ap-04', decTab: 'pending' }),
+      margins: [['Meridian Capital', 'R$ 61.200', 'R$ 98', '31 h', 71], ['Atlas Holdings', 'R$ 48.500', 'R$ 12', '4 h', 88], ['Multiverso (próprio)', '—', 'R$ 142', '22 h', 0], ['Escritório (interno)', '—', 'R$ 210', '40 h', 0]].map((m) => ({ p: m[0], r: m[1], c: m[2], h: m[3], m: m[4] ? m[4] + '%' : 'custo', w: m[4] || 100, color: m[4] ? 'var(--flow)' : 'var(--line-strong)' })),
+      personas: [
+        { ini: 'DL', name: 'Dono de negócio local', who: 'loja, padaria, oficina · 1 a 15 pessoas', pain: 'Perde cliente que chama no WhatsApp fora de hora e não sabe quanto perde.', val: 'Resposta rápida, preço claro e alguém que mostre o número.', no: 'Transformação digital, revolução, inteligência artificial que faz tudo.', mods: ['Raio-X', 'Flow'] },
+        { ini: 'GC', name: 'Gestora de clínica', who: 'odontologia, estética, fisioterapia', pain: 'Faltas na agenda e confirmação manual tomam a manhã da recepção.', val: 'Agenda cheia, privacidade do paciente e processo que não depende de uma pessoa.', no: 'Robô, substituir a recepção, garantia de lotação.', mods: ['Raio-X', 'Flow', 'Fábrica'] },
+        { ini: 'CN', name: 'Criador de nicho', who: 'canal de 20 a 200 mil seguidores', pain: 'Produz sozinho e não consegue manter frequência sem cair a qualidade.', val: 'Voz preservada, decisão final dele, constância.', no: 'Viralizar, hack de algoritmo, conteúdo infinito.', mods: ['Studio', 'Edição'] }
+      ].map((p) => Object.assign(p, { mods: p.mods.map((m) => ({ t: m })) })),
+      banned: ['revolucionário', 'disruptivo', 'mágica', 'garantido', 'sem esforço', '100% automático'].map((t) => ({ t: t }))
+    };
+  }
+}
+</script>
+</body>
+</html>

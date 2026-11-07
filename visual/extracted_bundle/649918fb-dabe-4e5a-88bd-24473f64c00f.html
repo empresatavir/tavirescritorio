@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Estratégia</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page">
+  <div class="phead"><div class="grow"><div class="eyebrow">Estratégia</div><h1 style="margin-top: 8px">{{title}}</h1><p>{{lead}}</p></div></div>
+  <div class="tabs"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div>
+
+  <!-- MISSION CONTROL -->
+  <sc-if value="{{v.mission}}" hint-placeholder-val="{{true}}">
+    <div class="g2">
+      <sc-for list="{{missions}}" as="m" hint-placeholder-count="4">
+        <article class="card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; gap: 10px; align-items: center"><span class="eyebrow">Missão {{m.n}} · Q4</span><div class="grow"></div><span class="badge {{m.cls}}"><i></i>{{m.st}}</span></div>
+          <h3 style="font-size: 18px; font-weight: 600; letter-spacing: -.01em">{{m.t}}</h3>
+          <div style="display: flex; align-items: center; gap: 10px"><span class="av" style="width: 26px; height: 26px; font-size: 9px">{{m.ini}}</span><span class="sec" style="font-size: 13px">{{m.owner}}</span><div class="grow"></div><span class="num" style="font-size: 20px">{{m.p}}%</span></div>
+          <div style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 14px">
+            <sc-for list="{{m.krs}}" as="k" hint-placeholder-count="3"><div style="display: flex; flex-direction: column; gap: 5px"><div style="display: flex; font-size: 13px"><span class="grow">{{k.t}}</span><span class="num muted">{{k.v}}</span></div><div class="track" style="height: 4px"><div class="fill {{k.cls}}" style="width: {{k.p}}%"></div></div></div></sc-for>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- ROADMAP -->
+  <sc-if value="{{v.roadmap}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="overflow-x: auto">
+      <div style="min-width: 820px; padding: 18px">
+        <div style="display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 0 16px">
+          <span></span>
+          <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-bottom: 1px solid var(--line); padding-bottom: 8px"><sc-for list="{{months}}" as="mo" hint-placeholder-count="6"><span class="mono muted" style="font-size: 11px">{{mo.t}}</span></sc-for></div>
+          <sc-for list="{{lanes}}" as="l" hint-placeholder-count="6">
+            <div style="padding: 12px 0; border-bottom: 1px solid var(--line)"><div style="font-size: 13px; font-weight: 600">{{l.t}}</div><div class="muted" style="font-size: 11px">{{l.track}} · {{l.owner}}</div></div>
+            <div style="position: relative; border-bottom: 1px solid var(--line); height: 100%; min-height: 52px">
+              <div style="position: absolute; top: 0; bottom: 0; left: {{today}}%; width: 2px; background: var(--lime); opacity: .7"></div>
+              <button onClick="{{l.pick}}" title="{{l.t}}" style="position: absolute; top: 14px; height: 24px; left: {{l.x}}%; width: {{l.w}}%; border-radius: 6px; border: 1px solid {{l.bd}}; background: {{l.bg}}; color: {{l.fg}}; font-size: 11px; text-align: left; padding: 0 8px; white-space: nowrap; overflow: hidden; transform-origin: left; animation: growx 600ms var(--ease) both; box-shadow: {{l.shadow}}">{{l.label}}</button>
+            </div>
+          </sc-for>
+        </div>
+        <div class="legend" style="margin-top: 12px"><span><i style="background: var(--flow)"></i>em andamento</span><span><i style="background: var(--surface-3); border: 1px solid var(--line-strong)"></i>planejado</span><span><i style="background: var(--lime); width: 2px"></i>hoje, 29/10</span></div>
+      </div>
+    </section>
+    <section class="card pad" style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center; animation: fade 200ms var(--ease) both">
+      <div class="grow" style="min-width: 260px"><span class="eyebrow">{{lane.track}} · {{lane.range}}</span><h3 style="font-size: 18px; font-weight: 600; margin-top: 6px">{{lane.t}}</h3><p class="sec" style="margin-top: 6px; font-size: 14px">{{lane.why}}</p></div>
+      <div style="display: flex; gap: 24px"><div><div class="eyebrow">Dono</div><div style="margin-top: 4px; font-weight: 600">{{lane.owner}}</div></div><div><div class="eyebrow">Depende de</div><div style="margin-top: 4px" class="sec">{{lane.dep}}</div></div></div>
+    </section>
+  </sc-if>
+
+  <!-- MAPA -->
+  <sc-if value="{{v.mapa}}" hint-placeholder-val="{{false}}">
+    <div class="ink" style="padding: 18px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 150px; gap: 10px">
+      <sc-for list="{{rooms}}" as="r" hint-placeholder-count="6">
+        <button onClick="{{r.go}}" style="grid-column: span {{r.cs}}; grid-row: span {{r.rs}}; border-radius: 14px; border: 1px solid {{r.bd}}; background: rgba(244,246,242,.03); color: #F4F6F2; text-align: left; padding: 16px; display: flex; flex-direction: column; gap: 8px; transition: border-color 160ms var(--ease)">
+          <div style="display: flex; align-items: center; gap: 8px; width: 100%"><span class="eyebrow">{{r.k}}</span><div class="grow"></div><span class="mono" style="font-size: 11px; color: {{r.c}}">{{r.jobs}}</span></div>
+          <b style="font-size: 16px">{{r.t}}</b>
+          <span style="font-size: 12px; color: #aeb7c4">{{r.d}}</span>
+          <div style="margin-top: auto; display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{r.dots}}" as="d" hint-placeholder-count="6"><i title="{{d.n}}" style="width: 12px; height: 12px; border-radius: 50%; background: {{d.bg}}; animation: {{d.anim}}"></i></sc-for></div>
+        </button>
+      </sc-for>
+    </div>
+    <div class="card" style="padding: 12px 16px; display: flex; gap: 10px; align-items: center; font-size: 13px"><span class="badge warn">depois</span><span class="sec">A vista isométrica com física espacial (ponto de conexão Habblaud) fica para uma versão posterior. Este mapa já mostra setores, agentes e carga ao vivo.</span></div>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"view":{"editor":"enum","options":["mission","roadmap","mapa"],"default":"mission"},"spot":{"editor":null},"$preview":{"width":1176,"height":1000}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const VIEWS = [['mission', 'Mission Control', 'As missões do trimestre, o dono de cada frente e os resultados-chave que dizem se estamos no rumo.'], ['roadmap', 'Roadmap', 'Marcos de produto, conteúdo e comercial até março. Clique numa barra para ver o porquê e a dependência.'], ['mapa', 'Mapa operacional', 'A agência como planta: setores, quem está trabalhando agora e onde há carga.']];
+const LANES = [
+  ['Flow · execução automática', 'Produto', 'Diego Flow', 0.6, 2.4, true, 'O desenho dos workflows já existe. Falta o motor rodar sem clique, respeitando gates.', 'motor v0.9'],
+  ['Edição · render em lote', 'Produto', 'Vini Vídeo', 1.0, 2.2, false, 'Renderizar os três formatos de uma vez e mandar direto para o Pacote do Studio.', 'Flow'],
+  ['Painel do cliente', 'Produto', 'Théo Tech Lead', 1.5, 3.8, false, 'O cliente vê o livro-razão do próprio projeto, sem acesso ao escritório.', 'Fábrica · Security'],
+  ['IA Livros · temporada 2', 'Conteúdo', 'Oráculo Diretor', 0.2, 2.9, true, '12 episódios sobre escrever com IA preservando a voz do autor.', 'Edição'],
+  ['Template de esteira para clínicas', 'Comercial', 'Dora Descoberta', 0.9, 1.9, true, 'Três clínicas no funil pedem o mesmo pacote: agenda, confirmação e retorno.', 'Raio-X'],
+  ['Primeiros 5 clientes de presença local', 'Comercial', 'Dario Diretor Comercial', 0, 3.0, true, 'Oferta pequena, mensal, que prova resultado em 30 dias.', 'Flow · lead do WhatsApp']
+];
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { v: 'mission', lane: 0 }; }
+  renderVals() {
+    const app = this.props.app;
+    const A = app || NOOP;
+    const s = this.state, self = this;
+    const pv = this.props.view;
+    const view = app && VIEWS.some((x) => x[0] === pv) ? pv : s.v;
+    const V = VIEWS.find((x) => x[0] === view);
+    const v = {}; VIEWS.forEach((x) => { v[x[0]] = view === x[0]; });
+    const MO = ['out', 'nov', 'dez', 'jan', 'fev', 'mar'];
+    const L = LANES[s.lane];
+    const busyDot = 'oklch(.80 .155 78)';
+    return {
+      title: V[1], lead: V[2], v: v,
+      tabs: VIEWS.map((x) => ({ label: x[1], on: view === x[0] ? 'on' : '', pick: () => app ? app.go(x[0]) : self.setState({ v: x[0] }) })),
+      missions: [
+        ['01', 'Primeiros 5 clientes de presença local', 'Dario Diretor Comercial', 'DC', 40, 'no rumo', 'flow', [['Casos abertos no Raio-X', '22 / 30', 73], ['Propostas enviadas', '8 / 10', 80], ['Contratos assinados', '2 / 5', 40]]],
+        ['02', 'Studio com 5 peças por semana', 'Oráculo Diretor', 'OD', 80, 'no rumo', 'flow', [['Peças por semana', '4 / 5', 80], ['Retenção aos 3 s', '58% / 70%', 83], ['Checkpoints no prazo', '9 / 10', 90]]],
+        ['03', 'Fábrica entrega em menos de 4 dias', 'Théo Tech Lead', 'TL', 65, 'atenção', 'warn', [['Lead time médio', '4,2 d / 4 d', 95], ['QA verde na 1ª rodada', '1 / 3', 33], ['Retrabalho de etapa', '2 / máx. 3', 66]]],
+        ['04', 'Custo de motor abaixo de US$ 300 por mês', 'Paula PM', 'PP', 71, 'risco', 'danger', [['Gasto de outubro', 'US$ 212 / 300', 71], ['Jobs com opus-4', '9 / máx. 6', 100], ['Jobs parados por teto', '1', 20]]]
+      ].map((m) => ({ n: m[0], t: m[1], owner: m[2], ini: m[3], p: m[4], st: m[5], cls: m[6], krs: m[7].map((k) => ({ t: k[0], v: k[1], p: k[2], cls: k[2] >= 95 && m[6] !== 'flow' ? 'warn' : '' })) })),
+      months: MO.map((t) => ({ t: t })), today: (0.93 / 6 * 100).toFixed(2),
+      lanes: LANES.map((l, i) => ({ t: l[0], track: l[1], owner: l[2], x: (l[3] / 6 * 100).toFixed(2), w: ((l[4] - l[3]) / 6 * 100).toFixed(2), label: l[5] ? 'em andamento' : 'planejado', bg: l[5] ? 'var(--flow-subtle)' : 'var(--surface-3)', bd: l[5] ? 'var(--flow-subtle-line)' : 'var(--line-strong)', fg: l[5] ? 'var(--flow-subtle-text)' : 'var(--text-muted)', shadow: s.lane === i ? '0 0 0 2px var(--flow)' : 'none', pick: () => self.setState({ lane: i }) })),
+      lane: { t: L[0], track: L[1], owner: L[2], why: L[6], dep: L[7], range: MO[Math.floor(L[3])] + ' → ' + MO[Math.min(5, Math.floor(L[4] - 0.01))] },
+      rooms: [
+        ['Operação & Cockpit', 'Sala', 'Orquestração de tasks, jobs e decisões', 2, 1, 'room', [['Paula PM', 1], ['Jane', 0], ['Rebeca', 0], ['Paulo', 0]], '2 jobs'],
+        ['Fábrica de Engenharia', 'Fábrica', 'Esteiras de landing, oferta e sistema', 2, 2, 'fabrica', [['Vitor', 1], ['Davi', 0], ['Théo', 0], ['Maicon', 0], ['Nando', 0], ['Ícaro', 0], ['Rafa', 0], ['Dora Dados', 0], ['Lia', 0]], '1 gate'],
+        ['Estúdio de Criação & Vídeo', 'Studio', 'Roteiro, arte, narração e edição', 1, 2, 'studio', [['Oráculo', 0], ['Adriano', 1], ['Rita', 0], ['Nara', 0], ['Vini', 0], ['Rafael', 0], ['Elisa', 0], ['Sofia', 0]], '1 job'],
+        ['Comercial & Propostas', 'Comercial', 'Raio-X, funil e aceite', 1, 1, 'funil', [['Dora', 1], ['Cléber', 0], ['Dario', 0], ['Cissa', 0]], '1 caso'],
+        ['Cérebro', 'Conhecimento', 'Vault, RAG e curadoria', 1, 1, 'cerebro', [['Cléo', 0], ['Yuri YT', 0]], 'ocioso'],
+        ['Diretoria & QA', 'Qualidade', 'Compliance, segurança e gates', 2, 1, 'decisions', [['Edna', 0], ['Auditor', 0], ['Jussara', 0], ['Atlas Web', 0]], '5 decisões']
+      ].map((r) => ({ t: r[0], k: r[1], d: r[2], cs: r[3], rs: r[4], jobs: r[7], c: r[7] === 'ocioso' ? '#aeb7c4' : '#1BC5BD', bd: r[6].some((x) => x[1]) ? 'rgba(27,197,189,.4)' : 'rgba(244,246,242,.14)', dots: r[6].map((x) => ({ n: x[0], bg: x[1] ? '#1BC5BD' : 'rgba(244,246,242,.22)', anim: x[1] ? 'pulse 2.4s var(--ease) infinite' : 'none' })), go: () => A.go(r[5]) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

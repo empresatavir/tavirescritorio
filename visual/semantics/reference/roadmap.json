@@ -1,0 +1,1721 @@
+{
+  "screenId": "roadmap",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 66,
+        "nav": 1,
+        "button": 27,
+        "img": 2,
+        "i": 8,
+        "aside": 1,
+        "small": 3,
+        "span": 68,
+        "b": 2,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 2,
+        "section": 2,
+        "h3": 1
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Estratégia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mission Control",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Roadmap",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa operacional",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Estratégia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Roadmap",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Estratégia",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Roadmap",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Marcos de produto, conteúdo e comercial até março. Clique numa barra para ver o porquê e a dependência.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mission Control",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Roadmap",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa operacional",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "out",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "nov",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "dez",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "jan",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "fev",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "mar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow · execução automática",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Produto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Diego Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "em andamento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Edição · render em lote",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Produto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Vini Vídeo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "planejado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Painel do cliente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Produto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Théo Tech Lead",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "planejado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "IA Livros · temporada 2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conteúdo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Oráculo Diretor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "em andamento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Template de esteira para clínicas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dora Descoberta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "em andamento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Primeiros 5 clientes de presença local",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dario Diretor Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "em andamento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "em andamento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "planejado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "hoje, 29/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Produto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "out → dez",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow · execução automática",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "O desenho dos workflows já existe. Falta o motor rodar sem clique, respeitando gates.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dono",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Diego Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Depende de",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "motor v0.9",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO ESTRATÉGIA Mission Control Roadmap Mapa operacional Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Mission Control",
+          "label": null,
+          "text": "Mission Control",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Roadmap",
+          "label": null,
+          "text": "Roadmap",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Mapa operacional",
+          "label": null,
+          "text": "Mapa operacional",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Estratégia / Roadmap AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Estratégia / Roadmap AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Roadmap",
+          "label": null,
+          "text": "Roadmap",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 1076,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Mission Control",
+          "label": null,
+          "text": "Mission Control",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 222,
+            "width": 129,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Roadmap",
+          "label": null,
+          "text": "Roadmap",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 465,
+            "y": 222,
+            "width": 91,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Mapa operacional",
+          "label": null,
+          "text": "Mapa operacional",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 560,
+            "y": 222,
+            "width": 142,
+            "height": 42
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "out nov dez jan fev mar Flow · execução automática Produto · Diego Flow em andamento Edição · render em lote Produto · Vini Vídeo planejado Painel do cliente Produto · Théo Tech Lead planejado IA Livros · temporada 2 Conteúdo · Oráculo Diretor em andamento Template de esteira para clínicas Comercial · Dora Descoberta em andamento Primeiros 5 clientes de presença local Comercial · Dario Diretor Comercial em andamento em andamento planejado hoje, 29/10",
+          "label": null,
+          "text": "out nov dez jan fev mar Flow · execução automática Produto · Diego Flow em andamento Edição · render em lote Produto · Vini Vídeo planejado Painel do cliente Produto · Théo Tech Lead planejado IA Livros · temporada 2 Conteúdo · Oráculo Diretor em andamento Template de esteira para clínicas Comercial · Dora Descoberta em andamento Primeiros 5 clientes de presença local Comercial · Dario Diretor Comercial em andamento em andamento planejado hoje, 29/10",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 289,
+            "width": 1076,
+            "height": 479
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow · execução automática",
+          "label": null,
+          "text": "em andamento",
+          "placeholder": null,
+          "title": "Flow · execução automática",
+          "rect": {
+            "x": 667,
+            "y": 347,
+            "width": 241,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição · render em lote",
+          "label": null,
+          "text": "planejado",
+          "placeholder": null,
+          "title": "Edição · render em lote",
+          "rect": {
+            "x": 721,
+            "y": 408,
+            "width": 160,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Painel do cliente",
+          "label": null,
+          "text": "planejado",
+          "placeholder": null,
+          "title": "Painel do cliente",
+          "rect": {
+            "x": 788,
+            "y": 469,
+            "width": 307,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "IA Livros · temporada 2",
+          "label": null,
+          "text": "em andamento",
+          "placeholder": null,
+          "title": "IA Livros · temporada 2",
+          "rect": {
+            "x": 614,
+            "y": 530,
+            "width": 361,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Template de esteira para clínicas",
+          "label": null,
+          "text": "em andamento",
+          "placeholder": null,
+          "title": "Template de esteira para clínicas",
+          "rect": {
+            "x": 707,
+            "y": 591,
+            "width": 134,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Primeiros 5 clientes de presença local",
+          "label": null,
+          "text": "em andamento",
+          "placeholder": null,
+          "title": "Primeiros 5 clientes de presença local",
+          "rect": {
+            "x": 587,
+            "y": 652,
+            "width": 401,
+            "height": 24
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "PRODUTO · OUT → DEZ Flow · execução automática O desenho dos workflows já existe. Falta o motor rodar sem clique, respeitando gates. DONO Diego Flow DEPENDE DE motor v0.9",
+          "label": null,
+          "text": "PRODUTO · OUT → DEZ Flow · execução automática O desenho dos workflows já existe. Falta o motor rodar sem clique, respeitando gates. DONO Diego Flow DEPENDE DE motor v0.9",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 792,
+            "width": 1076,
+            "height": 123
+          }
+        },
+        {
+          "tag": "h3",
+          "id": null,
+          "role": "heading",
+          "name": "Flow · execução automática",
+          "label": null,
+          "text": "Flow · execução automática",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 353,
+            "y": 840,
+            "width": 835,
+            "height": 27
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Mission Control",
+          "label": null,
+          "text": "Mission Control",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Roadmap",
+          "label": null,
+          "text": "Roadmap",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Mapa operacional",
+          "label": null,
+          "text": "Mapa operacional",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Mission Control",
+          "label": null,
+          "text": "Mission Control",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 222,
+            "width": 129,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Roadmap",
+          "label": null,
+          "text": "Roadmap",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 465,
+            "y": 222,
+            "width": 91,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Mapa operacional",
+          "label": null,
+          "text": "Mapa operacional",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 560,
+            "y": 222,
+            "width": 142,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow · execução automática",
+          "label": null,
+          "text": "em andamento",
+          "placeholder": null,
+          "title": "Flow · execução automática",
+          "rect": {
+            "x": 667,
+            "y": 347,
+            "width": 241,
+            "height": 24
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição · render em lote",
+          "label": null,
+          "text": "planejado",
+          "placeholder": null,
+          "title": "Edição · render em lote",
+          "rect": {
+            "x": 721,
+            "y": 408,
+            "width": 160,
+            "height": 24
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Painel do cliente",
+          "label": null,
+          "text": "planejado",
+          "placeholder": null,
+          "title": "Painel do cliente",
+          "rect": {
+            "x": 788,
+            "y": 469,
+            "width": 307,
+            "height": 24
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "IA Livros · temporada 2",
+          "label": null,
+          "text": "em andamento",
+          "placeholder": null,
+          "title": "IA Livros · temporada 2",
+          "rect": {
+            "x": 614,
+            "y": 530,
+            "width": 361,
+            "height": 24
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Template de esteira para clínicas",
+          "label": null,
+          "text": "em andamento",
+          "placeholder": null,
+          "title": "Template de esteira para clínicas",
+          "rect": {
+            "x": 707,
+            "y": 591,
+            "width": 134,
+            "height": 24
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Primeiros 5 clientes de presença local",
+          "label": null,
+          "text": "em andamento",
+          "placeholder": null,
+          "title": "Primeiros 5 clientes de presença local",
+          "rect": {
+            "x": 587,
+            "y": 652,
+            "width": 401,
+            "height": 24
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

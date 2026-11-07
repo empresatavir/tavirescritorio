@@ -1,69 +1,92 @@
 .pai-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 80;
+  z-index: 120;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(7, 13, 24, 0.62);
+  background: color-mix(in srgb, var(--ink) 58%, transparent);
+  backdrop-filter: blur(2px);
 }
 
 .pai-dialog {
-  width: min(420px, 100%);
+  width: min(440px, 94vw);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 18px;
-  border-radius: 16px;
-  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.16));
-  background: var(--surface-1, #0f1729);
-  color: var(--text-primary, #f4f6f2);
+  gap: 0;
+  padding: 0;
+  border-radius: 14px;
+  border: 1px solid var(--border-default);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
 }
 
 .pai-dialog h2 {
   margin: 0;
-  font-size: 16px;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border-default);
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.pai-dialog > p,
+.pai-dialog > label {
+  margin: 12px 22px 0;
+}
+
+.pai-dialog > p:first-of-type {
+  margin-top: 18px;
+}
+
+.pai-actions {
+  margin-top: 18px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border-default);
+  background: var(--surface-0);
+  gap: 10px;
+}
+
+.pai-actions button {
+  height: auto;
+  padding: 8px 15px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 550;
 }
 
 .pai-dialog p,
 .pai-note {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-secondary, #cbd3de);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
 }
 
 .pai-dialog label {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 12px;
-  color: var(--text-secondary, #cbd3de);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .pai-dialog select {
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.16));
-  background: var(--surface-0, #0b1220);
-  color: var(--text-primary, #f4f6f2);
-  padding: 0 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .pai-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-}
-
-.pai-actions button {
-  height: 32px;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid var(--border-subtle, rgba(244, 246, 242, 0.16));
-  background: transparent;
-  color: var(--text-primary, #f4f6f2);
-  cursor: pointer;
+  align-items: center;
 }
 
 .pai-actions button.is-primary {

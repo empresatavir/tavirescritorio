@@ -1,0 +1,1487 @@
+{
+  "screenId": "como-funciona",
+  "side": "candidate",
+  "capturedUrl": "http://127.0.0.1:9196/como-funciona",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:9196/como-funciona",
+      "title": "TAVIR Escritório — Painel Operacional",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 16,
+        "nav": 1,
+        "img": 2,
+        "button": 22,
+        "span": 41,
+        "svg": 16,
+        "path": 37,
+        "polygon": 2,
+        "polyline": 2,
+        "rect": 3,
+        "circle": 5,
+        "line": 2,
+        "aside": 1,
+        "header": 1,
+        "main": 1,
+        "p": 25,
+        "h1": 1,
+        "ol": 1,
+        "li": 8,
+        "strong": 8,
+        "b": 8
+      },
+      "visibleText": [
+        {
+          "text": "☀️",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sala de Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Execuções",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tasks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decisões",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Chat",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sala de Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Frontend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Backend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Entrada local",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "O escritório roda em 127.0.0.1. A chave do operador fica só nesta máquina e abre a sessão.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Por que importa.",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nada sai da máquina sem você. É a primeira garantia do sistema.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Login",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "O mapa em cinco passos",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Na primeira entrada, o onboarding explica a arquitetura: domínios no rail, telas no menu e o miolo de trabalho.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Por que importa.",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Quem entende o mapa encontra o que precisa sem perguntar.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Onboarding",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Leia o dia pela Sala",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "A Sala junta jobs rodando, cards ativos e o que depende de você. O bloco O que pede você vem antes de qualquer métrica.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Por que importa.",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decisão humana é o gargalo da operação. Ela aparece primeiro.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação / Sala",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Inicie um job",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Motor, modelo, esforço e teto de gasto. A estimativa aparece antes de rodar e o teto é obrigatório.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Por que importa.",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Custo previsível antes de rodar, não depois.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Acompanhe ao vivo",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "O log chega por SSE. Cada passo vira linha no livro-razão, com custo acumulado contra o teto.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Por que importa.",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Você vê o que a IA fez, em que ordem e quanto custou.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação / Execuções",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gate humano",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "O deploy da Meridian parou antes de publicar. Aprovar libera o próximo passo. Recusar devolve o card com o seu comentário.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Por que importa.",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "A automação cuida do repetitivo. O humano decide o que importa.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação / Decisões",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "A esteira avança",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Na Fábrica, a topologia mostra em que etapa cada projeto está e o que ainda bloqueia o Completion Guard.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Por que importa.",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Entrega com critério de pronto, não por impressão.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos / Fábrica",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Meça o resultado",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Analytics lê a telemetria local: custo por dia e por modelo, contra o teto do mês.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Por que importa.",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Resultado definido antes da promessa, e conferido depois.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistema / Analytics",
+          "tag": "p",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema ☀️ Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 14,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "Escritório OPERAÇÃO Sala de Operação Execuções 3 Tasks Decisões 5 Agentes Chat Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 80,
+            "y": 13,
+            "width": 203,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 3",
+          "label": null,
+          "text": "Execuções 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks",
+          "label": null,
+          "text": "Tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 308,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Operação / Sala de Operação office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Operação / Sala de Operação office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": null,
+          "name": "Indicador de dados operacionais ao vivo",
+          "label": null,
+          "text": "office.py · SQLite ao vivo",
+          "placeholder": null,
+          "title": "Indicador de dados operacionais ao vivo",
+          "rect": {
+            "x": 523,
+            "y": 20,
+            "width": 156,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          }
+        },
+        {
+          "tag": "main",
+          "id": null,
+          "role": "main",
+          "name": "MAPA DO CICLO COMPLETO Como funciona Entrada local O escritório roda em 127.0.0.1. A chave do operador fica só nesta máquina e abre a sessão. Por que importa. Nada sai da máquina sem você. É a primeira garantia do sistema. Login O mapa em cinco passos Na primeira entrada, o onboarding explica a arquitetura: domínios no rail, telas no menu e o miolo de trabalho. Por que importa. Quem entende o mapa encontra o que precisa sem perguntar. Onboarding Leia o dia pela Sala A Sala junta jobs rodando, cards ativos e o que depende de você. O bloco O que pede você vem antes de qualquer métrica. Por que importa. Decisão humana é o gargalo da operação. Ela aparece primeiro. Operação / Sala Inicie um job Motor, modelo, esforço e teto de gasto. A estimativa aparece antes de rodar e o teto é obrigatório. Por que importa. Custo previsível antes de rodar, não depois. Iniciar job Acompanhe ao vivo O log chega por SSE. Cada passo vira linha no livro-razão, com custo acumulado contra o teto. Por que importa. Você vê o que a IA fez, em que ordem e quanto custou. Operação / Execuções Gate humano O deploy da Meridian parou antes de publicar. Aprovar libera o próximo passo. Recusar devolve o card com o seu comentário. Por que importa. A automação cuida do repetitivo. O humano decide o que importa. Operação / Decisões A esteira avança Na Fábrica, a topologia mostra em que etapa cada projeto está e o que ainda bloqueia o Completion Guard. Por que importa. Entrega com critério de pronto, não por impressão. Módulos / Fábrica Meça o resultado Analytics lê a telemetria local: custo por dia e por modelo, contra o teto do mês. Por que importa. Resultado definido antes da promessa, e conferido depois. Sistema / Analytics",
+          "label": null,
+          "text": "MAPA DO CICLO COMPLETO Como funciona Entrada local O escritório roda em 127.0.0.1. A chave do operador fica só nesta máquina e abre a sessão. Por que importa. Nada sai da máquina sem você. É a primeira garantia do sistema. Login O mapa em cinco passos Na primeira entrada, o onboarding explica a arquitetura: domínios no rail, telas no menu e o miolo de trabalho. Por que importa. Quem entende o mapa encontra o que precisa sem perguntar. Onboarding Leia o dia pela Sala A Sala junta jobs rodando, cards ativos e o que depende de você. O bloco O que pede você vem antes de qualquer métrica. Por que importa. Decisão humana é o gargalo da operação. Ela aparece primeiro. Operação / Sala Inicie um job Motor, modelo, esforço e teto de gasto. A estimativa aparece antes de rodar e o teto é obrigatório. Por que importa. Custo previsível antes de rodar, não depois. Iniciar job Acompanhe ao vivo O log chega por SSE. Cada passo vira linha no livro-razão, com custo acumulado contra o teto. Por que importa. Você vê o que a IA fez, em que ordem e quanto custou. Operação / Execuções Gate humano O deploy da Meridian parou antes de publicar. Aprovar libera o próximo passo. Recusar devolve o card com o seu comentário. Por que importa. A automação cuida do repetitivo. O humano decide o que importa. Operação / Decisões A esteira avança Na Fábrica, a topologia mostra em que etapa cada projeto está e o que ainda bloqueia o Completion Guard. Por que importa. Entrega com critério de pronto, não por impressão. Módulos / Fábrica Meça o resultado Analytics lê a telemetria local: custo por dia e por modelo, contra o teto do mês. Por que importa. Resultado definido antes da promessa, e conferido depois. Sistema / Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 1140,
+            "height": 836
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Como funciona",
+          "label": null,
+          "text": "Como funciona",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 125,
+            "width": 1076,
+            "height": 47
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 3",
+          "label": null,
+          "text": "Execuções 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks",
+          "label": null,
+          "text": "Tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 308,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 30,
+          "height": 30
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 203,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

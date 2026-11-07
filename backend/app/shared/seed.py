@@ -200,7 +200,7 @@ async def seed():
                 existing.avatar_color = color
                 existing.initials = initials
                 existing.last_run = last_r
-                if not existing.soul_text:
+                if not existing.soul_text and not existing.craft_text:
                     existing.soul_text = soul
         await session.commit()
         print(f"Seeded {len(ROSTER_AGENTS_47)} agents successfully")

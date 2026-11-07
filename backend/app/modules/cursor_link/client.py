@@ -200,7 +200,7 @@ def cli_command(binary: str, workspace: str, model: str) -> list[str]:
         sandbox,
         "--model",
         model,
-        "Leia pedido.txt. Responda só com o texto pedido. Não crie arquivo. Não edite arquivo. Não rode comando.",
+        "Responda só com o texto pedido, em português. Não mencione arquivos, pedidos ou ferramentas. Não crie arquivo. Não edite arquivo. Não rode comando.",
     ]
 
 
@@ -317,12 +317,13 @@ def _run_cli(
     effort: str | None = None,
     on_status: Callable[[str], None] | None = None,
     timeout: float | None = TEXT_WAIT_SECONDS,
+    images: list[tuple[str, bytes]] | None = None,
 ) -> str:
     chosen = format_cursor_model(model, effort)
     last = "O Cursor local falhou."
     for attempt in range(3):
         try:
-            return _run_cli_once(binary, prompt, chosen, on_status=on_status, timeout=timeout)
+            return _run_cli_once(binary, prompt, chosen, on_status=on_status, timeout=timeout, images=images)
         except RuntimeError as exc:
             last = str(exc)
             lowered = last.lower()
@@ -692,9 +693,15 @@ def _run_cli_once(
     chosen: str,
     on_status: Callable[[str], None] | None = None,
     timeout: float | None = TEXT_WAIT_SECONDS,
+    images: list[tuple[str, bytes]] | None = None,
 ) -> str:
     with _scratch_dir() as folder:
         Path(folder, "pedido.txt").write_text(prompt, encoding="utf-8")
+        for index, (name, data) in enumerate(images or [], start=1):
+            suffix = Path(name).suffix.lower() or ".png"
+            if suffix not in {".png", ".jpg", ".webp", ".gif"}:
+                suffix = ".png"
+            Path(folder, f"anexo-{index}{suffix}").write_bytes(data)
         try:
             proc = _stream_cli(
                 cli_command(binary, folder, chosen),
@@ -711,6 +718,115 @@ def _run_cli_once(
     return text
 
 
+_workspace_held: set[str] = set()
+_workspace_guard = threading.Lock()
+
+
+def _workspace_key(path: str) -> str:
+    return str(Path(path).resolve()).lower()
+
+
+@contextlib.contextmanager
+def workspace_slot(path: str):
+    """Uma pasta de demanda por vez. Outra pasta segue livre."""
+    key = _workspace_key(path)
+    with _workspace_guard:
+        if key in _workspace_held:
+            raise RuntimeError("esta demanda já está em execução")
+        _workspace_held.add(key)
+    try:
+        yield
+    finally:
+        with _workspace_guard:
+            _workspace_held.discard(key)
+
+
+def order_destination(workspace: str, *, ask: bool, order_path: str | None = None) -> Path:
+    """Pedido desta pasta. Duas demandas não dividem o mesmo arquivo."""
+    if order_path:
+        dest = Path(order_path)
+    else:
+        folder = Path(workspace)
+        name = "chat-pedido.txt" if ask else "pedido.md" if (folder / "dossie.md").is_file() else "pedido-atual.md"
+        dest = folder / "qa" / "orders" / name
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    return dest
+
+
+def answer_inline(
+    binary: str,
+    model: str,
+    effort: str | None,
+    prompt: str,
+    timeout: float = 40.0,
+) -> str:
+    """Responde com o texto já na mensagem. A pasta do projeto não entra."""
+    chosen = format_cursor_model(model or "auto", effort or "low")
+    body = (prompt or "").strip()[:6000]
+    with _scratch_dir() as folder:
+        Path(folder, "pedido.txt").write_text(body, encoding="utf-8")
+        args = cli_command(binary, folder, chosen)
+        args[-1] = (
+            "Leia pedido.txt e responda só o que ele pede, em português, em no máximo 6 linhas. "
+            "Não leia outro arquivo. Não liste a pasta. Não crie arquivo. Não edite arquivo. Não rode comando."
+        )
+        try:
+            proc = _stream_cli(args, timeout=timeout, cwd=folder, on_status=None)
+        except subprocess.TimeoutExpired as exc:
+            raise RuntimeError(_timeout_message(timeout)) from exc
+    _raise_cli_failure(proc)
+    text = _extract_text(proc.stdout or "")
+    if not text:
+        raise RuntimeError("O Cursor devolveu uma resposta vazia.")
+    return text
+
+
+def ask_in_workspace(
+    binary: str,
+    workspace: str,
+    model: str,
+    effort: str | None,
+    prompt: str,
+    on_status: Callable[[str], None] | None = None,
+    timeout: float | None = TEXT_WAIT_SECONDS,
+    order_path: str | None = None,
+) -> str:
+    """Lê o projeto em modo ask. Não cria, não edita e não roda comando."""
+    folder = Path(workspace)
+    if not folder.is_dir():
+        raise RuntimeError("A pasta do projeto não está acessível.")
+    order = order_destination(workspace, ask=True, order_path=order_path)
+    persistent = order.name == "pedido.md" or bool(order_path)
+    order.write_text(prompt, encoding="utf-8")
+    chosen = format_cursor_model(model, effort)
+    args = cli_command(binary, str(folder), chosen)
+    relative = order.relative_to(folder).as_posix() if order.is_relative_to(folder) else order.name
+    args[-1] = (
+        f"Leia {relative} e responda só a pergunta, em português. "
+        "Não mencione arquivos, pedidos ou ferramentas. "
+        "Não crie arquivo. Não edite arquivo. Não rode comando."
+    )
+    try:
+        with workspace_slot(str(folder)):
+            proc = _stream_cli(
+                args,
+                timeout=None if timeout is None else max(30.0, float(timeout) - 10.0),
+                cwd=str(folder),
+                on_status=on_status,
+            )
+    finally:
+        if not persistent:
+            try:
+                order.unlink(missing_ok=True)
+            except OSError:
+                pass
+    _raise_cli_failure(proc)
+    text = _extract_text(proc.stdout or "")
+    if not text:
+        raise RuntimeError("O Cursor devolveu uma resposta vazia.")
+    return text
+
+
 def run_in_workspace(
     binary: str,
     workspace: str,
@@ -718,24 +834,26 @@ def run_in_workspace(
     effort: str | None,
     prompt: str,
     on_status: Callable[[str], None] | None = None,
+    order_path: str | None = None,
 ) -> str:
     """Executa o agente dentro do projeto, com escrita e comando."""
     chosen = format_cursor_model(model, effort)
     folder = Path(workspace)
-    order = folder / "qa" / "orders" / "pedido-atual.md"
-    order.parent.mkdir(parents=True, exist_ok=True)
+    order = order_destination(workspace, ask=False, order_path=order_path)
     order.write_text(prompt, encoding="utf-8")
+    relative = order.relative_to(folder).as_posix() if order.is_relative_to(folder) else "qa/orders/pedido.md"
     instruction = (
-        "Leia qa/orders/pedido-atual.md e faça o que ele pede. "
+        f"Leia {relative} e faça o que ele pede. "
         "Você pode criar arquivo, editar arquivo e rodar comando neste workspace. "
         "Não faça deploy. Não faça push."
     )
-    proc = _stream_cli(
-        work_command(binary, str(folder), chosen, instruction),
-        timeout=None,
-        cwd=str(folder),
-        on_status=on_status,
-    )
+    with workspace_slot(str(folder)):
+        proc = _stream_cli(
+            work_command(binary, str(folder), chosen, instruction),
+            timeout=None,
+            cwd=str(folder),
+            on_status=on_status,
+        )
     _raise_cli_failure(proc)
     return _extract_text(proc.stdout or "")
 
@@ -875,6 +993,10 @@ def start_login() -> dict:
     }
 
 
+def pending_login_url() -> str | None:
+    return _login_state.get("url")
+
+
 async def complete_text(
     *,
     system: str | None,
@@ -883,11 +1005,15 @@ async def complete_text(
     effort: str | None = None,
     on_status: Callable[[str], None] | None = None,
     timeout: float | None = TEXT_WAIT_SECONDS,
+    images: list[tuple[str, bytes]] | None = None,
 ) -> str:
     prompt_parts = [
         "Responda só com o texto pedido.",
         "Não crie arquivo. Não edite arquivo. Não rode comando.",
     ]
+    if images:
+        names = ", ".join(f"anexo-{index}{Path(name).suffix.lower() or '.png'}" for index, (name, _data) in enumerate(images, start=1))
+        prompt_parts.append(f"O usuário anexou imagens nesta pasta: {names}. Olhe cada uma antes de responder.")
     if system:
         prompt_parts.append(system)
     for message in messages:
@@ -902,7 +1028,7 @@ async def complete_text(
             raise RuntimeError(
                 "O Cursor está ligado, mas falta o login. Em Integrações, use Entrar no Cursor."
             )
-        work = asyncio.to_thread(_run_cli, binary, prompt, chosen, effort, on_status, timeout)
+        work = asyncio.to_thread(_run_cli, binary, prompt, chosen, effort, on_status, timeout, images)
         if timeout is None:
             return await work
         try:

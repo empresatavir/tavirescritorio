@@ -26,6 +26,7 @@ TEXT_SUFFIXES = {
     ".ini",
     ".csv",
     ".svg",
+    ".log",
 }
 
 

@@ -1,5 +1,5 @@
 """Approval model — human decision gate for TAVIR."""
-from sqlalchemy import String, Text, DateTime, ForeignKey, func
+from sqlalchemy import String, Text, DateTime, ForeignKey, Integer, func
 from sqlalchemy.orm import Mapped, mapped_column
 from app.shared.database import Base
 
@@ -19,6 +19,13 @@ class Approval(Base):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     on_approve_text: Mapped[str | None] = mapped_column(Text, nullable=True)
     on_reject_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    group: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    kind: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    question: Mapped[str | None] = mapped_column(Text, nullable=True)
+    yes_steps: Mapped[str | None] = mapped_column(Text, nullable=True)
+    no_steps: Mapped[str | None] = mapped_column(Text, nullable=True)
+    sla_hours: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    opened_at: Mapped[str | None] = mapped_column(DateTime(timezone=True), nullable=True)
     decided_by: Mapped[str | None] = mapped_column(String(100), nullable=True)
     justification: Mapped[str | None] = mapped_column(Text, nullable=True)
     decided_at: Mapped[str | None] = mapped_column(DateTime(timezone=True), nullable=True)

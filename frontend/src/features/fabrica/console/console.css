@@ -46,11 +46,12 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 14px;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--fc-line);
-  background: var(--surface-ink);
-  color: var(--on-ink);
+  gap: 16px;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border-default);
+  background: color-mix(in srgb, var(--surface-1) 70%, transparent);
+  backdrop-filter: blur(12px);
+  color: var(--text-primary);
   z-index: 5;
 }
 
@@ -74,18 +75,20 @@
 }
 
 .fc-brand-title {
-  font-size: 12px;
-  font-weight: 650;
-  letter-spacing: 0.01em;
+  font-size: 20px;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 .fc-brand-sub {
   display: block;
-  margin-top: 1px;
-  color: var(--on-ink-muted);
-  font: 8px var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 500;
 }
 
 .fc-nav-row {
@@ -99,17 +102,18 @@
 .fc-view-tab,
 .fc-btn,
 .fc-btn-sec {
-  min-height: 34px;
+  min-height: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 10px;
-  border-radius: 7px;
-  border: 1px solid var(--fc-line);
-  background: rgba(244, 246, 242, 0.04);
-  color: var(--on-ink-muted);
-  font-size: 11px;
+  gap: 7px;
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-1);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 550;
   transition: background var(--duration-fast) var(--ease-standard),
     border-color var(--duration-fast) var(--ease-standard),
     color var(--duration-fast) var(--ease-standard);
@@ -118,23 +122,40 @@
 .fc-icon-btn:hover,
 .fc-view-tab:hover,
 .fc-btn-sec:hover {
-  background: rgba(244, 246, 242, 0.08);
-  color: var(--on-ink);
+  background: color-mix(in srgb, var(--text-primary) 7%, transparent);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .fc-view-tab[aria-current="page"] {
+  color: var(--ink);
 }
 
 .fc-view-nav {
-  display: flex;
-  gap: 3px;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
   padding: 3px;
-  border: 1px solid var(--fc-line);
+  border: 1px solid var(--border-default);
   border-radius: 9px;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--surface-0);
+}
+
+.fc-view-tab {
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .fc-view-tab[aria-current="page"] {
-  color: var(--on-ink);
-  background: var(--fc-select-soft);
-  border-color: var(--flow-subtle-line);
+  color: var(--lime);
+  background: var(--surface-1);
+  border-color: transparent;
+  font-weight: 600;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--ink) 40%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--lime) 22%, transparent);
 }
 
 .fc-view-num {
@@ -151,14 +172,14 @@
 }
 
 .fc-search-box {
-  height: 34px;
+  height: auto;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 10px;
-  border: 1px solid var(--fc-line);
-  border-radius: 7px;
-  background: rgba(0, 0, 0, 0.28);
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-0);
 }
 
 .fc-search-box input {
@@ -167,8 +188,8 @@
   border: 0;
   outline: none;
   background: transparent;
-  color: var(--on-ink);
-  font-size: 11px;
+  color: var(--text-primary);
+  font-size: 13px;
 }
 
 .fc-search-key {
@@ -225,6 +246,8 @@
 }
 
 .fc-screen.is-active:has(.fc-chat2-wrap) {
+  position: absolute;
+  inset: 0;
   min-height: 0;
 }
 
@@ -1184,13 +1207,14 @@
 }
 
 .fc-mode-toggle {
-  min-height: 30px;
-  padding: 0 8px;
-  border-radius: 999px;
-  border: 1px solid var(--fc-line);
+  min-height: 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
   background: transparent;
-  color: var(--on-ink-muted);
-  font: 9px var(--font-mono);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 550;
 }
 
 @media (prefers-reduced-motion: reduce) {

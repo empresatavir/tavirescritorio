@@ -1,0 +1,1835 @@
+{
+  "screenId": "config-perfil",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 32,
+        "nav": 2,
+        "button": 30,
+        "img": 2,
+        "i": 5,
+        "aside": 1,
+        "small": 3,
+        "span": 45,
+        "b": 4,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 2,
+        "section": 1,
+        "h2": 1,
+        "label": 2,
+        "input": 2
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistema",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Analytics",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Doctor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Skills",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Org Chart",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Configurações",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistema",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Configurações",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Sistema",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Configurações",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Perfil, o que a Sala mostra, projetos, motores de IA, memória e o próprio escritório.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Perfil",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Visão geral",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Projetos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Motores de IA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Memórias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistema",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Aparência",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Perfil",
+          "tag": "h2",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Usado nas saudações do chat e na assinatura dos gates.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CH",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carlos",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CEO · operador desta máquina",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nome",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "E-mail",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Idioma",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Português (Brasil)",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "English",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Salvar perfil",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO SISTEMA Analytics Doctor 1 Skills Org Chart Configurações Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Doctor 1",
+          "label": null,
+          "text": "Doctor 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Sistema / Configurações AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Sistema / Configurações AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 1076,
+            "height": 33
+          }
+        },
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Seções",
+          "label": "Seções",
+          "text": "Perfil Visão geral Projetos 4 Motores de IA 3 Memórias Sistema Aparência",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 220,
+            "height": 292
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Perfil",
+          "label": null,
+          "text": "Perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 220,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão geral",
+          "label": null,
+          "text": "Visão geral",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 243,
+            "width": 220,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Projetos 4",
+          "label": null,
+          "text": "Projetos 4",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 285,
+            "width": 220,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Motores de IA 3",
+          "label": null,
+          "text": "Motores de IA 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 327,
+            "width": 220,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memórias",
+          "label": null,
+          "text": "Memórias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 369,
+            "width": 220,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": null,
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 411,
+            "width": 220,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Aparência",
+          "label": null,
+          "text": "Aparência",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 453,
+            "width": 220,
+            "height": 40
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Perfil Usado nas saudações do chat e na assinatura dos gates. CH Carlos CEO · operador desta máquina Nome E-mail Idioma Português (Brasil) English Salvar perfil",
+          "label": null,
+          "text": "Perfil Usado nas saudações do chat e na assinatura dos gates. CH Carlos CEO · operador desta máquina Nome E-mail Idioma Português (Brasil) English Salvar perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 576,
+            "y": 201,
+            "width": 832,
+            "height": 405
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Perfil",
+          "label": null,
+          "text": "Perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 601,
+            "y": 226,
+            "width": 782,
+            "height": 30
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Nome",
+          "label": null,
+          "text": "Nome",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 601,
+            "y": 379,
+            "width": 384,
+            "height": 68
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Nome",
+          "label": "Nome",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 601,
+            "y": 405,
+            "width": 384,
+            "height": 42
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "E-mail",
+          "label": null,
+          "text": "E-mail",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 999,
+            "y": 379,
+            "width": 384,
+            "height": 68
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "E-mail",
+          "label": "E-mail",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 999,
+            "y": 405,
+            "width": 384,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Português (Brasil)",
+          "label": null,
+          "text": "Português (Brasil)",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 601,
+            "y": 490,
+            "width": 137,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "English",
+          "label": null,
+          "text": "English",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 744,
+            "y": 490,
+            "width": 74,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Salvar perfil",
+          "label": null,
+          "text": "Salvar perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 601,
+            "y": 540,
+            "width": 113,
+            "height": 40
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Doctor 1",
+          "label": null,
+          "text": "Doctor 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Perfil",
+          "label": null,
+          "text": "Perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 220,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão geral",
+          "label": null,
+          "text": "Visão geral",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 243,
+            "width": 220,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Projetos 4",
+          "label": null,
+          "text": "Projetos 4",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 285,
+            "width": 220,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Motores de IA 3",
+          "label": null,
+          "text": "Motores de IA 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 327,
+            "width": 220,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memórias",
+          "label": null,
+          "text": "Memórias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 369,
+            "width": 220,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": null,
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 411,
+            "width": 220,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Aparência",
+          "label": null,
+          "text": "Aparência",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 453,
+            "width": 220,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Nome",
+          "label": null,
+          "text": "Nome",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 601,
+            "y": 379,
+            "width": 384,
+            "height": 68
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Nome",
+          "label": "Nome",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 601,
+            "y": 405,
+            "width": 384,
+            "height": 42
+          },
+          "kind": "field",
+          "type": "text",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": true
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "E-mail",
+          "label": null,
+          "text": "E-mail",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 999,
+            "y": 379,
+            "width": 384,
+            "height": 68
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "E-mail",
+          "label": "E-mail",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 999,
+            "y": 405,
+            "width": 384,
+            "height": 42
+          },
+          "kind": "field",
+          "type": "text",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": true
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Português (Brasil)",
+          "label": null,
+          "text": "Português (Brasil)",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 601,
+            "y": 490,
+            "width": 137,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "English",
+          "label": null,
+          "text": "English",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 744,
+            "y": 490,
+            "width": 74,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Salvar perfil",
+          "label": null,
+          "text": "Salvar perfil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 601,
+            "y": 540,
+            "width": 113,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

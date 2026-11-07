@@ -113,6 +113,7 @@ def run_visual_sync(
     expected: list[str] | None = None,
     on_status=None,
     agent=None,
+    preamble: str = "",
 ) -> dict:
     """A prova visual grava a interface. Um README não fecha a etapa."""
     root = root.resolve()
@@ -123,7 +124,7 @@ def run_visual_sync(
     _invoke(
         run_agent,
         root,
-        _prompt_visual(root, stage_def_id, agent_name, title, guidance),
+        _prompt_visual(root, stage_def_id, agent_name, title, guidance, preamble),
         model,
         effort,
         say,
@@ -463,6 +464,7 @@ def _default_agent(workspace: Path, prompt: str, model: str, effort: str, on_sta
             "O Cursor Agent não está instalado. O modo de leitura não grava o programa."
         )
     try:
+        order = workspace / "qa" / "orders" / "pedido.md"
         return run_in_workspace(
             binary,
             str(workspace),
@@ -470,12 +472,23 @@ def _default_agent(workspace: Path, prompt: str, model: str, effort: str, on_sta
             effort,
             prompt,
             on_status=on_status,
+            order_path=str(order) if (workspace / "dossie.md").is_file() else None,
         )
     except RuntimeError as exc:
         raise WorkSessionError(str(exc)) from exc
 
 
 def _invoke(agent, root: Path, prompt: str, model: str, effort: str, say) -> None:
+    from app.modules.factory.knowledge_map import bases_from_workspace, pages_prompt
+    import re
+
+    lead = "Antes de agir, leia dossie.md e MEMORY.md deste projeto.\n"
+    match = re.search(r"\(`([a-z0-9_]+)`\)", prompt)
+    if match:
+        extra = pages_prompt(match.group(1), bases_from_workspace(root))
+        if extra:
+            lead += extra + "\n"
+    prompt = lead + prompt
     try:
         agent(root, prompt, model, effort, say)
     except WorkSessionError:
@@ -526,13 +539,22 @@ def _prompt_code(root, stage_def_id, agent_name, title, layout, guidance, failur
     )
 
 
-def _prompt_visual(root: Path, stage_def_id: str, agent_name: str, title: str, guidance: str | None) -> str:
+def _prompt_visual(
+    root: Path,
+    stage_def_id: str,
+    agent_name: str,
+    title: str,
+    guidance: str | None,
+    preamble: str = "",
+) -> str:
     if _client_is_flutter(root):
         place = "Grave o app Flutter em `aplicativo/pubspec.yaml` e `aplicativo/lib/main.dart`. As telas ficam em `aplicativo/lib/`."
     else:
         place = "Grave `frontend/index.html` e `frontend/app.js`."
+    lead = f"{preamble.strip()}\n\n" if (preamble or "").strip() else ""
     return (
-        f"Você é {agent_name}. Etapa {title} (`{stage_def_id}`).\n"
+        lead
+        + f"Você é {agent_name}. Etapa {title} (`{stage_def_id}`).\n"
         "A entrega é a interface do produto, em código.\n"
         f"{place}\n"
         "Construa as telas e os sheets do contrato nessa interface.\n"

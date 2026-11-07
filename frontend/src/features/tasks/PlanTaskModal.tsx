@@ -1,54 +1,17 @@
 import { type Component, createSignal, createMemo, createEffect, For, Show, onMount, onCleanup } from "solid-js";
+import { api } from "../../shared/api/client";
 import { type UiTask } from "../../state/store";
 
-export type EffortLevel = 0 | 1 | 2 | 3 | 4;
-
-export interface AIModelOption {
+interface CatalogEffort {
   id: string;
-  name: string;
-  code: string;
-  tag: string;
-  defaultEffort: EffortLevel;
+  label: string;
 }
 
-const AI_MODELS: AIModelOption[] = [
-  {
-    id: "fable",
-    name: "Fable",
-    code: "fable-pm",
-    tag: "Planejamento & Orquestração",
-    defaultEffort: 4, // Selecionado por padrão
-  },
-  {
-    id: "claude-opus-5-5",
-    name: "Claude Opus 5.5",
-    code: "claude-opus-5-5",
-    tag: "Deep Reasoning & Arquitetura",
-    defaultEffort: 4,
-  },
-  {
-    id: "claude-sonnet-5",
-    name: "Claude Sonnet 5",
-    code: "claude-sonnet-5",
-    tag: "Equilibrado · Execução",
-    defaultEffort: 1,
-  },
-  {
-    id: "gpt-5-codex",
-    name: "Codex Engine",
-    code: "gpt-5-codex",
-    tag: "Refatoração & Linter",
-    defaultEffort: 2,
-  },
-];
-
-const EFFORT_META: Record<EffortLevel, { label: string; timeout: string; desc: string }> = {
-  0: { label: "Mínimo", timeout: "(~30s)", desc: "Execução direta sem cadeia longa de pensamento." },
-  1: { label: "Rápido", timeout: "(~90s)", desc: "Balanço ideal entre velocidade e qualidade (Recomendado)." },
-  2: { label: "Padrão", timeout: "(~180s)", desc: "Análise estruturada com validação de contexto." },
-  3: { label: "Alto", timeout: "(~360s)", desc: "Raciocínio profundo com revisão cruzada." },
-  4: { label: "Máximo", timeout: "(~600s)", desc: "Capacidade máxima de raciocínio, validação arquitetural e banca revisora independente." },
-};
+interface CatalogModel {
+  id: string;
+  label: string;
+  efforts: CatalogEffort[];
+}
 
 export interface PlanTaskModalProps {
   task: UiTask | null;
@@ -60,42 +23,78 @@ export interface PlanTaskModalProps {
     taskSeq: number;
     aiModel: string;
     modelName: string;
-    effortLevel: EffortLevel;
+    effortId: string;
     effortLabel: string;
+    providerId: string;
     orchestrator: string;
   }) => void | Promise<void>;
 }
 
 export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
-  // Padrão obrigatório: Fable + Esforço Máximo (nível 4)
-  const [selectedModel, setSelectedModel] = createSignal<string>("fable");
-  const [effort, setEffort] = createSignal<EffortLevel>(4);
+  const [catalog, setCatalog] = createSignal<CatalogModel[]>([]);
+  const [providerId, setProviderId] = createSignal("");
+  const [providerLabel, setProviderLabel] = createSignal("Motor padrão");
+  const [engineOn, setEngineOn] = createSignal(true);
+  const [officeEffort, setOfficeEffort] = createSignal("");
+  const [selectedModel, setSelectedModel] = createSignal("");
+  const [selectedEffort, setSelectedEffort] = createSignal("");
+  const [loadingCatalog, setLoadingCatalog] = createSignal(false);
   const [showEffortHelp, setShowEffortHelp] = createSignal(false);
   const [localBusy, setLocalBusy] = createSignal(false);
 
-  const currentEffortMeta = createMemo(() => EFFORT_META[effort()]);
-  const activeModel = createMemo(() => AI_MODELS.find((m) => m.id === selectedModel()) || AI_MODELS[0]);
-  const busy = () => Boolean(props.submitting || localBusy());
+  const fitEffort = (model: CatalogModel | undefined, preferred: string) => {
+    if (!model) return "";
+    return model.efforts.find((item) => item.id === preferred)?.id || model.efforts[0]?.id || "";
+  };
+
+  const activeModel = createMemo(() => catalog().find((item) => item.id === selectedModel()) || catalog()[0]);
+  const efforts = createMemo(() => activeModel()?.efforts || []);
+  const isAuto = createMemo(() => selectedModel() === "auto-smart");
+  const effortIndex = createMemo(() => {
+    const index = efforts().findIndex((item) => item.id === selectedEffort());
+    return index < 0 ? 0 : index;
+  });
+  const effortLabel = createMemo(() => efforts().find((item) => item.id === selectedEffort())?.label || "");
+  const standardEffort = createMemo(() => activeModel()?.efforts.find((item) => item.id === officeEffort())?.id || "");
+  const planning = () => Boolean(props.submitting || localBusy());
+  const busy = () => planning() || loadingCatalog();
 
   createEffect(() => {
-    if (props.isOpen) {
-      setSelectedModel("fable");
-      setEffort(4);
-      setShowEffortHelp(false);
-    }
+    if (!props.isOpen) return;
+    setShowEffortHelp(false);
+    setLoadingCatalog(true);
+    void api
+      .getOfficeAi()
+      .then((office) => {
+        const engine = office.engines.find((item) => item.id === office.provider) || office.engines[0];
+        const models = engine?.models || [];
+        setCatalog(models);
+        setProviderId(engine?.id || office.provider);
+        setProviderLabel(office.provider_label || engine?.label || office.provider);
+        setEngineOn(office.engine_enabled !== false && models.length > 0);
+        setOfficeEffort(office.effort);
+        const model = models.find((item) => item.id === office.model) || models[0];
+        setSelectedModel(model?.id || "");
+        setSelectedEffort(fitEffort(model, office.effort));
+      })
+      .catch(() => {
+        setCatalog([]);
+        setEngineOn(false);
+      })
+      .finally(() => setLoadingCatalog(false));
   });
 
-  const handleModelSelect = (model: AIModelOption) => {
+  const handleModelSelect = (model: CatalogModel) => {
     setSelectedModel(model.id);
-    setEffort(model.defaultEffort);
+    setSelectedEffort(fitEffort(model, officeEffort() || selectedEffort()));
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (!props.isOpen) return;
-    if (e.key === "Escape" && props.onClose && !busy()) {
+    if (e.key === "Escape" && props.onClose && !planning()) {
       props.onClose();
     }
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && props.task && !busy()) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && props.task && !busy() && engineOn() && selectedModel()) {
       handleConfirm();
     }
   };
@@ -104,16 +103,17 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
   onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
 
   const handleConfirm = async () => {
-    if (!props.task || busy()) return;
+    if (!props.task || busy() || !engineOn() || !selectedModel()) return;
     setLocalBusy(true);
     try {
       await props.onConfirmPlan?.({
         taskId: props.task.id,
         taskSeq: props.task.seq,
         aiModel: selectedModel(),
-        modelName: activeModel().name,
-        effortLevel: effort(),
-        effortLabel: currentEffortMeta().label,
+        modelName: activeModel()?.label || selectedModel(),
+        effortId: isAuto() ? officeEffort() : selectedEffort(),
+        effortLabel: isAuto() ? "Auto" : effortLabel(),
+        providerId: providerId(),
         orchestrator: "Paula (Product Manager)",
       });
     } finally {
@@ -140,7 +140,10 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
         }}
       >
         <div
-          class="relative w-full max-w-[560px] rounded-2xl overflow-hidden"
+          class="modal relative w-full max-w-[560px] rounded-2xl overflow-hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Planejar tarefa"
           style={{
             background: "#0F172A",
             border: "1px solid rgba(255, 255, 255, 0.09)",
@@ -188,7 +191,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
 
             <button
               type="button"
-              disabled={busy()}
+              disabled={planning()}
               onClick={() => props.onClose?.()}
               style={{
                 background: "rgba(11, 18, 32, 0.7)",
@@ -293,61 +296,78 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                     Motor de IA para Planejamento
                   </span>
                   <span class="font-mono text-[11px]" style={{ color: "#1BC5BD" }}>
-                    ● GhostCLI Gateway
+                    ● {providerLabel()}
                   </span>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="modelGroup">
-                  <For each={AI_MODELS}>
-                    {(model) => {
-                      const isSelected = () => selectedModel() === model.id;
-                      return (
-                        <button
-                          type="button"
-                          onClick={() => handleModelSelect(model)}
-                          style={{
-                            background: isSelected() ? "rgba(27, 197, 189, 0.15)" : "rgba(15, 23, 42, 0.7)",
-                            border: isSelected() ? "1px solid #1BC5BD" : "1px solid rgba(255, 255, 255, 0.06)",
-                            "box-shadow": isSelected() ? "0 0 15px rgba(27, 197, 189, 0.12)" : "none",
-                            "border-radius": "12px",
-                            padding: "10px",
-                            display: "flex",
-                            "flex-direction": "column",
-                            "align-items": "flex-start",
-                            "text-align": "left",
-                            cursor: "pointer",
-                            outline: "none",
-                            transition: "all 0.2s ease",
-                          }}
-                        >
-                          <div style={{ display: "flex", "align-items": "center", "justify-content": "space-between", width: "100%" }}>
-                            <span style={{ "font-size": "12px", "font-weight": 600, color: "#F4F6F2", "white-space": "nowrap", overflow: "hidden", "text-overflow": "ellipsis" }}>
-                              {model.name}
+                <Show
+                  when={!loadingCatalog() && engineOn() && catalog().length > 0}
+                  fallback={
+                    <p class="text-xs" style={{ color: "rgba(244, 246, 242, 0.55)", margin: 0 }}>
+                      {loadingCatalog()
+                        ? "Lendo o motor padrão em Integrações."
+                        : "O motor padrão está desligado. Ligue-o em Integrações."}
+                    </p>
+                  }
+                >
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="modelGroup">
+                    <For each={catalog()}>
+                      {(model) => {
+                        const isSelected = () => selectedModel() === model.id;
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => handleModelSelect(model)}
+                            style={{
+                              background: isSelected() ? "rgba(27, 197, 189, 0.15)" : "rgba(15, 23, 42, 0.7)",
+                              border: isSelected() ? "1px solid #1BC5BD" : "1px solid rgba(255, 255, 255, 0.06)",
+                              "box-shadow": isSelected() ? "0 0 15px rgba(27, 197, 189, 0.12)" : "none",
+                              "border-radius": "12px",
+                              padding: "10px",
+                              display: "flex",
+                              "flex-direction": "column",
+                              "align-items": "flex-start",
+                              "text-align": "left",
+                              cursor: "pointer",
+                              outline: "none",
+                              transition: "all 0.2s ease",
+                            }}
+                          >
+                            <div style={{ display: "flex", "align-items": "center", "justify-content": "space-between", width: "100%" }}>
+                              <span style={{ "font-size": "12px", "font-weight": 600, color: "#F4F6F2", "white-space": "nowrap", overflow: "hidden", "text-overflow": "ellipsis" }}>
+                                {model.label}
+                              </span>
+                              <Show when={isSelected()}>
+                                <span style={{ width: "6px", height: "6px", "border-radius": "9999px", background: "#B7F34A" }} />
+                              </Show>
+                            </div>
+                            <span style={{ "margin-top": "2px", "font-family": "var(--font-mono, monospace)", "font-size": "10px", color: "rgba(244, 246, 242, 0.45)", width: "100%", overflow: "hidden", "text-overflow": "ellipsis" }}>
+                              {model.id}
                             </span>
-                            <Show when={isSelected()}>
-                              <span style={{ width: "6px", height: "6px", "border-radius": "9999px", background: "#B7F34A" }} />
-                            </Show>
-                          </div>
-                          <span style={{ "margin-top": "2px", "font-family": "var(--font-mono, monospace)", "font-size": "10px", color: "rgba(244, 246, 242, 0.45)", width: "100%", overflow: "hidden", "text-overflow": "ellipsis" }}>
-                            {model.code}
-                          </span>
-                        </button>
-                      );
-                    }}
-                  </For>
-                </div>
+                          </button>
+                        );
+                      }}
+                    </For>
+                  </div>
+                </Show>
               </div>
 
               <div style={{ height: "1px", background: "rgba(255, 255, 255, 0.06)" }} />
 
-              {/* COMPONENTE DE ESFORÇO */}
+              <Show when={!loadingCatalog() && Boolean(selectedModel())}>
+              <Show
+                when={!isAuto()}
+                fallback={
+                  <p class="text-xs" style={{ color: "rgba(244, 246, 242, 0.55)", margin: 0 }}>
+                    O modelo é Auto. Esta instalação não aplica Cost, Balance ou Intelligence.
+                  </p>
+                }
+              >
               <div class="pt-0.5">
-                {/* Topo: Esforço [Valor] + (?) */}
                 <div class="flex items-center justify-between mb-2">
                   <div class="flex items-baseline gap-2">
                     <span class="text-sm" style={{ color: "rgba(244, 246, 242, 0.6)" }}>Nível de Esforço</span>
-                    <span id="effortLabelText" class="text-sm font-semibold text-[#F4F6F2]">{currentEffortMeta().label}</span>
-                    <span id="effortTimeoutText" class="font-mono text-[11px] ml-0.5" style={{ color: "rgba(27, 197, 189, 0.85)" }}>{currentEffortMeta().timeout}</span>
+                    <span id="effortLabelText" class="text-sm font-semibold text-[#F4F6F2]">{effortLabel()}</span>
                   </div>
 
                   <button
@@ -387,7 +407,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                       color: "rgba(244, 246, 242, 0.85)",
                     }}
                   >
-                    {currentEffortMeta().desc}
+                    O esforço vem do motor padrão ligado em Integrações. O padrão desta instalação é {efforts().find((item) => item.id === officeEffort())?.label || effortLabel()}.
                   </div>
                 </Show>
 
@@ -417,7 +437,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                       left: 0,
                       top: 0,
                       bottom: 0,
-                      width: `calc(16px + (100% - 32px) * ${effort() / 4})`,
+                      width: `calc(16px + (100% - 32px) * ${efforts().length > 1 ? effortIndex() / (efforts().length - 1) : 0})`,
                       background: "linear-gradient(90deg, rgba(27, 197, 189, 0.18) 0%, rgba(183, 243, 74, 0.22) 100%)",
                       "border-radius": "12px",
                       transition: "width 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -426,17 +446,18 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                   />
 
                   {/* Marcadores estáticos em cada uma das 5 posições */}
-                  <For each={[0, 1, 2, 3, 4] as EffortLevel[]}>
-                    {(step) => {
-                      const isRecommended = step === 1;
-                      const isCurrent = () => effort() === step;
+                  <For each={efforts()}>
+                    {(step, index) => {
+                      const isRecommended = () => step.id === standardEffort();
+                      const isCurrent = () => selectedEffort() === step.id;
+                      const span = () => (efforts().length > 1 ? index() / (efforts().length - 1) : 0);
 
                       return (
                         <div
                           style={{
                             position: "absolute",
                             top: "50%",
-                            left: `calc(16px + (100% - 32px) * ${step / 4})`,
+                            left: `calc(16px + (100% - 32px) * ${span()})`,
                             transform: "translate(-50%, -50%)",
                             "pointer-events": "none",
                             opacity: isCurrent() ? 0 : 1,
@@ -447,7 +468,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                           }}
                         >
                           <Show
-                            when={isRecommended}
+                            when={isRecommended()}
                             fallback={
                               <span
                                 style={{
@@ -478,7 +499,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                     style={{
                       position: "absolute",
                       top: "50%",
-                      left: `calc(16px + (100% - 32px) * ${effort() / 4})`,
+                      left: `calc(16px + (100% - 32px) * ${efforts().length > 1 ? effortIndex() / (efforts().length - 1) : 0})`,
                       transform: "translate(-50%, -50%)",
                       width: "24px",
                       height: "24px",
@@ -494,11 +515,11 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
 
                   {/* Zonas de clique transparentes nos 5 steps */}
                   <div class="absolute inset-0 flex z-20">
-                    <For each={[0, 1, 2, 3, 4] as EffortLevel[]}>
+                    <For each={efforts()}>
                       {(step) => (
                         <button
                           type="button"
-                          onClick={() => setEffort(step)}
+                          onClick={() => setSelectedEffort(step.id)}
                           style={{
                             flex: 1,
                             background: "transparent",
@@ -508,22 +529,22 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                             margin: 0,
                             cursor: "pointer",
                           }}
-                          aria-label={`Esforço ${EFFORT_META[step].label}`}
+                          aria-label={`Esforço ${step.label}`}
                         />
                       )}
                     </For>
                   </div>
                 </div>
 
-                {/* Label "Recomendado" alinhado exatamente sob o step 1 */}
+                <Show when={standardEffort()}>
                 <div style={{ position: "relative", width: "100%", height: "20px", "margin-top": "6px" }}>
                   <button
                     id="recommendedBtn"
                     type="button"
-                    onClick={() => setEffort(1)}
+                    onClick={() => setSelectedEffort(standardEffort())}
                     style={{
                       position: "absolute",
-                      left: "calc(16px + (100% - 32px) * 0.25)",
+                      left: `calc(16px + (100% - 32px) * ${(() => { const list = efforts(); const at = list.findIndex((item) => item.id === standardEffort()); const pos = at < 0 ? 0 : at; return list.length > 1 ? pos / (list.length - 1) : 0; })()})`,
                       transform: "translateX(-50%)",
                       background: "transparent",
                       border: "none",
@@ -532,16 +553,19 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                       cursor: "pointer",
                       "font-family": "var(--font-mono, monospace)",
                       "font-size": "11px",
-                      color: effort() === 1 ? "#1BC5BD" : "rgba(244, 246, 242, 0.5)",
-                      "font-weight": effort() === 1 ? 600 : 400,
+                      color: selectedEffort() === standardEffort() ? "#1BC5BD" : "rgba(244, 246, 242, 0.5)",
+                      "font-weight": selectedEffort() === standardEffort() ? 600 : 400,
                       transition: "color 0.2s ease",
                       outline: "none",
                     }}
                   >
-                    Recomendado
+                    Padrão
                   </button>
                 </div>
+                </Show>
               </div>
+              </Show>
+              </Show>
             </div>
 
           </div>
@@ -556,7 +580,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
           >
             <button
               type="button"
-              disabled={busy()}
+              disabled={planning()}
               onClick={() => props.onClose?.()}
               style={{
                 background: "transparent",
@@ -580,7 +604,7 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
               </span>
               <button
                 type="button"
-                disabled={busy()}
+                disabled={busy() || !engineOn() || !selectedModel()}
                 onClick={handleConfirm}
                 style={{
                   background: "#B7F34A",
@@ -591,13 +615,13 @@ export const PlanTaskModal: Component<PlanTaskModalProps> = (props) => {
                   padding: "8px 20px",
                   "font-size": "12px",
                   "font-weight": 600,
-                  cursor: busy() ? "wait" : "pointer",
-                  opacity: busy() ? 0.7 : 1,
+                  cursor: busy() || !engineOn() || !selectedModel() ? "not-allowed" : "pointer",
+                  opacity: busy() || !engineOn() || !selectedModel() ? 0.45 : 1,
                   outline: "none",
                   transition: "all 0.15s ease",
                 }}
               >
-                {busy() ? "Iniciando…" : "Planejar com Paula"}
+                {planning() ? "Iniciando…" : "Planejar com Paula"}
               </button>
             </div>
           </div>

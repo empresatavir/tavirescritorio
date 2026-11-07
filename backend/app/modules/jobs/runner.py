@@ -13,6 +13,26 @@ from app.models.artifact import Artifact
 ALLOWED_COMMANDS = {"echo", "cat", "ls", "python"}
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent.parent.parent / "workspaces"
 _ACTIVE_PROCESSES: dict[str, asyncio.subprocess.Process] = {}
+_MIME_IMAGEM = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".gif": "image/gif"}
+
+
+def _imagens_da_tarefa(task) -> list[tuple[str, bytes, str]]:
+    if task is None or not getattr(task, "id", None):
+        return []
+    tags = task.tags if isinstance(task.tags, list) else []
+    pasta = WORKSPACE_ROOT / "anexos" / task.id
+    saida: list[tuple[str, bytes, str]] = []
+    for tag in tags:
+        if not str(tag).startswith("img:"):
+            continue
+        nome = Path(str(tag)[4:]).name
+        caminho = pasta / nome
+        if not caminho.is_file() or caminho.stat().st_size > 1_200_000:
+            continue
+        saida.append((nome, caminho.read_bytes(), _MIME_IMAGEM.get(caminho.suffix.lower(), "image/png")))
+        if len(saida) == 4:
+            break
+    return saida
 
 
 def _get_office_db_path():
@@ -50,7 +70,7 @@ def _sync_to_office_db(job: Job, attempt_num: int, status: str, log_stream: str 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             job.id, job.task_id, job.project_id or "tavir-core", job.agent_id or "pm-projetos",
-            job.model_name or "Fable", job.effort or "max", st_office, 100 if st_office == "completed" else 0,
+            job.model_name or "", job.effort or "", st_office, 100 if st_office == "completed" else 0,
             0.0, job.workspace_path, now_str, now_str
         ))
         cur.execute("""
@@ -90,6 +110,7 @@ class JobRunner:
         effort: str | None = None,
         model_provider: str | None = None,
         origin: str = "manual",
+        budget_ceiling: float | None = None,
     ) -> Job:
         ws_path = str(WORKSPACE_ROOT / str(uuid.uuid4()))
         if task_id:
@@ -140,14 +161,15 @@ class JobRunner:
             model_name=model_name,
             effort=effort,
             model_provider=model_provider,
+            budget_ceiling=budget_ceiling,
             workspace_path=ws_path,
         )
         self.session.add(job)
         origin_l = (origin or "manual").lower()
         if origin_l == "planning":
-            created_msg = f"Job de planejamento enfileirado ({model_name or 'Fable'} · {effort or 'Máximo'})"
+            created_msg = f"Job de planejamento enfileirado ({model_name or 'motor padrão'} · {effort or 'motor padrão'})"
         elif origin_l == "execution":
-            created_msg = f"Job de execução enfileirado ({model_name or 'Fable'} · {effort or 'Máximo'})"
+            created_msg = f"Job de execução enfileirado ({model_name or 'motor padrão'} · {effort or 'motor padrão'})"
         else:
             created_msg = f"Job instanciado na fila: {command}"
         attempt = JobAttempt(
@@ -172,8 +194,8 @@ class JobRunner:
             raise ValueError(f"Job {job_id} not found")
 
         origin = (job.origin or "manual").lower()
-        model_label = job.model_name or "Fable"
-        effort_label = job.effort or "Máximo"
+        model_label = job.model_name or "motor padrão"
+        effort_label = job.effort or "motor padrão"
         agent_label = job.agent_id or "pm-projetos"
 
         await self._transition(
@@ -336,8 +358,8 @@ class JobRunner:
         seq = task.seq if task and task.seq else "?"
         title = task.title if task else "Demanda"
         desc = (task.description or "Sem descrição.").strip()
-        model = job.model_name or "Fable"
-        effort = job.effort or "Máximo"
+        model = job.model_name or "motor padrão"
+        effort = job.effort or "motor padrão"
         agent = job.agent_id or "pm-projetos"
 
         plan_body = (
@@ -463,16 +485,54 @@ class JobRunner:
         try:
             from app.modules.ghostcli import chat_completion
 
-            return await chat_completion(
-                system=(
-                    "Você é Paula PM no TAVIR Escritório. Execute a demanda do usuário "
+            imagens = _imagens_da_tarefa(task)
+            from app.models.agent import Agent
+            from app.modules.agents.prompt import build_agent_prompt, load_design_canon
+            from app.modules.agents.repository import AgentRepository
+
+            agent = await self.session.get(Agent, job.agent_id) if job.agent_id else None
+            if agent is not None:
+                rows = await AgentRepository(self.session).list_lessons(agent.id)
+                lessons = [
+                    {
+                        "status": row.status,
+                        "title": (row.situation or "Lição")[:80],
+                        "situation": row.situation,
+                        "lesson": row.lesson,
+                        "why": row.why,
+                        "how_to_apply": row.how_to_apply,
+                    }
+                    for row in rows
+                ]
+                sistema = build_agent_prompt(
+                    name=agent.name,
+                    role=agent.role,
+                    sector=agent.sector,
+                    soul_text=agent.soul_text,
+                    craft_text=agent.craft_text,
+                    canon_text=load_design_canon(agent.id),
+                    lessons=lessons,
+                )
+                sistema += (
+                    "\nExecute a demanda do usuário e entregue uma resposta objetiva em português do Brasil. "
+                    "Não invente dados que precisem de API externa sem avisar."
+                )
+            else:
+                sistema = (
+                    "Você é um agente do TAVIR Escritório. Execute a demanda do usuário "
                     "e entregue uma resposta objetiva em português do Brasil. "
                     "Não invente dados que precisem de API externa sem avisar."
-                ),
+                )
+            if imagens:
+                sistema += " O usuário anexou imagens. Olhe cada uma e use o que estiver visível."
+            return await chat_completion(
+                system=sistema,
                 messages=[{"role": "user", "content": f"Título: {title}\n\nDemanda:\n{demand}"}],
                 model=job.model_name,
+                effort=job.effort,
                 max_tokens=1200,
-                timeout=60.0,
+                timeout=180.0,
+                images=imagens or None,
             )
         except Exception as exc:
             return (
@@ -513,8 +573,8 @@ class JobRunner:
         exec_body = (
             f"# Execução — Task #{task.seq if task and task.seq else '?'}\n\n"
             f"**Job:** {job.id}\n"
-            f"**Modelo:** {job.model_name or 'Fable'}\n"
-            f"**Esforço:** {job.effort or 'Máximo'}\n"
+            f"**Modelo:** {job.model_name or 'motor padrão'}\n"
+            f"**Esforço:** {job.effort or 'motor padrão'}\n"
             f"**Agente:** {job.agent_id or 'pm-projetos'}\n\n"
             f"## Demanda\n{demand or '_Sem descrição._'}\n\n"
             f"## Resposta\n{answer}\n"
@@ -746,5 +806,66 @@ class JobRunner:
 
         _sync_to_office_db(job, att_num, "failed", log_stream="Job cancelado pelo operador")
         await self._rollback_task_on_cancel(job)
+        await self.session.flush()
+        return job
+
+    async def _require(self, job_id: str) -> Job:
+        job = await self.session.get(Job, job_id)
+        if not job:
+            raise ValueError(f"Job {job_id} not found")
+        return job
+
+    async def resume_job(self, job_id: str) -> Job:
+        job = await self._require(job_id)
+        if job.status != "paused":
+            raise ValueError("Só um job pausado pode ser retomado.")
+        old_status = job.status
+        job.status = "running"
+        job.updated_at = datetime.now(timezone.utc)
+        await self._log_event(
+            job.id, old_status, "running", "operator", "job_resumed",
+            "Job retomado pelo operador",
+        )
+        await self.session.flush()
+        return job
+
+    async def start_job(self, job_id: str) -> Job:
+        job = await self._require(job_id)
+        if job.status != "queued":
+            raise ValueError("Só um job na fila pode ser iniciado.")
+        old_status = job.status
+        job.status = "running"
+        job.updated_at = datetime.now(timezone.utc)
+        await self._log_event(
+            job.id, old_status, "running", "operator", "job_started",
+            "Job iniciado pelo operador",
+        )
+        await self.session.flush()
+        return job
+
+    async def redo_job(self, job_id: str) -> Job:
+        job = await self._require(job_id)
+        if job.status not in {"failed", "succeeded", "cancelled"}:
+            raise ValueError("Só um job encerrado pode ser refeito.")
+        old_status = job.status
+        job.status = "queued"
+        job.error_message = None
+        job.updated_at = datetime.now(timezone.utc)
+        await self._log_event(
+            job.id, old_status, "queued", "operator", "job_redone",
+            "Job refeito pelo operador",
+        )
+        from sqlalchemy import select
+        stmt = select(JobAttempt).where(JobAttempt.job_id == job.id).order_by(JobAttempt.attempt_number.desc())
+        latest = (await self.session.execute(stmt)).scalars().first()
+        next_num = (latest.attempt_number + 1) if latest else 2
+        self.session.add(JobAttempt(
+            id=str(uuid.uuid4()),
+            job_id=job.id,
+            attempt_number=next_num,
+            status="queued",
+            log_stream="Job refeito pelo operador",
+            git_diff_stat="",
+        ))
         await self.session.flush()
         return job

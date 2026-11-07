@@ -16,10 +16,13 @@ class ProposalRepository:
         self,
         stage: str | None = None,
         search: str | None = None,
+        raiox_case_id: str | None = None,
     ) -> list[Proposal]:
         query = select(Proposal)
         if stage:
             query = query.where(Proposal.stage == stage)
+        if raiox_case_id:
+            query = query.where(Proposal.raiox_case_id == raiox_case_id)
         if search:
             q_like = f"%{search}%"
             query = query.where(

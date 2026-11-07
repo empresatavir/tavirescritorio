@@ -1,0 +1,2464 @@
+{
+  "screenId": "org",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 73,
+        "nav": 1,
+        "button": 30,
+        "img": 2,
+        "i": 5,
+        "aside": 1,
+        "small": 3,
+        "span": 128,
+        "b": 13,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 2,
+        "section": 1
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistema",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Analytics",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Doctor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Skills",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Org Chart",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Configurações",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sistema",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Org Chart",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Sistema",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Org Chart",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Quem responde a quem. Setores e o roster de cada um.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Analytics",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Doctor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Skills",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Org Chart",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CH",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carlos",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CEO · assina gates",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "PP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Paula PM",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Orquestração",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "BS",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Bruno Sócio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conselho estratégico",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CT",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CTO",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Stack e infraestrutura",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "PP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "JA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "RB",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "PU",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Engenharia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "9",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "VC",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "DV",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "TL",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "MI",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "NC",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "IC",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "RC",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "DD",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "LL",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conteúdo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "8",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "OD",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "RV",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "NN",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "VV",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "RR",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "EE",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "SE",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "DD",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CC",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "DC",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CS",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Social",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "6",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "NS",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "IA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CL",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "BY",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "SS",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "TT",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Qualidade",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "EE",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AS",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "JJ",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AW",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Clique num setor para abrir os agentes dele. Contorno teal: alguém do setor está trabalhando agora.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO SISTEMA Analytics Doctor 1 Skills Org Chart Configurações Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Doctor 1",
+          "label": null,
+          "text": "Doctor 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Sistema / Org Chart AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Sistema / Org Chart AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 1060,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 88,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Doctor",
+          "label": null,
+          "text": "Doctor",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 424,
+            "y": 201,
+            "width": 73,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 500,
+            "y": 201,
+            "width": 61,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 565,
+            "y": 201,
+            "width": 94,
+            "height": 42
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "CH Carlos CEO · assina gates PP Paula PM Orquestração BS Bruno Sócio Conselho estratégico CT CTO Stack e infraestrutura Operação 4 PP JA RB PU Engenharia 9 VC DV TL MI NC IC RC DD LL Conteúdo 8 OD AA RV NN VV RR EE SE Comercial 4 DD CC DC CS Social 6 NS IA CL BY SS TT Qualidade 4 EE AS JJ AW",
+          "label": null,
+          "text": "CH Carlos CEO · assina gates PP Paula PM Orquestração BS Bruno Sócio Conselho estratégico CT CTO Stack e infraestrutura Operação 4 PP JA RB PU Engenharia 9 VC DV TL MI NC IC RC DD LL Conteúdo 8 OD AA RV NN VV RR EE SE Comercial 4 DD CC DC CS Social 6 NS IA CL BY SS TT Qualidade 4 EE AS JJ AW",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 268,
+            "width": 1076,
+            "height": 366
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação 4 PP JA RB PU",
+          "label": null,
+          "text": "Operação 4 PP JA RB PU",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 351,
+            "y": 499,
+            "width": 165,
+            "height": 78
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "PP",
+          "label": null,
+          "text": "PP",
+          "placeholder": null,
+          "title": "PP",
+          "rect": {
+            "x": 364,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "JA",
+          "label": null,
+          "text": "JA",
+          "placeholder": null,
+          "title": "JA",
+          "rect": {
+            "x": 392,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "RB",
+          "label": null,
+          "text": "RB",
+          "placeholder": null,
+          "title": "RB",
+          "rect": {
+            "x": 420,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "PU",
+          "label": null,
+          "text": "PU",
+          "placeholder": null,
+          "title": "PU",
+          "rect": {
+            "x": 448,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Engenharia 9 VC DV TL MI NC IC RC DD LL",
+          "label": null,
+          "text": "Engenharia 9 VC DV TL MI NC IC RC DD LL",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 526,
+            "y": 499,
+            "width": 165,
+            "height": 106
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "VC",
+          "label": null,
+          "text": "VC",
+          "placeholder": null,
+          "title": "VC",
+          "rect": {
+            "x": 539,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "DV",
+          "label": null,
+          "text": "DV",
+          "placeholder": null,
+          "title": "DV",
+          "rect": {
+            "x": 567,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "TL",
+          "label": null,
+          "text": "TL",
+          "placeholder": null,
+          "title": "TL",
+          "rect": {
+            "x": 595,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "MI",
+          "label": null,
+          "text": "MI",
+          "placeholder": null,
+          "title": "MI",
+          "rect": {
+            "x": 623,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "NC",
+          "label": null,
+          "text": "NC",
+          "placeholder": null,
+          "title": "NC",
+          "rect": {
+            "x": 651,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "IC",
+          "label": null,
+          "text": "IC",
+          "placeholder": null,
+          "title": "IC",
+          "rect": {
+            "x": 539,
+            "y": 567,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "RC",
+          "label": null,
+          "text": "RC",
+          "placeholder": null,
+          "title": "RC",
+          "rect": {
+            "x": 567,
+            "y": 567,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "DD",
+          "label": null,
+          "text": "DD",
+          "placeholder": null,
+          "title": "DD",
+          "rect": {
+            "x": 595,
+            "y": 567,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "LL",
+          "label": null,
+          "text": "LL",
+          "placeholder": null,
+          "title": "LL",
+          "rect": {
+            "x": 623,
+            "y": 567,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conteúdo 8 OD AA RV NN VV RR EE SE",
+          "label": null,
+          "text": "Conteúdo 8 OD AA RV NN VV RR EE SE",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 700,
+            "y": 499,
+            "width": 165,
+            "height": 106
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "OD",
+          "label": null,
+          "text": "OD",
+          "placeholder": null,
+          "title": "OD",
+          "rect": {
+            "x": 713,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "AA",
+          "label": null,
+          "text": "AA",
+          "placeholder": null,
+          "title": "AA",
+          "rect": {
+            "x": 741,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "RV",
+          "label": null,
+          "text": "RV",
+          "placeholder": null,
+          "title": "RV",
+          "rect": {
+            "x": 769,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "NN",
+          "label": null,
+          "text": "NN",
+          "placeholder": null,
+          "title": "NN",
+          "rect": {
+            "x": 797,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "VV",
+          "label": null,
+          "text": "VV",
+          "placeholder": null,
+          "title": "VV",
+          "rect": {
+            "x": 825,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "RR",
+          "label": null,
+          "text": "RR",
+          "placeholder": null,
+          "title": "RR",
+          "rect": {
+            "x": 713,
+            "y": 567,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "EE",
+          "label": null,
+          "text": "EE",
+          "placeholder": null,
+          "title": "EE",
+          "rect": {
+            "x": 741,
+            "y": 567,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "SE",
+          "label": null,
+          "text": "SE",
+          "placeholder": null,
+          "title": "SE",
+          "rect": {
+            "x": 769,
+            "y": 567,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial 4 DD CC DC CS",
+          "label": null,
+          "text": "Comercial 4 DD CC DC CS",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 875,
+            "y": 499,
+            "width": 165,
+            "height": 78
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "DD",
+          "label": null,
+          "text": "DD",
+          "placeholder": null,
+          "title": "DD",
+          "rect": {
+            "x": 888,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "CC",
+          "label": null,
+          "text": "CC",
+          "placeholder": null,
+          "title": "CC",
+          "rect": {
+            "x": 916,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "DC",
+          "label": null,
+          "text": "DC",
+          "placeholder": null,
+          "title": "DC",
+          "rect": {
+            "x": 944,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "CS",
+          "label": null,
+          "text": "CS",
+          "placeholder": null,
+          "title": "CS",
+          "rect": {
+            "x": 972,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social 6 NS IA CL BY SS TT",
+          "label": null,
+          "text": "Social 6 NS IA CL BY SS TT",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1050,
+            "y": 499,
+            "width": 165,
+            "height": 106
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "NS",
+          "label": null,
+          "text": "NS",
+          "placeholder": null,
+          "title": "NS",
+          "rect": {
+            "x": 1063,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "IA",
+          "label": null,
+          "text": "IA",
+          "placeholder": null,
+          "title": "IA",
+          "rect": {
+            "x": 1091,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "CL",
+          "label": null,
+          "text": "CL",
+          "placeholder": null,
+          "title": "CL",
+          "rect": {
+            "x": 1119,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "BY",
+          "label": null,
+          "text": "BY",
+          "placeholder": null,
+          "title": "BY",
+          "rect": {
+            "x": 1147,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "SS",
+          "label": null,
+          "text": "SS",
+          "placeholder": null,
+          "title": "SS",
+          "rect": {
+            "x": 1175,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "TT",
+          "label": null,
+          "text": "TT",
+          "placeholder": null,
+          "title": "TT",
+          "rect": {
+            "x": 1063,
+            "y": 567,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Qualidade 4 EE AS JJ AW",
+          "label": null,
+          "text": "Qualidade 4 EE AS JJ AW",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1224,
+            "y": 499,
+            "width": 165,
+            "height": 78
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "EE",
+          "label": null,
+          "text": "EE",
+          "placeholder": null,
+          "title": "EE",
+          "rect": {
+            "x": 1237,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "AS",
+          "label": null,
+          "text": "AS",
+          "placeholder": null,
+          "title": "AS",
+          "rect": {
+            "x": 1265,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "JJ",
+          "label": null,
+          "text": "JJ",
+          "placeholder": null,
+          "title": "JJ",
+          "rect": {
+            "x": 1293,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        },
+        {
+          "tag": "span",
+          "id": null,
+          "role": null,
+          "name": "AW",
+          "label": null,
+          "text": "AW",
+          "placeholder": null,
+          "title": "AW",
+          "rect": {
+            "x": 1321,
+            "y": 539,
+            "width": 24,
+            "height": 24
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Doctor 1",
+          "label": null,
+          "text": "Doctor 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Configurações",
+          "label": null,
+          "text": "Configurações",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analytics",
+          "label": null,
+          "text": "Analytics",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 88,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Doctor",
+          "label": null,
+          "text": "Doctor",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 424,
+            "y": 201,
+            "width": 73,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Skills",
+          "label": null,
+          "text": "Skills",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 500,
+            "y": 201,
+            "width": 61,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Org Chart",
+          "label": null,
+          "text": "Org Chart",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 565,
+            "y": 201,
+            "width": 94,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação 4 PP JA RB PU",
+          "label": null,
+          "text": "Operação 4 PP JA RB PU",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 351,
+            "y": 499,
+            "width": 165,
+            "height": 78
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Engenharia 9 VC DV TL MI NC IC RC DD LL",
+          "label": null,
+          "text": "Engenharia 9 VC DV TL MI NC IC RC DD LL",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 526,
+            "y": 499,
+            "width": 165,
+            "height": 106
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conteúdo 8 OD AA RV NN VV RR EE SE",
+          "label": null,
+          "text": "Conteúdo 8 OD AA RV NN VV RR EE SE",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 700,
+            "y": 499,
+            "width": 165,
+            "height": 106
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial 4 DD CC DC CS",
+          "label": null,
+          "text": "Comercial 4 DD CC DC CS",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 875,
+            "y": 499,
+            "width": 165,
+            "height": 78
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social 6 NS IA CL BY SS TT",
+          "label": null,
+          "text": "Social 6 NS IA CL BY SS TT",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1050,
+            "y": 499,
+            "width": 165,
+            "height": 106
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Qualidade 4 EE AS JJ AW",
+          "label": null,
+          "text": "Qualidade 4 EE AS JJ AW",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1224,
+            "y": 499,
+            "width": 165,
+            "height": 78
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

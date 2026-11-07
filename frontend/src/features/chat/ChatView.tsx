@@ -9,6 +9,12 @@ import {
 } from "../../state/store";
 import { api } from "../../shared/api/client";
 import { TvIcon } from "../../shared/components/TvIcon";
+import { Pensando } from "./Pensando";
+
+interface ChatImage {
+  name: string;
+  url: string;
+}
 
 interface ChatMessage {
   id: string;
@@ -16,6 +22,14 @@ interface ChatMessage {
   text: string;
   at: string;
   meta?: string;
+  images?: ChatImage[];
+  actions?: Array<{ tipo: string; rotulo: string; texto?: string; titulo?: string; demand_code?: string }>;
+}
+
+interface PendingImage {
+  id: string;
+  name: string;
+  dataUrl: string;
 }
 
 interface ChatConversation {
@@ -26,7 +40,8 @@ interface ChatConversation {
   messages: ChatMessage[];
   settings: {
     model: string;
-    effort: "baixo" | "médio" | "alto";
+    effort: string;
+    provider?: string;
     time: string;
     tokens: string;
     insp: number;
@@ -101,6 +116,28 @@ const INITIAL_CONVERSATIONS: ChatConversation[] = [
   },
 ];
 
+type EffortOption = { id: string; label: string };
+type ModelOption = { id: string; label: string; efforts: EffortOption[] };
+type OfficeEngine = { id: string; label: string; models: ModelOption[] };
+type OfficeAi = {
+  provider: string;
+  provider_label: string;
+  model: string;
+  effort: string;
+  engine_enabled: boolean;
+  engines: OfficeEngine[];
+};
+
+function preferredEffort(options: EffortOption[], current: string): string {
+  if (options.some((item) => item.id === current)) return current;
+  return (
+    options.find((item) => item.id === "balanced")?.id ||
+    options.find((item) => item.id === "xhigh")?.id ||
+    options[0]?.id ||
+    "balanced"
+  );
+}
+
 const formatAt = (iso?: string | null): string => {
   if (!iso || Number.isNaN(Date.parse(iso))) {
     return new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
@@ -113,9 +150,79 @@ export function ChatView() {
   const [selectedConvId, setSelectedConvId] = createSignal<string>("cv-1");
   const [searchHistory, setSearchHistory] = createSignal<string>("");
   const [pickOpen, setPickOpen] = createSignal<boolean>(false);
+  const [rosterOpen, setRosterOpen] = createSignal(false);
   const [settingsOpen, setSettingsOpen] = createSignal<boolean>(false);
   const [inputMessage, setInputMessage] = createSignal<string>("");
   const [isTyping, setIsTyping] = createSignal<boolean>(false);
+  const [pendingDeleteId, setPendingDeleteId] = createSignal<string | null>(null);
+  const [pendingImages, setPendingImages] = createSignal<PendingImage[]>([]);
+  let imageInput: HTMLInputElement | undefined;
+
+  const addImageFiles = async (list: FileList | File[] | null) => {
+    const incoming = Array.from(list || []);
+    if (!incoming.length) return;
+    const room = 4 - pendingImages().length;
+    if (room <= 0) {
+      showToast("Dá para anexar até 4 imagens.", "Chat", "info");
+      return;
+    }
+    const next: PendingImage[] = [];
+    for (const file of incoming.slice(0, room)) {
+      if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) {
+        showToast("Use PNG, JPEG, WEBP ou GIF.", "Chat", "info");
+        continue;
+      }
+      if (file.size > 4 * 1024 * 1024) {
+        showToast(`${file.name} passa de 4 MB.`, "Chat", "error");
+        continue;
+      }
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+      next.push({ id: `${Date.now()}-${next.length}`, name: file.name, dataUrl });
+    }
+    if (incoming.length > room) showToast("Dá para anexar até 4 imagens.", "Chat", "info");
+    if (next.length) setPendingImages((prev) => [...prev, ...next]);
+  };
+  const [office, setOffice] = createSignal<OfficeAi | null>(null);
+
+  const officeEngine = createMemo(() => {
+    const data = office();
+    if (!data) return undefined;
+    return data.engines.find((item) => item.id === data.provider) || data.engines[0];
+  });
+
+  const fitSettings = (raw: Record<string, any> | null | undefined): ChatConversation["settings"] => {
+    const data = office();
+    const engine = officeEngine();
+    const base = {
+      model: raw?.model || data?.model || "auto-smart",
+      effort: raw?.effort || data?.effort || "balanced",
+      provider: engine?.id || data?.provider,
+      time: raw?.time || "2 min",
+      tokens: raw?.tokens || "1024",
+      insp: typeof raw?.insp === "number" ? raw.insp : 30,
+      memory: typeof raw?.memory === "boolean" ? raw.memory : true,
+      vault: typeof raw?.vault === "boolean" ? raw.vault : true,
+      tasks: typeof raw?.tasks === "boolean" ? raw.tasks : true,
+    };
+    const model = engine?.models.find((item) => item.id === base.model) || engine?.models.find((item) => item.id === data?.model) || engine?.models[0];
+    if (!model) return base;
+    return {
+      ...base,
+      model: model.id,
+      effort: preferredEffort(model.efforts, String(base.effort)),
+    };
+  };
+
+  const modelLabel = (modelId: string) =>
+    officeEngine()?.models.find((item) => item.id === modelId)?.label || modelId;
+
+  const effortLabel = (modelId: string, effortId: string) =>
+    officeEngine()?.models.find((item) => item.id === modelId)?.efforts.find((item) => item.id === effortId)?.label || effortId;
 
   // Sync conversations from backend SQLite
   const loadConversationMessages = async (convId: string) => {
@@ -128,6 +235,8 @@ export function ChatView() {
           text: m.text,
           at: formatAt(m.created_at),
           meta: m.meta || undefined,
+          images: m.images || undefined,
+          actions: m.actions || undefined,
         }));
         setConversations((prev) =>
           prev.map((c) => (c.id === convId ? { ...c, messages: msgs } : c))
@@ -151,16 +260,7 @@ export function ChatView() {
             title: c.title,
             updatedAt: formatAt(c.updated_at),
             messages: [],
-            settings: {
-              model: s.model || "claude-sonnet-4",
-              effort: s.effort || "médio",
-              time: s.time || "2 min",
-              tokens: s.tokens || "1024",
-              insp: typeof s.insp === "number" ? s.insp : 30,
-              memory: typeof s.memory === "boolean" ? s.memory : true,
-              vault: typeof s.vault === "boolean" ? s.vault : true,
-              tasks: typeof s.tasks === "boolean" ? s.tasks : true,
-            },
+            settings: fitSettings(s),
           };
         });
         setConversations(mapped);
@@ -183,8 +283,14 @@ export function ChatView() {
           await loadConversationMessages(initialId);
         }
       } else {
-        // Fallback: load initial messages if backend empty
-        await loadConversationMessages(selectedConvId());
+        const targetAgent = activeChatAgentId();
+        if (targetAgent) {
+          const ag = agents().find((item) => item.id === targetAgent);
+          if (ag) await createConversationForAgent(ag);
+          setActiveChatAgentId(null);
+        } else {
+          await loadConversationMessages(selectedConvId());
+        }
       }
     } catch (err) {
       console.warn("Could not sync conversations from API:", err);
@@ -192,28 +298,37 @@ export function ChatView() {
   };
 
   onMount(() => {
-    syncConversations();
+    void (async () => {
+      try {
+        setOffice(await api.getOfficeAi());
+      } catch (err) {
+        console.warn("Não foi possível ler o motor de Integrações:", err);
+      }
+      await syncConversations();
+    })();
   });
 
   const createConversationForAgent = async (ag: RosterAgent) => {
     try {
-      const defaultSettings = {
-        model: ag.model || "claude-sonnet-4",
-        effort: "médio",
+      const data = office();
+      const defaultSettings = fitSettings({
+        model: data?.model,
+        effort: data?.effort,
+        provider: data?.provider,
         time: "2 min",
         tokens: "1024",
         insp: 30,
         memory: true,
         vault: true,
         tasks: true,
-      };
+      });
       const created = await api.createChatConversation(ag.id, `Conversa com ${ag.name}`, defaultSettings);
       const newConvItem: ChatConversation = {
         id: created.id,
         agentId: created.agent_id,
         title: created.title,
         updatedAt: "agora",
-        settings: (created.settings as any) || defaultSettings,
+        settings: fitSettings((created.settings as ChatConversation["settings"]) || defaultSettings),
         messages: [],
       };
       setConversations((prev) => [newConvItem, ...prev]);
@@ -246,18 +361,45 @@ export function ChatView() {
 
   const handleSelectConv = async (id: string) => {
     setSelectedConvId(id);
+    setPendingDeleteId(null);
     setPickOpen(false);
     await loadConversationMessages(id);
   };
 
-  const handleNewChat = async () => {
-    const ag = agents()[0] || { id: "ag-01", name: "Arquiteto", model: "claude-sonnet-4" };
-    await createConversationForAgent(ag as RosterAgent);
+  const removeConversation = async (id: string) => {
+    const title = conversations().find((item) => item.id === id)?.title || "Conversa";
+    try {
+      await api.deleteChatConversation(id);
+      const rest = conversations().filter((item) => item.id !== id);
+      setConversations(rest);
+      setPendingDeleteId(null);
+      if (selectedConvId() === id) {
+        const next = rest[0];
+        if (next) {
+          setSelectedConvId(next.id);
+          await loadConversationMessages(next.id);
+        } else {
+          setSelectedConvId("");
+        }
+      }
+      showToast(`${title} foi apagada.`, "Chat", "info");
+    } catch (err) {
+      console.error("Failed to delete conversation:", err);
+      showToast("Não foi possível apagar a conversa.", "Chat", "error");
+    }
+  };
+
+  const handleNewChat = () => {
+    setRosterOpen(true);
   };
 
   const handleSelectAgent = async (ag: RosterAgent) => {
     const conv = currentConv();
     if (!conv) return;
+    const data = office();
+    const model = data?.model || conv.settings.model;
+    const provider = data?.provider || conv.settings.provider;
+    const effort = data?.effort || conv.settings.effort;
 
     setConversations((prev) =>
       prev.map((c) => {
@@ -265,7 +407,7 @@ export function ChatView() {
           return {
             ...c,
             agentId: ag.id,
-            settings: { ...c.settings, model: ag.model },
+            settings: { ...c.settings, model, provider, effort },
           };
         }
         return c;
@@ -276,7 +418,9 @@ export function ChatView() {
     try {
       await api.updateChatSettings(conv.id, {
         ...conv.settings,
-        model: ag.model,
+        model,
+        provider,
+        effort,
       });
     } catch (err) {
       console.warn("Could not update agent on conversation:", err);
@@ -285,7 +429,8 @@ export function ChatView() {
 
   const handleSendMessage = async () => {
     const text = inputMessage().trim();
-    if (!text || isTyping()) return;
+    const images = pendingImages();
+    if ((!text && images.length === 0) || isTyping()) return;
 
     const conv = currentConv();
     if (!conv) return;
@@ -297,6 +442,7 @@ export function ChatView() {
       role: "user",
       text,
       at: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+      images: images.map((item) => ({ name: item.name, url: item.dataUrl })),
     };
 
     // Optimistic update
@@ -306,7 +452,7 @@ export function ChatView() {
           const isFirst = c.messages.length === 0;
           return {
             ...c,
-            title: isFirst ? text.slice(0, 36) : c.title,
+            title: isFirst ? text.slice(0, 36) || "Imagem" : c.title,
             messages: [...c.messages, userMsg],
           };
         }
@@ -315,10 +461,15 @@ export function ChatView() {
     );
 
     setInputMessage("");
+    setPendingImages([]);
     setIsTyping(true);
 
     try {
-      const res = await api.sendChatMessage(convId, text);
+      const res = await api.sendChatMessage(
+        convId,
+        text,
+        images.map((item) => ({ name: item.name, data_url: item.dataUrl })),
+      );
       if (res && res.assistant_message) {
         const replyMsg: ChatMessage = {
           id: res.assistant_message.id,
@@ -326,6 +477,7 @@ export function ChatView() {
           text: res.assistant_message.text,
           at: formatAt(res.assistant_message.created_at),
           meta: res.assistant_message.meta || undefined,
+          actions: res.assistant_message.actions || undefined,
         };
 
         setConversations((prev) =>
@@ -333,7 +485,12 @@ export function ChatView() {
             if (c.id === convId) {
               const updatedMsgs = c.messages.map((m) =>
                 m.id === tempUserMsgId
-                  ? { ...m, id: res.user_message.id, at: formatAt(res.user_message.created_at) }
+                  ? {
+                      ...m,
+                      id: res.user_message.id,
+                      at: formatAt(res.user_message.created_at),
+                      images: res.user_message.images || m.images,
+                    }
                   : m
               );
               return {
@@ -354,7 +511,7 @@ export function ChatView() {
         role: "assistant",
         text: `Entendido. Registrei a solicitação no contexto de ${ag.role} (${ag.sector}). Vou processar a resposta mantendo os critérios do checklist e reportar os próximos passos.`,
         at: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
-        meta: `${conv.settings.model} · esforço ${conv.settings.effort} · inspiração ${conv.settings.insp}`,
+        meta: `${office()?.provider_label || "Motor"} · ${modelLabel(conv.settings.model)}`,
       };
       setConversations((prev) =>
         prev.map((c) => {
@@ -374,14 +531,11 @@ export function ChatView() {
     }
   };
 
-  const updateSetting = async <K extends keyof ChatConversation["settings"]>(
-    key: K,
-    val: ChatConversation["settings"][K]
-  ) => {
+  const applySettings = async (partial: Partial<ChatConversation["settings"]>) => {
     const conv = currentConv();
     if (!conv) return;
 
-    const nextSettings = { ...conv.settings, [key]: val };
+    const nextSettings = { ...conv.settings, ...partial, provider: office()?.provider || conv.settings.provider };
     setConversations((prev) =>
       prev.map((c) => {
         if (c.id === conv.id) {
@@ -396,6 +550,18 @@ export function ChatView() {
     } catch (err) {
       console.warn("Could not persist conversation settings:", err);
     }
+  };
+
+  const updateSetting = async <K extends keyof ChatConversation["settings"]>(
+    key: K,
+    val: ChatConversation["settings"][K]
+  ) => applySettings({ [key]: val });
+
+  const chooseModel = (modelId: string) => {
+    const spec = officeEngine()?.models.find((item) => item.id === modelId);
+    const conv = currentConv();
+    if (!conv || !spec) return;
+    void applySettings({ model: modelId, effort: preferredEffort(spec.efforts, conv.settings.effort) });
   };
 
   return (
@@ -448,6 +614,23 @@ export function ChatView() {
             <TvIcon name="plus" style={{ width: "13px", height: "13px" }} />
             Nova conversa
           </button>
+          <Show when={rosterOpen()}>
+            <div role="listbox" aria-label="Escolher agente" style={{ display: "flex", "flex-direction": "column", gap: "4px" }}>
+              <For each={agents()}>
+                {(ag) => (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRosterOpen(false);
+                      void createConversationForAgent(ag);
+                    }}
+                  >
+                    {ag.name}
+                  </button>
+                )}
+              </For>
+            </div>
+          </Show>
           <input
             value={searchHistory()}
             onInput={(e) => setSearchHistory(e.currentTarget.value)}
@@ -487,70 +670,140 @@ export function ChatView() {
               const ag = agents().find((a) => a.id === cv.agentId);
 
               return (
-                <button
-                  type="button"
-                  onClick={() => handleSelectConv(cv.id)}
+                <div
                   style={{
-                    width: "100%",
-                    "text-align": "left",
                     display: "grid",
-                    "grid-template-columns": "28px minmax(0, 1fr)",
-                    gap: "10px",
+                    "grid-template-columns": "minmax(0, 1fr) auto",
                     "align-items": "center",
-                    padding: "8px",
-                    border: "none",
+                    gap: "4px",
+                    padding: "4px",
                     "border-radius": "8px",
                     background: isSelected() ? "var(--surface-2, #17223a)" : "transparent",
-                    color: "var(--text-primary, #F4F6F2)",
-                    cursor: "pointer",
-                    transition: "background 0.15s ease",
                   }}
                 >
-                  <span
+                  <button
+                    type="button"
+                    onClick={() => handleSelectConv(cv.id)}
                     style={{
-                      width: "28px",
-                      height: "28px",
-                      "border-radius": "8px",
-                      flex: "none",
-                      display: "flex",
+                      "min-width": "0",
+                      "text-align": "left",
+                      display: "grid",
+                      "grid-template-columns": "28px minmax(0, 1fr)",
+                      gap: "10px",
                       "align-items": "center",
-                      "justify-content": "center",
-                      "font-size": "11px",
-                      "font-weight": "600",
-                      color: "var(--teal, #1BC5BD)",
-                      background: "rgba(27,197,189,.14)",
+                      padding: "4px",
+                      border: "none",
+                      "border-radius": "8px",
+                      background: "transparent",
+                      color: "var(--text-primary, #F4F6F2)",
+                      cursor: "pointer",
                     }}
                   >
-                    {ag?.initials || "AG"}
-                  </span>
-                  <span style={{ "min-width": "0" }}>
                     <span
                       style={{
-                        display: "block",
-                        "font-size": "13px",
-                        "font-weight": "500",
-                        overflow: "hidden",
-                        "text-overflow": "ellipsis",
-                        "white-space": "nowrap",
-                      }}
-                    >
-                      {cv.title}
-                    </span>
-                    <span
-                      style={{
-                        display: "block",
-                        "margin-top": "1px",
+                        width: "28px",
+                        height: "28px",
+                        "border-radius": "8px",
+                        flex: "none",
+                        display: "flex",
+                        "align-items": "center",
+                        "justify-content": "center",
                         "font-size": "11px",
-                        color: "var(--text-muted, #aeb7c4)",
-                        overflow: "hidden",
-                        "text-overflow": "ellipsis",
-                        "white-space": "nowrap",
+                        "font-weight": "600",
+                        color: "var(--teal, #1BC5BD)",
+                        background: "rgba(27,197,189,.14)",
                       }}
                     >
-                      {ag?.name || "Agente"} · {cv.updatedAt}
+                      {ag?.initials || "AG"}
                     </span>
-                  </span>
-                </button>
+                    <span style={{ "min-width": "0" }}>
+                      <span
+                        style={{
+                          display: "block",
+                          "font-size": "13px",
+                          "font-weight": "500",
+                          overflow: "hidden",
+                          "text-overflow": "ellipsis",
+                          "white-space": "nowrap",
+                        }}
+                      >
+                        {cv.title}
+                      </span>
+                      <span
+                        style={{
+                          display: "block",
+                          "margin-top": "1px",
+                          "font-size": "11px",
+                          color: "var(--text-muted, #aeb7c4)",
+                          overflow: "hidden",
+                          "text-overflow": "ellipsis",
+                          "white-space": "nowrap",
+                        }}
+                      >
+                        {pendingDeleteId() === cv.id ? "Apagar esta conversa?" : `${ag?.name || "Agente"} · ${cv.updatedAt}`}
+                      </span>
+                    </span>
+                  </button>
+                  <Show
+                    when={pendingDeleteId() === cv.id}
+                    fallback={
+                      <button
+                        type="button"
+                        aria-label={`Apagar ${cv.title}`}
+                        title="Apagar conversa"
+                        onClick={() => setPendingDeleteId(cv.id)}
+                        style={{
+                          height: "28px",
+                          padding: "0 8px",
+                          "border-radius": "999px",
+                          border: "1px solid var(--border-subtle, rgba(244,246,242,.16))",
+                          background: "transparent",
+                          color: "var(--text-muted, #aeb7c4)",
+                          cursor: "pointer",
+                          "font-size": "11px",
+                        }}
+                      >
+                        Apagar
+                      </button>
+                    }
+                  >
+                    <span style={{ display: "flex", gap: "4px" }}>
+                      <button
+                        type="button"
+                        onClick={() => void removeConversation(cv.id)}
+                        style={{
+                          height: "28px",
+                          padding: "0 8px",
+                          "border-radius": "999px",
+                          border: "none",
+                          background: "var(--lime, #B7F34A)",
+                          color: "var(--ink, #0B1220)",
+                          cursor: "pointer",
+                          "font-size": "11px",
+                          "font-weight": "600",
+                        }}
+                      >
+                        Sim
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPendingDeleteId(null)}
+                        style={{
+                          height: "28px",
+                          padding: "0 8px",
+                          "border-radius": "999px",
+                          border: "1px solid var(--border-subtle, rgba(244,246,242,.16))",
+                          background: "transparent",
+                          color: "var(--text-primary, #F4F6F2)",
+                          cursor: "pointer",
+                          "font-size": "11px",
+                        }}
+                      >
+                        Não
+                      </button>
+                    </span>
+                  </Show>
+                </div>
               );
             }}
           </For>
@@ -565,6 +818,15 @@ export function ChatView() {
 
       {/* Coluna 2: Seção Principal do Chat */}
       <section style={{ display: "flex", "flex-direction": "column", "min-height": "0", "min-width": "0", position: "relative" }}>
+        <Show
+          when={currentConv()}
+          fallback={
+            <div style={{ flex: "1", display: "flex", "align-items": "center", "justify-content": "center", padding: "24px", color: "var(--text-muted, #aeb7c4)" }}>
+              Nenhuma conversa. Use Nova conversa para começar.
+            </div>
+          }
+        >
+        <>
         {/* Header da Conversa */}
         <div
           style={{
@@ -638,12 +900,73 @@ export function ChatView() {
               "white-space": "nowrap",
             }}
           >
-            {currentConv().settings.model}
+            {office()?.provider_label || "Motor"} · {modelLabel(currentConv().settings.model)}
           </span>
 
-          <span style={{ "font-size": "12px", color: "var(--text-muted, #aeb7c4)", "white-space": "nowrap" }}>
-            esforço {currentConv().settings.effort} · inspiração {currentConv().settings.insp}
-          </span>
+          <Show when={currentConv().settings.model !== "auto-smart"}>
+            <span style={{ "font-size": "12px", color: "var(--text-muted, #aeb7c4)", "white-space": "nowrap" }}>
+              {effortLabel(currentConv().settings.model, currentConv().settings.effort)}
+            </span>
+          </Show>
+
+          <Show
+            when={pendingDeleteId() === currentConv().id}
+            fallback={
+              <button
+                type="button"
+                onClick={() => setPendingDeleteId(currentConv().id)}
+                style={{
+                  height: "32px",
+                  padding: "0 12px",
+                  "border-radius": "999px",
+                  border: "1px solid var(--border-subtle, rgba(244,246,242,.16))",
+                  background: "transparent",
+                  color: "var(--text-primary, #F4F6F2)",
+                  cursor: "pointer",
+                  "font-size": "12px",
+                  "white-space": "nowrap",
+                }}
+              >
+                Apagar
+              </button>
+            }
+          >
+            <button
+              type="button"
+              onClick={() => void removeConversation(currentConv().id)}
+              style={{
+                height: "32px",
+                padding: "0 12px",
+                "border-radius": "999px",
+                border: "none",
+                background: "var(--lime, #B7F34A)",
+                color: "var(--ink, #0B1220)",
+                cursor: "pointer",
+                "font-size": "12px",
+                "font-weight": "600",
+                "white-space": "nowrap",
+              }}
+            >
+              Confirmar
+            </button>
+            <button
+              type="button"
+              onClick={() => setPendingDeleteId(null)}
+              style={{
+                height: "32px",
+                padding: "0 12px",
+                "border-radius": "999px",
+                border: "1px solid var(--border-subtle, rgba(244,246,242,.16))",
+                background: "transparent",
+                color: "var(--text-primary, #F4F6F2)",
+                cursor: "pointer",
+                "font-size": "12px",
+                "white-space": "nowrap",
+              }}
+            >
+              Manter
+            </button>
+          </Show>
 
           {/* Botão Configurações */}
           <button
@@ -739,7 +1062,7 @@ export function ChatView() {
                     </span>
                   </span>
                   <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", color: "var(--text-muted, #aeb7c4)" }}>
-                    {pa.model}
+                    {office()?.provider_label || "Motor"} · {modelLabel(office()?.model || "")}
                   </span>
                 </button>
               )}
@@ -774,7 +1097,7 @@ export function ChatView() {
                   Converse com {currentAgent().name}
                 </div>
                 <div style={{ "max-width": "620px", "line-height": "1.6", color: "var(--text-secondary, #cbd3de)", "text-wrap": "pretty" }}>
-                  {currentAgent().role} no setor {currentAgent().sector}. Atua com o modelo {currentConv().settings.model} sob limite de teto e critérios do roster operacional.
+                  {currentAgent().role} no setor {currentAgent().sector}. A conversa usa {office()?.provider_label || "o motor"} · {modelLabel(currentConv().settings.model)}, o motor ligado em Integrações.
                 </div>
                 <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px", "margin-top": "4px" }}>
                   <button
@@ -818,6 +1141,14 @@ export function ChatView() {
             </Show>
 
             {/* Lista de Mensagens */}
+            <Show when={currentConv().messages.length === 0}>
+              <div style={{ display: "flex", "flex-direction": "column", gap: "8px", color: "var(--text-secondary)" }}>
+                <p style={{ margin: 0, "font-size": "14px" }}>Conversa vazia. O ofício entra no contexto.</p>
+                <Show when={currentAgent()?.soulText}>
+                  <p style={{ margin: 0, "font-size": "13px", "white-space": "pre-wrap" }}>{currentAgent()?.soulText}</p>
+                </Show>
+              </div>
+            </Show>
             <For each={currentConv().messages}>
               {(m) => {
                 if (m.role === "user") {
@@ -833,9 +1164,36 @@ export function ChatView() {
                           "line-height": "1.55",
                           "white-space": "pre-wrap",
                           "text-wrap": "pretty",
+                          display: "flex",
+                          "flex-direction": "column",
+                          gap: "8px",
                         }}
                       >
-                        {m.text}
+                        <Show when={(m.images?.length || 0) > 0}>
+                          <span style={{ display: "flex", "flex-wrap": "wrap", gap: "6px" }}>
+                            <For each={m.images || []}>
+                              {(image) => (
+                                <img
+                                  src={image.url}
+                                  alt={image.name}
+                                  style={{
+                                    width: "auto",
+                                    height: "auto",
+                                    "max-width": "220px",
+                                    "max-height": "180px",
+                                    "min-width": "72px",
+                                    "min-height": "72px",
+                                    "object-fit": "contain",
+                                    "border-radius": "8px",
+                                    display: "block",
+                                    background: "rgba(11,18,32,.35)",
+                                  }}
+                                />
+                              )}
+                            </For>
+                          </span>
+                        </Show>
+                        <Show when={m.text}>{m.text}</Show>
                       </div>
                     </div>
                   );
@@ -878,6 +1236,26 @@ export function ChatView() {
                       >
                         {m.text}
                       </div>
+                      <Show when={m.actions?.length}>
+                        <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px", "margin-top": "8px" }}>
+                          <For each={m.actions || []}>
+                            {(action) => (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  void api.getOfficeSettings().then((settings) => {
+                                    const projectId = settings.focused_project_id;
+                                    if (!projectId) return;
+                                    return api.runDemandAction(projectId, action);
+                                  })
+                                }
+                              >
+                                {action.rotulo}
+                              </button>
+                            )}
+                          </For>
+                        </div>
+                      </Show>
                     </div>
                   </div>
                 );
@@ -904,9 +1282,7 @@ export function ChatView() {
                 >
                   {currentAgent().initials}
                 </span>
-                <span style={{ color: "var(--text-muted, #aeb7c4)", "font-size": "13px" }}>
-                  {currentAgent().name} está respondendo · limite {currentConv().settings.time}...
-                </span>
+                <Pensando nome={currentAgent().name} />
               </div>
             </Show>
           </div>
@@ -927,9 +1303,52 @@ export function ChatView() {
               gap: "8px",
             }}
           >
+            <Show when={pendingImages().length > 0}>
+              <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px" }}>
+                <For each={pendingImages()}>
+                  {(image) => (
+                    <span style={{ position: "relative", width: "72px", height: "72px" }}>
+                      <img src={image.dataUrl} alt={image.name} style={{ width: "72px", height: "72px", "object-fit": "cover", "border-radius": "8px", display: "block" }} />
+                      <button
+                        type="button"
+                        aria-label={`Remover ${image.name}`}
+                        onClick={() => setPendingImages((prev) => prev.filter((item) => item.id !== image.id))}
+                        style={{
+                          position: "absolute",
+                          top: "4px",
+                          right: "4px",
+                          width: "18px",
+                          height: "18px",
+                          "border-radius": "999px",
+                          border: "none",
+                          background: "var(--ink, #0B1220)",
+                          color: "var(--text-primary, #F4F6F2)",
+                          cursor: "pointer",
+                          "font-size": "11px",
+                          "line-height": "18px",
+                        }}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  )}
+                </For>
+              </div>
+            </Show>
             <textarea
               value={inputMessage()}
               onInput={(e) => setInputMessage(e.currentTarget.value)}
+              onPaste={(event) => {
+                const files = Array.from(event.clipboardData?.files || []).filter((file) => file.type.startsWith("image/"));
+                if (!files.length) return;
+                event.preventDefault();
+                void addImageFiles(files);
+              }}
+              onDragOver={(event) => event.preventDefault()}
+              onDrop={(event) => {
+                event.preventDefault();
+                void addImageFiles(event.dataTransfer?.files || null);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -951,13 +1370,43 @@ export function ChatView() {
               }}
             />
             <div style={{ display: "flex", "align-items": "center", gap: "10px" }}>
+              <input
+                ref={imageInput}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                multiple
+                hidden
+                aria-hidden="true"
+                onChange={(event) => {
+                  void addImageFiles(event.currentTarget.files);
+                  event.currentTarget.value = "";
+                }}
+              />
+              <button
+                type="button"
+                aria-label="Anexar imagem"
+                onClick={() => imageInput?.click()}
+                style={{
+                  height: "34px",
+                  padding: "0 12px",
+                  "border-radius": "999px",
+                  border: "1px solid var(--border-subtle, rgba(244,246,242,.16))",
+                  background: "transparent",
+                  color: "var(--text-primary, #F4F6F2)",
+                  cursor: "pointer",
+                  "font-size": "12px",
+                  "white-space": "nowrap",
+                }}
+              >
+                Imagem
+              </button>
               <span style={{ "font-size": "12px", color: "var(--text-muted, #aeb7c4)", flex: "1", overflow: "hidden", "text-overflow": "ellipsis", "white-space": "nowrap" }}>
                 Shift + Enter para pular linha · Enter para enviar
               </span>
               <button
                 type="button"
                 onClick={handleSendMessage}
-                disabled={!inputMessage().trim() || isTyping()}
+                disabled={(!inputMessage().trim() && pendingImages().length === 0) || isTyping()}
                 aria-label="Enviar"
                 style={{
                   display: "flex",
@@ -971,7 +1420,7 @@ export function ChatView() {
                   color: "var(--ink-panel, #25360a)",
                   "font-weight": "600",
                   cursor: "pointer",
-                  opacity: !inputMessage().trim() || isTyping() ? 0.5 : 1,
+                  opacity: (!inputMessage().trim() && pendingImages().length === 0) || isTyping() ? 0.5 : 1,
                 }}
               >
                 <TvIcon name="send" style={{ width: "14px", height: "14px" }} />
@@ -980,10 +1429,12 @@ export function ChatView() {
             </div>
           </div>
         </div>
+        </>
+        </Show>
       </section>
 
       {/* Coluna 3: Drawer de Configurações */}
-      <Show when={settingsOpen()}>
+      <Show when={settingsOpen() && currentConv()}>
         <aside
           aria-label="Configurações da conversa"
           style={{
@@ -1002,12 +1453,16 @@ export function ChatView() {
             <button
               type="button"
               onClick={() => {
-                updateSetting("model", currentAgent().model);
-                updateSetting("effort", "médio");
-                updateSetting("time", "2 min");
-                updateSetting("tokens", "1024");
-                updateSetting("insp", 30);
-                showToast("Configurações restauradas", "Padrão", "info");
+                const data = office();
+                void applySettings({
+                  model: data?.model || currentConv().settings.model,
+                  effort: data?.effort || currentConv().settings.effort,
+                  provider: data?.provider,
+                  time: "2 min",
+                  tokens: "1024",
+                  insp: 30,
+                });
+                showToast("Configurações restauradas", "Padrão do motor", "info");
               }}
               style={{ border: "none", background: "transparent", color: "var(--teal, #1BC5BD)", cursor: "pointer", "font-size": "12px", padding: "0" }}
             >
@@ -1032,61 +1487,83 @@ export function ChatView() {
             </button>
           </div>
 
-          {/* Modelo */}
+          <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
+            <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", "font-weight": "500", "letter-spacing": "0.14em", "text-transform": "uppercase", color: "var(--text-muted, #aeb7c4)" }}>
+              Motor
+            </span>
+            <span style={{ "font-size": "13px", color: "var(--text-primary, #F4F6F2)" }}>
+              {office()?.engine_enabled ? office()?.provider_label : "Desligado em Integrações"}
+            </span>
+          </div>
+
           <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
             <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", "font-weight": "500", "letter-spacing": "0.14em", "text-transform": "uppercase", color: "var(--text-muted, #aeb7c4)" }}>
               Modelo
             </span>
             <div style={{ display: "flex", "flex-direction": "column", gap: "4px" }}>
-              {["claude-opus-4", "claude-sonnet-4", "gpt-4o", "gpt-4o-mini", "dall-e-3"].map((m) => (
-                <button
-                  type="button"
-                  onClick={() => updateSetting("model", m)}
-                  style={{
-                    padding: "8px 10px",
-                    "border-radius": "8px",
-                    border: currentConv().settings.model === m ? "1px solid var(--teal, #1BC5BD)" : "1px solid var(--border-subtle, rgba(244,246,242,.10))",
-                    background: currentConv().settings.model === m ? "rgba(27,197,189,.08)" : "transparent",
-                    color: "var(--text-primary, #F4F6F2)",
-                    "text-align": "left",
-                    cursor: "pointer",
-                    "font-size": "13px",
-                    "font-family": "var(--font-mono)",
-                  }}
-                >
-                  {m}
-                </button>
-              ))}
+              <For each={officeEngine()?.models || []}>
+                {(item) => (
+                  <button
+                    type="button"
+                    onClick={() => chooseModel(item.id)}
+                    style={{
+                      padding: "8px 10px",
+                      "border-radius": "8px",
+                      border: currentConv().settings.model === item.id ? "1px solid var(--teal, #1BC5BD)" : "1px solid var(--border-subtle, rgba(244,246,242,.10))",
+                      background: currentConv().settings.model === item.id ? "rgba(27,197,189,.08)" : "transparent",
+                      color: "var(--text-primary, #F4F6F2)",
+                      "text-align": "left",
+                      cursor: "pointer",
+                      "font-size": "13px",
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                )}
+              </For>
+              <Show when={(officeEngine()?.models.length || 0) === 0}>
+                <span style={{ "font-size": "13px", color: "var(--text-muted, #aeb7c4)" }}>
+                  Ligue o motor em Integrações para escolher o modelo.
+                </span>
+              </Show>
             </div>
           </div>
 
-          {/* Nível de Esforço */}
-          <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
-            <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", "font-weight": "500", "letter-spacing": "0.14em", "text-transform": "uppercase", color: "var(--text-muted, #aeb7c4)" }}>
-              Esforço
-            </span>
-            <div style={{ display: "flex", gap: "4px" }}>
-              {(["baixo", "médio", "alto"] as const).map((ef) => (
-                <button
-                  type="button"
-                  onClick={() => updateSetting("effort", ef)}
-                  style={{
-                    flex: "1",
-                    height: "28px",
-                    "border-radius": "999px",
-                    border: "none",
-                    cursor: "pointer",
-                    "font-size": "12px",
-                    background: currentConv().settings.effort === ef ? "var(--teal, #1BC5BD)" : "var(--surface-0, #0B1220)",
-                    color: currentConv().settings.effort === ef ? "var(--ink, #0B1220)" : "var(--text-muted, #aeb7c4)",
-                    "font-weight": "500",
-                  }}
-                >
-                  {ef}
-                </button>
-              ))}
+          <Show when={currentConv().settings.model !== "auto-smart" && (officeEngine()?.models.find((item) => item.id === currentConv().settings.model)?.efforts.length || 0) > 0}>
+            <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>
+              <span style={{ "font-family": "var(--font-mono)", "font-size": "11px", "font-weight": "500", "letter-spacing": "0.14em", "text-transform": "uppercase", color: "var(--text-muted, #aeb7c4)" }}>
+                Esforço
+              </span>
+              <div style={{ display: "flex", gap: "4px", "flex-wrap": "wrap" }}>
+                <For each={officeEngine()?.models.find((item) => item.id === currentConv().settings.model)?.efforts || []}>
+                  {(item) => (
+                    <button
+                      type="button"
+                      onClick={() => updateSetting("effort", item.id)}
+                      style={{
+                        flex: "1",
+                        height: "28px",
+                        "border-radius": "999px",
+                        border: "none",
+                        cursor: "pointer",
+                        "font-size": "12px",
+                        background: currentConv().settings.effort === item.id ? "var(--teal, #1BC5BD)" : "var(--surface-0, #0B1220)",
+                        color: currentConv().settings.effort === item.id ? "var(--ink, #0B1220)" : "var(--text-muted, #aeb7c4)",
+                        "font-weight": "500",
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  )}
+                </For>
+              </div>
             </div>
-          </div>
+          </Show>
+          <Show when={currentConv().settings.model === "auto-smart"}>
+            <span style={{ "font-size": "12px", "line-height": "1.45", color: "var(--text-muted, #aeb7c4)" }}>
+              O modelo é Auto. Esta instalação não aplica Cost, Balance ou Intelligence.
+            </span>
+          </Show>
 
           {/* Inspiração Slider */}
           <div style={{ display: "flex", "flex-direction": "column", gap: "8px" }}>

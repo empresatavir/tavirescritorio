@@ -1,0 +1,841 @@
+{
+  "metric": "pixel_agreement_within_mean_absolute_rgb_threshold",
+  "threshold": 12,
+  "overall_macro_average_percent": 88.97,
+  "reference_screens": 36,
+  "candidate_images": 45,
+  "compared_screens": 36,
+  "missing_candidate_screens": 0,
+  "dimension_mismatches": 0,
+  "unexpected_candidate_images": 9,
+  "records": [
+    {
+      "key": "agentes-roster",
+      "reference_image": "assets/001-agentes-roster-reference.png",
+      "reference_source": "visual/reference/agentes-roster.png",
+      "candidate_image": "assets/001-agentes-roster-implementation.png",
+      "candidate_source": "visual/actual/agentes-roster.png",
+      "status": "compared",
+      "similarity_percent": 85.88,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 85.88,
+        "exact_pixel_percent": 33.3,
+        "mean_absolute_error_rgb": 15.659,
+        "changed_pixels": 182973,
+        "changed_pixel_percent": 14.12
+      },
+      "overlay_image": "assets/001-agentes-roster-overlay.png",
+      "difference_image": "assets/001-agentes-roster-difference.png"
+    },
+    {
+      "key": "analytics",
+      "reference_image": "assets/002-analytics-reference.png",
+      "reference_source": "visual/reference/analytics.png",
+      "candidate_image": "assets/002-analytics-implementation.png",
+      "candidate_source": "visual/actual/analytics.png",
+      "status": "compared",
+      "similarity_percent": 85.85,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 85.85,
+        "exact_pixel_percent": 34.45,
+        "mean_absolute_error_rgb": 16.921,
+        "changed_pixels": 183333,
+        "changed_pixel_percent": 14.15
+      },
+      "overlay_image": "assets/002-analytics-overlay.png",
+      "difference_image": "assets/002-analytics-difference.png"
+    },
+    {
+      "key": "cerebro",
+      "reference_image": "assets/003-cerebro-reference.png",
+      "reference_source": "visual/reference/cerebro.png",
+      "candidate_image": "assets/003-cerebro-implementation.png",
+      "candidate_source": "visual/actual/cerebro.png",
+      "status": "compared",
+      "similarity_percent": 88.25,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 88.25,
+        "exact_pixel_percent": 34.48,
+        "mean_absolute_error_rgb": 15.374,
+        "changed_pixels": 152225,
+        "changed_pixel_percent": 11.75
+      },
+      "overlay_image": "assets/003-cerebro-overlay.png",
+      "difference_image": "assets/003-cerebro-difference.png"
+    },
+    {
+      "key": "chat-conversa",
+      "reference_image": "assets/004-chat-conversa-reference.png",
+      "reference_source": "visual/reference/chat-conversa.png",
+      "candidate_image": "assets/004-chat-conversa-implementation.png",
+      "candidate_source": "visual/actual/chat-conversa.png",
+      "status": "compared",
+      "similarity_percent": 91.29,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 91.29,
+        "exact_pixel_percent": 50.62,
+        "mean_absolute_error_rgb": 9.985,
+        "changed_pixels": 112916,
+        "changed_pixel_percent": 8.71
+      },
+      "overlay_image": "assets/004-chat-conversa-overlay.png",
+      "difference_image": "assets/004-chat-conversa-difference.png"
+    },
+    {
+      "key": "chat-light",
+      "reference_image": "assets/005-chat-light-reference.png",
+      "reference_source": "visual/reference/chat-light.png",
+      "candidate_image": "assets/005-chat-light-implementation.png",
+      "candidate_source": "visual/actual/chat-light.png",
+      "status": "compared",
+      "similarity_percent": 90.13,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 90.13,
+        "exact_pixel_percent": 51.39,
+        "mean_absolute_error_rgb": 12.795,
+        "changed_pixels": 127918,
+        "changed_pixel_percent": 9.87
+      },
+      "overlay_image": "assets/005-chat-light-overlay.png",
+      "difference_image": "assets/005-chat-light-difference.png"
+    },
+    {
+      "key": "como-funciona",
+      "reference_image": "assets/006-como-funciona-reference.png",
+      "reference_source": "visual/reference/como-funciona.png",
+      "candidate_image": "assets/006-como-funciona-implementation.png",
+      "candidate_source": "visual/actual/como-funciona.png",
+      "status": "compared",
+      "similarity_percent": 88.76,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 88.76,
+        "exact_pixel_percent": 52.6,
+        "mean_absolute_error_rgb": 13.88,
+        "changed_pixels": 145705,
+        "changed_pixel_percent": 11.24
+      },
+      "overlay_image": "assets/006-como-funciona-overlay.png",
+      "difference_image": "assets/006-como-funciona-difference.png"
+    },
+    {
+      "key": "config-light",
+      "reference_image": "assets/007-config-light-reference.png",
+      "reference_source": "visual/reference/config-light.png",
+      "candidate_image": "assets/007-config-light-implementation.png",
+      "candidate_source": "visual/actual/config-light.png",
+      "status": "compared",
+      "similarity_percent": 92.81,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 92.81,
+        "exact_pixel_percent": 54.07,
+        "mean_absolute_error_rgb": 10.018,
+        "changed_pixels": 93245,
+        "changed_pixel_percent": 7.19
+      },
+      "overlay_image": "assets/007-config-light-overlay.png",
+      "difference_image": "assets/007-config-light-difference.png"
+    },
+    {
+      "key": "config-perfil",
+      "reference_image": "assets/008-config-perfil-reference.png",
+      "reference_source": "visual/reference/config-perfil.png",
+      "candidate_image": "assets/008-config-perfil-implementation.png",
+      "candidate_source": "visual/actual/config-perfil.png",
+      "status": "compared",
+      "similarity_percent": 93.67,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 93.67,
+        "exact_pixel_percent": 44.44,
+        "mean_absolute_error_rgb": 9.483,
+        "changed_pixels": 82034,
+        "changed_pixel_percent": 6.33
+      },
+      "overlay_image": "assets/008-config-perfil-overlay.png",
+      "difference_image": "assets/008-config-perfil-difference.png"
+    },
+    {
+      "key": "decisoes",
+      "candidate_image": "assets/009-decisoes-implementation.png",
+      "candidate_source": "visual/actual/decisoes.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "decisoes-light",
+      "reference_image": "assets/010-decisoes-light-reference.png",
+      "reference_source": "visual/reference/decisoes-light.png",
+      "candidate_image": "assets/010-decisoes-light-implementation.png",
+      "candidate_source": "visual/actual/decisoes-light.png",
+      "status": "compared",
+      "similarity_percent": 71.94,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 71.94,
+        "exact_pixel_percent": 40.39,
+        "mean_absolute_error_rgb": 53.195,
+        "changed_pixels": 363642,
+        "changed_pixel_percent": 28.06
+      },
+      "overlay_image": "assets/010-decisoes-light-overlay.png",
+      "difference_image": "assets/010-decisoes-light-difference.png"
+    },
+    {
+      "key": "decisoes-lista",
+      "reference_image": "assets/011-decisoes-lista-reference.png",
+      "reference_source": "visual/reference/decisoes-lista.png",
+      "candidate_image": "assets/011-decisoes-lista-implementation.png",
+      "candidate_source": "visual/actual/decisoes-lista.png",
+      "status": "compared",
+      "similarity_percent": 88.98,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 88.98,
+        "exact_pixel_percent": 51.03,
+        "mean_absolute_error_rgb": 12.073,
+        "changed_pixels": 142758,
+        "changed_pixel_percent": 11.02
+      },
+      "overlay_image": "assets/011-decisoes-lista-overlay.png",
+      "difference_image": "assets/011-decisoes-lista-difference.png"
+    },
+    {
+      "key": "doctor",
+      "reference_image": "assets/012-doctor-reference.png",
+      "reference_source": "visual/reference/doctor.png",
+      "candidate_image": "assets/012-doctor-implementation.png",
+      "candidate_source": "visual/actual/doctor.png",
+      "status": "compared",
+      "similarity_percent": 91.2,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 91.2,
+        "exact_pixel_percent": 48.96,
+        "mean_absolute_error_rgb": 10.214,
+        "changed_pixels": 114026,
+        "changed_pixel_percent": 8.8
+      },
+      "overlay_image": "assets/012-doctor-overlay.png",
+      "difference_image": "assets/012-doctor-difference.png"
+    },
+    {
+      "key": "edicao-timeline",
+      "reference_image": "assets/013-edicao-timeline-reference.png",
+      "reference_source": "visual/reference/edicao-timeline.png",
+      "candidate_image": "assets/013-edicao-timeline-implementation.png",
+      "candidate_source": "visual/actual/edicao-timeline.png",
+      "status": "compared",
+      "similarity_percent": 87.99,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 87.99,
+        "exact_pixel_percent": 46.64,
+        "mean_absolute_error_rgb": 11.733,
+        "changed_pixels": 155628,
+        "changed_pixel_percent": 12.01
+      },
+      "overlay_image": "assets/013-edicao-timeline-overlay.png",
+      "difference_image": "assets/013-edicao-timeline-difference.png"
+    },
+    {
+      "key": "electron_capture",
+      "candidate_image": "assets/014-electron-capture-implementation.png",
+      "candidate_source": "visual/actual/electron_capture.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "exec-lista",
+      "reference_image": "assets/015-exec-lista-reference.png",
+      "reference_source": "visual/reference/exec-lista.png",
+      "candidate_image": "assets/015-exec-lista-implementation.png",
+      "candidate_source": "visual/actual/exec-lista.png",
+      "status": "compared",
+      "similarity_percent": 89.26,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 89.26,
+        "exact_pixel_percent": 46.52,
+        "mean_absolute_error_rgb": 11.252,
+        "changed_pixels": 139128,
+        "changed_pixel_percent": 10.74
+      },
+      "overlay_image": "assets/015-exec-lista-overlay.png",
+      "difference_image": "assets/015-exec-lista-difference.png"
+    },
+    {
+      "key": "execucoes",
+      "candidate_image": "assets/016-execucoes-implementation.png",
+      "candidate_source": "visual/actual/execucoes.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "execucoes_clicado",
+      "candidate_image": "assets/017-execucoes-clicado-implementation.png",
+      "candidate_source": "visual/actual/execucoes_clicado.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "fabrica",
+      "candidate_image": "assets/018-fabrica-implementation.png",
+      "candidate_source": "visual/actual/fabrica.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "fabrica-esteiras",
+      "reference_image": "assets/019-fabrica-esteiras-reference.png",
+      "reference_source": "visual/reference/fabrica-esteiras.png",
+      "candidate_image": "assets/019-fabrica-esteiras-implementation.png",
+      "candidate_source": "visual/actual/fabrica-esteiras.png",
+      "status": "compared",
+      "similarity_percent": 87.64,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 87.64,
+        "exact_pixel_percent": 25.57,
+        "mean_absolute_error_rgb": 13.81,
+        "changed_pixels": 160245,
+        "changed_pixel_percent": 12.36
+      },
+      "overlay_image": "assets/019-fabrica-esteiras-overlay.png",
+      "difference_image": "assets/019-fabrica-esteiras-difference.png"
+    },
+    {
+      "key": "financas",
+      "reference_image": "assets/020-financas-reference.png",
+      "reference_source": "visual/reference/financas.png",
+      "candidate_image": "assets/020-financas-implementation.png",
+      "candidate_source": "visual/actual/financas.png",
+      "status": "compared",
+      "similarity_percent": 90.34,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 90.34,
+        "exact_pixel_percent": 32.94,
+        "mean_absolute_error_rgb": 12.04,
+        "changed_pixels": 125199,
+        "changed_pixel_percent": 9.66
+      },
+      "overlay_image": "assets/020-financas-overlay.png",
+      "difference_image": "assets/020-financas-difference.png"
+    },
+    {
+      "key": "flow-beta",
+      "reference_image": "assets/021-flow-beta-reference.png",
+      "reference_source": "visual/reference/flow-beta.png",
+      "candidate_image": "assets/021-flow-beta-implementation.png",
+      "candidate_source": "visual/actual/flow-beta.png",
+      "status": "compared",
+      "similarity_percent": 87.41,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 87.41,
+        "exact_pixel_percent": 32.46,
+        "mean_absolute_error_rgb": 11.825,
+        "changed_pixels": 163229,
+        "changed_pixel_percent": 12.59
+      },
+      "overlay_image": "assets/021-flow-beta-overlay.png",
+      "difference_image": "assets/021-flow-beta-difference.png"
+    },
+    {
+      "key": "funil",
+      "reference_image": "assets/022-funil-reference.png",
+      "reference_source": "visual/reference/funil.png",
+      "candidate_image": "assets/022-funil-implementation.png",
+      "candidate_source": "visual/actual/funil.png",
+      "status": "compared",
+      "similarity_percent": 88.29,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 88.29,
+        "exact_pixel_percent": 26.77,
+        "mean_absolute_error_rgb": 11.539,
+        "changed_pixels": 151728,
+        "changed_pixel_percent": 11.71
+      },
+      "overlay_image": "assets/022-funil-overlay.png",
+      "difference_image": "assets/022-funil-difference.png"
+    },
+    {
+      "key": "ideias",
+      "reference_image": "assets/023-ideias-reference.png",
+      "reference_source": "visual/reference/ideias.png",
+      "candidate_image": "assets/023-ideias-implementation.png",
+      "candidate_source": "visual/actual/ideias.png",
+      "status": "compared",
+      "similarity_percent": 91.35,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 91.35,
+        "exact_pixel_percent": 48.58,
+        "mean_absolute_error_rgb": 14.917,
+        "changed_pixels": 112165,
+        "changed_pixel_percent": 8.65
+      },
+      "overlay_image": "assets/023-ideias-overlay.png",
+      "difference_image": "assets/023-ideias-difference.png"
+    },
+    {
+      "key": "mapa",
+      "reference_image": "assets/024-mapa-reference.png",
+      "reference_source": "visual/reference/mapa.png",
+      "candidate_image": "assets/024-mapa-implementation.png",
+      "candidate_source": "visual/actual/mapa.png",
+      "status": "compared",
+      "similarity_percent": 93.62,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 93.62,
+        "exact_pixel_percent": 40.41,
+        "mean_absolute_error_rgb": 9.268,
+        "changed_pixels": 82748,
+        "changed_pixel_percent": 6.38
+      },
+      "overlay_image": "assets/024-mapa-overlay.png",
+      "difference_image": "assets/024-mapa-difference.png"
+    },
+    {
+      "key": "memoria",
+      "reference_image": "assets/025-memoria-reference.png",
+      "reference_source": "visual/reference/memoria.png",
+      "candidate_image": "assets/025-memoria-implementation.png",
+      "candidate_source": "visual/actual/memoria.png",
+      "status": "compared",
+      "similarity_percent": 89.51,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 89.51,
+        "exact_pixel_percent": 35.09,
+        "mean_absolute_error_rgb": 15.327,
+        "changed_pixels": 135992,
+        "changed_pixel_percent": 10.49
+      },
+      "overlay_image": "assets/025-memoria-overlay.png",
+      "difference_image": "assets/025-memoria-difference.png"
+    },
+    {
+      "key": "mission",
+      "reference_image": "assets/026-mission-reference.png",
+      "reference_source": "visual/reference/mission.png",
+      "candidate_image": "assets/026-mission-implementation.png",
+      "candidate_source": "visual/actual/mission.png",
+      "status": "compared",
+      "similarity_percent": 93.26,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 93.26,
+        "exact_pixel_percent": 36.24,
+        "mean_absolute_error_rgb": 9.877,
+        "changed_pixels": 87293,
+        "changed_pixel_percent": 6.74
+      },
+      "overlay_image": "assets/026-mission-overlay.png",
+      "difference_image": "assets/026-mission-difference.png"
+    },
+    {
+      "key": "modulos-hub",
+      "reference_image": "assets/027-modulos-hub-reference.png",
+      "reference_source": "visual/reference/modulos-hub.png",
+      "candidate_image": "assets/027-modulos-hub-implementation.png",
+      "candidate_source": "visual/actual/modulos-hub.png",
+      "status": "compared",
+      "similarity_percent": 90.75,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 90.75,
+        "exact_pixel_percent": 38.88,
+        "mean_absolute_error_rgb": 11.734,
+        "changed_pixels": 119899,
+        "changed_pixel_percent": 9.25
+      },
+      "overlay_image": "assets/027-modulos-hub-overlay.png",
+      "difference_image": "assets/027-modulos-hub-difference.png"
+    },
+    {
+      "key": "org",
+      "reference_image": "assets/028-org-reference.png",
+      "reference_source": "visual/reference/org.png",
+      "candidate_image": "assets/028-org-implementation.png",
+      "candidate_source": "visual/actual/org.png",
+      "status": "compared",
+      "similarity_percent": 93.59,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 93.59,
+        "exact_pixel_percent": 51.17,
+        "mean_absolute_error_rgb": 7.426,
+        "changed_pixels": 83037,
+        "changed_pixel_percent": 6.41
+      },
+      "overlay_image": "assets/028-org-overlay.png",
+      "difference_image": "assets/028-org-difference.png"
+    },
+    {
+      "key": "personas",
+      "reference_image": "assets/029-personas-reference.png",
+      "reference_source": "visual/reference/personas.png",
+      "candidate_image": "assets/029-personas-implementation.png",
+      "candidate_source": "visual/actual/personas.png",
+      "status": "compared",
+      "similarity_percent": 87.8,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 87.8,
+        "exact_pixel_percent": 39.93,
+        "mean_absolute_error_rgb": 17.97,
+        "changed_pixels": 158050,
+        "changed_pixel_percent": 12.2
+      },
+      "overlay_image": "assets/029-personas-overlay.png",
+      "difference_image": "assets/029-personas-difference.png"
+    },
+    {
+      "key": "propostas",
+      "reference_image": "assets/030-propostas-reference.png",
+      "reference_source": "visual/reference/propostas.png",
+      "candidate_image": "assets/030-propostas-implementation.png",
+      "candidate_source": "visual/actual/propostas.png",
+      "status": "compared",
+      "similarity_percent": 89.96,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 89.96,
+        "exact_pixel_percent": 40.23,
+        "mean_absolute_error_rgb": 11.02,
+        "changed_pixels": 130127,
+        "changed_pixel_percent": 10.04
+      },
+      "overlay_image": "assets/030-propostas-overlay.png",
+      "difference_image": "assets/030-propostas-difference.png"
+    },
+    {
+      "key": "raiox",
+      "candidate_image": "assets/031-raiox-implementation.png",
+      "candidate_source": "visual/actual/raiox.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "raiox-lista",
+      "reference_image": "assets/032-raiox-lista-reference.png",
+      "reference_source": "visual/reference/raiox-lista.png",
+      "candidate_image": "assets/032-raiox-lista-implementation.png",
+      "candidate_source": "visual/actual/raiox-lista.png",
+      "status": "compared",
+      "similarity_percent": 88.07,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 88.07,
+        "exact_pixel_percent": 26.76,
+        "mean_absolute_error_rgb": 15.602,
+        "changed_pixels": 154636,
+        "changed_pixel_percent": 11.93
+      },
+      "overlay_image": "assets/032-raiox-lista-overlay.png",
+      "difference_image": "assets/032-raiox-lista-difference.png"
+    },
+    {
+      "key": "roadmap",
+      "reference_image": "assets/033-roadmap-reference.png",
+      "reference_source": "visual/reference/roadmap.png",
+      "candidate_image": "assets/033-roadmap-implementation.png",
+      "candidate_source": "visual/actual/roadmap.png",
+      "status": "compared",
+      "similarity_percent": 90.44,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 90.44,
+        "exact_pixel_percent": 30.17,
+        "mean_absolute_error_rgb": 10.461,
+        "changed_pixels": 123934,
+        "changed_pixel_percent": 9.56
+      },
+      "overlay_image": "assets/033-roadmap-overlay.png",
+      "difference_image": "assets/033-roadmap-difference.png"
+    },
+    {
+      "key": "sala-dark",
+      "reference_image": "assets/034-sala-dark-reference.png",
+      "reference_source": "visual/reference/sala-dark.png",
+      "candidate_image": "assets/034-sala-dark-implementation.png",
+      "candidate_source": "visual/actual/sala-dark.png",
+      "status": "compared",
+      "similarity_percent": 86.37,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 86.37,
+        "exact_pixel_percent": 43.71,
+        "mean_absolute_error_rgb": 14.571,
+        "changed_pixels": 176633,
+        "changed_pixel_percent": 13.63
+      },
+      "overlay_image": "assets/034-sala-dark-overlay.png",
+      "difference_image": "assets/034-sala-dark-difference.png"
+    },
+    {
+      "key": "sala-estreita",
+      "reference_image": "assets/035-sala-estreita-reference.png",
+      "reference_source": "visual/reference/sala-estreita.png",
+      "candidate_image": "assets/035-sala-estreita-implementation.png",
+      "candidate_source": "visual/actual/sala-estreita.png",
+      "status": "compared",
+      "similarity_percent": 86.17,
+      "metrics": {
+        "width": 860,
+        "height": 900,
+        "pixels": 774000,
+        "similarity_percent": 86.17,
+        "exact_pixel_percent": 36.31,
+        "mean_absolute_error_rgb": 15.543,
+        "changed_pixels": 107006,
+        "changed_pixel_percent": 13.83
+      },
+      "overlay_image": "assets/035-sala-estreita-overlay.png",
+      "difference_image": "assets/035-sala-estreita-difference.png"
+    },
+    {
+      "key": "sala-light",
+      "reference_image": "assets/036-sala-light-reference.png",
+      "reference_source": "visual/reference/sala-light.png",
+      "candidate_image": "assets/036-sala-light-implementation.png",
+      "candidate_source": "visual/actual/sala-light.png",
+      "status": "compared",
+      "similarity_percent": 82.81,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 82.81,
+        "exact_pixel_percent": 57.3,
+        "mean_absolute_error_rgb": 21.27,
+        "changed_pixels": 222788,
+        "changed_pixel_percent": 17.19
+      },
+      "overlay_image": "assets/036-sala-light-overlay.png",
+      "difference_image": "assets/036-sala-light-difference.png"
+    },
+    {
+      "key": "sala_operacao",
+      "candidate_image": "assets/037-sala-operacao-implementation.png",
+      "candidate_source": "visual/actual/sala_operacao.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "skills",
+      "reference_image": "assets/038-skills-reference.png",
+      "reference_source": "visual/reference/skills.png",
+      "candidate_image": "assets/038-skills-implementation.png",
+      "candidate_source": "visual/actual/skills.png",
+      "status": "compared",
+      "similarity_percent": 91.22,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 91.22,
+        "exact_pixel_percent": 31.82,
+        "mean_absolute_error_rgb": 12.015,
+        "changed_pixels": 113799,
+        "changed_pixel_percent": 8.78
+      },
+      "overlay_image": "assets/038-skills-overlay.png",
+      "difference_image": "assets/038-skills-difference.png"
+    },
+    {
+      "key": "social-inbox",
+      "reference_image": "assets/039-social-inbox-reference.png",
+      "reference_source": "visual/reference/social-inbox.png",
+      "candidate_image": "assets/039-social-inbox-implementation.png",
+      "candidate_source": "visual/actual/social-inbox.png",
+      "status": "compared",
+      "similarity_percent": 91.28,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 91.28,
+        "exact_pixel_percent": 45.85,
+        "mean_absolute_error_rgb": 10.318,
+        "changed_pixels": 113037,
+        "changed_pixel_percent": 8.72
+      },
+      "overlay_image": "assets/039-social-inbox-overlay.png",
+      "difference_image": "assets/039-social-inbox-difference.png"
+    },
+    {
+      "key": "social-perfis",
+      "reference_image": "assets/040-social-perfis-reference.png",
+      "reference_source": "visual/reference/social-perfis.png",
+      "candidate_image": "assets/040-social-perfis-implementation.png",
+      "candidate_source": "visual/actual/social-perfis.png",
+      "status": "compared",
+      "similarity_percent": 91.91,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 91.91,
+        "exact_pixel_percent": 30.51,
+        "mean_absolute_error_rgb": 10.707,
+        "changed_pixels": 104875,
+        "changed_pixel_percent": 8.09
+      },
+      "overlay_image": "assets/040-social-perfis-overlay.png",
+      "difference_image": "assets/040-social-perfis-difference.png"
+    },
+    {
+      "key": "studio",
+      "candidate_image": "assets/041-studio-implementation.png",
+      "candidate_source": "visual/actual/studio.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "studio-esteira",
+      "reference_image": "assets/042-studio-esteira-reference.png",
+      "reference_source": "visual/reference/studio-esteira.png",
+      "candidate_image": "assets/042-studio-esteira-implementation.png",
+      "candidate_source": "visual/actual/studio-esteira.png",
+      "status": "compared",
+      "similarity_percent": 86.84,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 86.84,
+        "exact_pixel_percent": 34.4,
+        "mean_absolute_error_rgb": 13.684,
+        "changed_pixels": 170577,
+        "changed_pixel_percent": 13.16
+      },
+      "overlay_image": "assets/042-studio-esteira-overlay.png",
+      "difference_image": "assets/042-studio-esteira-difference.png"
+    },
+    {
+      "key": "tasks-kanban",
+      "reference_image": "assets/043-tasks-kanban-reference.png",
+      "reference_source": "visual/reference/tasks-kanban.png",
+      "candidate_image": "assets/043-tasks-kanban-implementation.png",
+      "candidate_source": "visual/actual/tasks-kanban.png",
+      "status": "compared",
+      "similarity_percent": 90.1,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 90.1,
+        "exact_pixel_percent": 42.41,
+        "mean_absolute_error_rgb": 12.262,
+        "changed_pixels": 128308,
+        "changed_pixel_percent": 9.9
+      },
+      "overlay_image": "assets/043-tasks-kanban-overlay.png",
+      "difference_image": "assets/043-tasks-kanban-difference.png"
+    },
+    {
+      "key": "tasks_kanban",
+      "candidate_image": "assets/044-tasks-kanban-implementation.png",
+      "candidate_source": "visual/actual/tasks_kanban.png",
+      "status": "unexpected_candidate",
+      "similarity_percent": null,
+      "message": "Não há imagem de referência com este caminho relativo; crie/atualize o mapa de telas e verifique o nome."
+    },
+    {
+      "key": "tour-escolha",
+      "reference_image": "assets/045-tour-escolha-reference.png",
+      "reference_source": "visual/reference/tour-escolha.png",
+      "candidate_image": "assets/045-tour-escolha-implementation.png",
+      "candidate_source": "visual/actual/tour-escolha.png",
+      "status": "compared",
+      "similarity_percent": 88.34,
+      "metrics": {
+        "width": 1440,
+        "height": 900,
+        "pixels": 1296000,
+        "similarity_percent": 88.34,
+        "exact_pixel_percent": 50.74,
+        "mean_absolute_error_rgb": 14.449,
+        "changed_pixels": 151137,
+        "changed_pixel_percent": 11.66
+      },
+      "overlay_image": "assets/045-tour-escolha-overlay.png",
+      "difference_image": "assets/045-tour-escolha-difference.png"
+    }
+  ]
+}

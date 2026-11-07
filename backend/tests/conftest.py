@@ -31,3 +31,5 @@ def _factory_agent_without_network(monkeypatch):
         raise RuntimeError("teste não abre sessão de código")
 
     monkeypatch.setattr("app.modules.cursor_link.client.run_in_workspace", _no_work_session)
+    monkeypatch.setattr("app.modules.cursor_link.client.ask_in_workspace", _no_work_session)
+    monkeypatch.setattr("app.modules.cursor_link.client.answer_inline", _no_work_session)

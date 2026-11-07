@@ -209,6 +209,19 @@ def import_agents(conn: sqlite3.Connection):
     cur = conn.cursor()
 
     imported_agents = []
+    cur.execute("PRAGMA table_info(agents)")
+    agent_cols = {row[1] for row in cur.fetchall()}
+    if "craft_text" in agent_cols:
+        soul_assign = """soul_text = CASE
+                    WHEN COALESCE(agents.soul_text, '') != '' OR COALESCE(agents.craft_text, '') != ''
+                    THEN agents.soul_text
+                    ELSE excluded.soul_text
+                END"""
+    else:
+        soul_assign = """soul_text = CASE
+                    WHEN COALESCE(agents.soul_text, '') != '' THEN agents.soul_text
+                    ELSE excluded.soul_text
+                END"""
     for aid in all_ids:
         papel = papeis.get(aid, {})
         doc = equipe_docs.get(aid, "")
@@ -274,7 +287,7 @@ def import_agents(conn: sqlite3.Connection):
         total_cost = round((total_jobs * 0.18) + 12.5, 2)
 
         cur.execute(
-            """
+            f"""
             INSERT INTO agents (id, name, role, sector, status, skills, model_provider, soul_text,
                                 total_jobs, total_cost, avatar_color, initials, last_run, created_at, updated_at)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
@@ -285,7 +298,7 @@ def import_agents(conn: sqlite3.Connection):
                 status = excluded.status,
                 skills = excluded.skills,
                 model_provider = excluded.model_provider,
-                soul_text = excluded.soul_text,
+                {soul_assign},
                 avatar_color = excluded.avatar_color,
                 initials = excluded.initials,
                 updated_at = datetime('now')

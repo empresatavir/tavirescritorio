@@ -15,6 +15,7 @@
   --surface-ink: var(--ink);
   --on-ink: var(--cloud);
   --on-ink-muted: #aeb7c4;
+  --on-ink-line: rgba(244, 246, 242, 0.12);
   --on-ink-accent: var(--lime);
   --on-ink-flow: var(--teal);
 
@@ -22,6 +23,7 @@
   --surface-0: var(--ink);
   --surface-1: #121c30;
   --surface-2: #0f1729;
+  --surface-3: #17223a;
   --line: rgba(244, 246, 242, 0.16);
   --line-strong: rgba(244, 246, 242, 0.34);
 
@@ -135,6 +137,7 @@
   --surface-0: var(--cloud);
   --surface-1: #ffffff;
   --surface-2: #ffffff;
+  --surface-3: #e7ece4;
   --line: rgba(11, 18, 32, 0.14);
   --line-strong: rgba(11, 18, 32, 0.32);
   --border-default: rgba(11, 18, 32, 0.14);

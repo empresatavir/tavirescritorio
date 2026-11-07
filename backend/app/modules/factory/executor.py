@@ -255,6 +255,43 @@ async def _watch_model(run: FactoryRun, stage: FactoryStageInstance, label: str,
             await task
 
 
+async def _stage_preamble(stage: FactoryStageInstance) -> str:
+    """Alma e ofício na frente do contrato. Sem agente resolvido, a etapa segue como está."""
+    from app.models.agent import Agent
+    from app.modules.agents.prompt import agent_id_for_stage, build_agent_prompt, load_design_canon
+    from app.modules.agents.repository import AgentRepository
+    from app.shared.database import async_session
+
+    agent_id = agent_id_for_stage(stage.stage_def_id, stage.agent_role)
+    if not agent_id:
+        return ""
+    async with async_session() as session:
+        agent = await session.get(Agent, agent_id)
+        if agent is None:
+            return ""
+        rows = await AgentRepository(session).list_lessons(agent.id)
+        lessons = [
+            {
+                "status": row.status,
+                "title": (row.situation or "Lição")[:80],
+                "situation": row.situation,
+                "lesson": row.lesson,
+                "why": row.why,
+                "how_to_apply": row.how_to_apply,
+            }
+            for row in rows
+        ]
+        return build_agent_prompt(
+            name=agent.name,
+            role=agent.role,
+            sector=agent.sector,
+            soul_text=agent.soul_text,
+            craft_text=agent.craft_text,
+            canon_text=load_design_canon(agent.id),
+            lessons=lessons,
+        )
+
+
 async def _agent_content(
     stage: FactoryStageInstance,
     project: Project,
@@ -271,8 +308,22 @@ async def _agent_content(
     effort = effort or default_effort()
     guidance = (guidance or "").strip()
     try:
-        root = resolve_workspace_root(project.local_path)
+        root_path = (run.workspace_path if run is not None and run.workspace_path else project.local_path)
+        root = resolve_workspace_root(root_path)
         sources = _source_bundle(project, root, relative)
+        from app.modules.factory.knowledge_map import pages_prompt
+        from app.modules.factory.memory_store import prompt_block
+        from app.modules.factory.project_control import normalize_control
+
+        bases = normalize_control(getattr(project, "control", None))["bases"]
+        preamble = "Antes de agir, leia dossie.md e MEMORY.md deste projeto.\n"
+        memory = prompt_block(project.local_path)
+        knowledge = pages_prompt(stage.stage_def_id, bases)
+        if memory:
+            preamble += "\n" + memory + "\n"
+        if knowledge:
+            preamble += "\n" + knowledge + "\n"
+        sources = preamble + "\n" + sources
     except ArtifactError as exc:
         sources = f"Workspace indisponível: {exc}"
 
@@ -347,13 +398,15 @@ async def _agent_content(
         )
 
     is_doc = relative.endswith(".md") or relative.endswith(".txt")
+    contract = role_extra + (STE100_RULES if is_doc else "Escreva só o código pedido. Não explique o código.\n")
+    preamble = await _stage_preamble(stage)
     system = (
-        f"Você é {stage.agent or 'o agente da Fábrica TAVIR'}, "
+        (preamble + "\n\n" if preamble else "")
+        + f"Você é {stage.agent or 'o agente da Fábrica TAVIR'}, "
         f"papel `{stage.agent_role or 'especialista'}`.\n"
         f"Projeto: {project.name}.\n"
         f"Etapa: {stage.title} (`{stage.stage_def_id}`).\n"
-        f"{role_extra}"
-        + (STE100_RULES if is_doc else "Escreva só o código pedido. Não explique o código.\n")
+        f"{contract}"
     )
     user = (
         f"Entregue o arquivo `{relative}`.\n\n"
@@ -510,8 +563,19 @@ async def execute_stage(
     if run.current_stage_id and run.current_stage_id != stage_def_id:
         raise StageTransitionError(f"Etapa atual é '{run.current_stage_id}'")
 
+    from app.modules.factory.demands import get_demand, guard_stage_reason
+
+    demand = None
+    demand_id = (run.meta or {}).get("demand_id")
+    if demand_id:
+        demand = await get_demand(session, str(demand_id))
+        blocked = guard_stage_reason(project, demand, stage_def_id)
+        if blocked:
+            raise StageTransitionError(blocked)
+
+    root_path = (run.workspace_path or project.local_path or "").strip()
     try:
-        root = resolve_workspace_root(project.local_path)
+        root = resolve_workspace_root(root_path)
     except ArtifactError as exc:
         raise StageTransitionError(str(exc)) from exc
 
@@ -548,6 +612,15 @@ async def execute_stage(
                 "on_status": on_status,
             }
             if kind == "visual":
+                from app.modules.factory.knowledge_map import pages_prompt
+                from app.modules.factory.project_control import normalize_control
+
+                bases = normalize_control(getattr(project, "control", None))["bases"]
+                lead = "\n\n".join(
+                    part
+                    for part in (await _stage_preamble(stage), pages_prompt(stage.stage_def_id, bases))
+                    if part
+                )
                 return await asyncio.to_thread(
                     run_visual_sync,
                     root,
@@ -555,6 +628,7 @@ async def execute_stage(
                     model=model,
                     effort=effort,
                     guidance=guidance,
+                    preamble=lead,
                     **common,
                 )
             if kind == "build":
@@ -639,7 +713,7 @@ async def execute_stage(
                 )
                 if note:
                     ghost_notes.append(note)
-                info = write_artifact(project.local_path, path, content)
+                info = write_artifact(root_path, path, content)
                 written.append(info)
                 await _emit_progress(run, stage, f"Arquivo {path} gravado.")
             else:
@@ -675,7 +749,7 @@ async def execute_stage(
         run.meta = meta
         flag_modified(run, "meta")
 
-    status = expected_status(project.local_path, expected)
+    status = expected_status(root_path, expected)
     missing = [s["path"] for s in status if not s["present"]]
     if missing:
         raise StageTransitionError(f"Artefatos ausentes após execute: {', '.join(missing)}")

@@ -1,0 +1,3445 @@
+{
+  "screenId": "cerebro",
+  "side": "candidate",
+  "capturedUrl": "http://127.0.0.1:9196/cerebro",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:9196/cerebro",
+      "title": "TAVIR Escritório — Painel Operacional",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 66,
+        "nav": 1,
+        "img": 2,
+        "button": 56,
+        "span": 161,
+        "svg": 19,
+        "path": 39,
+        "polygon": 2,
+        "polyline": 2,
+        "rect": 1,
+        "circle": 4,
+        "line": 2,
+        "aside": 3,
+        "ellipse": 1,
+        "header": 1,
+        "main": 1,
+        "section": 1,
+        "h1": 1,
+        "p": 1,
+        "input": 1,
+        "textarea": 1,
+        "label": 1,
+        "select": 1
+      },
+      "visibleText": [
+        {
+          "text": "☀️",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conhecimento",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cérebro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Memória e biblioteca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ideias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conhecimento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cérebro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Frontend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Backend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Grafo operacional",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Você → setores → cards → agentes → ferramentas",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Você (CEO)",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação Central",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Estratégia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4 agentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Planejamento Q4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2 tasks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Análise de Custos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1 job ativo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Arquiteto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ocupado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Analista",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ocioso",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Roadmap Builder",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "mcp",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conteúdo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3 agentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "LP Advocacia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1 job ativo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "IA Livros — Cap. 4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1 job ativo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Redator",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ocupado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Revisor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ocupado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Content Engine",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "mcp",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Engenharia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2 agentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Deploy Meridian",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "bloqueado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Auditoria API",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "concluído",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Deployer",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "offline",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CI/CD Pipeline",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "github",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Social",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1 agente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Instagram Setembro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5 posts",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Social Media",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ocioso",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Social Scheduler",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "meta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2 agentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Funil Setembro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3 propostas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ocioso",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CRM Bridge",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "supabase",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "setor",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "card",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "agente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ferramenta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cérebro",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Vault knowledge/ ·",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "páginas indexadas · acervo ativo",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Todos",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Psicologia",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Copywriting",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Negocios",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Engenharia",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Design",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Frameworks",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Mercados",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Sinteses",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Nenhuma página encontrada com esses filtros.",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Captura rápida",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ideias vão direto para a fila de Ideias/ e para o Sincron Brain",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Escopo",
+          "tag": "label",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Guardar nota",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Capturar",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Sincron Brain",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "scoring & decaimento",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "pref:tom_voz",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "92%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "pref:modelo_padrao",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "90%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ctx:cliente_meridian",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "88%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "15 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "pref:horario_operacao",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "85%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1 h",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ctx:nicho_advocacia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "77%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "20 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "learn:deploy_supabase_url",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "71%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3 h",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ctx:cliente_atlas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "65%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4 h",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "learn:headline_max_60",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "58%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "30 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema ☀️ Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 14,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "Escritório CONHECIMENTO Cérebro Memória e biblioteca Ideias Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 80,
+            "y": 13,
+            "width": 203,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Conhecimento / Cérebro office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Conhecimento / Cérebro office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": null,
+          "name": "Indicador de dados operacionais ao vivo",
+          "label": null,
+          "text": "office.py · SQLite ao vivo",
+          "placeholder": null,
+          "title": "Indicador de dados operacionais ao vivo",
+          "rect": {
+            "x": 497,
+            "y": 20,
+            "width": 156,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          }
+        },
+        {
+          "tag": "main",
+          "id": null,
+          "role": "main",
+          "name": "Grafo operacional Você → setores → cards → agentes → ferramentas Você (CEO) Operação Central Estratégia 4 agentes Planejamento Q4 2 tasks Análise de Custos 1 job ativo Arquiteto ocupado Analista ocioso Roadmap Builder mcp Conteúdo 3 agentes LP Advocacia 1 job ativo IA Livros — Cap. 4 1 job ativo Redator ocupado Revisor ocupado Content Engine mcp Engenharia 2 agentes Deploy Meridian bloqueado Auditoria API concluído Deployer offline CI/CD Pipeline github Social 1 agente Instagram Setembro 5 posts Social Media ocioso Social Scheduler meta Comercial 2 agentes Funil Setembro 3 propostas Comercial ocioso CRM Bridge supabase setor card agente ferramenta Cérebro Vault knowledge/ · 0 páginas indexadas · acervo ativo Todos Psicologia Copywriting Negocios Engenharia Design Frameworks Mercados Sinteses Nenhuma página encontrada com esses filtros. Captura rápida Ideias vão direto para a fila de Ideias/ e para o Sincron Brain Escopo comercial psicologia engenharia Guardar nota Capturar Sincron Brain scoring & decaimento pref:tom_voz 92% · 2 min pref:modelo_padrao 90% · 5 min ctx:cliente_meridian 88% · 15 min pref:horario_operacao 85% · 1 h ctx:nicho_advocacia 77% · 20 min learn:deploy_supabase_url 71% · 3 h ctx:cliente_atlas 65% · 4 h learn:headline_max_60 58% · 30 min",
+          "label": null,
+          "text": "Grafo operacional Você → setores → cards → agentes → ferramentas Você (CEO) Operação Central Estratégia 4 agentes Planejamento Q4 2 tasks Análise de Custos 1 job ativo Arquiteto ocupado Analista ocioso Roadmap Builder mcp Conteúdo 3 agentes LP Advocacia 1 job ativo IA Livros — Cap. 4 1 job ativo Redator ocupado Revisor ocupado Content Engine mcp Engenharia 2 agentes Deploy Meridian bloqueado Auditoria API concluído Deployer offline CI/CD Pipeline github Social 1 agente Instagram Setembro 5 posts Social Media ocioso Social Scheduler meta Comercial 2 agentes Funil Setembro 3 propostas Comercial ocioso CRM Bridge supabase setor card agente ferramenta Cérebro Vault knowledge/ · 0 páginas indexadas · acervo ativo Todos Psicologia Copywriting Negocios Engenharia Design Frameworks Mercados Sinteses Nenhuma página encontrada com esses filtros. Captura rápida Ideias vão direto para a fila de Ideias/ e para o Sincron Brain Escopo comercial psicologia engenharia Guardar nota Capturar Sincron Brain scoring & decaimento pref:tom_voz 92% · 2 min pref:modelo_padrao 90% · 5 min ctx:cliente_meridian 88% · 15 min pref:horario_operacao 85% · 1 h ctx:nicho_advocacia 77% · 20 min learn:deploy_supabase_url 71% · 3 h ctx:cliente_atlas 65% · 4 h learn:headline_max_60 58% · 30 min",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 1140,
+            "height": 836
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Grafo operacional Você → setores → cards → agentes → ferramentas Você (CEO) Operação Central Estratégia 4 agentes Planejamento Q4 2 tasks Análise de Custos 1 job ativo Arquiteto ocupado Analista ocioso Roadmap Builder mcp Conteúdo 3 agentes LP Advocacia 1 job ativo IA Livros — Cap. 4 1 job ativo Redator ocupado Revisor ocupado Content Engine mcp Engenharia 2 agentes Deploy Meridian bloqueado Auditoria API concluído Deployer offline CI/CD Pipeline github Social 1 agente Instagram Setembro 5 posts Social Media ocioso Social Scheduler meta Comercial 2 agentes Funil Setembro 3 propostas Comercial ocioso CRM Bridge supabase setor card agente ferramenta",
+          "label": null,
+          "text": "Grafo operacional Você → setores → cards → agentes → ferramentas Você (CEO) Operação Central Estratégia 4 agentes Planejamento Q4 2 tasks Análise de Custos 1 job ativo Arquiteto ocupado Analista ocioso Roadmap Builder mcp Conteúdo 3 agentes LP Advocacia 1 job ativo IA Livros — Cap. 4 1 job ativo Redator ocupado Revisor ocupado Content Engine mcp Engenharia 2 agentes Deploy Meridian bloqueado Auditoria API concluído Deployer offline CI/CD Pipeline github Social 1 agente Instagram Setembro 5 posts Social Media ocioso Social Scheduler meta Comercial 2 agentes Funil Setembro 3 propostas Comercial ocioso CRM Bridge supabase setor card agente ferramenta",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 274,
+            "height": 836
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Você (CEO) Operação Central",
+          "label": null,
+          "text": "Você (CEO) Operação Central",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 151,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia 4 agentes",
+          "label": null,
+          "text": "Estratégia 4 agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 181,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Planejamento Q4 2 tasks",
+          "label": null,
+          "text": "Planejamento Q4 2 tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 211,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Análise de Custos 1 job ativo",
+          "label": null,
+          "text": "Análise de Custos 1 job ativo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 241,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Arquiteto ocupado",
+          "label": null,
+          "text": "Arquiteto ocupado",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 271,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analista ocioso",
+          "label": null,
+          "text": "Analista ocioso",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 301,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Roadmap Builder mcp",
+          "label": null,
+          "text": "Roadmap Builder mcp",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 331,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conteúdo 3 agentes",
+          "label": null,
+          "text": "Conteúdo 3 agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 361,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "LP Advocacia 1 job ativo",
+          "label": null,
+          "text": "LP Advocacia 1 job ativo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 391,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "IA Livros — Cap. 4 1 job ativo",
+          "label": null,
+          "text": "IA Livros — Cap. 4 1 job ativo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 421,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Redator ocupado",
+          "label": null,
+          "text": "Redator ocupado",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 451,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Revisor ocupado",
+          "label": null,
+          "text": "Revisor ocupado",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 481,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Content Engine mcp",
+          "label": null,
+          "text": "Content Engine mcp",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 511,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Engenharia 2 agentes",
+          "label": null,
+          "text": "Engenharia 2 agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 541,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Deploy Meridian bloqueado",
+          "label": null,
+          "text": "Deploy Meridian bloqueado",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 571,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Auditoria API concluído",
+          "label": null,
+          "text": "Auditoria API concluído",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 601,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Deployer offline",
+          "label": null,
+          "text": "Deployer offline",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 631,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CI/CD Pipeline github",
+          "label": null,
+          "text": "CI/CD Pipeline github",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 661,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social 1 agente",
+          "label": null,
+          "text": "Social 1 agente",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 691,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Instagram Setembro 5 posts",
+          "label": null,
+          "text": "Instagram Setembro 5 posts",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 721,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social Media ocioso",
+          "label": null,
+          "text": "Social Media ocioso",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 751,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social Scheduler meta",
+          "label": null,
+          "text": "Social Scheduler meta",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 781,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial 2 agentes",
+          "label": null,
+          "text": "Comercial 2 agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 811,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil Setembro 3 propostas",
+          "label": null,
+          "text": "Funil Setembro 3 propostas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 841,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial ocioso",
+          "label": null,
+          "text": "Comercial ocioso",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 871,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CRM Bridge supabase",
+          "label": null,
+          "text": "CRM Bridge supabase",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 901,
+            "width": 257,
+            "height": 30
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Cérebro Vault knowledge/ · 0 páginas indexadas · acervo ativo Todos Psicologia Copywriting Negocios Engenharia Design Frameworks Mercados Sinteses Nenhuma página encontrada com esses filtros.",
+          "label": null,
+          "text": "Cérebro Vault knowledge/ · 0 páginas indexadas · acervo ativo Todos Psicologia Copywriting Negocios Engenharia Design Frameworks Mercados Sinteses Nenhuma página encontrada com esses filtros.",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 574,
+            "y": 64,
+            "width": 570,
+            "height": 836
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 598,
+            "y": 84,
+            "width": 522,
+            "height": 31
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar no vault",
+          "label": "Buscar no vault",
+          "text": null,
+          "placeholder": "Buscar no vault (conceitos, tags, psicologia, ofertas)…",
+          "title": null,
+          "rect": {
+            "x": 598,
+            "y": 153,
+            "width": 522,
+            "height": 38
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Todos",
+          "label": null,
+          "text": "Todos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 598,
+            "y": 201,
+            "width": 56,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Psicologia",
+          "label": null,
+          "text": "Psicologia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 660,
+            "y": 201,
+            "width": 78,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Copywriting",
+          "label": null,
+          "text": "Copywriting",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 744,
+            "y": 201,
+            "width": 90,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Negocios",
+          "label": null,
+          "text": "Negocios",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 840,
+            "y": 201,
+            "width": 74,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Engenharia",
+          "label": null,
+          "text": "Engenharia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 919,
+            "y": 201,
+            "width": 85,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Design",
+          "label": null,
+          "text": "Design",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1011,
+            "y": 201,
+            "width": 61,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Frameworks",
+          "label": null,
+          "text": "Frameworks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 598,
+            "y": 233,
+            "width": 90,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Mercados",
+          "label": null,
+          "text": "Mercados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 694,
+            "y": 233,
+            "width": 77,
+            "height": 26
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sinteses",
+          "label": null,
+          "text": "Sinteses",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 776,
+            "y": 233,
+            "width": 69,
+            "height": 26
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Captura rápida Ideias vão direto para a fila de Ideias/ e para o Sincron Brain Escopo comercial psicologia engenharia Guardar nota Capturar Sincron Brain scoring & decaimento pref:tom_voz 92% · 2 min pref:modelo_padrao 90% · 5 min ctx:cliente_meridian 88% · 15 min pref:horario_operacao 85% · 1 h ctx:nicho_advocacia 77% · 20 min learn:deploy_supabase_url 71% · 3 h ctx:cliente_atlas 65% · 4 h learn:headline_max_60 58% · 30 min",
+          "label": null,
+          "text": "Captura rápida Ideias vão direto para a fila de Ideias/ e para o Sincron Brain Escopo comercial psicologia engenharia Guardar nota Capturar Sincron Brain scoring & decaimento pref:tom_voz 92% · 2 min pref:modelo_padrao 90% · 5 min ctx:cliente_meridian 88% · 15 min pref:horario_operacao 85% · 1 h ctx:nicho_advocacia 77% · 20 min learn:deploy_supabase_url 71% · 3 h ctx:cliente_atlas 65% · 4 h learn:headline_max_60 58% · 30 min",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1144,
+            "y": 64,
+            "width": 296,
+            "height": 836
+          }
+        },
+        {
+          "tag": "textarea",
+          "id": null,
+          "role": "textbox",
+          "name": "Nova ideia ou insight",
+          "label": "Nova ideia ou insight",
+          "text": null,
+          "placeholder": "Nova ideia, link, hipótese ou insight…",
+          "title": null,
+          "rect": {
+            "x": 1165,
+            "y": 155,
+            "width": 255,
+            "height": 77
+          }
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Escopo comercial psicologia engenharia",
+          "label": null,
+          "text": "Escopo comercial psicologia engenharia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1165,
+            "y": 245,
+            "width": 255,
+            "height": 45
+          }
+        },
+        {
+          "tag": "select",
+          "id": null,
+          "role": "combobox",
+          "name": "Escopo",
+          "label": "Escopo",
+          "text": "comercial psicologia engenharia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1165,
+            "y": 269,
+            "width": 255,
+            "height": 20
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Guardar nota",
+          "label": null,
+          "text": "Guardar nota",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1249,
+            "y": 297,
+            "width": 85,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Capturar",
+          "label": null,
+          "text": "Capturar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1341,
+            "y": 297,
+            "width": 79,
+            "height": 30
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Você (CEO) Operação Central",
+          "label": null,
+          "text": "Você (CEO) Operação Central",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 151,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia 4 agentes",
+          "label": null,
+          "text": "Estratégia 4 agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 181,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Planejamento Q4 2 tasks",
+          "label": null,
+          "text": "Planejamento Q4 2 tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 211,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Análise de Custos 1 job ativo",
+          "label": null,
+          "text": "Análise de Custos 1 job ativo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 241,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Arquiteto ocupado",
+          "label": null,
+          "text": "Arquiteto ocupado",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 271,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Analista ocioso",
+          "label": null,
+          "text": "Analista ocioso",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 301,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Roadmap Builder mcp",
+          "label": null,
+          "text": "Roadmap Builder mcp",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 331,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conteúdo 3 agentes",
+          "label": null,
+          "text": "Conteúdo 3 agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 361,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "LP Advocacia 1 job ativo",
+          "label": null,
+          "text": "LP Advocacia 1 job ativo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 391,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "IA Livros — Cap. 4 1 job ativo",
+          "label": null,
+          "text": "IA Livros — Cap. 4 1 job ativo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 421,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Redator ocupado",
+          "label": null,
+          "text": "Redator ocupado",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 451,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Revisor ocupado",
+          "label": null,
+          "text": "Revisor ocupado",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 481,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Content Engine mcp",
+          "label": null,
+          "text": "Content Engine mcp",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 511,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Engenharia 2 agentes",
+          "label": null,
+          "text": "Engenharia 2 agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 541,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Deploy Meridian bloqueado",
+          "label": null,
+          "text": "Deploy Meridian bloqueado",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 571,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Auditoria API concluído",
+          "label": null,
+          "text": "Auditoria API concluído",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 601,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Deployer offline",
+          "label": null,
+          "text": "Deployer offline",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 631,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CI/CD Pipeline github",
+          "label": null,
+          "text": "CI/CD Pipeline github",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 661,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social 1 agente",
+          "label": null,
+          "text": "Social 1 agente",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 691,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Instagram Setembro 5 posts",
+          "label": null,
+          "text": "Instagram Setembro 5 posts",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 721,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social Media ocioso",
+          "label": null,
+          "text": "Social Media ocioso",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 751,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social Scheduler meta",
+          "label": null,
+          "text": "Social Scheduler meta",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 781,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial 2 agentes",
+          "label": null,
+          "text": "Comercial 2 agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 811,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil Setembro 3 propostas",
+          "label": null,
+          "text": "Funil Setembro 3 propostas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 841,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial ocioso",
+          "label": null,
+          "text": "Comercial ocioso",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 871,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CRM Bridge supabase",
+          "label": null,
+          "text": "CRM Bridge supabase",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 308,
+            "y": 901,
+            "width": 257,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar no vault",
+          "label": "Buscar no vault",
+          "text": null,
+          "placeholder": "Buscar no vault (conceitos, tags, psicologia, ofertas)…",
+          "title": null,
+          "rect": {
+            "x": 598,
+            "y": 153,
+            "width": 522,
+            "height": 38
+          },
+          "kind": "field",
+          "type": "text",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Todos",
+          "label": null,
+          "text": "Todos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 598,
+            "y": 201,
+            "width": 56,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Psicologia",
+          "label": null,
+          "text": "Psicologia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 660,
+            "y": 201,
+            "width": 78,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Copywriting",
+          "label": null,
+          "text": "Copywriting",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 744,
+            "y": 201,
+            "width": 90,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Negocios",
+          "label": null,
+          "text": "Negocios",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 840,
+            "y": 201,
+            "width": 74,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Engenharia",
+          "label": null,
+          "text": "Engenharia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 919,
+            "y": 201,
+            "width": 85,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Design",
+          "label": null,
+          "text": "Design",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1011,
+            "y": 201,
+            "width": 61,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Frameworks",
+          "label": null,
+          "text": "Frameworks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 598,
+            "y": 233,
+            "width": 90,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Mercados",
+          "label": null,
+          "text": "Mercados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 694,
+            "y": 233,
+            "width": 77,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sinteses",
+          "label": null,
+          "text": "Sinteses",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 776,
+            "y": 233,
+            "width": 69,
+            "height": 26
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "textarea",
+          "id": null,
+          "role": "textbox",
+          "name": "Nova ideia ou insight",
+          "label": "Nova ideia ou insight",
+          "text": null,
+          "placeholder": "Nova ideia, link, hipótese ou insight…",
+          "title": null,
+          "rect": {
+            "x": 1165,
+            "y": 155,
+            "width": 255,
+            "height": 77
+          },
+          "kind": "field",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "label",
+          "id": null,
+          "role": null,
+          "name": "Escopo comercial psicologia engenharia",
+          "label": null,
+          "text": "Escopo comercial psicologia engenharia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1165,
+            "y": 245,
+            "width": 255,
+            "height": 45
+          },
+          "kind": "label",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": null
+        },
+        {
+          "tag": "select",
+          "id": null,
+          "role": "combobox",
+          "name": "Escopo",
+          "label": "Escopo",
+          "text": "comercial psicologia engenharia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1165,
+            "y": 269,
+            "width": 255,
+            "height": 20
+          },
+          "kind": "field",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": [
+            {
+              "label": "comercial"
+            }
+          ],
+          "hasValue": true
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Guardar nota",
+          "label": null,
+          "text": "Guardar nota",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1249,
+            "y": 297,
+            "width": 85,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Capturar",
+          "label": null,
+          "text": "Capturar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1341,
+            "y": 297,
+            "width": 79,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 30,
+          "height": 30
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 203,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

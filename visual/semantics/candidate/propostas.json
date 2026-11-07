@@ -1,0 +1,1347 @@
+{
+  "screenId": "propostas",
+  "side": "candidate",
+  "capturedUrl": "http://127.0.0.1:9196/propostas",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:9196/propostas",
+      "title": "TAVIR Escritório — Painel Operacional",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 34,
+        "nav": 1,
+        "img": 2,
+        "button": 21,
+        "span": 44,
+        "svg": 14,
+        "path": 24,
+        "polygon": 3,
+        "polyline": 2,
+        "rect": 1,
+        "circle": 5,
+        "line": 2,
+        "aside": 1,
+        "header": 1,
+        "main": 1,
+        "h1": 1,
+        "p": 1,
+        "input": 1,
+        "section": 3
+      },
+      "visibleText": [
+        {
+          "text": "☀️",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Funil",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Propostas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Finanças",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Personas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Propostas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Frontend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Backend",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Propostas",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "0 em andamento com o agente Comercial · 0 pendentes · 0 concluídas",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nova proposta",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Propostas em andamento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agente Comercial coletando, montando ou ajustando",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nenhuma proposta",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Propostas pendentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Aguardando cliente ou decisão interna",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nenhuma proposta",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Propostas concluídas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Aceitas, contra-assinadas ou encerradas",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nenhuma proposta",
+          "tag": "div",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema ☀️ Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 14,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "Escritório COMERCIAL Funil Propostas Finanças Personas Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 80,
+            "y": 13,
+            "width": 203,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Propostas",
+          "label": null,
+          "text": "Propostas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças",
+          "label": null,
+          "text": "Finanças",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Comercial / Propostas office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Comercial / Propostas office.py · SQLite ao vivo Frontend Backend Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": null,
+          "name": "Indicador de dados operacionais ao vivo",
+          "label": null,
+          "text": "office.py · SQLite ao vivo",
+          "placeholder": null,
+          "title": "Indicador de dados operacionais ao vivo",
+          "rect": {
+            "x": 481,
+            "y": 20,
+            "width": 156,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          }
+        },
+        {
+          "tag": "main",
+          "id": null,
+          "role": "main",
+          "name": "Propostas 0 em andamento com o agente Comercial · 0 pendentes · 0 concluídas Nova proposta Propostas em andamento 0 Agente Comercial coletando, montando ou ajustando Nenhuma proposta Propostas pendentes 0 Aguardando cliente ou decisão interna Nenhuma proposta Propostas concluídas 0 Aceitas, contra-assinadas ou encerradas Nenhuma proposta",
+          "label": null,
+          "text": "Propostas 0 em andamento com o agente Comercial · 0 pendentes · 0 concluídas Nova proposta Propostas em andamento 0 Agente Comercial coletando, montando ou ajustando Nenhuma proposta Propostas pendentes 0 Aguardando cliente ou decisão interna Nenhuma proposta Propostas concluídas 0 Aceitas, contra-assinadas ou encerradas Nenhuma proposta",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 1140,
+            "height": 836
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Propostas",
+          "label": null,
+          "text": "Propostas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 84,
+            "width": 721,
+            "height": 28
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar propostas",
+          "label": "Buscar propostas",
+          "text": null,
+          "placeholder": "Buscar nº ou cliente",
+          "title": null,
+          "rect": {
+            "x": 1057,
+            "y": 104,
+            "width": 240,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova proposta",
+          "label": null,
+          "text": "Nova proposta",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1309,
+            "y": 104,
+            "width": 107,
+            "height": 32
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Propostas em andamento 0 Agente Comercial coletando, montando ou ajustando Nenhuma proposta",
+          "label": null,
+          "text": "Propostas em andamento 0 Agente Comercial coletando, montando ou ajustando Nenhuma proposta",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 152,
+            "width": 353,
+            "height": 724
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Propostas pendentes 0 Aguardando cliente ou decisão interna Nenhuma proposta",
+          "label": null,
+          "text": "Propostas pendentes 0 Aguardando cliente ou decisão interna Nenhuma proposta",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 693,
+            "y": 152,
+            "width": 353,
+            "height": 724
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Propostas concluídas 0 Aceitas, contra-assinadas ou encerradas Nenhuma proposta",
+          "label": null,
+          "text": "Propostas concluídas 0 Aceitas, contra-assinadas ou encerradas Nenhuma proposta",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1063,
+            "y": 152,
+            "width": 353,
+            "height": 724
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Funil",
+          "label": null,
+          "text": "Funil",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Propostas",
+          "label": null,
+          "text": "Propostas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças",
+          "label": null,
+          "text": "Finanças",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Personas",
+          "label": null,
+          "text": "Personas",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Frontend",
+          "label": "Reiniciar Frontend",
+          "text": "Frontend",
+          "placeholder": null,
+          "title": "Reinicia o Frontend do escritório",
+          "rect": {
+            "x": 782,
+            "y": 16,
+            "width": 74,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Reiniciar Backend",
+          "label": "Reiniciar Backend",
+          "text": "Backend",
+          "placeholder": null,
+          "title": "Reinicia o Backend do escritório",
+          "rect": {
+            "x": 868,
+            "y": 16,
+            "width": 71,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar propostas",
+          "label": "Buscar propostas",
+          "text": null,
+          "placeholder": "Buscar nº ou cliente",
+          "title": null,
+          "rect": {
+            "x": 1057,
+            "y": 104,
+            "width": 240,
+            "height": 32
+          },
+          "kind": "field",
+          "type": "text",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova proposta",
+          "label": null,
+          "text": "Nova proposta",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1309,
+            "y": 104,
+            "width": 107,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 30,
+          "height": 30
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 203,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

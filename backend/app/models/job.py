@@ -1,6 +1,6 @@
 """Job model — execution unit for TAVIR."""
 from datetime import datetime
-from sqlalchemy import String, Text, DateTime, Float, ForeignKey, func
+from sqlalchemy import String, Text, DateTime, Float, ForeignKey, Integer, func
 from sqlalchemy.orm import Mapped, mapped_column
 from app.shared.database import Base
 
@@ -17,6 +17,8 @@ class Job(Base):
     model_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
     effort: Mapped[str | None] = mapped_column(String(20), nullable=True)
     budget_ceiling: Mapped[float | None] = mapped_column(Float, nullable=True)
+    cost_usd: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
+    tokens_total: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="queued")
     branch: Mapped[str | None] = mapped_column(String(200), nullable=True)
     workspace_path: Mapped[str | None] = mapped_column(String(500), nullable=True)

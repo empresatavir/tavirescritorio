@@ -21,44 +21,47 @@ export const DOMAINS: Domain[] = [
   {
     id: "op",
     label: "Operação",
-    icon: "zap",
+    icon: "gauge",
     items: [
       { id: "room", label: "Sala de Operação", icon: "radio-tower" },
       { id: "exec", label: "Execuções", icon: "zap", badge: "jobs" },
       { id: "tasks", label: "Tasks", icon: "square-kanban", badge: "tasks" },
-      { id: "approvals", label: "Aprovações", icon: "shield-check", badge: "aps" },
-      { id: "blocks", label: "Bloqueios", icon: "octagon-alert", badge: "blocks" },
+      { id: "decisions", label: "Decisões", icon: "shield-check", badge: "aps" },
       { id: "agents", label: "Agentes", icon: "bot" },
-      { id: "changes", label: "Alterações", icon: "git-pull-request", badge: "changes" },
+      { id: "chat", label: "Chat", icon: "message-square" },
     ],
-  },
-  {
-    id: "chat",
-    label: "Chat",
-    icon: "message-square",
-    items: [{ id: "chat", label: "Chat com agentes", icon: "message-square" }],
   },
   {
     id: "mod",
     label: "Módulos",
     icon: "layers",
     items: [
-      { id: "studio", label: "Tavir Studio", icon: "sparkles" },
-      { id: "fabrica", label: "Tavir Fábrica", icon: "factory" },
-      { id: "flow", label: "Tavir Flow", icon: "waves" },
-      { id: "edicao", label: "Tavir Edição", icon: "film" },
+      { id: "modhub", label: "Visão dos módulos", icon: "layers" },
+      { id: "raiox", label: "Raio-X", icon: "file-search" },
+      { id: "studio", label: "Studio", icon: "sparkles" },
+      { id: "fabrica", label: "Fábrica", icon: "factory" },
+      { id: "flow", label: "Flow", icon: "waves" },
+      { id: "edicao", label: "Edição", icon: "film" },
     ],
   },
   {
-    id: "vis",
-    label: "Visibilidade",
-    icon: "activity",
+    id: "com",
+    label: "Comercial",
+    icon: "briefcase",
     items: [
-      { id: "analytics", label: "Analytics", icon: "chart-line" },
-      { id: "doctor", label: "Doctor", icon: "stethoscope" },
-      { id: "integrations", label: "Integrações", icon: "plug" },
-      { id: "skills", label: "Skills", icon: "sparkles" },
-      { id: "org", label: "Org Chart", icon: "network" },
+      { id: "funnel", label: "Funil", icon: "filter" },
+      { id: "proposals", label: "Propostas", icon: "file-signature" },
+      { id: "finances", label: "Finanças", icon: "wallet" },
+      { id: "personas", label: "Personas", icon: "user-round" },
+    ],
+  },
+  {
+    id: "soc",
+    label: "Social",
+    icon: "share-2",
+    items: [
+      { id: "social", label: "Perfis e calendário", icon: "instagram" },
+      { id: "comms", label: "Comunicações", icon: "inbox" },
     ],
   },
   {
@@ -67,45 +70,30 @@ export const DOMAINS: Domain[] = [
     icon: "brain",
     items: [
       { id: "brain", label: "Cérebro", icon: "brain" },
-      { id: "memory", label: "Memória", icon: "database" },
-      { id: "data", label: "Dados", icon: "file-search" },
-      { id: "projects", label: "Projetos", icon: "folder-kanban" },
+      { id: "memory", label: "Memória e biblioteca", icon: "database" },
       { id: "ideas", label: "Ideias", icon: "lightbulb" },
     ],
   },
   {
-    id: "map",
-    label: "Mapa / Tática",
+    id: "est",
+    label: "Estratégia",
     icon: "map",
     items: [
-      { id: "mapa", label: "Mapa", icon: "map" },
       { id: "mission", label: "Mission Control", icon: "rocket" },
       { id: "roadmap", label: "Roadmap", icon: "milestone" },
-      { id: "reference", label: "Reference", icon: "book-open" },
+      { id: "mapa", label: "Mapa operacional", icon: "map" },
     ],
   },
   {
-    id: "com",
-    label: "Comercial",
-    icon: "briefcase",
+    id: "sys",
+    label: "Sistema",
+    icon: "activity",
     items: [
-      { id: "funnel", label: "Funnel", icon: "filter" },
-      { id: "finances", label: "Finances", icon: "wallet" },
-      { id: "proposals", label: "Propostas", icon: "file-signature" },
-      { id: "content", label: "Content", icon: "pen-line" },
-      { id: "personas", label: "Personas", icon: "user-round" },
-    ],
-  },
-  {
-    id: "soc",
-    label: "Social / Workflows",
-    icon: "workflow",
-    items: [
-      { id: "workflows", label: "Workflows", icon: "workflow" },
-      { id: "social", label: "Social", icon: "instagram" },
-      { id: "platforms", label: "Plataformas", icon: "share-2" },
-      { id: "comms", label: "Comunicações", icon: "inbox" },
-      { id: "library", label: "Biblioteca", icon: "library" },
+      { id: "analytics", label: "Analytics", icon: "chart-line" },
+      { id: "doctor", label: "Doctor", icon: "stethoscope" },
+      { id: "skills", label: "Skills", icon: "sparkles" },
+      { id: "org", label: "Org Chart", icon: "network" },
+      { id: "config", label: "Configurações", icon: "sliders-horizontal" },
     ],
   },
 ];
@@ -123,6 +111,7 @@ export interface RosterAgent {
   avatarColor: string;
   initials: string;
   soulText?: string;
+  craftText?: string;
 }
 
 import { REAL_AGENTS } from "./real_data";
@@ -141,6 +130,7 @@ export interface UiJob {
   effort: string;
   cost: number;
   ceiling: number;
+  errorMessage?: string;
   taskId?: string;
   taskSeq?: number;
   taskTitle?: string;
@@ -326,9 +316,13 @@ export interface UiApproval {
   description: string;
   impact: "high" | "medium" | "low";
   taskId?: string;
+  jobId?: string;
   reason?: string;
   onApproveText?: string;
   onRejectText?: string;
+  group?: string;
+  kind?: string;
+  question?: string;
 }
 
 export const INITIAL_APPROVALS: UiApproval[] = [
@@ -455,10 +449,11 @@ export async function syncLiveJobs() {
             : "normal";
 
         const agentName = ag ? ag.name : (bj.agent_id || "Paula PM");
-        const model = bj.model_name || "Fable";
-        const effort = bj.effort || "Máximo";
-        const cost = 0.15;
-        const ceiling = 2.0;
+        const model = bj.model_name || "Motor padrão";
+        const effort = bj.effort || "Motor padrão";
+        const cost = typeof bj.cost_usd === "number" ? bj.cost_usd : 0;
+        const ceiling = typeof bj.budget_ceiling === "number" ? bj.budget_ceiling : 0;
+        const errorMessage = bj.error_message || undefined;
         const startedAt = execTime || "—";
         const taskId = bj.task_id || undefined;
 
@@ -476,6 +471,7 @@ export async function syncLiveJobs() {
             existing.effort === effort &&
             existing.cost === cost &&
             existing.ceiling === ceiling &&
+            existing.errorMessage === errorMessage &&
             existing.taskId === taskId &&
             existing.taskSeq === taskSeq &&
             existing.taskTitle === taskTitle;
@@ -508,6 +504,7 @@ export async function syncLiveJobs() {
             effort,
             cost,
             ceiling,
+            errorMessage,
             taskId,
             taskSeq,
             taskTitle,
@@ -529,6 +526,7 @@ export async function syncLiveJobs() {
           effort,
           cost,
           ceiling,
+          errorMessage,
           taskId,
           taskSeq,
           taskTitle,
@@ -626,7 +624,11 @@ function approvalVisualEqual(prev: UiApproval, next: UiApproval): boolean {
     prev.taskId === next.taskId &&
     prev.reason === next.reason &&
     prev.onApproveText === next.onApproveText &&
-    prev.onRejectText === next.onRejectText
+    prev.onRejectText === next.onRejectText &&
+    prev.jobId === next.jobId &&
+    prev.group === next.group &&
+    prev.kind === next.kind &&
+    prev.question === next.question
   );
 }
 
@@ -716,9 +718,13 @@ export async function syncApprovals() {
         description: a.description || "",
         impact: (a.impact as any) || "medium",
         taskId: a.task_id || undefined,
+        jobId: a.job_id || undefined,
         reason: a.reason || undefined,
         onApproveText: a.on_approve_text || undefined,
         onRejectText: a.on_reject_text || undefined,
+        group: a.group || undefined,
+        kind: a.kind || undefined,
+        question: a.question || undefined,
       };
       const old = prevById.get(next.id);
       return old && approvalVisualEqual(old, next) ? old : next;
@@ -799,7 +805,8 @@ export async function moveTaskPersistent(taskId: string, newStatus: UiTaskStatus
 export async function decideApprovalPersistent(
   approvalId: string,
   decision: "approve" | "reject",
-  justification?: string
+  justification?: string,
+  vault?: { name: string; value: string }
 ) {
   const newStatus = decision === "approve" ? "approved" : "rejected";
   // Optimistic update
@@ -807,7 +814,7 @@ export async function decideApprovalPersistent(
     prev.map((a) => (a.id === approvalId ? { ...a, status: newStatus } : a))
   );
   try {
-    await api.decideApproval(approvalId, decision, justification);
+    await api.decideApproval(approvalId, decision, justification, "CEO", vault);
     showToast(
       decision === "approve" ? `Aprovação ${approvalId} confirmada` : `Aprovação ${approvalId} rejeitada`,
       "Decisão registrada",
@@ -837,10 +844,11 @@ export async function syncAgents() {
         lastRun: a.last_run || "agora",
         totalJobs: a.total_jobs ?? 0,
         totalCost: a.total_cost ?? 0,
-        model: a.model_provider || "claude-sonnet-4",
+        model: a.model_provider || "Motor padrão",
         avatarColor: a.avatar_color || "#1BC5BD",
         initials: a.initials || a.name.slice(0, 2).toUpperCase(),
         soulText: a.soul_text || undefined,
+        craftText: a.craft_text || undefined,
       }));
       setAgents(mapped);
     }
@@ -850,13 +858,16 @@ export async function syncAgents() {
 }
 
 // Persist agent soul markdown in backend SQLite
-export async function saveAgentSoulPersistent(agentId: string, soulText: string): Promise<boolean> {
-  // Optimistic update
+export async function saveAgentSoulPersistent(
+  agentId: string,
+  soulText: string,
+  craftText: string = "",
+): Promise<boolean> {
   setAgents((prev) =>
-    prev.map((a) => (a.id === agentId ? { ...a, soulText } : a))
+    prev.map((a) => (a.id === agentId ? { ...a, soulText, craftText } : a))
   );
   try {
-    await api.updateAgentSoul(agentId, soulText);
+    await api.updateAgentSoul(agentId, soulText, craftText);
     showToast("Alma operacional persistida com sucesso no SQLite", "Agentes", "success");
     return true;
   } catch (err) {

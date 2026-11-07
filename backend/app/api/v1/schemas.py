@@ -8,10 +8,12 @@ class AgentResponse(BaseModel):
     name: str
     role: str
     sector: str
+    reports_to: str | None = None
     status: str
     skills: str | None = None
     model_provider: str | None = None
     soul_text: str | None = None
+    craft_text: str | None = None
     total_jobs: int = 0
     total_cost: float = 0.0
     avatar_color: str | None = None

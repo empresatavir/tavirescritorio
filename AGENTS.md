@@ -69,9 +69,9 @@ Este arquivo é a fonte primária de conhecimento operacional e regras técnicas
 
 ## 7. Estrutura das 3 Colunas Principais (Fidelidade Absoluta)
 
-- **Coluna 1 (Rail):** `56px` fixos, fundo `#070d18`, logo símbolo 28px, ícones 18px, seletor de tema, avatar do CEO.
-- **Coluna 2 (SubNav):** `212px` fixos, fundo `#0f1729`, wordmark TAVIR invertido 96px, categorias e subitens com ícones 15px, rodapé com status de conexões SQLite e MCP.
-- **Coluna 3 (Main):** Header `52px` fixo (`var(--surface-0)`), breadcrumb semântico, pílula de status ao vivo, busca global `Ctrl K` e botão *Iniciar job* Lima, com área de conteúdo em scroll independente.
+- **Coluna 1 (Rail):** `64px` fixos, fundo `#070d18`, botões `44×44`, logo símbolo 30px, ícones 20px, seletor de tema, avatar do CEO.
+- **Coluna 2 (SubNav):** `236px` fixos, fundo `#0f1729`, wordmark com altura 15px e a linha “Escritório”, itens com altura 40px e ícones 18px, rodapé com status de conexões SQLite e MCP. Some em viewport de até 860px.
+- **Coluna 3 (Main):** Header `64px` fixo (`var(--surface-0)`), breadcrumb semântico, pílula de status ao vivo, busca global `Ctrl K` e botão *Iniciar job* Lima, com área de conteúdo em scroll independente. Abaixo de 860px o texto da busca fica oculto.
 
 ---
 

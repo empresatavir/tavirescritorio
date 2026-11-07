@@ -245,13 +245,16 @@ async def list_personas(session: AsyncSession = Depends(get_session)):
 
 @router.post("/personas", response_model=PersonaResponse, status_code=201)
 async def create_persona(req: CreatePersonaRequest, session: AsyncSession = Depends(get_session)):
+    name = req.name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Informe o nome da persona.")
     persona = Persona(
         id=str(uuid.uuid4()),
-        name=req.name,
+        name=name,
         archetype=req.archetype,
-        pain_points=req.pain_points,
-        goals=req.goals,
-        demographics=req.demographics,
+        pain_points=(req.pain_points or "").strip() or None,
+        goals=(req.goals or "").strip() or None,
+        demographics=(req.demographics or "").strip() or None,
     )
     repo = PersonaRepository(session)
     created = await repo.create(persona)

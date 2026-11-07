@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Social</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page">
+  <div class="phead">
+    <div class="grow"><div class="eyebrow">Social</div><h1 style="margin-top: 8px">{{title}}</h1><p>{{lead}}</p></div>
+  </div>
+  <div class="tabs"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.hasN}}" hint-placeholder-val="{{false}}"><span class="n">{{t.n}}</span></sc-if></button></sc-for></div>
+
+  <sc-if value="{{isSocial}}" hint-placeholder-val="{{true}}">
+    <div class="card" style="overflow-x: auto">
+      <div class="card-h"><h3>Perfis</h3><div class="grow"></div><span class="eyebrow">últimos 30 dias</span></div>
+      <table class="tbl"><thead><tr><th>Perfil</th><th>Rede</th><th>Seguidores</th><th>Tendência</th><th>Engajamento</th><th>Posts</th><th>Melhor horário</th></tr></thead>
+        <tbody><sc-for list="{{profiles}}" as="p" hint-placeholder-count="3"><tr onClick="{{p.go}}" style="cursor: pointer"><td><b>{{p.name}}</b></td><td class="sec">{{p.net}}</td><td class="num">{{p.f}}</td><td><svg width="96" height="26" viewBox="0 0 96 26" aria-hidden="true"><polyline points="{{p.spark}}" fill="none" stroke="var(--flow)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></td><td class="num">{{p.e}}</td><td class="num muted">{{p.posts}}</td><td class="num muted">{{p.best}}</td></tr></sc-for></tbody>
+      </table>
+    </div>
+    <div style="display: flex; gap: 16px; flex-wrap: wrap">
+      <section class="card" style="flex: 2 1 520px">
+        <div class="card-h"><h3>Próximos 7 dias</h3><div class="grow"></div><button class="link" onClick="{{goStudio}}">Studio →</button></div>
+        <div class="rows"><sc-for list="{{upcoming}}" as="u" hint-placeholder-count="5"><div class="row" style="cursor: default"><span class="num muted" style="font-size: 12px; width: 92px">{{u.d}}</span><div class="grow"><div class="t" style="font-size: 13px">{{u.t}}</div><div class="m">{{u.net}} · {{u.who}}</div></div><span class="badge {{u.cls}}">{{u.st}}</span></div></sc-for></div>
+      </section>
+      <section class="card" style="flex: 1 1 300px">
+        <div class="card-h"><h3>Plataformas</h3><div class="grow"></div><span class="eyebrow">{{platOk}} de 5</span></div>
+        <div class="rows"><sc-for list="{{plats}}" as="p" hint-placeholder-count="5"><div class="row" style="cursor: default"><i style="width: 8px; height: 8px; border-radius: 50%; background: {{p.color}}"></i><div class="grow"><div class="t" style="font-size: 13px">{{p.n}}</div><div class="m">{{p.m}}</div></div><sc-if value="{{p.off}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{p.connect}}">Conectar</button></sc-if></div></sc-for></div>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isComms}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <aside class="card" style="flex: 0 1 320px; min-width: 260px">
+        <div style="padding: 12px 14px; border-bottom: 1px solid var(--line)"><div class="segs"><sc-for list="{{chs}}" as="c" hint-placeholder-count="4"><button class="seg {{c.on}}" onClick="{{c.pick}}" style="height: 28px; font-size: 12px">{{c.label}}<span class="c">{{c.n}}</span></button></sc-for></div></div>
+        <div class="rows">
+          <sc-for list="{{inbox}}" as="m" hint-placeholder-count="5">
+            <button class="row {{m.on}}" onClick="{{m.pick}}" style="align-items: flex-start">
+              <span class="av">{{m.ini}}</span>
+              <div class="grow" style="min-width: 0"><div style="display: flex; gap: 6px"><span class="t" style="font-size: 13px">{{m.from}}</span><div class="grow"></div><span class="num muted" style="font-size: 11px">{{m.t}}</span></div><div class="m" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{m.ch}} · {{m.preview}}</div></div>
+              <sc-if value="{{m.unread}}" hint-placeholder-val="{{false}}"><i style="width: 8px; height: 8px; border-radius: 50%; background: var(--flow); margin-top: 6px; flex: none"></i></sc-if>
+            </button>
+          </sc-for>
+        </div>
+      </aside>
+      <section style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+        <div class="card" style="display: flex; flex-direction: column">
+          <div class="card-h"><span class="av">{{cur.ini}}</span><div class="grow"><b>{{cur.from}}</b><div class="muted" style="font-size: 12px">{{cur.ch}} · {{cur.contact}}</div></div><span class="badge {{cur.tagCls}}">{{cur.tag}}</span></div>
+          <div style="padding: 18px; display: flex; flex-direction: column; gap: 10px">
+            <sc-for list="{{cur.msgs}}" as="x" hint-placeholder-count="2"><div class="bubble {{x.cls}}"><div class="eyebrow" style="font-size: 10px; margin-bottom: 4px">{{x.who}} · {{x.t}}</div>{{x.text}}</div></sc-for>
+          </div>
+        </div>
+        <div class="card pad" style="display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; align-items: center; gap: 8px"><span class="av" style="width: 26px; height: 26px; font-size: 9px">RB</span><span class="eyebrow">Resposta sugerida por Rebeca Recepção</span><div class="grow"></div><span class="muted" style="font-size: 12px">{{cur.why}}</span></div>
+          <textarea class="input" rows="3" value="{{reply}}" onChange="{{onReply}}" aria-label="Resposta"></textarea>
+          <div class="actions"><button class="btn primary" onClick="{{send}}">Enviar resposta</button><sc-if value="{{cur.isLead}}" hint-placeholder-val="{{false}}"><button class="btn secondary" onClick="{{openCase}}">Abrir caso no Raio-X</button></sc-if><button class="btn ghost" onClick="{{forward}}">Encaminhar</button><div class="grow"></div><span class="muted" style="font-size: 12px">Cliente novo: a primeira resposta passa por você.</span></div>
+        </div>
+      </section>
+    </div>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"view":{"editor":"enum","options":["social","comms"],"default":"social"},"spot":{"editor":null},"$preview":{"width":1176,"height":1000}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const INBOX = [
+  { id: 'm1', from: 'Marcos · Oficina Silva', ini: 'MS', ch: 'WhatsApp', contact: '+55 11 9•••• 4821', t: '14:12', unread: true, tag: 'lead', tagCls: 'action', isLead: true, why: 'pediu preço e prazo', msgs: [['Marcos', '14:12', 'Boa tarde. Vi o post de vocês. Quanto custa pra colocar o WhatsApp da oficina respondendo sozinho?']], reply: 'Boa tarde, Marcos. Antes de passar preço, a gente faz uma leitura rápida da oficina para saber o que faz sentido. Posso te mandar 4 perguntas por aqui?' },
+  { id: 'm2', from: 'Northwind Digital', ini: 'ND', ch: 'E-mail', contact: 'contato@northwind.com.br', t: '10:20', unread: true, tag: 'proposta', tagCls: 'flow', why: 'dúvida sobre PRO-003', msgs: [['Northwind', '10:20', 'Recebemos a proposta. O valor inclui a integração com o nosso CRM?']], reply: 'Inclui, sim. A integração com o CRM está no item 2 do escopo, com 4 semanas de ajuste. Posso marcar 20 minutos amanhã para mostrar?' },
+  { id: 'm3', from: '@leitora.voraz', ini: 'LV', ch: 'Instagram', contact: 'direct · IA Livros', t: '09:48', unread: true, tag: 'audiência', tagCls: '', why: 'pergunta sobre o método', msgs: [['@leitora.voraz', '09:48', 'O método do vídeo serve pra quem escreve ficção?']], reply: 'Serve. O vídeo mostra não ficção, mas as etapas de estrutura e revisão valem igual. O próximo episódio mostra um capítulo de ficção.' },
+  { id: 'm4', from: 'Atlas Holdings', ini: 'AH', ch: 'E-mail', contact: 'juridico@atlas.com.br', t: 'ontem', unread: true, tag: 'contrato', tagCls: 'warn', why: 'aguarda contra-assinatura', msgs: [['Atlas', 'ontem 17:40', 'Aceite feito pela ponte. Aguardamos a via contra-assinada para liberar o primeiro pagamento.']], reply: 'Recebido. A contra-assinatura sai hoje e enviamos a via por este e-mail.' },
+  { id: 'm5', from: 'Ana · Clínica Sorriso Vivo', ini: 'AS', ch: 'WhatsApp', contact: '+55 11 9•••• 0233', t: 'ontem', unread: false, tag: 'caso aberto', tagCls: '', why: 'respondeu a coleta', msgs: [['Ana', 'ontem 11:02', 'Mandei as fotos da recepção e a planilha de faltas.'], ['Rebeca', 'ontem 11:05', 'Recebido, Ana. A Dora usa isso na leitura da jornada.']], reply: 'Obrigada, Ana. A devolutiva chega até sexta.' }
+];
+const VIEWS = [['social', 'Perfis e calendário', 'Leitura recente de cada rede, o que sai nos próximos dias e quais plataformas estão conectadas.'], ['comms', 'Comunicações', 'Tudo que chegou e ainda pede resposta. A Rebeca faz a triagem e sugere a resposta; você aprova.']];
+function spark(vals) { const max = Math.max.apply(null, vals), min = Math.min.apply(null, vals); return vals.map((v, i) => (i * 96 / (vals.length - 1)).toFixed(1) + ',' + (22 - ((v - min) / ((max - min) || 1)) * 18).toFixed(1)).join(' '); }
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { v: 'social', ch: 'all', m: 'm1', replies: {}, sent: {} }; }
+  renderVals() {
+    const app = this.props.app;
+    const A = app || NOOP;
+    const s = this.state, self = this;
+    const pv = this.props.view;
+    const view = app && (pv === 'social' || pv === 'comms') ? pv : s.v;
+    const V = VIEWS.find((x) => x[0] === view);
+    const list = INBOX.filter((m) => s.ch === 'all' || m.ch === s.ch);
+    const C = INBOX.find((m) => m.id === s.m) || INBOX[0];
+    const unread = INBOX.filter((m) => m.unread && !s.sent[m.id]).length;
+    const plats = [['Instagram', 'Multiverso · Canal Tavir', true], ['YouTube', 'IA Livros', true], ['LinkedIn', 'Canal Tavir', true], ['WhatsApp Business', 'número comercial', true], ['TikTok', 'sem conexão', false]];
+    return {
+      title: V[1], lead: V[2], isSocial: view === 'social', isComms: view === 'comms',
+      tabs: VIEWS.map((x) => ({ label: x[1], hasN: x[0] === 'comms', n: unread, on: view === x[0] ? 'on' : '', pick: () => app ? app.go(x[0]) : self.setState({ v: x[0] }) })),
+      goStudio: () => A.go('studio'),
+      profiles: [['Multiverso Paranoico', 'Instagram', '128 mil', [118, 120, 121, 123, 124, 126, 128], '4,8%', 22, '19h'], ['IA Livros', 'YouTube', '41 mil', [38, 38.5, 39, 39.4, 40, 40.6, 41], '6,1%', 6, '12h'], ['Canal Tavir', 'LinkedIn', '3,2 mil', [2.4, 2.5, 2.7, 2.8, 2.9, 3.1, 3.2], '3,9%', 8, '8h']].map((p) => ({ name: p[0], net: p[1], f: p[2], spark: spark(p[3]), e: p[4], posts: p[5], best: p[6], go: () => A.go('studio') })),
+      upcoming: [['Qui 30 · 19h', 'Carrossel ep. 14', 'Instagram', 'Adriano Arte', 'em arte', 'warn'], ['Sex 31 · 19h', 'Reel ep. 14', 'Instagram', 'Vini Vídeo', 'agendado', 'flow'], ['Sex 31 · 8h', 'Post: o que um raio-x mostra', 'LinkedIn', 'Ciro LinkedIn', 'revisão', 'warn'], ['Sáb 01 · 12h', 'Short: capítulo 1 com IA', 'YouTube', 'Bento YouTube', 'agendado', 'flow'], ['Dom 02 · 19h', 'Carrossel ep. 15', 'Instagram', 'Oráculo', 'pauta', '']].map((u) => ({ d: u[0], t: u[1], net: u[2], who: u[3], st: u[4], cls: u[5] })),
+      platOk: plats.filter((p) => p[2]).length,
+      plats: plats.map((p) => ({ n: p[0], m: p[1], off: !p[2], color: p[2] ? 'var(--flow)' : 'var(--text-muted)', connect: () => A.toast(p[0], 'O login abriria no navegador.') })),
+      chs: [['all', 'Todos'], ['WhatsApp', 'WhatsApp'], ['E-mail', 'E-mail'], ['Instagram', 'Instagram']].map((c) => ({ label: c[1], n: c[0] === 'all' ? INBOX.length : INBOX.filter((m) => m.ch === c[0]).length, on: s.ch === c[0] ? 'on' : '', pick: () => self.setState({ ch: c[0] }) })),
+      inbox: list.map((m) => ({ from: m.from, ini: m.ini, ch: m.ch, t: m.t, unread: m.unread && !s.sent[m.id], preview: m.msgs[m.msgs.length - 1][2], on: m.id === C.id ? 'on' : '', pick: () => self.setState({ m: m.id }) })),
+      cur: Object.assign({}, C, { msgs: C.msgs.map((x) => ({ who: x[0], t: x[1], text: x[2], cls: x[0] === 'Rebeca' ? 'me' : 'ag' })).concat(s.sent[C.id] ? [{ who: 'TAVIR', t: 'agora', text: s.sent[C.id], cls: 'me' }] : []) }),
+      reply: s.replies[C.id] != null ? s.replies[C.id] : C.reply,
+      onReply: (e) => { const r = Object.assign({}, s.replies); r[C.id] = e.target.value; self.setState({ replies: r }); },
+      send: () => { const txt = s.replies[C.id] != null ? s.replies[C.id] : C.reply; if (!txt.trim()) return; const sent = Object.assign({}, s.sent); sent[C.id] = txt; self.setState({ sent: sent }); A.toast('Resposta enviada', C.ch + ' · ' + C.from); },
+      openCase: () => A.modal('raiox-new'),
+      forward: () => A.toast('Encaminhado', 'Dora Descoberta recebeu a conversa.')
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1036 @@
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iIq129k.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1isq129k.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iAq129k.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1iEq129k.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F63fjptAgt5VM-kVkqdyU8n1i8q1w.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl1FgtIU.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwlRFgtIU.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl9FgtIU.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwl5FgtIU.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwlBFgg.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3vAOwl1FgtIU.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3vAOwlRFgtIU.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3vAOwl9FgtIU.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3vAOwl5FgtIU.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3vAOwlBFgg.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: italic;
+  font-weight: 400 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/instrumentsans/v4/pxitypc9vsFDm051Uf6KVwgkfoSbSnNPooZAN0lInHGpCWNu2ZGRu3k.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: italic;
+  font-weight: 400 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/instrumentsans/v4/pxitypc9vsFDm051Uf6KVwgkfoSbSnNPooZAN0lInHGpCWNu15GR.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/instrumentsans/v4/pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0She1YmV.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url("f7e55672-3bd2-4fe0-b857-971c6fa7ba5b") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+</style>
+<style>
+body{margin:0;background:#0B1220}
+a{color:#1BC5BD}a:hover{color:#B7F34A}
+</style>
+</helmet>
+<div class="tv" data-theme="{{theme}}" sc-camel-on-key-down="{{onKey}}" style="height: 100vh; position: relative; overflow: hidden" data-canvas-width="1440" data-canvas-height="900" data-document-role="page" data-label="Escritório TAVIR · protótipo completo">
+
+<!-- ================= LOGIN ================= -->
+<sc-if value="{{is.login}}" hint-placeholder-val="{{false}}">
+<div class="screen" style="height: 100vh; overflow: auto; display: flex; flex-wrap: wrap; background: var(--surface-0)">
+  <section class="ink" style="flex: 1 1 520px; border-radius: 0; border: 0; padding: 56px; display: flex; flex-direction: column; gap: 28px; position: relative; overflow: hidden; min-height: 560px">
+    <svg sc-camel-view-box="0 0 400 400" width="420" height="420" aria-hidden="true" style="position: absolute; right: -90px; top: -60px; opacity: .5">
+      <path class="draw" d="M20 40 C 160 60, 200 180, 210 200" fill="none" stroke="#1BC5BD" stroke-width="2" stroke-linecap="round"></path>
+      <path class="draw" d="M20 200 C 120 200, 160 200, 210 200" fill="none" stroke="#1BC5BD" stroke-width="2" stroke-linecap="round"></path>
+      <path class="draw" d="M20 360 C 160 340, 200 220, 210 200" fill="none" stroke="#1BC5BD" stroke-width="2" stroke-linecap="round"></path>
+      <path class="draw" d="M210 200 L 380 200" fill="none" stroke="#B7F34A" stroke-width="2" stroke-linecap="round"></path>
+      <circle cx="210" cy="200" r="7" fill="#B7F34A"></circle>
+    </svg>
+    <img src="227c1932-4195-4442-a2b3-2d71d172d289" alt="TAVIR" style="width: 56px; height: auto; position: relative">
+    <div style="margin-top: auto; position: relative">
+      <div class="eyebrow">TAVIR Escritório · local-first</div>
+      <h1 style="font-size: 52px; font-weight: 600; letter-spacing: -.04em; line-height: 1.02; margin-top: 14px; max-width: 540px">Inteligência que entra em operação.</h1>
+      <p style="color: var(--on-ink-muted); margin-top: 16px; max-width: 460px; font-size: 16px">Orquestre agentes, tasks e entregas a partir desta máquina. Cada passo fica registrado. Cada ação irreversível espera você.</p>
+    </div>
+    <div style="display: flex; gap: 28px; flex-wrap: wrap; position: relative">
+      <div><div class="eyebrow">Endereço</div><div class="mono" style="margin-top: 6px; color: var(--teal)">127.0.0.1:9002</div></div>
+      <div><div class="eyebrow">Registro</div><div class="mono" style="margin-top: 6px; color: var(--teal)">SQLite auditável</div></div>
+      <div><div class="eyebrow">Regra</div><div class="mono" style="margin-top: 6px; color: var(--lime)">gate humano</div></div>
+    </div>
+  </section>
+  <section style="flex: 1 1 420px; display: grid; place-items: center; padding: 48px 24px">
+    <sc-if value="{{noSession}}" hint-placeholder-val="{{true}}">
+    <form class="{{sp.login}}" sc-camel-on-submit="{{doLogin}}" style="width: min(400px, 100%); display: flex; flex-direction: column; gap: 18px; border-radius: 16px">
+      <div>
+        <div class="eyebrow">Loopback · 127.0.0.1</div>
+        <h2 style="font-size: 28px; font-weight: 600; letter-spacing: -.03em; margin-top: 8px">Entrar no escritório</h2>
+        <p class="sec" style="margin-top: 6px">Use a chave local do operador.</p>
+      </div>
+      <label class="field"><span>Chave de acesso</span>
+        <div style="position: relative">
+          <input class="input" type="{{pwType}}" value="{{secret}}" sc-camel-on-change="{{onSecret}}" placeholder="Digite a chave local" autocomplete="current-password" style="padding-right: 80px">
+          <button type="button" class="link" style="position: absolute; right: 14px; top: 12px" sc-camel-on-click="{{togglePw}}">{{pwLabel}}</button>
+        </div>
+        <sc-if value="{{loginErr}}" hint-placeholder-val="{{false}}"><small style="color: var(--danger)">Informe a chave local para continuar.</small></sc-if>
+      </label>
+      <button type="submit" class="btn primary" style="height: 46px">Acessar painel</button>
+      <div class="card" style="padding: 12px 14px; display: flex; gap: 10px; font-size: 13px; align-items: flex-start">
+        <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.lock}}"></path></svg>
+        <span class="sec">A chave não sai desta máquina. A sessão expira depois de 12 h sem uso.</span>
+      </div>
+    </form>
+    </sc-if>
+    <sc-if value="{{session}}" hint-placeholder-val="{{false}}">
+    <div class="card pad" style="width: min(400px, 100%); display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; gap: 12px; align-items: center"><span class="av lg">CH</span><div><div class="eyebrow">Sessão ativa</div><b style="font-size: 18px">Carlos · CEO</b></div></div>
+      <p class="sec">Aberta às 08:12 nesta máquina. Último job iniciado às 13:55.</p>
+      <div class="actions"><button class="btn primary" sc-camel-on-click="{{goRoom}}">Entrar na Sala</button><button class="btn secondary" sc-camel-on-click="{{logout}}">Encerrar sessão</button></div>
+    </div>
+    </sc-if>
+  </section>
+</div>
+</sc-if>
+
+<!-- ================= ONBOARDING ================= -->
+<sc-if value="{{is.onboarding}}" hint-placeholder-val="{{false}}">
+<div class="screen" style="height: 100vh; overflow: auto; display: grid; place-items: center; padding: 32px 16px; background: var(--surface-0)">
+  <div class="{{sp.onb}}" style="width: min(980px, 100%); display: flex; flex-wrap: wrap; border-radius: 22px; overflow: hidden; border: 1px solid var(--line); background: var(--surface-1)">
+    <div class="ink" style="flex: 1 1 380px; border-radius: 0; border: 0; padding: 36px; min-height: 420px; display: flex; flex-direction: column; gap: 18px">
+      <div class="eyebrow">{{onb.eyebrow}}</div>
+      <div style="flex: 1; display: grid; place-items: center">
+        <sc-if value="{{onb.v0}}" hint-placeholder-val="{{true}}">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 18px; animation: rise 400ms var(--ease) both">
+            <img src="227c1932-4195-4442-a2b3-2d71d172d289" alt="" style="width: 96px">
+            <div class="segs" style="justify-content: center"><span class="badge flow">SQLite</span><span class="badge flow">API :9001</span><span class="badge action">gate humano</span></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{onb.v1}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; gap: 6px; width: 300px; height: 200px; animation: rise 400ms var(--ease) both">
+            <div style="width: 26px; border-radius: 8px; background: #070d18; border: 1px solid var(--on-ink-line); display: flex; flex-direction: column; gap: 6px; align-items: center; padding-top: 8px"><i style="width: 12px; height: 12px; border-radius: 4px; background: var(--lime)"></i><i style="width: 12px; height: 12px; border-radius: 4px; background: rgba(244,246,242,.2)"></i><i style="width: 12px; height: 12px; border-radius: 4px; background: rgba(244,246,242,.2)"></i></div>
+            <div style="width: 74px; border-radius: 8px; border: 1px solid var(--on-ink-line); padding: 8px; display: flex; flex-direction: column; gap: 6px"><i style="height: 8px; border-radius: 4px; background: rgba(244,246,242,.3)"></i><i style="height: 8px; border-radius: 4px; background: rgba(27,197,189,.5)"></i><i style="height: 8px; border-radius: 4px; background: rgba(244,246,242,.15)"></i></div>
+            <div style="flex: 1; border-radius: 8px; border: 1px dashed rgba(183,243,74,.45); display: grid; place-items: center"><span class="mono" style="font-size: 11px; color: var(--lime)">miolo</span></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{onb.v2}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; animation: rise 400ms var(--ease) both">
+            <span class="badge flow">Planejar</span><span class="muted">→</span><span class="badge flow">Executar</span><span class="muted">→</span><span class="badge action">Gate</span><span class="muted">→</span><span class="badge flow">Entregar</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{onb.v3}}" hint-placeholder-val="{{false}}">
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 320px; animation: rise 400ms var(--ease) both">
+            <span class="badge flow" style="justify-content: center">Raio-X</span><span class="badge flow" style="justify-content: center">Studio</span><span class="badge action" style="justify-content: center">Fábrica</span><span class="badge" style="justify-content: center">Flow</span><span class="badge" style="justify-content: center">Edição</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{onb.v4}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; flex-direction: column; gap: 10px; width: 280px; animation: rise 400ms var(--ease) both">
+            <div style="display: flex; align-items: center; gap: 10px"><span class="mono muted" style="width: 70px; font-size: 11px">custo</span><div class="track"><div class="fill" style="width: 71%"></div></div></div>
+            <div style="display: flex; align-items: center; gap: 10px"><span class="mono muted" style="width: 70px; font-size: 11px">saúde</span><div class="track"><div class="fill" style="width: 96%"></div></div></div>
+            <div style="display: flex; align-items: center; gap: 10px"><span class="mono muted" style="width: 70px; font-size: 11px">memória</span><div class="track"><div class="fill lime" style="width: 58%"></div></div></div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+    <div style="flex: 1 1 420px; padding: 36px; display: flex; flex-direction: column; gap: 16px">
+      <div class="tour-prog" style="padding: 0"><sc-for list="{{onb.dots}}" as="d" hint-placeholder-count="5"><i class="{{d.cls}}" style="flex: 1; height: 3px; border-radius: 3px; background: {{d.bg}}"></i></sc-for></div>
+      <div class="eyebrow">Passo {{onb.pos}}</div>
+      <h2 style="font-size: 30px; font-weight: 600; letter-spacing: -.03em; line-height: 1.1">{{onb.title}}</h2>
+      <p class="sec" style="font-size: 15px">{{onb.text}}</p>
+      <div class="rows" style="margin-top: 4px">
+        <sc-for list="{{onb.points}}" as="pt" hint-placeholder-count="3">
+          <div style="display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; font-size: 14px"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.check}}"></path></svg><span>{{pt.t}}</span></div>
+        </sc-for>
+      </div>
+      <div class="actions" style="margin-top: auto; padding-top: 12px">
+        <button class="btn ghost" sc-camel-on-click="{{goRoom}}">Pular</button>
+        <div class="grow"></div>
+        <sc-if value="{{onb.notFirst}}" hint-placeholder-val="{{false}}"><button class="btn secondary" sc-camel-on-click="{{onbPrev}}">Voltar</button></sc-if>
+        <button class="btn primary" sc-camel-on-click="{{onbNext}}">{{onb.next}}</button>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= SHELL ================= -->
+<sc-if value="{{is.shell}}" hint-placeholder-val="{{true}}">
+<div class="shell">
+  <nav class="rail" aria-label="Domínios">
+    <button class="rail-mark" sc-camel-on-click="{{goRoom}}" aria-label="TAVIR, ir para a Sala de Operação"><img src="227c1932-4195-4442-a2b3-2d71d172d289" alt=""></button>
+    <sc-for list="{{rail}}" as="d" hint-placeholder-count="7">
+      <button class="rail-btn {{d.on}}" sc-camel-on-click="{{d.pick}}" aria-label="{{d.label}}">
+        <svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{d.d}}"></path></svg>
+        <sc-if value="{{d.dot}}" hint-placeholder-val="{{false}}"><i class="dotc"></i></sc-if>
+        <span class="rail-tip">{{d.label}}</span>
+      </button>
+    </sc-for>
+    <div class="grow"></div>
+    <button class="rail-btn" sc-camel-on-click="{{toggleTheme}}" aria-label="Alternar tema">
+      <svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{themeIcon}}"></path></svg>
+      <span class="rail-tip">{{themeTip}}</span>
+    </button>
+    <button class="avatar" sc-camel-on-click="{{goLogin}}" aria-label="Carlos, CEO. Sessão" style="margin-top: 8px">CH</button>
+  </nav>
+
+  <aside class="sub" aria-label="Menu da área">
+    <div class="sub-brand"><img src="27c91494-3a2e-4981-a469-9c0c80f72d77" alt="TAVIR"><small>Escritório</small></div>
+    <div class="sub-label">{{dom.label}}</div>
+    <div class="sub-nav">
+      <sc-for list="{{subItems}}" as="it" hint-placeholder-count="6">
+        <button class="nav-item {{it.on}}" sc-camel-on-click="{{it.pick}}">
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{it.d}}"></path></svg>
+          <span>{{it.label}}</span>
+          <sc-if value="{{it.hasBadge}}" hint-placeholder-val="{{false}}"><b class="{{it.hot}}">{{it.badge}}</b></sc-if>
+          <sc-if value="{{it.hasTag}}" hint-placeholder-val="{{false}}"><em>{{it.tag}}</em></sc-if>
+        </button>
+      </sc-for>
+    </div>
+    <div class="sub-foot">
+      <button class="tour-cta {{sp.tourcta}}" sc-camel-on-click="{{startTour}}">
+        <svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B7F34A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.compass}}"></path></svg>
+        <span><b style="font-size: 13px">Fluxo guiado</b><small>Dois percursos explicados</small></span>
+      </button>
+      <button class="tour-cta" sc-camel-on-click="{{goFluxo}}" style="border-color: var(--on-ink-line); background: transparent">
+        <svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1BC5BD" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.diagram}}"></path></svg>
+        <span><b style="font-size: 13px">Como funciona</b><small>Mapa do ciclo completo</small></span>
+      </button>
+      <div class="health" style="margin-top: 4px"><i class="live-dot"></i>office.py · SQLite</div>
+      <div class="health"><i class="live-dot"></i>Sincron Brain MCP</div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <div class="crumbs"><span class="dim">{{dom.label}}</span><span class="sep">/</span><strong>{{crumb}}</strong></div>
+      <span class="badge flow" style="margin-left: 4px"><i class="live-dot" style="width: 6px; height: 6px"></i>ao vivo</span>
+      <div class="grow"></div>
+      <button class="search" sc-camel-on-click="{{openPalette}}">
+        <svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.search}}"></path></svg>
+        <span>Buscar telas, tasks, agentes…</span><span class="kbd">Ctrl K</span>
+      </button>
+      <div style="position: relative">
+        <button class="ibtn" sc-camel-on-click="{{toggleNotif}}" aria-label="Notificações" style="position: relative">
+          <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.bell}}"></path></svg>
+          <i style="position: absolute; top: 8px; right: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--danger)"></i>
+        </button>
+        <sc-if value="{{notifOpen}}" hint-placeholder-val="{{false}}">
+          <div class="card" style="position: absolute; right: 0; top: 50px; width: 360px; z-index: 40; box-shadow: var(--shadow-elevated); background: var(--surface-1); animation: rise 200ms var(--ease) both">
+            <div class="card-h"><h3>Notificações</h3><div class="grow"></div><span class="eyebrow">3 novas</span></div>
+            <div class="rows">
+              <sc-for list="{{notifs}}" as="n" hint-placeholder-count="3">
+                <button class="row" sc-camel-on-click="{{n.go}}"><i style="width: 8px; height: 8px; border-radius: 50%; background: {{n.color}}; flex: none"></i><div class="grow"><div class="t" style="font-size: 13px">{{n.t}}</div><div class="m">{{n.m}}</div></div></button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+      <button class="btn secondary {{sp.jobbtn}}" sc-camel-on-click="{{openJob}}">
+        <svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{ic.play}}"></path></svg>Iniciar job
+      </button>
+    </header>
+
+    <div class="content">
+
+<!-- ========== SALA ========== -->
+<sc-if value="{{is.room}}" hint-placeholder-val="{{true}}">
+<div class="page screen">
+  <div class="phead">
+    <div class="grow">
+      <div class="eyebrow">Quinta, 29 de outubro · Sala de Operação</div>
+      <h1 style="margin-top: 8px">Boa tarde, Carlos.</h1>
+      <p>{{room.summary}}</p>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" sc-camel-on-click="{{openProject}}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Novo projeto</button>
+      <button class="btn secondary" sc-camel-on-click="{{openTask}}">Nova task</button>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 16px">
+    <section class="ink {{sp.ask}}" style="flex: 2 1 560px; padding: 22px 24px">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <span class="eyebrow">O que pede você</span>
+        <span class="badge danger">{{room.pendingN}} pendentes</span>
+        <div class="grow"></div>
+        <button class="link" style="color: var(--teal)" sc-camel-on-click="{{goDecisions}}">Abrir Decisões →</button>
+      </div>
+      <div class="rows" style="margin-top: 8px">
+        <sc-for list="{{room.asks}}" as="a" hint-placeholder-count="3">
+          <div class="row" style="padding: 14px 0">
+            <span class="av">{{a.ini}}</span>
+            <div class="grow" style="min-width: 0"><div class="t">{{a.title}}</div><div class="m">{{a.who}} · {{a.type}} · {{a.age}}</div></div>
+            <span class="badge {{a.impCls}}">{{a.impact}}</span>
+            <button class="btn sm {{a.btn}}" sc-camel-on-click="{{a.open}}">Decidir</button>
+          </div>
+        </sc-for>
+        <sc-if value="{{room.noAsk}}" hint-placeholder-val="{{false}}"><p class="muted" style="padding: 16px 0">Nada depende de você agora. A sala segue sozinha.</p></sc-if>
+      </div>
+    </section>
+    <section class="ink" style="flex: 1 1 300px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; align-items: center"><span class="eyebrow">Teto do mês · outubro</span><div class="grow"></div><button class="link" style="color: var(--teal)" sc-camel-on-click="{{goFinancas}}">Finanças →</button></div>
+      <div style="display: flex; align-items: baseline; gap: 8px"><strong class="num" style="font-size: 36px; font-weight: 500; color: var(--lime)">US$ 212</strong><span class="muted num">de US$ 300</span></div>
+      <div class="track"><div class="fill lime" style="width: 71%"></div></div>
+      <p class="muted" style="font-size: 13px">Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62.</p>
+      <div class="chart-bars" style="height: 56px; gap: 4px">
+        <sc-for list="{{room.spend}}" as="b" hint-placeholder-count="14"><div class="b {{b.cls}}" style="height: {{b.h}}%; animation-delay: {{b.delay}}ms" title="{{b.tip}}"></div></sc-for>
+      </div>
+      <div class="eyebrow" style="font-size: 10px">Custo diário · últimos 14 dias · dados do protótipo</div>
+    </section>
+  </div>
+
+  <div class="g4">
+    <sc-for list="{{room.kpis}}" as="k" hint-placeholder-count="4">
+      <button class="metric click" sc-camel-on-click="{{k.go}}">
+        <span class="eyebrow" style="display: flex; align-items: center; gap: 8px"><i style="width: 8px; height: 8px; border-radius: 50%; background: {{k.color}}"></i>{{k.label}}</span>
+        <div style="display: flex; align-items: flex-end; gap: 10px"><strong style="color: {{k.vcolor}}">{{k.v}}</strong><div class="grow"></div>
+          <svg width="88" height="28" sc-camel-view-box="0 0 88 28" aria-hidden="true"><polyline points="{{k.spark}}" fill="none" stroke="{{k.color}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+        </div>
+        <small>{{k.note}}</small>
+      </button>
+    </sc-for>
+  </div>
+
+  <div class="g2">
+    <section class="card">
+      <div class="card-h"><h3>Jobs ao vivo</h3><span class="badge flow">{{room.runN}} rodando</span><div class="grow"></div><button class="link" sc-camel-on-click="{{goExec}}">Execuções →</button></div>
+      <div class="rows">
+        <sc-for list="{{room.jobs}}" as="j" hint-placeholder-count="3">
+          <button class="row" sc-camel-on-click="{{j.open}}">
+            <span class="av busy">{{j.ini}}</span>
+            <div class="grow" style="min-width: 0">
+              <div class="t">{{j.title}}</div>
+              <div class="m">{{j.who}} · {{j.model}}</div>
+              <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px"><div class="track"><div class="fill run" style="width: {{j.progress}}%"></div></div><span class="num" style="font-size: 12px; width: 36px; text-align: right">{{j.progress}}%</span></div>
+            </div>
+            <span class="num muted" style="font-size: 12px; text-align: right; width: 84px">US$ {{j.costTxt}}<br>de {{j.ceiling}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-h"><h3>Esteiras dos módulos</h3><div class="grow"></div><button class="link" sc-camel-on-click="{{goModhub}}">Módulos →</button></div>
+      <div class="rows">
+        <sc-for list="{{room.lines}}" as="l" hint-placeholder-count="3">
+          <button class="row" sc-camel-on-click="{{l.go}}">
+            <span style="width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{l.d}}"></path></svg></span>
+            <div class="grow" style="min-width: 0"><div class="t">{{l.title}}</div><div class="m">{{l.mod}} · {{l.stage}}</div>
+              <div style="display: flex; gap: 3px; margin-top: 8px"><sc-for list="{{l.segs}}" as="g" hint-placeholder-count="6"><i style="flex: 1; height: 4px; border-radius: 2px; background: {{g.bg}}"></i></sc-for></div>
+            </div>
+            <span class="badge {{l.cls}}">{{l.state}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="card-h"><h3>Livro-razão da sala</h3><span class="eyebrow">hoje</span><div class="grow"></div><span class="muted" style="font-size: 12px">Toda ação humana ou de agente vira linha aqui.</span></div>
+    <div style="padding: 8px 18px 14px; display: flex; flex-direction: column">
+      <sc-for list="{{room.activity}}" as="e" hint-placeholder-count="6">
+        <div style="display: flex; gap: 14px; align-items: flex-start; padding: 8px 0; animation: fade 300ms var(--ease) both">
+          <span class="num muted" style="font-size: 12px; width: 44px; flex: none; padding-top: 1px">{{e.t}}</span>
+          <i style="width: 8px; height: 8px; border-radius: 50%; background: {{e.color}}; margin-top: 6px; flex: none"></i>
+          <span style="font-size: 13px"><b>{{e.who}}</b> <span class="sec">{{e.text}}</span></span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<!-- ========== EXECUÇÕES ========== -->
+<sc-if value="{{is.exec}}" hint-placeholder-val="{{false}}">
+<div class="split screen">
+  <aside class="split-side">
+    <div style="padding: 20px 18px 14px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center"><h2 style="font-size: 18px; font-weight: 600">Execuções</h2><div class="grow"></div><span class="num muted" style="font-size: 12px">{{exec.total}} jobs</span></div>
+      <div class="segs"><sc-for list="{{exec.filters}}" as="f" hint-placeholder-count="5"><button class="seg {{f.on}}" sc-camel-on-click="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+    </div>
+    <div class="rows" style="border-top: 1px solid var(--line)">
+      <sc-for list="{{exec.list}}" as="j" hint-placeholder-count="5">
+        <button class="row {{j.on}}" sc-camel-on-click="{{j.pick}}" style="align-items: flex-start">
+          <i style="width: 8px; height: 8px; border-radius: 50%; background: {{j.color}}; margin-top: 7px; flex: none"></i>
+          <div class="grow" style="min-width: 0">
+            <div class="t">{{j.title}}</div><div class="m">{{j.id}} · {{j.who}} · {{j.label}}</div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px"><div class="track" style="height: 4px"><div class="fill {{j.fillCls}}" style="width: {{j.progress}}%"></div></div><span class="num muted" style="font-size: 11px; width: 32px; text-align: right">{{j.progress}}%</span></div>
+          </div>
+        </button>
+      </sc-for>
+      <sc-if value="{{exec.empty}}" hint-placeholder-val="{{false}}"><p class="muted" style="padding: 24px 18px">Nenhum job neste filtro.</p></sc-if>
+    </div>
+  </aside>
+  <section class="split-main">
+    <div class="page">
+      <div class="phead">
+        <div class="grow" style="min-width: 260px">
+          <div style="display: flex; gap: 8px; align-items: center"><span class="eyebrow">{{job.id}} · task {{job.task}}</span><span class="badge {{job.cls}}"><i></i>{{job.label}}</span></div>
+          <h1 style="margin-top: 8px">{{job.title}}</h1>
+          <p>{{job.who}} · {{job.model}} · iniciado às {{job.started}}</p>
+        </div>
+        <div class="actions">
+          <button class="btn ghost" sc-camel-on-click="{{openEvidence}}">Ver evidência</button>
+          <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{true}}"><button class="btn secondary" sc-camel-on-click="{{jobPause}}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.pause}}"></path></svg>Pausar</button><button class="btn danger" sc-camel-on-click="{{jobCancel}}">Cancelar</button></sc-if>
+          <sc-if value="{{job.isPaused}}" hint-placeholder-val="{{false}}"><button class="btn primary" sc-camel-on-click="{{jobResume}}">Retomar</button></sc-if>
+          <sc-if value="{{job.isQueued}}" hint-placeholder-val="{{false}}"><button class="btn primary" sc-camel-on-click="{{jobResume}}">Iniciar agora</button></sc-if>
+          <sc-if value="{{job.isFailed}}" hint-placeholder-val="{{false}}"><button class="btn secondary" sc-camel-on-click="{{jobRetry}}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.retry}}"></path></svg>Refazer</button><button class="btn primary" sc-camel-on-click="{{goGate}}">Abrir gate</button></sc-if>
+        </div>
+      </div>
+
+      <div class="g4">
+        <div class="metric"><span class="eyebrow">Progresso</span><strong>{{job.progress}}%</strong><div class="track"><div class="fill {{job.fillCls}}" style="width: {{job.progress}}%"></div></div></div>
+        <div class="metric"><span class="eyebrow">Custo / teto</span><strong>US$ {{job.costTxt}}</strong><div class="track"><div class="fill {{job.costCls}}" style="width: {{job.costPct}}%"></div></div><small>teto US$ {{job.ceiling}} · {{job.costPct}}% usado</small></div>
+        <div class="metric"><span class="eyebrow">Tokens</span><strong>{{job.tokens}}</strong><small>entrada + saída</small></div>
+        <div class="metric"><span class="eyebrow">Motor</span><strong style="font-size: 20px">{{job.motor}}</strong><small>esforço {{job.effort}}</small></div>
+      </div>
+
+      <div class="stepper">
+        <sc-for list="{{job.steps}}" as="st" hint-placeholder-count="6">
+          <div class="stp {{st.cls}}"><span class="n">{{st.n}}</span><b>{{st.label}}</b><div class="bar"></div></div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{job.isFailed}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; border-color: var(--danger)">
+          <svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.alert}}"></path></svg>
+          <div class="grow"><b>O job parou antes do deploy.</b><p class="sec" style="margin-top: 4px; font-size: 13px">Variável obrigatória ausente: SUPABASE_URL. Nada foi publicado. O gate ap-02 espera sua decisão para registrar a variável e refazer.</p></div>
+        </div>
+      </sc-if>
+
+      <section class="ink {{sp.log}}">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--on-ink-line)">
+          <b style="font-size: 14px">Log ao vivo</b>
+          <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{true}}"><span class="badge flow"><i class="live-dot" style="width: 6px; height: 6px"></i>SSE</span></sc-if>
+          <div class="grow"></div><span class="eyebrow">{{job.logN}} linhas · livro-razão</span>
+        </div>
+        <div class="log">
+          <sc-for list="{{job.log}}" as="l" hint-placeholder-count="6"><div><span class="ts">{{l.ts}}</span><span class="{{l.cls}}" style="width: 44px; flex: none">{{l.lvl}}</span><span>{{l.text}}</span></div></sc-for>
+          <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{true}}"><div><span class="ts">     </span><span class="ok">▍</span><span style="color: var(--on-ink-muted)">aguardando próximo passo</span></div></sc-if>
+        </div>
+      </section>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<!-- ========== TASKS ========== -->
+<sc-if value="{{is.tasks}}" hint-placeholder-val="{{false}}">
+<div class="page screen" style="max-width: none">
+  <div class="phead">
+    <div class="grow"><div class="eyebrow">Kanban · SQLite</div><h1 style="margin-top: 8px">Tasks</h1><p>Planejado → Em execução inicia o job. Card com gate não avança sem decisão.</p></div>
+    <div class="actions">
+      <div class="segs"><sc-for list="{{tk.filters}}" as="f" hint-placeholder-count="3"><button class="seg {{f.on}}" sc-camel-on-click="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+      <button class="btn primary" sc-camel-on-click="{{openTask}}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Nova task</button>
+    </div>
+  </div>
+  <div class="kanban">
+    <sc-for list="{{tk.cols}}" as="c" hint-placeholder-count="4">
+      <section class="kcol" aria-label="{{c.label}}">
+        <div class="kcol-h"><i style="background: {{c.color}}"></i><b>{{c.label}}</b><span class="num muted" style="font-size: 12px">{{c.n}}</span><div class="grow"></div><span class="eyebrow" style="font-size: 10px">{{c.wip}}</span></div>
+        <p class="muted" style="font-size: 12px; padding: 0 4px">{{c.hint}}</p>
+        <sc-for list="{{c.cards}}" as="t" hint-placeholder-count="2">
+          <button class="kcard {{t.gateCls}}" sc-camel-on-click="{{t.open}}">
+            <div style="display: flex; align-items: center; gap: 8px"><span class="num muted" style="font-size: 12px">#{{t.seq}}</span><div class="grow"></div><span class="badge {{t.prioCls}}">{{t.prio}}</span></div>
+            <b style="font-size: 14px; line-height: 1.35; font-weight: 600">{{t.title}}</b>
+            <sc-if value="{{t.hasJob}}" hint-placeholder-val="{{false}}"><div style="display: flex; align-items: center; gap: 8px"><div class="track" style="height: 4px"><div class="fill {{t.fillCls}}" style="width: {{t.jobPct}}%"></div></div><span class="num muted" style="font-size: 11px">{{t.jobPct}}%</span></div></sc-if>
+            <div style="display: flex; align-items: center; gap: 8px"><span class="av" style="width: 24px; height: 24px; font-size: 9px">{{t.ini}}</span><span class="muted" style="font-size: 12px">{{t.who}} · {{t.sector}}</span><div class="grow"></div>
+              <sc-if value="{{t.gate}}" hint-placeholder-val="{{false}}"><span class="badge danger">gate</span></sc-if>
+              <sc-if value="{{t.planning}}" hint-placeholder-val="{{false}}"><span class="badge warn">planejando</span></sc-if>
+            </div>
+          </button>
+        </sc-for>
+        <sc-if value="{{c.empty}}" hint-placeholder-val="{{false}}"><div style="border: 1px dashed var(--line-strong); border-radius: 12px; padding: 18px; text-align: center" class="muted">Sem cards aqui.</div></sc-if>
+      </section>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- ========== DECISÕES ========== -->
+<sc-if value="{{is.decisions}}" hint-placeholder-val="{{false}}">
+<div class="screen" style="display: flex; flex-direction: column; min-height: 100%">
+  <div style="padding: 24px 32px 0; display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap">
+    <div class="grow" style="min-width: 280px">
+      <div class="eyebrow">Operação · caixa de decisões</div>
+      <h1 style="font-size: 30px; font-weight: 600; letter-spacing: -.03em; margin-top: 8px">Decisões</h1>
+      <p class="sec" style="margin-top: 6px">{{dc.summary}}</p>
+    </div>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap">
+      <div class="card" style="padding: 12px 16px; display: flex; gap: 12px; align-items: center">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: conic-gradient(var(--flow) 0 {{dc.dayPct}}%, var(--line) 0); display: grid; place-items: center; transition: background 400ms var(--ease)"><div style="width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center"><span class="num" style="font-size: 10.5px">{{dc.dayPct}}%</span></div></div>
+        <div><div class="eyebrow" style="font-size: 10px">Hoje</div><div class="num" style="font-size: 14px; margin-top: 2px">{{dc.dayDone}} de {{dc.dayTotal}} decididas</div></div>
+      </div>
+      <div class="card" style="padding: 12px 16px"><div class="eyebrow" style="font-size: 10px">Espera mais longa</div><div class="num" style="font-size: 14px; margin-top: 4px; color: {{dc.oldColor}}">{{dc.oldest}}</div></div>
+    </div>
+  </div>
+  <div style="padding: 16px 32px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; border-bottom: 1px solid var(--line)">
+    <div class="segs"><sc-for list="{{dc.filters}}" as="f" hint-placeholder-count="5"><button class="seg {{f.on}}" sc-camel-on-click="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+    <div class="grow"></div>
+    <span class="muted" style="font-size: 12px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span class="kbd">J</span><span class="kbd">K</span>navegar<span class="kbd" style="margin-left: 8px">A</span>aprovar<span class="kbd" style="margin-left: 8px">R</span>recusar<span class="kbd" style="margin-left: 8px">C</span>contexto</span>
+  </div>
+  <div style="display: flex; flex: 1; flex-wrap: wrap; align-items: stretch">
+    <aside style="flex: 1 1 360px; max-width: 400px; min-width: 300px; padding: 18px; display: flex; flex-direction: column; gap: 20px; border-right: 1px solid var(--line); background: var(--surface-0)">
+      <sc-for list="{{dc.groups}}" as="g" hint-placeholder-count="3">
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; align-items: center; gap: 8px"><i style="width: 8px; height: 8px; border-radius: 50%; background: {{g.color}}"></i><span class="eyebrow">{{g.label}}</span><span class="num muted" style="font-size: 11px">{{g.n}}</span></div>
+          <sc-for list="{{g.items}}" as="q" hint-placeholder-count="2">
+            <button class="lift" sc-camel-on-click="{{q.pick}}" style="text-align: left; color: inherit; padding: 14px; border-radius: 14px; border: 1px solid {{q.bd}}; background: var(--surface-2); box-shadow: {{q.sh}}; display: flex; gap: 12px; align-items: flex-start; width: 100%; animation: fade 240ms var(--ease) both">
+              <span style="width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: {{q.tbg}}; color: {{q.tfg}}; flex: none"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{q.icon}}"></path></svg></span>
+              <div class="grow" style="min-width: 0; display: flex; flex-direction: column; gap: 6px">
+                <div style="display: flex; align-items: center; gap: 6px"><span class="eyebrow" style="font-size: 10px">{{q.type}} · {{q.id}}</span><div class="grow"></div><span class="num muted" style="font-size: 11px">{{q.age}}</span></div>
+                <b style="font-size: 14px; line-height: 1.35; font-weight: 600">{{q.title}}</b>
+                <div style="display: flex; align-items: center; gap: 8px"><span class="av" style="width: 22px; height: 22px; font-size: 8px">{{q.ini}}</span><span class="muted" style="font-size: 12px">{{q.who}}</span><div class="grow"></div><span class="badge {{q.bcls}}">{{q.blabel}}</span></div>
+                <sc-if value="{{q.pending}}" hint-placeholder-val="{{true}}"><div style="display: flex; align-items: center; gap: 8px"><div class="track" style="height: 3px"><div class="fill" style="width: {{q.slaPct}}%; background: {{q.slaColor}}"></div></div><span class="num muted" style="font-size: 10.5px; white-space: nowrap">SLA · {{q.slaLeft}}</span></div></sc-if>
+              </div>
+            </button>
+          </sc-for>
+        </div>
+      </sc-for>
+      <sc-if value="{{dc.listEmpty}}" hint-placeholder-val="{{false}}"><div style="border: 1px dashed var(--line-strong); border-radius: 14px; padding: 24px; text-align: center" class="muted">Nada neste filtro.</div></sc-if>
+    </aside>
+
+    <section style="flex: 999 1 560px; min-width: 0">
+      <!-- dossiê -->
+      <sc-if value="{{dc.showDossier}}" hint-placeholder-val="{{true}}">
+      <div class="page" style="max-width: none; gap: 18px">
+      <div style="display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start">
+      <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+        <section class="ink" style="padding: 26px 28px; display: flex; flex-direction: column; gap: 16px; animation: fade 240ms var(--ease) both">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="eyebrow">{{cur.type}} · {{cur.id}} · task {{cur.task}}</span><div class="grow"></div><sc-if value="{{cur.block}}" hint-placeholder-val="{{false}}"><span class="badge danger">bloqueia entrega</span></sc-if><sc-if value="{{cur.scopeChange}}" hint-placeholder-val="{{false}}"><span class="badge warn">muda escopo ou custo</span></sc-if><span class="badge {{cur.impCls}}">impacto {{cur.impact}}</span></div>
+          <h1 style="font-size: 28px; font-weight: 600; letter-spacing: -.03em; line-height: 1.15">{{cur.title}}</h1>
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap"><span class="av">{{cur.ini}}</span><span style="font-size: 14px"><b>{{cur.who}}</b> <span class="muted">pede sua decisão · aberto {{cur.age}}</span></span><div class="grow"></div><sc-if value="{{cur.pending}}" hint-placeholder-val="{{true}}"><span class="mono" style="font-size: 12px; color: {{cur.slaInk}}">SLA 24 h · {{cur.slaLeft}}</span></sc-if></div>
+          <div style="padding: 16px 18px; border-radius: 14px; background: rgba(183,243,74,.07); border: 1px solid rgba(183,243,74,.28)"><span class="eyebrow" style="color: var(--lime)">A pergunta</span><p style="font-size: 19px; font-weight: 600; letter-spacing: -.01em; margin-top: 6px; line-height: 1.35">{{cur.question}}</p></div>
+        </section>
+
+        <section class="card pad" style="display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; align-items: center"><span class="eyebrow">Contexto e evidência</span><div class="grow"></div><button class="link" sc-camel-on-click="{{openEvidence}}">Abrir artefato completo →</button></div>
+          <p style="font-size: 15px; line-height: 1.6">{{cur.reason}}</p>
+          <sc-if value="{{ev.deploy}}" hint-placeholder-val="{{false}}">
+            <div class="ink" style="border-radius: 12px; overflow: hidden">
+              <div class="log" style="max-height: none; padding: 10px 0"><sc-for list="{{ev.log}}" as="l" hint-placeholder-count="5"><div style="background: {{l.bg}}; padding: 2px 18px"><span class="ts">{{l.ts}}</span><span class="{{l.cls}}" style="width: 44px; flex: none">{{l.lvl}}</span><span>{{l.text}}</span></div></sc-for></div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 12px">
+              <div class="card" style="padding: 12px 14px; background: var(--surface-0)"><div class="eyebrow" style="font-size: 10px">.env da conta Meridian · hoje</div><div class="mono" style="font-size: 12px; margin-top: 8px; line-height: 1.9"><sc-for list="{{ev.env}}" as="x" hint-placeholder-count="3"><div style="color: {{x.c}}">{{x.t}}</div></sc-for></div></div>
+              <div class="card" style="padding: 12px 14px; background: var(--surface-0); display: flex; flex-direction: column; gap: 8px"><div class="eyebrow" style="font-size: 10px">Se aprovar · vai para o cofre local</div><label class="field"><span style="font-size: 12px">Valor de SUPABASE_URL</span><input class="input mono" style="height: 36px; font-size: 12px" value="{{secretVal}}" sc-camel-on-change="{{onSecretVal}}" placeholder="https://xxxx.supabase.co"></label><small class="muted" style="font-size: 11px">Fica só nesta máquina. Não entra no livro-razão nem no chat.</small></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ev.roadmap}}" hint-placeholder-val="{{false}}">
+            <div style="display: grid; grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr); gap: 8px; align-items: center">
+              <span class="eyebrow">Ordem atual</span><span></span><span class="eyebrow" style="color: var(--flow)">Ordem proposta</span>
+              <sc-for list="{{ev.rows}}" as="r" hint-placeholder-count="3">
+                <div class="card" style="padding: 12px 14px; display: flex; gap: 10px; background: var(--surface-0)"><span class="num muted">{{r.n}}</span><span style="font-size: 14px">{{r.a}}</span></div>
+                <span style="text-align: center; color: {{r.ac}}; font-size: 18px">→</span>
+                <div class="card" style="padding: 12px 14px; display: flex; gap: 10px; align-items: center; border-color: {{r.bd}}"><span class="num" style="color: var(--flow)">{{r.n}}</span><span style="font-size: 14px">{{r.b}}</span><div class="grow"></div><sc-if value="{{r.moved}}" hint-placeholder-val="{{false}}"><span class="badge {{r.mcls}}">{{r.mv}}</span></sc-if></div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ev.ceiling}}" hint-placeholder-val="{{false}}">
+            <div style="display: flex; flex-direction: column; gap: 14px; padding-top: 6px">
+              <sc-for list="{{ev.bars}}" as="b" hint-placeholder-count="3">
+                <div style="display: grid; grid-template-columns: 200px minmax(0, 1fr) 76px; gap: 12px; align-items: center"><span class="sec" style="font-size: 13px">{{b.k}}</span><div style="position: relative; height: 14px; border-radius: 999px; background: var(--line)"><div style="height: 100%; width: {{b.w}}%; border-radius: 999px; background: {{b.c}}; transform-origin: left; animation: growx 600ms var(--ease) both"></div><i style="position: absolute; top: -5px; bottom: -5px; left: {{ev.m300}}%; width: 2px; background: var(--danger)"></i><i style="position: absolute; top: -5px; bottom: -5px; left: {{ev.m340}}%; width: 2px; background: var(--text-muted)"></i></div><span class="num" style="text-align: right; font-size: 13px">{{b.v}}</span></div>
+              </sc-for>
+              <div class="legend"><span><i style="background: var(--danger); width: 3px"></i>teto atual · US$ 300</span><span><i style="background: var(--text-muted); width: 3px"></i>teto pedido · US$ 340</span></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ev.contract}}" hint-placeholder-val="{{false}}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 10px">
+              <sc-for list="{{ev.facts}}" as="x" hint-placeholder-count="4"><div class="card" style="padding: 12px 14px; background: var(--surface-0)"><div class="eyebrow" style="font-size: 10px">{{x.k}}</div><div style="margin-top: 6px; font-size: 14px; font-weight: 600">{{x.v}}</div></div></sc-for>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap">
+              <sc-for list="{{ev.signs}}" as="x" hint-placeholder-count="2"><div class="card" style="flex: 1 1 220px; padding: 14px; display: flex; gap: 12px; align-items: center; border-color: {{x.bd}}"><span style="width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: {{x.bg}}; color: {{x.fg}}; flex: none"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{x.icon}}"></path></svg></span><div><b style="font-size: 14px">{{x.who}}</b><div class="muted" style="font-size: 12px">{{x.st}}</div></div></div></sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ev.text}}" hint-placeholder-val="{{false}}">
+            <sc-for list="{{ev.texts}}" as="x" hint-placeholder-count="2">
+              <div class="card" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; border-color: {{x.bd}}; background: var(--surface-0)">
+                <div style="display: flex; align-items: center"><span class="eyebrow" style="font-size: 10px">{{x.k}}</span><div class="grow"></div><span class="num" style="font-size: 12px; color: {{x.c}}">{{x.len}} / 60 caracteres</span></div>
+                <p style="font-size: 18px; font-weight: 600; letter-spacing: -.01em">{{x.t}}</p>
+                <div style="position: relative" class="track"><div class="fill" style="width: {{x.w}}%; background: {{x.c}}"></div></div>
+              </div>
+            </sc-for>
+          </sc-if>
+        </section>
+
+        <sc-if value="{{cur.pending}}" hint-placeholder-val="{{true}}">
+        <div class="{{sp.decide}}" style="display: flex; flex-direction: column; gap: 12px; border-radius: 16px">
+          <div style="display: flex; align-items: center"><span class="eyebrow">Sua decisão</span><div class="grow"></div><span class="muted" style="font-size: 12px">Escolha um caminho para ver o que acontece em seguida</span></div>
+          <div class="g3" style="gap: 12px">
+            <sc-for list="{{chs}}" as="c" hint-placeholder-count="3">
+              <button class="lift" sc-camel-on-click="{{c.pick}}" aria-pressed="{{c.pressed}}" style="text-align: left; color: inherit; padding: 16px; border-radius: 14px; border: 1.5px solid {{c.bd}}; background: {{c.bg}}; display: flex; flex-direction: column; gap: 12px; width: 100%">
+                <div style="display: flex; align-items: center; gap: 10px"><span style="width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: {{c.ibg}}; color: {{c.ifg}}; transition: all 160ms var(--ease)"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg></span><b style="font-size: 15px">{{c.label}}</b><div class="grow"></div><span class="kbd">{{c.key}}</span></div>
+                <div style="display: flex; flex-direction: column; gap: 7px"><sc-for list="{{c.steps}}" as="t" hint-placeholder-count="3"><div style="display: flex; gap: 8px; font-size: 13px; color: var(--text-secondary); line-height: 1.4"><span class="num" style="color: {{c.tone}}; font-size: 11px; padding-top: 2px">{{t.n}}</span><span>{{t.t}}</span></div></sc-for></div>
+              </button>
+            </sc-for>
+          </div>
+          <sc-if value="{{dcConfirm.show}}" hint-placeholder-val="{{false}}">
+            <div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; animation: slideup 220ms var(--ease) both; border: 1.5px solid {{dcConfirm.bd}}">
+              <p style="font-size: 14px"><b>{{dcConfirm.head}}</b> <span class="sec">{{dcConfirm.text}}</span></p>
+              <textarea class="input" rows="2" value="{{decNote}}" sc-camel-on-change="{{onDecNote}}" placeholder="{{dcConfirm.ph}}" aria-label="Comentário da decisão"></textarea>
+              <sc-if value="{{decErr}}" hint-placeholder-val="{{false}}"><small style="color: var(--danger)">Uma recusa precisa de motivo. O agente usa isso para refazer.</small></sc-if>
+              <div class="actions"><button class="btn ghost" sc-camel-on-click="{{decCancel}}">Voltar</button><div class="grow"></div><span class="muted" style="font-size: 12px">Fica registrado no livro-razão com seu nome</span><button class="btn {{dcConfirm.cls}}" sc-camel-on-click="{{decConfirm}}">{{dcConfirm.label}}</button></div>
+            </div>
+          </sc-if>
+        </div>
+        </sc-if>
+        <sc-if value="{{cur.decided}}" hint-placeholder-val="{{false}}">
+          <div class="card pad" style="display: flex; gap: 14px; align-items: center">
+            <span style="width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: {{cur.recBg}}; color: {{cur.recFg}}"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{cur.recIcon}}"></path></svg></span>
+            <div class="grow"><b>Decisão: {{cur.stLabel}}</b><div class="muted" style="font-size: 13px">{{cur.decidedAt}} · por Carlos · registrada no livro-razão</div></div>
+          </div>
+        </sc-if>
+      </div>
+      <aside style="flex: 1 1 280px; max-width: 380px; display: flex; flex-direction: column; gap: 14px; position: sticky; top: 16px">
+        <section class="card">
+          <div class="card-h"><h3>Impacto</h3><div class="grow"></div><span class="badge {{cur.impCls}}">{{cur.impact}}</span></div>
+          <div class="rows"><sc-for list="{{cur.impacts}}" as="m" hint-placeholder-count="3"><div class="row" style="cursor: default"><span class="eyebrow grow" style="font-size: 10px">{{m.k}}</span><b style="font-size: 14px">{{m.v}}</b></div></sc-for></div>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Envolvidos</h3></div>
+          <div class="rows"><sc-for list="{{cur.people}}" as="p" hint-placeholder-count="3"><div class="row" style="cursor: default"><span class="av {{p.busy}}" style="width: 30px; height: 30px; font-size: 10px">{{p.ini}}</span><div class="grow"><div class="t" style="font-size: 13px">{{p.n}}</div><div class="m">{{p.r}}</div></div></div></sc-for></div>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Linha do tempo do pedido</h3></div>
+          <div style="padding: 8px 18px 12px"><sc-for list="{{cur.tl}}" as="t" hint-placeholder-count="3"><div style="display: flex; gap: 12px; padding: 8px 0; align-items: flex-start"><span class="num muted" style="font-size: 11px; width: 52px; flex: none; padding-top: 1px">{{t.t}}</span><i style="width: 8px; height: 8px; border-radius: 50%; background: {{t.c}}; margin-top: 5px; flex: none"></i><span style="font-size: 13px">{{t.x}}</span></div></sc-for></div>
+        </section>
+        <button class="btn secondary" sc-camel-on-click="{{chatWithReq}}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.msg}}"></path></svg>Conversar com {{cur.who}}</button>
+      </aside>
+      </div>
+      </div>
+      </sc-if>
+
+      <!-- decisão registrada -->
+      <sc-if value="{{dc.showDone}}" hint-placeholder-val="{{false}}">
+      <div class="page" style="max-width: 720px; margin: 0 auto; align-items: center; text-align: center; padding-top: 56px">
+        <div style="width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; background: {{done.bg}}; color: {{done.fg}}; animation: stamp 420ms var(--ease) both"><svg width="44" height="44" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{done.icon}}"></path></svg></div>
+        <div class="eyebrow">Decisão registrada · {{done.time}} · livro-razão</div>
+        <h1 style="font-size: 30px; font-weight: 600; letter-spacing: -.03em">{{done.verb}}</h1>
+        <p class="sec" style="font-size: 16px; max-width: 520px">{{done.title}}</p>
+        <div class="card" style="width: 100%; text-align: left; padding: 4px 18px">
+          <sc-for list="{{done.steps}}" as="t" hint-placeholder-count="3"><div style="display: flex; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); animation: slideup 320ms var(--ease) both; animation-delay: {{t.d}}ms"><span style="width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none"><svg width="12" height="12" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.check}}"></path></svg></span><span style="font-size: 14px">{{t.t}}</span><div class="grow"></div><span class="num muted" style="font-size: 11px">{{t.when}}</span></div></sc-for>
+        </div>
+        <sc-if value="{{done.hasNote}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 13px">Seu comentário: “{{done.note}}”</p></sc-if>
+        <div class="actions" style="justify-content: center"><button class="btn secondary" sc-camel-on-click="{{done.link}}">{{done.linkLabel}}</button><button class="btn primary" sc-camel-on-click="{{done.next}}">{{done.nextLabel}}</button></div>
+      </div>
+      </sc-if>
+
+      <!-- caixa zerada -->
+      <sc-if value="{{dc.showEmpty}}" hint-placeholder-val="{{false}}">
+      <div class="page" style="max-width: 520px; margin: 0 auto; align-items: center; text-align: center; padding-top: 80px">
+        <div style="width: 88px; height: 88px; border-radius: 50%; display: grid; place-items: center; background: var(--action-bg); color: var(--action-fg); animation: stamp 420ms var(--ease) both"><svg width="40" height="40" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.check}}"></path></svg></div>
+        <h1 style="font-size: 28px; font-weight: 600; letter-spacing: -.03em">Caixa zerada</h1>
+        <p class="sec">Nada neste filtro depende de você agora. Novas decisões aparecem aqui e no topo da Sala.</p>
+        <div class="actions" style="justify-content: center"><button class="btn secondary" sc-camel-on-click="{{dcSeeDone}}">Ver decididas</button><button class="btn primary" sc-camel-on-click="{{goRoom}}">Voltar para a Sala</button></div>
+      </div>
+      </sc-if>
+    </section>
+  </div>
+</div>
+</sc-if>
+
+<!-- ========== CHAT ========== -->
+<sc-if value="{{is.chat}}" hint-placeholder-val="{{false}}">
+<div class="split screen" style="height: 100%">
+  <aside class="split-side">
+    <div style="padding: 18px; display: flex; align-items: center; gap: 8px"><h2 style="font-size: 18px; font-weight: 600">Conversas</h2><div class="grow"></div><button class="btn sm secondary" sc-camel-on-click="{{openPick}}"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="{{ic.plus}}"></path></svg>Nova</button></div>
+    <div class="rows" style="border-top: 1px solid var(--line)">
+      <sc-for list="{{ch.convs}}" as="c" hint-placeholder-count="3">
+        <button class="row {{c.on}}" sc-camel-on-click="{{c.pick}}">
+          <span class="av {{c.busy}}">{{c.ini}}</span>
+          <div class="grow" style="min-width: 0"><div style="display: flex; gap: 8px"><span class="t">{{c.title}}</span><div class="grow"></div><span class="num muted" style="font-size: 11px">{{c.time}}</span></div><div class="m" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{c.agent}} · {{c.last}}</div></div>
+        </button>
+      </sc-for>
+    </div>
+  </aside>
+  <section class="split-main" style="display: flex; flex-direction: column; min-height: 0">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 14px 24px; border-bottom: 1px solid var(--line)">
+      <span class="av">{{ch.ini}}</span>
+      <div class="grow"><b>{{ch.agent}}</b><div class="muted" style="font-size: 12px">{{ch.role}}</div></div>
+      <span class="badge">{{ch.model}}</span>
+      <button class="ibtn sm" sc-camel-on-click="{{openChatSettings}}" aria-label="Ajustes da conversa"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.sliders}}"></path></svg></button>
+      <button class="ibtn sm" sc-camel-on-click="{{openDeleteChat}}" aria-label="Apagar conversa"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.trash}}"></path></svg></button>
+    </div>
+    <div style="display: flex; gap: 6px; padding: 10px 24px; border-bottom: 1px solid var(--line); flex-wrap: wrap"><span class="eyebrow" style="align-self: center; margin-right: 4px">Contexto</span><span class="badge flow">Sala de Operação</span><span class="badge">Livro-razão de hoje</span><span class="badge">Memória: ligada</span></div>
+    <div style="flex: 1; overflow: auto; padding: 24px; display: flex; flex-direction: column; gap: 12px; min-height: 280px">
+      <sc-for list="{{ch.msgs}}" as="m" hint-placeholder-count="3">
+        <div class="bubble {{m.cls}}"><div class="eyebrow" style="font-size: 10px; margin-bottom: 4px">{{m.who}}</div>{{m.text}}</div>
+      </sc-for>
+      <sc-if value="{{ch.empty}}" hint-placeholder-val="{{false}}"><p class="muted" style="text-align: center; margin: auto">Conversa vazia. Pergunte algo ou use uma sugestão.</p></sc-if>
+      <sc-if value="{{typing}}" hint-placeholder-val="{{false}}"><div class="typing" aria-label="digitando"><i></i><i></i><i></i></div></sc-if>
+    </div>
+    <div style="padding: 12px 24px 20px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line)">
+      <div class="segs"><sc-for list="{{ch.sugs}}" as="g" hint-placeholder-count="3"><button class="seg" sc-camel-on-click="{{g.pick}}">{{g.t}}</button></sc-for></div>
+      <form sc-camel-on-submit="{{sendChat}}" style="display: flex; gap: 8px; align-items: center">
+        <button type="button" class="ibtn" sc-camel-on-click="{{openAttach}}" aria-label="Anexar imagem"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.clip}}"></path></svg></button>
+        <input class="input" style="border-radius: 999px" value="{{chatDraft}}" sc-camel-on-change="{{onDraft}}" placeholder="Mensagem para {{ch.agent}}" aria-label="Mensagem">
+        <button type="submit" class="btn primary">Enviar<svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.send}}"></path></svg></button>
+      </form>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<!-- ========== FILHOS (módulos e demais áreas) ========== -->
+<sc-if value="{{is.Modulos}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Modulos" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.RaioX}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="RaioX" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Studio}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Studio" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Fabrica}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Fabrica" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Flow}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Flow" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Edicao}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Edicao" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Agentes}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Agentes" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Comercial}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Comercial" app="{{app}}" view="{{screen}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Social}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Social" app="{{app}}" view="{{screen}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Conhecimento}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Conhecimento" app="{{app}}" view="{{screen}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Estrategia}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Estrategia" app="{{app}}" view="{{screen}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Sistema}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Sistema" app="{{app}}" view="{{screen}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Config}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Config" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1000px"></dc-import></div></sc-if>
+<sc-if value="{{is.Fluxo}}" hint-placeholder-val="{{false}}"><div class="screen"><dc-import name="Fluxo" app="{{app}}" spot="{{spotKey}}" hint-size="100%,1100px"></dc-import></div></sc-if>
+
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= MODAL: INICIAR JOB ================= -->
+<sc-if value="{{m.job}}" hint-placeholder-val="{{false}}">
+<div class="back" sc-camel-on-click="{{closeBack}}">
+  <div class="modal lg {{sp.wizard}}" role="dialog" aria-modal="true" aria-label="Iniciar job">
+    <div class="mhead">
+      <div class="grow"><div class="eyebrow">Novo job · passo {{wz.pos}}</div><h2 style="margin-top: 6px">Iniciar job</h2><p>{{wz.lead}}</p></div>
+      <button class="ibtn sm" sc-camel-on-click="{{closeModal}}" aria-label="Fechar"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button>
+    </div>
+    <div style="display: flex; flex-wrap: wrap">
+      <div style="padding: 18px 0 18px 24px; display: flex; flex-direction: column; gap: 6px; width: 210px; flex: none">
+        <sc-for list="{{wz.steps}}" as="st" hint-placeholder-count="4">
+          <button class="choice {{st.on}}" style="padding: 10px 12px" sc-camel-on-click="{{st.pick}}"><span class="num" style="font-size: 11px; color: {{st.color}}">{{st.n}}</span><span class="grow"><b style="font-size: 13px; display: block">{{st.label}}</b><small>{{st.val}}</small></span></button>
+        </sc-for>
+      </div>
+      <div class="mbody grow" style="min-width: 280px">
+        <sc-if value="{{wz.s0}}" hint-placeholder-val="{{true}}">
+          <sc-for list="{{wz.motors}}" as="o" hint-placeholder-count="4"><button class="choice {{o.on}}" sc-camel-on-click="{{o.pick}}" disabled="{{o.off}}"><span class="rd"></span><span class="grow"><b style="display: block">{{o.label}}</b><small>{{o.sub}}</small></span><span class="badge {{o.bcls}}">{{o.meta}}</span></button></sc-for>
+        </sc-if>
+        <sc-if value="{{wz.s1}}" hint-placeholder-val="{{false}}">
+          <sc-for list="{{wz.models}}" as="o" hint-placeholder-count="3"><button class="choice {{o.on}}" sc-camel-on-click="{{o.pick}}"><span class="rd"></span><span class="grow"><b style="display: block" class="mono">{{o.label}}</b><small>{{o.sub}}</small></span><span class="badge">{{o.meta}}</span></button></sc-for>
+        </sc-if>
+        <sc-if value="{{wz.s2}}" hint-placeholder-val="{{false}}">
+          <sc-for list="{{wz.efforts}}" as="o" hint-placeholder-count="3"><button class="choice {{o.on}}" sc-camel-on-click="{{o.pick}}"><span class="rd"></span><span class="grow"><b style="display: block">{{o.label}}</b><small>{{o.sub}}</small></span><span class="badge">{{o.meta}}</span></button></sc-for>
+        </sc-if>
+        <sc-if value="{{wz.s3}}" hint-placeholder-val="{{false}}">
+          <label class="field"><span>Título do job</span><input class="input" value="{{jobTitle}}" sc-camel-on-change="{{onJobTitle}}" placeholder="Ex.: Revisar SEO da landing Atlas"></label>
+          <label class="field"><span>Teto de gasto (US$)</span><input class="input num" value="{{jobCeiling}}" sc-camel-on-change="{{onJobCeiling}}" inputmode="decimal"><small>O job para sozinho ao atingir o teto e abre um gate.</small>
+            <sc-if value="{{wz.ceilErr}}" hint-placeholder-val="{{false}}"><small style="color: var(--danger)">{{wz.ceilErrText}}</small></sc-if>
+          </label>
+          <div class="ink" style="padding: 16px; display: flex; gap: 16px; align-items: center">
+            <div class="grow"><div class="eyebrow">Estimativa</div><div class="num" style="font-size: 22px; color: var(--lime); margin-top: 4px">US$ {{wz.est}}</div><div class="muted" style="font-size: 12px">com base nos últimos 30 jobs parecidos</div></div>
+            <div style="width: 140px"><div class="track"><div class="fill lime" style="width: {{wz.estPct}}%"></div></div><div class="muted num" style="font-size: 11px; margin-top: 6px">{{wz.estPct}}% do teto</div></div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+    <div class="mfoot"><span class="muted grow" style="font-size: 12px">{{wz.summary}}</span><button class="btn ghost" sc-camel-on-click="{{wzBack}}">{{wz.backLabel}}</button><button class="btn primary" sc-camel-on-click="{{wzNext}}">{{wz.nextLabel}}</button></div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= MODAL GENÉRICO ================= -->
+<sc-if value="{{m.form}}" hint-placeholder-val="{{false}}">
+<div class="back" sc-camel-on-click="{{closeBack}}">
+  <form class="modal {{fm.size}}" role="dialog" aria-modal="true" aria-label="{{fm.title}}" sc-camel-on-submit="{{fmSubmit}}">
+    <div class="mhead">
+      <div class="grow"><sc-if value="{{fm.hasEyebrow}}" hint-placeholder-val="{{false}}"><div class="eyebrow" style="margin-bottom: 6px">{{fm.eyebrow}}</div></sc-if><h2>{{fm.title}}</h2><p>{{fm.lead}}</p></div>
+      <button type="button" class="ibtn sm" sc-camel-on-click="{{closeModal}}" aria-label="Fechar"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button>
+    </div>
+    <div class="mbody">
+      <sc-for list="{{fm.fields}}" as="f" hint-placeholder-count="2">
+        <sc-if value="{{f.isText}}" hint-placeholder-val="{{true}}"><label class="field"><span>{{f.label}}</span><input class="input" type="{{f.itype}}" value="{{f.val}}" placeholder="{{f.ph}}" sc-camel-on-change="{{f.onInput}}"><sc-if value="{{f.err}}" hint-placeholder-val="{{false}}"><small style="color: var(--danger)">{{f.errText}}</small></sc-if><sc-if value="{{f.hasHelp}}" hint-placeholder-val="{{false}}"><small>{{f.help}}</small></sc-if></label></sc-if>
+        <sc-if value="{{f.isArea}}" hint-placeholder-val="{{false}}"><label class="field"><span>{{f.label}}</span><textarea class="input" rows="{{f.rows}}" placeholder="{{f.ph}}" value="{{f.val}}" sc-camel-on-change="{{f.onInput}}"></textarea><sc-if value="{{f.err}}" hint-placeholder-val="{{false}}"><small style="color: var(--danger)">{{f.errText}}</small></sc-if></label></sc-if>
+        <sc-if value="{{f.isSegs}}" hint-placeholder-val="{{false}}"><div class="field"><span>{{f.label}}</span><div class="segs"><sc-for list="{{f.opts}}" as="o" hint-placeholder-count="3"><button type="button" class="seg {{o.on}}" sc-camel-on-click="{{o.pick}}">{{o.label}}</button></sc-for></div></div></sc-if>
+        <sc-if value="{{f.isChoice}}" hint-placeholder-val="{{false}}"><div class="field"><span>{{f.label}}</span><div style="display: flex; flex-direction: column; gap: 8px"><sc-for list="{{f.opts}}" as="o" hint-placeholder-count="3"><button type="button" class="choice {{o.on}}" sc-camel-on-click="{{o.pick}}"><span class="rd"></span><span class="grow"><b style="display: block; font-size: 14px">{{o.label}}</b><small>{{o.sub}}</small></span><sc-if value="{{o.hasMeta}}" hint-placeholder-val="{{false}}"><span class="badge">{{o.meta}}</span></sc-if></button></sc-for></div></div></sc-if>
+        <sc-if value="{{f.isToggle}}" hint-placeholder-val="{{false}}"><div class="setrow"><div class="grow"><b style="font-size: 14px">{{f.label}}</b><div class="muted" style="font-size: 12px">{{f.sub}}</div></div><button type="button" class="tgl {{f.on}}" sc-camel-on-click="{{f.flip}}" aria-label="{{f.label}}" aria-pressed="{{f.pressed}}"></button></div></sc-if>
+        <sc-if value="{{f.isNote}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 12px 14px; font-size: 13px; color: var(--text-secondary); display: flex; gap: 10px; align-items: flex-start; background: var(--surface-0)"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="{{f.color}}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{f.icon}}"></path></svg><span>{{f.text}}</span></div></sc-if>
+        <sc-if value="{{f.isCode}}" hint-placeholder-val="{{false}}"><div class="ink" style="padding: 14px 16px; border-radius: 12px"><pre class="mono" style="margin: 0; font-size: 12px; white-space: pre-wrap; color: var(--on-ink)">{{f.text}}</pre></div></sc-if>
+      </sc-for>
+    </div>
+    <div class="mfoot">
+      <sc-if value="{{fm.hasSecondary}}" hint-placeholder-val="{{false}}"><button type="button" class="btn ghost" sc-camel-on-click="{{fmSecondary}}">{{fm.secondary}}</button></sc-if>
+      <div class="grow"></div>
+      <button type="button" class="btn secondary" sc-camel-on-click="{{closeModal}}">{{fm.cancel}}</button>
+      <button type="submit" class="btn {{fm.primaryCls}}">{{fm.primary}}</button>
+    </div>
+  </form>
+</div>
+</sc-if>
+
+<!-- ================= PALETA ================= -->
+<sc-if value="{{m.palette}}" hint-placeholder-val="{{false}}">
+<div class="back" sc-camel-on-click="{{closeBack}}">
+  <div class="pal" role="dialog" aria-modal="true" aria-label="Busca">
+    <div style="position: relative">
+      <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 20px; top: 20px"><path d="{{ic.search}}"></path></svg>
+      <input value="{{palQ}}" sc-camel-on-change="{{onPalQ}}" sc-camel-on-key-down="{{onPalKey}}" placeholder="Buscar telas, tasks, agentes, ações…" aria-label="Buscar">
+    </div>
+    <div style="max-height: 420px; overflow: auto; padding: 8px 0">
+      <sc-for list="{{pal.hits}}" as="h" hint-placeholder-count="8">
+        <button class="hit" sc-camel-on-click="{{h.go}}" style="background: {{h.bg}}"><span class="k">{{h.k}}</span><span class="grow"><b style="font-size: 14px; font-weight: 600">{{h.t}}</b><span class="muted" style="font-size: 12px; margin-left: 8px">{{h.m}}</span></span><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.arrow}}"></path></svg></button>
+      </sc-for>
+      <sc-if value="{{pal.empty}}" hint-placeholder-val="{{false}}"><p class="muted" style="padding: 20px">Nada com esse termo.</p></sc-if>
+    </div>
+    <div style="display: flex; gap: 14px; padding: 10px 20px; border-top: 1px solid var(--line); font-size: 12px" class="muted"><span><span class="kbd">↑↓</span> navegar</span><span><span class="kbd">Enter</span> abrir</span><span><span class="kbd">Esc</span> fechar</span></div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= DRAWER: TASK ================= -->
+<sc-if value="{{m.taskdetail}}" hint-placeholder-val="{{false}}">
+<div class="back right" sc-camel-on-click="{{closeBack}}">
+  <aside class="drawer" role="dialog" aria-modal="true" aria-label="Detalhe da task">
+    <div class="mhead" style="padding-bottom: 16px; border-bottom: 1px solid var(--line)">
+      <div class="grow"><div style="display: flex; gap: 8px; align-items: center"><span class="eyebrow">Task #{{td.seq}}</span><span class="badge {{td.prioCls}}">{{td.prio}}</span><sc-if value="{{td.gate}}" hint-placeholder-val="{{false}}"><span class="badge danger">gate</span></sc-if></div><h2 style="margin-top: 8px">{{td.title}}</h2><p>{{td.who}} · {{td.sector}}</p></div>
+      <button class="ibtn sm" sc-camel-on-click="{{closeModal}}" aria-label="Fechar"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button>
+    </div>
+    <div class="mbody" style="gap: 20px">
+      <div class="field"><span>Coluna</span><div class="segs"><sc-for list="{{td.moves}}" as="mv" hint-placeholder-count="4"><button class="seg {{mv.on}}" sc-camel-on-click="{{mv.pick}}">{{mv.label}}</button></sc-for></div><small>{{td.moveHint}}</small></div>
+      <sc-if value="{{td.gate}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 14px; display: flex; gap: 10px; border-color: var(--danger)"><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.alert}}"></path></svg><div class="grow" style="font-size: 13px"><b>Card em gate.</b> A decisão mora em Decisões e trava o avanço até ser tomada.</div><button class="link" sc-camel-on-click="{{goDecisions}}">Decidir →</button></div></sc-if>
+      <div class="field"><span>Histórico</span>
+        <div style="display: flex; flex-direction: column">
+          <sc-for list="{{td.hist}}" as="h" hint-placeholder-count="3"><div style="display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px"><span class="num muted" style="width: 44px">{{h.t}}</span><span>{{h.text}}</span></div></sc-for>
+        </div>
+      </div>
+      <div class="actions"><button class="btn secondary" sc-camel-on-click="{{openPlan}}">Planejar com Paula</button><sc-if value="{{td.hasJob}}" hint-placeholder-val="{{false}}"><button class="btn primary" sc-camel-on-click="{{tdGoJob}}">Ver execução</button></sc-if></div>
+    </div>
+  </aside>
+</div>
+</sc-if>
+
+<!-- ================= DRAWER: OFÍCIO DO AGENTE ================= -->
+<sc-if value="{{m.soul}}" hint-placeholder-val="{{false}}">
+<div class="back right" sc-camel-on-click="{{closeBack}}">
+  <aside class="drawer" role="dialog" aria-modal="true" aria-label="Ofício do agente">
+    <div class="ink" style="border-radius: 0; border: 0; padding: 24px; display: flex; gap: 16px; align-items: flex-start">
+      <span class="av lg {{ag.busy}}">{{ag.ini}}</span>
+      <div class="grow"><div class="eyebrow">{{ag.sector}} · {{ag.statusLabel}}</div><h2 style="font-size: 22px; font-weight: 600; margin-top: 6px">{{ag.name}}</h2><p class="muted" style="font-size: 13px; margin-top: 2px">{{ag.role}}</p><div style="margin-top: 10px"><span class="badge flow">{{ag.model}}</span></div></div>
+      <button class="ibtn sm" sc-camel-on-click="{{closeModal}}" aria-label="Fechar" style="color: var(--on-ink-muted); border-color: var(--on-ink-line)"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button>
+    </div>
+    <div class="tabs" style="padding: 0 16px"><sc-for list="{{ag.tabs}}" as="t" hint-placeholder-count="3"><button class="tab {{t.on}}" sc-camel-on-click="{{t.pick}}">{{t.label}}</button></sc-for></div>
+    <div class="mbody" style="flex: 1">
+      <sc-if value="{{ag.t0}}" hint-placeholder-val="{{true}}">
+        <label class="field"><span>Ofício</span><textarea class="input mono" rows="12" style="font-size: 12.5px" value="{{soulText}}" sc-camel-on-change="{{onSoul}}"></textarea><small>Lugar, critério, conflito, voz e limite. O ofício entra no contexto de todo job deste agente.</small></label>
+      </sc-if>
+      <sc-if value="{{ag.t1}}" hint-placeholder-val="{{false}}">
+        <sc-for list="{{ag.lessons}}" as="l" hint-placeholder-count="3"><div class="card" style="padding: 14px; display: flex; flex-direction: column; gap: 6px"><span class="eyebrow">{{l.when}} · {{l.src}}</span><p style="font-size: 14px">{{l.text}}</p></div></sc-for>
+      </sc-if>
+      <sc-if value="{{ag.t2}}" hint-placeholder-val="{{false}}">
+        <div class="g3" style="grid-template-columns: repeat(3, minmax(0, 1fr))">
+          <div class="metric" style="padding: 14px"><span class="eyebrow">Jobs 30d</span><strong style="font-size: 24px">{{ag.jobs}}</strong></div>
+          <div class="metric" style="padding: 14px"><span class="eyebrow">Aprov. 1ª</span><strong style="font-size: 24px">{{ag.first}}</strong></div>
+          <div class="metric" style="padding: 14px"><span class="eyebrow">Custo médio</span><strong style="font-size: 24px">{{ag.avg}}</strong></div>
+        </div>
+        <p class="muted" style="font-size: 12px">Dados do protótipo. No escritório real vêm da telemetria local.</p>
+      </sc-if>
+    </div>
+    <div class="mfoot"><button class="btn ghost" sc-camel-on-click="{{soulChat}}">Abrir chat</button><div class="grow"></div><button class="btn primary" sc-camel-on-click="{{soulSave}}">Salvar ofício</button></div>
+  </aside>
+</div>
+</sc-if>
+
+<!-- ================= ESCOLHER AGENTE ================= -->
+<sc-if value="{{m.pick}}" hint-placeholder-val="{{false}}">
+<div class="back" sc-camel-on-click="{{closeBack}}">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Escolher agente">
+    <div class="mhead"><div class="grow"><h2>Nova conversa</h2><p>Escolha alguém do roster. O ofício do agente vem junto.</p></div><button class="ibtn sm" sc-camel-on-click="{{closeModal}}" aria-label="Fechar"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></div>
+    <div class="mbody">
+      <input class="input" value="{{pickQ}}" sc-camel-on-change="{{onPickQ}}" placeholder="Buscar por nome ou setor" aria-label="Buscar agente">
+      <div class="card" style="max-height: 340px; overflow: auto">
+        <div class="rows"><sc-for list="{{pk}}" as="a" hint-placeholder-count="6"><button class="row" sc-camel-on-click="{{a.pick}}"><span class="av {{a.busy}}">{{a.ini}}</span><div class="grow"><div class="t">{{a.name}}</div><div class="m">{{a.role}}</div></div><span class="badge">{{a.sector}}</span></button></sc-for></div>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= TOAST ================= -->
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}">
+<div class="toast" role="status" aria-live="polite">
+  <svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1BC5BD" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.check}}"></path></svg>
+  <div class="grow"><b>{{toast.t}}</b><span>{{toast.m}}</span></div>
+</div>
+</sc-if>
+
+<!-- ================= FLUXO GUIADO ================= -->
+<sc-if value="{{tour.on}}" hint-placeholder-val="{{false}}">
+<div class="tour" role="dialog" aria-label="Fluxo guiado" style="left: {{tour.left}}">
+  <sc-if value="{{tour.picking}}" hint-placeholder-val="{{true}}">
+    <div style="padding: 18px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center"><span class="eyebrow">Fluxo guiado</span><div class="grow"></div><button class="ibtn sm" style="border-color: var(--on-ink-line); color: var(--on-ink-muted)" sc-camel-on-click="{{endTour}}" aria-label="Fechar fluxo guiado"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></div>
+      <h3>Escolha um percurso</h3>
+      <p>O protótipo navega sozinho. Você lê o porquê de cada tela e pode clicar em tudo no caminho.</p>
+      <button class="tour-cta" sc-camel-on-click="{{tourExec}}" style="padding: 14px"><span class="grow"><b>Ciclo de execução</b><small>Do login à medição · 8 passos</small></span><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B7F34A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.arrow}}"></path></svg></button>
+      <button class="tour-cta" sc-camel-on-click="{{tourClient}}" style="padding: 14px; border-color: rgba(27,197,189,.4); background: rgba(27,197,189,.08)"><span class="grow"><b>Jornada do cliente</b><small>Encontrar, conversar, vender, medir · 6 passos</small></span><svg width="18" height="18" sc-camel-view-box="0 0 24 24" fill="none" stroke="#1BC5BD" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.arrow}}"></path></svg></button>
+    </div>
+  </sc-if>
+  <sc-if value="{{tour.running}}" hint-placeholder-val="{{false}}">
+    <div class="tour-prog"><sc-for list="{{tour.dots}}" as="d" hint-placeholder-count="8"><i class="{{d.cls}}"></i></sc-for></div>
+    <div style="padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; gap: 8px"><span class="eyebrow">{{tour.name}} · {{tour.pos}}</span><div class="grow"></div><button class="ibtn sm" style="border-color: var(--on-ink-line); color: var(--on-ink-muted)" sc-camel-on-click="{{endTour}}" aria-label="Sair do fluxo guiado"><svg width="14" height="14" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="{{ic.x}}"></path></svg></button></div>
+      <h3>{{tour.title}}</h3>
+      <p>{{tour.body}}</p>
+      <div class="why"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="#B7F34A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.spark}}"></path></svg><span><b style="color: var(--lime)">Por que importa.</b> {{tour.why}}</span></div>
+      <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px">
+        <span class="mono" style="font-size: 11px; color: var(--on-ink-muted)">{{tour.where}}</span>
+        <div class="grow"></div>
+        <button class="btn sm onink-sec" sc-camel-on-click="{{tourPrev}}" disabled="{{tour.first}}">Anterior</button>
+        <button class="btn sm onink" sc-camel-on-click="{{tourNext}}">{{tour.nextLabel}}</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+</div>
+</x-dc>

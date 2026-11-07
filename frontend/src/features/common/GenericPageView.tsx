@@ -347,8 +347,8 @@ export function GenericPageView(props: Props) {
                 onRowClick: () => {
                   setSelectedApprovalId(app.id);
                   setCurrentDomainId("op");
-                  setCurrentScreenId("approvals");
-                  navigate("/aprovacoes");
+                  setCurrentScreenId("decisions");
+                  navigate("/decisoes");
                 },
               }))
             : [
@@ -847,8 +847,8 @@ export function GenericPageView(props: Props) {
                   onAction: () => {
                     setSelectedApprovalId("ap-01");
                     setCurrentDomainId("op");
-                    setCurrentScreenId("approvals");
-                    navigate("/aprovacoes");
+                    setCurrentScreenId("decisions");
+                    navigate("/decisoes");
                   },
                 },
               ],

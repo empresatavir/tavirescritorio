@@ -1,0 +1,2393 @@
+{
+  "screenId": "sala-dark",
+  "side": "candidate",
+  "capturedUrl": "http://127.0.0.1:9198/sala-operacao",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:9198/sala-operacao",
+      "title": "TAVIR Escritório — Painel Operacional",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 52,
+        "nav": 1,
+        "img": 2,
+        "button": 38,
+        "span": 105,
+        "svg": 16,
+        "path": 37,
+        "polygon": 2,
+        "polyline": 2,
+        "rect": 3,
+        "circle": 5,
+        "line": 2,
+        "aside": 1,
+        "header": 1,
+        "main": 1,
+        "p": 4,
+        "section": 6,
+        "strong": 5,
+        "i": 17,
+        "small": 4,
+        "br": 2
+      },
+      "visibleText": [
+        {
+          "text": "☀️",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sala de Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Execuções",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tasks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decisões",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Chat",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sala de Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AO VIVO",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "QUINTA-FEIRA, 29 DE OUTUBRO · SALA DE OPERAÇÃO",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Boa tarde, Carlos.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2 jobs rodando, 5 decisões esperando você, 2 cards em gate. O resto segue sem bloqueio.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Novo projeto",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Nova task",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "O que pede você",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "6 pendentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Abrir Decisões →",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "DD",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Deploy landing Meridian — variável ausente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Davi DevOps · Checkpoint · há 21h",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Impacto alto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decidir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "AN",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Roadmap Q4 IA Livros — aprovar priorização",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Arquiteto de Nicho · Autorização · há 3h",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Impacto alto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decidir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "PP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gasto mensal acima do teto — modelo opus-4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Paula PM · Autorização · há 40 min",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Impacto médio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decidir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Teto do mês · outubro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Finanças →",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "US$ 212",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "de US$ 300",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Custo diário · últimos 14 dias · dados do protótipo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Jobs rodando",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1 na fila · 1 com falha",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cards ativos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "7",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3 em execução",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gates abertos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "mais antigo há 5 h",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Custo hoje",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "US$ 8,40",
+          "tag": "strong",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "teto diário US$ 12",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Jobs ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2 rodando",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Execuções →",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "NS",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "SEO da landing principal",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nina SEO · claude-sonnet-4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "62",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "US$",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1,84",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "de",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "8",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carrossel Multiverso ep. 14",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Adriano Arte · claude-sonnet-4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "41",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "US$",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0,92",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "de",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Esteiras dos módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos →",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Meridian — landing institucional",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio · etapa 6 de 8 · QA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Gate",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Multiverso — carrossel ep. 14",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio · etapa 3 de 5 · Arte",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rodando",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Escalados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cards ativos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tasks →",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema ☀️ Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 14,
+            "width": 30,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "Escritório OPERAÇÃO Sala de Operação Execuções 3 Tasks Decisões 5 Agentes Chat Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 80,
+            "y": 13,
+            "width": 203,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 3",
+          "label": null,
+          "text": "Execuções 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks",
+          "label": null,
+          "text": "Tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 308,
+            "width": 219,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Operação / Sala de Operação AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Operação / Sala de Operação AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "div",
+          "id": null,
+          "role": null,
+          "name": "Indicador de dados operacionais ao vivo",
+          "label": null,
+          "text": "AO VIVO",
+          "placeholder": null,
+          "title": "Indicador de dados operacionais ao vivo",
+          "rect": {
+            "x": 523,
+            "y": 20,
+            "width": 81,
+            "height": 24
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          }
+        },
+        {
+          "tag": "main",
+          "id": null,
+          "role": "main",
+          "name": "QUINTA-FEIRA, 29 DE OUTUBRO · SALA DE OPERAÇÃO Boa tarde, Carlos. 2 jobs rodando, 5 decisões esperando você, 2 cards em gate. O resto segue sem bloqueio. Novo projeto Nova task O QUE PEDE VOCÊ 6 PENDENTES Abrir Decisões → DD Deploy landing Meridian — variável ausente Davi DevOps · Checkpoint · há 21h IMPACTO ALTO Decidir AN Roadmap Q4 IA Livros — aprovar priorização Arquiteto de Nicho · Autorização · há 3h IMPACTO ALTO Decidir PP Gasto mensal acima do teto — modelo opus-4 Paula PM · Autorização · há 40 min IMPACTO MÉDIO Decidir TETO DO MÊS · OUTUBRO Finanças → US$ 212 de US$ 300 Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62. CUSTO DIÁRIO · ÚLTIMOS 14 DIAS · DADOS DO PROTÓTIPO JOBS RODANDO 2 1 na fila · 1 com falha CARDS ATIVOS 7 3 em execução GATES ABERTOS 5 mais antigo há 5 h CUSTO HOJE US$ 8,40 teto diário US$ 12 Jobs ao vivo 2 RODANDO Execuções → NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8 AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5 Esteiras dos módulos Módulos → Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO Escalados 0 Cards ativos 0 Tasks →",
+          "label": null,
+          "text": "QUINTA-FEIRA, 29 DE OUTUBRO · SALA DE OPERAÇÃO Boa tarde, Carlos. 2 jobs rodando, 5 decisões esperando você, 2 cards em gate. O resto segue sem bloqueio. Novo projeto Nova task O QUE PEDE VOCÊ 6 PENDENTES Abrir Decisões → DD Deploy landing Meridian — variável ausente Davi DevOps · Checkpoint · há 21h IMPACTO ALTO Decidir AN Roadmap Q4 IA Livros — aprovar priorização Arquiteto de Nicho · Autorização · há 3h IMPACTO ALTO Decidir PP Gasto mensal acima do teto — modelo opus-4 Paula PM · Autorização · há 40 min IMPACTO MÉDIO Decidir TETO DO MÊS · OUTUBRO Finanças → US$ 212 de US$ 300 Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62. CUSTO DIÁRIO · ÚLTIMOS 14 DIAS · DADOS DO PROTÓTIPO JOBS RODANDO 2 1 na fila · 1 com falha CARDS ATIVOS 7 3 em execução GATES ABERTOS 5 mais antigo há 5 h CUSTO HOJE US$ 8,40 teto diário US$ 12 Jobs ao vivo 2 RODANDO Execuções → NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8 AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5 Esteiras dos módulos Módulos → Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO Escalados 0 Cards ativos 0 Tasks →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 64,
+            "width": 1140,
+            "height": 836
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo projeto",
+          "label": null,
+          "text": "Novo projeto",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1221,
+            "y": 146,
+            "width": 102,
+            "height": 34
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova task",
+          "label": null,
+          "text": "Nova task",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1331,
+            "y": 146,
+            "width": 85,
+            "height": 34
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "O QUE PEDE VOCÊ 6 PENDENTES Abrir Decisões → DD Deploy landing Meridian — variável ausente Davi DevOps · Checkpoint · há 21h IMPACTO ALTO Decidir AN Roadmap Q4 IA Livros — aprovar priorização Arquiteto de Nicho · Autorização · há 3h IMPACTO ALTO Decidir PP Gasto mensal acima do teto — modelo opus-4 Paula PM · Autorização · há 40 min IMPACTO MÉDIO Decidir",
+          "label": null,
+          "text": "O QUE PEDE VOCÊ 6 PENDENTES Abrir Decisões → DD Deploy landing Meridian — variável ausente Davi DevOps · Checkpoint · há 21h IMPACTO ALTO Decidir AN Roadmap Q4 IA Livros — aprovar priorização Arquiteto de Nicho · Autorização · há 3h IMPACTO ALTO Decidir PP Gasto mensal acima do teto — modelo opus-4 Paula PM · Autorização · há 40 min IMPACTO MÉDIO Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 200,
+            "width": 704,
+            "height": 267
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir Decisões →",
+          "label": null,
+          "text": "Abrir Decisões →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 909,
+            "y": 223,
+            "width": 95,
+            "height": 16
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 939,
+            "y": 267,
+            "width": 65,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 937,
+            "y": 331,
+            "width": 67,
+            "height": 30
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 937,
+            "y": 396,
+            "width": 67,
+            "height": 30
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "TETO DO MÊS · OUTUBRO Finanças → US$ 212 de US$ 300 Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62. CUSTO DIÁRIO · ÚLTIMOS 14 DIAS · DADOS DO PROTÓTIPO",
+          "label": null,
+          "text": "TETO DO MÊS · OUTUBRO Finanças → US$ 212 de US$ 300 Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62. CUSTO DIÁRIO · ÚLTIMOS 14 DIAS · DADOS DO PROTÓTIPO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1044,
+            "y": 200,
+            "width": 372,
+            "height": 304
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças →",
+          "label": null,
+          "text": "Finanças →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1329,
+            "y": 222,
+            "width": 63,
+            "height": 16
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "JOBS RODANDO 2 1 na fila · 1 com falha",
+          "label": null,
+          "text": "JOBS RODANDO 2 1 na fila · 1 com falha",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CARDS ATIVOS 7 3 em execução",
+          "label": null,
+          "text": "CARDS ATIVOS 7 3 em execução",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 600,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "GATES ABERTOS 5 mais antigo há 5 h",
+          "label": null,
+          "text": "GATES ABERTOS 5 mais antigo há 5 h",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 876,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CUSTO HOJE US$ 8,40 teto diário US$ 12",
+          "label": null,
+          "text": "CUSTO HOJE US$ 8,40 teto diário US$ 12",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1152,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Jobs ao vivo 2 RODANDO Execuções → NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8 AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "label": null,
+          "text": "Jobs ao vivo 2 RODANDO Execuções → NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8 AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 652,
+            "width": 522,
+            "height": 217
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções →",
+          "label": null,
+          "text": "Execuções →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 755,
+            "y": 667,
+            "width": 74,
+            "height": 16
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8",
+          "label": null,
+          "text": "NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 325,
+            "y": 698,
+            "width": 520,
+            "height": 85
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "label": null,
+          "text": "AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 325,
+            "y": 783,
+            "width": 520,
+            "height": 85
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Esteiras dos módulos Módulos → Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "label": null,
+          "text": "Esteiras dos módulos Módulos → Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 862,
+            "y": 652,
+            "width": 522,
+            "height": 193
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos →",
+          "label": null,
+          "text": "Módulos →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1305,
+            "y": 667,
+            "width": 62,
+            "height": 16
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE",
+          "label": null,
+          "text": "Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 863,
+            "y": 698,
+            "width": 520,
+            "height": 73
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "label": null,
+          "text": "Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 863,
+            "y": 771,
+            "width": 520,
+            "height": 73
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Escalados 0",
+          "label": null,
+          "text": "Escalados 0",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1400,
+            "y": 652,
+            "width": 0,
+            "height": 0
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Cards ativos 0 Tasks →",
+          "label": null,
+          "text": "Cards ativos 0 Tasks →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1416,
+            "y": 652,
+            "width": 0,
+            "height": 0
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks →",
+          "label": null,
+          "text": "Tasks →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1508,
+            "y": 668,
+            "width": 31,
+            "height": 32
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": "Operação",
+          "rect": {
+            "x": 10,
+            "y": 62,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": "Módulos",
+          "rect": {
+            "x": 10,
+            "y": 112,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": "Comercial",
+          "rect": {
+            "x": 10,
+            "y": 162,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": "Social",
+          "rect": {
+            "x": 10,
+            "y": 212,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": "Conhecimento",
+          "rect": {
+            "x": 10,
+            "y": 262,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": "Estratégia",
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": "Sistema",
+          "rect": {
+            "x": 10,
+            "y": 362,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "☀️ Tema claro",
+          "placeholder": null,
+          "title": "Alternar tema (atual: dark)",
+          "rect": {
+            "x": 14,
+            "y": 808,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Gerenciar sessão do operador",
+          "label": "Gerenciar sessão do operador",
+          "text": "CH",
+          "placeholder": null,
+          "title": "Carlos · CEO (Clique para gerenciar sessão)",
+          "rect": {
+            "x": 16,
+            "y": 856,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 103,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 3",
+          "label": null,
+          "text": "Execuções 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 144,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks",
+          "label": null,
+          "text": "Tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 185,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 226,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 267,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 308,
+            "width": 219,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 723,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 72,
+            "y": 777,
+            "width": 219,
+            "height": 50
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "label": "Buscar telas, tasks, agentes… (Ctrl K)",
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 951,
+            "y": 16,
+            "width": 300,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1263,
+            "y": 16,
+            "width": 32,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar novo job operacional",
+          "label": "Iniciar novo job operacional",
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1307,
+            "y": 16,
+            "width": 109,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo projeto",
+          "label": null,
+          "text": "Novo projeto",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1221,
+            "y": 146,
+            "width": 102,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova task",
+          "label": null,
+          "text": "Nova task",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1331,
+            "y": 146,
+            "width": 85,
+            "height": 34
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir Decisões →",
+          "label": null,
+          "text": "Abrir Decisões →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 909,
+            "y": 223,
+            "width": 95,
+            "height": 16
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 939,
+            "y": 267,
+            "width": 65,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 937,
+            "y": 331,
+            "width": 67,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decidir",
+          "label": null,
+          "text": "Decidir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 937,
+            "y": 396,
+            "width": 67,
+            "height": 30
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Finanças →",
+          "label": null,
+          "text": "Finanças →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1329,
+            "y": 222,
+            "width": 63,
+            "height": 16
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "JOBS RODANDO 2 1 na fila · 1 com falha",
+          "label": null,
+          "text": "JOBS RODANDO 2 1 na fila · 1 com falha",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 324,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CARDS ATIVOS 7 3 em execução",
+          "label": null,
+          "text": "CARDS ATIVOS 7 3 em execução",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 600,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "GATES ABERTOS 5 mais antigo há 5 h",
+          "label": null,
+          "text": "GATES ABERTOS 5 mais antigo há 5 h",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 876,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "CUSTO HOJE US$ 8,40 teto diário US$ 12",
+          "label": null,
+          "text": "CUSTO HOJE US$ 8,40 teto diário US$ 12",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1152,
+            "y": 520,
+            "width": 264,
+            "height": 116
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções →",
+          "label": null,
+          "text": "Execuções →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 755,
+            "y": 667,
+            "width": 74,
+            "height": 16
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8",
+          "label": null,
+          "text": "NS SEO da landing principal Nina SEO · claude-sonnet-4 62% US$ 1,84 de 8",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 325,
+            "y": 698,
+            "width": 520,
+            "height": 85
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "label": null,
+          "text": "AA Carrossel Multiverso ep. 14 Adriano Arte · claude-sonnet-4 41% US$ 0,92 de 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 325,
+            "y": 783,
+            "width": 520,
+            "height": 85
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos →",
+          "label": null,
+          "text": "Módulos →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1305,
+            "y": 667,
+            "width": 62,
+            "height": 16
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE",
+          "label": null,
+          "text": "Meridian — landing institucional Studio · etapa 6 de 8 · QA GATE",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 863,
+            "y": 698,
+            "width": 520,
+            "height": 73
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "label": null,
+          "text": "Multiverso — carrossel ep. 14 Studio · etapa 3 de 5 · Arte RODANDO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 863,
+            "y": 771,
+            "width": 520,
+            "height": 73
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks →",
+          "label": null,
+          "text": "Tasks →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1508,
+            "y": 668,
+            "width": 31,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 30,
+          "height": 30
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 203,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

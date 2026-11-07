@@ -1,0 +1,2266 @@
+{
+  "screenId": "memoria",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 29,
+        "nav": 1,
+        "button": 35,
+        "img": 2,
+        "i": 5,
+        "aside": 1,
+        "small": 3,
+        "span": 127,
+        "b": 12,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 1,
+        "input": 1,
+        "table": 1,
+        "thead": 1,
+        "tr": 11,
+        "th": 6,
+        "tbody": 1,
+        "td": 60
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conhecimento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cérebro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Memória e biblioteca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ideias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conhecimento",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Memória e biblioteca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Conhecimento",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Memória e biblioteca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Notas, referências e dados que os agentes consultam, com fonte e grau de confiança.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cérebro",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Memória e biblioteca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ideias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Todos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Casa",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Projeto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Biblioteca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "todos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "psicologia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "copywriting",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "negócios",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "engenharia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "mercados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "frameworks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "design",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Item",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Escopo",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Domínio",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fonte",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Confiança",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Atualizado",
+          "tag": "th",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Limite editorial de headline: 60 caracteres",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Casa",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "copywriting",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "canon/editorial.md",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "27/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Clínicas respondem melhor a confirmação 24 h antes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Casa",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "negócios",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "raiox/clinicas.csv",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "média",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "22/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Meridian: textos regulatórios passam pelo jurídico",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Projeto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "negócios",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "meridian/briefing.md",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "02/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Hook visual antes da narração",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "design",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "lições/oraculo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "26/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Viés de ancoragem em tabela de preço",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Biblioteca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "psicologia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Kahneman, cap. 11",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "14/09",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Jobs-to-be-done para oferta local",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Biblioteca",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "frameworks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Christensen, 2016",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "03/09",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Telemetria de custo por modelo · 90 dias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "mercados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "sqlite/telemetry",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "observado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "hoje",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Padrão de API REST do escritório",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Projeto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "engenharia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "escritorio/api.md",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "19/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Contraste mínimo 4,5:1 em todo texto",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Casa",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "design",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "tavir-ds/readme",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "18/09",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Concorrentes de presença local em SP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "mercados",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "raiox/concorrentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "inferido",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "11/10",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO CONHECIMENTO Cérebro Memória e biblioteca Ideias Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Conhecimento / Memória e biblioteca AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Conhecimento / Memória e biblioteca AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 1076,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 81,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 417,
+            "y": 201,
+            "width": 166,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 587,
+            "y": 201,
+            "width": 65,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Todos 10",
+          "label": null,
+          "text": "Todos 10",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 273,
+            "width": 88,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Casa 3",
+          "label": null,
+          "text": "Casa 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 426,
+            "y": 273,
+            "width": 75,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Projeto 2",
+          "label": null,
+          "text": "Projeto 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 507,
+            "y": 273,
+            "width": 90,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agente 1",
+          "label": null,
+          "text": "Agente 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 602,
+            "y": 273,
+            "width": 90,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Biblioteca 2",
+          "label": null,
+          "text": "Biblioteca 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 699,
+            "y": 273,
+            "width": 106,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Dados 2",
+          "label": null,
+          "text": "Dados 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 811,
+            "y": 273,
+            "width": 84,
+            "height": 32
+          }
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar na memória",
+          "label": "Buscar na memória",
+          "text": null,
+          "placeholder": "Buscar na memória",
+          "title": null,
+          "rect": {
+            "x": 1128,
+            "y": 268,
+            "width": 280,
+            "height": 42
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "todos",
+          "label": null,
+          "text": "todos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 334,
+            "width": 61,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "psicologia",
+          "label": null,
+          "text": "psicologia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 399,
+            "y": 334,
+            "width": 86,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "copywriting",
+          "label": null,
+          "text": "copywriting",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 491,
+            "y": 334,
+            "width": 95,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "negócios",
+          "label": null,
+          "text": "negócios",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 592,
+            "y": 334,
+            "width": 80,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "engenharia",
+          "label": null,
+          "text": "engenharia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 678,
+            "y": 334,
+            "width": 92,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "mercados",
+          "label": null,
+          "text": "mercados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 777,
+            "y": 334,
+            "width": 85,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "frameworks",
+          "label": null,
+          "text": "frameworks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 868,
+            "y": 334,
+            "width": 95,
+            "height": 28
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "design",
+          "label": null,
+          "text": "design",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 969,
+            "y": 334,
+            "width": 67,
+            "height": 28
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Cérebro",
+          "label": null,
+          "text": "Cérebro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 81,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Memória e biblioteca",
+          "label": null,
+          "text": "Memória e biblioteca",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 417,
+            "y": 201,
+            "width": 166,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ideias",
+          "label": null,
+          "text": "Ideias",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 587,
+            "y": 201,
+            "width": 65,
+            "height": 42
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Todos 10",
+          "label": null,
+          "text": "Todos 10",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 273,
+            "width": 88,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Casa 3",
+          "label": null,
+          "text": "Casa 3",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 426,
+            "y": 273,
+            "width": 75,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Projeto 2",
+          "label": null,
+          "text": "Projeto 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 507,
+            "y": 273,
+            "width": 90,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agente 1",
+          "label": null,
+          "text": "Agente 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 602,
+            "y": 273,
+            "width": 90,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Biblioteca 2",
+          "label": null,
+          "text": "Biblioteca 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 699,
+            "y": 273,
+            "width": 106,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Dados 2",
+          "label": null,
+          "text": "Dados 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 811,
+            "y": 273,
+            "width": 84,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "input",
+          "id": null,
+          "role": "textbox",
+          "name": "Buscar na memória",
+          "label": "Buscar na memória",
+          "text": null,
+          "placeholder": "Buscar na memória",
+          "title": null,
+          "rect": {
+            "x": 1128,
+            "y": 268,
+            "width": 280,
+            "height": 42
+          },
+          "kind": "field",
+          "type": "text",
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": false,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "todos",
+          "label": null,
+          "text": "todos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 334,
+            "width": 61,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "psicologia",
+          "label": null,
+          "text": "psicologia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 399,
+            "y": 334,
+            "width": 86,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "copywriting",
+          "label": null,
+          "text": "copywriting",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 491,
+            "y": 334,
+            "width": 95,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "negócios",
+          "label": null,
+          "text": "negócios",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 592,
+            "y": 334,
+            "width": 80,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "engenharia",
+          "label": null,
+          "text": "engenharia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 678,
+            "y": 334,
+            "width": 92,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "mercados",
+          "label": null,
+          "text": "mercados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 777,
+            "y": 334,
+            "width": 85,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "frameworks",
+          "label": null,
+          "text": "frameworks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 868,
+            "y": 334,
+            "width": 95,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "design",
+          "label": null,
+          "text": "design",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 969,
+            "y": 334,
+            "width": 67,
+            "height": 28
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

@@ -35,12 +35,15 @@ frontend/.vite/
 *.db
 *.db-journal
 *.db-wal
+*.db-shm
 *.sqlite
 *.sqlite3
 
 # Environment & Secrets
 .env
 .env.*
+backend/data/engine_secrets.json
+db/engine_secrets.json
 !.env.example
 
 # IDE
@@ -79,3 +82,8 @@ nul
 .serena/cache/
 .serena/memories/
 .serena/project.local.yml
+
+# Runtime logs e testes temporários
+logs/
+frontend/test-results/
+visual/*_test.png

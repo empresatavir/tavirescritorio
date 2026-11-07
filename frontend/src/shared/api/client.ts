@@ -16,6 +16,7 @@ export interface Agent {
   skills: string | null;
   model_provider: string | null;
   soul_text?: string | null;
+  craft_text?: string | null;
   total_jobs?: number;
   total_cost?: number;
   avatar_color?: string | null;
@@ -25,12 +26,31 @@ export interface Agent {
   updated_at?: string;
 }
 
+export interface AgentLesson {
+  id: string;
+  agent_id: string;
+  situation?: string | null;
+  lesson: string;
+  why?: string | null;
+  how_to_apply?: string | null;
+  evidence?: string | null;
+  approval_id?: string | null;
+  status: string;
+}
+
+export interface ApiChatImage {
+  name: string;
+  url: string;
+}
+
 export interface ApiChatMessage {
   id: string;
   conversation_id: string;
   role: "user" | "assistant";
   text: string;
   meta?: string | null;
+  images?: ApiChatImage[] | null;
+  actions?: Array<{ tipo: string; rotulo: string; texto?: string; titulo?: string; demand_code?: string }> | null;
   created_at: string;
 }
 
@@ -73,6 +93,8 @@ export interface Job {
   model_provider?: string | null;
   model_name?: string | null;
   effort?: string | null;
+  budget_ceiling?: number | null;
+  cost_usd?: number | null;
   status: string;
   workspace_path: string | null;
   error_message: string | null;
@@ -121,6 +143,7 @@ export interface CreateJobRequest {
   model_name?: string | null;
   effort?: string | null;
   model_provider?: string | null;
+  budget_ceiling?: number | null;
   command?: string;
   timeout?: number;
   /** planning | execution | manual */
@@ -229,6 +252,59 @@ export interface CheckpointInfo {
   action?: string;
   problem?: string;
   solution?: string;
+}
+
+export interface GuardFlowStep {
+  n: number;
+  title: string;
+  command: string;
+  result: string;
+  status: string;
+  agent: string;
+  initials: string;
+  gate?: boolean;
+}
+
+export interface GuardRule {
+  id: string;
+  title: string;
+  kind?: string;
+  status: string;
+  detail?: string;
+}
+
+export interface GuardReturn {
+  title: string;
+  status: string;
+  detail: string;
+  actor: string;
+}
+
+export interface GuardEvidence {
+  path: string;
+  name: string;
+  kind: string;
+  status: string;
+  size: number;
+  note?: string;
+}
+
+export interface GuardDossier {
+  project_id: string;
+  run_id?: string | null;
+  template_code: string;
+  workspace_ok?: boolean;
+  rules: GuardRule[];
+  passed: number;
+  total: number;
+  pct: number;
+  ready_for_handoff: boolean;
+  rounds?: number;
+  flow?: GuardFlowStep[];
+  returns?: GuardReturn[];
+  evidence?: GuardEvidence[];
+  specialist?: boolean;
+  agent_error?: string;
 }
 
 export interface FactoryRunPayload {
@@ -546,6 +622,9 @@ export interface ApiApproval {
   description?: string | null;
   on_approve_text?: string | null;
   on_reject_text?: string | null;
+  group?: string | null;
+  kind?: string | null;
+  question?: string | null;
   decided_by?: string | null;
   justification?: string | null;
   decided_at?: string | null;
@@ -637,6 +716,7 @@ export interface Proposal {
   changes: ProposalChange[];
   timeline: [string, string, string][];
   send_info?: ProposalSendInfo | null;
+  raiox_case_id?: string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -726,9 +806,194 @@ function noticeAiLinkPayload(data: unknown) {
   }
 }
 
+export interface RaioxJourneyStage {
+  stage: string;
+  count: number;
+  usable: number;
+}
+
+export interface RaioxEvidence {
+  id: string;
+  stage: string;
+  source: string;
+  claim: string;
+  classification: string;
+  front?: string | null;
+  note?: string | null;
+  created_at: string;
+}
+
+export interface RaioxCatalogItem {
+  id: string;
+  kind: "modo" | "entrega" | "recurso";
+  cash_rank: number;
+  name: string;
+  cash_why: string;
+  promise: string;
+  includes: string[];
+  holds: string[];
+  status: string;
+  vault: string[];
+  defaults: {
+    objective?: string;
+    decision_needed?: string;
+    frontier?: string;
+  };
+  plano?: RaioxPlano;
+}
+
+export interface RaioxPlano {
+  quando: "agora" | "depois_da_primeira_receita" | "depois_da_base";
+  objetivo: string;
+  temos: string[];
+  precisa: string[];
+  ferramentas: string[];
+  investimento: string;
+  estrutura: string;
+  criar: string[];
+  mobile: string;
+}
+
+export interface RaioxCiclo {
+  janela: string;
+  foco: string;
+  escritorio: Array<{ ordem: number; titulo: string; entrega: string }>;
+  mobile: {
+    estado: string;
+    leva: string[];
+    fica_no_pc: string[];
+  };
+}
+
+export interface RaioxCatalog {
+  infra: {
+    public_url: string;
+    database: string;
+    mail: string;
+    gates: string;
+    improvements: string[];
+  };
+  ciclo?: RaioxCiclo;
+  items: RaioxCatalogItem[];
+}
+
+export interface RaioxScanFront {
+  id: string;
+  label: string;
+  covered: boolean;
+}
+
+export interface RaioxMethodPage {
+  path: string;
+  title: string;
+}
+
+export interface RaioxMethod {
+  path: string;
+  title: string;
+  definition: string;
+}
+
+export interface RaioxCaseSummary {
+  id: string;
+  company_name: string;
+  contact_name?: string | null;
+  objective: string;
+  product_id: string;
+  product_name: string;
+  deep_scan: boolean;
+  physical_store: boolean;
+  origin: string;
+  segment?: string | null;
+  public_link?: string | null;
+  package_id: string;
+  status: string;
+  bottleneck?: string | null;
+  priority_stage?: string | null;
+  next_offer?: string | null;
+  debrief_decision?: string | null;
+  evidence_count: number;
+  updated_at: string;
+}
+
+export interface RaioxCaseDetail extends RaioxCaseSummary {
+  decision_needed: string;
+  frontier?: string | null;
+  priority_rationale?: string | null;
+  discarded?: string | null;
+  confidence?: string | null;
+  debrief_reason?: string | null;
+  plan_30?: string | null;
+  plan_60?: string | null;
+  plan_90?: string | null;
+  created_at: string;
+  evidence: RaioxEvidence[];
+  journey: RaioxJourneyStage[];
+  scan: RaioxScanFront[];
+  method_pages: RaioxMethodPage[];
+  readiness: {
+    has_usable_evidence: boolean;
+    priority_ready: boolean;
+    debrief_ready: boolean;
+  };
+}
+
+export interface OfficeSession {
+  authenticated: boolean;
+  setup_required: boolean;
+  onboarding_complete: boolean;
+  expires_at: string | null;
+  operator: string;
+}
+
+export interface OfficeNotification {
+  id: string;
+  kind: string;
+  source_id: string;
+  title: string;
+  detail: string;
+  read: boolean;
+}
+
+export interface OfficeSearchHit {
+  kind: string;
+  id: string;
+  label: string;
+  href: string;
+}
+
 export const api = {
   // Health
   health: () => fetchJson<{ status: string; version: string }>("/api/v1/health"),
+
+  getSession: (signal?: AbortSignal) =>
+    fetchJson<OfficeSession>("/api/v1/auth/session", { signal }),
+
+  login: (secret: string) =>
+    fetchJson<OfficeSession>("/api/v1/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ secret }),
+    }),
+
+  logout: () => fetchJson<OfficeSession>("/api/v1/auth/logout", { method: "POST" }),
+
+  completeOnboarding: () =>
+    fetchJson<OfficeSession>("/api/v1/auth/onboarding/complete", { method: "POST" }),
+
+  listNotifications: () =>
+    fetchJson<{ unread_count: number; items: OfficeNotification[] }>("/api/v1/notifications"),
+
+  markNotificationRead: (id: string) =>
+    fetchJson<{ unread_count: number; items: OfficeNotification[] }>(
+      `/api/v1/notifications/${encodeURIComponent(id)}/read`,
+      { method: "POST" },
+    ),
+
+  searchOffice: (q: string, signal?: AbortSignal) =>
+    fetchJson<{ q: string; items: OfficeSearchHit[] }>(
+      `/api/v1/search?q=${encodeURIComponent(q)}`,
+      { signal },
+    ),
 
   // Cockpit
   getCockpitSummary: () => fetchJson<CockpitSummary>("/api/v1/cockpit/summary"),
@@ -803,7 +1068,8 @@ export const api = {
     approvalId: string,
     decision: string,
     justification?: string,
-    decidedBy: string = "CEO"
+    decidedBy: string = "CEO",
+    vault?: { name: string; value: string }
   ) =>
     fetchJson<ApiApproval>(`/api/v1/approvals/${approvalId}/decide`, {
       method: "POST",
@@ -811,6 +1077,8 @@ export const api = {
         decision,
         justification,
         decided_by: decidedBy,
+        vault_name: vault?.name,
+        vault_value: vault?.value,
       }),
     }),
 
@@ -825,11 +1093,23 @@ export const api = {
   },
   getAgent: (agentId: string) => fetchJson<Agent>(`/api/v1/agents/${agentId}`),
   getAgentSoul: (agentId: string) =>
-    fetchJson<{ agent_id: string; soul_text: string | null }>(`/api/v1/agents/${agentId}/soul`),
-  updateAgentSoul: (agentId: string, soul_text: string) =>
-    fetchJson<{ agent_id: string; soul_text: string }>(`/api/v1/agents/${agentId}/soul`, {
-      method: "PUT",
-      body: JSON.stringify({ soul_text }),
+    fetchJson<{ agent_id: string; soul_text: string | null; craft_text?: string | null }>(
+      `/api/v1/agents/${agentId}/soul`,
+    ),
+  updateAgentSoul: (agentId: string, soul_text: string, craft_text?: string) =>
+    fetchJson<{ agent_id: string; soul_text: string; craft_text?: string | null }>(
+      `/api/v1/agents/${agentId}/soul`,
+      {
+        method: "PUT",
+        body: JSON.stringify({ soul_text, craft_text: craft_text ?? "" }),
+      },
+    ),
+  listAgentLessons: (agentId: string) =>
+    fetchJson<AgentLesson[]>(`/api/v1/agents/${agentId}/lessons`),
+  setAgentLessonStatus: (agentId: string, lessonId: string, status: string) =>
+    fetchJson<AgentLesson>(`/api/v1/agents/${agentId}/lessons/${lessonId}`, {
+      method: "POST",
+      body: JSON.stringify({ status }),
     }),
 
   // Chat
@@ -851,10 +1131,10 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify({ settings }),
     }),
-  sendChatMessage: (convId: string, text: string) =>
+  sendChatMessage: (convId: string, text: string, images?: { name: string; data_url: string }[]) =>
     fetchJson<SendMessageResponse>(`/api/v1/chat/conversations/${convId}/messages`, {
       method: "POST",
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, images: images || [] }),
     }),
   deleteChatConversation: (convId: string) =>
     fetchJson<void>(`/api/v1/chat/conversations/${convId}`, {
@@ -891,6 +1171,12 @@ export const api = {
   getJob: (jobId: string) => fetchJson<Job>(`/api/v1/jobs/${jobId}`),
   pauseJob: (jobId: string) =>
     fetchJson<Job>(`/api/v1/jobs/${jobId}/pause`, { method: "POST" }),
+  resumeJob: (jobId: string) =>
+    fetchJson<Job>(`/api/v1/jobs/${jobId}/resume`, { method: "POST" }),
+  startJob: (jobId: string) =>
+    fetchJson<Job>(`/api/v1/jobs/${jobId}/start`, { method: "POST" }),
+  redoJob: (jobId: string) =>
+    fetchJson<Job>(`/api/v1/jobs/${jobId}/redo`, { method: "POST" }),
   retryJob: (jobId: string) =>
     fetchJson<Job>(`/api/v1/jobs/${jobId}/retry`, { method: "POST" }),
   cancelJob: (jobId: string) =>
@@ -1065,23 +1351,19 @@ export const api = {
     }),
 
   getFactoryQa: (projectId: string) =>
-    fetchJson<{
-      project_id: string;
-      run_id?: string | null;
-      template_code: string;
-      workspace_ok: boolean;
-      rules: Array<{
-        id: string;
-        title: string;
-        kind: string;
-        status: "pass" | "fail" | "wait" | string;
-        paths?: string[];
-      }>;
-      passed: number;
-      total: number;
-      pct: number;
-      ready_for_handoff: boolean;
-    }>(`/api/v1/factory/projects/${projectId}/qa`),
+    fetchJson<GuardDossier>(`/api/v1/factory/projects/${projectId}/qa`),
+
+  getFactorySecurity: (projectId: string) =>
+    fetchJson<GuardDossier>(`/api/v1/factory/projects/${projectId}/security`),
+
+  planFactorySecurity: (projectId: string) =>
+    fetchJson<GuardDossier>(`/api/v1/factory/projects/${projectId}/security/plan`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
+
+  factoryEvidenceUrl: (projectId: string, path: string) =>
+    `${BASE_URL}/api/v1/factory/projects/${projectId}/artifacts/raw?path=${encodeURIComponent(path)}`,
 
   getFactoryRoadmap: (projectId: string) =>
     fetchJson<{
@@ -1110,12 +1392,28 @@ export const api = {
 
   postFactoryChat: (
     projectId: string,
-    body: { message: string; agent_role?: string; agent_name?: string },
+    body: { message: string; agent_role?: string; agent_name?: string; to_project?: boolean },
   ) =>
     fetchJson<{
       project_id: string;
       messages: Array<{ id: string; role: string; text: string; agent_name?: string; at?: string }>;
     }>(`/api/v1/factory/projects/${projectId}/chat`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+
+  openFactoryMaintenance: (projectId: string) =>
+    fetchJson<FactoryRunPayload>(`/api/v1/factory/projects/${projectId}/maintenance`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
+
+  applyFactoryMaintenance: (projectId: string, body: { message: string }) =>
+    fetchJson<{
+      project_id: string;
+      applied: boolean;
+      messages: Array<{ id: string; role: string; text: string; agent_name?: string; at?: string }>;
+    }>(`/api/v1/factory/projects/${projectId}/maintenance/apply`, {
       method: "POST",
       body: JSON.stringify(body),
     }),
@@ -1166,6 +1464,11 @@ export const api = {
 
   // Studio
   listPersonas: () => fetchJson<Persona[]>("/api/v1/studio/personas"),
+  createPersona: (data: { name: string; demographics?: string; pain_points?: string; goals?: string }) =>
+    fetchJson<Persona>("/api/v1/studio/personas", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
   listStudioProfiles: () => fetchJson<StudioProfile[]>("/api/v1/studio/profiles"),
   getStudioProfile: (id: string) => fetchJson<StudioProfile>(`/api/v1/studio/profiles/${id}`),
   createStudioProfile: (data: Record<string, unknown>) =>
@@ -1261,6 +1564,99 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  listRaioxCatalog: () => fetchJson<RaioxCatalog>("/api/v1/raiox/catalog"),
+  getRaioxMethod: (page: string) => {
+    const [domain, slug] = page.split("/");
+    return fetchJson<RaioxMethod>(`/api/v1/raiox/metodo/${domain}/${slug}`);
+  },
+  listRaioxCases: () => fetchJson<RaioxCaseSummary[]>("/api/v1/raiox/cases"),
+  getRaioxCase: (id: string) => fetchJson<RaioxCaseDetail>(`/api/v1/raiox/cases/${id}`),
+  createRaioxCase: (data: {
+    company_name: string;
+    objective: string;
+    decision_needed: string;
+    contact_name?: string;
+    frontier?: string;
+    product_id?: string;
+    deep_scan?: boolean;
+    physical_store?: boolean;
+    origin?: string;
+    segment?: string;
+    public_link?: string;
+    package_id?: string;
+  }) =>
+    fetchJson<RaioxCaseDetail>("/api/v1/raiox/cases", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateRaioxFrontier: (
+    id: string,
+    data: {
+      company_name?: string;
+      contact_name?: string;
+      objective?: string;
+      decision_needed?: string;
+      frontier?: string;
+      origin?: string;
+      segment?: string;
+      public_link?: string;
+    },
+  ) =>
+    fetchJson<RaioxCaseDetail>(`/api/v1/raiox/cases/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  addRaioxEvidence: (
+    id: string,
+    data: {
+      stage: string;
+      source: string;
+      claim: string;
+      classification: string;
+      note?: string;
+      front?: string;
+    },
+  ) =>
+    fetchJson<RaioxCaseDetail>(`/api/v1/raiox/cases/${id}/evidence`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  removeRaioxEvidence: (id: string, evidenceId: string) =>
+    fetchJson<RaioxCaseDetail>(`/api/v1/raiox/cases/${id}/evidence/${evidenceId}`, {
+      method: "DELETE",
+    }),
+  setRaioxPriority: (
+    id: string,
+    data: {
+      priority_stage: string;
+      bottleneck: string;
+      priority_rationale: string;
+      confidence: string;
+      discarded?: string;
+    },
+  ) =>
+    fetchJson<RaioxCaseDetail>(`/api/v1/raiox/cases/${id}/priority`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  setRaioxDebrief: (
+    id: string,
+    data: {
+      decision: string;
+      reason: string;
+      next_offer?: string;
+      plan_30?: string;
+      plan_60?: string;
+      plan_90?: string;
+    },
+  ) =>
+    fetchJson<RaioxCaseDetail>(`/api/v1/raiox/cases/${id}/debrief`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  closeRaioxCase: (id: string) =>
+    fetchJson<RaioxCaseDetail>(`/api/v1/raiox/cases/${id}/close`, { method: "POST" }),
+
   // Visibility & Knowledge
   listWorkflows: () => fetchJson<Workflow[]>("/api/v1/workflows"),
   getWorkflow: (id: string) => fetchJson<Workflow>(`/api/v1/workflows/${id}`),
@@ -1276,6 +1672,21 @@ export const api = {
       method: "POST",
     }),
   getGhostCliStatus: () => fetchJson<{ integration: string; status: string; latency_ms: number | null; last_check: string | null; error: string | null }>("/api/v1/integrations/ghostcli/status"),
+  getOfficeAi: () =>
+    fetchJson<{
+      provider: string;
+      provider_label: string;
+      model: string;
+      effort: string;
+      engine_enabled: boolean;
+      engines: Array<{
+        id: string;
+        label: string;
+        enabled?: boolean;
+        is_default?: boolean;
+        models: Array<{ id: string; label: string; efforts: Array<{ id: string; label: string }> }>;
+      }>;
+    }>("/api/v1/integrations/office-ai"),
   listAiEngines: () =>
     fetchJson<{ default_id: string; engines: { id: string; enabled: boolean; is_default: boolean }[] }>(
       "/api/v1/integrations/engines",
@@ -1290,6 +1701,58 @@ export const api = {
       `/api/v1/integrations/engines/${engineId}/default`,
       { method: "PUT" },
     ),
+  listMotors: () =>
+    fetchJson<{
+      motors: Array<{
+        id: string;
+        label: string;
+        hint: string;
+        plugged: boolean;
+        enabled: boolean;
+        is_default: boolean;
+        local: boolean;
+        logged_in: boolean;
+        sdk: boolean;
+        has_key: boolean;
+        login_url?: string | null;
+      }>;
+    }>("/api/v1/integrations/motors"),
+  loginMotor: (engineId: string) =>
+    fetchJson<{
+      login: { logged_in: boolean; url: string | null; pending: boolean; opened?: boolean; error: string | null };
+      motors: Array<{
+        id: string;
+        label: string;
+        hint: string;
+        plugged: boolean;
+        enabled: boolean;
+        is_default: boolean;
+        local: boolean;
+        logged_in: boolean;
+        sdk: boolean;
+        has_key: boolean;
+        login_url?: string | null;
+      }>;
+    }>(`/api/v1/integrations/motors/${engineId}/login`, { method: "POST" }),
+  plugMotor: (engineId: string, apiKey: string, baseUrl?: string) =>
+    fetchJson<{
+      motors: Array<{
+        id: string;
+        label: string;
+        hint: string;
+        plugged: boolean;
+        enabled: boolean;
+        is_default: boolean;
+        local: boolean;
+        logged_in: boolean;
+        sdk: boolean;
+        has_key: boolean;
+        login_url?: string | null;
+      }>;
+    }>(`/api/v1/integrations/motors/${engineId}/plug`, {
+      method: "POST",
+      body: JSON.stringify({ api_key: apiKey, base_url: baseUrl || null }),
+    }),
   getCursorIntegration: () =>
     fetchJson<{
       integration: string;
@@ -1317,6 +1780,80 @@ export const api = {
       "/api/v1/integrations/cursor/login",
       { method: "POST" },
     ),
+  getOfficeSettings: () =>
+    fetchJson<{
+      perfil: { nome: string; email: string; idioma?: string };
+      greeting?: string;
+      as_of?: string;
+      visual_fixture?: boolean;
+      overview: { fabrica: boolean; aprovacoes: boolean; prazos: boolean; ordem?: string[] };
+      focused_project_id: string | null;
+      focused_demand_id: string | null;
+      projects: Array<{
+        id: string;
+        slug: string;
+        name: string;
+        client: string | null;
+        template_code: string | null;
+        local_path: string | null;
+        status: string;
+        focused: boolean;
+        control: Record<string, any>;
+      }>;
+      ports: { api: number; web: number };
+    }>("/api/v1/settings"),
+  saveOfficeProfile: (nome: string, email: string, idioma = "pt") =>
+    fetchJson<{ nome: string; email: string; idioma: string; greeting: string }>("/api/v1/settings/profile", {
+      method: "PUT",
+      body: JSON.stringify({ nome, email, idioma }),
+    }),
+  saveOfficeOverview: (overview: { fabrica: boolean; aprovacoes: boolean; prazos: boolean; ordem?: string[] }) =>
+    fetchJson("/api/v1/settings/overview", { method: "PUT", body: JSON.stringify(overview) }),
+  saveOfficeFocus: (projectId: string | null, demandId?: string | null) =>
+    fetchJson("/api/v1/settings/focus", {
+      method: "PUT",
+      body: JSON.stringify({ project_id: projectId, demand_id: demandId ?? null }),
+    }),
+  createOfficeProject: (name: string) =>
+    fetchJson<{ id: string; name: string; slug: string; local_path: string | null }>("/api/v1/settings/projects", {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    }),
+  saveProjectControl: (projectId: string, control: Record<string, unknown>) =>
+    fetchJson<{ id: string; control: Record<string, any> }>(`/api/v1/settings/projects/${projectId}/control`, {
+      method: "PUT",
+      body: JSON.stringify(control),
+    }),
+  getProjectMemory: (projectId: string) =>
+    fetchJson<{
+      casa: Array<{ name: string; text: string }>;
+      projeto: Array<{ name: string; text: string }>;
+      agente: Array<{ name: string; text: string }>;
+    }>(`/api/v1/settings/projects/${projectId}/memory`),
+  approveProjectMemory: (projectId: string, name: string) =>
+    fetchJson(`/api/v1/settings/projects/${projectId}/memory/approve`, {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    }),
+  rejectProjectMemory: (projectId: string, name: string) =>
+    fetchJson(`/api/v1/settings/projects/${projectId}/memory/reject`, {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    }),
+  haltFactory: () => fetchJson<{ stopped: number }>("/api/v1/settings/halt", { method: "POST" }),
+  createFactoryDemand: (projectId: string, body: { title: string; type: string; summary?: string; opt_out?: boolean }) =>
+    fetchJson<{ id: string; code: string; status: string }>(`/api/v1/factory/projects/${projectId}/demands`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  runDemandAction: (
+    projectId: string,
+    body: { tipo: string; texto?: string; titulo?: string; demand_code?: string },
+  ) =>
+    fetchJson(`/api/v1/factory/projects/${projectId}/demand-action`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
   getProjectAiSettings: (projectId: string) =>
     fetchJson<{
       model: string;
@@ -1351,10 +1888,11 @@ export const api = {
   listSkillsCatalog: () => fetchJson<SkillItem[]>("/api/v1/skills"),
 
   // Commercial & Proposals
-  listProposals: (query?: { client?: string; stage?: string }) => {
+  listProposals: (query?: { client?: string; stage?: string; raiox_case_id?: string }) => {
     const params = new URLSearchParams();
     if (query?.client) params.set("client", query.client);
     if (query?.stage) params.set("stage", query.stage);
+    if (query?.raiox_case_id) params.set("raiox_case_id", query.raiox_case_id);
     const qs = params.toString();
     return fetchJson<Proposal[]>(`/api/v1/proposals${qs ? `?${qs}` : ""}`);
   },
@@ -1424,6 +1962,7 @@ export const api = {
       source.onmessage = (msg) => {
         try {
           const event = JSON.parse(msg.data) as JobEvent;
+          if (!event || !event.created_at || Number.isNaN(Date.parse(event.created_at))) return;
           lastEventId = event.id;
           onEvent(event);
         } catch {

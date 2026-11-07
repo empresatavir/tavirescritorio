@@ -96,6 +96,7 @@ class TaskResponse(BaseModel):
     tags: Any | None = None
     depends_on: Any | None = None
     active_job_id: str | None = None
+    gate_held: bool = False
     created_at: datetime
     updated_at: datetime
 
@@ -327,6 +328,17 @@ async def update_task_status(
     req.status = normalize_task_status(req.status)
 
     if req.status == "done":
+        pending_gate = await session.scalar(
+            select(Approval.id).where(
+                Approval.task_id == task.id,
+                Approval.status == "pending",
+            )
+        )
+        if task.gate_held or pending_gate is not None:
+            raise HTTPException(
+                status_code=409,
+                detail="Task com gate aberto. Resolva a decisão antes de concluir.",
+            )
         office = None
         try:
             import sys

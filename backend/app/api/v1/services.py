@@ -368,15 +368,26 @@ async def stop_service(service_id: str):
 
 @router.post("/{service_id}/restart")
 async def restart_service(service_id: str):
-    """Restart a service: stop then start."""
+    """Restart a service: stop then start.
+
+    Com TAVIR_SERVICE_DOUBLE=1 a resposta descreve o reinício e não encerra porta.
+    """
     if service_id not in SERVICES_CONFIG:
         raise HTTPException(status_code=404, detail=f"Service '{service_id}' not found")
 
-    _schedule_port_restart(service_id)
     label = "backend" if service_id == "backend" else "frontend"
+    if os.environ.get("TAVIR_SERVICE_DOUBLE") == "1":
+        return {
+            "message": f"Double: {label} reiniciado sem encerrar a porta.",
+            "scheduled": False,
+            "double": True,
+        }
+
+    _schedule_port_restart(service_id)
     return {
         "message": f"O {label} vai reiniciar em instantes.",
         "scheduled": True,
+        "double": False,
         "stop": None,
         "start": None,
     }

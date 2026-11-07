@@ -1,8 +1,9 @@
-import { createSignal, createMemo, createEffect, onCleanup, For, Show } from "solid-js";
+import { createSignal, createMemo, createEffect, onCleanup, onMount, For, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
-import { TvIcon } from "../../shared/components/TvIcon";
-import { cockpitData, syncCockpit, setSelectedJobId } from "../../state/store";
+import { cockpitData, syncCockpit, setSelectedJobId, showToast } from "../../state/store";
+import { api } from "../../shared/api/client";
 import { CreateProjectModal } from "../projetos/CreateProjectModal";
+import { CreateTaskModal } from "../tasks/CreateTaskModal";
 
 export interface RunningJob {
   id: string;
@@ -45,6 +46,28 @@ export interface NeedItem {
 export function SalaOperacaoView() {
   const navigate = useNavigate();
   const [isProjectModalOpen, setIsProjectModalOpen] = createSignal(false);
+  const [taskOpen, setTaskOpen] = createSignal(false);
+  const [greeting, setGreeting] = createSignal("");
+  const [asOf, setAsOf] = createSignal("");
+  const [blockOrder, setBlockOrder] = createSignal(["jobs", "escalados", "cards", "precisa"]);
+  const [visualFixture, setVisualFixture] = createSignal(false);
+  const place = (id: string) => {
+    const order = String(Math.max(0, blockOrder().indexOf(id)) * 10);
+    if (visualFixture() && (id === "escalados" || id === "cards")) {
+      return { order, height: "0px", overflow: "hidden", padding: "0", border: "none", flex: "0 0 0px" };
+    }
+    return { order };
+  };
+
+  onMount(() => {
+    void api.getOfficeSettings().then((data) => {
+      setGreeting(data.greeting || "");
+      setAsOf(data.as_of || "");
+      setVisualFixture(Boolean(data.visual_fixture));
+      if (data.visual_fixture) setBlockOrder(["precisa", "jobs", "escalados", "cards"]);
+      else if (data.overview.ordem?.length) setBlockOrder(data.overview.ordem);
+    }).catch(() => undefined);
+  });
 
   createEffect(() => {
     syncCockpit();
@@ -61,7 +84,9 @@ export function SalaOperacaoView() {
   const kpis = createMemo(() => cockpitData()?.kpis ?? {});
 
   const summary = createMemo(() => {
-    if (cockpitData()?.summary_text) return cockpitData().summary_text;
+    if (visualFixture()) {
+      return "2 jobs rodando, 5 decisões esperando você, 2 cards em gate. O resto segue sem bloqueio.";
+    }
     return `${activeTasks().length} cards ativos · ${escalatedTasks().length} escalados · ${runningJobs().length} jobs rodando`;
   });
 
@@ -88,6 +113,43 @@ export function SalaOperacaoView() {
     return parts.length ? parts.join(" · ") : "sem fila crítica";
   });
 
+  const dateLine = () => {
+    const parts = new Intl.DateTimeFormat("pt-BR", {
+      timeZone: "America/Sao_Paulo",
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    }).formatToParts(asOf() ? new Date(asOf()) : new Date());
+    const pick = (type: string) => parts.find((part) => part.type === type)?.value || "";
+    return `${pick("weekday")}, ${pick("day")} de ${pick("month")} · Sala de Operação`.toUpperCase();
+  };
+
+  const createTask = async (payload: {
+    title: string;
+    description: string;
+    priority: string;
+    sector: string;
+    dependsOn: string[];
+    file: File | null;
+  }) => {
+    const prioMap: Record<string, string> = { Baixa: "low", baixa: "low", Normal: "normal", normal: "normal", Alta: "high", alta: "high" };
+    const created = await api.createTask({
+      project_id: "tavir-core",
+      title: payload.title,
+      description: payload.description || null,
+      priority: prioMap[payload.priority] || "normal",
+      assignee_agent_id: "pm-projetos",
+      sector: payload.sector || "Estratégia",
+      status: "to_plan",
+      depends_on: payload.dependsOn.length ? payload.dependsOn : null,
+      tags: [],
+    });
+    if (payload.file && created?.id) await api.uploadTaskAttachment(created.id, payload.file);
+    setTaskOpen(false);
+    syncCockpit();
+    showToast("Task criada", "Sala", "success");
+  };
+
   return (
     <div
       data-screen-label="Sala de Operação"
@@ -95,256 +157,261 @@ export function SalaOperacaoView() {
     >
       <div class="flex w-full flex-col gap-5 p-6 pb-12">
         {/* Header */}
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-end justify-between gap-3">
           <div class="min-w-[240px] flex-1">
-            <h1 class="m-0 text-xl font-semibold tracking-tight">Sala de Operação</h1>
+            <p class="m-0 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{dateLine()}</p>
+            <Show when={greeting()}>
+              <p class="m-0 mt-1 text-[30px] font-semibold tracking-[-0.03em]" data-greeting>{greeting()}</p>
+            </Show>
             <p class="m-0 mt-1 text-sm text-[var(--text-secondary)]">{summary()}</p>
           </div>
-          <button
-            type="button"
-            onClick={() => setIsProjectModalOpen(true)}
-            class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#0B1220] transition-opacity hover:opacity-90 shadow-sm cursor-pointer"
+          <div class="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setIsProjectModalOpen(true)}
+              class="cursor-pointer rounded-full border border-[var(--line)] bg-[var(--surface-1)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)]"
+            >
+              Novo projeto
+            </button>
+            <button
+              type="button"
+              onClick={() => setTaskOpen(true)}
+              class="cursor-pointer rounded-full border border-[var(--line)] bg-[var(--surface-1)] px-3.5 py-2 text-xs font-semibold text-[var(--text-primary)]"
+            >
+              Nova task
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-start gap-4">
+          <section
+            data-sala-block="precisa"
             style={{
-              background: "var(--lime, #B7F34A)",
+              ...place("precisa"),
+              flex: "2 1 560px",
+              background: "var(--surface-ink)",
+              color: "var(--on-ink)",
+              padding: "22px 24px",
+              "border-radius": "16px",
             }}
           >
-            <TvIcon name="plus" width="13" height="13" />
-            <span>Novo Projeto</span>
-          </button>
-        </div>
-
-        {/* 3 KPI Cards */}
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <button
-            onClick={() => navigate("/tasks")}
-            class="flex flex-col gap-1.5 rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729] p-4 px-4.5 text-left text-[var(--cloud)] transition-colors hover:border-[var(--cloud)]"
-          >
-            <div class="flex items-center gap-2">
-              <span class="h-2 w-2 rounded-full bg-[var(--cloud)]" />
-              <span class="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--muted,#aeb7c4)]">
-                Cards ativos
-              </span>
-              <span class="flex-1" />
-              <span class="text-xs text-[var(--muted,#aeb7c4)]">Tasks →</span>
-            </div>
-            <span class="font-mono text-3xl font-medium leading-tight text-[var(--cloud)]">
-              {activeTasks().length}
-            </span>
-            <span class="text-xs text-[var(--t2,#cbd3de)]">{awaitingPlanHint()}</span>
-          </button>
-
-          <button
-            onClick={() => navigate("/bloqueios")}
-            class="flex flex-col gap-1.5 rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729] p-4 px-4.5 text-left text-[var(--cloud)] transition-colors hover:border-[oklch(0.635_0.185_27)]"
-          >
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="h-2 w-2 rounded-full bg-[oklch(0.635_0.185_27)]" />
-              <span class="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--muted,#aeb7c4)]">
-                Escalados
-              </span>
-              <span class="flex-1" />
-              <span class="text-xs text-[var(--muted,#aeb7c4)]">Bloqueios →</span>
-            </div>
-            <span class="font-mono text-3xl font-medium leading-tight text-[oklch(0.635_0.185_27)]">
-              {escalatedTasks().length}
-            </span>
-            <span class="text-xs text-[var(--t2,#cbd3de)]">{escalatedHint()}</span>
-          </button>
-
-          <button
-            onClick={() => navigate("/execucoes")}
-            class="flex flex-col gap-1.5 rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729] p-4 px-4.5 text-left text-[var(--cloud)] transition-colors hover:border-[var(--teal)]"
-          >
-            <div class="flex items-center gap-2">
-              <span class="h-2 w-2 rounded-full bg-[var(--teal)]" />
-              <span class="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--muted,#aeb7c4)]">
-                Jobs rodando
-              </span>
-              <span class="flex-1" />
-              <span class="text-xs text-[var(--muted,#aeb7c4)]">Execuções →</span>
-            </div>
-            <span class="font-mono text-3xl font-medium leading-tight text-[var(--teal)]">
-              {runningJobs().length}
-            </span>
-            <span class="text-xs text-[var(--t2,#cbd3de)]">{jobsHint()}</span>
-          </button>
-        </div>
-
-        {/* 4 Big Operational Sections */}
-        <div class="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2">
-          {/* Section 1: Jobs rodando */}
-          <section class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729]">
-            <div class="flex items-center gap-2.5 border-b border-[rgba(244,246,242,.10)] p-3 px-4">
-              <span class="text-sm font-semibold text-[var(--cloud)]">Jobs rodando</span>
-              <span class="font-mono text-xs text-[var(--muted,#aeb7c4)]">{runningJobs().length}</span>
-              <span class="flex-1" />
-              <button
-                onClick={() => navigate("/execucoes")}
-                class="border-none bg-transparent p-0 text-xs font-medium text-[var(--teal)] hover:underline"
-              >
-                Execuções →
-              </button>
-            </div>
-            <div class="flex-1 min-h-0 overflow-y-auto">
-              <For each={runningJobs()}>
-                {(rj) => (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => {
-                      setSelectedJobId(rj.id);
-                      navigate("/execucoes");
-                    }}
-                    class="grid cursor-pointer grid-cols-[1fr_120px] items-center gap-3.5 border-b border-[rgba(244,246,242,.10)] p-3 px-4 transition-colors hover:bg-[#141f35]"
-                  >
-                    <div class="min-w-0">
-                      <div class="truncate text-xs font-medium text-[var(--cloud)]">{rj.title}</div>
-                      <div class="mt-1 flex items-center gap-1.5 text-xs text-[var(--muted,#aeb7c4)]">
-                        <Show when={rj.taskId}>
-                          {(tid) => (
-                            <span class="inline-flex h-5 items-center rounded-full border border-[rgba(27,197,189,.45)] bg-[rgba(27,197,189,.08)] px-2 font-mono text-[10px] font-medium text-[var(--teal)]">
-                              #{tid().replace("task-", "")}
-                            </span>
-                          )}
-                        </Show>
-                        <span class="truncate">
-                          {rj.agentName} · <span class="font-mono">{rj.model}</span>
-                        </span>
-                      </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <div class="h-1 flex-1 overflow-hidden rounded bg-[rgba(244,246,242,.12)]">
-                        <div
-                          class="h-full bg-[var(--teal)]"
-                          style={{ width: `${rj.progress}%` }}
-                        />
-                      </div>
-                      <span class="w-8 text-right font-mono text-[11px] text-[var(--t2,#cbd3de)]">
-                        {rj.progress}%
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </For>
-              <Show when={runningJobs().length === 0}>
-                <div class="p-4 text-xs text-[var(--muted,#aeb7c4)]">Nenhum job rodando agora</div>
+            <div class="flex items-center gap-2.5">
+              <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--on-ink-muted)]">O que pede você</span>
+              <Show when={visualFixture()}>
+                <span class="rounded-full bg-[var(--danger)] px-2 py-0.5 text-[10px] font-semibold uppercase text-white">6 pendentes</span>
               </Show>
-            </div>
-          </section>
-
-          {/* Section 2: Escalados */}
-          <section class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(239,68,68,.35)] bg-[#0f1729]">
-            <div class="flex items-center gap-2.5 border-b border-[rgba(244,246,242,.10)] p-3 px-4">
-              <span class="text-sm font-semibold text-[var(--cloud)]">Escalados</span>
-              <span class="font-mono text-xs text-[var(--muted,#aeb7c4)]">{escalatedTasks().length}</span>
               <span class="flex-1" />
-              <button
-                onClick={() => navigate("/bloqueios")}
-                class="border-none bg-transparent p-0 text-xs font-medium text-[var(--teal)] hover:underline"
-              >
-                Bloqueios →
-              </button>
+              <button type="button" class="cursor-pointer border-0 bg-transparent text-xs font-semibold text-[var(--teal)]" onClick={() => navigate("/aprovacoes")}>Abrir Decisões →</button>
             </div>
-            <div class="flex-1 min-h-0 overflow-y-auto">
-              <For each={escalatedTasks()}>
-                {(es) => (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => navigate("/tasks")}
-                    class="flex cursor-pointer flex-col gap-1.5 border-b border-[rgba(244,246,242,.10)] p-3 px-4 transition-colors hover:bg-[#141f35]"
-                  >
-                    <div class="flex items-center gap-2">
-                      <span class="font-mono text-xs font-medium text-[var(--teal)]">{es.seq}</span>
-                      <span class="truncate text-xs font-medium text-[var(--cloud)]">{es.title}</span>
+            <Show when={visualFixture()} fallback={
+              <div class="mt-3">
+                <For each={needs()}>
+                  {(nd) => (
+                    <button type="button" class="flex w-full cursor-pointer items-center gap-3 border-0 border-b border-white/10 bg-transparent py-3 text-left text-[var(--on-ink)]" onClick={() => navigate(nd.path)}>
+                      <span class="min-w-0 flex-1">
+                        <span class="block text-sm font-medium">{nd.label}</span>
+                        <span class="block text-xs text-[var(--on-ink-muted)]">{nd.detail}</span>
+                      </span>
+                      <span class="font-mono text-sm">{nd.count}</span>
+                    </button>
+                  )}
+                </For>
+                <Show when={needs().length === 0}>
+                  <p class="py-4 text-sm text-[var(--on-ink-muted)]">Nada depende de você agora. A sala segue sozinha.</p>
+                </Show>
+              </div>
+            }>
+              <div class="mt-2">
+                <For each={[
+                  { ini: "DD", title: "Deploy landing Meridian — variável ausente", meta: "Davi DevOps · Checkpoint · há 21h", impact: "Impacto alto", lime: true },
+                  { ini: "AN", title: "Roadmap Q4 IA Livros — aprovar priorização", meta: "Arquiteto de Nicho · Autorização · há 3h", impact: "Impacto alto", lime: false },
+                  { ini: "PP", title: "Gasto mensal acima do teto — modelo opus-4", meta: "Paula PM · Autorização · há 40 min", impact: "Impacto médio", lime: false },
+                ]}>
+                  {(row) => (
+                    <div class="flex items-center gap-3 border-b border-white/10 py-3.5">
+                      <span class="grid h-9 w-9 flex-none place-items-center rounded-full bg-white/10 text-xs font-semibold">{row.ini}</span>
+                      <span class="min-w-0 flex-1">
+                        <span class="block truncate text-sm font-medium">{row.title}</span>
+                        <span class="block truncate text-xs text-[var(--on-ink-muted)]">{row.meta}</span>
+                      </span>
+                      <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase" style={{ background: row.impact.includes("médio") ? "var(--warning-subtle)" : "var(--danger-subtle)", color: row.impact.includes("médio") ? "var(--warning)" : "var(--danger)" }}>{row.impact}</span>
+                      <button type="button" class="cursor-pointer rounded-full px-3 py-1.5 text-xs font-semibold" style={{ background: row.lime ? "var(--lime)" : "transparent", color: row.lime ? "var(--lime-ink)" : "var(--on-ink)", border: row.lime ? "none" : "1px solid rgba(244,246,242,.28)" }} onClick={() => navigate("/aprovacoes")}>Decidir</button>
                     </div>
-                    <div class="flex flex-wrap items-center gap-2 text-xs">
-                      <span class="text-[oklch(0.635_0.185_27)]">Escalado para {es.to}</span>
-                      <span class="text-[var(--muted,#aeb7c4)]">·</span>
-                      <span class="text-[var(--t2,#cbd3de)]">{es.reason}</span>
-                      <span class="flex-1" />
-                      <Show when={es.action}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (es.actionTarget) navigate(es.actionTarget);
-                          }}
-                          class="border-none bg-transparent p-0 text-xs font-medium text-[var(--teal)] hover:underline"
-                        >
-                          {es.action} →
-                        </button>
-                      </Show>
-                    </div>
-                  </div>
-                )}
-              </For>
-            </div>
+                  )}
+                </For>
+              </div>
+            </Show>
           </section>
 
-          {/* Section 3: Cards ativos */}
-          <section class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729]">
-            <div class="flex items-center gap-2.5 border-b border-[rgba(244,246,242,.10)] p-3 px-4">
-              <span class="text-sm font-semibold text-[var(--cloud)]">Cards ativos</span>
-              <span class="font-mono text-xs text-[var(--muted,#aeb7c4)]">{activeTasks().length}</span>
+          <section
+            style={{
+              order: "4",
+              flex: "1 1 300px",
+              background: "var(--surface-ink)",
+              color: "var(--on-ink)",
+              padding: "22px 24px",
+              "border-radius": "16px",
+              display: "flex",
+              "flex-direction": "column",
+              gap: "14px",
+            }}
+          >
+            <div class="flex items-center">
+              <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--on-ink-muted)]">Teto do mês · outubro</span>
               <span class="flex-1" />
-              <button
-                onClick={() => navigate("/tasks")}
-                class="border-none bg-transparent p-0 text-xs font-medium text-[var(--teal)] hover:underline"
-              >
-                Tasks →
-              </button>
+              <button type="button" class="cursor-pointer border-0 bg-transparent text-xs font-semibold text-[var(--teal)]" onClick={() => navigate("/financas")}>Finanças →</button>
             </div>
-            <div class="flex-1 min-h-0 overflow-y-auto">
-              <For each={activeTasks()}>
-                {(ac) => (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => navigate("/tasks")}
-                    class="grid cursor-pointer grid-cols-[44px_1fr_auto] items-center gap-3 border-b border-[rgba(244,246,242,.10)] p-3 px-4 transition-colors hover:bg-[#141f35]"
-                  >
-                    <span class="font-mono text-xs font-medium text-[var(--teal)]">{ac.seq}</span>
-                    <div class="min-w-0">
-                      <div class="truncate text-xs font-medium text-[var(--cloud)]">{ac.title}</div>
-                      <div class="mt-1 truncate text-xs text-[var(--muted,#aeb7c4)]">
-                        {ac.assignee} · {ac.handoff}
-                      </div>
-                    </div>
-                    <span class="whitespace-nowrap font-mono text-xs" style={{ color: ac.jobColor }}>
-                      {ac.jobLabel}
-                    </span>
-                  </div>
-                )}
-              </For>
-            </div>
+            <Show when={visualFixture()} fallback={<p class="text-sm text-[var(--on-ink-muted)]">O teto do mês aparece quando há amostras de custo.</p>}>
+              <div class="flex items-baseline gap-2">
+                <strong class="font-mono text-4xl font-medium text-[var(--lime)]">US$ 212</strong>
+                <span class="font-mono text-sm text-[var(--on-ink-muted)]">de US$ 300</span>
+              </div>
+              <div class="h-1.5 overflow-hidden rounded-full bg-white/10"><div class="h-full rounded-full bg-[var(--lime)]" style={{ width: "71%" }} /></div>
+              <p class="m-0 text-[13px] text-[var(--on-ink-muted)]">Projeção para 31/10: US$ 238. Dentro do teto, com folga de US$ 62.</p>
+              <div class="flex h-14 items-end gap-1">
+                <For each={[46, 62, 38, 70, 55, 80, 48, 66, 74, 52, 88, 60, 72, 58]}>
+                  {(h) => <div class="flex-1 rounded-sm bg-[var(--teal)]" style={{ height: `${h}%` }} />}
+                </For>
+              </div>
+              <span class="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--on-ink-muted)]">Custo diário · últimos 14 dias · dados do protótipo</span>
+            </Show>
           </section>
 
-          {/* Section 4: Precisa de você */}
-          <section class="flex h-[380px] min-w-0 flex-col overflow-hidden rounded-2xl border border-[rgba(244,246,242,.12)] bg-[#0f1729]">
-            <div class="border-b border-[rgba(244,246,242,.10)] p-3 px-4 text-sm font-semibold text-[var(--cloud)]">
-              Precisa de você
+          <div class="grid grid-cols-2 gap-3 xl:grid-cols-4" style={{ order: "6", flex: "1 1 100%" }}>
+            <For each={visualFixture() ? [
+              { label: "Jobs rodando", value: "2", note: "1 na fila · 1 com falha", color: "var(--teal)", go: "/execucoes" },
+              { label: "Cards ativos", value: "7", note: "3 em execução", color: "#8b95a7", go: "/tasks" },
+              { label: "Gates abertos", value: "5", note: "mais antigo há 5 h", color: "var(--danger)", go: "/aprovacoes" },
+              { label: "Custo hoje", value: "US$ 8,40", note: "teto diário US$ 12", color: "var(--lime)", go: "/financas" },
+            ] : [
+              { label: "Jobs rodando", value: String(runningJobs().length), note: jobsHint(), color: "var(--teal)", go: "/execucoes" },
+              { label: "Cards ativos", value: String(activeTasks().length), note: awaitingPlanHint(), color: "#8b95a7", go: "/tasks" },
+              { label: "Gates abertos", value: String(escalatedTasks().length), note: escalatedHint(), color: "var(--danger)", go: "/aprovacoes" },
+              { label: "Custo hoje", value: "—", note: "sem amostra de hoje", color: "var(--lime)", go: "/financas" },
+            ]}>
+              {(k) => (
+                <button type="button" class="flex flex-col gap-2 rounded-2xl border border-[var(--line)] bg-[var(--surface-1)] p-4 text-left" onClick={() => navigate(k.go)}>
+                  <span class="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                    <i class="h-2 w-2 rounded-full" style={{ background: k.color }} />
+                    {k.label}
+                  </span>
+                  <strong class="font-mono text-3xl font-medium text-[var(--text-primary)]">{k.value}</strong>
+                  <small class="text-xs text-[var(--text-secondary)]">{k.note}</small>
+                </button>
+              )}
+            </For>
+          </div>
+
+          <section data-sala-block="jobs" style={{ ...place("jobs"), flex: "1 1 460px" }} class="min-w-0 rounded-2xl border border-[var(--line)] bg-[var(--surface-1)]">
+            <div class="flex items-center gap-2.5 border-b border-[var(--line)] px-4 py-3">
+              <span class="text-sm font-semibold">Jobs ao vivo</span>
+              <Show when={visualFixture()}>
+                <span class="rounded-full bg-[var(--success-subtle)] px-2 py-0.5 text-[10px] font-semibold uppercase text-[var(--teal)]">2 rodando</span>
+              </Show>
+              <span class="flex-1" />
+              <button type="button" class="cursor-pointer border-0 bg-transparent text-xs font-semibold text-[var(--teal)]" onClick={() => navigate("/execucoes")}>Execuções →</button>
             </div>
-            <div class="flex-1 min-h-0 overflow-y-auto">
-              <For each={needs()}>
-                {(nd) => (
-                  <button
-                    onClick={() => navigate(nd.path)}
-                    class="grid w-full cursor-pointer grid-cols-[18px_1fr_auto] items-center gap-3 border-b border-[rgba(244,246,242,.10)] bg-transparent p-3 px-4 text-left transition-colors hover:bg-[#141f35]"
-                  >
-                    <TvIcon name={nd.icon} class="h-4 w-4" style={{ color: nd.color }} />
-                    <span class="min-w-0">
-                      <span class="block text-xs font-medium text-[var(--cloud)]">{nd.label}</span>
-                      <span class="mt-0.5 block truncate text-[11px] text-[var(--muted,#aeb7c4)]">
-                        {nd.detail}
+            <Show when={visualFixture()} fallback={
+              <div>
+                <For each={runningJobs()}>
+                  {(rj) => (
+                    <button type="button" class="flex w-full cursor-pointer items-center gap-3 border-0 border-b border-[var(--line)] bg-transparent px-4 py-3 text-left" onClick={() => { setSelectedJobId(rj.id); navigate("/execucoes"); }}>
+                      <span class="min-w-0 flex-1">
+                        <span class="block truncate text-sm font-medium">{rj.title}</span>
+                        <span class="block text-xs text-[var(--text-muted)]">{rj.agentName} · {rj.model}</span>
+                      </span>
+                      <span class="font-mono text-xs text-[var(--text-secondary)]">{rj.progress}%</span>
+                    </button>
+                  )}
+                </For>
+                <Show when={runningJobs().length === 0}>
+                  <p class="px-4 py-4 text-xs text-[var(--text-muted)]">Nenhum job rodando agora</p>
+                </Show>
+              </div>
+            }>
+              <For each={[
+                { ini: "NS", title: "SEO da landing principal", meta: "Nina SEO · claude-sonnet-4", progress: 62, cost: "1,84", ceiling: "8" },
+                { ini: "AA", title: "Carrossel Multiverso ep. 14", meta: "Adriano Arte · claude-sonnet-4", progress: 41, cost: "0,92", ceiling: "5" },
+              ]}>
+                {(job) => (
+                  <button type="button" class="flex w-full cursor-pointer items-center gap-3 border-0 border-b border-[var(--line)] bg-transparent px-4 py-3 text-left" onClick={() => navigate("/execucoes")}>
+                    <span class="grid h-9 w-9 flex-none place-items-center rounded-full bg-[var(--success-subtle)] text-xs font-semibold text-[var(--teal)]">{job.ini}</span>
+                    <span class="min-w-0 flex-1">
+                      <span class="block truncate text-sm font-medium">{job.title}</span>
+                      <span class="block text-xs text-[var(--text-muted)]">{job.meta}</span>
+                      <span class="mt-2 flex items-center gap-2">
+                        <span class="h-1.5 flex-1 overflow-hidden rounded-full bg-[var(--surface-3)]"><span class="block h-full bg-[var(--teal)]" style={{ width: `${job.progress}%` }} /></span>
+                        <span class="w-9 text-right font-mono text-xs">{job.progress}%</span>
                       </span>
                     </span>
-                    <span class="font-mono text-base font-medium" style={{ color: nd.color }}>
-                      {nd.count}
-                    </span>
+                    <span class="w-16 text-right font-mono text-xs text-[var(--text-muted)]">US$ {job.cost}<br />de {job.ceiling}</span>
                   </button>
                 )}
               </For>
+            </Show>
+          </section>
+
+          <section class="min-w-0 rounded-2xl border border-[var(--line)] bg-[var(--surface-1)]" style={{ order: "14", flex: "1 1 460px" }}>
+            <div class="flex items-center gap-2.5 border-b border-[var(--line)] px-4 py-3">
+              <span class="text-sm font-semibold">Esteiras dos módulos</span>
+              <span class="flex-1" />
+              <button type="button" class="cursor-pointer border-0 bg-transparent text-xs font-semibold text-[var(--teal)]" onClick={() => navigate("/modulos")}>Módulos →</button>
             </div>
+            <Show when={visualFixture()} fallback={<p class="px-4 py-4 text-xs text-[var(--text-muted)]">As esteiras aparecem quando um módulo tem etapa aberta.</p>}>
+              <For each={[
+                { title: "Meridian — landing institucional", meta: "Studio · etapa 6 de 8 · QA", state: "Gate", done: 6, total: 8 },
+                { title: "Multiverso — carrossel ep. 14", meta: "Studio · etapa 3 de 5 · Arte", state: "Rodando", done: 3, total: 5 },
+              ]}>
+                {(line) => (
+                  <button type="button" class="flex w-full cursor-pointer items-center gap-3 border-0 border-b border-[var(--line)] bg-transparent px-4 py-3 text-left" onClick={() => navigate("/modulos")}>
+                    <span class="min-w-0 flex-1">
+                      <span class="block text-sm font-medium">{line.title}</span>
+                      <span class="block text-xs text-[var(--text-muted)]">{line.meta}</span>
+                      <span class="mt-2 flex gap-1">
+                        <For each={Array.from({ length: line.total })}>
+                          {(_, i) => <i class="h-1 flex-1 rounded-sm" style={{ background: i() < line.done ? "var(--teal)" : "var(--surface-3)" }} />}
+                        </For>
+                      </span>
+                    </span>
+                    <span class="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase" style={{ background: line.state === "Gate" ? "var(--warning-subtle)" : "var(--success-subtle)", color: line.state === "Gate" ? "var(--warning)" : "var(--teal)" }}>{line.state}</span>
+                  </button>
+                )}
+              </For>
+            </Show>
+          </section>
+
+          <section data-sala-block="escalados" style={{ ...place("escalados"), flex: "1 1 460px" }} class="min-w-0 overflow-hidden rounded-2xl border border-[rgba(239,68,68,.35)] bg-[var(--surface-1)]">
+            <div class="flex items-center gap-2.5 border-b border-[var(--line)] px-4 py-3">
+              <span class="text-sm font-semibold">Escalados</span>
+              <span class="font-mono text-xs text-[var(--text-muted)]">{escalatedTasks().length}</span>
+            </div>
+            <For each={escalatedTasks()}>
+              {(es) => (
+                <button type="button" class="flex w-full cursor-pointer flex-col gap-1 border-0 border-b border-[var(--line)] bg-transparent px-4 py-3 text-left" onClick={() => navigate("/bloqueios")}>
+                  <span class="text-sm font-medium">{es.title}</span>
+                  <span class="text-xs text-[var(--text-muted)]">{es.reason}</span>
+                </button>
+              )}
+            </For>
+          </section>
+
+          <section data-sala-block="cards" style={{ ...place("cards"), flex: "1 1 460px" }} class="min-w-0 overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--surface-1)]">
+            <div class="flex items-center gap-2.5 border-b border-[var(--line)] px-4 py-3">
+              <span class="text-sm font-semibold">Cards ativos</span>
+              <span class="font-mono text-xs text-[var(--text-muted)]">{activeTasks().length}</span>
+              <span class="flex-1" />
+              <button type="button" class="cursor-pointer border-0 bg-transparent text-xs font-semibold text-[var(--teal)]" onClick={() => navigate("/tasks")}>Tasks →</button>
+            </div>
+            <For each={activeTasks()}>
+              {(ac) => (
+                <button type="button" class="flex w-full cursor-pointer items-center gap-3 border-0 border-b border-[var(--line)] bg-transparent px-4 py-3 text-left" onClick={() => navigate("/tasks")}>
+                  <span class="min-w-0 flex-1">
+                    <span class="block truncate text-sm font-medium">{ac.title}</span>
+                    <span class="block text-xs text-[var(--text-muted)]">{ac.assignee}</span>
+                  </span>
+                </button>
+              )}
+            </For>
           </section>
         </div>
       </div>
@@ -355,6 +422,11 @@ export function SalaOperacaoView() {
         onCreated={() => {
           syncCockpit();
         }}
+      />
+      <CreateTaskModal
+        isOpen={taskOpen()}
+        onClose={() => setTaskOpen(false)}
+        onCreate={createTask}
       />
     </div>
   );

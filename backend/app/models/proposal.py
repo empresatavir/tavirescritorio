@@ -20,6 +20,7 @@ class Proposal(Base):
     deadline: Mapped[str | None] = mapped_column(String(100), nullable=True)
     task_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     project_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    raiox_case_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
     scope: Mapped[str | None] = mapped_column(Text, nullable=True)
     items: Mapped[Any | None] = mapped_column(JSON, nullable=True)  # [{desc: str, value: float}]

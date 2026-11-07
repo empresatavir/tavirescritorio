@@ -20,7 +20,7 @@ export function Toast(props: ToastProps) {
 
   return (
     <div
-      class={props.class}
+      class={`toast ${props.class || ""}`.trim()}
       style={{
         display: "flex",
         "flex-direction": "column",

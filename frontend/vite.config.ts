@@ -5,23 +5,25 @@ import solid from "vite-plugin-solid";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
+const apiTarget = new URL(process.env.TAVIR_API_TARGET || "http://127.0.0.1:9001");
+const apiPort = Number(apiTarget.port || (apiTarget.protocol === "https:" ? 443 : 80));
 const apiAgent = new http.Agent({ keepAlive: true, maxSockets: 32 });
 apiAgent.createConnection = (_options, callback) => {
   const base = 18000 + Math.floor(Math.random() * 4000);
   const tryPort = (offset: number) => {
-    const socket = net.connect({ host: "127.0.0.1", port: 9001, localPort: base + offset });
+    const socket = net.connect({ host: apiTarget.hostname, port: apiPort, localPort: base + offset });
     const fail = (err: NodeJS.ErrnoException) => {
       socket.destroy();
       if (offset < 30 && (err.code === "EADDRINUSE" || err.code === "EACCES")) {
         tryPort(offset + 1);
         return;
       }
-      callback(err);
+      callback?.(err, socket);
     };
     socket.once("error", fail);
     socket.once("connect", () => {
       socket.removeListener("error", fail);
-      callback(null, socket);
+      callback?.(null, socket);
     });
   };
   tryPort(0);
@@ -44,7 +46,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:9001",
+        target: apiTarget.origin,
         changeOrigin: true,
         agent: apiAgent,
         timeout: 0,

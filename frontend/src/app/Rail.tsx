@@ -12,9 +12,10 @@ export function Rail() {
 
   return (
     <nav
+      class="rail"
       aria-label="Domínios"
       style={{
-        width: "56px",
+        width: "64px",
         background: "#070d18",
         "border-right": "1px solid rgba(244,246,242,.10)",
         display: "flex",
@@ -31,8 +32,8 @@ export function Rail() {
         src="/assets/brand/tavir-symbol-lime.svg"
         alt="TAVIR"
         style={{
-          width: "28px",
-          height: "28px",
+          width: "30px",
+          height: "30px",
           margin: "2px 0 12px",
           "object-fit": "contain",
         }}
@@ -44,6 +45,7 @@ export function Rail() {
           const isSelected = () => currentDomainId() === dom.id;
           return (
             <button
+              class="rail-btn"
               type="button"
               title={dom.label}
               aria-label={dom.label}
@@ -58,8 +60,8 @@ export function Rail() {
                 }
               }}
               style={{
-                width: "40px",
-                height: "40px",
+                width: "44px",
+                height: "44px",
                 "border-radius": "14px",
                 border: "none",
                 cursor: "pointer",
@@ -83,7 +85,8 @@ export function Rail() {
                 }
               }}
             >
-              <TvIcon name={dom.icon} width="18" height="18" />
+              <TvIcon name={dom.icon} width="20" height="20" />
+              <span class="rail-tip">{dom.label}</span>
             </button>
           );
         }}
@@ -93,6 +96,7 @@ export function Rail() {
 
       {/* Theme Switcher Toggle */}
       <button
+        class="rail-btn"
         type="button"
         title={`Alternar tema (atual: ${theme()})`}
         aria-label="Alternar tema"
@@ -113,6 +117,7 @@ export function Rail() {
         }}
       >
         {theme() === "dark" ? "☀️" : "🌙"}
+        <span class="rail-tip">{theme() === "dark" ? "Tema claro" : "Tema escuro"}</span>
       </button>
 
       {/* CEO Profile Pill / Login */}

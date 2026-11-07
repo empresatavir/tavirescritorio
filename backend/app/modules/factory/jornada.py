@@ -96,6 +96,12 @@ def carregar_office(root: Path):
     path = root / "backend" / "office.py"
     if not path.is_file():
         return None
+    import sys
+
+    backend_dir = str(path.parent)
+    if backend_dir not in sys.path:
+        sys.path.insert(0, backend_dir)
+
     spec = importlib.util.spec_from_file_location(f"office_{abs(hash(path))}", path)
     if spec is None or spec.loader is None:
         return None

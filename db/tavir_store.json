@@ -1,0 +1,246 @@
+{
+  "session": {
+    "authenticated": true,
+    "operatorName": "Carlos",
+    "expiresAt": null,
+    "onboardingCompleted": true,
+    "theme": "dark"
+  },
+  "jobs": [
+    {
+      "id": "job-014",
+      "title": "SEO da landing principal",
+      "who": "Nina SEO",
+      "ini": "NS",
+      "status": "running",
+      "progress": 62,
+      "model": "claude-sonnet-4",
+      "motor": "Cursor",
+      "effort": "equilibrado",
+      "task": "#30",
+      "cost": 1.84,
+      "ceiling": 8,
+      "started": "13:41",
+      "tokens": "412k"
+    },
+    {
+      "id": "job-011",
+      "title": "Carrossel Multiverso ep. 14",
+      "who": "Adriano Arte",
+      "ini": "AA",
+      "status": "running",
+      "progress": 41,
+      "model": "claude-sonnet-4",
+      "motor": "Cursor",
+      "effort": "equilibrado",
+      "task": "#27",
+      "cost": 0.92,
+      "ceiling": 5,
+      "started": "13:55",
+      "tokens": "188k"
+    },
+    {
+      "id": "job-009",
+      "title": "Detalhar roadmap Q4",
+      "who": "Arquiteto de Nicho",
+      "ini": "AN",
+      "status": "queued",
+      "progress": 0,
+      "model": "claude-opus-4",
+      "motor": "Claude",
+      "effort": "profundo",
+      "task": "#21",
+      "cost": 0,
+      "ceiling": 12,
+      "started": "—",
+      "tokens": "0"
+    },
+    {
+      "id": "job-007",
+      "title": "Deploy landing Meridian",
+      "who": "Davi DevOps",
+      "ini": "DD",
+      "status": "failed",
+      "progress": 70,
+      "model": "claude-sonnet-4",
+      "motor": "Cursor",
+      "effort": "rápido",
+      "task": "#18",
+      "cost": 2.1,
+      "ceiling": 6,
+      "started": "12:20",
+      "tokens": "530k"
+    },
+    {
+      "id": "job-006",
+      "title": "Auditoria API — hardening",
+      "who": "Atlas Web",
+      "ini": "AW",
+      "status": "completed",
+      "progress": 100,
+      "model": "gpt-4o",
+      "motor": "Codex",
+      "effort": "profundo",
+      "task": "#9",
+      "cost": 3.4,
+      "ceiling": 10,
+      "started": "09:12",
+      "tokens": "1,1M"
+    },
+    {
+      "id": "job-003",
+      "title": "Revisão headline LP advocacia",
+      "who": "Rita Revisora",
+      "ini": "RR",
+      "status": "paused",
+      "progress": 80,
+      "model": "claude-sonnet-4",
+      "motor": "Cursor",
+      "effort": "rápido",
+      "task": "#12",
+      "cost": 0.44,
+      "ceiling": 2,
+      "started": "11:05",
+      "tokens": "96k"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "t1",
+      "seq": 12,
+      "title": "Headline da LP de advocacia passou de 60 caracteres",
+      "status": "in_progress",
+      "who": "Rita Revisora",
+      "ini": "RR",
+      "prio": "Alta",
+      "sector": "Conteúdo",
+      "gate": true,
+      "job": "job-003"
+    },
+    {
+      "id": "t2",
+      "seq": 18,
+      "title": "Deploy landing Meridian — SUPABASE_URL ausente",
+      "status": "in_progress",
+      "who": "Davi DevOps",
+      "ini": "DD",
+      "prio": "Crítica",
+      "sector": "Engenharia",
+      "gate": true,
+      "job": "job-007"
+    },
+    {
+      "id": "t3",
+      "seq": 21,
+      "title": "Roadmap Q4 IA Livros — priorizar 3 frentes",
+      "status": "to_plan",
+      "who": "Paula PM",
+      "ini": "PP",
+      "prio": "Alta",
+      "sector": "Estratégia",
+      "planning": true,
+      "job": "job-009"
+    },
+    {
+      "id": "t4",
+      "seq": 9,
+      "title": "Auditoria de segurança da API",
+      "status": "done",
+      "who": "Atlas Web",
+      "ini": "AW",
+      "prio": "Normal",
+      "sector": "Qualidade",
+      "job": "job-006"
+    },
+    {
+      "id": "t5",
+      "seq": 24,
+      "title": "Proposta Atlas — contra-assinatura local",
+      "status": "planned",
+      "who": "Cléber Closer",
+      "ini": "CC",
+      "prio": "Alta",
+      "sector": "Comercial"
+    },
+    {
+      "id": "t6",
+      "seq": 27,
+      "title": "Carrossel Multiverso — 7 frames do episódio 14",
+      "status": "in_progress",
+      "who": "Adriano Arte",
+      "ini": "AA",
+      "prio": "Normal",
+      "sector": "Conteúdo",
+      "job": "job-011"
+    },
+    {
+      "id": "t7",
+      "seq": 30,
+      "title": "SEO da landing principal",
+      "status": "planned",
+      "who": "Nina SEO",
+      "ini": "NS",
+      "prio": "Normal",
+      "sector": "Social",
+      "job": "job-014"
+    },
+    {
+      "id": "t8",
+      "seq": 31,
+      "title": "Oferta de presença local — claims e preço",
+      "status": "to_plan",
+      "who": "Dora Descoberta",
+      "ini": "DD",
+      "prio": "Normal",
+      "sector": "Comercial"
+    }
+  ],
+  "approvals": [
+    {
+      "id": "ap-02",
+      "group": "block",
+      "kind": "deploy",
+      "title": "Deploy landing Meridian — variável ausente",
+      "who": "Davi DevOps",
+      "ini": "DD",
+      "type": "Checkpoint",
+      "status": "pending",
+      "impact": "alto",
+      "task": "#18",
+      "age": "há 2 h",
+      "reason": "O build da landing passou, mas o deploy parou porque SUPABASE_URL não existe na conta da Meridian.",
+      "question": "Registrar SUPABASE_URL no cofre local e refazer o deploy da Meridian?",
+      "yes": [
+        "A variável é gravada no cofre local",
+        "O job-007 refaz o deploy a partir do passo 4"
+      ],
+      "no": [
+        "O deploy continua parado",
+        "O card #18 volta para Planejado"
+      ]
+    },
+    {
+      "id": "ap-01",
+      "group": "scope",
+      "kind": "roadmap",
+      "title": "Roadmap Q4 IA Livros — aprovar priorização",
+      "who": "Arquiteto de Nicho",
+      "ini": "AN",
+      "type": "Autorização",
+      "status": "pending",
+      "impact": "alto",
+      "task": "#21",
+      "age": "há 3 h",
+      "reason": "O livro guia do método sobe para a primeira frente.",
+      "question": "Aprovar a nova ordem das três frentes de IA Livros para o Q4?",
+      "yes": [
+        "Paula reordena as frentes no Roadmap",
+        "O job-009 sai da fila"
+      ],
+      "no": [
+        "A ordem atual continua valendo"
+      ]
+    }
+  ],
+  "events": []
+}

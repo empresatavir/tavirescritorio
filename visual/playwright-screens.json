@@ -1,0 +1,2104 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "deviceScaleFactor": 1
+  },
+  "locale": "pt-BR",
+  "timezoneId": "America/Sao_Paulo",
+  "colorScheme": "dark",
+  "timeoutMs": 45000,
+  "semanticInventory": true,
+  "includeFieldValues": false,
+  "fullPage": false,
+  "sides": {
+    "reference": {
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html"
+    },
+    "candidate": {
+      "url": "http://127.0.0.1:9196/sala-operacao"
+    }
+  },
+  "output": {
+    "reference": "reference",
+    "candidate": "actual",
+    "report": "report",
+    "semantics": "semantics"
+  },
+  "comparison": {
+    "enabled": true,
+    "threshold": 12,
+    "python": "python"
+  },
+  "screens": [
+    {
+      "id": "sala-dark",
+      "file": "sala-dark.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "sala-light",
+      "file": "sala-light.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Alternar tema",
+            "exact": true,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Alternar tema",
+            "exact": true,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "sala-estreita",
+      "file": "sala-estreita.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 20000
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      },
+      "viewport": {
+        "width": 860,
+        "height": 900,
+        "deviceScaleFactor": 1
+      }
+    },
+    {
+      "id": "exec-lista",
+      "file": "exec-lista.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Execuções",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Execuções",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "tasks-kanban",
+      "file": "tasks-kanban.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Tasks",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Tasks",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "decisoes-lista",
+      "file": "decisoes-lista.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Decisões",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Decisões",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "decisoes-light",
+      "file": "decisoes-light.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Decisões",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Alternar tema",
+            "exact": true,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Decisões",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Alternar tema",
+            "exact": true,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "agentes-roster",
+      "file": "agentes-roster.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Agentes",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Agentes",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "chat-conversa",
+      "file": "chat-conversa.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Chat",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Chat",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "chat-light",
+      "file": "chat-light.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Chat",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Alternar tema",
+            "exact": true,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Chat",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Alternar tema",
+            "exact": true,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "modulos-hub",
+      "file": "modulos-hub.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "raiox-lista",
+      "file": "raiox-lista.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Raio-X",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Raio-X",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "studio-esteira",
+      "file": "studio-esteira.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Studio",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Studio",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "fabrica-esteiras",
+      "file": "fabrica-esteiras.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Fábrica",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Fábrica",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "flow-beta",
+      "file": "flow-beta.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Flow",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Flow",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "edicao-timeline",
+      "file": "edicao-timeline.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Edição",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Módulos",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Edição",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "funil",
+      "file": "funil.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Comercial",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Funil",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Comercial",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Funil",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "propostas",
+      "file": "propostas.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Comercial",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Propostas",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Comercial",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Propostas",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "financas",
+      "file": "financas.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Comercial",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Finanças",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Comercial",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Finanças",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "personas",
+      "file": "personas.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Comercial",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Personas",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Comercial",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Personas",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "social-perfis",
+      "file": "social-perfis.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Social",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Perfis e calendário",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Social",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Perfis e calendário",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "social-inbox",
+      "file": "social-inbox.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Social",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Comunicações",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Social",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Comunicações",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "cerebro",
+      "file": "cerebro.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Conhecimento",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Cérebro",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Conhecimento",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Cérebro",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "memoria",
+      "file": "memoria.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Conhecimento",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Memória e biblioteca",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Conhecimento",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Memória e biblioteca",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "ideias",
+      "file": "ideias.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Conhecimento",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Ideias",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Conhecimento",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Ideias",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "mission",
+      "file": "mission.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Estratégia",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Mission Control",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Estratégia",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Mission Control",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "roadmap",
+      "file": "roadmap.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Estratégia",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Roadmap",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Estratégia",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Roadmap",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "mapa",
+      "file": "mapa.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Estratégia",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Mapa operacional",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Estratégia",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Mapa operacional",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "analytics",
+      "file": "analytics.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Analytics",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Analytics",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "doctor",
+      "file": "doctor.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Doctor",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Doctor",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "skills",
+      "file": "skills.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Skills",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Skills",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "org",
+      "file": "org.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Org Chart",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Org Chart",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "config-perfil",
+      "file": "config-perfil.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Configurações",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Configurações",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "config-light",
+      "file": "config-light.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Configurações",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Alternar tema",
+            "exact": true,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Sistema",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Configurações",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Alternar tema",
+            "exact": true,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "como-funciona",
+      "file": "como-funciona.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Como funciona",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Como funciona",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    },
+    {
+      "id": "tour-escolha",
+      "file": "tour-escolha.png",
+      "reference": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 30000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Fluxo guiado",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 600
+          }
+        ]
+      },
+      "candidate": {
+        "actions": [
+          {
+            "type": "waitFor",
+            "role": "button",
+            "name": "Operação",
+            "exact": true,
+            "timeout": 45000
+          },
+          {
+            "type": "click",
+            "role": "button",
+            "name": "Fluxo guiado",
+            "exact": false,
+            "nth": 0
+          },
+          {
+            "type": "waitMs",
+            "ms": 400
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -22,9 +22,9 @@ export function ProjectAiDialog(props: {
   projectName?: string;
   onClose: () => void;
 }) {
-  const [provider, setProvider] = createSignal("ghostcli");
-  const [model, setModel] = createSignal("claude-opus-5-5");
-  const [effort, setEffort] = createSignal("xhigh");
+  const [provider, setProvider] = createSignal("");
+  const [model, setModel] = createSignal("");
+  const [effort, setEffort] = createSignal("");
   const [engines, setEngines] = createSignal<EngineOption[]>([]);
   const [busy, setBusy] = createSignal(false);
   let providerEl: HTMLSelectElement | undefined;
@@ -46,7 +46,7 @@ export function ProjectAiDialog(props: {
         const savedEngine = list.find((item) => item.id === data.provider) || list[0];
         const savedModel = savedEngine?.models.find((item) => item.id === data.model) || savedEngine?.models[0];
         setEngines(list);
-        setProvider(savedEngine?.id || "ghostcli");
+        setProvider(savedEngine?.id || data.provider || "");
         setModel(savedModel?.id || data.model);
         setEffort(preferredEffort(savedModel?.efforts || [], data.effort));
       })

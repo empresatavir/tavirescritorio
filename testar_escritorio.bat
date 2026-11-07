@@ -10,37 +10,35 @@ echo                TAVIR ESCRITÓRIO — VALIDAÇÃO E TESTES
 echo ===============================================================================
 echo.
 
-set "PY_EXE=python"
-if exist "%~dp0backend\.venv\Scripts\python.exe" (
-    set "PY_EXE=%~dp0backend\.venv\Scripts\python.exe"
-) else if exist "%~dp0.venv\Scripts\python.exe" (
-    set "PY_EXE=%~dp0.venv\Scripts\python.exe"
-) else if exist "%~dp0venv\Scripts\python.exe" (
-    set "PY_EXE=%~dp0venv\Scripts\python.exe"
-)
-
-echo [1/2] Executando testes unitários e de integração do Backend (pytest)...
-cd /d "%~dp0backend"
-"%PY_EXE%" -m pytest tests/ -v
+echo [1/3] Validando tipagem TypeScript unificada (npm run typecheck)...
+call npm run typecheck
 if %errorlevel% neq 0 (
     echo.
-    echo [FALHA] Testes do backend falharam!
+    echo [FALHA] Validação de tipagem falhou!
     if "%1" neq "--no-pause" pause
     exit /b 1
 )
 
 echo.
-echo [2/2] Validando tipagem TypeScript e compilação do Frontend (npm run build)...
-cd /d "%~dp0frontend"
-call npm run build
+echo [2/3] Executando testes automatizados (Vitest: Motion + Backend)...
+call npm test
 if %errorlevel% neq 0 (
     echo.
-    echo [FALHA] Build do frontend falhou!
+    echo [FALHA] Testes automatizados falharam!
     if "%1" neq "--no-pause" pause
     exit /b 1
 )
 
-cd /d "%~dp0"
+echo.
+echo [3/3] Compilando bundles de produção (Main Electron + Vite Renderer)...
+call npm run build
+if %errorlevel% neq 0 (
+    echo.
+    echo [FALHA] Build de produção falhou!
+    if "%1" neq "--no-pause" pause
+    exit /b 1
+)
+
 echo.
 echo ===============================================================================
 echo            TODOS OS TESTES E BUILDS PASSARAM COM SUCESSO!

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -144,7 +144,16 @@ async def create_template(req: CreateTemplateRequest, session: AsyncSession = De
 @router.get("/projects", response_model=list[FactoryProjectResponse])
 async def list_factory_projects(session: AsyncSession = Depends(get_session)):
     repo = TemplateRepository(session)
-    return await repo.list_factory_projects()
+    projects = await repo.list_factory_projects()
+    from app.modules.factory.run_service import resolve_visible_run
+
+    changed = False
+    for proj in projects:
+        _run, dirty = await resolve_visible_run(session, proj)
+        changed = changed or dirty
+    if changed:
+        await session.commit()
+    return projects
 
 
 @router.get("/projects/{project_id}", response_model=FactoryProjectResponse)
@@ -319,9 +328,9 @@ async def create_factory_project(req: CreateFactoryProjectRequest, session: Asyn
 async def get_project_run(project_id: str, session: AsyncSession = Depends(get_session)):
     """Run ativo + stages materializadas (B0)."""
     from app.modules.factory.run_service import (
-        get_active_run,
         list_stages,
         materialize_run_for_project,
+        resolve_visible_run,
         serialize_run,
     )
 
@@ -333,7 +342,7 @@ async def get_project_run(project_id: str, session: AsyncSession = Depends(get_s
     if not proj:
         raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
 
-    run = await get_active_run(session, proj.id)
+    run, restored = await resolve_visible_run(session, proj)
     if not run:
         if not proj.template_code:
             raise HTTPException(status_code=404, detail="Projeto sem esteira / run")
@@ -342,6 +351,10 @@ async def get_project_run(project_id: str, session: AsyncSession = Depends(get_s
             await session.commit()
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
+    elif restored:
+        await session.commit()
+        await session.refresh(run)
+        await session.refresh(proj)
 
     from app.modules.factory.run_service import align_run_to_esteira, stamp_run_engine
 
@@ -538,32 +551,112 @@ async def write_project_artifact(
     }
 
 
-@router.get("/projects/{project_id}/qa")
-async def get_project_qa(project_id: str, session: AsyncSession = Depends(get_session)):
-    """B5 — Completion Guard: regras + status pass/fail/wait."""
-    from app.modules.factory.qa_guard import evaluate_guard
-    from app.modules.factory.run_service import get_active_run, get_latest_run, list_stages
-
+async def _factory_project(session: AsyncSession, project_id: str) -> Project:
     repo = TemplateRepository(session)
     proj = await repo.get_factory_project(project_id)
     if not proj:
         proj = await session.get(Project, project_id)
     if not proj:
         raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+    return proj
 
-    run = await get_active_run(session, proj.id) or await get_latest_run(session, proj.id)
+
+@router.get("/projects/{project_id}/qa")
+async def get_project_qa(project_id: str, session: AsyncSession = Depends(get_session)):
+    """Completion Guard, fluxo de QA e evidências gravadas no projeto."""
+    from app.modules.factory.dossier import qa_dossier
+    from app.modules.factory.run_service import list_stages, resolve_visible_run
+
+    proj = await _factory_project(session, project_id)
+    run, restored = await resolve_visible_run(session, proj)
+    if restored:
+        await session.commit()
     stages = await list_stages(session, run.id) if run else []
     code = (run.template_code if run else None) or proj.template_code or "lp-c"
-    report = evaluate_guard(proj.local_path, code, stages=stages)
+    report = qa_dossier(proj.local_path, code, stages)
     report["project_id"] = proj.id
     report["run_id"] = run.id if run else None
     return report
 
 
+@router.get("/projects/{project_id}/security")
+async def get_project_security(project_id: str, session: AsyncSession = Depends(get_session)):
+    """Vistoria de segurança: varredura, parecer e roteiro do especialista."""
+    from app.modules.factory.dossier import security_dossier
+
+    proj = await _factory_project(session, project_id)
+    report = security_dossier(proj.local_path)
+    report["project_id"] = proj.id
+    return report
+
+
+@router.post("/projects/{project_id}/security/plan")
+async def plan_project_security(project_id: str, session: AsyncSession = Depends(get_session)):
+    """O especialista lê o projeto e grava o roteiro de verificação."""
+    from pathlib import Path
+
+    from app.modules.factory.artifacts import ArtifactError, resolve_workspace_root
+    from app.modules.factory.dossier import security_dossier, write_scanner_roteiro
+    from app.modules.factory.engine_prefs import office_call
+    from app.modules.factory.run_service import resolve_visible_run
+    from app.modules.factory.work_session import WorkSessionError, _default_agent
+
+    proj = await _factory_project(session, project_id)
+    try:
+        root = resolve_workspace_root(proj.local_path)
+    except ArtifactError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    write_scanner_roteiro(root)
+    run, _restored = await resolve_visible_run(session, proj)
+    meta = (run.meta if run else None) or {}
+    _provider, model, effort, _enabled = await office_call(meta.get("model"), meta.get("effort"))
+    prompt = (
+        "Você é Sérgio Seg/LGPD. Analise este projeto e grave somente qa/security-roteiro.md.\n"
+        "Não altere código do produto, não apague arquivos e não recomece a esteira.\n"
+        "O arquivo deve ser um roteiro de verificação específico deste projeto, em português, neste formato:\n"
+        "# Roteiro de verificação\n"
+        "- [ ] Título curto | o que conferir neste projeto\n"
+        "Marque [x] só o que você verificou e está seguro. Deixe [ ] no que ainda precisa de prova.\n"
+        "Cubra segredo, autenticação, dados pessoais, permissões e a superfície real (Flutter, API ou site) que existir na pasta."
+    )
+    try:
+        await asyncio.to_thread(_default_agent, Path(root), prompt, model or "", effort or "", None)
+    except WorkSessionError as exc:
+        report = security_dossier(proj.local_path)
+        report["project_id"] = proj.id
+        report["agent_error"] = str(exc)
+        return report
+    report = security_dossier(proj.local_path)
+    report["project_id"] = proj.id
+    report["specialist"] = True
+    return report
+
+
+@router.get("/projects/{project_id}/artifacts/raw")
+async def read_project_artifact_raw(
+    project_id: str,
+    path: str,
+    session: AsyncSession = Depends(get_session),
+):
+    """Entrega HTML ou imagem de evidência para a vistoria."""
+    from app.modules.factory.artifacts import ArtifactError, resolve_safe_path, resolve_workspace_root
+    from app.modules.factory.dossier import RAW_SUFFIXES
+
+    proj = await _factory_project(session, project_id)
+    try:
+        root = resolve_workspace_root(proj.local_path)
+        target = resolve_safe_path(root, path)
+    except ArtifactError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    if not target.is_file() or target.suffix.lower() not in RAW_SUFFIXES:
+        raise HTTPException(status_code=404, detail="Evidência visual não encontrada")
+    return FileResponse(target)
+
+
 @router.get("/projects/{project_id}/roadmap")
 async def get_project_roadmap(project_id: str, session: AsyncSession = Depends(get_session)):
     """B6 — Roadmap = projeção das stages do run."""
-    from app.modules.factory.run_service import get_active_run, get_latest_run, list_stages, serialize_stage
+    from app.modules.factory.run_service import get_latest_run, list_stages, resolve_visible_run, serialize_stage
 
     repo = TemplateRepository(session)
     proj = await repo.get_factory_project(project_id)
@@ -572,7 +665,11 @@ async def get_project_roadmap(project_id: str, session: AsyncSession = Depends(g
     if not proj:
         raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
 
-    run = await get_active_run(session, proj.id) or await get_latest_run(session, proj.id)
+    run, restored = await resolve_visible_run(session, proj)
+    if restored:
+        await session.commit()
+    if not run:
+        run = await get_latest_run(session, proj.id)
     if not run:
         raise HTTPException(status_code=404, detail="Projeto sem run")
     stages = await list_stages(session, run.id)
@@ -594,6 +691,7 @@ class ChatMessageRequest(BaseModel):
     message: str
     agent_role: str | None = None
     agent_name: str | None = None
+    to_project: bool = False
 
 
 @router.get("/projects/{project_id}/chat")
@@ -618,7 +716,7 @@ async def post_project_chat(
 ):
     """B8 — mensagem isolada por project_id (persona da stage via GhostCLI)."""
     import uuid as _uuid
-    from app.modules.factory.run_service import get_active_run, get_latest_run, list_stages
+    from app.modules.factory.run_service import get_latest_run, list_stages, resolve_visible_run
     from app.modules.ghostcli import chat_completion
     from app.modules.ghostcli.client import GhostCliError
     from sqlalchemy.orm.attributes import flag_modified
@@ -634,19 +732,25 @@ async def post_project_chat(
     if not text:
         raise HTTPException(status_code=400, detail="message vazia")
 
-    run = await get_active_run(session, proj.id) or await get_latest_run(session, proj.id)
+    run, _restored = await resolve_visible_run(session, proj)
+    if run is None:
+        run = await get_latest_run(session, proj.id)
     stages = await list_stages(session, run.id) if run else []
-    agent_name = req.agent_name
-    agent_role = req.agent_role
-    stage_title = None
-    if not agent_name and stages:
-        cur = next((s for s in stages if s.stage_def_id == (run.current_stage_id if run else None)), None)
-        if cur:
-            agent_name = cur.agent
-            agent_role = cur.agent_role or agent_role
-            stage_title = cur.title
-    agent_name = agent_name or "Orquestrador"
-    agent_role = agent_role or "orquestrador"
+    finished = run is not None and run.status == "done"
+    to_project = bool(req.to_project)
+    agent_name = None if to_project else req.agent_name
+    agent_role = None if to_project else req.agent_role
+    cur = next((s for s in stages if run and s.stage_def_id == run.current_stage_id), None)
+    stage_title = cur.title if cur else None
+    if not to_project and not agent_name and cur and not finished:
+        agent_name = cur.agent
+        agent_role = cur.agent_role or agent_role
+    if to_project:
+        agent_name = proj.name
+        agent_role = "projeto"
+    else:
+        agent_name = agent_name or ("Projeto" if finished else "Orquestrador")
+        agent_role = agent_role or ("projeto" if finished else "orquestrador")
 
     now = datetime.now(timezone.utc).isoformat()
     raw_files = proj.files if isinstance(proj.files, dict) else {}
@@ -668,48 +772,104 @@ async def post_project_chat(
         history.append({"role": role, "content": m.get("text") or ""})
     history.append({"role": "user", "content": text})
 
+    from app.modules.factory.actions import split_actions
+    from app.modules.factory.demands import chat_workspace, open_demand, order_path_for
     from app.modules.factory.engine_prefs import office_call
+    from app.modules.factory.project_control import ensure_layout
 
     run_meta = (run.meta if run else None) or {}
     provider, model, effort, _enabled = await office_call(run_meta.get("model"), run_meta.get("effort"))
+    demand = await open_demand(session, proj.id, (run_meta or {}).get("demand_id"))
+    stage_label = stage_title or (run.current_stage_id if run else None)
+    recent = [f"{item['role']}: {item['content']}" for item in history]
+    note = f"Você é {agent_name}, atuando como {agent_role}."
+    if finished:
+        maintenance = bool((run.meta or {}).get("maintenance")) if run else False
+        note += " A esteira está encerrada."
+        if maintenance:
+            note += " A gravação só acontece quando a pessoa pede Aplicar no projeto."
+        else:
+            note += " Para alterar o código, a pessoa entra em manutenção."
+    if to_project:
+        note += f" A conversa é com o projeto {proj.name}."
 
-    system = (
-        f"Você é {agent_name}, atuando como {agent_role} na Fábrica TAVIR.\n"
-        f"Projeto: {proj.name} (id={proj.id}).\n"
-        f"Workspace: {proj.local_path or '—'}.\n"
-        f"Etapa atual: {stage_title or (run.current_stage_id if run else '—')}.\n"
-        f"Modelo: {model}. Esforço: {effort}.\n"
-        "Contexto isolado a este project_id. Responda em português, de forma operacional."
-    )
+    try:
+        ensure_layout(proj.local_path)
+    except Exception:
+        ensure_layout_ok = False
+    else:
+        ensure_layout_ok = True
+    workspace = None
+    order = None
+    if ensure_layout_ok and proj.local_path:
+        folder = chat_workspace(proj, demand if demand and demand.status not in {"concluida", "recusada"} else None)
+        workspace = str(folder)
+        order = str(order_path_for(folder))
+    from app.modules.factory.chat_reply import fonte_prompt, local_text, needs_source, retrato_prompt
 
+    direct = local_text(proj, demand, stage_label, text)
     ghost_meta = None
     try:
-        reply_text = await chat_completion(
-            system=system,
-            messages=history,
-            model=model,
-            effort=effort,
-            provider=provider,
-            max_tokens=1200,
-            timeout=None,
-        )
-        ghost_meta = f"{provider}:ok:{model}:{effort}"
-    except GhostCliError as exc:
+        from app.modules.cursor_link.client import answer_inline, ask_in_workspace, cli_path
+
+        binary = cli_path()
+        if direct is not None:
+            reply_text = direct
+            ghost_meta = "retrato:local"
+        elif needs_source(text) and binary and workspace:
+            reply_text = await asyncio.to_thread(
+                ask_in_workspace,
+                binary,
+                workspace,
+                model or "",
+                "low",
+                note + "\n" + fonte_prompt(proj, demand, stage_label, text),
+                None,
+                50.0,
+                order,
+            )
+            ghost_meta = "cursor:fonte:low"
+        elif binary:
+            reply_text = await asyncio.to_thread(
+                answer_inline,
+                binary,
+                "auto",
+                "low",
+                note + "\n" + retrato_prompt(proj, demand, stage_label, recent, text),
+                40.0,
+            )
+            ghost_meta = "cursor:retrato:auto"
+        else:
+            reply_text = await chat_completion(
+                system=note + "\n" + retrato_prompt(proj, demand, stage_label, recent, text),
+                messages=[{"role": "user", "content": text}],
+                model=model,
+                effort="low",
+                provider=provider,
+                max_tokens=400,
+                timeout=40,
+            )
+            ghost_meta = f"{provider}:retrato:low"
+    except (GhostCliError, RuntimeError) as exc:
         reply_text = (
-            f"[{agent_name}] Não consegui falar com o GhostCLI agora ({exc}). "
+            f"[{agent_name}] Não consegui falar com o motor agora ({exc}). "
             f"Mensagem recebida no projeto {proj.name}."
         )
         ghost_meta = f"ghostcli:error:{exc}"
 
+    from app.modules.chat.service import ChatService
+
+    visible, actions = split_actions(ChatService._plain_reply(reply_text))
     reply = {
         "id": str(_uuid.uuid4()),
         "role": "agent",
-        "text": reply_text,
+        "text": visible,
         "agent_role": agent_role,
         "agent_name": agent_name,
         "at": datetime.now(timezone.utc).isoformat(),
         "project_id": proj.id,
         "meta": ghost_meta,
+        "actions": actions,
     }
     chat.extend([user_msg, reply])
     files["chat"] = chat[-200:]
@@ -717,6 +877,127 @@ async def post_project_chat(
     flag_modified(proj, "files")
     await session.commit()
     return {"project_id": proj.id, "messages": [user_msg, reply], "history_count": len(files["chat"])}
+
+
+@router.post("/projects/{project_id}/maintenance")
+async def open_project_maintenance(project_id: str, session: AsyncSession = Depends(get_session)):
+    """Liga a manutenção do projeto finalizado sem reabrir a esteira."""
+    from app.modules.factory.run_service import list_stages, resolve_visible_run, serialize_run
+    from sqlalchemy.orm.attributes import flag_modified
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    run, _restored = await resolve_visible_run(session, proj)
+    if not run or run.status != "done":
+        await session.commit()
+        raise HTTPException(
+            status_code=409,
+            detail="A manutenção abre quando a esteira está finalizada.",
+        )
+    meta = dict(run.meta or {})
+    meta["maintenance"] = True
+    run.meta = meta
+    flag_modified(run, "meta")
+    await session.commit()
+    await session.refresh(run)
+    stages = await list_stages(session, run.id)
+    return serialize_run(run, stages)
+
+
+@router.post("/projects/{project_id}/maintenance/apply")
+async def apply_project_maintenance(
+    project_id: str,
+    req: ChatMessageRequest,
+    session: AsyncSession = Depends(get_session),
+):
+    """Aplica um pedido de manutenção no código já entregue."""
+    import asyncio
+    import uuid as _uuid
+    from pathlib import Path
+
+    from sqlalchemy.orm.attributes import flag_modified
+
+    from app.modules.factory.engine_prefs import office_call
+    from app.modules.factory.run_service import resolve_visible_run
+    from app.modules.factory.work_session import WorkSessionError, _default_agent
+
+    repo = TemplateRepository(session)
+    proj = await repo.get_factory_project(project_id)
+    if not proj:
+        proj = await session.get(Project, project_id)
+    if not proj:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
+    text = (req.message or "").strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="message vazia")
+
+    run, _restored = await resolve_visible_run(session, proj)
+    if not run or run.status != "done":
+        raise HTTPException(
+            status_code=409,
+            detail="A alteração entra na manutenção de um projeto finalizado.",
+        )
+    if not (run.meta or {}).get("maintenance"):
+        raise HTTPException(status_code=409, detail="Entre em manutenção antes de aplicar uma alteração.")
+
+    workspace = proj.local_path or run.workspace_path
+    if not workspace:
+        raise HTTPException(status_code=404, detail="Projeto sem pasta para aplicar a alteração.")
+
+    _provider, model, effort, _enabled = await office_call((run.meta or {}).get("model"), (run.meta or {}).get("effort"))
+    prompt = (
+        "Manutenção do projeto já entregue. A esteira permanece finalizada. "
+        "Não recrie etapas, não apague a pasta e não recomece do Gate 0.\n"
+        "Aplique somente este pedido:\n"
+        f"{text}\n"
+        "Ao terminar, descreva os arquivos alterados."
+    )
+    try:
+        reply_text = await asyncio.to_thread(
+            _default_agent,
+            Path(workspace),
+            prompt,
+            model or "",
+            effort or "",
+            None,
+        )
+    except WorkSessionError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    now = datetime.now(timezone.utc).isoformat()
+    raw_files = proj.files if isinstance(proj.files, dict) else {}
+    files = dict(raw_files)
+    chat = list(files.get("chat") or [])
+    user_msg = {
+        "id": str(_uuid.uuid4()),
+        "role": "user",
+        "text": text,
+        "agent_role": "manutencao",
+        "agent_name": "Projeto",
+        "at": now,
+        "project_id": proj.id,
+    }
+    reply = {
+        "id": str(_uuid.uuid4()),
+        "role": "agent",
+        "text": reply_text or "Alteração aplicada no projeto.",
+        "agent_role": "manutencao",
+        "agent_name": "Projeto",
+        "at": datetime.now(timezone.utc).isoformat(),
+        "project_id": proj.id,
+    }
+    chat.extend([user_msg, reply])
+    files["chat"] = chat[-200:]
+    proj.files = files
+    flag_modified(proj, "files")
+    await session.commit()
+    return {"project_id": proj.id, "messages": [user_msg, reply], "applied": True}
 
 
 class AccessUpsertRequest(BaseModel):
@@ -911,7 +1192,11 @@ class AutoSwitchRequest(BaseModel):
 
 
 async def _load_project_and_run(session: AsyncSession, project_id: str):
-    from app.modules.factory.run_service import get_active_run, get_latest_run, materialize_run_for_project
+    from app.modules.factory.run_service import (
+        get_latest_run,
+        materialize_run_for_project,
+        resolve_visible_run,
+    )
 
     repo = TemplateRepository(session)
     proj = await repo.get_factory_project(project_id)
@@ -920,7 +1205,12 @@ async def _load_project_and_run(session: AsyncSession, project_id: str):
     if not proj:
         raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
 
-    run = await get_active_run(session, proj.id)
+    run, restored = await resolve_visible_run(session, proj)
+    if restored:
+        await session.commit()
+        if run:
+            await session.refresh(run)
+        await session.refresh(proj)
     if not run:
         run = await get_latest_run(session, proj.id)
     if not run:
@@ -1434,6 +1724,11 @@ async def update_project_stage(
     await session.commit()
     await session.refresh(updated)
     return updated
+
+
+from app.modules.factory.demand_http import mount as mount_demands
+
+mount_demands(router)
 
 
 @router.post("/projects/{project_id}/resolve-pendency", response_model=FactoryProjectResponse)

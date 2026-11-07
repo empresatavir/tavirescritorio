@@ -6,14 +6,16 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from datetime import datetime, timezone
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.shared.database import get_session, async_session
 from app.modules.jobs.repository import JobRepository
 from app.modules.jobs.runner import JobRunner
+from app.modules.jobs.sse import event_payload, read_event_rows
 from app.models.task import Task
+from app.models.job import Job
 from app.models.project import Project
 from app.models.agent import Agent
 from app.models.artifact import Artifact
@@ -46,21 +48,40 @@ class CreateJobRequest(BaseModel):
     model_name: str | None = None
     effort: str | None = None
     model_provider: str | None = None
+    budget_ceiling: float | None = None
     # planning | execution | manual — controla transição de status da task vinculada
     origin: str = "manual"
 
     model_config = {"protected_namespaces": ()}
 
 
+_PROGRESS = {
+    "queued": 0,
+    "preflight": 15,
+    "running": 50,
+    "paused": 50,
+    "succeeded": 100,
+    "completed": 100,
+    "failed": 100,
+    "cancelled": 100,
+}
+
+
 class JobResponse(BaseModel):
     id: str
     task_id: str | None = None
+    task_title: str | None = None
     project_id: str | None = None
     agent_id: str | None = None
     origin: str
     model_provider: str | None = None
+    motor: str | None = None
     model_name: str | None = None
     effort: str | None = None
+    budget_ceiling: float | None = None
+    cost_usd: float = 0
+    tokens_total: int = 0
+    progress: int = 0
     status: str
     workspace_path: str | None = None
     error_message: str | None = None
@@ -68,6 +89,13 @@ class JobResponse(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True, "protected_namespaces": ()}
+
+    @model_validator(mode="after")
+    def fill_view(self):
+        if not self.motor:
+            self.motor = self.model_provider
+        self.progress = _PROGRESS.get(self.status, 0)
+        return self
 
 
 _background_job_tasks: set[asyncio.Task] = set()
@@ -162,17 +190,9 @@ async def create_job(req: CreateJobRequest, session: AsyncSession = Depends(get_
                                 detail=f"Task {req.task_id} possui etapa bloqueada aguardando aprovação humana de decision gate"
                             )
 
-    # Infer model and effort
+    # Modelo e esforço vêm do pedido. Sem os dois, o motor padrão de Integrações decide na hora da chamada.
     model_name = req.model_name
     effort = req.effort
-    if not model_name and req.command:
-        if "Fable" in req.command or "fable" in req.command.lower():
-            model_name = "Fable"
-        elif "Claude" in req.command or "claude" in req.command.lower():
-            model_name = "Claude"
-    if not effort and req.command:
-        if "Máximo" in req.command or "max" in req.command.lower():
-            effort = "max"
 
     # Validate foreign keys
     project_id = req.project_id
@@ -202,6 +222,23 @@ async def create_job(req: CreateJobRequest, session: AsyncSession = Depends(get_
         effort=effort,
         model_provider=req.model_provider,
         origin=origin,
+        budget_ceiling=req.budget_ceiling,
+    )
+    from app.modules.office.ledger import record_event
+
+    record_event(
+        session,
+        action="job.criado",
+        details=json.dumps(
+            {
+                "job_id": job.id,
+                "motor": req.model_provider,
+                "model": model_name,
+                "effort": effort,
+                "budget_ceiling": req.budget_ceiling,
+            },
+            ensure_ascii=False,
+        ),
     )
     if task:
         task.active_job_id = job.id
@@ -258,22 +295,15 @@ async def stream_events(job_id: str):
                     yield f"data: {json.dumps({'error': 'Job not found'})}\n\n"
                     break
 
-                events = await repo.list_events(job_id)
+                events = await read_event_rows(session, job_id)
                 for event in events:
-                    if event.id in seen_event_ids:
+                    if event["id"] in seen_event_ids:
                         continue
-                    seen_event_ids.add(event.id)
-                    data = {
-                        "id": event.id,
-                        "event_type": event.event_type,
-                        "previous_state": event.previous_state,
-                        "new_state": event.new_state,
-                        "actor": event.actor,
-                        "action": event.action,
-                        "details": event.details,
-                        "created_at": str(event.created_at),
-                    }
-                    yield f"id: {event.id}\ndata: {json.dumps(data)}\n\n"
+                    seen_event_ids.add(event["id"])
+                    data = event_payload(event)
+                    if data is None:
+                        continue
+                    yield f"id: {data['id']}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
 
                 # If job reached terminal success state, stop streaming after emitting all events
                 if job.status == "succeeded":
@@ -286,6 +316,74 @@ async def stream_events(job_id: str):
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
     )
+
+
+@router.get("/{job_id}/stream")
+async def stream_job(job_id: str, session: AsyncSession = Depends(get_session)):
+    """Uma passada do SSE. Evento com created_at inválido fica no banco e não sai."""
+    job = await session.get(Job, job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail=f"Job {job_id} not found")
+    rows = await read_event_rows(session, job_id)
+
+    async def once():
+        for row in rows:
+            data = event_payload(row)
+            if data is None:
+                continue
+            yield f"id: {data['id']}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(once(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})
+
+
+async def _present(session: AsyncSession, job: Job) -> JobResponse:
+    view = JobResponse.model_validate(job)
+    if job.task_id:
+        task = await session.get(Task, job.task_id)
+        view.task_title = task.title if task else None
+    return view
+
+
+def _job_http(exc: ValueError) -> HTTPException:
+    text = str(exc)
+    status = 404 if text.startswith("Job ") and text.endswith(" not found") else 409
+    return HTTPException(status_code=status, detail=text)
+
+
+@router.post("/{job_id}/resume", response_model=JobResponse)
+async def resume_job(job_id: str, session: AsyncSession = Depends(get_session)):
+    runner = JobRunner(session)
+    try:
+        job = await runner.resume_job(job_id)
+        await session.commit()
+        await session.refresh(job)
+        return await _present(session, job)
+    except ValueError as exc:
+        raise _job_http(exc)
+
+
+@router.post("/{job_id}/start", response_model=JobResponse)
+async def start_job(job_id: str, session: AsyncSession = Depends(get_session)):
+    runner = JobRunner(session)
+    try:
+        job = await runner.start_job(job_id)
+        await session.commit()
+        await session.refresh(job)
+        return await _present(session, job)
+    except ValueError as exc:
+        raise _job_http(exc)
+
+
+@router.post("/{job_id}/redo", response_model=JobResponse)
+async def redo_job(job_id: str, session: AsyncSession = Depends(get_session)):
+    runner = JobRunner(session)
+    try:
+        job = await runner.redo_job(job_id)
+        await session.commit()
+        await session.refresh(job)
+        return await _present(session, job)
+    except ValueError as exc:
+        raise _job_http(exc)
 
 
 @router.post("/{job_id}/pause", response_model=JobResponse)

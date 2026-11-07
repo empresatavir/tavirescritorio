@@ -7,7 +7,7 @@ import {
   type RosterAgent,
   setModalOpen,
 } from "../../state/store";
-import { api } from "../../shared/api/client";
+import { api, type AgentLesson } from "../../shared/api/client";
 import { TvIcon } from "../../shared/components/TvIcon";
 import { useNavigate } from "@solidjs/router";
 
@@ -17,6 +17,8 @@ export function AgentesView() {
   const [selectedSector, setSelectedSector] = createSignal<string>("Todos");
   const [selectedAgentForSoul, setSelectedAgentForSoul] = createSignal<RosterAgent | null>(null);
   const [soulDraft, setSoulDraft] = createSignal<string>("");
+  const [craftDraft, setCraftDraft] = createSignal<string>("");
+  const [lessons, setLessons] = createSignal<AgentLesson[]>([]);
   const [savingSoul, setSavingSoul] = createSignal<boolean>(false);
 
   onMount(() => {
@@ -50,30 +52,39 @@ export function AgentesView() {
   const statusLabel = (st: RosterAgent["status"]) => {
     switch (st) {
       case "busy": return { label: "Ocupado", color: "var(--teal, #1BC5BD)" };
-      case "idle": return { label: "Ocioso", color: "var(--slate, #cbd3de)" };
       case "offline": return { label: "Offline", color: "var(--text-muted, #5E6878)" };
       case "error": return { label: "Erro", color: "var(--ember, oklch(.635 .185 27))" };
+      default: return { label: "Ocioso", color: "var(--slate, #cbd3de)" };
     }
   };
 
   const handleOpenSoul = async (ag: RosterAgent) => {
     setSelectedAgentForSoul(ag);
-    if (ag.soulText) {
-      setSoulDraft(ag.soulText);
-    } else {
-      try {
-        const res = await api.getAgentSoul(ag.id);
-        if (res.soul_text) {
-          setSoulDraft(res.soul_text);
-          return;
-        }
-      } catch {
-        // fallback to default template
+    setCraftDraft(ag.craftText || "");
+    setLessons([]);
+    let soul = ag.soulText || "";
+    try {
+      const res = await api.getAgentSoul(ag.id);
+      if (res.soul_text) soul = res.soul_text;
+      setCraftDraft(res.craft_text || "");
+    } catch {
+      if (!soul) {
+        soul = `# Lugar\nAtuar como ${ag.role} no setor ${ag.sector}.\n\n# Critério\n\n# Conflito\n\n# Voz\n\n# Limite\n`;
       }
-      setSoulDraft(
-        `# Propósito\nAtuar como ${ag.role} no setor ${ag.sector} com autonomia supervisionada.\n\n# Como trabalha\n- Executa jobs respeitando o teto de gastos estipulado\n- Valida critérios de aceite contra o planejamento de teste\n- Registra handoffs formais entre etapas\n\n# Nunca faz\n- Não publica sem aprovação de gates humanos\n- Não altera escopo de outros setores sem alinhamento\n\n# Tom de voz\nEstruturado, objetivo e operacional.\n\n# Escala para\nOrquestrador e CEO.`
-      );
     }
+    setSoulDraft(soul);
+    try {
+      setLessons(await api.listAgentLessons(ag.id));
+    } catch {
+      setLessons([]);
+    }
+  };
+
+  const handleLessonStatus = async (lessonId: string, status: string) => {
+    const ag = selectedAgentForSoul();
+    if (!ag) return;
+    const row = await api.setAgentLessonStatus(ag.id, lessonId, status);
+    setLessons((prev) => prev.map((item) => (item.id === lessonId ? row : item)));
   };
 
   const handleSaveSoul = async () => {
@@ -81,7 +92,7 @@ export function AgentesView() {
     if (!ag || savingSoul()) return;
     setSavingSoul(true);
     try {
-      await saveAgentSoulPersistent(ag.id, soulDraft());
+      await saveAgentSoulPersistent(ag.id, soulDraft(), craftDraft());
       setSelectedAgentForSoul(null);
     } finally {
       setSavingSoul(false);
@@ -201,6 +212,7 @@ export function AgentesView() {
 
               return (
                 <div
+                  data-agent-id={ag.id}
                   style={{
                     display: "grid",
                     "grid-template-columns": "minmax(220px, 2fr) 1fr 110px 140px 90px 70px 90px 210px",
@@ -282,6 +294,7 @@ export function AgentesView() {
                   <div style={{ "justify-self": "end", display: "flex", gap: "6px" }}>
                     <button
                       type="button"
+                      aria-label={`Abrir chat de ${ag.name}`}
                       onClick={() => handleOpenChat(ag)}
                       style={{
                         height: "28px",
@@ -328,7 +341,13 @@ export function AgentesView() {
       <Show when={selectedAgentForSoul()}>
         {(ag) => (
           <div style={{ position: "fixed", inset: "0", background: "rgba(7,12,22,.65)", display: "flex", "align-items": "center", "justify-content": "center", "z-index": "100" }}>
-            <div style={{ width: "680px", "max-width": "calc(100% - 32px)", "max-height": "calc(100vh - 64px)", background: "var(--surface-1, #0f1729)", border: "1px solid var(--border-light, rgba(244,246,242,.34))", "border-radius": "18px", padding: "20px", display: "flex", "flex-direction": "column", gap: "16px", "box-shadow": "0 24px 60px rgba(0,0,0,.5)" }}>
+            <div
+              class="modal"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Ofício do agente"
+              style={{ width: "680px", "max-width": "calc(100% - 32px)", "max-height": "calc(100vh - 64px)", background: "var(--surface-1, #0f1729)", border: "1px solid var(--border-light, rgba(244,246,242,.34))", "border-radius": "18px", padding: "20px", display: "flex", "flex-direction": "column", gap: "16px", "box-shadow": "0 24px 60px rgba(0,0,0,.5)" }}
+            >
               <div style={{ display: "flex", "align-items": "center", gap: "10px" }}>
                 <span style={{ width: "32px", height: "32px", "border-radius": "8px", background: ag().avatarColor, display: "flex", "align-items": "center", "justify-content": "center", "font-weight": "700", color: "#0B1220" }}>
                   {ag().initials}
@@ -341,11 +360,13 @@ export function AgentesView() {
               </div>
 
               <div style={{ flex: "1", "min-height": "0", "overflow-y": "auto", display: "flex", "flex-direction": "column", gap: "10px" }}>
-                <span style={{ "font-size": "12px", color: "var(--text-muted)" }}>Arquivo de Alma (Markdown editável):</span>
+                <span style={{ "font-size": "12px", color: "var(--text-muted)" }}>
+                  {craftDraft().trim() ? "Alma (estável)" : "Alma (markdown único, ofício ainda vazio)"}
+                </span>
                 <textarea
                   value={soulDraft()}
                   onInput={(e) => setSoulDraft(e.currentTarget.value)}
-                  rows={14}
+                  rows={8}
                   style={{
                     width: "100%",
                     padding: "12px",
@@ -360,6 +381,45 @@ export function AgentesView() {
                     outline: "none",
                   }}
                 />
+                <span style={{ "font-size": "12px", color: "var(--text-muted)" }}>Ofício</span>
+                <textarea
+                  aria-label="Ofício"
+                  value={craftDraft()}
+                  onInput={(e) => setCraftDraft(e.currentTarget.value)}
+                  rows={6}
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    "border-radius": "8px",
+                    border: "1px solid var(--border-subtle, rgba(244,246,242,.16))",
+                    background: "var(--surface-0, #0B1220)",
+                    color: "var(--text-primary, #F4F6F2)",
+                    "font-family": "var(--font-mono)",
+                    "font-size": "12px",
+                    "line-height": "1.6",
+                    resize: "vertical",
+                    outline: "none",
+                  }}
+                />
+                <span style={{ "font-size": "12px", color: "var(--text-muted)" }}>Lições do papel</span>
+                <Show
+                  when={lessons().length > 0}
+                  fallback={<span style={{ "font-size": "12px", color: "var(--text-muted)" }}>Nenhuma lição proposta.</span>}
+                >
+                  <For each={lessons()}>
+                    {(lesson) => (
+                      <div style={{ display: "flex", gap: "8px", "align-items": "center", "font-size": "12px" }}>
+                        <span style={{ flex: "1" }}>{lesson.situation || lesson.lesson.slice(0, 80)} · {lesson.status}</span>
+                        <Show when={lesson.status !== "adotada"}>
+                          <button type="button" onClick={() => handleLessonStatus(lesson.id, "adotada")} style={{ height: "26px", padding: "0 10px", "border-radius": "999px", border: "none", background: "var(--lime, #B7F34A)", color: "var(--ink-panel, #25360a)", cursor: "pointer" }}>Adotar</button>
+                        </Show>
+                        <Show when={lesson.status !== "aposentada"}>
+                          <button type="button" onClick={() => handleLessonStatus(lesson.id, "aposentada")} style={{ height: "26px", padding: "0 10px", "border-radius": "999px", border: "1px solid var(--border-subtle)", background: "transparent", color: "var(--text-secondary)", cursor: "pointer" }}>Aposentar</button>
+                        </Show>
+                      </div>
+                    )}
+                  </For>
+                </Show>
               </div>
 
               <div style={{ display: "flex", "justify-content": "flex-end", gap: "8px" }}>

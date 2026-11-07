@@ -1,0 +1,2687 @@
+{
+  "screenId": "modulos-hub",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 159,
+        "nav": 1,
+        "button": 37,
+        "img": 2,
+        "i": 33,
+        "span": 165,
+        "aside": 1,
+        "small": 3,
+        "b": 8,
+        "em": 2,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 8,
+        "section": 1,
+        "article": 6,
+        "h2": 5
+      },
+      "visibleText": [
+        {
+          "text": "Módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Visão dos módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fábrica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "beta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Edição",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "beta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Visão dos módulos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Módulos · cinco linhas de produção",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Do diagnóstico à entrega",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Cada módulo tem esteira própria, gate humano antes do irreversível e livro-razão. Eles se encaixam na jornada que a TAVIR vende ao cliente.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Jornada do cliente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Clique numa etapa para ver os módulos que a servem",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "01",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Encontrar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "02",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conversar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "03",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Atender",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "04",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Vender",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "05",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Medir",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Encontrar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "O Raio-X lê presença, atendimento e oferta de um negócio antes de qualquer proposta.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "→",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ativo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Lê presença, atendimento e oferta antes de vender.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agora",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Loja da Rua · presença local",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Etapa 2 de 6 · Coleta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "casos abertos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "em devolutiva",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "6",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "fechados 30d",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "DD",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CC",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "II",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Novo caso",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Abrir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Studio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ativo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Produz conteúdo por perfil, com decisão antes de publicar.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agora",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Multiverso · carrossel ep. 14",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Etapa 3 de 5 · Arte",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "peças ativas",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "checkpoints",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "14",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "publicadas 30d",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "OD",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "IA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nova produção",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Abrir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Fábrica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1 gate",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Constrói landing, oferta e sistema em esteiras com QA.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agora",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Meridian · landing institucional",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Etapa 6 de 9 · QA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "esteiras",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "no gate",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "entregues 30d",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "YU",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "VC",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "EE",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nova esteira",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Abrir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "beta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Liga módulos em esteiras automáticas, com gate onde importa.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agora",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Publicar carrossel",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iara → Rita → gate → Paulo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "workflows",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "pausado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "212",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "execuções 30d",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "DF",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "PP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Novo workflow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Abrir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Edição",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "beta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Finaliza vídeo: corte, narração, legenda e render.",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agora",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ep. 14 · reel de 45 s",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Etapa 3 de 4 · Legenda",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "render na fila",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "0",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "no gate",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "6",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "entregues 30d",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "VV",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "NN",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ver timeline",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Abrir",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Entregas · últimos 30 dias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Studio",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "14",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Raio-X",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "6",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Edição",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "6",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fábrica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Flow",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Peças, entregas ou casos fechados, por módulo. Dados do protótipo.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tempo médio até o gate",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3 h 40",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "−18% no mês",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO MÓDULOS Visão dos módulos Raio-X Studio Fábrica 1 Flow BETA Edição BETA Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão dos módulos",
+          "label": null,
+          "text": "Visão dos módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fábrica 1",
+          "label": null,
+          "text": "Fábrica 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow BETA",
+          "label": null,
+          "text": "Flow BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição BETA",
+          "label": null,
+          "text": "Edição BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Módulos / Visão dos módulos AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Módulos / Visão dos módulos AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Do diagnóstico à entrega",
+          "label": null,
+          "text": "Do diagnóstico à entrega",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 1076,
+            "height": 33
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "JORNADA DO CLIENTE Clique numa etapa para ver os módulos que a servem 01 Encontrar 02 Conversar 03 Atender 04 Vender 05 Medir ENCONTRAR O Raio-X lê presença, atendimento e oferta de um negócio antes de qualquer proposta. Raio-X →",
+          "label": null,
+          "text": "JORNADA DO CLIENTE Clique numa etapa para ver os módulos que a servem 01 Encontrar 02 Conversar 03 Atender 04 Vender 05 Medir ENCONTRAR O Raio-X lê presença, atendimento e oferta de um negócio antes de qualquer proposta. Raio-X →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 222,
+            "width": 1076,
+            "height": 253
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "01 Encontrar",
+          "label": null,
+          "text": "01 Encontrar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 357,
+            "y": 283,
+            "width": 199,
+            "height": 75
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "02 Conversar",
+          "label": null,
+          "text": "02 Conversar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 564,
+            "y": 283,
+            "width": 199,
+            "height": 75
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "03 Atender",
+          "label": null,
+          "text": "03 Atender",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 771,
+            "y": 283,
+            "width": 199,
+            "height": 75
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "04 Vender",
+          "label": null,
+          "text": "04 Vender",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 977,
+            "y": 283,
+            "width": 199,
+            "height": 75
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "05 Medir",
+          "label": null,
+          "text": "05 Medir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1184,
+            "y": 283,
+            "width": 199,
+            "height": 75
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X →",
+          "label": null,
+          "text": "Raio-X →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1275,
+            "y": 396,
+            "width": 91,
+            "height": 32
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Raio-X ATIVO Lê presença, atendimento e oferta antes de vender. AGORA Loja da Rua · presença local Etapa 2 de 6 · Coleta 2 casos abertos 1 em devolutiva 6 fechados 30d DD CC II Novo caso Abrir",
+          "label": null,
+          "text": "Raio-X ATIVO Lê presença, atendimento e oferta antes de vender. AGORA Loja da Rua · presença local Etapa 2 de 6 · Coleta 2 casos abertos 1 em devolutiva 6 fechados 30d DD CC II Novo caso Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 498,
+            "width": 348,
+            "height": 348
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 411,
+            "y": 519,
+            "width": 56,
+            "height": 27
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo caso",
+          "label": null,
+          "text": "Novo caso",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 499,
+            "y": 800,
+            "width": 92,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir",
+          "label": null,
+          "text": "Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 599,
+            "y": 800,
+            "width": 60,
+            "height": 32
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Studio ATIVO Produz conteúdo por perfil, com decisão antes de publicar. AGORA Multiverso · carrossel ep. 14 Etapa 3 de 5 · Arte 3 peças ativas 2 checkpoints 14 publicadas 30d OD AA IA Nova produção Abrir",
+          "label": null,
+          "text": "Studio ATIVO Produz conteúdo por perfil, com decisão antes de publicar. AGORA Multiverso · carrossel ep. 14 Etapa 3 de 5 · Arte 3 peças ativas 2 checkpoints 14 publicadas 30d OD AA IA Nova produção Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 696,
+            "y": 499,
+            "width": 348,
+            "height": 348
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 775,
+            "y": 519,
+            "width": 56,
+            "height": 27
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova produção",
+          "label": null,
+          "text": "Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 835,
+            "y": 800,
+            "width": 120,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir",
+          "label": null,
+          "text": "Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 963,
+            "y": 800,
+            "width": 60,
+            "height": 32
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Fábrica 1 GATE Constrói landing, oferta e sistema em esteiras com QA. AGORA Meridian · landing institucional Etapa 6 de 9 · QA 3 esteiras 1 no gate 4 entregues 30d YU VC EE Nova esteira Abrir",
+          "label": null,
+          "text": "Fábrica 1 GATE Constrói landing, oferta e sistema em esteiras com QA. AGORA Meridian · landing institucional Etapa 6 de 9 · QA 3 esteiras 1 no gate 4 entregues 30d YU VC EE Nova esteira Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1060,
+            "y": 499,
+            "width": 347,
+            "height": 348
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Fábrica",
+          "label": null,
+          "text": "Fábrica",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1139,
+            "y": 520,
+            "width": 62,
+            "height": 27
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova esteira",
+          "label": null,
+          "text": "Nova esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1216,
+            "y": 800,
+            "width": 103,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir",
+          "label": null,
+          "text": "Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1327,
+            "y": 800,
+            "width": 60,
+            "height": 32
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Flow BETA Liga módulos em esteiras automáticas, com gate onde importa. AGORA Publicar carrossel Iara → Rita → gate → Paulo 4 workflows 1 pausado 212 execuções 30d DF PP Novo workflow Abrir",
+          "label": null,
+          "text": "Flow BETA Liga módulos em esteiras automáticas, com gate onde importa. AGORA Publicar carrossel Iara → Rita → gate → Paulo 4 workflows 1 pausado 212 execuções 30d DF PP Novo workflow Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 333,
+            "y": 867,
+            "width": 346,
+            "height": 347
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Flow",
+          "label": null,
+          "text": "Flow",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 411,
+            "y": 887,
+            "width": 40,
+            "height": 27
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo workflow",
+          "label": null,
+          "text": "Novo workflow",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 473,
+            "y": 1167,
+            "width": 118,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir",
+          "label": null,
+          "text": "Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 598,
+            "y": 1167,
+            "width": 60,
+            "height": 32
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "Edição BETA Finaliza vídeo: corte, narração, legenda e render. AGORA Ep. 14 · reel de 45 s Etapa 3 de 4 · Legenda 1 render na fila 0 no gate 6 entregues 30d VV NN Ver timeline Abrir",
+          "label": null,
+          "text": "Edição BETA Finaliza vídeo: corte, narração, legenda e render. AGORA Ep. 14 · reel de 45 s Etapa 3 de 4 · Legenda 1 render na fila 0 no gate 6 entregues 30d VV NN Ver timeline Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 698,
+            "y": 874,
+            "width": 343,
+            "height": 344
+          }
+        },
+        {
+          "tag": "h2",
+          "id": null,
+          "role": "heading",
+          "name": "Edição",
+          "label": null,
+          "text": "Edição",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 776,
+            "y": 894,
+            "width": 56,
+            "height": 27
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver timeline",
+          "label": null,
+          "text": "Ver timeline",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 853,
+            "y": 1171,
+            "width": 101,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir",
+          "label": null,
+          "text": "Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 962,
+            "y": 1171,
+            "width": 59,
+            "height": 32
+          }
+        },
+        {
+          "tag": "article",
+          "id": null,
+          "role": null,
+          "name": "ENTREGAS · ÚLTIMOS 30 DIAS Studio 14 Raio-X 6 Edição 6 Fábrica 4 Flow 3 Peças, entregas ou casos fechados, por módulo. Dados do protótipo. TEMPO MÉDIO ATÉ O GATE 3 h 40 −18% NO MÊS",
+          "label": null,
+          "text": "ENTREGAS · ÚLTIMOS 30 DIAS Studio 14 Raio-X 6 Edição 6 Fábrica 4 Flow 3 Peças, entregas ou casos fechados, por módulo. Dados do protótipo. TEMPO MÉDIO ATÉ O GATE 3 h 40 −18% NO MÊS",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1060,
+            "y": 863,
+            "width": 348,
+            "height": 349
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Visão dos módulos",
+          "label": null,
+          "text": "Visão dos módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X",
+          "label": null,
+          "text": "Raio-X",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Studio",
+          "label": null,
+          "text": "Studio",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fábrica 1",
+          "label": null,
+          "text": "Fábrica 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Flow BETA",
+          "label": null,
+          "text": "Flow BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Edição BETA",
+          "label": null,
+          "text": "Edição BETA",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "01 Encontrar",
+          "label": null,
+          "text": "01 Encontrar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 357,
+            "y": 283,
+            "width": 199,
+            "height": 75
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "02 Conversar",
+          "label": null,
+          "text": "02 Conversar",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 564,
+            "y": 283,
+            "width": 199,
+            "height": 75
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "03 Atender",
+          "label": null,
+          "text": "03 Atender",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 771,
+            "y": 283,
+            "width": 199,
+            "height": 75
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "04 Vender",
+          "label": null,
+          "text": "04 Vender",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 977,
+            "y": 283,
+            "width": 199,
+            "height": 75
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "05 Medir",
+          "label": null,
+          "text": "05 Medir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1184,
+            "y": 283,
+            "width": 199,
+            "height": 75
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Raio-X →",
+          "label": null,
+          "text": "Raio-X →",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1275,
+            "y": 396,
+            "width": 91,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo caso",
+          "label": null,
+          "text": "Novo caso",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 499,
+            "y": 800,
+            "width": 92,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir",
+          "label": null,
+          "text": "Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 599,
+            "y": 800,
+            "width": 60,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova produção",
+          "label": null,
+          "text": "Nova produção",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 835,
+            "y": 800,
+            "width": 120,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir",
+          "label": null,
+          "text": "Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 963,
+            "y": 800,
+            "width": 60,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova esteira",
+          "label": null,
+          "text": "Nova esteira",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1216,
+            "y": 800,
+            "width": 103,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir",
+          "label": null,
+          "text": "Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1327,
+            "y": 800,
+            "width": 60,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Novo workflow",
+          "label": null,
+          "text": "Novo workflow",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 473,
+            "y": 1167,
+            "width": 118,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir",
+          "label": null,
+          "text": "Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 598,
+            "y": 1167,
+            "width": 60,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Ver timeline",
+          "label": null,
+          "text": "Ver timeline",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 853,
+            "y": 1171,
+            "width": 101,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Abrir",
+          "label": null,
+          "text": "Abrir",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 962,
+            "y": 1171,
+            "width": 59,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

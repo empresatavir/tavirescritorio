@@ -2,6 +2,7 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "./shared/styles/design-tokens.css";
+@import "./styles/motion.css";
 
 /* Font Faces — 100% Self-hosted OFL */
 @font-face {
@@ -108,6 +109,35 @@ a:hover {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* O tooltip do rail atravessa a subnav. */
+.rail {
+  position: relative;
+  z-index: 30;
+  overflow: visible;
+}
+
+/* Shell do redesenho: rail 64, subnav 236, header 64. Abaixo de 860px a subnav some. */
+@media (max-width: 860px) {
+  .shell {
+    grid-template-columns: 64px minmax(0, 1fr) !important;
+  }
+  .sub {
+    display: none !important;
+  }
+  .search-copy,
+  .search-kbd {
+    display: none !important;
+  }
+  .exec-split {
+    grid-template-columns: minmax(0, 1fr) !important;
+    overflow-y: auto !important;
+  }
+  .exec-side {
+    min-height: 160px;
+    border-top: 1px solid rgba(244, 246, 242, 0.1);
   }
 }
 

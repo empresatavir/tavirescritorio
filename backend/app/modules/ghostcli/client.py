@@ -158,6 +158,7 @@ async def chat_completion(
     max_tokens: int = 2048,
     timeout: float | None = 720.0,
     on_status: Any | None = None,
+    images: list[tuple[str, bytes, str]] | None = None,
 ) -> str:
     """Entrega o texto do motor padrão do escritório. Não troca para o outro motor."""
     del provider
@@ -183,12 +184,36 @@ async def chat_completion(
                 effort=use_effort,
                 on_status=on_status,
                 timeout=timeout,
+                images=[(name, data) for name, data, _mime in images or []],
             )
         except Exception as exc:  # noqa: BLE001
             raise GhostCliError(str(exc)) from exc
 
+    if chosen in {"claude", "codex", "antigravity"}:
+        from app.modules.factory.motor_call import complete_antigravity, complete_claude, complete_codex
+        from app.modules.factory.motor_secrets import claude_key
+
+        use_ghost = False
+        if chosen == "claude" and not claude_key() and is_configured():
+            from app.modules.factory.motor_install import installation
+
+            use_ghost = not installation("claude").get("logged_in")
+        if not use_ghost:
+            caller = {"claude": complete_claude, "codex": complete_codex, "antigravity": complete_antigravity}[chosen]
+            return await caller(system=system, messages=messages, model=model, max_tokens=max_tokens)
+        chosen = "ghostcli"
+
     ghost_model = ghost_model_id(model)
     ghost_effort = ghost_effort_id(use_effort)
+    if images and payload_messages:
+        import base64
+
+        last = payload_messages[-1]
+        parts: list[dict[str, Any]] = [{"type": "text", "text": str(last.get("content") or "Olhe as imagens.")}]
+        for _name, data, mime in images:
+            encoded = base64.b64encode(data).decode("ascii")
+            parts.append({"type": "image_url", "image_url": {"url": f"data:{mime};base64,{encoded}"}})
+        last["content"] = parts
     payload: dict[str, Any] = {
         "model": ghost_model,
         "messages": payload_messages,

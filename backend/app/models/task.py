@@ -1,6 +1,6 @@
 """Task model — kanban entity for TAVIR."""
 from datetime import datetime
-from sqlalchemy import String, Text, DateTime, ForeignKey, Integer, JSON, func
+from sqlalchemy import String, Text, DateTime, ForeignKey, Integer, JSON, Boolean, func
 from sqlalchemy.orm import Mapped, mapped_column
 from typing import Any
 from app.shared.database import Base
@@ -27,6 +27,7 @@ class Task(Base):
     # Lista de refs (#seq ou id) que bloqueiam início desta task
     depends_on: Mapped[Any | None] = mapped_column(JSON, nullable=True)
     active_job_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    gate_held: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

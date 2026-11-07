@@ -1,0 +1,2282 @@
+{
+  "screenId": "tasks-kanban",
+  "side": "reference",
+  "capturedUrl": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+  "frames": [
+    {
+      "name": null,
+      "url": "http://127.0.0.1:4174/TAVIR%20Escrit%C3%B3rio%20%E2%80%94%20redesenho.html",
+      "title": "TAVIR Escritório",
+      "viewport": {
+        "width": 1440,
+        "height": 900,
+        "devicePixelRatio": 1
+      },
+      "visibleElementCountsByTag": {
+        "html": 1,
+        "body": 1,
+        "div": 72,
+        "nav": 1,
+        "button": 33,
+        "img": 2,
+        "i": 9,
+        "aside": 1,
+        "small": 3,
+        "span": 147,
+        "b": 17,
+        "header": 1,
+        "strong": 1,
+        "h1": 1,
+        "p": 5,
+        "section": 4
+      },
+      "visibleText": [
+        {
+          "text": "CH",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Escritório",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sala de Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Execuções",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tasks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "7",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Decisões",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "5",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Agentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Chat",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Fluxo guiado",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dois percursos explicados",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Como funciona",
+          "tag": "b",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Mapa do ciclo completo",
+          "tag": "small",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "office.py · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Sincron Brain MCP",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Operação",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "/",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tasks",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "ao vivo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Buscar telas, tasks, agentes…",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Ctrl K",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Iniciar job",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "Kanban · SQLite",
+          "tag": "div",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Tasks",
+          "tag": "h1",
+          "id": "",
+          "role": "heading"
+        },
+        {
+          "text": "Planejado → Em execução inicia o job. Card com gate não avança sem decisão.",
+          "tag": "p",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Todos",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "8",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Com gate",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Engenharia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nova task",
+          "tag": "button",
+          "id": "",
+          "role": "button"
+        },
+        {
+          "text": "A planejar",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "sem limite",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Novas demandas e planejamento em curso",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "#",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "21",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Roadmap Q4 IA Livros — priorizar 3 frentes",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "PP",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Paula PM",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Estratégia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "planejando",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "#",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "31",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Normal",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Oferta de presença local — claims e preço",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "DD",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Dora Descoberta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Planejado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "2",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "wip 6",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Plano da Paula pronto · aguarda início",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "#",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "24",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Proposta Atlas — contra-assinatura local",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "CC",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Cléber Closer",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Comercial",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "#",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "30",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Normal",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "SEO da landing principal",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "NS",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Nina SEO",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Social",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Em execução",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "3",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "wip 4",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Jobs ativos · gate em vermelho",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "#",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "12",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Alta",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Headline da LP de advocacia passou de 60 caracteres",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "80",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "RR",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Rita Revisora",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conteúdo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "gate",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "#",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "18",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Crítica",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Deploy landing Meridian — SUPABASE_URL ausente",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "70",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "DD",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Davi DevOps",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Engenharia",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "gate",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "#",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "27",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Normal",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Carrossel Multiverso — 7 frames do episódio 14",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "41",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "%",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AA",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Adriano Arte",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Conteúdo",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Concluído",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "1",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "7 dias",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Entregue e validado",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "#",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "9",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Normal",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Auditoria de segurança da API",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "AW",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Atlas Web",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "·",
+          "tag": "span",
+          "id": "",
+          "role": null
+        },
+        {
+          "text": "Qualidade",
+          "tag": "span",
+          "id": "",
+          "role": null
+        }
+      ],
+      "semanticElements": [
+        {
+          "tag": "nav",
+          "id": null,
+          "role": "navigation",
+          "name": "Domínios",
+          "label": "Domínios",
+          "text": "Operação Módulos Comercial Social Conhecimento Estratégia Sistema Tema claro CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 64,
+            "height": 900
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": null,
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 17,
+            "y": 26,
+            "width": 30,
+            "height": 21
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          }
+        },
+        {
+          "tag": "aside",
+          "id": null,
+          "role": null,
+          "name": "Menu da área",
+          "label": "Menu da área",
+          "text": "ESCRITÓRIO OPERAÇÃO Sala de Operação Execuções 2 Tasks 7 Decisões 5 Agentes Chat Fluxo guiado Dois percursos explicados Como funciona Mapa do ciclo completo office.py · SQLite Sincron Brain MCP",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 64,
+            "y": 0,
+            "width": 236,
+            "height": 900
+          }
+        },
+        {
+          "tag": "img",
+          "id": null,
+          "role": "img",
+          "name": null,
+          "label": null,
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 82,
+            "y": 24,
+            "width": 67,
+            "height": 15
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 2",
+          "label": null,
+          "text": "Execuções 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks 7",
+          "label": null,
+          "text": "Tasks 7",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          }
+        },
+        {
+          "tag": "header",
+          "id": null,
+          "role": null,
+          "name": "Operação / Tasks AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "label": null,
+          "text": "Operação / Tasks AO VIVO Buscar telas, tasks, agentes… Ctrl K Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 300,
+            "y": 0,
+            "width": 1140,
+            "height": 64
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          }
+        },
+        {
+          "tag": "h1",
+          "id": null,
+          "role": "heading",
+          "name": "Tasks",
+          "label": null,
+          "text": "Tasks",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 117,
+            "width": 612,
+            "height": 33
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Todos 8",
+          "label": null,
+          "text": "Todos 8",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 960,
+            "y": 141,
+            "width": 82,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Com gate 2",
+          "label": null,
+          "text": "Com gate 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1048,
+            "y": 141,
+            "width": 106,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Engenharia 1",
+          "label": null,
+          "text": "Engenharia 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1159,
+            "y": 141,
+            "width": 116,
+            "height": 32
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova task",
+          "label": null,
+          "text": "Nova task",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1284,
+            "y": 137,
+            "width": 124,
+            "height": 40
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "A planejar",
+          "label": "A planejar",
+          "text": "A planejar 2 SEM LIMITE Novas demandas e planejamento em curso #21 ALTA Roadmap Q4 IA Livros — priorizar 3 frentes PP Paula PM · Estratégia PLANEJANDO #31 NORMAL Oferta de presença local — claims e preço DD Dora Descoberta · Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 332,
+            "y": 201,
+            "width": 259,
+            "height": 420
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#21 ALTA Roadmap Q4 IA Livros — priorizar 3 frentes PP Paula PM · Estratégia PLANEJANDO",
+          "label": null,
+          "text": "#21 ALTA Roadmap Q4 IA Livros — priorizar 3 frentes PP Paula PM · Estratégia PLANEJANDO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 345,
+            "y": 293,
+            "width": 233,
+            "height": 146
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#31 NORMAL Oferta de presença local — claims e preço DD Dora Descoberta · Comercial",
+          "label": null,
+          "text": "#31 NORMAL Oferta de presença local — claims e preço DD Dora Descoberta · Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 345,
+            "y": 449,
+            "width": 233,
+            "height": 134
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Planejado",
+          "label": "Planejado",
+          "text": "Planejado 2 WIP 6 Plano da Paula pronto · aguarda início #24 ALTA Proposta Atlas — contra-assinatura local CC Cléber Closer · Comercial #30 NORMAL SEO da landing principal NS Nina SEO · Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 605,
+            "y": 201,
+            "width": 259,
+            "height": 420
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#24 ALTA Proposta Atlas — contra-assinatura local CC Cléber Closer · Comercial",
+          "label": null,
+          "text": "#24 ALTA Proposta Atlas — contra-assinatura local CC Cléber Closer · Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 618,
+            "y": 275,
+            "width": 233,
+            "height": 134
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#30 NORMAL SEO da landing principal NS Nina SEO · Social",
+          "label": null,
+          "text": "#30 NORMAL SEO da landing principal NS Nina SEO · Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 618,
+            "y": 419,
+            "width": 233,
+            "height": 115
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Em execução",
+          "label": "Em execução",
+          "text": "Em execução 3 WIP 4 Jobs ativos · gate em vermelho #12 ALTA Headline da LP de advocacia passou de 60 caracteres 80% RR Rita Revisora · Conteúdo GATE #18 CRÍTICA Deploy landing Meridian — SUPABASE_URL ausente 70% DD Davi DevOps · Engenharia GATE #27 NORMAL Carrossel Multiverso — 7 frames do episódio 14 41% AA Adriano Arte · Conteúdo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 877,
+            "y": 201,
+            "width": 259,
+            "height": 612
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#12 ALTA Headline da LP de advocacia passou de 60 caracteres 80% RR Rita Revisora · Conteúdo GATE",
+          "label": null,
+          "text": "#12 ALTA Headline da LP de advocacia passou de 60 caracteres 80% RR Rita Revisora · Conteúdo GATE",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 890,
+            "y": 275,
+            "width": 233,
+            "height": 172
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#18 CRÍTICA Deploy landing Meridian — SUPABASE_URL ausente 70% DD Davi DevOps · Engenharia GATE",
+          "label": null,
+          "text": "#18 CRÍTICA Deploy landing Meridian — SUPABASE_URL ausente 70% DD Davi DevOps · Engenharia GATE",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 890,
+            "y": 457,
+            "width": 233,
+            "height": 172
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#27 NORMAL Carrossel Multiverso — 7 frames do episódio 14 41% AA Adriano Arte · Conteúdo",
+          "label": null,
+          "text": "#27 NORMAL Carrossel Multiverso — 7 frames do episódio 14 41% AA Adriano Arte · Conteúdo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 890,
+            "y": 640,
+            "width": 233,
+            "height": 160
+          }
+        },
+        {
+          "tag": "section",
+          "id": null,
+          "role": null,
+          "name": "Concluído",
+          "label": "Concluído",
+          "text": "Concluído 1 7 DIAS Entregue e validado #9 NORMAL Auditoria de segurança da API AW Atlas Web · Qualidade",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1150,
+            "y": 201,
+            "width": 259,
+            "height": 420
+          }
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#9 NORMAL Auditoria de segurança da API AW Atlas Web · Qualidade",
+          "label": null,
+          "text": "#9 NORMAL Auditoria de segurança da API AW Atlas Web · Qualidade",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1163,
+            "y": 275,
+            "width": 233,
+            "height": 115
+          }
+        }
+      ],
+      "controls": [
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "TAVIR, ir para a Sala de Operação",
+          "label": "TAVIR, ir para a Sala de Operação",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 14,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Operação",
+          "label": "Operação",
+          "text": "Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 72,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Módulos",
+          "label": "Módulos",
+          "text": "Módulos",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 120,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Comercial",
+          "label": "Comercial",
+          "text": "Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 168,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Social",
+          "label": "Social",
+          "text": "Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 216,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Conhecimento",
+          "label": "Conhecimento",
+          "text": "Conhecimento",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 264,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Estratégia",
+          "label": "Estratégia",
+          "text": "Estratégia",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 312,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sistema",
+          "label": "Sistema",
+          "text": "Sistema",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 360,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Alternar tema",
+          "label": "Alternar tema",
+          "text": "Tema claro",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 10,
+            "y": 796,
+            "width": 44,
+            "height": 44
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Carlos, CEO. Sessão",
+          "label": "Carlos, CEO. Sessão",
+          "text": "CH",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 14,
+            "y": 852,
+            "width": 36,
+            "height": 36
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Sala de Operação",
+          "label": null,
+          "text": "Sala de Operação",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 109,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Execuções 2",
+          "label": null,
+          "text": "Execuções 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 151,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Tasks 7",
+          "label": null,
+          "text": "Tasks 7",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 193,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Decisões 5",
+          "label": null,
+          "text": "Decisões 5",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 235,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Agentes",
+          "label": null,
+          "text": "Agentes",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 277,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Chat",
+          "label": null,
+          "text": "Chat",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 74,
+            "y": 319,
+            "width": 215,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Fluxo guiado Dois percursos explicados",
+          "label": null,
+          "text": "Fluxo guiado Dois percursos explicados",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 703,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Como funciona Mapa do ciclo completo",
+          "label": null,
+          "text": "Como funciona Mapa do ciclo completo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 78,
+            "y": 772,
+            "width": 207,
+            "height": 61
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Buscar telas, tasks, agentes… Ctrl K",
+          "label": null,
+          "text": "Buscar telas, tasks, agentes… Ctrl K",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 930,
+            "y": 12,
+            "width": 300,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Notificações",
+          "label": "Notificações",
+          "text": null,
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1242,
+            "y": 12,
+            "width": 40,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Iniciar job",
+          "label": null,
+          "text": "Iniciar job",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1294,
+            "y": 12,
+            "width": 122,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Todos 8",
+          "label": null,
+          "text": "Todos 8",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 960,
+            "y": 141,
+            "width": 82,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Com gate 2",
+          "label": null,
+          "text": "Com gate 2",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1048,
+            "y": 141,
+            "width": 106,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Engenharia 1",
+          "label": null,
+          "text": "Engenharia 1",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1159,
+            "y": 141,
+            "width": 116,
+            "height": 32
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "Nova task",
+          "label": null,
+          "text": "Nova task",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1284,
+            "y": 137,
+            "width": 124,
+            "height": 40
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#21 ALTA Roadmap Q4 IA Livros — priorizar 3 frentes PP Paula PM · Estratégia PLANEJANDO",
+          "label": null,
+          "text": "#21 ALTA Roadmap Q4 IA Livros — priorizar 3 frentes PP Paula PM · Estratégia PLANEJANDO",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 345,
+            "y": 293,
+            "width": 233,
+            "height": 146
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#31 NORMAL Oferta de presença local — claims e preço DD Dora Descoberta · Comercial",
+          "label": null,
+          "text": "#31 NORMAL Oferta de presença local — claims e preço DD Dora Descoberta · Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 345,
+            "y": 449,
+            "width": 233,
+            "height": 134
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#24 ALTA Proposta Atlas — contra-assinatura local CC Cléber Closer · Comercial",
+          "label": null,
+          "text": "#24 ALTA Proposta Atlas — contra-assinatura local CC Cléber Closer · Comercial",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 618,
+            "y": 275,
+            "width": 233,
+            "height": 134
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#30 NORMAL SEO da landing principal NS Nina SEO · Social",
+          "label": null,
+          "text": "#30 NORMAL SEO da landing principal NS Nina SEO · Social",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 618,
+            "y": 419,
+            "width": 233,
+            "height": 115
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#12 ALTA Headline da LP de advocacia passou de 60 caracteres 80% RR Rita Revisora · Conteúdo GATE",
+          "label": null,
+          "text": "#12 ALTA Headline da LP de advocacia passou de 60 caracteres 80% RR Rita Revisora · Conteúdo GATE",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 890,
+            "y": 275,
+            "width": 233,
+            "height": 172
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#18 CRÍTICA Deploy landing Meridian — SUPABASE_URL ausente 70% DD Davi DevOps · Engenharia GATE",
+          "label": null,
+          "text": "#18 CRÍTICA Deploy landing Meridian — SUPABASE_URL ausente 70% DD Davi DevOps · Engenharia GATE",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 890,
+            "y": 457,
+            "width": 233,
+            "height": 172
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#27 NORMAL Carrossel Multiverso — 7 frames do episódio 14 41% AA Adriano Arte · Conteúdo",
+          "label": null,
+          "text": "#27 NORMAL Carrossel Multiverso — 7 frames do episódio 14 41% AA Adriano Arte · Conteúdo",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 890,
+            "y": 640,
+            "width": 233,
+            "height": 160
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        },
+        {
+          "tag": "button",
+          "id": null,
+          "role": "button",
+          "name": "#9 NORMAL Auditoria de segurança da API AW Atlas Web · Qualidade",
+          "label": null,
+          "text": "#9 NORMAL Auditoria de segurança da API AW Atlas Web · Qualidade",
+          "placeholder": null,
+          "title": null,
+          "rect": {
+            "x": 1163,
+            "y": 275,
+            "width": 233,
+            "height": 115
+          },
+          "kind": "control",
+          "type": null,
+          "nameAttribute": null,
+          "required": false,
+          "disabled": false,
+          "checked": null,
+          "selected": null,
+          "hasValue": false
+        }
+      ],
+      "dialogs": [],
+      "images": [
+        {
+          "alt": null,
+          "title": null,
+          "width": 30,
+          "height": 21
+        },
+        {
+          "alt": "TAVIR",
+          "title": null,
+          "width": 67,
+          "height": 15
+        }
+      ]
+    }
+  ],
+  "warnings": [],
+  "fieldValuesIncluded": false
+}

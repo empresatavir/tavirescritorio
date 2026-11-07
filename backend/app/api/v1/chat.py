@@ -1,6 +1,8 @@
 """Chat API router — conversations, messaging and agent settings."""
+import json
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any
@@ -18,6 +20,8 @@ class ChatMessageResponse(BaseModel):
     role: str
     text: str
     meta: str | None = None
+    images: list[dict[str, str]] | None = None
+    actions: list[dict] | None = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -49,8 +53,14 @@ class UpdateSettingsRequest(BaseModel):
     settings: dict[str, Any]
 
 
+class ChatImageUpload(BaseModel):
+    name: str = "imagem"
+    data_url: str
+
+
 class SendMessageRequest(BaseModel):
-    text: str
+    text: str = ""
+    images: list[ChatImageUpload] | None = None
 
 
 class SendMessageResponse(BaseModel):
@@ -119,7 +129,8 @@ async def send_message(
 ):
     service = ChatService(session)
     try:
-        user_msg, assistant_msg = await service.process_user_message(conv_id, req.text)
+        uploads = [item.model_dump() for item in req.images or []]
+        user_msg, assistant_msg = await service.process_user_message(conv_id, req.text, uploads)
         await session.commit()
         await session.refresh(user_msg)
         await session.refresh(assistant_msg)
@@ -128,14 +139,39 @@ async def send_message(
             assistant_message=ChatMessageResponse.model_validate(assistant_msg),
         )
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        status = 404 if "not found" in str(e).lower() else 400
+        raise HTTPException(status_code=status, detail=str(e))
 
 
 @router.delete("/conversations/{conv_id}", status_code=204)
 async def delete_conversation(conv_id: str, session: AsyncSession = Depends(get_session)):
     repo = ChatRepository(session)
+    conv = await repo.get_conversation(conv_id)
+    if not conv:
+        raise HTTPException(status_code=404, detail=f"Conversation {conv_id} not found")
+    title = conv.title
     deleted = await repo.delete_conversation(conv_id)
     if not deleted:
         raise HTTPException(status_code=404, detail=f"Conversation {conv_id} not found")
+    from app.modules.office.ledger import record_event
+
+    record_event(
+        session,
+        action="chat.apagada",
+        details=json.dumps({"conversation_id": conv_id, "title": title}, ensure_ascii=False),
+    )
     await session.commit()
+    from app.modules.chat.images import remove_conversation_images
+
+    remove_conversation_images(conv_id)
     return None
+
+
+@router.get("/images/{conv_id}/{name}")
+async def get_chat_image(conv_id: str, name: str):
+    from app.modules.chat.images import resolve_image
+
+    path = resolve_image(conv_id, name)
+    if path is None:
+        raise HTTPException(status_code=404, detail="Imagem não encontrada")
+    return FileResponse(path)
