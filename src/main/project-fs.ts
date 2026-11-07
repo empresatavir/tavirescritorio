@@ -722,6 +722,873 @@ function nowHM(): string {
   return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
 }
 
+function controlFilePath(rootPath: string): string {
+  return path.join(rootPath, '.tavir', 'control.json');
+}
+
+export const ALT_TRACK_STEPS = [
+  { id: 'map', label: 'Mapear gaps', owner: 'Íris', skill: 'Varredura e pacote de alinhamento', kind: 'map' },
+  { id: 'plan', label: 'Planejar', owner: 'Paula PM', skill: 'Plano da alteração no trilho', kind: 'plan' },
+  { id: 'fix', label: 'Ajustar', owner: 'Agentes', skill: 'Aplicar mudanças no workspace', kind: 'work' },
+  { id: 'build', label: 'Validar & build', owner: 'QA / Carlos', skill: 'Checklist e build do app', kind: 'build' },
+] as const;
+
+export type AltTrackKind = 'map' | 'plan' | 'work' | 'build';
+
+export type AltTrackItem = {
+  id: string;
+  label: string;
+  owner: string;
+  skill: string;
+  kind: AltTrackKind;
+  note: string;
+};
+
+export type AltTrackNotes = {
+  map: string;
+  plan: string;
+  fix: string;
+  build: string;
+};
+
+export type AltTrackCheckpoint = {
+  step: number;
+  itemId: string;
+  label: string;
+  at: string;
+  reason: string;
+  partial: string;
+};
+
+export type AltTrackState = {
+  active: boolean;
+  step: number;
+  title: string;
+  updated_at?: string;
+  notes: AltTrackNotes;
+  /** Agentes seguem item a item depois do mapeamento, sem passar pela Íris. */
+  auto: boolean;
+  runStatus: 'idle' | 'running' | 'waiting' | 'done';
+  waitingQuestion: string;
+  runLog: string[];
+  runError: string;
+  runJobId: string;
+  checkpoint?: AltTrackCheckpoint | null;
+  items: AltTrackItem[];
+  cycles?: Array<{ closed_at: string; title: string; items: AltTrackItem[] }>;
+};
+
+const EMPTY_NOTES: AltTrackNotes = { map: '', plan: '', fix: '', build: '' };
+
+function noteKey(step: number): keyof AltTrackNotes {
+  return (['map', 'plan', 'fix', 'build'] as const)[Math.max(0, Math.min(3, step))] || 'map';
+}
+
+function defaultTrackItems(notes?: AltTrackNotes): AltTrackItem[] {
+  const src = notes || EMPTY_NOTES;
+  return ALT_TRACK_STEPS.map((step) => ({
+    id: step.id,
+    label: step.label,
+    owner: step.owner,
+    skill: step.skill,
+    kind: step.kind,
+    note: step.id === 'fix' ? src.fix : src[step.id as keyof AltTrackNotes] || '',
+  }));
+}
+
+function normalizeItems(raw: unknown, notes: AltTrackNotes): AltTrackItem[] {
+  if (!Array.isArray(raw) || raw.length < 2) return defaultTrackItems(notes);
+  const items = raw
+    .map((entry, index) => {
+      const row = entry && typeof entry === 'object' ? (entry as Record<string, unknown>) : {};
+      const kind: AltTrackKind =
+        row.kind === 'map' || row.kind === 'plan' || row.kind === 'work' || row.kind === 'build'
+          ? row.kind
+          : index === 0
+            ? 'map'
+            : 'work';
+      const id = String(row.id || `${kind}-${index + 1}`);
+      const legacy =
+        kind === 'map' ? notes.map : kind === 'plan' ? notes.plan : kind === 'build' ? notes.build : id === 'fix' ? notes.fix : '';
+      return {
+        id,
+        label: String(row.label || 'Etapa').slice(0, 80),
+        owner: String(row.owner || 'Agentes').slice(0, 40),
+        skill: String(row.skill || '').slice(0, 140),
+        kind,
+        note: String(row.note || legacy || ''),
+      };
+    })
+    .filter((item) => item.label);
+  if (!items.some((item) => item.kind === 'map')) return defaultTrackItems(notes);
+  if (!items.some((item) => item.kind === 'build')) {
+    const build = ALT_TRACK_STEPS[3];
+    items.push({ id: build.id, label: build.label, owner: build.owner, skill: build.skill, kind: 'build', note: notes.build });
+  }
+  return items;
+}
+
+function notesFromItems(items: AltTrackItem[]): AltTrackNotes {
+  const notes = { ...EMPTY_NOTES };
+  for (const item of items) {
+    if (item.id === 'map' || item.kind === 'map') notes.map = item.note;
+    else if (item.id === 'plan' || item.kind === 'plan') notes.plan = item.note;
+    else if (item.id === 'fix') notes.fix = item.note;
+    else if (item.id === 'build' || item.kind === 'build') notes.build = item.note;
+  }
+  return notes;
+}
+
+function parseTrilhos(reply: string): Array<{ label: string; owner: string; skill: string }> {
+  const match = reply.match(/TRILHOS:\s*([\s\S]*)$/i);
+  if (!match) return [];
+  return match[1]
+    .split(/\n/)
+    .map((line) => line.trim())
+    .filter((line) => /^[-*]/.test(line))
+    .map((line) => {
+      const parts = line.replace(/^[-*]\s*/, '').split(/\s*[|·]\s*/);
+      return {
+        label: String(parts[0] || '').trim().slice(0, 80),
+        owner: String(parts[1] || 'Agentes').trim().slice(0, 40),
+        skill: String(parts[2] || 'Executar este trecho do plano').trim().slice(0, 140),
+      };
+    })
+    .filter((item) => item.label)
+    .slice(0, 8);
+}
+
+function applyProposedTracks(items: AltTrackItem[], reply: string): AltTrackItem[] {
+  const proposed = parseTrilhos(reply);
+  if (!proposed.length) return items;
+  const head = items.filter((item) => item.kind === 'map' || item.kind === 'plan');
+  const tail = items.filter((item) => item.kind === 'build');
+  const previous = items.filter((item) => item.kind === 'work');
+  const work = proposed.map((item, index) => {
+    const kept = previous.find((row) => row.label.toLowerCase() === item.label.toLowerCase());
+    return {
+      id: kept?.id || `work-${index + 1}`,
+      label: item.label,
+      owner: item.owner,
+      skill: item.skill,
+      kind: 'work' as const,
+      note: kept?.note || '',
+    };
+  });
+  const build = tail[0] || {
+    id: 'build',
+    label: 'Validar & build',
+    owner: 'QA / Carlos',
+    skill: 'Checklist e build do app',
+    kind: 'build' as const,
+    note: '',
+  };
+  return [...head, ...work, build];
+}
+
+function readControlJson(rootPath: string): Record<string, unknown> {
+  try {
+    const cf = controlFilePath(rootPath);
+    if (!fs.existsSync(cf)) return {};
+    const parsed = JSON.parse(fs.readFileSync(cf, 'utf8'));
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeControlJson(rootPath: string, data: Record<string, unknown>): void {
+  fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
+  fs.writeFileSync(controlFilePath(rootPath), JSON.stringify(data, null, 2), 'utf8');
+}
+
+function checkpointFilePath(rootPath: string): string {
+  return path.join(rootPath, '.tavir', 'trilho', 'checkpoint.json');
+}
+
+function normalizeCheckpoint(raw: unknown): AltTrackCheckpoint | null {
+  const row = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : null;
+  if (!row) return null;
+  const itemId = String(row.itemId || '').trim();
+  const partial = String(row.partial || '').slice(-6000);
+  const reason = String(row.reason || '').slice(0, 400);
+  if (!itemId || (!partial.trim() && !reason.trim())) return null;
+  return {
+    step: Math.max(0, Number(row.step) || 0),
+    itemId,
+    label: String(row.label || 'Etapa').slice(0, 80),
+    at: String(row.at || ''),
+    reason,
+    partial,
+  };
+}
+
+function readCheckpointFile(rootPath: string): AltTrackCheckpoint | null {
+  try {
+    return normalizeCheckpoint(JSON.parse(fs.readFileSync(checkpointFilePath(rootPath), 'utf8')));
+  } catch {
+    return null;
+  }
+}
+
+function writeCheckpointFile(rootPath: string, checkpoint: AltTrackCheckpoint): void {
+  const target = checkpointFilePath(rootPath);
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.writeFileSync(target, JSON.stringify(checkpoint), 'utf8');
+}
+
+function clearCheckpointFile(rootPath: string): void {
+  try {
+    fs.rmSync(checkpointFilePath(rootPath), { force: true });
+  } catch {}
+}
+
+function sameCheckpoint(checkpoint: AltTrackCheckpoint | null | undefined, itemId: string): checkpoint is AltTrackCheckpoint {
+  return !!checkpoint && checkpoint.itemId === itemId && !!(checkpoint.partial.trim() || checkpoint.reason.trim());
+}
+
+function normalizeNotes(raw: unknown): AltTrackNotes {
+  const base = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+  return {
+    map: String(base.map || ''),
+    plan: String(base.plan || ''),
+    fix: String(base.fix || ''),
+    build: String(base.build || ''),
+  };
+}
+
+function normalizeAltTrack(raw: unknown, alterationsOpen: boolean): AltTrackState {
+  const base = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+  const notes = normalizeNotes(base.notes);
+  const items = normalizeItems(base.items, notes);
+  const step = Math.max(0, Math.min(items.length - 1, Number(base.step) || 0));
+  return {
+    active: alterationsOpen ? base.active !== false : false,
+    step,
+    title: String(base.title || 'Trilho de alteração'),
+    updated_at: base.updated_at ? String(base.updated_at) : undefined,
+    notes: notesFromItems(items),
+    auto: Boolean(base.auto),
+    runStatus:
+      base.runStatus === 'done' && step >= items.length - 1
+        ? 'done'
+        : base.runStatus === 'waiting'
+          ? 'waiting'
+          : 'idle',
+    waitingQuestion: String(base.waitingQuestion || ''),
+    runLog: Array.isArray(base.runLog) ? base.runLog.map((x) => String(x)).slice(-40) : [],
+    runError: String(base.runError || ''),
+    runJobId: String(base.runJobId || ''),
+    checkpoint: normalizeCheckpoint(base.checkpoint),
+    items,
+    cycles: Array.isArray(base.cycles)
+      ? base.cycles
+          .slice(-30)
+          .map((entry) => {
+            const row = entry && typeof entry === 'object' ? (entry as Record<string, unknown>) : {};
+            return {
+              closed_at: String(row.closed_at || ''),
+              title: String(row.title || 'Manutenção'),
+              items: normalizeItems(row.items, EMPTY_NOTES),
+            };
+          })
+      : [],
+  };
+}
+
+function writeTrackMarkdown(rootPath: string, track: AltTrackState): void {
+  const dir = path.join(rootPath, '.tavir', 'trilho');
+  fs.mkdirSync(dir, { recursive: true });
+  const files: Array<[string, string]> = track.items.map((item, index) => [
+    item.note || '_Ainda sem registro._\n',
+    `${String(index + 1).padStart(2, '0')}-${item.id}.md`,
+  ]);
+  for (const [body, name] of files) {
+    const title = track.items.find((item) => name.includes(item.id))?.label || name;
+    fs.writeFileSync(
+      path.join(dir, name),
+      `# ${title}\n\n${body}\n`,
+      'utf8',
+    );
+  }
+}
+
+function isGreetingOnly(question: string, reply: string): boolean {
+  const q = question.trim();
+  if (q.length > 24) return false;
+  return /^(oi|ol[aá]|ok|beleza|perfeito|valeu|obrigad[oa])[.!?\s]*$/i.test(q) && reply.length < 220;
+}
+
+export function recordIrisOnAltTrack(
+  idOrPath: string,
+  question: string,
+  reply: string,
+): AltTrackState | null {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open || !ctrl.finished) return ctrl.alt_track;
+  if (!question.trim() || !reply.trim() || isGreetingOnly(question, reply)) return ctrl.alt_track;
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  if (track.auto && track.step > 0) return track;
+  const key = noteKey(track.step);
+  const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  const block =
+    `### ${stamp}\n` +
+    `**Carlos:** ${question.trim()}\n\n` +
+    `**Íris:** ${reply.trim()}\n`;
+  const item = track.items[track.step];
+  if (item) item.note = (item.note ? item.note + '\n' : '') + block;
+  track.items = applyProposedTracks(track.items, reply);
+  track.notes = notesFromItems(track.items);
+  if (!item) track.notes = { ...track.notes, [key]: (track.notes[key] ? track.notes[key] + '\n' : '') + block };
+  track.updated_at = new Date().toISOString();
+  track.active = true;
+  writeControlJson(ctrl.rootPath, {
+    ...prev,
+    alterations_open: true,
+    updated_at: track.updated_at,
+    alt_track: track,
+  });
+  try {
+    writeTrackMarkdown(ctrl.rootPath, track);
+  } catch {}
+  return track;
+}
+
+export function getProjectAlterationsControl(idOrPath: string): {
+  ok: boolean;
+  rootPath: string;
+  projectId: string;
+  projectName: string;
+  status: string;
+  finished: boolean;
+  alterations_open: boolean;
+  chat_unlocked: boolean;
+  alt_track: AltTrackState;
+} {
+  const rec = resolveProjectRecord(idOrPath);
+  const info = inspectProjectFolder(rec.local_path || idOrPath);
+  const rootPath = info.rootPath || rec.local_path;
+  let status = 'running';
+  try {
+    const { DatabaseSync } = require('node:sqlite');
+    const sqlite = new DatabaseSync(getDbPath());
+    const row = sqlite
+      .prepare('SELECT status, stages_done, total_stages FROM projects WHERE id = ? OR local_path = ? LIMIT 1')
+      .get(rec.id, rootPath) as any;
+    sqlite.close();
+    if (row) status = String(row.status || 'running');
+    const done = Number(row?.stages_done) || 0;
+    const total = Math.max(1, Number(row?.total_stages) || 9);
+    if (!row?.status && done >= total) status = 'done';
+  } catch {}
+
+  const parsed = readControlJson(rootPath);
+  const alterationsOpen = Boolean(parsed?.alterations_open);
+  const altTrack = normalizeAltTrack(parsed?.alt_track, alterationsOpen);
+
+  const finished = status === 'done' || status === 'completed';
+  // Em esteira ativa o chat com agentes fica liberado; no Handoff exige liberação explícita.
+  const chatUnlocked = !finished || alterationsOpen;
+  return {
+    ok: true,
+    rootPath,
+    projectId: rec.id,
+    projectName: rec.name || info.name || 'Projeto',
+    status,
+    finished,
+    alterations_open: alterationsOpen,
+    chat_unlocked: chatUnlocked,
+    alt_track: altTrack,
+  };
+}
+
+export function setProjectAlterationsOpen(idOrPath: string, open: boolean): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  const rootPath = ctrl.rootPath;
+  try {
+    const prev = readControlJson(rootPath);
+    const prevTrack = normalizeAltTrack(prev.alt_track, Boolean(open));
+    const payload = {
+      ...prev,
+      alterations_open: Boolean(open),
+      updated_at: new Date().toISOString(),
+      note: open
+        ? 'Projeto liberado para o trilho de alteração. A esteira original permanece encerrada.'
+        : 'Trilho de alteração fechado. Chat consulta status; não aplica mudanças.',
+      alt_track: open
+        ? {
+            ...prevTrack,
+            notes: prevTrack.notes || { ...EMPTY_NOTES },
+            active: true,
+            step: prevTrack.step || 0,
+            title: 'Trilho de alteração',
+            updated_at: new Date().toISOString(),
+          }
+        : {
+            ...prevTrack,
+            notes: prevTrack.notes || { ...EMPTY_NOTES },
+            active: false,
+            updated_at: new Date().toISOString(),
+          },
+    };
+    writeControlJson(rootPath, payload);
+  } catch (err) {
+    return {
+      ...ctrl,
+      ok: false,
+      error: String(err),
+      alterations_open: Boolean(open),
+      chat_unlocked: !ctrl.finished || Boolean(open),
+    };
+  }
+
+  try {
+    const memDir = path.join(rootPath, 'memory', 'projeto');
+    fs.mkdirSync(memDir, { recursive: true });
+    const memFile = path.join(memDir, 'MEMORY.md');
+    const prev = fs.existsSync(memFile) ? fs.readFileSync(memFile, 'utf8') : `# Memória do Projeto · ${ctrl.projectName}\n`;
+    const line = `\n- [${new Date().toISOString().slice(0, 16).replace('T', ' ')}] Controle: trilho de alteração ${open ? 'ATIVO' : 'FECHADO'} (esteira original não reabre)\n`;
+    fs.writeFileSync(memFile, prev + line, 'utf8');
+  } catch {}
+
+  return getProjectAlterationsControl(idOrPath);
+}
+
+export function setProjectAltTrackStep(idOrPath: string, step: number): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) {
+    return { ...ctrl, ok: false, error: 'Libere o trilho de alteração antes de avançar etapas.' };
+  }
+  try {
+    const prev = readControlJson(ctrl.rootPath);
+    const track = normalizeAltTrack(prev.alt_track, true);
+    const nextStep = Math.max(0, Math.min(track.items.length - 1, Number(step) || 0));
+    writeControlJson(ctrl.rootPath, {
+      ...prev,
+      alterations_open: true,
+      updated_at: new Date().toISOString(),
+      alt_track: {
+        ...track,
+        notes: track.notes || { ...EMPTY_NOTES },
+        active: true,
+        step: nextStep,
+        title: 'Trilho de alteração',
+        updated_at: new Date().toISOString(),
+      },
+    });
+  } catch (err) {
+    return { ...ctrl, ok: false, error: String(err) };
+  }
+  return getProjectAlterationsControl(idOrPath);
+}
+
+export function setProjectAltTrackAuto(idOrPath: string, auto: boolean): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) {
+    return { ...ctrl, ok: false, error: 'Libere o trilho antes de mudar a execução automática.' };
+  }
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  track.auto = Boolean(auto);
+  if (!auto && track.runStatus === 'running') track.runStatus = 'idle';
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, {
+    ...prev,
+    alterations_open: true,
+    updated_at: track.updated_at,
+    alt_track: track,
+  });
+  return getProjectAlterationsControl(idOrPath);
+}
+
+export function saveProjectAltTrackNote(idOrPath: string, index: number, text: string): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) return { ...ctrl, ok: false, error: 'Libere o trilho antes de editar o pacote.' };
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  const at = Math.max(0, Math.min(track.items.length - 1, Number(index) || 0));
+  track.items[at].note = String(text || '');
+  if (track.items[at].kind === 'map' || track.items[at].kind === 'plan') {
+    track.items = applyProposedTracks(track.items, track.items[at].note);
+  }
+  track.notes = notesFromItems(track.items);
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, {
+    ...prev,
+    alterations_open: true,
+    updated_at: track.updated_at,
+    alt_track: track,
+  });
+  try {
+    writeTrackMarkdown(ctrl.rootPath, track);
+  } catch {}
+  return getProjectAlterationsControl(idOrPath);
+}
+
+export function clearProjectAltTrackFault(idOrPath: string): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) return ctrl;
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  track.runError = '';
+  track.runLog = [];
+  if (track.runStatus !== 'done') track.runStatus = 'idle';
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, {
+    ...prev,
+    alterations_open: true,
+    updated_at: track.updated_at,
+    alt_track: track,
+  });
+  return getProjectAlterationsControl(idOrPath);
+}
+
+export function advanceProjectAltTrack(idOrPath: string, fromStep?: number): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) return { ...ctrl, ok: false, error: 'Libere o trilho antes de avançar.' };
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  if (typeof fromStep === 'number' && Number.isFinite(fromStep)) {
+    track.step = Math.max(0, Math.min(track.items.length - 1, Math.floor(fromStep)));
+    if (track.runStatus === 'done' && track.step < track.items.length - 1) track.runStatus = 'idle';
+  }
+  const current = track.items[track.step];
+  if (!String(current?.note || '').trim()) {
+    return {
+      ...ctrl,
+      ok: false,
+      error: 'Este item ainda está vazio. Execute o agente ou grave o pacote antes de seguir.',
+    };
+  }
+  track.runError = '';
+  track.runLog = [];
+  track.waitingQuestion = '';
+  track.checkpoint = null;
+  clearCheckpointFile(ctrl.rootPath);
+  if (track.step >= track.items.length - 1) track.runStatus = 'done';
+  else {
+    track.step += 1;
+    track.runStatus = 'idle';
+  }
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, {
+    ...prev,
+    alterations_open: true,
+    updated_at: track.updated_at,
+    alt_track: track,
+  });
+  try {
+    writeTrackMarkdown(ctrl.rootPath, track);
+  } catch {}
+  return getProjectAlterationsControl(idOrPath);
+}
+
+function archiveTrackFiles(rootPath: string, track: AltTrackState): void {
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const dir = path.join(rootPath, '.tavir', 'trilho', 'ciclos', stamp);
+  fs.mkdirSync(dir, { recursive: true });
+  track.items.forEach((item, index) => {
+    const name = `${String(index + 1).padStart(2, '0')}-${item.id}.md`;
+    fs.writeFileSync(path.join(dir, name), `# ${item.label}\n\n${item.owner}\n\n${item.note || '_Sem registro._'}\n`, 'utf8');
+  });
+}
+
+export function closeProjectAltTrackItem(idOrPath: string, fromStep?: number): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) return { ...ctrl, ok: false, error: 'Libere o trilho antes de encerrar o item.' };
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  if (typeof fromStep === 'number' && Number.isFinite(fromStep)) {
+    track.step = Math.max(0, Math.min(track.items.length - 1, Math.floor(fromStep)));
+  }
+  const current = track.items[track.step];
+  if (!current) return { ...ctrl, ok: false, error: 'Não há item neste foco.' };
+  const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  const manual = `### ${stamp} · encerrado manualmente\nCarlos encerrou este item. O gap fica registrado como fechado neste ciclo.\n`;
+  current.note = current.note.trim() ? `${current.note.trim()}\n\n${manual}` : manual;
+  track.notes = notesFromItems(track.items);
+  track.runError = '';
+  track.runLog = [];
+  track.waitingQuestion = '';
+  track.checkpoint = null;
+  clearCheckpointFile(ctrl.rootPath);
+  const last = track.step >= track.items.length - 1;
+  if (last) track.runStatus = 'done';
+  else {
+    track.step += 1;
+    track.runStatus = 'idle';
+  }
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, {
+    ...prev,
+    alterations_open: true,
+    updated_at: track.updated_at,
+    alt_track: track,
+  });
+  try {
+    writeTrackMarkdown(ctrl.rootPath, track);
+  } catch {}
+  return getProjectAlterationsControl(idOrPath);
+}
+
+export function startNewAltTrackCycle(idOrPath: string): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) return { ...ctrl, ok: false, error: 'Libere o trilho antes de abrir outro mapeamento.' };
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  try {
+    archiveTrackFiles(ctrl.rootPath, track);
+  } catch {}
+  const archived = {
+    closed_at: new Date().toISOString(),
+    title: track.title || 'Manutenção',
+    items: track.items,
+  };
+  const fresh = defaultTrackItems(EMPTY_NOTES);
+  track.items = fresh;
+  track.notes = notesFromItems(fresh);
+  track.step = 0;
+  track.runStatus = 'idle';
+  track.runError = '';
+  track.runLog = [];
+  track.waitingQuestion = '';
+  track.checkpoint = null;
+  clearCheckpointFile(ctrl.rootPath);
+  track.cycles = [...(track.cycles || []), archived].slice(-30);
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, {
+    ...prev,
+    alterations_open: true,
+    updated_at: track.updated_at,
+    alt_track: track,
+  });
+  try {
+    writeTrackMarkdown(ctrl.rootPath, track);
+  } catch {}
+  return getProjectAlterationsControl(idOrPath);
+}
+
+export function approveAltTrackGate(idOrPath: string): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) return { ...ctrl, ok: false, error: 'Trilho fechado.' };
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  if (!track.waitingQuestion) return getProjectAlterationsControl(idOrPath);
+  track.waitingQuestion = '';
+  track.runStatus = track.step >= track.items.length - 1 ? 'done' : 'idle';
+  if (track.step < track.items.length - 1) track.step += 1;
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, {
+    ...prev,
+    alterations_open: true,
+    updated_at: track.updated_at,
+    alt_track: track,
+  });
+  return getProjectAlterationsControl(idOrPath);
+}
+
+export async function executeAltTrackStep(
+  idOrPath: string,
+  hooks?: {
+    onStart?: (info: {
+      projectName: string;
+      projectPath: string;
+      focus: string;
+      owner: string;
+      motor: string;
+      model: string;
+    }) => void;
+    onLine?: (text: string, level: 'info' | 'error') => void;
+    onEnd?: (info: { ok: boolean; status: 'completed' | 'failed' | 'waiting'; text: string }) => void;
+  },
+  stepOverride?: number,
+): Promise<any> {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.ok || !ctrl.alterations_open) {
+    return { ...ctrl, ok: false, error: 'Libere o trilho de alteração.' };
+  }
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  if (typeof stepOverride === 'number' && Number.isFinite(stepOverride)) {
+    const requested = Math.max(0, Math.min(track.items.length - 1, Math.floor(stepOverride)));
+    if (requested !== track.step) track.waitingQuestion = '';
+    track.step = requested;
+    track.runError = '';
+    if (track.runStatus !== 'waiting') track.runStatus = 'idle';
+  }
+  if (track.step <= 0) {
+    return { ...ctrl, ok: false, error: 'O mapeamento fica com a Íris. Avance quando o pacote estiver fechado.' };
+  }
+  if (!String(track.notes.map || '').trim()) {
+    return { ...ctrl, ok: false, error: 'Mapear gaps ainda está vazio. Feche o pacote com a Íris antes.' };
+  }
+  if (track.waitingQuestion) {
+    return { ...getProjectAlterationsControl(idOrPath), ok: true, needsApproval: true, continued: false };
+  }
+  if (track.runStatus === 'done' && track.step >= track.items.length - 1 && track.items[track.step]?.note.trim()) {
+    return { ...getProjectAlterationsControl(idOrPath), ok: true, needsApproval: false, continued: false };
+  }
+
+  const focus = track.items[track.step] || track.items[track.items.length - 1];
+  const asChange = focus.kind === 'work' || focus.kind === 'build';
+  const mapItem = track.items.find((item) => item.kind === 'map');
+  const mapText = String(mapItem?.note || track.notes.map || '').trim();
+  const earlier = track.items
+    .filter((item) => item.note.trim() && item.id !== focus.id && item.kind !== 'map')
+    .map((item) => `${item.label} (${item.owner}):\n${item.note.slice(0, 2500)}`)
+    .join('\n\n');
+  const storedCheckpoint = readCheckpointFile(ctrl.rootPath) || track.checkpoint || null;
+  const resume = sameCheckpoint(storedCheckpoint, focus.id) ? storedCheckpoint : null;
+  const role =
+    focus.kind === 'plan'
+      ? 'Você é a Paula PM, e só você conduz este planejamento. A única fonte é o mapeamento de gaps da Íris, colado abaixo. Transforme cada gap em trabalho: tarefa, agente responsável e pronto quando. Não invente gap que não esteja nesse mapeamento e não deixe gap sem dono. Não edite código. Feche a resposta com o bloco TRILHOS:, um trilho de trabalho por linha, no formato "- Título | Nome do agente | entrega". Cada linha nasce de um gap. Sem esse bloco o ajuste não começa. Mantenha o validar por último.'
+      : focus.kind === 'work'
+        ? `Você é ${focus.owner}. A Paula PM designou você para este trecho a partir dos gaps da Íris. Execute só o que está no seu trilho e no plano dela, no workspace. A esteira original não reabre.`
+        : 'Você é o QA do trilho. Os gaps e o plano estão abaixo. Valide o que foi pedido ali e, se for app mobile, rode o build do APK. Resuma o artefato gerado.';
+  const resumeBlock = resume
+    ? 'CHECKPOINT — esta etapa já começou e a comunicação caiu no meio. Não recomece do zero. Não refaça o que o texto abaixo diz que já foi feito e não desfaça arquivo que o workspace já mostra alterado. Continue exatamente deste ponto. Se o bloco TRILHOS já tinha linhas, complete as que faltam em vez de inventar outra lista.\n' +
+      `Parou em: ${resume.at || 'tentativa anterior'}\n` +
+      (resume.reason ? `Motivo: ${resume.reason}\n` : '') +
+      (resume.partial.trim()
+        ? `O que já estava feito quando parou:\n${resume.partial.trim().slice(-5000)}\n\n`
+        : 'A tentativa anterior caiu antes de registrar texto. Confira o workspace e siga o item a partir do que já existir nele.\n\n')
+    : '';
+  const question =
+    `${role}\n` +
+    `Foco: ${focus.label} (${focus.owner}). ${focus.skill}\n` +
+    'Se faltar uma decisão do Carlos, comece a resposta exatamente com "AGUARDANDO APROVAÇÃO:" e uma pergunta. Não invente a decisão.\n' +
+    'Se puder seguir, entregue o resultado do item sem pedir a Íris de novo.\n\n' +
+    resumeBlock +
+    (mapText ? `MAPEAMENTO DE GAPS (Íris) — fonte de todas as etapas seguintes:\n${mapText.slice(0, 8000)}\n\n` : '') +
+    (earlier ? `O QUE AS ETAPAS ANTERIORES JÁ ENTREGARAM:\n${earlier}\n` : '');
+
+  track.runStatus = 'running';
+  track.runError = '';
+  track.runLog = [resume ? `Retomando ${focus.label} do checkpoint · ${focus.owner}` : `Iniciando ${focus.label} · ${focus.owner}`];
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, { ...prev, alterations_open: true, alt_track: track, updated_at: track.updated_at });
+
+  const { converseWithIrisAgent } = require('./irisAgent') as typeof import('./irisAgent');
+  const eng = resolveEngineSpec();
+  const log: string[] = track.runLog.slice();
+  let latestSpeech = resume?.partial || '';
+  let lastCheckpointAt = 0;
+  const saveCheckpoint = (reason: string, force: boolean) => {
+    const partial = (latestSpeech.trim() || resume?.partial || '').slice(-6000);
+    if (!force && partial.length < 40) return;
+    const now = Date.now();
+    if (!force && now - lastCheckpointAt < 12000) return;
+    lastCheckpointAt = now;
+    const checkpoint: AltTrackCheckpoint = {
+      step: track.step,
+      itemId: focus.id,
+      label: focus.label,
+      at: new Date().toISOString(),
+      reason: reason.slice(0, 400),
+      partial,
+    };
+    try {
+      writeCheckpointFile(ctrl.rootPath, checkpoint);
+    } catch {}
+    return checkpoint;
+  };
+  const pushLine = (text: string, level: 'info' | 'error' = 'info') => {
+    const line = String(text || '').trim();
+    if (!line) return;
+    const clipped = line.slice(0, 1800);
+    const prevLine = log[log.length - 1] || '';
+    const grows = prevLine && clipped.startsWith(prevLine.slice(0, Math.min(prevLine.length, 80)));
+    if (grows) log[log.length - 1] = clipped;
+    else log.push(clipped);
+    if (log.length > 40) log.shift();
+    if (clipped.length > 80 && !/^(Iniciando|Retomando) /.test(clipped)) {
+      if (clipped.length >= latestSpeech.length || clipped.startsWith(latestSpeech.slice(0, 48))) latestSpeech = clipped;
+      saveCheckpoint('', false);
+    }
+    hooks?.onLine?.(clipped, level);
+  };
+  hooks?.onStart?.({
+    projectName: ctrl.projectName,
+    projectPath: ctrl.rootPath,
+    focus: focus.label,
+    owner: focus.owner,
+    motor: eng.name,
+    model: eng.model,
+  });
+  const agentRes = await converseWithIrisAgent({
+    workspace: ctrl.rootPath,
+    question,
+    projectName: ctrl.projectName,
+    stageName: focus.label,
+    stageOwner: focus.owner,
+    engineId: eng.id,
+    model: eng.model,
+    effort: eng.effort,
+    finished: true,
+    alterationsOpen: true,
+    asChangeRequest: asChange,
+    recent: [],
+    timeoutMs: 600000,
+    onProgress: (line) => pushLine(line, 'info'),
+  });
+  const reply = String(agentRes.text || '').trim() || 'O agente não devolveu texto neste item.';
+  if (agentRes.ok) pushLine(reply.slice(0, 240), 'info');
+  else log.push(reply.slice(0, 240));
+  const needsApproval = agentRes.ok && /AGUARDANDO APROVAÇÃO/i.test(reply);
+  const fresh = readControlJson(ctrl.rootPath);
+  const next = normalizeAltTrack(fresh.alt_track, true);
+  const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  const current = next.items[next.step] || focus;
+  if (agentRes.ok) current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · ${focus.owner}\n${reply}\n`;
+  if (agentRes.ok && (focus.kind === 'plan' || focus.kind === 'map')) next.items = applyProposedTracks(next.items, reply);
+  next.notes = notesFromItems(next.items);
+  next.waitingQuestion = needsApproval ? reply.replace(/^AGUARDANDO APROVAÇÃO:\s*/i, '').trim() : '';
+  next.runLog = log;
+  next.runError = agentRes.ok ? '' : reply.slice(0, 400);
+  let continued = false;
+  if (!agentRes.ok) {
+    next.runStatus = 'idle';
+    next.checkpoint = saveCheckpoint(reply.slice(0, 400), true) || resume;
+  } else if (needsApproval) {
+    next.runStatus = 'waiting';
+    next.checkpoint = null;
+    clearCheckpointFile(ctrl.rootPath);
+  } else if (next.step >= next.items.length - 1) {
+    next.runStatus = 'done';
+    next.checkpoint = null;
+    clearCheckpointFile(ctrl.rootPath);
+  } else {
+    next.step += 1;
+    next.runStatus = 'idle';
+    next.checkpoint = null;
+    clearCheckpointFile(ctrl.rootPath);
+    continued = true;
+  }
+  next.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, {
+    ...fresh,
+    alterations_open: true,
+    updated_at: next.updated_at,
+    alt_track: next,
+  });
+  try {
+    writeTrackMarkdown(ctrl.rootPath, next);
+  } catch {}
+  hooks?.onEnd?.({
+    ok: Boolean(agentRes.ok),
+    status: !agentRes.ok ? 'failed' : needsApproval ? 'waiting' : 'completed',
+    text: reply.slice(0, 500),
+  });
+  return {
+    ...getProjectAlterationsControl(idOrPath),
+    ok: Boolean(agentRes.ok),
+    needsApproval,
+    continued,
+    reply,
+  };
+}
+
 export function getProjectChatHistory(idOrPath: string): any {
   const info = inspectProjectFolder(idOrPath);
   const rootPath = info.rootPath;
@@ -759,111 +1626,139 @@ export function getProjectChatHistory(idOrPath: string): any {
   return { ok: true, rootPath, messages: [welcomeMsg] };
 }
 
-export function askProjectIris(params: any): any {
+export async function askProjectIris(params: any): Promise<any> {
   const idOrPath = String(params?.projectId || params?.projectPath || params?.projectName || 'projeto').trim();
   const question = String(params?.question || params?.message || '').trim();
   const eng = resolveEngineSpec(params?.engine, params?.model, params?.effort);
-  const effort = eng.effortLabel;
   const stageName = String(params?.stageName || 'Arquitetura & Construção').trim();
   const stageOwner = String(params?.stageOwner || 'Paula PM').trim();
   const persona = String(params?.persona || 'Íris · Inteligência do Projeto').trim();
+  const forceChange = Boolean(params?.asChangeRequest || params?.pedirAlteracao);
 
+  const control = getProjectAlterationsControl(idOrPath);
   const info = inspectProjectFolder(idOrPath);
-  const rootPath = info.rootPath;
+  const rootPath = info.rootPath || control.rootPath;
+  const qLower = question.toLowerCase();
 
-  let diagnosisText = '';
-  let scopeText = '';
   let memoryText = '';
   try {
-    const diagPath = path.join(rootPath, 'context', 'diagnosis.md');
-    if (fs.existsSync(diagPath)) diagnosisText = fs.readFileSync(diagPath, 'utf8').slice(0, 1200);
-  } catch {}
-  try {
-    const scopePath = path.join(rootPath, 'context', 'escopo.md');
-    if (fs.existsSync(scopePath)) scopeText = fs.readFileSync(scopePath, 'utf8').slice(0, 1000);
-  } catch {}
-  try {
     const memPath = path.join(rootPath, 'memory', 'projeto', 'MEMORY.md');
-    if (fs.existsSync(memPath)) memoryText = fs.readFileSync(memPath, 'utf8').slice(0, 1000);
+    if (fs.existsSync(memPath)) memoryText = fs.readFileSync(memPath, 'utf8').slice(-1200);
   } catch {}
 
-  const topDirs = info.tree.filter((x: any) => x.isDir && x.depth === 0).map((x: any) => x.name);
-  const topFiles = info.tree.filter((x: any) => !x.isDir && x.depth <= 1).map((x: any) => x.relPath);
-  const gitUser = info.isolation?.git_identity?.user_name || 'TAVIR';
-  const gitEmail = info.isolation?.git_identity?.user_email || 'engenharia@tavir.com.br';
-  const deployTarget = info.isolation?.deploy_isolation?.target || 'Isolado local (.env.project)';
-
-  // Match if user asks about a specific file in the project
-  const qLower = question.toLowerCase();
-  let matchedFile: { relPath: string; content: string } | null = null;
-  for (const item of info.tree) {
-    if (!item.isDir && item.name && qLower.includes(item.name.toLowerCase())) {
-      const readRes = readProjectFileContent(item.fullPath);
-      if (readRes.ok && readRes.content) {
-        matchedFile = { relPath: item.relPath, content: readRes.content.slice(0, 900) };
-        break;
-      }
-    }
-  }
-
-  const thoughts: string[] = [
-    `[${eng.caption}] Iniciando raciocínio via ${eng.protocol}`,
-    `[Workspace] Lendo pasta isolada do projeto "${info.name}" em ${rootPath}`,
-    `[Árvore Física] ${info.dirCount} pastas (${topDirs.slice(0, 6).join(', ') || 'raiz'}) e ${info.fileCount} arquivos · Stack: ${info.stacks}`,
-    `[Contexto da Esteira] Etapa em foco: "${stageName}" (Responsável: ${stageOwner}) · Git local: ${gitUser} <${gitEmail}>`,
-  ];
-
-  if (matchedFile) {
-    thoughts.push(`[Leitura de Arquivo] Inspecionado "${matchedFile.relPath}" diretamente no disco (${matchedFile.content.length} chars lidos)`);
-  } else if (diagnosisText || scopeText) {
-    thoughts.push(`[Memória & Escopo] Carregados context/escopo.md, context/diagnosis.md e memory/projeto/MEMORY.md`);
-  }
-  thoughts.push(`[Síntese Íris] Consolidando resposta acionável para "${question.slice(0, 70)}"`);
-
-  let reply = '';
-  if (matchedFile) {
-    reply =
-      `Li o arquivo \`${matchedFile.relPath}\` diretamente na pasta de **${info.name}** (\`${rootPath}\`):\n\n` +
-      `Resumo do conteúdo encontrado:\n` +
-      `${matchedFile.content.split(/\r?\n/).slice(0, 12).join('\n')}\n\n` +
-      `Se quiser, posso registrar uma alteração neste arquivo ou disparar a etapa **${stageName}** com **${stageOwner}** usando o motor **${eng.name}**.`;
-  } else if (qLower.includes('pasta') || qLower.includes('estrutura') || qLower.includes('arquiv') || qLower.includes('stack') || qLower.includes('arquitetura')) {
-    reply =
-      `Aqui está a leitura real da estrutura de **${info.name}** via **${eng.name}** (${eng.model}):\n` +
-      `• **Caminho no disco**: \`${rootPath}\`\n` +
-      `• **Stacks detectadas**: ${info.stacks}\n` +
-      `• **Pastas principais (${info.dirCount})**: ${topDirs.join(', ') || 'nenhuma subpasta'}\n` +
-      `• **Arquivos mapeados (${info.fileCount})**: ${topFiles.slice(0, 10).join(', ') || 'nenhum arquivo'}\n` +
-      `• **Isolamento**: Git local configurado como \`${gitUser} <${gitEmail}>\` e ambiente \`${deployTarget}\`.`;
-  } else if (qLower.includes('execut') || qLower.includes('rodando') || qLower.includes('agora') || qLower.includes('status') || qLower.includes('etapa') || qLower.includes('falta')) {
-    reply =
-      `Status ao vivo de **${info.name}** analisado pelo motor **${eng.name}**:\n` +
-      `• **Etapa atual em foco**: **${stageName}** (conduzida por **${stageOwner}**).\n` +
-      `• **Motor ativo**: ${eng.caption} (\`${eng.sdkPath}\`).\n` +
-      `• **Workspace**: \`${rootPath}\` (${info.dirCount} pastas, ${info.fileCount} arquivos).\n` +
-      `• **Próximo passo recomendado**: você pode clicar em **"▶ Executar etapa com Pensamento"** no painel de Execução ao Vivo da tela inicial do projeto para rodar/atualizar os artefatos desta etapa em tempo real.`;
-  } else if (qLower.includes('git') || qLower.includes('credencia') || qLower.includes('env') || qLower.includes('isolamento') || qLower.includes('deploy')) {
-    reply =
-      `Isolamento verificado em **${info.name}**:\n` +
-      `• **Identidade Git exclusiva da pasta**: \`${gitUser} <${gitEmail}>\` (gravada em \`.git/config\` local).\n` +
-      `• **Cofre de ambiente**: \`.env.project\` isolado para **${deployTarget}** (protegido no \`.git/info/exclude\`).\n` +
-      `• Nenhuma credencial ou configuração deste projeto vaza para outros módulos ou para sua conta global.`;
-  } else {
-    // Registra ou executa orientação para o projeto e atualiza memory/projeto/MEMORY.md
+  const absorbMemory = (line: string) => {
     try {
       const memDir = path.join(rootPath, 'memory', 'projeto');
       fs.mkdirSync(memDir, { recursive: true });
       const memFile = path.join(memDir, 'MEMORY.md');
       const prevMem = fs.existsSync(memFile) ? fs.readFileSync(memFile, 'utf8') : `# Memória do Projeto · ${info.name}\n`;
-      const newEntry = `\n- [${new Date().toISOString().slice(0, 16).replace('T', ' ')}] (${eng.name} · ${stageName}) Solicitação: "${question}"`;
-      fs.writeFileSync(memFile, prevMem + newEntry + '\n', 'utf8');
+      fs.writeFileSync(memFile, prevMem + `\n- [${new Date().toISOString().slice(0, 16).replace('T', ' ')}] ${line}\n`, 'utf8');
     } catch {}
+  };
 
-    reply =
-      `Entendido, Carlos! Analisei seu pedido para **${info.name}** na etapa **${stageName}** usando o motor **${eng.name}** (\`${eng.model}\`):\n` +
-      `• **Solicitação registrada**: "${question}"\n` +
-      `• **Contexto inspecionado**: \`${rootPath}\` (${info.stacks} · ${info.dirCount} pastas e ${info.fileCount} arquivos).\n` +
-      `• **Ação tomada**: Diretriz gravada em \`memory/projeto/MEMORY.md\` e vinculada a **${stageOwner}** na etapa **${stageName}**. Você também pode disparar a execução ao vivo logo acima para gerar/atualizar o artefato correspondente.`;
+  const absorbChangeRequest = (text: string) => {
+    try {
+      const memDir = path.join(rootPath, 'memory', 'projeto');
+      fs.mkdirSync(memDir, { recursive: true });
+      const reqFile = path.join(memDir, 'CHANGE_REQUESTS.md');
+      const prev = fs.existsSync(reqFile)
+        ? fs.readFileSync(reqFile, 'utf8')
+        : `# Pedidos de alteração · ${info.name}\n\nA esteira permanece encerrada. Cada pedido abaixo é absorvido pelos agentes com o motor ativo.\n`;
+      const block =
+        `\n## ${new Date().toISOString().slice(0, 16).replace('T', ' ')} · ${eng.caption}\n` +
+        `- Etapa de referência: ${stageName} (${stageOwner})\n` +
+        `- Pedido: ${text}\n`;
+      fs.writeFileSync(reqFile, prev + block, 'utf8');
+    } catch {}
+  };
+
+  const chatFile = path.join(rootPath, '.tavir', 'iris-chat.json');
+  let history: any[] = [];
+  try {
+    if (fs.existsSync(chatFile)) {
+      history = JSON.parse(fs.readFileSync(chatFile, 'utf8')) || [];
+    }
+  } catch {}
+  if (!Array.isArray(history) || !history.length) {
+    history = getProjectChatHistory(idOrPath).messages || [];
+  }
+
+  const recent = history
+    .filter((m) => m && (m.role === 'me' || m.role === 'ag' || m.cls === 'me' || m.cls === 'ag'))
+    .slice(-8)
+    .map((m) => ({
+      role: (m.role === 'me' || m.cls === 'me' ? 'user' : 'assistant') as 'user' | 'assistant',
+      text: String(m.t || m.text || ''),
+    }))
+    .filter((m) => m.text.trim());
+
+  const thoughts: string[] = [
+    `[${eng.caption}] Modo conversação no workspace do projeto`,
+    `[Workspace] ${info.name} · ${rootPath}`,
+    `[Controle] ${control.finished ? (control.alterations_open ? 'Handoff · liberado' : 'Handoff · fechado') : 'Esteira ativa'}`,
+    `[Etapa] ${stageName} · ${stageOwner}`,
+  ];
+
+  let reply = '';
+  const wantsChange =
+    forceChange ||
+    /\b(alter|muda|ajuste|corrija|corri|implement|adicione|remova|refator)\w*/i.test(question);
+
+  // Projeto fechado: resposta curta local, sem agent.
+  if (control.finished && !control.chat_unlocked) {
+    if (wantsChange || forceChange) {
+      reply =
+        `O projeto **${info.name}** está **fechado para alterações**.\n` +
+        `Use **Liberar alterações** para conversar com os agentes e pedir mudanças — a esteira não reabre.`;
+    } else {
+      reply =
+        `**${info.name}** está entregue (Handoff) e **fechado para alterações**.\n` +
+        `Posso só consultar o status. Libere alterações se quiser conversa real com o motor no workspace.`;
+    }
+    thoughts.push('[Local] Projeto fechado — sem chamada ao agente');
+  } else {
+    // Conversa real com o Cursor Agent no workspace do projeto aberto.
+    const { converseWithIrisAgent } = require('./irisAgent') as typeof import('./irisAgent');
+    thoughts.push('[IrisAgent] Chamando agente conversacional…');
+    const agentRes = await converseWithIrisAgent({
+      workspace: rootPath,
+      question,
+      projectName: info.name || control.projectName,
+      stageName,
+      stageOwner,
+      engineId: eng.id,
+      model: eng.model,
+      effort: eng.effort,
+      finished: control.finished,
+      alterationsOpen: control.alterations_open,
+      asChangeRequest: Boolean(forceChange),
+      recent,
+      memorySnippet: memoryText,
+      timeoutMs: 120000,
+    });
+    thoughts.push(...(agentRes.thoughts || []));
+    reply = String(agentRes.text || '').trim();
+    if (!reply) {
+      reply = 'Não consegui obter resposta do agente neste turno. Tente de novo em instantes.';
+    }
+    absorbMemory(`(${eng.name} · chat) "${question.slice(0, 120)}" → ${reply.slice(0, 160)}`);
+    if (forceChange || wantsChange) {
+      absorbChangeRequest(question);
+      thoughts.push('[Absorção] CHANGE_REQUESTS.md atualizado (pedido de alteração)');
+    }
+    if (control.finished && control.alterations_open) {
+      const tracked = recordIrisOnAltTrack(idOrPath, question, reply);
+      if (tracked) {
+        thoughts.push(
+          `[Trilho] Registro no foco ${ALT_TRACK_STEPS[tracked.step]?.label || 'Mapear gaps'}`,
+        );
+      }
+    }
+  }
+
+  // Evita eco de dumps de estrutura gerados por heurística antiga em turnos futuros
+  if (/Caminho no disco|Stacks detectadas|Arquivos mapeados \(\d+\)/i.test(reply) && !/estrutura|pasta|arquiv|stack/i.test(qLower)) {
+    thoughts.push('[Aviso] Resposta parecia inventário; pedindo rephrase conversacional falhou — mantida resposta do agente');
   }
 
   const userMsg = {
@@ -887,16 +1782,6 @@ export function askProjectIris(params: any): any {
     t: reply,
   };
 
-  const chatFile = path.join(rootPath, '.tavir', 'iris-chat.json');
-  let history: any[] = [];
-  try {
-    if (fs.existsSync(chatFile)) {
-      history = JSON.parse(fs.readFileSync(chatFile, 'utf8')) || [];
-    }
-  } catch {}
-  if (!Array.isArray(history) || !history.length) {
-    history = getProjectChatHistory(idOrPath).messages || [];
-  }
   history.push(userMsg, agentMsg);
   if (history.length > 60) history = history.slice(-60);
 
@@ -910,6 +1795,11 @@ export function askProjectIris(params: any): any {
     rootPath,
     engine: eng.name,
     model: eng.model,
+    alterations_open: control.alterations_open,
+    chat_unlocked: control.chat_unlocked,
+    finished: control.finished,
+    alt_track: getProjectAlterationsControl(idOrPath).alt_track,
+    conversational: control.chat_unlocked,
     userMessage: userMsg,
     replyMessage: agentMsg,
     messages: history,

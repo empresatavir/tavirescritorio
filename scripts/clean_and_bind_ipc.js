@@ -406,14 +406,113 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             disk: [6, 12, 'pasta isolada'],
             tok0: [0, 0, 0],
             think: p.description || (done >= total ? 'Esteira concluída' : 'Em execução'),
-            local_path: p.local_path || null
+            local_path: p.local_path || null,
+            alterations_open: false
           });
           gp[p.id] = { cur: done, paused: st === 'paused', resolved: {}, extra: [] };
         });
         const keepPid = self.state.pid && absorbed.some(function(x) { return x.id === self.state.pid; }) ? self.state.pid : null;
         self.setState({ absorbed: absorbed, gp: gp, pid: keepPid, removed: {} });
         if (keepPid && self.loadIpcFiles) self.loadIpcFiles(keepPid);
+        // Carrega controle Liberar/Fechar alterações por projeto
+        absorbed.forEach(function(proj) {
+          const key = proj.local_path || proj.id;
+          if (!tavir.projects.getAlterationsControl) return;
+          tavir.projects.getAlterationsControl(key).then(function(ctrl) {
+            if (!ctrl || !ctrl.ok) return;
+            const open = !!ctrl.alterations_open;
+            const nextAbs = (self.state.absorbed || []).map(function(p) {
+              return p.id === proj.id ? Object.assign({}, p, { alterations_open: open }) : p;
+            });
+            const altMap = Object.assign({}, self.state.altOpen || {});
+            altMap[proj.id] = open;
+            const trackMap = Object.assign({}, self.state.altTrack || {});
+            if (ctrl.alt_track) trackMap[proj.id] = ctrl.alt_track;
+            self.setState({ absorbed: nextAbs, altOpen: altMap, altTrack: trackMap });
+          }).catch(function() {});
+        });
       }).catch(function(err) { console.error('[Fábrica] falha ao listar projects:', err); });
+    };
+    this.sendIrisMessage = function(rawText, opts) {
+      opts = opts || {};
+      const txt = String(rawText != null ? rawText : (self.state.draft || '')).trim();
+      if (!txt) return;
+      const tavir = getTavir();
+      const app = self.props.app || { toast: function() {} };
+      const list = self.state.absorbed || [];
+      const ap = list.find(function(p) { return p.id === self.state.pid; }) || list[0];
+      if (!ap) { app.toast('Sem projeto', 'Abra um projeto para falar com a Íris.'); return; }
+      const gpRow = (self.state.gp && self.state.gp[ap.id]) || {};
+      const stageN = (ap.stages && ap.stages.length) || Number(ap.n) || 9;
+      const doneN = Math.min(Number(gpRow.cur != null ? gpRow.cur : ap.done) || 0, stageN);
+      const finished = doneN >= stageN || String(ap.status || '').toLowerCase() === 'done' || String(ap.status || '').toLowerCase() === 'completed';
+      const unlocked = !finished || !!(self.state.altOpen && self.state.altOpen[ap.id]) || !!ap.alterations_open;
+      const motorRow = (self.state.motors && self.state.motors[ap.id]) || {};
+      const engName = String(motorRow.engine || 'cursor').toLowerCase();
+      const engLabel = engName === 'antigravity' ? 'Antigravity' : (engName.charAt(0).toUpperCase() + engName.slice(1));
+      const engModel = motorRow.model || (engName === 'claude' ? 'claude-sonnet-4-5' : engName === 'codex' ? 'gpt-5-codex' : engName === 'antigravity' ? 'gemini-2.5-pro' : 'auto-smart');
+      const engEffort = motorRow.effort || 'medium';
+      const hm = function() {
+        const d = new Date();
+        return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+      };
+      const pidNow = ap.id;
+      const prev = (self.state.chats && self.state.chats[pidNow]) || [];
+      const base = prev.concat([['Carlos', txt, 'me', [], hm()]]);
+      const chats = Object.assign({}, self.state.chats || {});
+      chats[pidNow] = base;
+      self.setState({ chats: chats, draft: '', typing: true, chat: true, unread: 0 });
+      const finish = function(reply, thoughts, extra) {
+        const st = self.state;
+        const c3 = Object.assign({}, st.chats || {});
+        c3[pidNow] = (st.chats[pidNow] || base).concat([['Íris · ' + engLabel, reply, 'ag', thoughts || [], hm()]]);
+        const patch = { chats: c3, typing: false };
+        if (extra && extra.alt_track) {
+          const tm = Object.assign({}, st.altTrack || {});
+          tm[pidNow] = extra.alt_track;
+          patch.altTrack = tm;
+          const step = Number(extra.alt_track.step) || 0;
+          const labels = ['Mapear gaps', 'Planejar', 'Ajustar', 'Validar & build'];
+          if (extra.registered) app.toast('Trilho atualizado', 'Registro gravado em ' + (labels[step] || 'Mapear gaps') + '.');
+        }
+        self.setState(patch);
+      };
+      if (!tavir || !tavir.projects || !tavir.projects.askIris) {
+        finish(
+          unlocked
+            ? ('Absorvi "' + txt + '" no projeto ' + (ap.name || '') + '.')
+            : 'Projeto fechado para alterações. Use Liberar alterações para falar com os agentes.',
+          ['[Local] sem IPC askIris']
+        );
+        return;
+      }
+      const stg = (ap.stages && ap.stages[Math.min((ap.stages.length || 1) - 1, Math.max(0, Number(ap.done) || 0))]) || ['Handoff', 'Paula PM'];
+      const track = (self.state.altTrack && self.state.altTrack[pidNow]) || {};
+      const trackLabels = ['Mapear gaps', 'Planejar', 'Ajustar', 'Validar e build'];
+      const trackStep = Math.max(0, Math.min(3, Number(track.step) || 0));
+      tavir.projects.askIris({
+        projectId: ap.id,
+        projectName: ap.name,
+        projectPath: ap.local_path || ap.path || ap.slug || '',
+        stageName: finished ? (trackLabels[trackStep] || stg[0]) : stg[0],
+        stageOwner: finished && trackStep === 1 ? 'Paula PM' : stg[1],
+        engine: engName,
+        model: engModel,
+        effort: engEffort,
+        question: txt,
+        asChangeRequest: !!opts.asChangeRequest,
+        persona: 'Íris · Inteligência do Projeto'
+      }).then(function(res) {
+        const msg = res && res.replyMessage;
+        const thoughts = (msg && msg.thoughts) || [];
+        const registered = thoughts.some(function(t) { return String(t).indexOf('[Trilho]') >= 0; });
+        finish((msg && msg.t) || 'Pedido registrado na memória do projeto.', thoughts, {
+          alt_track: res && res.alt_track,
+          registered: registered
+        });
+      }).catch(function(err) {
+        finish('Não consegui falar com o motor agora (' + String(err && err.message || err) + ').', ['[Erro] askIris']);
+      });
     };
     this.reloadIpcProjects();
     this._onProjCreated = function() { if (self.reloadIpcProjects) self.reloadIpcProjects(); };
@@ -445,6 +544,15 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
       '.fb-side{width:236px;flex:none;border-right:1px solid var(--line);background:var(--surface-1);padding:16px 10px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;scrollbar-width:thin}',
       '.fb-side{width:236px;flex:none;border-right:1px solid var(--line);background:var(--surface-1);padding:16px 10px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;align-self:flex-start;height:calc(100vh - 64px);overflow-y:auto;scrollbar-width:thin}',
     );
+
+    // Clique em etapa/gate em todos os projetos (fonte Fabrica.dc.html)
+    if (fabHtml.includes("const stepPick = (i) => isM ? () => goStage(i) : () => self.setState({ ptab: 'esteira' });")) {
+      fabHtml = fabHtml.replace(
+        "const stepPick = (i) => isM ? () => goStage(i) : () => self.setState({ ptab: 'esteira' });",
+        "const stepPick = (i) => () => goStage(i);"
+      );
+      console.log('Fábrica: stepPick universal (gates/etapas clicáveis)');
+    }
 
     manifest[fabUuid].data = zlib.gzipSync(Buffer.from(fabHtml, 'utf8')).toString('base64');
     console.log('Fábrica limpa e atualizada! (referência sem mock + IPC)');
@@ -1313,7 +1421,98 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
   // Atualiza goStage para também sincronizar o pensamento da etapa clicada
   fabHtml = fabHtml.replace(
     "const goStage = (i, t) => { const tb = Object.assign({}, s.tabs); if (t) tb[i] = t; self.setState({ stage: i, tabs: tb, open: true }); };",
-    "const goStage = (i, t) => { const tb = Object.assign({}, s.tabs); if (t) tb[i] = t; self.setState({ stage: i, tabs: tb, open: true }); if (self.syncLiveThinkingState) self.syncLiveThinkingState(ap, pt, s.execEngineId || s.execEngine, s.execEffort, i); };"
+    "const goStage = (i, t) => { const tb = Object.assign({}, s.tabs); if (t) tb[i] = t; self.setState({ stage: i, tabs: tb, open: true, ptab: 'esteira' }); if (self.syncLiveThinkingState) self.syncLiveThinkingState(ap, pt, s.execEngineId || s.execEngine, s.execEffort, i); };"
+  );
+
+  // Clique em etapa/gate funciona em TODOS os projetos (não só Meridian)
+  fabHtml = fabHtml.replace(
+    "const stepPick = (i) => isM ? () => goStage(i) : () => self.setState({ ptab: 'esteira' });",
+    "const stepPick = (i) => () => goStage(i);"
+  );
+
+  // gsteps: seleção visual + pick para inspecionar quem/o quê da etapa
+  fabHtml = fabHtml.replace(
+    "gsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; const isCur = i === P.done && P.status !== 'done'; const blockP = P.pends[0]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], skill: x[2], st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: isCur ? 'var(--surface-3)' : 'transparent', when: ddmm(P.base, startOf(i)) + (x[3] > 1 ? ' → ' + ddmm(P.base, startOf(i) + x[3] - 1) : ''),\n        hasAct: isCur && P.status === 'run', actLbl: blockP ? 'Autorizar' : 'Concluir etapa', act: blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy) }; }),",
+    `gsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; const isCur = i === P.done && P.status !== 'done'; const isSel = Number(s.stage) === i; const blockP = P.pends[0]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], skill: x[2], st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: isSel ? 'var(--surface-3)' : (isCur ? 'var(--surface-3)' : 'transparent'), when: ddmm(P.base, startOf(i)) + (x[3] > 1 ? ' → ' + ddmm(P.base, startOf(i) + x[3] - 1) : ''),
+        pick: stepPick(i), hasAct: isCur && P.status === 'run', actLbl: blockP ? 'Autorizar' : 'Concluir etapa', act: blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy) }; }),
+      gSel: (function() {
+        const idx = Math.max(0, Math.min(Number(s.stage) || 0, P.stages.length - 1));
+        const st = P.stages[idx] || P.stages[0] || ['Etapa', '—', '—', 1];
+        const k = stState(idx); const Z = SS[k];
+        const ini = PEOPLE[st[1]] || (st[4] || String(st[1] || '—').slice(0, 2).toUpperCase());
+        return {
+          n: String(idx + 1).padStart(2, '0'),
+          label: st[0],
+          owner: st[1],
+          ini: ini,
+          skill: st[2],
+          state: Z[0],
+          cls: Z[1],
+          when: ddmm(P.base, startOf(idx)) + (st[3] > 1 ? ' → ' + ddmm(P.base, startOf(idx) + st[3] - 1) : ''),
+          note: k === 'done'
+            ? 'Etapa concluída. Você pode inspecionar o responsável e o escopo; a esteira encerrada não reabre automaticamente.'
+            : (k === 'gate' || k === 'paused')
+              ? 'Gate/etapa sob sua atenção. Use Pedir alteração ou libere o responsável para seguir.'
+              : (k === 'run' ? 'Etapa em andamento com ' + st[1] + '.' : 'Etapa planejada — ainda não começou.'),
+          ask: function() {
+            const txt = 'Quero trabalhar o gate/etapa \"' + st[0] + '\" (' + st[1] + '). Detalhe o que falta e prepare o handoff para Paula planejar.';
+            self.setState({ chat: true, draft: txt, ptab: 'esteira' });
+            if (self.sendIrisMessage) self.sendIrisMessage(txt, { asChangeRequest: !!(P.status === 'done' || P.alterations_open) });
+          }
+        };
+      })(),`
+  );
+
+  // Esteira genérica: linhas clicáveis + painel da etapa selecionada
+  fabHtml = fabHtml.replace(
+    `  <!-- ESTEIRA (demais projetos) -->
+  <sc-if value="{{pt.esteiraG}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="animation: fade 200ms var(--ease) both">
+      <div class="card-h"><h3>Esteira {{P.line}} · {{P.n}} etapas</h3><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>concluída</span><span><i style="background: var(--warning)"></i>agora</span><span><i style="background: var(--line-strong)"></i>a seguir</span></div></div>
+      <div class="rows">
+        <sc-for list="{{gsteps}}" as="v" hint-placeholder-count="10">
+          <div class="row" style="cursor: default; gap: 14px; background: {{v.rowBg}}">
+            <span class="fb-nb" style="background: {{v.bg}}; color: {{v.fg}}; border: 1px solid {{v.bd}}">{{v.n}}</span>
+            <div class="grow" style="min-width: 0"><div class="t" style="font-size: 14px; color: {{v.tc}}">{{v.t}}</div><div class="m">{{v.who}} · <span class="mono" style="font-size: 11px">{{v.skill}}</span></div></div>
+            <span class="num muted" style="font-size: 11px">{{v.when}}</span>
+            <span class="badge {{v.cls}}"><i></i>{{v.st}}</span>
+            <sc-if value="{{v.hasAct}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{v.act}}" disabled="{{v.dis}}">{{v.actLbl}}</button></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </sc-if>`,
+    `  <!-- ESTEIRA (demais projetos) -->
+  <sc-if value="{{pt.esteiraG}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="animation: fade 200ms var(--ease) both">
+      <div class="card-h"><h3>Esteira {{P.line}} · {{P.n}} etapas</h3><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>concluída</span><span><i style="background: var(--warning)"></i>agora</span><span><i style="background: var(--line-strong)"></i>a seguir</span></div></div>
+      <p class="muted" style="padding: 0 18px 10px; font-size: 12.5px; margin: 0">Clique numa etapa/gate para ver responsável, escopo e o que dá para pedir à Íris.</p>
+      <div class="rows">
+        <sc-for list="{{gsteps}}" as="v" hint-placeholder-count="10">
+          <button type="button" class="row" onClick="{{v.pick}}" style="cursor: pointer; gap: 14px; background: {{v.rowBg}}; width: 100%; text-align: left; border: 0; color: inherit">
+            <span class="fb-nb" style="background: {{v.bg}}; color: {{v.fg}}; border: 1px solid {{v.bd}}">{{v.n}}</span>
+            <div class="grow" style="min-width: 0"><div class="t" style="font-size: 14px; color: {{v.tc}}">{{v.t}}</div><div class="m">{{v.who}} · <span class="mono" style="font-size: 11px">{{v.skill}}</span></div></div>
+            <span class="num muted" style="font-size: 11px">{{v.when}}</span>
+            <span class="badge {{v.cls}}"><i></i>{{v.st}}</span>
+            <sc-if value="{{v.hasAct}}" hint-placeholder-val="{{false}}"><span class="btn sm secondary" style="pointer-events: none">{{v.actLbl}}</span></sc-if>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+    <section class="card" style="margin-top: 14px; animation: fade 200ms var(--ease) both; overflow: hidden">
+      <div style="padding: 16px 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap">
+        <span class="av" style="width: 40px; height: 40px; font-size: 11px; flex: none">{{gSel.ini}}</span>
+        <div class="grow" style="min-width: 200px">
+          <div class="eyebrow">Etapa {{gSel.n}} · {{gSel.state}}</div>
+          <h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.02em; margin-top: 4px">{{gSel.label}}</h2>
+          <div class="muted" style="font-size: 12.5px; margin-top: 4px">{{gSel.owner}} · {{gSel.skill}} · {{gSel.when}}</div>
+        </div>
+        <span class="badge {{gSel.cls}}"><i></i>{{gSel.state}}</span>
+        <button type="button" class="btn sm secondary" onClick="{{gSel.ask}}">Pedir à Íris nesta etapa</button>
+      </div>
+      <div style="padding: 0 18px 16px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.45">{{gSel.note}}</div>
+    </section>
+  </sc-if>`
   );
 
   const engMetaExpr = `const curEng = (typeof self.getEngineMeta === 'function')
@@ -1693,7 +1892,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
   );
   cfgHtml = cfgHtml.replace(
     "btn: m[2] ? 'Chave e login' : 'Instalar'",
-    "btn: m[2] ? 'SDK e apontamento' : 'Configurar SDK'"
+    "btn: m[2] ? 'Login e cofre' : 'Configurar'"
   );
   cfgHtml = cfgHtml.replace(
     "setDef: () => { self.setState({ def: m[0] }); app.toast('Motor padrão', m[0] + ' atende o chat a partir de agora.'); }, flip: () => { const mo = Object.assign({}, s.mon); mo[m[0]] = !mo[m[0]]; self.setState({ mon: mo }); }",
@@ -2016,6 +2215,17 @@ templateHtml = templateHtml.replace(
 const origJcur = "const jcur = s.jobs.find((j) => j.id === s.jobId) || jlist[0] || s.jobs[0];";
 const safeJcur = "const jcur = s.jobs.find((j) => j.id === s.jobId) || jlist[0] || s.jobs[0] || { id: '', title: 'Nenhum job ativo', who: '—', ini: '—', status: 'completed', progress: 0, model: '—', motor: '—', effort: '—', task: '—', cost: 0, ceiling: 0, started: '—', tokens: '0' };";
 templateHtml = templateHtml.replace(origJcur, safeJcur);
+templateHtml = templateHtml.replace(
+  "isFailed: jcur.status === 'failed',",
+  "isFailed: jcur.status === 'failed', failTitle: jcur.error ? 'A execução parou.' : 'O job parou antes do deploy.', failWhy: jcur.error || 'Variável obrigatória ausente: SUPABASE_URL. Nada foi publicado. O gate ap-02 espera sua decisão para registrar a variável e refazer.',"
+);
+const failBanner = '<b>O job parou antes do deploy.</b><p class="sec" style="margin-top: 4px; font-size: 13px">Variável obrigatória ausente: SUPABASE_URL. Nada foi publicado. O gate ap-02 espera sua decisão para registrar a variável e refazer.</p>';
+if (templateHtml.includes(failBanner)) {
+  templateHtml = templateHtml.replace(failBanner, '<b>{{job.failTitle}}</b><p class="sec" style="margin-top: 4px; font-size: 13px">{{job.failWhy}}</p>');
+  console.log('Banner de falha da execução passou a usar o erro real do job.');
+} else {
+  console.log('Banner de falha não encontrado para troca.');
+}
 
 const origDcur = "const dcur = dlist.find((a) => a.id === s.approvalId) || dlist[0] || null;";
 const safeDcur = "const dcur = dlist.find((a) => a.id === s.approvalId) || dlist[0] || { id: '', group: 'none', kind: 'none', title: 'Nenhuma decisão pendente', who: '—', ini: '—', type: '—', status: 'approved', impact: 'baixo', task: '—', age: '—', ageH: 0, reason: 'Tudo liberado. Nenhum bloqueio humano na sala.', question: 'Sem aprovações pendentes.', yes: [], no: [], more: [] };";
@@ -2061,6 +2271,11 @@ const newMount = `componentDidMount() {
           vaultDocs: u.vaultDocs ? u.vaultDocs.length : 0
         });
         self.setState(u);
+        if (window.tavir.jobs.logs) {
+          window.tavir.jobs.logs().then(function (logs) {
+            if (logs && typeof logs === 'object') self.setState({ logs: Object.assign({}, logs, self.state.logs || {}) });
+          }).catch(function () {});
+        }
         if (res[4] && res[4].totalDocs) {
           self.log(
             'Sincron Brain',
@@ -2072,11 +2287,51 @@ const newMount = `componentDidMount() {
         console.error('[TAVIR IPC] Erro ao sincronizar:', err);
       });
       window.tavir.onEvent(function(evt) {
-        if (evt.type === 'tool_start' || evt.type === 'status') {
+        if (evt && evt.meta && evt.meta.track) {
+          const list = (self.state.jobs || []).slice();
+          let j = list.find(function(x) { return x.id === evt.runId; });
+          const st = evt.meta.status || (evt.type === 'error' ? 'failed' : evt.type === 'done' ? 'completed' : 'running');
+          if (!j) {
+            j = {
+              id: evt.runId,
+              title: evt.meta.title || 'Trilho de alteração',
+              who: evt.meta.owner || 'Trilho',
+              ini: String(evt.meta.owner || 'TR').slice(0, 2).toUpperCase(),
+              status: st,
+              progress: evt.meta.progress || 12,
+              model: evt.meta.model || 'auto',
+              motor: evt.meta.motor || 'Cursor',
+              effort: 'trilho',
+              task: evt.meta.focus || 'trilho',
+              cost: 0,
+              ceiling: 0,
+              started: 'agora',
+              tokens: '0',
+              error: evt.type === 'error' ? evt.content : ''
+            };
+            list.unshift(j);
+          } else {
+            j.status = st;
+            j.progress = evt.meta.progress || j.progress;
+            if (evt.meta.title) j.title = evt.meta.title;
+            if (evt.type === 'error') j.error = evt.content;
+            if (evt.type === 'done') j.error = '';
+          }
+          const logs = Object.assign({}, self.state.logs || {});
+          const d = new Date();
+          const ts = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+          const bad = evt.type === 'error';
+          logs[evt.runId] = (logs[evt.runId] || []).concat([{ ts: ts, lvl: bad ? 'erro' : 'info', cls: bad ? 'err' : 'info', text: String(evt.content || '').slice(0, 400) }]).slice(-80);
+          const patch = { jobs: list, logs: logs };
+          if (!self.state.jobId) patch.jobId = evt.runId;
+          self.setState(patch);
+          return;
+        }
+        if (evt.type === 'tool_start' || evt.type === 'status' || evt.type === 'thought') {
           const list = (self.state.jobs || []).slice();
           const j = list.find(function(x) { return x.id === evt.runId; });
           if (j) {
-            j.progress = Math.min(95, j.progress + 15);
+            j.progress = Math.min(95, j.progress + 8);
             self.setState({ jobs: list });
           }
         }
@@ -2458,10 +2713,11 @@ const newControlAndMotor = `      control: { title: 'Controle & Isolamento do Pr
         { k: 'mod_git', type: 'segs', label: 'Identidade Git padrão para novos projetos do módulo', opts: ['TAVIR (Empresa)', 'Pessoal (Carlos)', 'Perguntar ao criar'] },
         { k: 'mod_gate', type: 'toggle', label: 'Exigir aprovação humana nos Gates do módulo', sub: 'Mantém o Completion Guard ativo antes de qualquer publicação ou deploy.', def: true },
         { k: 'mod_sla', type: 'segs', label: 'SLA padrão dos gates deste módulo', opts: ['4 h', '24 h', '72 h'] }] },
-      motor: { title: 'Motor ' + ((d && d.name) || '') + ' · SDK & Apontamento Local', eyebrow: 'Motores de IA · Detecção na Máquina', lead: 'O escritório busca primeiro a instalação e o SDK local na sua máquina e faz o apontamento automático. A chave de API é apenas opcional.', size: 'lg', primary: 'Salvar apontamento', secondary: 'Revalidar SDK na máquina', done: ['Motor configurado', 'Apontamento local do SDK salvo e ativo.'], fields: [
-        { k: 'mode', type: 'segs', label: 'Modo de Conexão Principal', opts: ['SDK / Instalação Local na Máquina (Recomendado)', 'Chave de API Manual (Fallback)'] },
-        { k: 'sdk_path', type: 'text', label: 'Apontamento da Instalação / SDK na Máquina', val: (d && d.name === 'Antigravity') ? '~/.gemini/antigravity' : (d && d.name === 'Claude') ? '~/.claude' : (d && d.name === 'Codex') ? '~/.codex' : '~/.cursor', help: 'Detectado automaticamente no sistema. Todos os motores seguem o mesmo padrão de SDK local.' },
-        { k: 'key', type: 'text', itype: 'password', label: 'Chave de API (Opcional · Não obrigatória com SDK local)', ph: 'Deixe em branco para usar a instalação/login local da máquina', help: 'Se preenchida, fica apenas no cofre local desta máquina como fallback.' },
+      motor: { title: 'Motor ' + ((d && d.name) || '') + ' · Login & Cofre', eyebrow: 'Motores de IA · Integrações', lead: 'Preferência: login do CLI na máquina. Alternativa: cole a chave de API — fica cifrada só neste computador.', size: 'lg', primary: 'Salvar no cofre', secondary: 'Entrar com login', done: ['Motor pronto', 'Login/chave disponíveis para a Íris e os jobs.'], fields: [
+        { k: 'mode', type: 'segs', label: 'Modo de Conexão Principal', opts: ['SDK / Login Local na Máquina (Recomendado)', 'Chave de API Manual (Cofre)'] },
+        { k: 'sdk_path', type: 'text', label: 'Apontamento da Instalação / SDK na Máquina', val: (d && d.name === 'Antigravity') ? '~/.gemini/antigravity' : (d && d.name === 'Claude') ? '~/.claude' : (d && d.name === 'Codex') ? '~/.codex' : '~/.cursor', help: 'Detectado automaticamente. O botão Entrar com login abre o fluxo oficial do motor.' },
+        { k: 'key', type: 'text', itype: 'password', label: 'Chave de API (opcional se já fez login)', ph: 'Cole a chave para guardar no cofre', help: 'Guardada cifrada no cofre local. Nunca vai para o livro-razão, o chat ou o pacote de entrega.' },
+        { k: 'base_url', type: 'text', label: 'Endereço da API (só Antigravity)', val: '', ph: 'https://api.exemplo.com/v1', help: 'Obrigatório apenas se for plugar Antigravity por chave.' },
         { k: 'def', type: 'toggle', label: 'Tornar motor padrão do escritório', sub: 'Atende o chat e os jobs quando nenhum motor específico é escolhido.', def: false }] },`;
 
 if (templateHtml.includes(origControlAndMotor)) {
@@ -2516,18 +2772,38 @@ const newFmSecondary = `fmSecondary: () => {
         }
         if (s.modal === 'motor') {
           const tavir = (typeof window !== 'undefined' && window.tavir) || null;
-          if (tavir && tavir.engines && tavir.engines.detect) {
-            tavir.engines.detect().then(function(list) {
-              const mName = (s.mdata && s.mdata.name) || 'Motor';
-              const found = (list || []).find(function(x) { return x.name.toLowerCase() === mName.toLowerCase(); });
-              if (found) {
-                self.setState({ form: Object.assign({}, self.state.form, { sdk_path: found.path }) });
-                self.say('SDK Local Validado', found.detail);
-              }
-            });
-          } else {
-            self.say('SDK Local Validado', 'Instalação local encontrada e apontada com sucesso.');
+          const mName = (s.mdata && s.mdata.name) || 'Cursor';
+          const nameToId = { Cursor: 'cursor', Claude: 'claude', Codex: 'codex', Antigravity: 'antigravity' };
+          const engineId = nameToId[mName] || String(mName).toLowerCase();
+          if (!tavir || !tavir.engines || !tavir.engines.login) {
+            self.say('Login do motor', 'IPC de login indisponível. Reinicie o Escritório.');
+            return;
           }
+          self.say('Abrindo login…', 'Aguarde o fluxo do ' + mName + '.');
+          tavir.engines.login(engineId).then(function(res) {
+            if (res && res.loggedIn) {
+              self.say('Login ok', mName + ' já autenticado nesta máquina.');
+            } else if (res && res.url) {
+              self.say('Login aberto', 'Confirme no navegador e volte para testar a Íris com ' + mName + '.');
+            } else if (res && res.opened) {
+              self.say('Login em andamento', (res && res.message) || ('Siga as instruções do ' + mName + '.'));
+            } else {
+              self.say('Login', (res && res.message) || ('Não consegui abrir o login do ' + mName + '.'));
+            }
+            if (tavir.engines.detect) {
+              tavir.engines.detect().then(function(list) {
+                if (Array.isArray(list) && list.length) {
+                  self.setState({
+                    detectedMotors: list.map(function(e) {
+                      return [e.name, e.detail || '', !!e.installed];
+                    })
+                  });
+                }
+              }).catch(function() {});
+            }
+          }).catch(function(err) {
+            self.say('Login falhou', String(err && err.message || err));
+          });
           return;
         }
         self.say('Login do motor', 'Conectado via instalação e SDK local da máquina.');
@@ -2535,7 +2811,7 @@ const newFmSecondary = `fmSecondary: () => {
       },`;
 if (templateHtml.includes(origFmSecondary)) {
   templateHtml = templateHtml.replace(origFmSecondary, newFmSecondary);
-  console.log('fmSecondary conectado ao seletor nativo de pastas (Product Lab) e detecção de SDK!');
+  console.log('fmSecondary conectado ao login real dos motores e seletor de pastas!');
 }
 
 const origSubmitProject = "if (id === 'project') this.log('Carlos', 'criou o projeto ' + v('name', '') + ' · trilho ' + v('track', 'Landing'));";
@@ -2648,6 +2924,47 @@ const newSubmitProjectAndFactory = `if (id === 'factory-delete') {
 if (templateHtml.includes(origSubmitProject)) {
   templateHtml = templateHtml.replace(origSubmitProject, newSubmitProjectAndFactory);
   console.log("submitForm atualizado para criar/absorver esteira real e excluir projeto com opção de arquivos locais!");
+}
+
+const origMotorDone = "if (sp.done) this.say(sp.done[0], sp.done[1]);";
+const newMotorDone = `if (id === 'motor') {
+      const mName = (s.mdata && s.mdata.name) || 'Cursor';
+      const nameToId = { Cursor: 'cursor', Claude: 'claude', Codex: 'codex', Antigravity: 'antigravity' };
+      const engineId = nameToId[mName] || String(mName).toLowerCase();
+      const apiKey = String(v('key', '') || '').trim();
+      const baseUrl = String(v('base_url', '') || '').trim();
+      const makeDefault = !!(self.state.form && (self.state.form.def === true || self.state.form.def === 'true'));
+      const tavir = (typeof window !== 'undefined' && window.tavir) || null;
+      const finishMotor = function(msgTitle, msgBody) {
+        if (makeDefault && tavir && tavir.engines && tavir.engines.updateSettings) {
+          tavir.engines.updateSettings({ defaultEngine: engineId }).catch(function() {});
+        }
+        if (sp.done) self.say(msgTitle || sp.done[0], msgBody || sp.done[1]);
+        else self.say(msgTitle || 'Motor salvo', msgBody || mName);
+        self.close();
+      };
+      if (apiKey && tavir && tavir.engines && tavir.engines.saveKey) {
+        tavir.engines.saveKey({ engineId: engineId, apiKey: apiKey, baseUrl: baseUrl || undefined }).then(function(res) {
+          finishMotor(res && res.ok ? 'Cofre atualizado' : 'Cofre', (res && res.message) || ('Chave do ' + mName + ' processada.'));
+          if (tavir.engines.detect) {
+            tavir.engines.detect().then(function(list) {
+              if (Array.isArray(list) && list.length) {
+                window.dispatchEvent(new CustomEvent('tavir:motors-updated', { detail: { list: list } }));
+              }
+            }).catch(function() {});
+          }
+        }).catch(function(err) {
+          self.say('Cofre', String(err && err.message || err));
+        });
+        return;
+      }
+      finishMotor('Motor configurado', apiKey ? ('Chave do ' + mName + ' anotada.') : (mName + ' usa o login/SDK local. Use «Entrar com login» se ainda não autenticou.'));
+      return;
+    }
+    if (sp.done) this.say(sp.done[0], sp.done[1]);`;
+if (templateHtml.includes(origMotorDone)) {
+  templateHtml = templateHtml.replace(origMotorDone, newMotorDone);
+  console.log('submitForm do motor conectado ao cofre (engines:saveKey)!');
 }
 
 // ==========================================

@@ -35,12 +35,16 @@ const api: TavirApi = {
         const pathMod = require('node:path');
         const home = os.homedir();
         return [
-          { id: 'cursor', name: 'Cursor', installed: true, sdk: true, loggedIn: true, path: pathMod.join(home, '.cursor'), detail: 'SDK local detectado · ~/.cursor' },
-          { id: 'claude', name: 'Claude', installed: true, sdk: true, loggedIn: true, path: pathMod.join(home, '.claude'), detail: 'SDK local detectado · ~/.claude' },
-          { id: 'codex', name: 'Codex', installed: true, sdk: true, loggedIn: true, path: pathMod.join(home, '.codex'), detail: 'SDK local detectado · ~/.codex' },
-          { id: 'antigravity', name: 'Antigravity', installed: true, sdk: true, loggedIn: true, path: pathMod.join(home, '.gemini', 'antigravity'), detail: 'SDK local detectado · ~/.gemini/antigravity' },
+          { id: 'cursor', name: 'Cursor', installed: true, sdk: true, loggedIn: false, hasKey: false, path: pathMod.join(home, '.cursor'), detail: 'Detecção indisponível' },
+          { id: 'claude', name: 'Claude', installed: true, sdk: true, loggedIn: false, hasKey: false, path: pathMod.join(home, '.claude'), detail: 'Detecção indisponível' },
+          { id: 'codex', name: 'Codex', installed: true, sdk: true, loggedIn: false, hasKey: false, path: pathMod.join(home, '.codex'), detail: 'Detecção indisponível' },
+          { id: 'antigravity', name: 'Antigravity', installed: true, sdk: true, loggedIn: false, hasKey: false, path: pathMod.join(home, '.gemini', 'antigravity'), detail: 'Detecção indisponível' },
         ];
       }),
+    login: (engineId: string) => ipcRenderer.invoke('engines:login', engineId),
+    saveKey: (payload: { engineId: string; apiKey?: string; baseUrl?: string }) =>
+      ipcRenderer.invoke('engines:saveKey', payload),
+    keyStatus: (engineId?: string) => ipcRenderer.invoke('engines:keyStatus', engineId),
   },
   jobs: {
     list: () => ipcRenderer.invoke('jobs:list'),
@@ -48,6 +52,7 @@ const api: TavirApi = {
     pause: (id: string) => ipcRenderer.invoke('jobs:pause', id),
     resume: (id: string) => ipcRenderer.invoke('jobs:resume', id),
     cancel: (id: string) => ipcRenderer.invoke('jobs:cancel', id),
+    logs: () => ipcRenderer.invoke('jobs:logs').catch(() => ({})),
   },
   tasks: {
     list: () => {
@@ -156,9 +161,64 @@ const api: TavirApi = {
         return getProjectChatHistory(idOrPath);
       }),
     askIris: (params: any) =>
-      ipcRenderer.invoke('projects:askIris', params).catch(() => {
+      ipcRenderer.invoke('projects:askIris', params).catch(async () => {
         const { askProjectIris } = require('../main/project-fs');
         return askProjectIris(params);
+      }),
+    getAlterationsControl: (idOrPath: string) =>
+      ipcRenderer.invoke('projects:getAlterationsControl', idOrPath).catch(() => {
+        const { getProjectAlterationsControl } = require('../main/project-fs');
+        return getProjectAlterationsControl(idOrPath);
+      }),
+    setAlterationsOpen: (idOrPath: string, open: boolean) =>
+      ipcRenderer.invoke('projects:setAlterationsOpen', idOrPath, open).catch(() => {
+        const { setProjectAlterationsOpen } = require('../main/project-fs');
+        return setProjectAlterationsOpen(idOrPath, open);
+      }),
+    clearAltTrackFault: (idOrPath: string) =>
+      ipcRenderer.invoke('projects:clearAltTrackFault', idOrPath).catch(() => {
+        const { clearProjectAltTrackFault } = require('../main/project-fs');
+        return clearProjectAltTrackFault(idOrPath);
+      }),
+    advanceAltTrack: (idOrPath: string, fromStep?: number) =>
+      ipcRenderer.invoke('projects:advanceAltTrack', idOrPath, fromStep).catch(() => {
+        const { advanceProjectAltTrack } = require('../main/project-fs');
+        return advanceProjectAltTrack(idOrPath, fromStep);
+      }),
+    closeAltTrackItem: (idOrPath: string, fromStep?: number) =>
+      ipcRenderer.invoke('projects:closeAltTrackItem', idOrPath, fromStep).catch(() => {
+        const { closeProjectAltTrackItem } = require('../main/project-fs');
+        return closeProjectAltTrackItem(idOrPath, fromStep);
+      }),
+    startAltTrackCycle: (idOrPath: string) =>
+      ipcRenderer.invoke('projects:startAltTrackCycle', idOrPath).catch(() => {
+        const { startNewAltTrackCycle } = require('../main/project-fs');
+        return startNewAltTrackCycle(idOrPath);
+      }),
+    saveAltTrackNote: (idOrPath: string, index: number, text: string) =>
+      ipcRenderer.invoke('projects:saveAltTrackNote', idOrPath, index, text).catch(() => {
+        const { saveProjectAltTrackNote } = require('../main/project-fs');
+        return saveProjectAltTrackNote(idOrPath, index, text);
+      }),
+    setAltTrackStep: (idOrPath: string, step: number) =>
+      ipcRenderer.invoke('projects:setAltTrackStep', idOrPath, step).catch(() => {
+        const { setProjectAltTrackStep } = require('../main/project-fs');
+        return setProjectAltTrackStep(idOrPath, step);
+      }),
+    setAltTrackAuto: (idOrPath: string, auto: boolean) =>
+      ipcRenderer.invoke('projects:setAltTrackAuto', idOrPath, auto).catch(() => {
+        const { setProjectAltTrackAuto } = require('../main/project-fs');
+        return setProjectAltTrackAuto(idOrPath, auto);
+      }),
+    approveAltTrack: (idOrPath: string) =>
+      ipcRenderer.invoke('projects:approveAltTrack', idOrPath).catch(() => {
+        const { approveAltTrackGate } = require('../main/project-fs');
+        return approveAltTrackGate(idOrPath);
+      }),
+    runAltTrack: (idOrPath: string, step?: number) =>
+      ipcRenderer.invoke('projects:runAltTrack', idOrPath, step).catch(() => {
+        const { executeAltTrackStep } = require('../main/project-fs');
+        return executeAltTrackStep(idOrPath, undefined, step);
       }),
     runWithThinking: (params: any) =>
       ipcRenderer.invoke('projects:runWithThinking', params).catch(() => {

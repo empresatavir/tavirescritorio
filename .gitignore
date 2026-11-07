@@ -43,6 +43,7 @@ frontend/.vite/
 .env
 .env.*
 backend/data/engine_secrets.json
+db/engine_secrets.json
 !.env.example
 
 # IDE

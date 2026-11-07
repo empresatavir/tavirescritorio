@@ -23,6 +23,7 @@ export interface JobItem {
   ceiling: number;
   started: string;
   tokens: string;
+  error?: string;
 }
 
 export interface TaskItem {
@@ -115,6 +116,37 @@ export interface FactoryProjectItem {
   local_path?: string | null;
   stack?: string | null;
   description?: string | null;
+  alterations_open?: boolean;
+}
+
+export interface AltTrackState {
+  active: boolean;
+  step: number;
+  title: string;
+  updated_at?: string;
+  notes?: { map?: string; plan?: string; fix?: string; build?: string };
+  auto?: boolean;
+  runStatus?: 'idle' | 'running' | 'waiting' | 'done';
+  waitingQuestion?: string;
+  runLog?: string[];
+  runError?: string;
+  runJobId?: string;
+  checkpoint?: { step: number; itemId: string; label: string; at: string; reason: string; partial: string } | null;
+  items?: Array<{ id: string; label: string; owner: string; skill: string; kind?: string; note?: string }>;
+  cycles?: Array<{ closed_at: string; title: string; items: Array<{ id: string; label: string; note?: string }> }>;
+}
+
+export interface ProjectAlterationsControl {
+  ok: boolean;
+  rootPath?: string;
+  projectId?: string;
+  projectName?: string;
+  status?: string;
+  finished?: boolean;
+  alterations_open: boolean;
+  chat_unlocked: boolean;
+  alt_track?: AltTrackState;
+  error?: string;
 }
 
 export interface CreateFactoryProjectParams {
@@ -146,6 +178,25 @@ export interface DetectedEngineInfo {
   loggedIn: boolean;
   path: string;
   detail: string;
+  hasKey?: boolean;
+}
+
+export interface MotorLoginResult {
+  ok: boolean;
+  loggedIn: boolean;
+  pending: boolean;
+  opened: boolean;
+  url: string | null;
+  error: string | null;
+  message: string;
+  engine: string;
+}
+
+export interface MotorKeySaveResult {
+  ok: boolean;
+  hasKey: boolean;
+  message: string;
+  engine: string;
 }
 
 export interface TavirApi {
@@ -166,6 +217,18 @@ export interface TavirApi {
     getSettings: () => Promise<EngineSettings>;
     updateSettings: (settings: Partial<EngineSettings>) => Promise<EngineSettings>;
     detect: () => Promise<DetectedEngineInfo[]>;
+    login: (engineId: string) => Promise<MotorLoginResult>;
+    saveKey: (payload: {
+      engineId: string;
+      apiKey?: string;
+      baseUrl?: string;
+    }) => Promise<MotorKeySaveResult>;
+    keyStatus: (
+      engineId?: string,
+    ) => Promise<
+      | { engine: string; hasKey: boolean; baseUrl: string }
+      | Array<{ engine: string; hasKey: boolean; baseUrl: string }>
+    >;
     getCatalog: () => Promise<{
       settings: EngineSettings;
       engines: Array<{
@@ -185,6 +248,7 @@ export interface TavirApi {
     pause: (id: string) => Promise<void>;
     resume: (id: string) => Promise<void>;
     cancel: (id: string) => Promise<void>;
+    logs: () => Promise<Record<string, Array<{ ts: string; lvl: string; cls: string; text: string }>>>;
   };
   tasks: {
     list: () => Promise<TaskItem[]>;
@@ -212,6 +276,17 @@ export interface TavirApi {
     readFile: (filePath: string) => Promise<{ ok: boolean; content?: string; size?: number }>;
     getChat: (idOrPath: string) => Promise<any>;
     askIris: (params: any) => Promise<any>;
+    getAlterationsControl: (idOrPath: string) => Promise<ProjectAlterationsControl>;
+    setAlterationsOpen: (idOrPath: string, open: boolean) => Promise<ProjectAlterationsControl>;
+    setAltTrackStep: (idOrPath: string, step: number) => Promise<ProjectAlterationsControl>;
+    saveAltTrackNote: (idOrPath: string, index: number, text: string) => Promise<ProjectAlterationsControl>;
+    clearAltTrackFault: (idOrPath: string) => Promise<ProjectAlterationsControl>;
+    advanceAltTrack: (idOrPath: string, fromStep?: number) => Promise<ProjectAlterationsControl>;
+    closeAltTrackItem: (idOrPath: string, fromStep?: number) => Promise<ProjectAlterationsControl>;
+    startAltTrackCycle: (idOrPath: string) => Promise<ProjectAlterationsControl>;
+    setAltTrackAuto: (idOrPath: string, auto: boolean) => Promise<ProjectAlterationsControl>;
+    approveAltTrack: (idOrPath: string) => Promise<ProjectAlterationsControl>;
+    runAltTrack: (idOrPath: string, step?: number) => Promise<ProjectAlterationsControl & { needsApproval?: boolean; continued?: boolean; reply?: string }>;
     runWithThinking: (params: any) => Promise<any>;
   };
   agents: {

@@ -272,6 +272,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
     <button class="link" onClick="{{back}}">← Painel</button>
     <span class="muted">/</span><span style="font-size: 14px; font-weight: 600">{{P.name}}</span>
     <div class="grow"></div>
+    <sc-if value="{{P.showAltToggle}}" hint-placeholder-val="{{false}}"><button class="btn sm {{P.altBtnCls}}" onClick="{{toggleAlterations}}">{{P.altBtnLabel}}</button></sc-if>
     <button class="btn sm ghost" onClick="{{askChange}}">Pedir alteração</button>
     <button class="btn sm secondary" onClick="{{openChat}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14v11H9l-4 3z"></path></svg>Íris</button>
     <div style="position: relative">
@@ -280,22 +281,24 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
     </div>
   </div>
 
-  <section class="ink" style="padding: 22px 24px; display: flex; gap: 22px; flex-wrap: wrap; align-items: stretch">
-    <div style="flex: 2 1 380px; display: flex; flex-direction: column; gap: 10px; min-width: 0">
-      <div style="display: flex; gap: 6px; flex-wrap: wrap"><span class="badge">{{P.code}}</span><span class="badge {{P.cls}}"><i></i>{{P.state}}</span><span class="badge {{P.gCls}}">Guard {{P.gN}}/8</span><span class="badge">{{P.due}}</span><span class="badge flow"><i></i>Git/.env isolado · {{P.git}}</span><span class="badge flow">{{P.cap}}</span></div>
-      <h1 style="font-size: 28px; font-weight: 600; letter-spacing: -.03em; line-height: 1.1">{{P.name}}</h1>
-      <div style="font-size: 13px; color: var(--on-ink-muted)">{{P.kind}} · {{P.client}} · esteira {{P.line}}</div>
-      <div class="fb-path"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h6l2 2h10v10H3z"></path></svg><code>{{P.path}}</code><button class="btn sm onink-sec" onClick="{{copyPath}}">Copiar</button><button class="btn sm onink-sec" onClick="{{openExplorer}}">Abrir no Explorer</button><button class="btn sm onink-sec" onClick="{{toWorkspace}}">Estrutura</button></div>
-      <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 6px"><sc-for list="{{P.tags}}" as="g" hint-placeholder-count="4"><span class="fb-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{g.icon}}"></path></svg>{{g.t}}</span></sc-for></div>
+  <section class="ink" style="padding: 18px 22px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
+      <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; gap: 6px; flex-wrap: wrap"><span class="badge">{{P.code}}</span><span class="badge {{P.cls}}"><i></i>{{P.state}}</span><span class="badge {{P.gCls}}">Guard {{P.gN}}/8</span><span class="badge">{{P.due}}</span><span class="badge flow"><i></i>Git/.env isolado · {{P.git}}</span><span class="badge flow">{{P.cap}}</span><sc-if value="{{showAltTrack}}" hint-placeholder-val="{{false}}"><span class="badge flow"><i></i>Trilho de alteração · ativo</span></sc-if></div>
+        <h1 style="font-size: 28px; font-weight: 600; letter-spacing: -.03em; line-height: 1.1">{{P.name}}</h1>
+        <div style="font-size: 13px; color: var(--on-ink-muted)">{{P.kind}} · {{P.client}} · esteira {{P.line}}</div>
+        <div class="fb-path"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h6l2 2h10v10H3z"></path></svg><code>{{P.path}}</code><button class="btn sm onink-sec" onClick="{{copyPath}}">Copiar</button><button class="btn sm onink-sec" onClick="{{openExplorer}}">Abrir no Explorer</button><button class="btn sm onink-sec" onClick="{{toWorkspace}}">Estrutura</button></div>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center; flex: none"><button class="btn sm onink-sec" onClick="{{togglePause}}" disabled="{{P.isDone}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{P.pauseIcon}}"></path></svg>{{P.pauseLbl}}</button></div>
     </div>
-    <div style="flex: 1 1 480px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; align-content: center">
+    <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px">
       <div class="fb-hm"><span class="fb-ring" style="width: 48px; height: 48px; background: conic-gradient(#B7F34A 0 {{P.pct}}%, rgba(244,246,242,.12) 0)"><i style="width: 38px; height: 38px; background: #0B1220; color: #F4F6F2; font-size: 11px">{{P.pct}}%</i></span><small>Progresso</small></div>
       <button class="fb-hm" onClick="{{toEsteira}}"><b class="num">{{P.done}}<span>/{{P.n}}</span></b><small>Etapas</small></button>
       <button class="fb-hm" onClick="{{toGuard}}"><b class="num" style="color: {{P.gCol}}">{{P.gN}}<span>/8</span></b><small>Guard</small></button>
       <button class="fb-hm" onClick="{{toGeral}}"><b class="num" style="color: {{P.pCol}}">{{P.pendN}}</b><small>Pendências</small></button>
       <div class="fb-hm"><b class="num" style="font-size: 15px">US$ {{P.spent}}</b><div style="width: 76%; height: 4px; border-radius: 999px; background: rgba(244,246,242,.12); overflow: hidden; flex: none"><div style="height: 100%; width: {{P.costPct}}%; background: #1BC5BD"></div></div><small>de US$ {{P.budget}}</small></div>
     </div>
-    <div style="display: flex; flex-direction: column; gap: 8px; justify-content: center"><button class="btn sm onink-sec" onClick="{{togglePause}}" disabled="{{P.isDone}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{P.pauseIcon}}"></path></svg>{{P.pauseLbl}}</button></div>
+    <div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{P.tags}}" as="g" hint-placeholder-count="4"><span class="fb-chip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{g.icon}}"></path></svg>{{g.t}}</span></sc-for></div>
   </section>
 
   <sc-if value="{{P.paused}}" hint-placeholder-val="{{false}}">
@@ -308,6 +311,18 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
   <sc-if value="{{pt.geral}}" hint-placeholder-val="{{true}}">
   <div style="display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; animation: fade 200ms var(--ease) both">
     <div style="flex: 2 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+      <sc-if value="{{altTrack.liveShow}}" hint-placeholder-val="{{false}}">
+        <section class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; border-color: {{altTrack.liveBd}}">
+          <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+            <sc-if value="{{altTrack.liveRun}}" hint-placeholder-val="{{false}}"><i class="spin" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i></sc-if>
+            <div class="grow" style="min-width: 180px"><div class="eyebrow">Execução do trilho</div><b style="font-size: 15px">{{altTrack.liveTitle}}</b></div>
+            <span class="badge {{altTrack.liveCls}}"><i></i>{{altTrack.liveStatus}}</span>
+            <button class="btn sm ghost" onClick="{{toTrilho}}">Abrir no trilho</button>
+          </div>
+          <sc-if value="{{altTrack.liveErr}}" hint-placeholder-val="{{false}}"><div class="fb-warn"><span class="grow">{{altTrack.liveError}}<sc-if value="{{altTrack.hasCheckpoint}}" hint-placeholder-val="{{false}}"><span style="display: block; margin-top: 4px">Há um checkpoint desta etapa. A nova tentativa continua dali.</span></sc-if></span><button type="button" class="btn sm primary" onClick="{{altTrack.run}}">{{altTrack.retryLbl}}</button><sc-if value="{{altTrack.showNext}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.advance}}">{{altTrack.nextLbl}}</button></sc-if></div></sc-if>
+          <div class="fb-log" style="max-height: 220px"><div class="fb-ls"><sc-for list="{{altTrack.liveLines}}" as="l" hint-placeholder-count="3"><div class="fb-ll" style="border-left-color: {{l.bd}}"><div style="display: block; white-space: pre-wrap; overflow-wrap: break-word; font-size: 12px; line-height: 1.45; color: {{l.fg}}">{{l.t}}</div></div></sc-for></div></div>
+        </section>
+      </sc-if>
       <section class="card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px; border-color: {{cs.bd}}">
         <div style="display: flex; gap: 14px; align-items: center">
           <span style="width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; background: {{cs.ibg}}; color: {{cs.ifg}}; animation: {{cs.anim}}; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{cs.icon}}"></path></svg></span>
@@ -445,21 +460,92 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
   </section>
   </sc-if>
 
+  <!-- TRILHO DE ALTERAÇÃO (pós-handoff) -->
+  <sc-if value="{{pt.trilho}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="animation: fade 200ms var(--ease) both; overflow: hidden">
+      <div class="card-h" style="flex-wrap: wrap">
+        <div class="grow" style="min-width: 220px">
+          <div class="eyebrow">Pós-handoff · esteira original encerrada</div>
+          <h3 style="margin-top: 4px">{{altTrack.title}}</h3>
+        </div>
+        <span class="badge {{altTrack.badgeCls}}"><i></i>{{altTrack.badge}}</span>
+        <sc-if value="{{P.showAltToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm {{altTrack.autoCls}}" onClick="{{altTrack.toggleAuto}}" disabled="{{altTrack.locked}}">{{altTrack.autoLbl}}</button></sc-if>
+        <sc-if value="{{P.showAltToggle}}" hint-placeholder-val="{{false}}"><button class="btn sm {{P.altBtnCls}}" onClick="{{toggleAlterations}}">{{P.altBtnLabel}}</button></sc-if>
+      </div>
+      <p class="muted" style="padding: 0 18px 12px; margin: 0; font-size: 13px; line-height: 1.45">{{altTrack.lead}}</p>
+      <sc-if value="{{altTrack.liveShow}}" hint-placeholder-val="{{false}}">
+        <div style="margin: 0 18px 14px; padding: 12px 14px; border-radius: 12px; border: 1px solid {{altTrack.liveBd}}; background: var(--surface-0); display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+            <sc-if value="{{altTrack.liveRun}}" hint-placeholder-val="{{false}}"><i class="spin" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i></sc-if>
+            <b style="font-size: 13.5px" class="grow">{{altTrack.liveTitle}}</b>
+            <span class="badge {{altTrack.liveCls}}"><i></i>{{altTrack.liveStatus}}</span>
+          </div>
+          <sc-if value="{{altTrack.liveErr}}" hint-placeholder-val="{{false}}"><div style="font-size: 13px; color: var(--danger)">{{altTrack.liveError}}</div><sc-if value="{{altTrack.hasCheckpoint}}" hint-placeholder-val="{{false}}"><div style="font-size: 12.5px; color: var(--text-secondary)">Há um checkpoint desta etapa. A nova tentativa continua dali.</div></sc-if><div style="display: flex; gap: 8px; flex-wrap: wrap"><button type="button" class="btn sm primary" onClick="{{altTrack.run}}">{{altTrack.retryLbl}}</button><sc-if value="{{altTrack.showNext}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.advance}}">{{altTrack.nextLbl}}</button></sc-if><button type="button" class="btn sm secondary" onClick="{{altTrack.dismiss}}">Dispensar falha</button></div></sc-if>
+          <div style="max-height: 240px; overflow: auto; display: flex; flex-direction: column; gap: 6px"><sc-for list="{{altTrack.liveLines}}" as="l" hint-placeholder-count="3"><div style="font-size: 12.5px; line-height: 1.45; color: {{l.fg}}; border-left: 2px solid {{l.bd}}; padding-left: 8px; white-space: pre-wrap; overflow-wrap: break-word">{{l.t}}</div></sc-for></div>
+        </div>
+      </sc-if>
+      <div class="rows">
+        <sc-for list="{{altTrack.steps}}" as="v" hint-placeholder-count="4">
+          <button type="button" class="row" onClick="{{v.pick}}" style="cursor: pointer; gap: 14px; background: {{v.rowBg}}; width: 100%; text-align: left; border: 0; color: inherit">
+            <span class="fb-nb" style="background: {{v.bg}}; color: {{v.fg}}; border: 1px solid {{v.bd}}">{{v.n}}</span>
+            <div class="grow" style="min-width: 0"><div class="t" style="font-size: 14px; color: {{v.tc}}">{{v.t}}</div><div class="m">{{v.who}} · <span class="mono" style="font-size: 11px">{{v.skill}}</span></div></div>
+            <span class="badge {{v.cls}}"><i></i>{{v.st}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <sc-if value="{{altTrack.waiting}}" hint-placeholder-val="{{false}}"><div style="margin: 0 18px 12px; padding: 12px 14px; border-radius: 10px; background: var(--warning-subtle); border: 1px solid var(--warning); font-size: 13.5px; line-height: 1.45"><b>Precisa da sua decisão.</b> {{altTrack.waitingQuestion}}<div style="margin-top: 10px"><button type="button" class="btn sm primary" onClick="{{altTrack.approve}}">Aprovar e seguir</button></div></div></sc-if>
+      <sc-if value="{{altTrack.hasCheckpoint}}" hint-placeholder-val="{{false}}"><div style="margin: 0 18px 12px; padding: 12px 14px; border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); font-size: 13px; line-height: 1.45; color: var(--text-secondary)"><b style="color: var(--text-primary)">Checkpoint · {{altTrack.checkpointAt}}</b><div style="margin-top: 4px">{{altTrack.checkpointHint}}</div></div></sc-if>
+      <div style="padding: 16px 18px; border-top: 1px solid var(--line); display: flex; gap: 14px; align-items: center; flex-wrap: wrap">
+        <span class="av" style="width: 40px; height: 40px; font-size: 11px; flex: none">{{altTrack.sel.ini}}</span>
+        <div class="grow" style="min-width: 200px">
+          <div class="eyebrow">{{altTrack.focusEyebrow}} · {{altTrack.sel.n}}</div>
+          <h2 style="font-size: 18px; font-weight: 600; margin-top: 4px">{{altTrack.sel.label}}</h2>
+          <div class="muted" style="font-size: 12.5px; margin-top: 4px">{{altTrack.sel.owner}} · {{altTrack.sel.skill}}</div>
+        </div>
+        <button type="button" class="btn sm secondary" onClick="{{altTrack.openCurrent}}" disabled="{{altTrack.locked}}">Abrir foco atual</button>
+        <sc-if value="{{altTrack.showIris}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.ask}}" disabled="{{altTrack.locked}}">Pedir à Íris neste foco</button></sc-if>
+        <sc-if value="{{altTrack.showRun}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm {{altTrack.runCls}}" onClick="{{altTrack.run}}" disabled="{{altTrack.running}}">{{altTrack.runLbl}}</button></sc-if>
+        <sc-if value="{{altTrack.showNext}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm primary" onClick="{{altTrack.advance}}" disabled="{{altTrack.locked}}">{{altTrack.nextLbl}}</button></sc-if>
+        <sc-if value="{{altTrack.showGoBuild}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.goBuild}}" disabled="{{altTrack.locked}}">Ir para validação e build</button></sc-if>
+        <sc-if value="{{altTrack.showClose}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.closeItem}}" disabled="{{altTrack.locked}}">{{altTrack.closeLbl}}</button></sc-if>
+        <sc-if value="{{altTrack.showRerun}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.run}}" disabled="{{altTrack.running}}">Rodar validação de novo</button></sc-if>
+        <sc-if value="{{altTrack.showNewCycle}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm primary" onClick="{{altTrack.newCycle}}" disabled="{{altTrack.locked}}">Novo mapeamento de gaps</button></sc-if>
+      </div>
+      <div style="padding: 0 18px 8px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.45">{{altTrack.sel.note}}</div>
+      <sc-if value="{{altTrack.hasBase}}" hint-placeholder-val="{{false}}"><div style="margin: 0 18px 10px"><div class="eyebrow" style="margin-bottom: 6px">Entra nesta etapa · {{altTrack.baseFrom}}</div><pre class="mono" style="margin: 0; padding: 12px; max-height: 140px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: var(--surface-0); border: 1px solid var(--line); border-radius: 10px; color: var(--text-secondary)">{{altTrack.basePreview}}</pre></div></sc-if>
+      <sc-if value="{{altTrack.hasPack}}" hint-placeholder-val="{{false}}"><div style="margin: 0 18px 16px"><div class="eyebrow" style="margin-bottom: 6px">Produzido nesta etapa</div><pre class="mono" style="margin: 0; padding: 12px; max-height: 160px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: var(--surface-0); border: 1px solid var(--line); border-radius: 10px; color: var(--text-secondary)">{{altTrack.preview}}</pre></div></sc-if>
+    </section>
+  </sc-if>
+
   <!-- ESTEIRA (demais projetos) -->
   <sc-if value="{{pt.esteiraG}}" hint-placeholder-val="{{false}}">
     <section class="card" style="animation: fade 200ms var(--ease) both">
       <div class="card-h"><h3>Esteira {{P.line}} · {{P.n}} etapas</h3><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>concluída</span><span><i style="background: var(--warning)"></i>agora</span><span><i style="background: var(--line-strong)"></i>a seguir</span></div></div>
+      <p class="muted" style="padding: 0 18px 10px; font-size: 12.5px; margin: 0">Clique numa etapa/gate para ver responsável, escopo e o que dá para pedir à Íris.</p>
       <div class="rows">
         <sc-for list="{{gsteps}}" as="v" hint-placeholder-count="10">
-          <div class="row" style="cursor: default; gap: 14px; background: {{v.rowBg}}">
+          <button type="button" class="row" onClick="{{v.pick}}" style="cursor: pointer; gap: 14px; background: {{v.rowBg}}; width: 100%; text-align: left; border: 0; color: inherit">
             <span class="fb-nb" style="background: {{v.bg}}; color: {{v.fg}}; border: 1px solid {{v.bd}}">{{v.n}}</span>
             <div class="grow" style="min-width: 0"><div class="t" style="font-size: 14px; color: {{v.tc}}">{{v.t}}</div><div class="m">{{v.who}} · <span class="mono" style="font-size: 11px">{{v.skill}}</span></div></div>
             <span class="num muted" style="font-size: 11px">{{v.when}}</span>
             <span class="badge {{v.cls}}"><i></i>{{v.st}}</span>
-            <sc-if value="{{v.hasAct}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{v.act}}" disabled="{{v.dis}}">{{v.actLbl}}</button></sc-if>
-          </div>
+            <sc-if value="{{v.hasAct}}" hint-placeholder-val="{{false}}"><span class="btn sm secondary" style="pointer-events: none">{{v.actLbl}}</span></sc-if>
+          </button>
         </sc-for>
       </div>
+    </section>
+    <section class="card" style="margin-top: 14px; animation: fade 200ms var(--ease) both; overflow: hidden">
+      <div style="padding: 16px 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap">
+        <span class="av" style="width: 40px; height: 40px; font-size: 11px; flex: none">{{gSel.ini}}</span>
+        <div class="grow" style="min-width: 200px">
+          <div class="eyebrow">Etapa {{gSel.n}} · {{gSel.state}}</div>
+          <h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.02em; margin-top: 4px">{{gSel.label}}</h2>
+          <div class="muted" style="font-size: 12.5px; margin-top: 4px">{{gSel.owner}} · {{gSel.skill}} · {{gSel.when}}</div>
+        </div>
+        <span class="badge {{gSel.cls}}"><i></i>{{gSel.state}}</span>
+        <button type="button" class="btn sm secondary" onClick="{{gSel.ask}}">Pedir à Íris nesta etapa</button>
+      </div>
+      <div style="padding: 0 18px 16px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.45">{{gSel.note}}</div>
     </section>
   </sc-if>
 
@@ -931,7 +1017,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
       <div class="grow" style="min-width: 0"><div style="display: flex; gap: 8px; align-items: center"><b style="font-size: 14px">Íris</b><span class="badge flow" style="height: 18px">{{iris.cap}}</span></div><div style="font-size: 12px; color: var(--on-ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{iris.ctx}}</div></div>
       <button class="ibtn sm" onClick="{{closeChat}}" aria-label="Fechar Íris" style="border-color: var(--on-ink-line); color: var(--on-ink-muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
     </div>
-    <div style="padding: 8px 14px; border-bottom: 1px solid var(--line); display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span class="eyebrow" style="font-size: 10px">Motor</span><div class="segs"><sc-for list="{{iris.engines}}" as="e" hint-placeholder-count="4"><button class="seg {{e.on}}" onClick="{{e.pick}}" style="height: 24px; font-size: 11px; padding: 0 9px; opacity: {{e.op}}">{{e.label}}</button></sc-for></div><div class="grow"></div><span class="badge warn">não reabre a esteira</span></div>
+    <div style="padding: 8px 14px; border-bottom: 1px solid var(--line); display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span class="eyebrow" style="font-size: 10px">Motor</span><div class="segs"><sc-for list="{{iris.engines}}" as="e" hint-placeholder-count="4"><button class="seg {{e.on}}" onClick="{{e.pick}}" style="height: 24px; font-size: 11px; padding: 0 9px; opacity: {{e.op}}">{{e.label}}</button></sc-for></div><div class="grow"></div><span class="badge {{altBadgeCls}}">{{altBadge}}</span><sc-if value="{{P.showAltToggle}}" hint-placeholder-val="{{false}}"><button class="btn sm {{P.altBtnCls}}" onClick="{{toggleAlterations}}" style="height: 24px; font-size: 11px; padding: 0 9px">{{P.altBtnShort}}</button></sc-if></div>
     <div style="flex: 1; overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px">
       <sc-for list="{{iris.msgs}}" as="m" hint-placeholder-count="3">
         <div class="bubble {{m.cls}}" style="font-size: 13px; max-width: 90%">
@@ -946,6 +1032,31 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
       <form onSubmit="{{send}}" style="display: flex; gap: 8px"><input class="input" style="border-radius: 999px; height: 40px" value="{{draft}}" onChange="{{onDraft}}" placeholder="Pergunte ou peça um ajuste à Íris" aria-label="Mensagem para a Íris"><button type="submit" class="ibtn" aria-label="Enviar" style="background: var(--action-bg); color: var(--action-fg); border: 0; flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 20 4l-6 16-3-7z"></path></svg></button></form>
     </div>
   </section>
+</sc-if>
+
+<!-- pedir alteração -->
+<sc-if value="{{chgOpen}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{chgBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Pedir alteração">
+    <div class="mhead"><span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg></span><div class="grow"><div class="eyebrow">Íris · agentes</div><h2>Pedir alteração</h2><p>O pedido vai ao chat com o motor ativo e é absorvido em memória. A esteira não recomeça.</p></div></div>
+    <div class="mbody"><label class="field"><span>O que mudar</span><textarea class="input" rows="5" value="{{chgDraft}}" onChange="{{onChgDraft}}" placeholder="Ex.: ajustar hero em 390 px e atualizar o runbook" style="resize: vertical; min-height: 120px; border-radius: 12px"></textarea></label></div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{chgClose}}">Cancelar</button><button class="btn primary" onClick="{{chgSend}}">Mandar para o chat</button></div>
+  </div></div>
+</sc-if>
+
+<sc-if value="{{trackModal}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{trackBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Pacote do trilho" style="width: min(720px, calc(100vw - 48px))">
+    <div class="mhead"><div class="grow"><div class="eyebrow">{{trackStatus}} · {{trackOwner}}</div><h2>{{trackTitle}}</h2><p>{{trackHint}}</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 14px">
+      <sc-if value="{{trackHasBase}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 8px"><div class="eyebrow">Base recebida das etapas anteriores</div><sc-for list="{{trackBase}}" as="b" hint-placeholder-count="1"><div style="border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--surface-0)"><div style="font-size: 12.5px; margin-bottom: 6px"><b>{{b.label}}</b> <span class="muted">· {{b.owner}}</span></div><pre class="mono" style="margin: 0; max-height: 180px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; color: var(--text-secondary)">{{b.text}}</pre></div></sc-for></div></sc-if>
+      <label class="field"><span>{{trackDraftLbl}}</span><textarea class="input" rows="12" value="{{trackDraft}}" onChange="{{onTrackDraft}}" placeholder="{{trackDraftPh}}" style="resize: vertical; min-height: 220px; border-radius: 12px; line-height: 1.45"></textarea></label>
+    </div>
+    <div class="mfoot" style="flex-wrap: wrap; justify-content: flex-end; row-gap: 8px">
+      <button class="btn secondary" onClick="{{closeTrack}}">Fechar</button>
+      <button class="btn secondary" onClick="{{trackSave}}">Salvar texto</button>
+      <button class="btn secondary" onClick="{{trackAsk}}">Pedir complemento à Íris</button>
+      <button class="btn primary" onClick="{{trackGo}}" disabled="{{trackGoOff}}">{{trackGoLbl}}</button>
+    </div>
+  </div></div>
 </sc-if>
 
 <!-- remover projeto -->
@@ -1463,7 +1574,7 @@ function secHtml(P, r, list, checks, score) {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { pid: null, ptab: 'geral', pf: 'all', ps: 'pct', busy: {}, envOk: false, envDraft: '', envBusy: false, mPaused: false, ff: 'all', motors: {}, think: {}, runs: {}, chats: {}, chatThink: {}, menu: false, removed: {}, lastRm: null, rmOpen: false, abs: { open: false, step: 'path', path: ROOT + 'tavir-clientes\\loja-aurora-site', name: '', tpl: null, logN: 0 }, absorbed: [], treeClosed: {}, cfgOpen: false, inj: '', credEd: {}, reveal: {}, credF: 'all', cm: { open: false }, qaRuns: {}, secRuns: {}, qaSel: {}, secSel: {}, prog: {}, evf: 'all', repF: 'all', sevF: 'all', fOpen: {}, secFix: {}, evw: null, vt: 0, vplay: false, vsp: 1, gp: (() => { const o = {}; Object.keys(GP_INIT).forEach((k) => { o[k] = Object.assign({ resolved: {}, extra: [] }, GP_INIT[k]); }); return o; })(), stage: 5, tabs: {}, guard: GUARD.map((g) => g[3]), loading: {}, signed: false, signedAt: '', vp: 'desk', fixing: false, lf: 'stage', extra: [],
+    this.state = { pid: null, ptab: 'geral', pf: 'all', ps: 'pct', busy: {}, envOk: false, envDraft: '', envBusy: false, mPaused: false, ff: 'all', motors: {}, think: {}, runs: {}, chats: {}, chatThink: {}, menu: false, removed: {}, lastRm: null, rmOpen: false, chgOpen: false, chgDraft: '', altOpen: {}, altTrack: {}, abs: { open: false, step: 'path', path: ROOT + 'tavir-clientes\\loja-aurora-site', name: '', tpl: null, logN: 0 }, absorbed: [], treeClosed: {}, cfgOpen: false, inj: '', credEd: {}, reveal: {}, credF: 'all', cm: { open: false }, qaRuns: {}, secRuns: {}, qaSel: {}, secSel: {}, prog: {}, evf: 'all', repF: 'all', sevF: 'all', fOpen: {}, secFix: {}, evw: null, vt: 0, vplay: false, vsp: 1, gp: (() => { const o = {}; Object.keys(GP_INIT).forEach((k) => { o[k] = Object.assign({ resolved: {}, extra: [] }, GP_INIT[k]); }); return o; })(), stage: 5, tabs: {}, guard: GUARD.map((g) => g[3]), loading: {}, signed: false, signedAt: '', vp: 'desk', fixing: false, lf: 'stage', extra: [],
       viewer: null, zoom: 1, imgBg: 'dark', mdMode: 'view', csvMode: 'table', edits: {}, saved: {}, ver: {},
       chat: false, unread: 2, typing: false, draft: '', msgs: [['Yuri UX', 'A hero ainda compete com o menu em 390 px. Proponho cortar o subtítulo e virar o menu ícone.', 'ag'], ['Vitor Construtor', 'Ajuste pronto no branch hero-390. Preciso da prova visual de novo.', 'ag']] };
   }
@@ -1595,6 +1706,29 @@ class Component extends DCLogic {
     const app = this.props.app || NOOP;
     const spot = this.props.spot || '';
     const s = this.state, self = this;
+    if (typeof window !== 'undefined' && window.tavir && !window.__tavirFabTrackOn) {
+      window.__tavirFabTrackOn = true;
+      window.__tavirFabTrack = { lines: [], status: '', title: '', error: '', focus: '', projectName: '', show: false };
+      window.tavir.onEvent(function (evt) {
+        if (!evt || !evt.meta || !evt.meta.track) return;
+        const box = window.__tavirFabTrack;
+        box.show = true;
+        box.projectName = evt.meta.projectName || box.projectName;
+        box.focus = evt.meta.focus || box.focus;
+        box.title = evt.meta.title || box.title || 'Execução do trilho';
+        box.status = evt.meta.status || (evt.type === 'error' ? 'failed' : evt.type === 'done' ? 'completed' : 'running');
+        box.error = evt.type === 'error' ? String(evt.content || '') : (evt.type === 'done' ? '' : box.error);
+        const text = String(evt.content || '').slice(0, 1800);
+        const lines = box.lines || [];
+        const last = lines[lines.length - 1];
+        const grows = last && !last.bad && text && last.t && text.startsWith(String(last.t).slice(0, 40));
+        if (grows) lines[lines.length - 1] = { t: text, bad: evt.type === 'error' };
+        else lines.push({ t: text, bad: evt.type === 'error' });
+        box.lines = lines.slice(-20);
+        if (window.__tavirFabPing) window.__tavirFabPing();
+      });
+    }
+    if (typeof window !== 'undefined') window.__tavirFabPing = function () { self.setState({ trackPulse: Date.now() }); };
     const pid = spot === 'topology' ? 'meridian' : s.pid;
     const ptab = spot === 'topology' ? 'esteira' : s.ptab;
     const isOpen = !!pid;
@@ -1603,7 +1737,7 @@ class Component extends DCLogic {
     const S = STG[s.stage];
     const tabKeys = S[6];
     const tab = s.tabs[s.stage] && tabKeys.some((t) => t[0] === s.tabs[s.stage]) ? s.tabs[s.stage] : tabKeys[0][0];
-    const goStage = (i, t) => { const tb = Object.assign({}, s.tabs); if (t) tb[i] = t; self.setState({ stage: i, tabs: tb, pid: 'meridian', ptab: 'esteira' }); };
+    const goStage = (i, t) => { const tb = Object.assign({}, s.tabs); if (t) tb[i] = t; self.setState({ stage: i, tabs: tb, ptab: 'esteira' }); };
     const ledgerAll = (s.signed ? [[s.signedAt, 'gate', 'Gate de QA assinado por Carlos', 'Carlos', '—', 6]] : []).concat(s.extra).concat(LEDGER);
     const lfFn = { stage: (e) => e[5] === s.stage + 1, all: () => true, gate: (e) => e[1] === 'gate' };
     const ledger = ledgerAll.filter(lfFn[s.lf]);
@@ -1687,9 +1821,11 @@ class Component extends DCLogic {
       slug: META.meridian[0], git: 'MERIDIAN', cost: [s.signed ? 9.96 : 9.74, 25], disk: META.meridian[3], tok0: META.meridian[4], think: s.signed ? 'QA assinado · Security em andamento' : 'Gate de QA aberto · ' + pending + (pending === 1 ? ' critério aguardando' : ' critérios aguardando')
     }];
     GP.concat(s.absorbed).forEach((g) => {
-      const d = s.gp[g.id]; const n = g.stages.length; const done = Math.min(d.cur, n);
-      const pends = g.pends.filter((p) => !d.resolved[p.id]).map((p) => decorate(g.id, g.name, Object.assign({}, p, { btn: 'Autorizar', act: () => self.authorize(g.id, p) })));
-      PL.push(Object.assign({}, g, { done: done, gN: done >= n ? 8 : g.guard, status: done >= n ? 'done' : d.paused ? 'paused' : 'run', pends: pends, acts: d.extra.concat(g.acts), gates: (function () { const gs = g.stages.map((x, i) => /Gate|Aprovação/.test(x[0]) ? i : -1).filter((i) => i >= 0); return gs.length ? gs : [g.stages.length - 1]; })() }));
+      if (!g || !Array.isArray(g.stages) || !g.stages.length) return;
+      const d = s.gp[g.id] || { cur: 0, paused: false, resolved: {}, extra: [] }; const n = g.stages.length; const done = Math.min(Number(d.cur) || 0, n);
+      const resolved = d.resolved || {};
+      const pends = (g.pends || []).filter((p) => !resolved[p.id]).map((p) => decorate(g.id, g.name, Object.assign({}, p, { btn: 'Autorizar', act: () => self.authorize(g.id, p) })));
+      PL.push(Object.assign({}, g, { done: done, gN: done >= n ? 8 : g.guard, status: done >= n ? 'done' : d.paused ? 'paused' : 'run', pends: pends, acts: (d.extra || []).concat(g.acts || []), gates: (function () { const gs = g.stages.map((x, i) => /Gate|Aprovação/.test(x[0]) ? i : -1).filter((i) => i >= 0); return gs.length ? gs : [g.stages.length - 1]; })() }));
     });
     const STAT = { run: ['Em andamento', 'flow', '#1BC5BD'], paused: ['Pausado', 'warn', 'oklch(.80 .155 78)'], done: ['Concluído', 'action', '#B7F34A'] };
     for (let i = PL.length - 1; i >= 0; i--) { if (s.removed[PL[i].id]) PL.splice(i, 1); }
@@ -1697,7 +1833,124 @@ class Component extends DCLogic {
     PL.forEach((p) => { p.n = p.stages.length; p.pct = Math.round(p.done / p.n * 100); p.pendN = p.pends.length; p.ci = Math.min(p.done, p.n - 1); p.stepName = p.done >= p.n ? 'Entregue' : p.stages[p.ci][0]; p.owner = p.done >= p.n ? 'gate final assinado' : p.stages[p.ci][1]; });
     const allPends = [].concat.apply([], PL.map((p) => p.pends));
     const openProj = (id, tb) => self.setState({ pid: id, ptab: tb || 'geral', ff: 'all', menu: false, cfgOpen: false, evf: 'all', repF: 'all', sevF: 'all', credF: 'all', evw: null });
+    if (!PL.length) {
+      PL.push({ id: '_vazio', name: 'Nenhum projeto ainda', code: '—', line: '—', kind: '—', client: '—', base: [2026, 11, 1], tags: [], stages: [['Aguardando', '—', '—', 1]], done: 0, gN: 0, status: 'paused', pends: [], acts: [], gates: [0], slug: '', git: '', cost: [0, 1], disk: [0, 0, ''], tok0: [0, 0, 0], think: '', people: [], inv: [], env: [], acc: [], pauseNote: '', n: 1, pct: 0, pendN: 0, ci: 0, stepName: 'Aguardando', owner: '—', motor: DEFM, cap: '', path: ROOT, spent: 0 });
+    }
     const P = PL.find((p) => p.id === pid) || PL[0];
+    const projFinished = !!(P && (P.status === 'done' || P.done >= P.n));
+    const altFromState = !!(s.altOpen && P && s.altOpen[P.id]);
+    const altFromProj = !!(P && P.alterations_open);
+    const alterationsOpen = altFromState || altFromProj;
+    const chatUnlocked = !projFinished || alterationsOpen;
+    const ALT_TRACK_STEPS = [
+      ['Mapear gaps', 'Íris', 'Varredura e pacote de alinhamento'],
+      ['Planejar', 'Paula PM', 'Plano da alteração no trilho'],
+      ['Ajustar', 'Agentes', 'Aplicar mudanças no workspace'],
+      ['Validar & build', 'QA / Carlos', 'Checklist e build do app']
+    ];
+    const persistedTrack = (s.altTrack && P && s.altTrack[P.id]) || {};
+    const trackItems = (persistedTrack.items && persistedTrack.items.length)
+      ? persistedTrack.items
+      : ALT_TRACK_STEPS.map(function (x, i) {
+          const ids = ['map', 'plan', 'fix', 'build'];
+          const notes = persistedTrack.notes || {};
+          return { id: ids[i], label: x[0], owner: x[1], skill: x[2], kind: ids[i] === 'fix' ? 'work' : ids[i], note: notes[ids[i]] || '' };
+        });
+    const altTrackStep = Math.max(0, Math.min(trackItems.length - 1, Number(persistedTrack.step != null ? persistedTrack.step : 0)));
+    const trackBaseOf = function (index) {
+      return trackItems.slice(0, Math.max(0, index)).filter(function (x) { return String(x.note || '').trim(); }).map(function (x) {
+        return { label: x.label, owner: x.owner, text: String(x.note).trim().slice(0, 4000) };
+      });
+    };
+    const showAltTrack = !!(projFinished && alterationsOpen);
+    const applyAltTrack = (track) => {
+      if (!P || !track) return;
+      const map = Object.assign({}, self.state.altTrack || {});
+      map[P.id] = track;
+      self.setState({ altTrack: map, ptab: 'trilho' });
+    };
+    const syncAltTrackStep = (nextStep) => {
+      if (!P) return Promise.resolve();
+      const step = Math.max(0, Math.min(trackItems.length - 1, Number(nextStep) || 0));
+      const map = Object.assign({}, self.state.altTrack || {});
+      map[P.id] = Object.assign({ active: true, title: 'Trilho de alteração', auto: false, notes: {} }, map[P.id] || {}, { step: step, active: true });
+      self.setState({ altTrack: map, ptab: 'trilho' });
+      const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+      const target = P.local_path || P.path || P.slug || P.id;
+      if (tavir && tavir.projects && tavir.projects.setAltTrackStep) {
+        return tavir.projects.setAltTrackStep(target, step).then(function (res) {
+          if (res && res.alt_track) applyAltTrack(res.alt_track);
+          return res;
+        }).catch(function () { return null; });
+      }
+      return Promise.resolve();
+    };
+    const seedTrackRun = function (track) {
+      const items = (track && track.items) || trackItems;
+      const step = Math.max(0, Number(track && track.step) || 0);
+      const item = items[step] || items[0] || { label: 'Trilho', owner: 'Agente' };
+      window.__tavirFabTrack = {
+        show: true,
+        projectName: P.name,
+        status: 'running',
+        error: '',
+        focus: item.label,
+        title: item.owner + ' · ' + item.label,
+        lines: [{ t: item.owner + ' assumiu «' + item.label + '». O motor está sendo chamado.', bad: false }]
+      };
+      if (window.__tavirFabPing) window.__tavirFabPing();
+    };
+    self._runAltTrackChain = function (opts) {
+      const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+      if (!P || !tavir || !tavir.projects || !tavir.projects.runAltTrack) {
+        app.toast('Trilho', 'A execução não está ligada a este painel.');
+        return;
+      }
+      const target = P.local_path || P.path || P.slug || P.id;
+      const cur = (opts && opts.track) || (self.state.altTrack && self.state.altTrack[P.id]) || {};
+      const once = !!(opts && opts.once);
+      const force = !!(opts && opts.force);
+      if (cur.waitingQuestion && !force) { app.toast('Decisão sua', 'O trilho parou numa pergunta. Aprove para a Paula seguir.'); return; }
+      const itemCount = (cur.items && cur.items.length) || trackItems.length || 4;
+      if (cur.runStatus === 'done' && Number(cur.step) >= itemCount - 1) { app.toast('Trilho concluído', 'Não há próximo item para executar.'); return; }
+      if (Number(cur.step) <= 0) { app.toast('Mapa', 'Aceite o mapeamento para a Paula assumir o planejamento.'); return; }
+      if (!force && !once && !cur.auto) { app.toast('Execução manual', 'Clique em Executar este item no foco atual.'); return; }
+      if (window.__tavirTrackBusy && !force) { app.toast('Em execução', 'O agente deste item já foi chamado. O andamento está no painel do trilho.'); return; }
+      window.__tavirTrackBusy = true;
+      seedTrackRun(cur);
+      applyAltTrack(Object.assign({}, cur, { runStatus: 'running', runError: '' }));
+      tavir.projects.runAltTrack(target, Number(cur.step)).then(function (res) {
+        window.__tavirTrackBusy = false;
+        const track = (res && res.alt_track) || null;
+        if (track) applyAltTrack(Object.assign({}, track, { runStatus: track.runStatus === 'running' ? 'idle' : track.runStatus }));
+        else applyAltTrack(Object.assign({}, cur, { runStatus: 'idle' }));
+        if (res && res.error && !(res && res.ok)) {
+          const msg = String(res.error);
+          if (window.__tavirFabTrack) {
+            window.__tavirFabTrack.show = true;
+            window.__tavirFabTrack.status = 'failed';
+            window.__tavirFabTrack.error = msg;
+            window.__tavirFabTrack.lines = (window.__tavirFabTrack.lines || []).concat([{ t: msg, bad: true }]).slice(-30);
+          }
+          if (window.__tavirFabPing) window.__tavirFabPing();
+          app.toast('Trilho', msg);
+        }
+        if (res && res.needsApproval) {
+          app.toast('Decisão sua', 'Um agente parou e precisa da sua aprovação.');
+          return;
+        }
+        const still = (self.state.altTrack && self.state.altTrack[P.id]) || {};
+        if (!once && track && track.auto && res && res.continued && track.runStatus !== 'done' && !track.waitingQuestion) {
+          self._runAltTrackChain({ track: track });
+        } else if ((track && track.runStatus === 'done') || still.runStatus === 'done') {
+          app.toast('Trilho concluído', 'Os itens foram executados. Revise o pacote de build.');
+        }
+      }).catch(function (err) {
+        window.__tavirTrackBusy = false;
+        applyAltTrack(Object.assign({}, cur, { runStatus: 'idle' }));
+        app.toast('Trilho', String(err && err.message || err));
+      });
+    };
 
     // painel
     const fl = { all: () => true, run: (p) => p.status === 'run', pend: (p) => p.pendN > 0, paused: (p) => p.status === 'paused', done: (p) => p.status === 'done' };
@@ -1722,7 +1975,7 @@ class Component extends DCLogic {
     }
     const stState = (i) => i < P.done ? 'done' : i === P.done ? (P.status === 'paused' ? 'paused' : (isM ? (s.signed ? 'run' : 'gate') : (P.pends.length ? 'gate' : 'run'))) : 'todo';
     const SS = { done: ['concluída', 'flow', 'var(--flow)', 'var(--surface-1)', 'var(--flow)'], run: ['em execução', 'flow', 'var(--flow-subtle)', 'var(--flow)', 'var(--flow-subtle-line)'], gate: [isM ? 'no gate' : 'aguarda você', 'warn', 'var(--warning-subtle)', 'var(--warning)', 'var(--warning)'], paused: ['pausada', 'warn', 'var(--warning-subtle)', 'var(--warning)', 'var(--warning)'], todo: ['a seguir', '', 'var(--surface-0)', 'var(--text-muted)', 'var(--line)'] };
-    const stepPick = (i) => isM ? () => goStage(i) : () => self.setState({ ptab: 'esteira' });
+    const stepPick = (i) => () => goStage(i);
     // roadmap
     const daysArr = P.stages.map((x) => x[3]); const totalD = daysArr.reduce((a, b) => a + b, 0);
     const startOf = (i) => daysArr.slice(0, i).reduce((a, b) => a + b, 0);
@@ -1740,7 +1993,7 @@ class Component extends DCLogic {
     // abas do projeto: no Meridian, o painel de etapa só aparece na aba Esteira; Guard usa a seção existente
     Object.keys(t).forEach((k) => { if (ptab !== 'esteira') t[k] = false; });
     if (ptab === 'qa' && isM) t.guard = true;
-    const pt = { geral: ptab === 'geral', esteiraM: ptab === 'esteira' && isM, esteiraG: ptab === 'esteira' && !isM, kanban: ptab === 'kanban', roadmap: ptab === 'roadmap', arquivos: ptab === 'arquivos', qa: ptab === 'qa', seg: ptab === 'seg', acessos: ptab === 'acessos' };
+    const pt = { geral: ptab === 'geral', esteiraM: ptab === 'esteira' && isM, esteiraG: ptab === 'esteira' && !isM, trilho: ptab === 'trilho' && projFinished, kanban: ptab === 'kanban', roadmap: ptab === 'roadmap', arquivos: ptab === 'arquivos', qa: ptab === 'qa', seg: ptab === 'seg', acessos: ptab === 'acessos' };
 
     // ================= MOTOR & EXECUÇÃO =================
     const motor = P.motor; const Eng = ENG[motor.engine]; const Mo = modelOf(motor);
@@ -1992,19 +2245,319 @@ class Component extends DCLogic {
       esteiras: ESTEIRAS.map((e) => { const used = PL.filter((p) => p.line === e[0]).length; return { code: e[0], fam: e[1], name: e[2], d: e[3], st: e[6].map((x) => ({ t: x })), guard: e[7], meta: TPL_STAGES[e[0]].length + ' etapas · ' + new Set(TPL_STAGES[e[0]].map((x) => x[1])).size + ' mesas', lead: 'Paula PM', use: used ? used + (used === 1 ? ' projeto' : ' projetos') : 'sem uso' }; }),
       // projeto
       back: () => self.setState({ pid: null }),
-      P: { cap: P.cap.toUpperCase(), git: P.git, path: P.path, spent: brl(P.spent), budget: String(P.cost[1]), costPct: Math.min(100, Math.round(P.spent / P.cost[1] * 100)), disk0: P.disk[0], disk1: P.disk[1], disk2: P.disk[2], name: P.name, code: P.code, line: P.line, kind: P.kind, client: P.client, state: STAT[P.status][0], cls: STAT[P.status][1], gN: P.gN, gCls: P.gN === 8 ? 'flow' : 'warn', gCol: P.gN === 8 ? '#1BC5BD' : 'oklch(.80 .155 78)', due: P.status === 'paused' ? 'prazo suspenso' : (P.status === 'done' ? 'entregue ' : 'entrega ') + ddmm(P.base, totalD - 1),
+      P: { cap: P.cap.toUpperCase(), git: P.git, path: P.path, spent: brl(P.spent), budget: String(P.cost[1]), costPct: Math.min(100, Math.round(P.spent / P.cost[1] * 100)), disk0: P.disk[0], disk1: P.disk[1], disk2: P.disk[2], name: P.name, code: P.code, line: P.line, kind: P.kind, client: P.client, state: STAT[P.status][0], cls: STAT[P.status][1], gN: P.gN, gCls: P.gN === 8 ? 'flow' : 'warn', gCol: P.gN === 8 ? '#1BC5BD' : 'oklch(.80 .155 78)', due: P.status === 'paused' ? 'prazo suspenso' : (P.status === 'done' ? 'entregue ' : 'entrega ') + ddmm(P.base, totalD - 1), showAltToggle: projFinished, altBtnCls: alterationsOpen ? 'secondary' : 'primary', altBtnLabel: alterationsOpen ? 'Fechar alterações' : 'Liberar alterações', altBtnShort: alterationsOpen ? 'Fechar' : 'Liberar',
         tags: P.tags.map((g) => ({ t: g[1], icon: ICN[g[0]] })), pct: P.pct, done: P.done, n: P.n, pendN: P.pendN, pCol: P.pendN ? 'oklch(.80 .155 78)' : '#F4F6F2', pBadge: P.pendN ? 'warn' : 'flow',
         isDone: P.status === 'done', paused: P.status === 'paused', pauseNote: P.pauseNote || '', pauseLbl: P.status === 'paused' ? 'Retomar' : P.status === 'done' ? 'Entregue' : 'Pausar', pauseIcon: P.status === 'paused' ? ICN.play : ICN.pause },
       togglePause: () => self.togglePause(P.id),
-      toGeral: () => self.setState({ ptab: 'geral' }), toEsteira: () => self.setState({ ptab: 'esteira' }), toGuard: () => self.setState({ ptab: 'qa' }),
+      toGeral: () => self.setState({ ptab: 'geral' }), toEsteira: () => self.setState({ ptab: 'esteira' }), toTrilho: () => self.setState({ ptab: 'trilho' }), toGuard: () => self.setState({ ptab: 'qa' }),
       toLedger: () => { self.setState({ ptab: 'esteira', lf: 'all' }); goStage(s.stage, 'ledger'); },
-      ptabs: [['geral', 'Visão geral', P.pendN, 'warn'], ['esteira', 'Esteira', null], ['kanban', 'Kanban', null], ['roadmap', 'Roadmap', null], ['arquivos', 'Workspace', pFiles.length, ''], ['qa', 'QA', qaTabN, 'danger'], ['seg', 'Segurança', segTabN, 'danger'], ['acessos', 'Acessos', missingN, 'danger']].map((x) => ({ label: x[1], n: x[2], cls: x[3] || '', hasN: x[2] != null && x[2] !== 0, on: ptab === x[0] ? 'on' : '', pick: () => self.setState({ ptab: x[0] }) })),
-      pt: pt, cs: cs,
+      ptabs: ([['geral', 'Visão geral', P.pendN, 'warn'], ['esteira', 'Esteira', null]].concat(projFinished ? [['trilho', 'Trilho', showAltTrack ? 1 : null, showAltTrack ? 'flow' : '']] : []).concat([['kanban', 'Kanban', null], ['roadmap', 'Roadmap', null], ['arquivos', 'Workspace', pFiles.length, ''], ['qa', 'QA', qaTabN, 'danger'], ['seg', 'Segurança', segTabN, 'danger'], ['acessos', 'Acessos', missingN, 'danger']])).map((x) => ({ label: x[1], n: x[2], cls: x[3] || '', hasN: x[2] != null && x[2] !== 0, on: ptab === x[0] ? 'on' : '', pick: () => self.setState({ ptab: x[0] }) })),
+      pt: pt, cs: cs, showAltTrack: showAltTrack,
+      altTrack: (function () {
+        const curItem = trackItems[altTrackStep] || trackItems[0];
+        const cur = [curItem.label, curItem.owner, curItem.skill];
+        const noteKeys = ['map', 'plan', 'fix', 'build'];
+        const packNotes = (persistedTrack.notes) || {};
+        const pack = String(curItem.note || packNotes[curItem.kind] || packNotes[noteKeys[altTrackStep]] || '');
+        const autoOn = !!persistedTrack.auto;
+        const waitingQ = String(persistedTrack.waitingQuestion || '');
+        const checkpoint = persistedTrack.checkpoint && typeof persistedTrack.checkpoint === 'object' ? persistedTrack.checkpoint : null;
+        const finished = persistedTrack.runStatus === 'done' && altTrackStep >= trackItems.length - 1;
+        const running = persistedTrack.runStatus === 'running';
+        const nextItem = trackItems[altTrackStep + 1] || null;
+        const mapItem = trackItems.filter(function (x) { return x.kind === 'map'; })[0] || trackItems[0];
+        const mapText = String((mapItem && mapItem.note) || '').trim();
+        const notes = [
+          autoOn
+            ? 'A Íris só mapeia. Esse pacote é a fonte de todas as etapas seguintes.'
+            : 'A conversa com a Íris grava os gaps aqui. As etapas seguintes leem este pacote.',
+          mapText
+            ? 'A Paula planeja só a partir dos gaps da Íris, visíveis acima. O texto dela aparece em "Produzido nesta etapa" depois que ela executa.'
+            : 'O mapeamento ainda está vazio. Sem os gaps, a Paula não tem o que planejar.',
+          'Cada ajuste executa um gap do plano da Paula, que por sua vez veio do mapeamento.',
+          'O build valida o que os gaps pediram. Não abre trabalho novo.'
+        ];
+        const liveBox = (typeof window !== 'undefined' && window.__tavirFabTrack) || {};
+        const sameProject = !liveBox.projectName || liveBox.projectName === P.name;
+        const persistedLines = Array.isArray(persistedTrack.runLog) ? persistedTrack.runLog : [];
+        const useLive = !!(sameProject && liveBox.show && liveBox.lines && liveBox.lines.length);
+        const rawLines = useLive ? liveBox.lines : persistedLines.map(function (t) { return { t: String(t), bad: /erro|falha|não consegui|nao consegui/i.test(String(t)) }; });
+        const liveStatusKey = useLive ? liveBox.status : (persistedTrack.runError ? 'failed' : persistedTrack.waitingQuestion ? 'waiting' : persistedTrack.runStatus === 'done' ? 'done' : persistedLines.length ? 'completed' : (persistedTrack.runStatus || ''));
+        const liveMap = {
+          running: ['executando', 'flow', 'var(--flow)'],
+          waiting: ['aguardando você', 'warn', 'var(--warning)'],
+          paused: ['aguardando você', 'warn', 'var(--warning)'],
+          failed: ['falhou', 'danger', 'var(--danger)'],
+          completed: ['concluído neste item', 'flow', 'var(--flow)'],
+          done: ['concluído', 'flow', 'var(--flow)'],
+          idle: ['em espera', '', 'var(--line)']
+        };
+        const liveMeta = liveMap[liveStatusKey] || ['', '', 'var(--line)'];
+        return {
+          title: 'Trilho de alteração',
+          lead: !alterationsOpen
+            ? 'Libere alterações para ativar o trilho. Enquanto fechado, só consulta.'
+            : finished
+              ? 'Ciclo encerrado. A validação e o build ficaram registrados. Abra um novo mapeamento para a próxima manutenção.'
+              : (autoOn ? 'Execução automática ligada. Depois do mapa, cada agente cumpre o item e só chama você num gate. No fim, a validação pode fechar sozinha ou na sua mão.' : 'Execução automática desligada. Cada item avança no seu clique, e a validação também pode ser encerrada à mão.'),
+          focusEyebrow: finished ? 'Ciclo encerrado' : 'Foco atual',
+          showClose: alterationsOpen && !waitingQ && !finished,
+          closeLbl: (!nextItem || curItem.kind === 'build') ? 'Concluir validação e build' : 'Concluir este item',
+          showGoBuild: alterationsOpen && !waitingQ && !finished && curItem.kind !== 'build' && trackItems.some(function (x) { return x.kind === 'build'; }),
+          showRerun: alterationsOpen && finished && curItem.kind === 'build',
+          showNewCycle: alterationsOpen && finished,
+          cycleN: Array.isArray(persistedTrack.cycles) ? persistedTrack.cycles.length : 0,
+          badge: alterationsOpen ? (autoOn ? 'automático · não reabre a esteira' : 'manual · não reabre a esteira') : 'fechado',
+          autoOn: autoOn,
+          autoLbl: autoOn ? 'Execução automática: ligada' : 'Execução automática: desligada',
+          autoCls: autoOn ? 'primary' : 'secondary',
+          waiting: !!waitingQ,
+          waitingQuestion: waitingQ,
+          showIris: alterationsOpen && (altTrackStep === 0 || !autoOn),
+          showRun: alterationsOpen && altTrackStep > 0 && !waitingQ && !finished,
+          running: running,
+          hasCheckpoint: !!(checkpoint && checkpoint.itemId === curItem.id && (checkpoint.partial || checkpoint.reason)),
+          checkpointAt: checkpoint && checkpoint.at ? String(checkpoint.at).slice(0, 16).replace('T', ' ') : '',
+          checkpointHint: checkpoint && checkpoint.partial
+            ? String(checkpoint.partial).trim().slice(-280)
+            : 'A tentativa anterior parou antes de registrar texto. A próxima continua a partir do que já estiver no workspace.',
+          retryLbl: (checkpoint && checkpoint.itemId === curItem.id) ? 'Continuar do checkpoint' : 'Tentar de novo',
+          runLbl: running ? 'Executando…' : ((checkpoint && checkpoint.itemId === curItem.id) ? 'Continuar do checkpoint' : 'Executar este item'),
+          runCls: (pack.trim() && nextItem) ? 'secondary' : 'primary',
+          showNext: alterationsOpen && !waitingQ && !finished && !!pack.trim() && !!nextItem,
+          nextLbl: nextItem ? ('Seguir para ' + nextItem.label) : 'Seguir',
+          liveShow: rawLines.length > 0,
+          liveTitle: (useLive && liveBox.title) || ('Trilho · ' + cur[0]),
+          liveStatus: liveMeta[0],
+          liveCls: liveMeta[1],
+          liveBd: liveMeta[2],
+          liveRun: liveStatusKey === 'running',
+          liveErr: !!(useLive ? liveBox.error : persistedTrack.runError),
+          liveError: String((useLive ? liveBox.error : persistedTrack.runError) || ''),
+          liveLines: rawLines.filter(function (l) {
+            const t = String(l.t || '').trim();
+            return t && t !== '[object Object]' && (t.length >= 12 || /erro|falha|timeout|não |nao /i.test(t));
+          }).slice(-8).map(function (l) { return { t: l.t, bd: l.bad ? 'var(--danger)' : 'var(--flow)', fg: l.bad ? 'var(--danger)' : 'var(--text-secondary)' }; }),
+          badgeCls: alterationsOpen ? 'flow' : 'warn',
+          locked: !alterationsOpen,
+          atFirst: altTrackStep <= 0 || !alterationsOpen,
+          atLast: altTrackStep >= trackItems.length - 1 || !alterationsOpen,
+          hasPack: !!pack.trim(),
+          preview: pack.trim().slice(0, 700),
+          hasBase: altTrackStep > 0 && !!mapText,
+          baseFrom: (mapItem && mapItem.label) || 'Mapear gaps',
+          basePreview: mapText.slice(0, 900),
+          openCurrent: () => self.setState({
+            trackModal: true,
+            trackIndex: altTrackStep,
+            trackTitle: cur[0],
+            trackOwner: cur[1],
+            trackDraft: String(curItem.note || pack || ''),
+            trackBase: trackBaseOf(altTrackStep),
+            trackStatus: 'Foco atual'
+          }),
+          steps: trackItems.map((x, i) => {
+            const done = alterationsOpen && (i < altTrackStep || (finished && i === altTrackStep));
+            const now = alterationsOpen && i === altTrackStep && !finished;
+            const st = !alterationsOpen ? 'aguardando' : done ? 'concluído' : now && window.__tavirTrackBusy ? 'executando' : now ? 'foco atual' : 'a seguir';
+            const cls = !alterationsOpen ? '' : done ? 'flow' : now ? 'warn' : '';
+            const bg = done ? 'var(--flow-subtle)' : now ? 'var(--warning-subtle)' : 'var(--surface-0)';
+            const fg = done ? 'var(--flow)' : now ? 'var(--warning)' : 'var(--text-muted)';
+            const bd = done ? 'var(--flow)' : now ? 'var(--warning)' : 'var(--line)';
+            return {
+              n: String(i + 1).padStart(2, '0'), t: x.label, who: x.owner, skill: x.skill, st: st, cls: cls,
+              bg: bg, fg: fg, bd: bd, tc: now || done ? 'var(--text-primary)' : 'var(--text-secondary)',
+              rowBg: now ? 'var(--surface-3)' : 'transparent',
+              pick: () => {
+                if (!alterationsOpen) { app.toast('Trilho fechado', 'Libere alterações para ler os pacotes.'); return; }
+                const status = i < altTrackStep ? 'Concluído' : i === altTrackStep ? 'Foco atual' : 'A seguir';
+                self.setState({
+                  trackModal: true,
+                  trackIndex: i,
+                  trackTitle: x.label,
+                  trackOwner: x.owner,
+                  trackDraft: String(x.note || ''),
+                  trackBase: trackBaseOf(i),
+                  trackStatus: status,
+                  ptab: 'trilho'
+                });
+              }
+            };
+          }),
+          sel: {
+            n: String(altTrackStep + 1).padStart(2, '0'),
+            label: cur[0],
+            owner: cur[1],
+            skill: cur[2],
+            ini: (PEOPLE[cur[1]] || cur[1].slice(0, 2).toUpperCase()),
+            note: notes[Math.min(altTrackStep, notes.length - 1)] || notes[0]
+          },
+          ask: () => {
+            if (!alterationsOpen) { app.toast('Trilho fechado', 'Libere alterações primeiro.'); return; }
+            if (autoOn && altTrackStep > 0) { app.toast('Execução automática', 'Este item roda com o agente do foco, sem a Íris. Desligue o modo se quiser conversar.'); return; }
+            const txt = 'No trilho de alteração, foco "' + cur[0] + '" (' + cur[1] + '): detalhe o que falta e prepare o próximo passo sem reabrir a esteira original.';
+            self.setState({ chat: true, draft: txt, ptab: 'trilho' });
+            if (self.sendIrisMessage) self.sendIrisMessage(txt, { asChangeRequest: altTrackStep > 0 });
+          },
+          toggleAuto: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            const target = P.local_path || P.path || P.slug || P.id;
+            const next = !autoOn;
+            applyAltTrack(Object.assign({}, persistedTrack, { auto: next }));
+            if (tavir && tavir.projects && tavir.projects.setAltTrackAuto) {
+              tavir.projects.setAltTrackAuto(target, next).then(function (res) {
+                if (res && res.alt_track) applyAltTrack(res.alt_track);
+                app.toast(next ? 'Execução automática ligada' : 'Execução automática desligada', next ? 'Depois do mapa, os agentes seguem item a item.' : 'Os próximos itens ficam manuais.');
+                const st = (res && res.alt_track) || {};
+                if (next && Number(st.step) > 0 && !st.waitingQuestion && st.runStatus !== 'done' && self._runAltTrackChain) {
+                  self._runAltTrackChain();
+                }
+              }).catch(function () {});
+            }
+          },
+          run: () => {
+            if (window.__tavirFabTrack && window.__tavirFabTrack.status === 'failed') window.__tavirTrackBusy = false;
+            window.__tavirFabTrack = {
+              show: true, projectName: P.name, status: 'running', error: '', focus: cur[0],
+              title: cur[1] + ' · ' + cur[0],
+              lines: [{ t: 'Pedido enviado. ' + cur[1] + ' está assumindo «' + cur[0] + '».', bad: false }]
+            };
+            self.setState({ trackPulse: Date.now(), ptab: 'trilho' });
+            if (self._runAltTrackChain) self._runAltTrackChain({
+              track: Object.assign({}, persistedTrack, { step: altTrackStep, runStatus: 'idle', runError: '', items: trackItems }),
+              force: true,
+              once: !autoOn
+            });
+          },
+          advance: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            const target = P.local_path || P.path || P.slug || P.id;
+            if (!tavir || !tavir.projects || !tavir.projects.advanceAltTrack) {
+              app.toast('Trilho', 'O avanço de etapa não está ligado a este painel.');
+              return;
+            }
+            window.__tavirTrackBusy = false;
+            window.__tavirFabTrack = { show: false, lines: [], error: '', status: 'idle', projectName: P.name, focus: '' };
+            tavir.projects.advanceAltTrack(target, altTrackStep).then(function (res) {
+              if (res && res.ok === false) { app.toast('Trilho', res.error || 'Não foi possível seguir.'); return; }
+              const track = (res && res.alt_track) || null;
+              if (track) applyAltTrack(track);
+              const item = track && track.items && track.items[Number(track.step)] ;
+              app.toast('Próxima etapa', item ? (item.owner + ' · ' + item.label) : 'O foco avançou.');
+              if (track && track.auto && track.runStatus !== 'done' && Number(track.step) > 0 && self._runAltTrackChain) {
+                self._runAltTrackChain({ track: track, force: true, once: false });
+              }
+            }).catch(function (err) { app.toast('Trilho', String(err && err.message || err)); });
+          },
+          dismiss: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            const target = P.local_path || P.path || P.slug || P.id;
+            window.__tavirTrackBusy = false;
+            window.__tavirFabTrack = { show: false, lines: [], error: '', status: 'idle', projectName: P.name, focus: '' };
+            applyAltTrack(Object.assign({}, persistedTrack, { runError: '', runLog: [], runStatus: finished ? 'done' : 'idle' }));
+            if (tavir && tavir.projects && tavir.projects.clearAltTrackFault) {
+              tavir.projects.clearAltTrackFault(target).then(function (res) {
+                if (res && res.alt_track) applyAltTrack(res.alt_track);
+              }).catch(function () {});
+            }
+            self.setState({ trackPulse: Date.now() });
+          },
+          approve: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            const target = P.local_path || P.path || P.slug || P.id;
+            if (!tavir || !tavir.projects || !tavir.projects.approveAltTrack) return;
+            tavir.projects.approveAltTrack(target).then(function (res) {
+              if (res && res.alt_track) applyAltTrack(res.alt_track);
+              app.toast('Aprovado', 'O trilho segue para o próximo item.');
+              if (res && res.alt_track && res.alt_track.auto) self._runAltTrackChain({ track: res.alt_track });
+            }).catch(function (err) { app.toast('Trilho', String(err && err.message || err)); });
+          },
+          closeItem: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            const target = P.local_path || P.path || P.slug || P.id;
+            if (!tavir || !tavir.projects || !tavir.projects.closeAltTrackItem) {
+              app.toast('Trilho', 'O encerramento manual não está ligado a este painel.');
+              return;
+            }
+            window.__tavirTrackBusy = false;
+            tavir.projects.closeAltTrackItem(target, altTrackStep).then(function (res) {
+              if (res && res.ok === false) { app.toast('Trilho', res.error || 'Não encerrei o item.'); return; }
+              const track = (res && res.alt_track) || null;
+              if (track) applyAltTrack(track);
+              const closed = track && track.runStatus === 'done';
+              app.toast(closed ? 'Validação encerrada' : 'Item concluído', closed ? 'O ciclo fechou. Você pode abrir um novo mapeamento.' : 'O foco passou para o próximo item.');
+              if (track && track.auto && !closed && Number(track.step) > 0 && self._runAltTrackChain) {
+                self._runAltTrackChain({ track: track, force: true, once: false });
+              }
+            }).catch(function (err) { app.toast('Trilho', String(err && err.message || err)); });
+          },
+          goBuild: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            const target = P.local_path || P.path || P.slug || P.id;
+            const buildAt = trackItems.reduce(function (at, item, index) { return item.kind === 'build' ? index : at; }, -1);
+            if (buildAt < 0 || !tavir || !tavir.projects || !tavir.projects.setAltTrackStep) return;
+            tavir.projects.setAltTrackStep(target, buildAt).then(function (res) {
+              if (res && res.alt_track) applyAltTrack(Object.assign({}, res.alt_track, { runStatus: 'idle' }));
+              app.toast('Validação e build', 'Este item é o foco. Execute a QA ou encerre à mão.');
+            }).catch(function (err) { app.toast('Trilho', String(err && err.message || err)); });
+          },
+          newCycle: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            const target = P.local_path || P.path || P.slug || P.id;
+            if (!tavir || !tavir.projects || !tavir.projects.startAltTrackCycle) {
+              app.toast('Trilho', 'O novo mapeamento não está ligado a este painel.');
+              return;
+            }
+            window.__tavirTrackBusy = false;
+            window.__tavirFabTrack = { show: false, lines: [], error: '', status: 'idle', projectName: P.name, focus: '' };
+            tavir.projects.startAltTrackCycle(target).then(function (res) {
+              if (res && res.ok === false) { app.toast('Trilho', res.error || 'Não abri o novo mapeamento.'); return; }
+              if (res && res.alt_track) applyAltTrack(res.alt_track);
+              self.setState({ ptab: 'trilho', trackModal: false });
+              app.toast('Novo mapeamento', 'O ciclo anterior ficou arquivado. Converse com a Íris para registrar os próximos gaps.');
+            }).catch(function (err) { app.toast('Trilho', String(err && err.message || err)); });
+          },
+          prev: () => syncAltTrackStep(altTrackStep - 1),
+          next: () => {
+            const dest = altTrackStep + 1;
+            const startAuto = autoOn && altTrackStep === 0 && !!String((packNotes && packNotes.map) || '').trim();
+            Promise.resolve(syncAltTrackStep(dest)).then(function () {
+              if (startAuto && self._runAltTrackChain) self._runAltTrackChain();
+            });
+          }
+        };
+      })(),
       pends: P.pends, noPends: P.pendN === 0,
       timeline: P.acts.slice(0, 6).map((e, i) => ({ t: e[0], x: e[1], w: e[2], c: i === 0 ? 'var(--flow)' : 'var(--line-strong)' })),
       vsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], now: k === 'run' || k === 'gate' || k === 'paused', st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: k === 'run' || k === 'gate' || k === 'paused' ? 'var(--surface-3)' : 'transparent', pick: stepPick(i) }; }),
-      gsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; const isCur = i === P.done && P.status !== 'done'; const blockP = P.pends[0]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], skill: x[2], st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: isCur ? 'var(--surface-3)' : 'transparent', when: ddmm(P.base, startOf(i)) + (x[3] > 1 ? ' → ' + ddmm(P.base, startOf(i) + x[3] - 1) : ''),
-        hasAct: isCur && P.status === 'run', actLbl: blockP ? 'Autorizar' : 'Concluir etapa', act: blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy) }; }),
+      gsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; const isCur = i === P.done && P.status !== 'done'; const isSel = Number(s.stage) === i; const blockP = P.pends[0]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], skill: x[2], st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: isSel ? 'var(--surface-3)' : (isCur ? 'var(--surface-3)' : 'transparent'), when: ddmm(P.base, startOf(i)) + (x[3] > 1 ? ' → ' + ddmm(P.base, startOf(i) + x[3] - 1) : ''),
+        pick: stepPick(i), hasAct: isCur && P.status === 'run', actLbl: blockP ? 'Autorizar' : 'Concluir etapa', act: blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy) }; }),
+      gSel: (function() {
+        const idx = Math.max(0, Math.min(Number(s.stage) || 0, P.stages.length - 1));
+        const st = P.stages[idx] || P.stages[0] || ['Etapa', '—', '—', 1];
+        const k = stState(idx); const Z = SS[k];
+        const ini = PEOPLE[st[1]] || (st[4] || String(st[1] || '—').slice(0, 2).toUpperCase());
+        return {
+          n: String(idx + 1).padStart(2, '0'),
+          label: st[0],
+          owner: st[1],
+          ini: ini,
+          skill: st[2],
+          state: Z[0],
+          cls: Z[1],
+          when: ddmm(P.base, startOf(idx)) + (st[3] > 1 ? ' → ' + ddmm(P.base, startOf(idx) + st[3] - 1) : ''),
+          note: k === 'done'
+            ? 'Etapa concluída. Você pode inspecionar o responsável e o escopo; a esteira encerrada não reabre automaticamente.'
+            : (k === 'gate' || k === 'paused')
+              ? 'Gate/etapa sob sua atenção. Use Pedir alteração ou libere o responsável para seguir.'
+              : (k === 'run' ? 'Etapa em andamento com ' + st[1] + '.' : 'Etapa planejada — ainda não começou.'),
+          ask: function() {
+            const txt = 'Quero trabalhar o gate/etapa "' + st[0] + '" (' + st[1] + '). Detalhe o que falta e prepare o handoff para Paula planejar.';
+            self.setState({ chat: true, draft: txt, ptab: 'esteira' });
+            if (self.sendIrisMessage) self.sendIrisMessage(txt, { asChangeRequest: !!(P.status === 'done' || P.alterations_open) });
+          }
+        };
+      })(),
       inv: P.inv.map((f) => ({ k: f[0], v: f[1] })),
       mesas: mesas.map((m) => ({ n: m.n, ini: PEOPLE[m.n] || (STG.find((x) => x[1] === m.n) || [0, 0, m.n.slice(0, 2).toUpperCase()])[2], skill: m.skills.join(' · '), c: m.c + (m.c === 1 ? ' etapa' : ' etapas'), busy: m.busy ? 'busy' : '' })), mesasN: mesas.length + ' mesas',
       kcols: [['todo', 'A fazer', 'var(--line-strong)'], ['run', 'Em andamento', 'var(--flow)'], ['gate', 'Aguardando você', 'var(--warning)'], ['done', 'Concluído', 'var(--lime)']].map((c) => {
@@ -2059,7 +2612,125 @@ class Component extends DCLogic {
         close: () => self.setState({ cm: { open: false } }), bg: (e) => { if (e && e.target === e.currentTarget) self.setState({ cm: { open: false } }); },
         save: () => self.saveCred(P.id, CM, CM.prev), remove: () => self.removeCred(P.id, CM.prev) },
       newLine: () => app.modal('factory-new'),
-      control: () => app.modal('control', { name: 'Meridian' }), askChange: () => app.modal('ai'),
+      control: () => app.modal('control', { name: P.name }),
+      askChange: () => {
+        if (!chatUnlocked) {
+          app.toast('Projeto fechado', 'Libere o trilho de alteração no topo do projeto. A esteira original não reabre.');
+          return;
+        }
+        self.setState({ chgOpen: true, chgDraft: '', chat: true, unread: 0, menu: false, ptab: projFinished ? 'trilho' : self.state.ptab });
+      },
+      toggleAlterations: () => {
+        if (!projFinished) return;
+        const next = !alterationsOpen;
+        const key = P.id;
+        const map = Object.assign({}, self.state.altOpen || {});
+        map[key] = next;
+        const trackMap = Object.assign({}, self.state.altTrack || {});
+        if (next) trackMap[key] = Object.assign({ active: true, step: 0, title: 'Trilho de alteração' }, trackMap[key] || {}, { active: true });
+        else if (trackMap[key]) trackMap[key] = Object.assign({}, trackMap[key], { active: false });
+        self.setState({ altOpen: map, altTrack: trackMap, ptab: next ? 'trilho' : (self.state.ptab === 'trilho' ? 'geral' : self.state.ptab) });
+        const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+        const target = P.local_path || P.path || P.slug || P.id;
+        if (tavir && tavir.projects && tavir.projects.setAlterationsOpen) {
+          tavir.projects.setAlterationsOpen(target, next).then(function (res) {
+            const absorbed = (self.state.absorbed || []).map(function (p) {
+              return p.id === key ? Object.assign({}, p, { alterations_open: !!(res && res.alterations_open) }) : p;
+            });
+            if (res && res.alt_track) {
+              const tm = Object.assign({}, self.state.altTrack || {});
+              tm[key] = res.alt_track;
+              self.setState({ absorbed: absorbed, altTrack: tm });
+            } else {
+              self.setState({ absorbed: absorbed });
+            }
+            app.toast(next ? 'Trilho de alteração ativo' : 'Trilho fechado', next ? 'Chat e Pedir alteração alimentam o trilho. A esteira original permanece encerrada.' : 'Novos pedidos ficam bloqueados até liberar de novo.');
+          }).catch(function () {
+            app.toast(next ? 'Trilho de alteração ativo' : 'Trilho fechado', 'Controle atualizado neste painel.');
+          });
+        } else {
+          app.toast(next ? 'Trilho de alteração ativo' : 'Trilho fechado', next ? 'Chat liberado para o trilho.' : 'Chat em modo consulta.');
+        }
+      },
+      altBadge: projFinished ? (alterationsOpen ? 'trilho ativo · não reabre a esteira' : 'trilho fechado · não reabre a esteira') : 'chat com agentes',
+      altBadgeCls: projFinished ? (alterationsOpen ? 'flow' : 'warn') : 'flow',
+      trackModal: !!s.trackModal, trackTitle: s.trackTitle || 'Pacote', trackDraft: s.trackDraft || '', trackOwner: s.trackOwner || '', trackStatus: s.trackStatus || '',
+      trackBase: Array.isArray(s.trackBase) ? s.trackBase : [],
+      trackHasBase: Array.isArray(s.trackBase) && s.trackBase.length > 0,
+      trackDraftLbl: Number(s.trackIndex) > 0 ? 'O que esta etapa produz' : 'Pacote deste item',
+      trackDraftPh: Number(s.trackIndex) > 0 ? 'Ainda vazio. Esta etapa escreve aqui a partir da base acima, quando o agente executar.' : 'Ainda sem registro. Converse com a Íris no mapeamento ou escreva o pacote aqui.',
+      trackHint: Number(s.trackIndex) === 0
+        ? 'Os gaps nascem da conversa com a Íris. Tudo que vier depois lê este pacote.'
+        : Number(s.trackIndex) < altTrackStep
+          ? 'Etapa já concluída. A base acima é o que ela recebeu. O campo de baixo é o que ela entregou.'
+          : Number(s.trackIndex) > altTrackStep
+            ? 'Esta etapa ainda não é a atual. A base acima já está ligada aos gaps. O campo de baixo só enche quando ela executar.'
+            : 'A base acima é o que esta etapa recebe. O campo de baixo é o que ela mesma vai produzir.',
+      trackGoLbl: altTrackStep === 0 && Number(s.trackIndex) === 0 ? 'Aceitar e seguir' : 'Executar este item',
+      trackGoOff: Number(s.trackIndex) !== altTrackStep,
+      onTrackDraft: (e) => self.setState({ trackDraft: e.target.value }),
+      closeTrack: () => self.setState({ trackModal: false }),
+      trackBg: (e) => { if (e && e.target === e.currentTarget) self.setState({ trackModal: false }); },
+      trackSave: () => {
+        const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+        const target = P.local_path || P.path || P.slug || P.id;
+        const idx = Number(s.trackIndex) || 0;
+        if (!tavir || !tavir.projects || !tavir.projects.saveAltTrackNote) { app.toast('Trilho', 'Não consegui gravar o pacote.'); return; }
+        tavir.projects.saveAltTrackNote(target, idx, String(self.state.trackDraft || '')).then(function (res) {
+          if (res && res.alt_track) applyAltTrack(res.alt_track);
+          app.toast('Pacote salvo', 'O texto ficou neste item. A etapa atual não mudou.');
+        }).catch(function (err) { app.toast('Trilho', String(err && err.message || err)); });
+      },
+      trackAsk: () => {
+        const txt = 'No item "' + (s.trackTitle || 'trilho') + '" do trilho, complemente o pacote com isto, sem mudar a etapa atual:\n\n' + String(self.state.trackDraft || '');
+        self.setState({ chat: true, draft: txt, trackModal: false });
+        if (self.sendIrisMessage) self.sendIrisMessage(txt, { asChangeRequest: false });
+      },
+      trackGo: () => {
+        const idx = Number(self.state.trackIndex);
+        if (idx !== altTrackStep) { app.toast('Trilho', 'Só o foco atual pode ser executado. Os outros abrem para leitura.'); return; }
+        const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+        const target = P.local_path || P.path || P.slug || P.id;
+        const draft = String(self.state.trackDraft || '');
+        const afterSave = function () {
+          self.setState({ trackModal: false });
+          if (idx === 0) {
+            Promise.resolve(syncAltTrackStep(1)).then(function (res) {
+              const track = (res && res.alt_track) || Object.assign({}, persistedTrack, { step: 1, auto: !!persistedTrack.auto });
+              app.toast('Paula PM', 'O mapeamento foi aceito. A Paula está assumindo o planejamento.');
+              if (self._runAltTrackChain) self._runAltTrackChain({ track: track, force: true, once: !track.auto });
+            });
+            return;
+          }
+          const live = (self.state.altTrack && self.state.altTrack[P.id]) || persistedTrack;
+          if (self._runAltTrackChain) self._runAltTrackChain({ track: Object.assign({}, live, { step: idx }), force: true, once: !live.auto });
+        };
+        if (tavir && tavir.projects && tavir.projects.saveAltTrackNote) {
+          tavir.projects.saveAltTrackNote(target, idx, draft).then(function (res) {
+            if (res && res.alt_track) applyAltTrack(res.alt_track);
+            afterSave();
+          }).catch(afterSave);
+        } else afterSave();
+      },
+      chgOpen: !!s.chgOpen, chgDraft: s.chgDraft || '',
+      chgClose: () => self.setState({ chgOpen: false, chgDraft: '' }),
+      chgBg: (e) => { if (e && e.target === e.currentTarget) self.setState({ chgOpen: false, chgDraft: '' }); },
+      onChgDraft: (e) => self.setState({ chgDraft: e.target.value }),
+      chgSend: () => {
+        const txt = String(self.state.chgDraft || '').trim();
+        if (!txt) { app.toast('Descreva a alteração', 'O pedido precisa de um texto.'); return; }
+        self.setState({ chgOpen: false, chgDraft: '', chat: true, draft: txt, ptab: projFinished ? 'trilho' : self.state.ptab });
+        if (projFinished && alterationsOpen) syncAltTrackStep(Math.max(0, altTrackStep));
+        if (self.sendIrisMessage) self.sendIrisMessage(txt, { asChangeRequest: true });
+        else {
+          // fallback: dispara o send do formulário da Íris
+          self.setState({ draft: txt });
+          setTimeout(function () {
+            const formSend = self._irisSend;
+            if (typeof formSend === 'function') formSend({ preventDefault: function () {} });
+          }, 30);
+        }
+      },
       now: now, nodes: STG.map((_, i) => nodeOf(i)),
       sel: { n: '0' + (s.stage + 1), label: S[0], owner: S[1], ini: S[2], role: S[3], dur: s.stage === cur && s.signed ? 'em curso' : S[4], cost: S[5], fileN: filesOf(s.stage).length, busy: s.stage === cur ? 'busy' : '',
         state: s.stage < cur ? 'concluída' : s.stage === cur ? (s.signed ? 'em andamento' : 'no gate') : 'aguardando', locked: s.stage >= cur, waiting: s.stage > cur, prev: STG[Math.max(0, s.stage - 1)][0],
@@ -2125,17 +2796,59 @@ class Component extends DCLogic {
       onDraft: (e) => self.setState({ draft: e.target.value }),
       sugs: (isM ? (s.stage === 4 ? ['O que mudou no último build?', 'A prévia já está no ar?'] : s.stage === 5 ? ['Quem está bloqueando o QA?', 'Quanto falta para entregar?'] : ['Resuma esta etapa', 'Quanto falta para entregar?']) : ['Resuma esta etapa', 'O que falta para entregar?']).concat(['Quais arquivos mudaram hoje?']).map((x) => ({ t: x, pick: () => self.setState({ draft: x }) })),
       send: (e) => {
-        if (e && e.preventDefault) e.preventDefault(); const txt = s.draft.trim(); if (!txt) return;
-        const pidNow = P.id; const base = chat.concat([['Carlos', txt, 'me', [], hm()]]);
+        if (e && e.preventDefault) e.preventDefault();
+        const txt = String((self.state.draft != null ? self.state.draft : s.draft) || '').trim();
+        if (!txt) return;
+        if (self.sendIrisMessage) {
+          self.sendIrisMessage(txt, { asChangeRequest: false });
+          return;
+        }
+        const pidNow = P.id;
+        const unlocked = !projFinished || !!(self.state.altOpen && self.state.altOpen[pidNow]) || !!P.alterations_open;
+        const base = chat.concat([['Carlos', txt, 'me', [], hm()]]);
         const c2 = Object.assign({}, s.chats); c2[pidNow] = base; self.setState({ chats: c2, draft: '', typing: true });
         clearTimeout(self.t3);
-        self.t3 = setTimeout(() => {
-          const st = self.state; let reply;
-          if (pidNow === 'meridian') { const left = GUARD.length - st.guard.filter(Boolean).length; reply = st.signed ? 'QA assinado. Security deve fechar hoje e SEO amanhã. Entrega mantida para 04/11.' : left ? 'Faltam ' + left + ' critérios de QA. Depois vêm Security, SEO e Handoff. Com o gate assinado hoje, a entrega fica em 04/11.' : 'O Guard está verde. Só falta a sua assinatura para seguir para Security.'; }
-          else { const nxt = P.done + 1 < P.n ? P.stages[P.done + 1][0] : null; reply = P.status === 'done' ? 'O projeto está entregue com o Guard em 8 de 8. ' + (pidNow === 'novoapp' ? 'Falta só o deploy na conta do cliente, que está no pacote de Handoff.' : 'O runbook está no workspace.') : P.status === 'paused' ? 'A esteira está pausada em ' + stName + '. O contexto está salvo: ao retomar, o motor continua dali.' : (P.pends.length ? 'Estamos em ' + stName + ', esperando a sua autorização: ' + P.pends[0].t + '.' : 'Estamos em ' + stName + ', em execução.') + (nxt ? ' Depois vem ' + nxt + '.' : ''); }
-          const c3 = Object.assign({}, st.chats); c3[pidNow] = (st.chats[pidNow] || base).concat([['Íris · ' + Eng.label, reply, 'ag', ['[Contexto] ' + P.name + ' · etapa ' + stName, '[Leitura] ' + P.disk[1] + ' arquivos indexados na pasta isolada', '[Plano] responder com o estado da esteira e o próximo passo'], hm()]]);
+        const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+        const finish = (reply, thoughts) => {
+          const st = self.state;
+          const c3 = Object.assign({}, st.chats);
+          c3[pidNow] = (st.chats[pidNow] || base).concat([['Íris · ' + Eng.label, reply, 'ag', thoughts || ['[' + Eng.label + '] Resposta local'], hm()]]);
           self.setState({ chats: c3, typing: false });
-        }, 1100);
+        };
+        if (tavir && tavir.projects && tavir.projects.askIris) {
+          tavir.projects.askIris({
+            projectId: P.id,
+            projectName: P.name,
+            projectPath: P.local_path || P.path || P.slug || '',
+            stageName: stName,
+            stageOwner: P.owner || 'Paula PM',
+            engine: motor.engine || Eng.label,
+            model: Mo[0],
+            effort: motor.effort,
+            question: txt,
+            asChangeRequest: false
+          }).then(function (res) {
+            const msg = res && res.replyMessage;
+            finish((msg && msg.t) || 'Pedido registrado.', (msg && msg.thoughts) || []);
+          }).catch(function () {
+            finish('Não consegui falar com o motor agora. Tente de novo em instantes.', ['[Erro] IPC askIris']);
+          });
+          return;
+        }
+        self.t3 = setTimeout(() => {
+          let reply;
+          if (!unlocked && projFinished) {
+            reply = 'O projeto está fechado para alterações. Use Liberar alterações para conversar com os agentes sem reabrir a esteira.';
+          } else if (pidNow === 'meridian') {
+            const left = GUARD.length - self.state.guard.filter(Boolean).length;
+            reply = self.state.signed ? 'QA assinado. Security deve fechar hoje e SEO amanhã.' : left ? 'Faltam ' + left + ' critérios de QA.' : 'O Guard está verde. Falta a sua assinatura.';
+          } else {
+            reply = unlocked
+              ? ('Absorvi "' + txt + '" no contexto de ' + P.name + ' · ' + stName + ' via ' + Eng.label + '.')
+              : ('Estamos em ' + stName + '.');
+          }
+          finish(reply, ['[Contexto] ' + P.name + ' · ' + stName, '[Motor] ' + Eng.label, unlocked ? '[Absorção] memória do projeto' : '[Consulta] projeto fechado']);
+        }, 600);
       },
       // visualizador
       vw: vw,

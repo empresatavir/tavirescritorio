@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow, app, dialog } from 'electron';
+import { ipcMain, BrowserWindow, app, dialog, shell } from 'electron';
 import { carregarDb, salvarDb } from './db';
 import { engineHub } from './drivers/engineHub';
 import { criarWorktree, removerWorktree } from './gitFlow';
@@ -85,100 +85,71 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     return engineHub.getCatalog();
   });
 
-  handle('engines:detect', () => {
-    const fs = require('node:fs');
-    const os = require('node:os');
-    const pathMod = require('node:path');
-    const home = os.homedir();
-    const local = process.env.LOCALAPPDATA || '';
-    const appdata = process.env.APPDATA || '';
+  handle('engines:detect', async () => {
+    const { motorAuthStatus } = await import('./motorAuth');
+    const ids = ['cursor', 'claude', 'codex', 'antigravity'] as const;
+    const rows = await Promise.all(ids.map((id) => motorAuthStatus(id)));
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      installed: row.installed,
+      sdk: row.installed,
+      loggedIn: row.loggedIn,
+      path: row.path,
+      detail: row.detail,
+      hasKey: row.hasKey,
+    }));
+  });
 
-    const findFirst = (candidates: string[], fallback: string): string => {
-      for (const c of candidates) {
-        if (c && fs.existsSync(c)) return c;
+  handle('engines:login', async (_e, engineId: string) => {
+    const { startMotorLogin } = await import('./motorAuth');
+    const result = await startMotorLogin(engineId);
+    if (result.url) {
+      try {
+        await shell.openExternal(result.url);
+      } catch (err) {
+        return {
+          ...result,
+          ok: false,
+          error: String(err),
+          message: result.message + ' (não consegui abrir o navegador automaticamente)',
+        };
       }
-      return fallback;
-    };
+    }
+    return result;
+  });
 
-    const cursorPath = findFirst(
-      [
-        pathMod.join(local, 'Programs', 'cursor', 'Cursor.exe'),
-        pathMod.join(local, 'cursor-agent', 'agent.cmd'),
-        pathMod.join(home, '.cursor'),
-      ],
-      pathMod.join(home, '.cursor'),
-    );
-    const claudePath = findFirst(
-      [
-        pathMod.join(appdata, 'npm', 'claude.cmd'),
-        pathMod.join(home, '.local', 'bin', 'claude.exe'),
-        pathMod.join(home, '.claude'),
-      ],
-      pathMod.join(home, '.claude'),
-    );
-    const codexPath = findFirst(
-      [
-        pathMod.join(appdata, 'npm', 'codex.cmd'),
-        pathMod.join(local, 'Programs', 'OpenAI', 'Codex', 'bin', 'codex.exe'),
-        pathMod.join(home, '.codex'),
-      ],
-      pathMod.join(home, '.codex'),
-    );
-    const agyPath = findFirst(
-      [
-        pathMod.join(home, '.gemini', 'antigravity'),
-        pathMod.join(local, 'Programs', 'Antigravity', 'Antigravity.exe'),
-        pathMod.join(local, 'Programs', 'Antigravity IDE', 'Antigravity IDE.exe'),
-        pathMod.join(appdata, 'npm', 'agy.cmd'),
-        pathMod.join(home, '.antigravity'),
-      ],
-      pathMod.join(home, '.gemini', 'antigravity'),
-    );
+  handle('engines:saveKey', async (_e, payload: { engineId: string; apiKey?: string; baseUrl?: string }) => {
+    const { saveMotorKey } = await import('./motorAuth');
+    return saveMotorKey(payload?.engineId || '', payload?.apiKey || '', payload?.baseUrl);
+  });
 
-    return [
-      {
-        id: 'cursor',
-        name: 'Cursor',
-        installed: true,
-        sdk: true,
-        loggedIn: true,
-        path: cursorPath,
-        detail: `SDK local detectado · ${cursorPath}`,
-      },
-      {
-        id: 'claude',
-        name: 'Claude',
-        installed: true,
-        sdk: true,
-        loggedIn: true,
-        path: claudePath,
-        detail: `SDK local detectado · ${claudePath}`,
-      },
-      {
-        id: 'codex',
-        name: 'Codex',
-        installed: true,
-        sdk: true,
-        loggedIn: true,
-        path: codexPath,
-        detail: `SDK local detectado · ${codexPath}`,
-      },
-      {
-        id: 'antigravity',
-        name: 'Antigravity',
-        installed: true,
-        sdk: true,
-        loggedIn: true,
-        path: agyPath,
-        detail: `SDK local detectado · ${agyPath}`,
-      },
-    ];
+  handle('engines:keyStatus', async (_e, engineId?: string) => {
+    const { motorHasKey, getMotorBaseUrl, normalizeMotorId } = await import('./motorAuth');
+    if (engineId) {
+      const id = normalizeMotorId(engineId);
+      return { engine: id, hasKey: motorHasKey(id), baseUrl: getMotorBaseUrl(id) };
+    }
+    return (['cursor', 'claude', 'codex', 'antigravity'] as const).map((id) => ({
+      engine: id,
+      hasKey: motorHasKey(id),
+      baseUrl: getMotorBaseUrl(id),
+    }));
   });
 
   // Jobs
   handle('jobs:list', () => {
     const db = carregarDb();
     return db.jobs;
+  });
+
+  handle('jobs:logs', () => {
+    try {
+      const { listarLogsJobs } = require('./db');
+      return listarLogsJobs();
+    } catch {
+      return {};
+    }
   });
 
   handle('jobs:start', async (_e, params: { title: string; engine: EngineKind; model: string; ceiling: number }) => {
@@ -792,12 +763,193 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
-  handle('projects:askIris', (_e, params: any) => {
+  handle('projects:askIris', async (_e, params: any) => {
     try {
       const { askProjectIris } = require('./project-fs');
-      return askProjectIris(params);
+      return await askProjectIris(params);
     } catch (err) {
-      return { ok: false, messages: [] };
+      console.error('[TAVIR IPC] askIris falhou:', err);
+      return {
+        ok: false,
+        messages: [],
+        replyMessage: {
+          id: 'err-' + Date.now(),
+          who: 'Íris',
+          role: 'ag',
+          engine: 'Cursor',
+          ts: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          thoughts: ['[Erro] ' + String(err)],
+          t: 'Não consegui completar a conversa com o agente agora. Tente de novo em instantes.',
+        },
+      };
+    }
+  });
+
+  handle('projects:getAlterationsControl', (_e, idOrPath: string) => {
+    try {
+      const { getProjectAlterationsControl } = require('./project-fs');
+      return getProjectAlterationsControl(idOrPath);
+    } catch (err) {
+      return { ok: false, alterations_open: false, chat_unlocked: false, finished: false };
+    }
+  });
+
+  handle('projects:setAlterationsOpen', (_e, idOrPath: string, open: boolean) => {
+    try {
+      const { setProjectAlterationsOpen } = require('./project-fs');
+      return setProjectAlterationsOpen(idOrPath, Boolean(open));
+    } catch (err) {
+      return { ok: false, alterations_open: Boolean(open), chat_unlocked: false };
+    }
+  });
+
+  handle('projects:clearAltTrackFault', (_e, idOrPath: string) => {
+    try {
+      const { clearProjectAltTrackFault } = require('./project-fs');
+      return clearProjectAltTrackFault(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:advanceAltTrack', (_e, idOrPath: string, fromStep?: number) => {
+    try {
+      const { advanceProjectAltTrack } = require('./project-fs');
+      const step = typeof fromStep === 'number' && Number.isFinite(fromStep) ? fromStep : undefined;
+      return advanceProjectAltTrack(idOrPath, step);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:closeAltTrackItem', (_e, idOrPath: string, fromStep?: number) => {
+    try {
+      const { closeProjectAltTrackItem } = require('./project-fs');
+      const step = typeof fromStep === 'number' && Number.isFinite(fromStep) ? fromStep : undefined;
+      return closeProjectAltTrackItem(idOrPath, step);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:startAltTrackCycle', (_e, idOrPath: string) => {
+    try {
+      const { startNewAltTrackCycle } = require('./project-fs');
+      return startNewAltTrackCycle(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:saveAltTrackNote', (_e, idOrPath: string, index: number, text: string) => {
+    try {
+      const { saveProjectAltTrackNote } = require('./project-fs');
+      return saveProjectAltTrackNote(idOrPath, Number(index) || 0, String(text || ''));
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:setAltTrackStep', (_e, idOrPath: string, step: number) => {
+    try {
+      const { setProjectAltTrackStep } = require('./project-fs');
+      return setProjectAltTrackStep(idOrPath, Number(step) || 0);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:setAltTrackAuto', (_e, idOrPath: string, auto: boolean) => {
+    try {
+      const { setProjectAltTrackAuto } = require('./project-fs');
+      return setProjectAltTrackAuto(idOrPath, Boolean(auto));
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:approveAltTrack', (_e, idOrPath: string) => {
+    try {
+      const { approveAltTrackGate } = require('./project-fs');
+      return approveAltTrackGate(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:runAltTrack', async (e, idOrPath: string, stepOverride?: number) => {
+    let jobId = '';
+    let jobTitle = 'Trilho de alteração';
+    const send = (evt: any) => {
+      try {
+        e.sender.send('run:event', evt);
+      } catch {}
+    };
+    const stamp = () => new Date().toISOString();
+    const { executeAltTrackStep } = require('./project-fs');
+    const { abrirJobTrilho, atualizarJobTrilho, registrarEventoJob } = require('./db');
+    try {
+      const step = typeof stepOverride === 'number' && Number.isFinite(stepOverride) ? stepOverride : undefined;
+      const res = await executeAltTrackStep(idOrPath, {
+        onStart(info: any) {
+          const job = abrirJobTrilho(info);
+          jobId = job.id;
+          jobTitle = job.title;
+          registrarEventoJob(jobId, 'inicio', `Iniciando ${info.focus} com ${info.owner} · ${info.motor}`, 'info');
+          send({
+            runId: jobId,
+            timestamp: stamp(),
+            type: 'thought',
+            content: `Iniciando ${info.focus} · ${info.owner} · ${info.motor}`,
+            meta: { track: true, status: 'running', progress: 12, title: jobTitle, projectName: info.projectName, focus: info.focus, owner: info.owner, motor: info.motor, model: info.model },
+          });
+        },
+        onLine(text: string, level: 'info' | 'error') {
+          if (jobId) registrarEventoJob(jobId, level === 'error' ? 'erro' : 'passo', text, level === 'error' ? 'error' : 'info');
+          send({
+            runId: jobId || 'trilho-local',
+            timestamp: stamp(),
+            type: level === 'error' ? 'error' : 'thought',
+            content: text,
+            meta: { track: true, status: level === 'error' ? 'failed' : 'running', progress: level === 'error' ? 100 : 60, title: jobTitle },
+          });
+        },
+        onEnd(info: { ok: boolean; status: string; text: string }) {
+          const status = info.status === 'failed' ? 'failed' : info.status === 'waiting' ? 'paused' : 'completed';
+          if (jobId) {
+            atualizarJobTrilho(jobId, status, info.ok ? '' : info.text);
+            registrarEventoJob(jobId, 'fim', info.text, info.ok ? 'info' : 'error');
+          }
+          send({
+            runId: jobId || 'trilho-local',
+            timestamp: stamp(),
+            type: info.ok ? 'done' : 'error',
+            content: info.text,
+            meta: { track: true, status, progress: 100, title: jobTitle },
+          });
+        },
+      }, step);
+      if (res && res.error && !res.ok) {
+        send({
+          runId: jobId || 'trilho-local',
+          timestamp: stamp(),
+          type: 'error',
+          content: String(res.error),
+          meta: { track: true, status: 'failed', progress: 100, title: jobTitle, focus: 'Trilho', owner: 'Escritório' },
+        });
+      }
+      return Object.assign({}, res, { jobId });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (jobId) atualizarJobTrilho(jobId, 'failed', message);
+      send({
+        runId: jobId || 'trilho-local',
+        timestamp: stamp(),
+        type: 'error',
+        content: message,
+        meta: { track: true, status: 'failed', progress: 100, title: jobTitle },
+      });
+      return { ok: false, error: message, jobId };
     }
   });
 
