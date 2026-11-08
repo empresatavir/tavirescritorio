@@ -25,7 +25,7 @@ describe('moldes das esteiras', () => {
     expect(esteiraTemplate('of-c').stages).toHaveLength(8);
     expect(esteiraTemplate('of-m').stages).toHaveLength(6);
     expect(esteiraTemplate('sy-c').stages).toHaveLength(15);
-    expect(esteiraTemplate('sy-m').stages).toHaveLength(8);
+    expect(esteiraTemplate('sy-m').stages).toHaveLength(9);
   });
 
   it('marca como gate só as etapas de decisão humana', () => {

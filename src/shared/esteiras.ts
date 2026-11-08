@@ -106,8 +106,17 @@ export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {
     ['Correção e migração', 'Diego Dev Front & Back', 'test-driven-development', 3],
     ['Loop Linter & Compiler', 'Compiler TAVIR', 'tsc --noEmit · dart analyze', 1],
     ['QA E2E Playwright', 'Talita QA', 'playwright', 1],
+    ['Segurança & LGPD', 'Sérgio Seg/LGPD', 'web-security', 1],
     ['Handoff', 'Paulo Publicador', 'pacote-entrega', 1],
   ]),
+};
+
+/**
+ * Nomes das etapas de moldes que mudaram depois de haver projetos gravados. Esteiras antigas
+ * guardavam só a posição; com isto o main remapeia pelo nome em vez de deslocar os registros.
+ */
+export const LEGACY_STAGE_NAMES: Partial<Record<EsteiraCode, string[]>> = {
+  'SY-M1': ['Entender', 'Refinar', 'Dossiê', 'Diagnóstico técnico', 'Correção e migração', 'Loop Linter & Compiler', 'QA E2E Playwright', 'Handoff'],
 };
 
 /** `sy-c`, `SY_M1`, `of-m`… → código do molde. Mesma regra que o painel usava. */

@@ -57,3 +57,17 @@ Roda a suíte completa de testes unitários/integração do backend (`pytest`) e
 - **Painel Operacional (Frontend):** `http://localhost:9002/`
 - **Swagger API Docs (Backend):** `http://127.0.0.1:9001/docs`
 - **OpenAPI JSON:** `http://127.0.0.1:9001/openapi.json`
+
+
+---
+
+## App desktop (Electron) e Fábrica
+
+```
+npm install
+npm start              # build (main + renderer) e abre o app
+npm test               # testes unitários (vitest)
+npm run test:motores   # conformidade dos 4 motores de IA
+```
+
+Para os portões automáticos da Fábrica: ffmpeg (GIFs do QA) e, para a varredura de segurança completa, gitleaks, trivy, semgrep e pip-audit no PATH. Sem eles a varredura roda só com as regras próprias. Detalhes em [docs/modules/fabrica.md](docs/modules/fabrica.md).

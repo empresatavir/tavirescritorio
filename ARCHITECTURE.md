@@ -81,3 +81,11 @@ tavirescritorio/
 - [ADR-004: Separação Formal entre Templates da Fábrica e Workflows Canônicos de Negócio](docs/adr/ADR-004-separacao-templates-fabrica-workflows-negocio.md)
 - [ADR-005: Governança de Portas Oficiais (9001/9002) e Execução Windows](docs/adr/ADR-005-portas-oficiais-e-processos-windows.md)
 - [ADR-006: Papel do GhostCLI como Gateway do Chat e Cline como Agente de Desenvolvimento](docs/adr/ADR-006-gateway-ghostcli-e-cline-desenvolvimento.md)
+
+
+---
+
+## 7. Fábrica no app Electron
+O app desktop em uso é o Electron (`src/main`, `src/preload`, `src/renderer`), com banco SQLite em `backend/tavir.db` via `node:sqlite`. O frontend SolidJS e o backend FastAPI descritos acima são a versão anterior.
+
+A Fábrica (esteiras, trilho de alteração, livro de execuções, portões de QA e de segurança) está descrita em [docs/modules/fabrica.md](docs/modules/fabrica.md). Princípio: o motor de IA executa; quem fecha a etapa é o gate do CEO, a suíte de QA ou a varredura de segurança.

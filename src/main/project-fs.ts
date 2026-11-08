@@ -4,7 +4,7 @@ import * as os from 'node:os';
 import * as crypto from 'node:crypto';
 import { execFile, execFileSync, spawn } from 'node:child_process';
 import { fitCall } from '../shared/engineCatalog';
-import { esteiraTemplate, type EsteiraStage } from '../shared/esteiras';
+import { esteiraTemplate, LEGACY_STAGE_NAMES, type EsteiraCode, type EsteiraStage } from '../shared/esteiras';
 import { commitStep, type StepCommitResult } from './stepCommit';
 import { annotateRun, type RunChanges } from './runLedger';
 import { listQaRuns, qaSummary, runQa, type QaRun } from './qa/qaRunner';
@@ -2594,7 +2594,7 @@ type EsteiraStageRecord = {
   /** Varreduras do portão de segurança (qa/seguranca/<id>). */
   seg?: string[];
 };
-type EsteiraDesk = { auto: boolean; template: string; stages: EsteiraStageRecord[] };
+type EsteiraDesk = { auto: boolean; template: string; stages: EsteiraStageRecord[]; names?: string[] };
 
 const ESTEIRA_STATUS: EsteiraStatus[] = ['idle', 'running', 'paused', 'done', 'stopped', 'awaiting'];
 
@@ -2658,6 +2658,12 @@ function readEsteira(rootPath: string): EsteiraDesk {
     const done = Math.min(defs.length, legacyStagesDone(rootPath));
     saved = defs.map((_d, i) => (i < done ? { status: 'done', note: 'Marcada como concluída no registro anterior da Fábrica, sem execução registrada no livro.' } : {}));
   }
+  // Molde mudou (etapa nova no meio): remapeia os registros pelo nome da etapa, não pela posição.
+  const want = defs.map((d) => d.name);
+  const legacy = LEGACY_STAGE_NAMES[code as EsteiraCode];
+  const had: string[] | null = Array.isArray(raw.names) ? raw.names.map(String) : !fresh && legacy && saved.length === legacy.length ? legacy : null;
+  const remapped = !!had && had.join('|') !== want.join('|');
+  if (remapped) saved = want.map((n) => { const j = had!.indexOf(n); return j >= 0 ? saved[j] : {}; });
   const live = liveAgents.get(`${rootPath}:esteira`);
   const stages: EsteiraStageRecord[] = defs.map((_def, i) => {
     const row = saved[i] && typeof saved[i] === 'object' ? saved[i] : {};
@@ -2673,12 +2679,16 @@ function readEsteira(rootPath: string): EsteiraDesk {
       commits: Array.isArray(row.commits) ? row.commits.map((x: unknown) => String(x)).slice(-30) : [],
       decision: row.decision && typeof row.decision === 'object' ? (row.decision as DecisionEntry) : null,
       qa: Array.isArray(row.qa) ? row.qa.map((x: unknown) => String(x)).slice(-30) : [],
+      seg: Array.isArray(row.seg) ? row.seg.map((x: unknown) => String(x)).slice(-30) : [],
     };
   });
-  return { auto: Boolean(raw.auto), template: code, stages };
+  const desk: EsteiraDesk = { auto: Boolean(raw.auto), template: code, stages, names: want };
+  if (remapped) writeEsteira(rootPath, desk);
+  return desk;
 }
 
 function writeEsteira(rootPath: string, desk: EsteiraDesk): void {
+  desk.names = projectStages(rootPath).stages.map((d) => d.name);
   fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
   fs.writeFileSync(esteiraFile(rootPath), JSON.stringify(desk, null, 2), 'utf8');
   syncEsteiraProgress(rootPath, desk);
