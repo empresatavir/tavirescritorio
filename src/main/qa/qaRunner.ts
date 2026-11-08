@@ -122,7 +122,7 @@ function freePort(): Promise<number> {
   });
 }
 
-function killTree(child: ChildProcess | null): void {
+export function killTree(child: ChildProcess | null): void {
   if (!child || child.exitCode != null || !child.pid) return;
   try {
     if (WIN) spawn('taskkill', ['/pid', String(child.pid), '/t', '/f'], { windowsHide: true });
@@ -295,6 +295,75 @@ function jornadaScript(): string {
   return fs.existsSync(local) ? local : path.join(process.cwd(), 'dist', 'main', 'qa', 'jornada.js');
 }
 
+export interface StartedTarget {
+  up: boolean;
+  baseUrl: string;
+  label: string;
+  server: ChildProcess | null;
+  staticSrv: http.Server | null;
+  /** Por que não subiu (fim do log do servidor). */
+  error: string;
+  stop: () => void;
+}
+
+/**
+ * Sobe o app do projeto como o plano de QA manda (servidor de dev ou estático) numa porta
+ * livre em 127.0.0.1 e espera responder. Usado pelo QA e pela varredura gray box.
+ */
+export async function startTarget(
+  workspace: string,
+  plan: QaPlan,
+  logFile: string,
+  track: (c: ChildProcess | null) => void,
+  stopped: () => boolean,
+): Promise<StartedTarget> {
+  const port = await freePort();
+  let baseUrl = `http://127.0.0.1:${port}/`;
+  let server: ChildProcess | null = null;
+  let staticSrv: http.Server | null = null;
+  let up = false;
+  let label = 'sem alvo web';
+  let error = '';
+  if (plan.target.kind === 'static') {
+    staticSrv = serveStatic(plan.target.dir, port);
+    label = `estático · ${path.relative(workspace, plan.target.dir) || '.'}`;
+    up = await waitHttp(baseUrl, 10000, () => true);
+    if (!up) error = 'Servidor estático não respondeu';
+  } else if (plan.target.kind === 'dev') {
+    const t = plan.target;
+    const args = plan.manager === 'npm' ? [...t.args, '--', '--port', String(port)] : [...t.args, '--port', String(port)];
+    label = `${t.framework} · ${plan.manager} run ${t.script}`;
+    let serverOut = '';
+    const srv = spawnCmd(t.command, args, workspace, qaEnv({ PORT: String(port), HOST: '127.0.0.1' }));
+    server = srv;
+    track(srv);
+    const grab = (b: Buffer) => {
+      serverOut += b.toString('utf8');
+      const m = serverOut.replace(/\x1b\[[0-9;]*m/g, '').match(/https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\]):(\d+)/);
+      if (m && m[1] !== String(port)) baseUrl = `http://127.0.0.1:${m[1]}/`;
+    };
+    srv.stdout?.on('data', grab);
+    srv.stderr?.on('data', grab);
+    const alive = () => srv.exitCode == null && !stopped();
+    up = await waitHttp(baseUrl, 180000, alive);
+    if (!up && serverOut) {
+      const m = serverOut.match(/https?:\/\/(?:localhost|127\.0\.0\.1):(\d+)/);
+      if (m) { baseUrl = `http://127.0.0.1:${m[1]}/`; up = await waitHttp(baseUrl, 20000, alive); }
+    }
+    fs.writeFileSync(logFile, serverOut, 'utf8');
+    srv.stdout?.on('data', (b: Buffer) => fs.appendFileSync(logFile, b));
+    srv.stderr?.on('data', (b: Buffer) => fs.appendFileSync(logFile, b));
+    track(null);
+    if (!up) error = tail(serverOut, 30) || 'O servidor de desenvolvimento não respondeu';
+  } else {
+    error = plan.target.reason;
+  }
+  return {
+    up, baseUrl, label, server, staticSrv, error,
+    stop: () => { killTree(server); staticSrv?.close(); },
+  };
+}
+
 export async function runQa(opts: QaRunOptions): Promise<QaRun> {
   const workspace = path.resolve(opts.workspace);
   const started = new Date();
@@ -354,46 +423,20 @@ export async function runQa(opts: QaRunOptions): Promise<QaRun> {
   let targetLbl = 'sem alvo web';
   const serverTests: QaTestResult[] = [];
   if (!stopped && plan.target.kind !== 'none' && !(plan.target.kind === 'dev' && noDeps)) {
-    const port = await freePort();
-    let baseUrl = `http://127.0.0.1:${port}/`;
-    let up = false;
     const t0 = Date.now();
-    if (plan.target.kind === 'static') {
-      staticSrv = serveStatic(plan.target.dir, port);
-      targetLbl = `estático · ${path.relative(workspace, plan.target.dir) || '.'}`;
-      up = await waitHttp(baseUrl, 10000, () => true);
-    } else {
-      const t = plan.target;
-      const args = plan.manager === 'npm' ? [...t.args, '--', '--port', String(port)] : [...t.args, '--port', String(port)];
-      targetLbl = `${t.framework} · ${plan.manager} run ${t.script}`;
-      say(`Subindo o app (${plan.manager} run ${t.script}) na porta ${port}`);
-      let serverOut = '';
-      server = spawnCmd(t.command, args, workspace, qaEnv({ PORT: String(port), HOST: '127.0.0.1' }));
-      track(server);
-      const grab = (b: Buffer) => {
-        serverOut += b.toString('utf8');
-        const m = serverOut.replace(/\x1b\[[0-9;]*m/g, '').match(/https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\]):(\d+)/);
-        if (m && m[1] !== String(port)) baseUrl = `http://127.0.0.1:${m[1]}/`;
-      };
-      server.stdout?.on('data', grab);
-      server.stderr?.on('data', grab);
-      const alive = () => !!server && server.exitCode == null && !stopped;
-      up = await waitHttp(baseUrl, 180000, alive);
-      if (!up && serverOut) {
-        const m = serverOut.match(/https?:\/\/(?:localhost|127\.0\.0\.1):(\d+)/);
-        if (m) { baseUrl = `http://127.0.0.1:${m[1]}/`; up = await waitHttp(baseUrl, 20000, alive); }
-      }
-      fs.writeFileSync(path.join(dir, 'logs', 'servidor.log'), serverOut, 'utf8');
-      server.stdout?.on('data', (b: Buffer) => fs.appendFileSync(path.join(dir, 'logs', 'servidor.log'), b));
-      server.stderr?.on('data', (b: Buffer) => fs.appendFileSync(path.join(dir, 'logs', 'servidor.log'), b));
-      track(null);
-    }
+    if (plan.target.kind === 'dev') say(`Subindo o app (${plan.manager} run ${plan.target.script})`);
+    const tg = await startTarget(workspace, plan, path.join(dir, 'logs', 'servidor.log'), track, () => stopped);
+    server = tg.server;
+    staticSrv = tg.staticSrv;
+    targetLbl = tg.label;
+    const up = tg.up;
+    const baseUrl = tg.baseUrl;
     serverTests.push({
       name: 'App sobe e responde',
       st: up ? 'pass' : 'fail',
       dur: Math.round((Date.now() - t0) / 100) / 10,
       log: plan.target.kind === 'dev' ? 'logs/servidor.log' : undefined,
-      err: up ? null : { msg: 'O app não respondeu', exp: `HTTP em ${baseUrl}`, rec: plan.target.kind === 'dev' ? tail(fs.readFileSync(path.join(dir, 'logs', 'servidor.log'), 'utf8'), 30) : 'Servidor estático não respondeu', at: targetLbl, code: '' },
+      err: up ? null : { msg: 'O app não respondeu', exp: `HTTP em ${baseUrl}`, rec: tg.error, at: targetLbl, code: '' },
     });
     if (up && !stopped) {
       say(`App no ar em ${baseUrl} · iniciando a jornada`);

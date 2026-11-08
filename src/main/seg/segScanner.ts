@@ -489,10 +489,20 @@ async function gitleaks(bin: string, ws: string, outDir: string, git: boolean, t
   try { data = JSON.parse(fs.readFileSync(report, 'utf8')); } catch {
     return { tool: { name: 'gitleaks', ran: false, note: `Não rodou: ${tail(res.out, 3)}`, ms: res.ms }, drafts: [] };
   }
+  // O gitleaks varre o histórico inteiro: o achado só é "histórico" se o trecho já saiu do código atual.
+  const stillThere = (file: string, line: number, match: string) => {
+    try {
+      const cur = fs.readFileSync(path.join(ws, file), 'utf8').split(/\r?\n/)[line - 1] || '';
+      return String(match).split('REDACTED').map((p) => p.trim()).filter(Boolean).every((p) => cur.includes(p));
+    } catch {
+      return false;
+    }
+  };
   const drafts: Draft[] = data.map((g) => {
     const file = toPosix(String(g.File || ''));
+    const past = !!g.Commit && !stillThere(file, g.StartLine, g.Match || '');
     return {
-      fp: sha(`gitleaks|${g.RuleID}|${file}|${g.Fingerprint || g.Secret}`), sev: 'alta' as Sev, title: `${g.Description || g.RuleID} (gitleaks)`, key: g.Commit ? 'history' : 'secrets', tool: 'gitleaks', where: `${file}:${g.StartLine}${g.Commit ? ` · commit ${String(g.Commit).slice(0, 7)}` : ''}`, file, line: g.StartLine,
+      fp: sha(`gitleaks|${g.RuleID}|${file}|${g.Fingerprint || g.Secret}`), sev: 'alta' as Sev, title: `${g.Description || g.RuleID} (gitleaks)`, key: past ? 'history' : 'secrets', tool: 'gitleaks', where: `${file}:${g.StartLine}${past ? ` · commit ${String(g.Commit).slice(0, 7)}` : ''}`, file, line: g.StartLine,
       desc: SECRET_TEXT.desc(g.Description || 'Uma credencial'), ev: `${file}:${g.StartLine}\n${String(g.Match || '').slice(0, 220)}`,
       impact: SECRET_TEXT.impact, fix: SECRET_TEXT.fix, code: SECRET_TEXT.code, refs: [`gitleaks · ${g.RuleID}`, 'CWE-798'],
     };
@@ -524,6 +534,32 @@ async function trivy(bin: string, ws: string, outDir: string, track: (c: ChildPr
     }
   }
   return { tool: { name: 'trivy', ran: true, note: `${drafts.length} achado(s) · vuln + misconfig`, ms: res.ms, log: 'logs/trivy.json' }, drafts };
+}
+
+/**
+ * Ferramentas diferentes apontando a mesma linha (ou o mesmo arquivo, no histórico) viram um achado só,
+ * com a maior severidade e as ferramentas somadas. O trivy não repete pacote npm já auditado pelo npm audit.
+ */
+function mergeAcrossTools(list: Draft[]): Draft[] {
+  const own = (d: Draft) => (d.tool.startsWith('Regras TAVIR') ? 0 : 1);
+  const sorted = list.slice().sort((a, b) => SEV_ORDER[a.sev] - SEV_ORDER[b.sev] || own(a) - own(b));
+  const audited = new Set(list.filter((d) => d.key === 'deps' && / audit$/.test(d.tool)).map((d) => d.where.split(' ')[0]));
+  const byLoc = new Map<string, Draft>();
+  const out: Draft[] = [];
+  for (const d of sorted) {
+    if (d.tool === 'trivy' && d.key === 'deps' && /(?:package-lock\.json|pnpm-lock\.yaml)/.test(d.where) && audited.has(d.title.split(':')[0])) continue;
+    const loc = d.key === 'history' && d.file ? `hist|${d.file}` : d.file && d.line ? `${d.file}:${d.line}` : '';
+    const prev = loc ? byLoc.get(loc) : undefined;
+    if (prev && !prev.tool.split(' + ').includes(d.tool)) {
+      prev.tool = `${prev.tool} + ${d.tool}`;
+      prev.desc = `${prev.desc}\nTambém apontado por ${d.tool}: ${d.title}`;
+      prev.refs = Array.from(new Set(prev.refs.concat(d.refs))).slice(0, 6);
+      continue;
+    }
+    if (loc && !prev) byLoc.set(loc, d);
+    out.push(d);
+  }
+  return out;
 }
 
 function lastRun(workspace: string): SegRun | null {
@@ -587,7 +623,8 @@ export async function runSeg(opts: SegRunOptions): Promise<SegRun> {
     tools.push(r.tool);
     drafts.push(...r.drafts);
   }
-  if (git && !killed && !(gl && tools[tools.length - 1].ran)) {
+  // Roda mesmo com o gitleaks: ele descarta valores de baixa entropia que as regras próprias pegam.
+  if (git && !killed) {
     say('Procurando segredos no histórico do Git');
     const r = await scanHistory(workspace, new Set(secretDrafts.map((d) => d.fp)), track);
     tools.push({ name: 'Regras TAVIR · histórico do Git', ran: !r.note.startsWith('git log falhou'), note: `${r.drafts.length} achado(s) · ${r.note}`, ms: r.ms });
@@ -635,8 +672,11 @@ export async function runSeg(opts: SegRunOptions): Promise<SegRun> {
   // Deduplica por impressão digital, ordena e numera.
   const byFp = new Map<string, Draft>();
   for (const d of drafts) if (!byFp.has(d.fp) || SEV_ORDER[d.sev] < SEV_ORDER[byFp.get(d.fp)!.sev]) byFp.set(d.fp, d);
+  const merged = mergeAcrossTools(Array.from(byFp.values()));
+  byFp.clear();
+  for (const d of merged) byFp.set(d.fp, d);
   const accepts = readSegAccepts(workspace);
-  const current = Array.from(byFp.values()).map<SegFinding>((d) => ({ ...d, id: '', st: accepts[d.fp] ? 'aceita' : 'aberta', accepted: accepts[d.fp] }));
+  const current = merged.map<SegFinding>((d) => ({ ...d, id: '', st: accepts[d.fp] ? 'aceita' : 'aberta', accepted: accepts[d.fp] }));
   // O que estava aberto na varredura anterior e sumiu agora foi corrigido.
   const fixed = (prev?.findings || []).filter((f) => f.st !== 'corrigida' && !byFp.has(f.fp)).map((f) => ({ ...f, st: 'corrigida' as SegStatus }));
   const findings = current.concat(fixed).sort((a, b) => Number(a.st === 'corrigida') - Number(b.st === 'corrigida') || SEV_ORDER[a.sev] - SEV_ORDER[b.sev] || a.where.localeCompare(b.where));
