@@ -878,7 +878,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
       <div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{sec.sevs}}" as="v" hint-placeholder-count="5"><span class="fb-sev {{v.cls}}"><b>{{v.n}}</b>{{v.label}}</span></sc-for></div>
       <button class="btn sm primary" onClick="{{sec.run}}" disabled="{{sec.running}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4"></path></svg>{{sec.runLbl}}</button>
     </section>
-    <sc-if value="{{sec.running}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 14px 18px; display: flex; gap: 12px; align-items: center"><i class="spin" style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i><span class="grow" style="font-size: 13px">Rodando ZAP baseline, auditoria de dependências, gitleaks, cabeçalhos e checklist LGPD. O relatório sai em HTML.</span><div class="track" style="max-width: 220px; height: 6px"><div class="fill run" style="width: {{sec.prog}}%"></div></div></div></sc-if>
+    <sc-if value="{{sec.running}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 14px 18px; display: flex; gap: 12px; align-items: center"><i class="spin" style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i><span class="grow" style="font-size: 13px">{{sec.runTxt}}</span><div class="track" style="max-width: 220px; height: 6px"><div class="fill run" style="width: {{sec.prog}}%"></div></div></div></sc-if>
     <sc-if value="{{sec.has}}" hint-placeholder-val="{{true}}">
     <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
       <div style="flex: 2 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
@@ -905,11 +905,14 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
                   <h4>Impacto</h4><p class="sec">{{f.impact}}</p>
                   <h4>Como corrigir</h4><p>{{f.fix}}</p><pre class="fb-pre fix">{{f.code}}</pre>
                   <div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{f.refs}}" as="r" hint-placeholder-count="2"><span class="badge">{{r.t}}</span></sc-for></div>
+                  <sc-if value="{{f.accepting}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 8px; padding-top: 6px"><label class="field"><span>Por que o risco é aceito (fica no relatório e no livro de decisões)</span><textarea class="input" rows="3" value="{{f.accDraft}}" onChange="{{f.onAccDraft}}" placeholder="Ex.: chave de teste sem acesso a produção; trocada no deploy" style="resize: vertical; border-radius: 12px"></textarea></label><div style="display: flex; gap: 8px"><button class="btn sm primary" onClick="{{f.confirmAccept}}">Confirmar aceite</button><button class="btn sm ghost" onClick="{{f.cancelAccept}}">Cancelar</button></div></div></sc-if>
                   <div style="display: flex; gap: 8px; flex-wrap: wrap; padding-top: 4px">
-                    <sc-if value="{{f.isOpen}}" hint-placeholder-val="{{true}}"><button class="btn sm secondary" onClick="{{f.askFix}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 5 14h6l-1 7 8-11h-6z"></path></svg>Pedir correção ao motor</button><button class="btn sm ghost" onClick="{{f.markFixed}}">Marcar como corrigida</button></sc-if>
+                    <sc-if value="{{f.isOpen}}" hint-placeholder-val="{{true}}"><button class="btn sm secondary" onClick="{{f.askFix}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 5 14h6l-1 7 8-11h-6z"></path></svg>Pedir correção ao motor</button><sc-if value="{{f.isMock}}" hint-placeholder-val="{{true}}"><button class="btn sm ghost" onClick="{{f.markFixed}}">Marcar como corrigida</button></sc-if><sc-if value="{{f.isReal}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{f.startAccept}}">Aceitar risco</button></sc-if></sc-if>
+                    <sc-if value="{{f.isAccepted}}" hint-placeholder-val="{{false}}"><span class="badge" title="{{f.accNote}}">risco aceito · {{f.accNote}}</span><button class="btn sm ghost" onClick="{{f.unaccept}}">Retirar aceite</button></sc-if>
                     <sc-if value="{{f.isFixing}}" hint-placeholder-val="{{false}}"><span class="badge warn"><i class="spin" style="width: 9px; height: 9px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; background: transparent"></i>motor aplicando a correção</span></sc-if>
                     <sc-if value="{{f.isFixed}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{f.reopen}}">Reabrir</button></sc-if>
                     <button class="btn sm ghost" onClick="{{f.copyFix}}">Copiar sugestão</button>
+                    <sc-if value="{{f.hasTool}}" hint-placeholder-val="{{false}}"><span class="muted mono" style="font-size: 11px; align-self: center">{{f.tool}}</span></sc-if>
                     <sc-if value="{{f.hasImg}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{f.img}}">Ver print</button></sc-if>
                   </div>
                 </div>
@@ -1856,6 +1859,22 @@ class Component extends DCLogic {
         if (window.__tavirFabPing) window.__tavirFabPing();
       });
     }
+    if (typeof window !== 'undefined' && window.tavir && !window.__tavirSegLiveOn) {
+      window.__tavirSegLiveOn = true;
+      window.__tavirSegLive = {};
+      window.tavir.onEvent(function (evt) {
+        if (!evt || !evt.meta || !evt.meta.seg) return;
+        const k = String(evt.meta.projectKey || '');
+        const cur = window.__tavirSegLive[k] || { lines: [] };
+        if (evt.type === 'done') {
+          delete window.__tavirSegLive[k];
+          if (window.__tavirSegDone) window.__tavirSegDone(k, evt.meta);
+        } else {
+          window.__tavirSegLive[k] = { lines: cur.lines.concat(String(evt.content || '')).slice(-60) };
+        }
+        if (window.__tavirFabPing) window.__tavirFabPing();
+      });
+    }
     if (typeof window !== 'undefined') window.__tavirFabPing = function () { self.setState({ trackPulse: Date.now() }); };
     const pid = spot === 'topology' ? 'meridian' : s.pid;
     const ptab = spot === 'topology' ? 'esteira' : s.ptab;
@@ -2358,45 +2377,80 @@ class Component extends DCLogic {
     // ================= SEGURANÇA =================
     const sIdx = P.stages.findIndex((x) => /Segurança|Security/.test(x[0]));
     const sReached = sIdx >= 0 && P.done >= sIdx;
-    const SD = (SEC_DATA[P.id] || []).map((f) => ({ id: f[0], sev: f[1], title: f[2], key: f[3], where: f[4], desc: f[5], ev: f[6], impact: f[7], fix: f[8], code: f[9], refs: f[10], img: f[11] || null, st: s.secFix[P.id + ':' + f[0]] || f[12] || 'aberta' }));
-    SD.forEach((f) => { f.open = f.st !== 'corrigida'; });
+    const SD0 = (SEC_DATA[P.id] || []).map((f) => ({ id: f[0], sev: f[1], title: f[2], key: f[3], where: f[4], desc: f[5], ev: f[6], impact: f[7], fix: f[8], code: f[9], refs: f[10], img: f[11] || null, st: s.secFix[P.id + ':' + f[0]] || f[12] || 'aberta' }));
+    SD0.forEach((f) => { f.open = f.st !== 'corrigida'; });
+    const SD = SD0;
     const mkSec = (id, when, preview, onlyOpen) => ({ id: id, when: when, preview: preview, by: 'Sérgio Seg/LGPD · web-security', target: isM ? 'meridian-lp-preview.vercel.app' : P.slug.replace(/\\/g, '/'), tools: ['OWASP ZAP baseline', fam === 'SY' ? 'pub/npm audit' : 'npm audit', 'gitleaks', 'checagem de cabeçalhos', 'checklist LGPD'], fids: SD.filter((f) => !onlyOpen || f.open).map((f) => f.id) });
     const seedSec = () => { if (isM) return [mkSec('SEC-0031', 'hoje 13:40', true, false)]; if (sReached || P.status === 'done') return [mkSec('SEC-00' + (40 + P.id.length), P.status === 'done' ? 'entrega' : 'hoje 09:30', false, false)]; return []; };
-    const secRuns = s.secRuns[P.id] || seedSec();
+    // Varreduras reais (qa/seguranca/<id>/resultado.json). A demonstração fica só para os projetos de exemplo.
+    const realSec = !!P.local_path;
+    const secRuns = s.secRuns[P.id] || (realSec ? [] : seedSec());
     const sSel = secRuns.length ? Math.min(s.secSel[P.id] != null ? s.secSel[P.id] : secRuns.length - 1, secRuns.length - 1) : -1;
     const SR = sSel >= 0 ? secRuns[sSel] : null;
-    const sProg = s.prog['sec:' + P.id];
-    const fIn = SR ? SD.filter((f) => SR.fids.indexOf(f.id) >= 0) : [];
+    const segLive = (typeof window !== 'undefined' && window.__tavirSegLive && window.__tavirSegLive[P.id]) || null;
+    const sProg = segLive ? Math.min(95, 8 + segLive.lines.length * 7) : s.prog['sec:' + P.id];
+    const SDR = SR && SR.real ? SR.run.findings.map((f) => ({ id: f.id, fp: f.fp, sev: f.sev, title: f.title, key: f.key, where: f.where, desc: f.desc, ev: f.ev, impact: f.impact, fix: f.fix, code: f.code, refs: f.refs || [], img: null, st: f.st, tool: f.tool, accepted: f.accepted || null, open: f.st === 'aberta' })) : SD;
+    const fIn = SR ? SDR.filter((f) => SR.fids.indexOf(f.id) >= 0) : [];
     const fOpen = fIn.filter((f) => f.open);
     const score = Math.max(0, 100 - fOpen.reduce((a, f) => a + SEV[f.sev][2], 0));
-    const checks = SEC_CHECKS.map((c) => { const hit = fOpen.filter((f) => f.key === c[2]); const bad = hit.some((f) => SEV[f.sev][0] <= 2); const st = !hit.length ? 'pass' : bad ? 'fail' : 'warn'; return { area: c[0], t: c[1], st: st, lbl: st === 'pass' ? 'passou' : st === 'fail' ? 'falhou' : 'atenção', cls: st === 'pass' ? 'flow' : st === 'fail' ? 'danger' : 'warn', icon: st === 'pass' ? IC.check : st === 'fail' ? 'M6 6l12 12M18 6 6 18' : IC.dot }; });
-    const secEv = SR ? [{ kind: 'report', name: 'relatorio-seguranca-' + SR.id.toLowerCase() + '.html', size: '36 KB', i: 0 }].concat(fIn.filter((f) => f.img).map((f, k) => ({ kind: 'img', name: f.img[0], size: '240 KB', note: f.img[1], region: f.img[2], fail: f.open, mobile: false, fid: f.id, i: k + 1 }))) : [];
+    const CK_LBL = { pass: ['passou', 'flow', IC.check], fail: ['falhou', 'danger', 'M6 6l12 12M18 6 6 18'], warn: ['atenção', 'warn', IC.dot], skip: ['não se aplica', '', IC.dot] };
+    const checks = SR && SR.real ? SR.run.checks.map((c) => ({ area: c.area, t: c.title + (c.note && c.st !== 'pass' ? ' · ' + c.note : ''), st: c.st, lbl: CK_LBL[c.st][0], cls: CK_LBL[c.st][1], icon: CK_LBL[c.st][2] })) : SEC_CHECKS.map((c) => { const hit = fOpen.filter((f) => f.key === c[2]); const bad = hit.some((f) => SEV[f.sev][0] <= 2); const st = !hit.length ? 'pass' : bad ? 'fail' : 'warn'; return { area: c[0], t: c[1], st: st, lbl: st === 'pass' ? 'passou' : st === 'fail' ? 'falhou' : 'atenção', cls: st === 'pass' ? 'flow' : st === 'fail' ? 'danger' : 'warn', icon: st === 'pass' ? IC.check : st === 'fail' ? 'M6 6l12 12M18 6 6 18' : IC.dot }; });
+    const secEv = SR && SR.real ? [{ kind: 'report', name: 'index.html', size: 'HTML', i: 0 }] : SR ? [{ kind: 'report', name: 'relatorio-seguranca-' + SR.id.toLowerCase() + '.html', size: '36 KB', i: 0 }].concat(fIn.filter((f) => f.img).map((f, k) => ({ kind: 'img', name: f.img[0], size: '240 KB', note: f.img[1], region: f.img[2], fail: f.open, mobile: false, fid: f.id, i: k + 1 }))) : [];
     const secHtmlNow = () => secHtml(P, SR, fIn, checks, score);
     const sevF = { all: () => true, open: (f) => f.open, fixed: (f) => !f.open };
     const fShown = fIn.filter(sevF[s.sevF] || sevF.all).sort((a, b) => SEV[a.sev][0] - SEV[b.sev][0]);
     const firstOpen = fOpen.slice().sort((a, b) => SEV[a.sev][0] - SEV[b.sev][0])[0];
+    const openSegReport = () => { if (SR && SR.real && qaApi && qaApi.seg) qaApi.seg.open(qaTarget, SR.id, 'index.html').then(function (r) { if (r && r.ok === false) app.toast('Relatório', r.error || 'Não abriu.'); }); };
     const sec = {
       has: !!SR, none: !SR, running: sProg != null, prog: sProg || 0,
       runLbl: sProg != null ? 'Varrendo…' : SR ? 'Rodar varredura' : 'Rodar varredura prévia',
-      run: () => self.runTests('sec', P.id, secRuns, () => { const last = secRuns.length ? parseInt(secRuns[secRuns.length - 1].id.slice(4), 10) : 30; return mkSec('SEC-' + String(last + 1).padStart(4, '0'), 'agora ' + hm(), !sReached, true); }, 'Varredura de segurança concluída'),
+      runTxt: segLive ? (segLive.lines[segLive.lines.length - 1] || 'Preparando…') : realSec ? 'Procurando segredos no código e no histórico do Git, padrões perigosos, dependências vulneráveis e sinais de LGPD.' : 'Rodando ZAP baseline, auditoria de dependências, gitleaks, cabeçalhos e checklist LGPD. O relatório sai em HTML.',
+      run: realSec ? () => {
+        if (!qaApi || !qaApi.seg) { app.toast('Segurança', 'A varredura só roda no app desktop.'); return; }
+        if (window.__tavirSegLive) window.__tavirSegLive[P.id] = { lines: ['Preparando a varredura de ' + P.name] };
+        self.setState({ trackPulse: Date.now() });
+        qaApi.seg.run(qaTarget).then(function (res) {
+          if (window.__tavirSegLive) delete window.__tavirSegLive[P.id];
+          self._loadSeg();
+          if (!res || res.ok === false) { app.toast('Segurança', (res && res.error) || 'A varredura não rodou.'); return; }
+          const r = res.run;
+          app.toast(r.ok ? 'Segurança aprovada' : 'Segurança reprovada', r.ok ? 'Nota ' + r.score + '/100. Nenhum achado crítico ou alto aberto.' : r.blocking + ' achado(s) crítico(s) ou alto(s). Veja o relatório.');
+        }).catch(function (err) { if (window.__tavirSegLive) delete window.__tavirSegLive[P.id]; app.toast('Segurança', String(err && err.message || err)); });
+      } : () => self.runTests('sec', P.id, secRuns, () => { const last = secRuns.length ? parseInt(secRuns[secRuns.length - 1].id.slice(4), 10) : 30; return mkSec('SEC-' + String(last + 1).padStart(4, '0'), 'agora ' + hm(), !sReached, true); }, 'Varredura de segurança concluída'),
       score: score, ring: score >= 90 ? 'var(--flow)' : score >= 70 ? 'var(--warning)' : 'var(--danger)',
-      title: !SR ? 'Nenhuma varredura ainda' : fOpen.length ? fOpen.length + (fOpen.length === 1 ? ' falha aberta' : ' falhas abertas') + ' em ' + SR.id : 'Nenhuma falha aberta em ' + SR.id,
-      note: !SR ? (sIdx >= 0 ? 'A etapa de Segurança começa em ' + P.stages[sIdx][0] + '.' : 'Esta esteira não tem etapa de Segurança própria; a varredura roda junto do Completion Guard.') + ' Uma prévia pode rodar agora no build atual.' : SR.when + (SR.preview ? ' · prévia' : '') + ' · ' + SR.by + ' · alvo ' + SR.target,
+      title: segLive ? 'Varredura em execução' : !SR ? 'Nenhuma varredura ainda' : fOpen.length ? fOpen.length + (fOpen.length === 1 ? ' falha aberta' : ' falhas abertas') + ' em ' + SR.id : 'Nenhuma falha aberta em ' + SR.id,
+      note: segLive ? (segLive.lines[segLive.lines.length - 1] || 'Preparando…') : SR && SR.real ? SR.when + ' · ' + SR.by + (SR.label ? ' · ' + SR.label : '') + ' · ' + SR.run.files + ' arquivos · commit ' + SR.run.commit : !SR && realSec ? 'Lê o código e o histórico do Git atrás de segredos, padrões perigosos, dependências vulneráveis e sinais de LGPD. Crítico ou alto aberto reprova a etapa de Segurança.' : !SR ? (sIdx >= 0 ? 'A etapa de Segurança começa em ' + P.stages[sIdx][0] + '.' : 'Esta esteira não tem etapa de Segurança própria; a varredura roda junto do Completion Guard.') + ' Uma prévia pode rodar agora no build atual.' : SR.when + (SR.preview ? ' · prévia' : '') + ' · ' + SR.by + ' · alvo ' + SR.target,
       sevs: ['crítica', 'alta', 'média', 'baixa', 'info'].map((v) => { const n = fOpen.filter((f) => f.sev === v).length; return { label: v, n: n, cls: n ? (SEV[v][1] || 'muted') : 'zero' }; }),
-      runs: secRuns.map((r, i) => { const op = SD.filter((f) => r.fids.indexOf(f.id) >= 0 && f.open).length; return { id: r.id, when: r.when + (r.preview ? ' · prévia' : ''), by: r.tools.length + ' ferramentas', res: op ? op + ' aberta' + (op > 1 ? 's' : '') : 'ok', cls: op ? 'danger' : 'flow', pp: Math.round((r.fids.length - op) / Math.max(1, r.fids.length) * 100), on: i === sSel ? 'on' : '', pick: () => { const q2 = Object.assign({}, s.secSel); q2[P.id] = i; self.setState({ secSel: q2 }); } }; }).reverse(),
+      runs: secRuns.map((r, i) => { const op = r.real ? r.run.findings.filter((f) => f.st === 'aberta').length : SD.filter((f) => r.fids.indexOf(f.id) >= 0 && f.open).length; return { id: r.id, when: r.when + (r.preview ? ' · prévia' : ''), by: r.tools.length + ' ferramentas', res: op ? op + ' aberta' + (op > 1 ? 's' : '') : 'ok', cls: op ? 'danger' : 'flow', pp: Math.round((r.fids.length - op) / Math.max(1, r.fids.length) * 100), on: i === sSel ? 'on' : '', pick: () => { const q2 = Object.assign({}, s.secSel); q2[P.id] = i; self.setState({ secSel: q2 }); } }; }).reverse(),
       selId: SR ? SR.id : '', checksN: checks.length, findN: fIn.length, passN: checks.filter((c) => c.st === 'pass').length,
-      openRep: () => openEv(true, 0), dlRep: () => self.dl('relatorio-seguranca-' + (SR ? SR.id.toLowerCase() : '') + '.html', secHtmlNow()),
+      openRep: () => (SR && SR.real ? openSegReport() : openEv(true, 0)), dlRep: () => (SR && SR.real ? openSegReport() : self.dl('relatorio-seguranca-' + (SR ? SR.id.toLowerCase() : '') + '.html', secHtmlNow())),
       tools: SR ? SR.tools.map((x) => ({ t: x })) : [],
       checks: checks, checkTxt: checks.filter((c) => c.st === 'pass').length + ' de ' + checks.length + ' passaram',
       ff: [['all', 'Todas', fIn.length], ['open', 'Abertas', fOpen.length], ['fixed', 'Corrigidas', fIn.length - fOpen.length]].map((f) => ({ label: f[1], n: f[2], on: s.sevF === f[0] ? 'on' : '', pick: () => self.setState({ sevF: f[0] }) })),
-      findings: fShown.map((f) => { const k = P.id + ':' + f.id; const ex2 = s.fOpen[k] != null ? s.fOpen[k] : (firstOpen && firstOpen.id === f.id); const imgEv = secEv.find((e) => e.fid === f.id); return { id: f.id, sev: f.sev, sevCls: SEV[f.sev][1], title: f.title, where: f.where, desc: f.desc, ev: f.ev, impact: f.impact, fix: f.fix, code: f.code, refs: f.refs.map((r) => ({ t: r })), st: f.st, stCls: f.st === 'corrigida' ? 'flow' : f.st === 'em correção' ? 'warn' : 'danger', open: !!ex2, chev: ex2 ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6', cls: f.open ? '' : 'done', isOpen: f.open && f.st === 'aberta', isFixing: f.st === 'em correção', isFixed: f.st === 'corrigida', hasImg: !!imgEv,
+      findings: fShown.map((f) => { const k = P.id + ':' + f.id; const ex2 = s.fOpen[k] != null ? s.fOpen[k] : (firstOpen && firstOpen.id === f.id); const imgEv = secEv.find((e) => e.fid === f.id); return { id: f.id, sev: f.sev, sevCls: SEV[f.sev][1], title: f.title, where: f.where, desc: f.desc, ev: f.ev, impact: f.impact, fix: f.fix, code: f.code, refs: f.refs.map((r) => ({ t: r })), st: f.st === 'aceita' ? 'risco aceito' : f.st, stCls: f.st === 'corrigida' ? 'flow' : f.st === 'em correção' ? 'warn' : f.st === 'aceita' ? '' : 'danger', open: !!ex2, chev: ex2 ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6', cls: f.open ? '' : 'done', isOpen: f.open && f.st === 'aberta', isFixing: f.st === 'em correção', isFixed: f.st === 'corrigida' && !(SR && SR.real), hasImg: !!imgEv,
+        isMock: !(SR && SR.real), isReal: !!(SR && SR.real), tool: f.tool || '', hasTool: !!f.tool,
+        isAccepted: f.st === 'aceita', accNote: f.accepted ? f.accepted.by + ': ' + f.accepted.note : '',
+        accepting: !!(s.segAcc && s.segAcc[k] != null), accDraft: (s.segAcc || {})[k] || '',
+        startAccept: () => { const a = Object.assign({}, s.segAcc); a[k] = ''; self.setState({ segAcc: a }); },
+        onAccDraft: (e) => { const a = Object.assign({}, self.state.segAcc); a[k] = e.target.value; self.setState({ segAcc: a }); },
+        cancelAccept: () => { const a = Object.assign({}, self.state.segAcc); delete a[k]; self.setState({ segAcc: a }); },
+        confirmAccept: () => {
+          const note = String((self.state.segAcc || {})[k] || '').trim();
+          if (!note) { app.toast('Justificativa', 'Escreva por que o risco é aceito.'); return; }
+          qaApi.seg.accept(qaTarget, f.fp, true, note, f.id + ' · ' + f.title).then(function (r) {
+            if (!r || r.ok === false) { app.toast('Aceite', (r && r.error) || 'Não gravou.'); return; }
+            const a = Object.assign({}, self.state.segAcc); delete a[k]; self.setState({ segAcc: a });
+            self._loadSeg(); app.toast('Risco aceito', f.id + ' sai do portão e fica no relatório com a justificativa.');
+          });
+        },
+        unaccept: () => { qaApi.seg.accept(qaTarget, f.fp, false, '', f.id + ' · ' + f.title).then(function () { self._loadSeg(); app.toast('Aceite retirado', f.id + ' volta a contar no portão.'); }); },
         toggle: () => { const o = Object.assign({}, s.fOpen); o[k] = !ex2; self.setState({ fOpen: o }); },
-        askFix: () => self.setFix(P.id, f.id, 'em correção'), markFixed: () => self.setFix(P.id, f.id, 'corrigida'), reopen: () => self.setFix(P.id, f.id, 'aberta'),
+        askFix: SR && SR.real ? () => self.setState({ chgOpen: true, chat: true, unread: 0, menu: false, chgDraft: 'Corrigir o achado de segurança ' + f.id + ' (' + f.sev + '): ' + f.title + '\nOnde: ' + f.where + '\nComo corrigir: ' + f.fix + (f.code ? '\nSugestão:\n' + f.code : '') + '\nNão mude o comportamento do produto além disso. A varredura de segurança roda de novo para confirmar.' }) : () => self.setFix(P.id, f.id, 'em correção'), markFixed: () => self.setFix(P.id, f.id, 'corrigida'), reopen: () => self.setFix(P.id, f.id, 'aberta'),
         copyFix: () => { try { navigator.clipboard.writeText(f.code); } catch (er) { /* sem área de transferência */ } app.toast('Sugestão copiada', f.id + ' · ' + f.title); },
         img: () => imgEv && openEv(true, imgEv.i) }; }),
       noFind: fShown.length === 0,
       imgs: secEv.filter((e) => e.kind === 'img').map((e) => Object.assign(thumbOf(e), { open: () => openEv(true, e.i) })), hasImgs: secEv.some((e) => e.kind === 'img'),
-      store: P.slug.replace(/\\/g, '/') + '/evidencias/seguranca/' + (SR ? SR.id : ''),
+      store: SR && SR.real ? SR.run.dir : P.slug.replace(/\\/g, '/') + '/evidencias/seguranca/' + (SR ? SR.id : ''),
       planned: SEC_CHECKS.map((c) => ({ t: c[1], a: c[0] }))
     };
 
@@ -2466,6 +2520,16 @@ class Component extends DCLogic {
         if (res && res.running && window.__tavirQaLive && !window.__tavirQaLive[P.id]) window.__tavirQaLive[P.id] = { lines: res.lines || [] };
       }).catch(function () {});
     };
+    self._loadSeg = () => {
+      if (!lgApi || !lgApi.seg) return;
+      lgApi.seg.list(lgTarget).then(function (res) {
+        const map = Object.assign({}, self.state.secRuns || {});
+        map[P.id] = ((res && res.runs) || []).map(function (r) { return { real: true, id: r.id, when: r.when, preview: false, by: r.by, label: r.label, target: r.target, tools: r.tools.filter(function (t) { return t.ran; }).map(function (t) { return t.name; }), fids: r.findings.map(function (f) { return f.id; }), run: r }; });
+        self.setState({ secRuns: map });
+        if (res && res.running && window.__tavirSegLive && !window.__tavirSegLive[P.id]) window.__tavirSegLive[P.id] = { lines: res.lines || [] };
+      }).catch(function () {});
+    };
+    if (typeof window !== 'undefined') window.__tavirSegDone = function (k) { if (k === P.id && self._loadSeg) self._loadSeg(); };
     if (typeof window !== 'undefined') window.__tavirQaDone = function (k) { if (k === P.id && self._loadQa) self._loadQa(); if (self.reloadIpcProjects) self.reloadIpcProjects(); };
     self._loadRuns = (keepSel) => {
       if (!lgApi || !lgApi.runs) { self.setState({ lgErr: 'O livro de execuções só existe no app desktop.' }); return; }
@@ -2556,7 +2620,7 @@ class Component extends DCLogic {
       togglePause: () => self.togglePause(P.id),
       toGeral: () => self.setState({ ptab: 'geral' }), toEsteira: () => self.setState({ ptab: 'esteira' }), toTrilho: () => self.setState({ ptab: 'trilho' }), toGuard: () => self.setState({ ptab: 'qa' }),
       toLedger: () => { self.setState({ ptab: 'esteira', lf: 'all' }); goStage(s.stage, 'ledger'); },
-      ptabs: ([['geral', 'Visão geral', P.pendN, 'warn'], ['esteira', 'Esteira', null]].concat(projFinished ? [['trilho', 'Trilho', showAltTrack ? 1 : null, showAltTrack ? 'flow' : '']] : []).concat([['kanban', 'Kanban', null], ['roadmap', 'Roadmap', null], ['arquivos', 'Workspace', pFiles.length, ''], ['qa', 'QA', qaTabN, 'danger'], ['seg', 'Segurança', segTabN, 'danger'], ['acessos', 'Acessos', missingN, 'danger'], ['logs', 'Logs', lgFailN, 'danger']])).map((x) => ({ label: x[1], n: x[2], cls: x[3] || '', hasN: x[2] != null && x[2] !== 0, on: ptab === x[0] ? 'on' : '', pick: () => { self.setState({ ptab: x[0] }); if (x[0] === 'logs') self._loadRuns(false); if (x[0] === 'qa' && self._loadQa) self._loadQa(); } })),
+      ptabs: ([['geral', 'Visão geral', P.pendN, 'warn'], ['esteira', 'Esteira', null]].concat(projFinished ? [['trilho', 'Trilho', showAltTrack ? 1 : null, showAltTrack ? 'flow' : '']] : []).concat([['kanban', 'Kanban', null], ['roadmap', 'Roadmap', null], ['arquivos', 'Workspace', pFiles.length, ''], ['qa', 'QA', qaTabN, 'danger'], ['seg', 'Segurança', segTabN, 'danger'], ['acessos', 'Acessos', missingN, 'danger'], ['logs', 'Logs', lgFailN, 'danger']])).map((x) => ({ label: x[1], n: x[2], cls: x[3] || '', hasN: x[2] != null && x[2] !== 0, on: ptab === x[0] ? 'on' : '', pick: () => { self.setState({ ptab: x[0] }); if (x[0] === 'logs') self._loadRuns(false); if (x[0] === 'qa' && self._loadQa) self._loadQa(); if (x[0] === 'seg' && self._loadSeg) self._loadSeg(); } })),
       pt: pt, cs: cs, showAltTrack: showAltTrack,
       altTrack: (function () {
         const curItem = trackItems[altTrackStep] || trackItems[0];

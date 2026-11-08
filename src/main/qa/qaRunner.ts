@@ -90,13 +90,13 @@ const pad = (n: number) => String(n).padStart(2, '0');
 function stampId(d = new Date()): string {
   return `QA-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
 }
-const whenOf = (d: Date) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+export const whenOf = (d: Date) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 
 export function qaRoot(workspace: string): string {
   return path.join(workspace, 'qa', 'evidencias');
 }
 
-function sizeOf(file: string): string {
+export function sizeOf(file: string): string {
   try {
     const b = fs.statSync(file).size;
     if (b < 1024) return `${b} B`;
@@ -107,7 +107,7 @@ function sizeOf(file: string): string {
   }
 }
 
-function tail(text: string, lines = LOG_TAIL): string {
+export function tail(text: string, lines = LOG_TAIL): string {
   return text.replace(/\x1b\[[0-9;]*m/g, '').split(/\r?\n/).filter((l) => l.trim()).slice(-lines).join('\n');
 }
 
@@ -148,7 +148,7 @@ function qaEnv(extra: Record<string, string> = {}): NodeJS.ProcessEnv {
   return env;
 }
 
-function runCommand(
+export function runCommand(
   cmd: string,
   args: string[],
   cwd: string,
@@ -282,7 +282,7 @@ function makeGif(ffmpeg: string, video: string, out: string, start: number, dur:
   }
 }
 
-function gitHead(workspace: string): string {
+export function gitHead(workspace: string): string {
   try {
     return execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: workspace, stdio: 'pipe', windowsHide: true, encoding: 'utf8' }).trim();
   } catch {

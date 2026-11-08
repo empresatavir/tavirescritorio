@@ -8,6 +8,7 @@ import { esteiraTemplate, type EsteiraStage } from '../shared/esteiras';
 import { commitStep, type StepCommitResult } from './stepCommit';
 import { annotateRun, type RunChanges } from './runLedger';
 import { listQaRuns, qaSummary, runQa, type QaRun } from './qa/qaRunner';
+import { listSegRuns, runSeg, segSummary, setSegAccept, type SegRun } from './seg/segScanner';
 
 function getDbPath(): string {
   return path.join(process.cwd(), 'backend', 'tavir.db');
@@ -1083,7 +1084,7 @@ export function projectEngineSpec(rootPath: string) {
 
 export type DecisionEntry = {
   at: string;
-  kind: 'esteira' | 'trilho';
+  kind: 'esteira' | 'trilho' | 'seguranca';
   stage: string;
   decision: 'aprovado' | 'reprovado';
   question?: string;
@@ -1196,6 +1197,79 @@ export function listProjectQa(idOrPath: string): { ok: boolean; runs: QaRun[]; r
   const rootPath = resolveProjectRecord(idOrPath).local_path;
   const live = qaLive.get(rootPath);
   return { ok: true, runs: rootPath ? listQaRuns(rootPath) : [], running: !!live, lines: live?.lines || [] };
+}
+
+// ------------------------------------------------------------------ portão de segurança
+
+type SegListener = (event: { projectKey: string; rootPath: string; line?: string; done?: SegRun; running: boolean }) => void;
+let segListener: SegListener | null = null;
+const segLive = new Map<string, { kill?: () => void; label: string; lines: string[] }>();
+
+export function setSegListener(fn: SegListener | null): void {
+  segListener = fn;
+}
+
+/** Varredura white box do projeto. Uma por projeto por vez. */
+export async function runProjectSeg(idOrPath: string, opts: { label?: string; onProgress?: (line: string) => void } = {}): Promise<{ ok: boolean; run?: SegRun; error?: string }> {
+  const rec = resolveProjectRecord(idOrPath);
+  const rootPath = rec.local_path;
+  if (!rootPath || !fs.existsSync(rootPath)) return { ok: false, error: 'Pasta do projeto não encontrada.' };
+  if (segLive.has(rootPath)) return { ok: false, error: 'Já há uma varredura de segurança rodando neste projeto.' };
+  const live = { label: opts.label || 'Painel', lines: [] as string[] } as { kill?: () => void; label: string; lines: string[] };
+  segLive.set(rootPath, live);
+  const emit = (line?: string, done?: SegRun) => {
+    try {
+      segListener?.({ projectKey: rec.id, rootPath, line, done, running: !done });
+    } catch {}
+  };
+  try {
+    const run = await runSeg({
+      workspace: rootPath,
+      projectName: rec.name,
+      label: opts.label,
+      onProgress: (line) => {
+        live.lines = live.lines.concat(line).slice(-80);
+        opts.onProgress?.(line);
+        emit(line);
+      },
+      registerKill: (kill) => {
+        live.kill = kill;
+      },
+    });
+    emit(undefined, run);
+    return { ok: true, run };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    emit(`A varredura falhou antes de terminar: ${message}`);
+    return { ok: false, error: message };
+  } finally {
+    segLive.delete(rootPath);
+  }
+}
+
+export function stopProjectSeg(idOrPath: string): { ok: boolean } {
+  const live = segLive.get(resolveProjectRecord(idOrPath).local_path);
+  try {
+    live?.kill?.();
+  } catch {}
+  return { ok: !!live };
+}
+
+export function listProjectSeg(idOrPath: string): { ok: boolean; runs: SegRun[]; running: boolean; lines: string[] } {
+  const rootPath = resolveProjectRecord(idOrPath).local_path;
+  const live = segLive.get(rootPath);
+  return { ok: true, runs: rootPath ? listSegRuns(rootPath) : [], running: !!live, lines: live?.lines || [] };
+}
+
+/** Aceite de risco pelo CEO (com justificativa) ou retirada do aceite. Fica no livro de decisões. */
+export function acceptProjectSegFinding(idOrPath: string, fp: string, accept: boolean, note = '', title = ''): { ok: boolean; error?: string } {
+  const rootPath = resolveProjectRecord(idOrPath).local_path;
+  if (!rootPath || !fs.existsSync(rootPath)) return { ok: false, error: 'Pasta do projeto não encontrada.' };
+  if (!/^[0-9a-f]{16}$/.test(String(fp || ''))) return { ok: false, error: 'Achado inválido.' };
+  if (accept && !String(note).trim()) return { ok: false, error: 'Escreva por que o risco é aceito.' };
+  setSegAccept(rootPath, fp, accept ? { by: 'Carlos Henrique', note: String(note).trim().slice(0, 1000), title } : null);
+  logDecision(rootPath, { kind: 'seguranca', stage: title || fp, decision: accept ? 'aprovado' : 'reprovado', note: accept ? `Risco aceito: ${String(note).trim()}` : 'Aceite de risco retirado' });
+  return { ok: true };
 }
 
 function nowHM(): string {
@@ -2479,6 +2553,8 @@ type EsteiraStageRecord = {
   decision?: DecisionEntry | null;
   /** Execuções do portão de QA (qa/evidencias/<id>). */
   qa?: string[];
+  /** Varreduras do portão de segurança (qa/seguranca/<id>). */
+  seg?: string[];
 };
 type EsteiraDesk = { auto: boolean; template: string; stages: EsteiraStageRecord[] };
 
@@ -2836,9 +2912,35 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     writeEsteira(info.rootPath, after);
     fresh.stages[at] = row;
   }
+  // Portão de segurança: mesma lógica do QA, com a varredura white box.
+  const segGate = def.seg && agentRes.ok && !paused && (!qaGate || !!qa?.ok);
+  let seg: SegRun | null = null;
+  let segError = '';
+  if (segGate) {
+    const pre = readEsteira(info.rootPath);
+    pre.stages[at].status = 'running';
+    writeEsteira(info.rootPath, pre);
+    liveAgents.set(key, { paused: false, speech: 'Portão de segurança rodando', step: at, itemId: `esteira-${at}`, label: def.name });
+    const res = await runProjectSeg(info.rootPath, { label: `Esteira · ${def.name}` });
+    liveAgents.delete(key);
+    seg = res.run || null;
+    segError = res.error || '';
+    const after = readEsteira(info.rootPath);
+    const row = after.stages[at];
+    row.note =
+      (row.note ? row.note.trim() + '\n\n' : '') +
+      `### ${new Date().toISOString().slice(0, 16).replace('T', ' ')} · Portão de segurança\n` +
+      (seg ? segSummary(seg) : `A varredura não rodou: ${segError}`) +
+      '\n';
+    row.status = seg?.ok ? 'done' : 'idle';
+    if (seg) row.seg = (row.seg || []).concat(seg.id).slice(-30);
+    writeEsteira(info.rootPath, after);
+    fresh.stages[at] = row;
+  }
   const last = at >= fresh.stages.length - 1;
   const qaOk = !qaGate || !!qa?.ok;
-  const ok = Boolean(agentRes.ok) && !paused && qaOk;
+  const segOk = !segGate || !!seg?.ok;
+  const ok = Boolean(agentRes.ok) && !paused && qaOk && segOk;
   return {
     ...esteiraPayload(info.rootPath, fresh),
     ok,
@@ -2847,13 +2949,16 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     awaiting: ok && def.gate,
     commit,
     qa,
+    seg,
     continued: ok && !def.gate && !last && fresh.auto,
     reply: agentRes.text,
     error: ok || paused
       ? undefined
       : !qaOk
         ? qa ? `QA reprovou «${def.name}»: ${qa.empty ? 'nenhum teste rodou' : `${qa.fail} de ${qa.total} testes falharam`}.` : `QA não rodou: ${qaError}`
-        : String(agentRes.text || 'A etapa não concluiu.'),
+        : !segOk
+          ? seg ? `Segurança reprovou «${def.name}»: ${seg.blocking} achado(s) crítico(s) ou alto(s) aberto(s).` : `A varredura de segurança não rodou: ${segError}`
+          : String(agentRes.text || 'A etapa não concluiu.'),
   };
 }
 

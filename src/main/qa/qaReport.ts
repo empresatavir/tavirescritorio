@@ -10,7 +10,7 @@ const esc = (x: unknown) =>
 const rel = (p: string) => p.split('/').map(encodeURIComponent).join('/');
 const dur = (s: number) => (s >= 60 ? `${Math.floor(s / 60)} min ${String(Math.round(s % 60)).padStart(2, '0')} s` : `${String(Math.round(s * 10) / 10).replace('.', ',')} s`);
 
-const CSS = `
+export const CSS = `
 :root{--ink:#0B1220;--lime:#B7F34A;--teal:#1BC5BD;--teal-deep:#0B6C67;--cloud:#F4F6F2;--slate:#5E6878;--line:rgba(11,18,32,.12);
 --danger:oklch(.52 .18 27);--danger-subtle:oklch(.52 .18 27 / .10);--ok:#0B6C67;--ok-subtle:rgba(11,108,103,.10);--warn:oklch(.52 .12 78);--warn-subtle:oklch(.62 .12 78 / .14);
 --body:"Instrument Sans",Arial,sans-serif;--mono:"IBM Plex Mono",Consolas,monospace}

@@ -16,6 +16,8 @@ export interface EsteiraStage {
   gate: boolean;
   /** Portão de QA: depois do agente, a suíte automática roda e a etapa só fecha se passar. */
   qa: boolean;
+  /** Portão de segurança: depois do agente, a varredura white box roda e a etapa só fecha sem achado crítico ou alto aberto. */
+  seg: boolean;
 }
 
 export interface EsteiraTemplate {
@@ -28,11 +30,12 @@ type Row = [name: string, owner: string, skill: string, weight: number];
 
 const isGate = (name: string, skill: string) => /^gate\b|aprova/i.test(name) || /aprova[cç][aã]o humana/i.test(skill);
 const isQa = (name: string) => /^QA\b|Loop Linter|Completion Guard/i.test(name);
+const isSeg = (name: string) => /^Security\b|^Segurança\b/i.test(name);
 
 const build = (code: EsteiraCode, name: string, rows: Row[]): EsteiraTemplate => ({
   code,
   name,
-  stages: rows.map(([n, owner, skill, weight]) => ({ name: n, owner, skill, weight, gate: isGate(n, skill), qa: !isGate(n, skill) && isQa(n) })),
+  stages: rows.map(([n, owner, skill, weight]) => ({ name: n, owner, skill, weight, gate: isGate(n, skill), qa: !isGate(n, skill) && isQa(n), seg: !isGate(n, skill) && isSeg(n) })),
 });
 
 export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {

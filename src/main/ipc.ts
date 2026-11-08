@@ -534,6 +534,77 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     });
   }
 
+  // ---------------- Portão de segurança ----------------
+  {
+    const { setSegListener } = require('./project-fs');
+    setSegListener((ev: { projectKey: string; rootPath: string; line?: string; done?: any; running: boolean }) => {
+      const event = {
+        runId: `seg-${ev.projectKey}`,
+        type: ev.done ? 'done' : 'thought',
+        content: ev.line || (ev.done ? (ev.done.ok ? 'Segurança aprovada' : 'Segurança reprovada') : ''),
+        meta: { seg: true, projectKey: ev.projectKey, rootPath: ev.rootPath, runSeg: ev.done ? ev.done.id : undefined, ok: ev.done ? ev.done.ok : undefined },
+      };
+      for (const w of BrowserWindow.getAllWindows()) {
+        try {
+          w.webContents.send('run:event', event);
+        } catch {}
+      }
+    });
+  }
+
+  handle('seg:run', async (_e, idOrPath: string) => {
+    try {
+      const { runProjectSeg } = require('./project-fs');
+      return await runProjectSeg(idOrPath, { label: 'Painel' });
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('seg:list', (_e, idOrPath: string) => {
+    try {
+      const { listProjectSeg } = require('./project-fs');
+      return listProjectSeg(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err), runs: [], running: false, lines: [] };
+    }
+  });
+
+  handle('seg:stop', (_e, idOrPath: string) => {
+    try {
+      const { stopProjectSeg } = require('./project-fs');
+      return stopProjectSeg(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('seg:accept', (_e, idOrPath: string, fp: string, accept: boolean, note?: string, title?: string) => {
+    try {
+      const { acceptProjectSegFinding } = require('./project-fs');
+      return acceptProjectSegFinding(idOrPath, fp, !!accept, note || '', title || '');
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  // Abre relatório ou saída de ferramenta. Só dentro de qa/seguranca/<id> do projeto.
+  handle('seg:open', async (_e, idOrPath: string, runId: string, rel?: string) => {
+    try {
+      const pathMod = require('node:path');
+      const { segRoot } = require('./seg/segScanner');
+      const id = String(runId || '');
+      if (!/^SEC-\d{8}-\d{6}$/.test(id)) return { ok: false, error: 'Varredura inválida.' };
+      const base = pathMod.join(segRoot(runsWorkspace(idOrPath)), id);
+      const target = pathMod.resolve(base, String(rel || ''));
+      if (target !== base && !target.startsWith(base + pathMod.sep)) return { ok: false, error: 'Caminho fora da varredura.' };
+      const error = await shell.openPath(target);
+      return { ok: !error, error: error || undefined, path: target };
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
   handle('qa:run', async (_e, idOrPath: string) => {
     try {
       const { runProjectQa } = require('./project-fs');
