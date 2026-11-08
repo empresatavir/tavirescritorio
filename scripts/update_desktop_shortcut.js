@@ -6,6 +6,9 @@ const projectDir = path.resolve(__dirname, '..');
 const icoPath = path.join(projectDir, 'assets', 'tavir.ico');
 const vbsLauncher = path.join(projectDir, 'abrir_escritorio.vbs');
 
+// String literal do VBScript: barra invertida não é escape, só aspas dobram.
+const vbs = (s) => s.replace(/"/g, '""');
+
 // Script VBS usando SpecialFolders("Desktop")
 const updateVbs = `
 Set WshShell = CreateObject("WScript.Shell")
@@ -14,10 +17,10 @@ shortcutPath = desktopPath & "\\TAVIR Escritorio.lnk"
 
 Set shortcut = WshShell.CreateShortcut(shortcutPath)
 shortcut.TargetPath = "wscript.exe"
-shortcut.Arguments = Chr(34) & "${vbsLauncher.replace(/\\/g, '\\\\')}" & Chr(34)
-shortcut.WorkingDirectory = "${projectDir.replace(/\\/g, '\\\\')}"
+shortcut.Arguments = Chr(34) & "${vbs(vbsLauncher)}" & Chr(34)
+shortcut.WorkingDirectory = "${vbs(projectDir)}"
 shortcut.Description = "TAVIR Escritório — Plataforma Desktop Nativa"
-shortcut.IconLocation = "${icoPath.replace(/\\/g, '\\\\')},0"
+shortcut.IconLocation = "${vbs(icoPath)},0"
 shortcut.Save
 
 WScript.Echo "Atalho salvo em: " & shortcutPath
