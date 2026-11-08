@@ -305,6 +305,16 @@ export interface TavirApi {
     stats: () => Promise<any>;
     reindex: () => Promise<{ stats: any; items: any[] }>;
   };
+  /** Chat da Íris: parar a resposta em curso de um projeto. */
+  iris: {
+    stop: (projectKey: string) => Promise<{ ok: boolean }>;
+  };
+  /** Livro de execuções dos motores (.tavir/runs de cada projeto). */
+  runs: {
+    list: (idOrPath: string, limit?: number) => Promise<any>;
+    read: (idOrPath: string, runId: string) => Promise<any>;
+    openFolder: (idOrPath: string, runId?: string) => Promise<{ ok: boolean; error?: string }>;
+  };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
 }
 

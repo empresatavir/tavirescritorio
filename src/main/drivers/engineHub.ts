@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { EngineKind, EngineSettings, RunEvent } from '../../shared/types';
 import {
+  ENGINE_CATALOG,
   callCaption,
   enabledMotors,
   fitCall,
@@ -145,6 +146,8 @@ class EngineHub {
     return {
       settings,
       engines,
+      /** Os 4 motores com os modelos, ligados ou não (a Fábrica mostra todos e libera só os ativos). */
+      all: ENGINE_CATALOG.map((motor) => ({ id: motor.id, label: motor.label, models: motor.models, enabled: engines.some((e) => e.id === motor.id) })),
       caption: callCaption(settings.defaultEngine, settings.defaultModel, settings.defaultEffort),
     };
   }

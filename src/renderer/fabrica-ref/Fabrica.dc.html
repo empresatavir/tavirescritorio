@@ -157,6 +157,14 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
 .fb-fabi{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:rgba(27,197,189,.18);color:#1BC5BD;font-weight:700;font-size:12px;flex:none}
 .fb-fab b{display:block;font-size:13px}.fb-fab small{display:block;font-family:var(--font-mono);font-size:10px;color:#aeb7c4}
 .fb-unread{position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;padding:0 5px;border-radius:999px;background:#B7F34A;color:#25360a;font-size:11px;font-family:var(--font-mono);display:grid;place-items:center;border:2px solid var(--surface-0)}
+.fb-run{display:flex;flex-direction:column;gap:4px;width:100%;text-align:left;padding:12px 14px;border-radius:14px;background:var(--surface-0);border:1px solid var(--line);color:inherit;cursor:pointer;transition:border-color var(--fast) var(--ease)}
+.fb-run:hover{border-color:var(--line-strong)}.fb-run.on{border-color:var(--flow);background:var(--flow-subtle)}
+.fb-run-warn{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--warning);background:var(--warning-subtle);border-radius:8px;padding:4px 8px}
+.fb-run-err{font-size:12px;color:var(--danger);background:var(--danger-subtle);border-radius:8px;padding:4px 8px;overflow-wrap:anywhere}
+.fb-run-facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.fb-run-facts>div{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface-0);font-size:12.5px}
+.fb-run-facts span{font-size:11px}.fb-run-facts b{font-weight:600;overflow-wrap:anywhere}
+.fb-run-body{margin:0;max-height:560px;overflow:auto;white-space:pre-wrap;word-break:break-word;font-family:var(--font-mono);font-size:12px;line-height:1.55;padding:14px;border-radius:12px;background:var(--surface-0);border:1px solid var(--line);color:var(--text-secondary)}
 </style>
 </helmet>
 <div class="tv" style="min-height: 100%">
@@ -1004,6 +1012,58 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
     </div>
   </div>
   </sc-if>
+
+  <!-- LOGS · livro de execuções -->
+  <sc-if value="{{pt.logs}}" hint-placeholder-val="{{false}}">
+  <div style="display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; animation: fade 200ms var(--ease) both">
+    <section class="card" style="flex: 1 1 420px; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap">
+        <div class="grow" style="min-width: 220px"><div style="display: flex; gap: 8px; align-items: center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg><b style="font-size: 15px">Execuções dos motores</b><span class="badge">{{lg.total}}</span></div><p class="muted" style="font-size: 12.5px; margin: 4px 0 0">Cada chamada guarda o pedido completo, a saída bruta, a transcrição e o diff real do disco em .tavir/runs.</p></div>
+        <button class="btn sm ghost" onClick="{{lg.openRoot}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Pasta</button>
+        <button class="btn sm secondary" onClick="{{lg.refresh}}" disabled="{{lg.busy}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"></path></svg>Atualizar</button>
+      </div>
+      <div class="segs"><sc-for list="{{lg.filters}}" as="f" hint-placeholder-count="5"><button class="seg {{f.on}}" onClick="{{f.pick}}" style="height: 28px; font-size: 12px">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+      <sc-if value="{{lg.hasErr}}" hint-placeholder-val="{{false}}"><p style="font-size: 12.5px; color: var(--danger); margin: 0">{{lg.err}}</p></sc-if>
+      <div style="display: flex; flex-direction: column; gap: 8px; max-height: 720px; overflow: auto">
+        <sc-for list="{{lg.rows}}" as="r" hint-placeholder-count="4">
+          <button class="fb-run {{r.cls}}" onClick="{{r.open}}">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="badge">{{r.kind}}</span><b style="font-size: 13.5px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.label}}</b><span class="badge {{r.stCls}}"><i></i>{{r.st}}</span></div>
+            <div class="mono muted" style="font-size: 11.5px">{{r.when}} · {{r.dur}} · {{r.eng}}</div>
+            <div class="mono muted" style="font-size: 11.5px">{{r.tools}} · {{r.files}} · {{r.tok}}</div>
+            <sc-if value="{{r.hasWarn}}" hint-placeholder-val="{{false}}"><div class="fb-run-warn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>{{r.warn}}</div></sc-if>
+            <sc-if value="{{r.hasErr}}" hint-placeholder-val="{{false}}"><div class="fb-run-err">{{r.err}}</div></sc-if>
+          </button>
+        </sc-for>
+        <sc-if value="{{lg.empty}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 13px; padding: 8px 2px">{{lg.emptyTxt}}</p></sc-if>
+      </div>
+    </section>
+
+    <section class="card" style="flex: 2 1 560px; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+      <sc-if value="{{lg.hasSel}}" hint-placeholder-val="{{false}}">
+        <sc-if value="{{lg.loadingDet}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 13px">Abrindo a execução…</p></sc-if>
+        <sc-if value="{{lg.hasDetErr}}" hint-placeholder-val="{{false}}"><p style="font-size: 13px; color: var(--danger)">{{lg.detErr}}</p></sc-if>
+        <sc-if value="{{lg.hasDet}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap">
+            <div class="grow" style="min-width: 220px"><div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><b style="font-size: 15px">{{lg.d.title}}</b><span class="badge {{lg.d.stCls}}"><i></i>{{lg.d.st}}</span></div><div class="mono muted" style="font-size: 11.5px; margin-top: 2px">{{lg.d.id}}</div></div>
+            <button class="btn sm ghost" onClick="{{lg.d.openDir}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>Abrir pasta</button>
+            <button class="btn sm ghost" onClick="{{lg.d.close}}">Fechar</button>
+          </div>
+          <sc-if value="{{lg.d.hasFlags}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 6px"><sc-for list="{{lg.d.flags}}" as="g" hint-placeholder-count="1"><div class="fb-run-warn" style="font-size: 12.5px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>{{g.t}}</div></sc-for></div></sc-if>
+          <sc-if value="{{lg.d.hasErr}}" hint-placeholder-val="{{false}}"><div class="fb-run-err" style="font-size: 12.5px">{{lg.d.err}}</div></sc-if>
+          <div class="fb-run-facts"><sc-for list="{{lg.d.facts}}" as="x" hint-placeholder-count="8"><div><span class="muted">{{x.k}}</span><b>{{x.v}}</b></div></sc-for></div>
+          <div>
+            <div class="eyebrow" style="margin-bottom: 6px">O que mudou no disco</div>
+            <sc-if value="{{lg.d.hasChanges}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow: auto"><sc-for list="{{lg.d.changes}}" as="c" hint-placeholder-count="3"><div style="display: flex; gap: 8px; align-items: center; font-size: 12.5px"><span class="badge {{c.cls}}">{{c.op}}</span><span class="mono" style="overflow-wrap: anywhere">{{c.f}}</span></div></sc-for></div></sc-if>
+            <sc-if value="{{lg.d.noChanges}}" hint-placeholder-val="{{true}}"><p class="muted" style="font-size: 12.5px; margin: 0">{{lg.d.changesTxt}}</p></sc-if>
+          </div>
+          <div class="segs"><sc-for list="{{lg.d.views}}" as="v" hint-placeholder-count="6"><button class="seg {{v.on}}" onClick="{{v.pick}}" style="height: 28px; font-size: 12px">{{v.label}}</button></sc-for></div>
+          <pre class="fb-run-body">{{lg.d.body}}</pre>
+        </sc-if>
+      </sc-if>
+      <sc-if value="{{lg.noSel}}" hint-placeholder-val="{{true}}"><p class="muted" style="font-size: 13px; padding: 8px 2px">Escolha uma execução para ver o pedido enviado, o que o agente fez passo a passo e o que mudou de verdade nos arquivos.</p></sc-if>
+    </section>
+  </div>
+  </sc-if>
 </div>
 </sc-if>
 
@@ -1025,11 +1085,17 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
     <div style="flex: 1; overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px">
       <sc-for list="{{iris.msgs}}" as="m" hint-placeholder-count="3">
         <div class="bubble {{m.cls}}" style="font-size: 13px; max-width: 90%">
-          <div class="eyebrow" style="font-size: 9.5px; margin-bottom: 4px; color: {{m.wc}}">{{m.who}} · {{m.at}}</div>{{m.t}}
+          <div class="eyebrow" style="font-size: 9.5px; margin-bottom: 4px; color: {{m.wc}}">{{m.who}} · {{m.at}}</div><div style="white-space: pre-wrap; overflow-wrap: anywhere">{{m.t}}</div>
           <sc-if value="{{m.hasThink}}" hint-placeholder-val="{{false}}"><div style="margin-top: 8px"><button class="link" style="font-size: 11.5px" onClick="{{m.toggle}}">{{m.thinkLbl}}</button><sc-if value="{{m.open}}" hint-placeholder-val="{{false}}"><div style="margin-top: 6px; display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 8px; background: #070d18; border-left: 2px solid #1BC5BD"><sc-for list="{{m.think}}" as="x" hint-placeholder-count="2"><div class="mono" style="font-size: 11px; color: #cbd3de">{{x.t}}</div></sc-for></div></sc-if></div></sc-if>
         </div>
       </sc-for>
-      <sc-if value="{{typing}}" hint-placeholder-val="{{false}}"><div class="typing"><i></i><i></i><i></i></div></sc-if>
+      <sc-if value="{{typing}}" hint-placeholder-val="{{false}}">
+        <div class="bubble ag" style="font-size: 13px; max-width: 90%">
+          <div class="eyebrow" style="font-size: 9.5px; margin-bottom: 4px; color: var(--flow); overflow-wrap: anywhere">Íris · {{irisLive.status}}</div>
+          <sc-if value="{{irisLive.hasSpeech}}" hint-placeholder-val="{{false}}"><div style="white-space: pre-wrap; overflow-wrap: anywhere">{{irisLive.speech}}</div></sc-if>
+          <div style="display: flex; gap: 10px; align-items: center; margin-top: 6px"><div class="typing"><i></i><i></i><i></i></div><button class="link" style="font-size: 11.5px" onClick="{{irisLive.stop}}">Parar</button></div>
+        </div>
+      </sc-if>
     </div>
     <div style="padding: 10px 14px 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px">
       <div class="segs noscroll" style="flex-wrap: nowrap; overflow-x: auto"><sc-for list="{{sugs}}" as="g" hint-placeholder-count="3"><button class="seg" onClick="{{g.pick}}" style="height: 28px; font-size: 12px; white-space: nowrap; flex: none">{{g.t}}</button></sc-for></div>
@@ -1467,8 +1533,8 @@ const ENG = {
 const ENABLED = ['cursor'];
 const DEFM = { engine: 'cursor', model: 'auto', effort: 'Balance' };
 const ROOT = 'C:\\Users\\carlo\\Downloads\\Projetos a Estudar\\tavirescritorio\\';
-function modelOf(m) { const E = ENG[m.engine]; return E.models.find((x) => x[0] === m.model) || E.models[0]; }
-function motorCap(m) { const E = ENG[m.engine]; const M = modelOf(m); return M[0] === 'auto' ? E.label + ' · ' + M[1] : E.label + ' · ' + M[1] + ' · ' + m.effort; }
+function modelOf(m) { const E = ENG[m.engine] || ENG[Object.keys(ENG)[0]]; return E.models.find((x) => x[0] === m.model) || E.models[0]; }
+function motorCap(m) { const E = ENG[m.engine] || ENG.cursor; const M = modelOf(m); return M[3] ? E.label + ' · ' + M[1] : E.label + ' · ' + M[1] + ' · ' + m.effort; }
 function milhar(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
 function brl(n) { return n.toFixed(2).replace('.', ','); }
 const ICX = { folder: 'M3 7h6l2 2h10v10H3z', file: 'M6 3h8l4 4v14H6zM14 3v4h4', folderPlus: 'M3 7h6l2 2h10v10H3zM12 12v5M9.5 14.5h5', trash: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3', dots: 'M5 12h.01M12 12h.01M19 12h.01', chat: 'M5 5h14v11H9l-4 3z', bolt: 'M13 3 5 14h6l-1 7 8-11h-6z', ext: 'M14 4h6v6M20 4l-9 9M18 14v6H4V6h6' };
@@ -1599,7 +1665,7 @@ function secHtml(P, r, list, checks, score) {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { pid: null, ptab: 'geral', pf: 'all', ps: 'pct', busy: {}, envOk: false, envDraft: '', envBusy: false, mPaused: false, ff: 'all', motors: {}, think: {}, runs: {}, chats: {}, chatThink: {}, menu: false, removed: {}, lastRm: null, rmOpen: false, chgOpen: false, chgDraft: '', altOpen: {}, altTrack: {}, abs: { open: false, step: 'path', path: ROOT + 'tavir-clientes\\loja-aurora-site', name: '', tpl: null, logN: 0 }, absorbed: [], treeClosed: {}, cfgOpen: false, inj: '', credEd: {}, reveal: {}, credF: 'all', cm: { open: false }, qaRuns: {}, secRuns: {}, qaSel: {}, secSel: {}, prog: {}, evf: 'all', repF: 'all', sevF: 'all', fOpen: {}, secFix: {}, evw: null, vt: 0, vplay: false, vsp: 1, gp: (() => { const o = {}; Object.keys(GP_INIT).forEach((k) => { o[k] = Object.assign({ resolved: {}, extra: [] }, GP_INIT[k]); }); return o; })(), stage: 5, tabs: {}, guard: GUARD.map((g) => g[3]), loading: {}, signed: false, signedAt: '', vp: 'desk', fixing: false, lf: 'stage', extra: [],
+    this.state = { lgRuns: {}, lgSel: null, lgDet: null, lgView: 'transcricao', lgF: 'all', lgBusy: false, lgErr: '', pid: null, ptab: 'geral', pf: 'all', ps: 'pct', busy: {}, envOk: false, envDraft: '', envBusy: false, mPaused: false, ff: 'all', motors: {}, think: {}, runs: {}, chats: {}, chatThink: {}, menu: false, removed: {}, lastRm: null, rmOpen: false, chgOpen: false, chgDraft: '', altOpen: {}, altTrack: {}, abs: { open: false, step: 'path', path: ROOT + 'tavir-clientes\\loja-aurora-site', name: '', tpl: null, logN: 0 }, absorbed: [], treeClosed: {}, cfgOpen: false, inj: '', credEd: {}, reveal: {}, credF: 'all', cm: { open: false }, qaRuns: {}, secRuns: {}, qaSel: {}, secSel: {}, prog: {}, evf: 'all', repF: 'all', sevF: 'all', fOpen: {}, secFix: {}, evw: null, vt: 0, vplay: false, vsp: 1, gp: (() => { const o = {}; Object.keys(GP_INIT).forEach((k) => { o[k] = Object.assign({ resolved: {}, extra: [] }, GP_INIT[k]); }); return o; })(), stage: 5, tabs: {}, guard: GUARD.map((g) => g[3]), loading: {}, signed: false, signedAt: '', vp: 'desk', fixing: false, lf: 'stage', extra: [],
       viewer: null, zoom: 1, imgBg: 'dark', mdMode: 'view', csvMode: 'table', edits: {}, saved: {}, ver: {},
       chat: false, unread: 2, typing: false, draft: '', msgs: [['Yuri UX', 'A hero ainda compete com o menu em 390 px. Proponho cortar o subtítulo e virar o menu ícone.', 'ag'], ['Vitor Construtor', 'Ajuste pronto no branch hero-390. Preciso da prova visual de novo.', 'ag']] };
   }
@@ -1750,6 +1816,39 @@ class Component extends DCLogic {
         if (grows) lines[lines.length - 1] = { t: text, bad: evt.type === 'error' };
         else lines.push({ t: text, bad: evt.type === 'error' });
         box.lines = lines.slice(-20);
+        if (window.__tavirFabPing) window.__tavirFabPing();
+      });
+    }
+    if (typeof window !== 'undefined' && window.tavir && window.tavir.engines && window.tavir.engines.getCatalog && !window.__tavirFabEngOn) {
+      window.__tavirFabEngOn = true;
+      window.tavir.engines.getCatalog().then(function (cat) {
+        const all = (cat && (cat.all || cat.engines)) || [];
+        if (!all.length) return;
+        Object.keys(ENG).forEach(function (k) { delete ENG[k]; });
+        ENABLED.splice(0, ENABLED.length);
+        all.forEach(function (m) {
+          ENG[m.id] = { label: m.label, models: (m.models || []).map(function (x) { return [x.id, x.label, (x.efforts || []).map(function (e) { return e.label; }), x.id === 'auto-smart']; }) };
+          if (m.enabled !== false) ENABLED.push(m.id);
+        });
+        const st = (cat && cat.settings) || {};
+        const defId = ENG[st.defaultEngine] ? st.defaultEngine : ENABLED[0] || 'cursor';
+        const defModel = (ENG[defId].models.find(function (x) { return x[0] === st.defaultModel; }) || ENG[defId].models[0]);
+        const catModel = ((all.find(function (m) { return m.id === defId; }) || {}).models || []).find(function (x) { return x.id === defModel[0]; });
+        const effRow = catModel && (catModel.efforts || []).find(function (e) { return e.id === st.defaultEffort; });
+        DEFM.engine = defId;
+        DEFM.model = defModel[0];
+        DEFM.effort = effRow ? effRow.label : defModel[2][0];
+        if (window.__tavirFabPing) window.__tavirFabPing();
+      }).catch(function () {});
+    }
+    if (typeof window !== 'undefined' && window.tavir && !window.__tavirIrisLiveOn) {
+      window.__tavirIrisLiveOn = true;
+      window.__tavirIrisLive = {};
+      window.tavir.onEvent(function (evt) {
+        if (!evt || !evt.meta || !evt.meta.chat) return;
+        const k = String(evt.meta.projectKey || '');
+        if (evt.type === 'done') delete window.__tavirIrisLive[k];
+        else window.__tavirIrisLive[k] = { speech: String(evt.content || ''), activity: String(evt.meta.activity || '') };
         if (window.__tavirFabPing) window.__tavirFabPing();
       });
     }
@@ -2044,7 +2143,7 @@ class Component extends DCLogic {
     // abas do projeto: no Meridian, o painel de etapa só aparece na aba Esteira; Guard usa a seção existente
     Object.keys(t).forEach((k) => { if (ptab !== 'esteira') t[k] = false; });
     if (ptab === 'qa' && isM) t.guard = true;
-    const pt = { geral: ptab === 'geral', esteiraM: ptab === 'esteira' && isM, esteiraG: ptab === 'esteira' && !isM, trilho: ptab === 'trilho' && projFinished, kanban: ptab === 'kanban', roadmap: ptab === 'roadmap', arquivos: ptab === 'arquivos', qa: ptab === 'qa', seg: ptab === 'seg', acessos: ptab === 'acessos' };
+    const pt = { geral: ptab === 'geral', esteiraM: ptab === 'esteira' && isM, esteiraG: ptab === 'esteira' && !isM, trilho: ptab === 'trilho' && projFinished, kanban: ptab === 'kanban', roadmap: ptab === 'roadmap', arquivos: ptab === 'arquivos', qa: ptab === 'qa', seg: ptab === 'seg', logs: ptab === 'logs', acessos: ptab === 'acessos' };
 
     // ================= MOTOR & EXECUÇÃO =================
     const motor = P.motor; const Eng = ENG[motor.engine]; const Mo = modelOf(motor);
@@ -2096,6 +2195,13 @@ class Component extends DCLogic {
     const greet = ['Íris', 'Olá, Carlos! Sou a Íris via ' + P.cap + ', conectada ao projeto "' + P.name + '". Pergunte sobre arquivos, etapas ou peça ajustes.', 'ag', ['[' + P.cap + '] Conectada à pasta isolada', '[Árvore] ' + P.disk[0] + ' pastas e ' + P.disk[1] + ' arquivos mapeados'], '07:10'];
     const chatOf = (p) => s.chats[p.id] || (p.id === 'meridian' ? [greet, ['Yuri UX', 'A hero ainda compete com o menu em 390 px. Proponho cortar o subtítulo e virar o menu ícone.', 'ag', [], '14:22'], ['Vitor Construtor', 'Ajuste pronto no branch hero-390. Preciso da prova visual de novo.', 'ag', [], '14:24']] : [greet]);
     const chat = chatOf(P);
+    const irisLiveRow = (typeof window !== 'undefined' && window.__tavirIrisLive && window.__tavirIrisLive[P.id]) || null;
+    const irisLive = {
+      speech: irisLiveRow ? irisLiveRow.speech : '',
+      hasSpeech: !!(irisLiveRow && irisLiveRow.speech),
+      status: irisLiveRow && irisLiveRow.activity ? irisLiveRow.activity : 'pensando…',
+      stop: () => { const tv = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null; if (tv && tv.iris) tv.iris.stop(P.id); },
+    };
     const iris = {
       cap: P.cap.toUpperCase(), ctx: P.name + ' · etapa ' + stName,
       engines: ex.engines,
@@ -2273,6 +2379,70 @@ class Component extends DCLogic {
     }
 
     const qaTabN = QR && QR.fail ? QR.fail : null; const segTabN = fOpen.filter((f) => SEV[f.sev][0] <= 1).length || null;
+    // ================= LOGS · livro de execuções (.tavir/runs) =================
+    const lgApi = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+    const lgTarget = P.local_path || P.path || P.slug || P.id;
+    const lgList = (s.lgRuns || {})[P.id] || [];
+    self._loadRuns = (keepSel) => {
+      if (!lgApi || !lgApi.runs) { self.setState({ lgErr: 'O livro de execuções só existe no app desktop.' }); return; }
+      self.setState({ lgBusy: true });
+      lgApi.runs.list(lgTarget, 150).then(function (res) {
+        const map = Object.assign({}, self.state.lgRuns || {});
+        map[P.id] = (res && res.runs) || [];
+        self.setState({ lgRuns: map, lgBusy: false, lgErr: res && res.ok === false ? String(res.error || 'Falha ao ler as execuções.') : '' });
+        if (keepSel && self.state.lgSel) self._openRun(self.state.lgSel, true);
+      }).catch(function (e) { self.setState({ lgBusy: false, lgErr: String(e) }); });
+    };
+    self._openRun = (id, quiet) => {
+      if (!lgApi || !lgApi.runs) return;
+      if (!quiet) self.setState({ lgSel: id, lgDet: null });
+      lgApi.runs.read(lgTarget, id).then(function (d) { if (self.state.lgSel === id) self.setState({ lgDet: d }); }).catch(function () {});
+    };
+    if (ptab === 'logs' && self._lgLoadedFor !== P.id) { self._lgLoadedFor = P.id; setTimeout(function () { self._loadRuns(false); }, 0); }
+    const lgRunning = lgList.some((r) => r.status === 'running');
+    if (ptab === 'logs' && lgRunning && !self._lgTimer) { self._lgTimer = setTimeout(function () { self._lgTimer = null; if (self.state.ptab === 'logs') self._loadRuns(true); }, 4000); }
+    const LG_KIND = { chat: 'Chat', esteira: 'Esteira', trilho: 'Trilho' };
+    const LG_ST = { running: ['Rodando', 'flow'], ok: ['Concluída', 'action'], failed: ['Falhou', 'danger'], paused: ['Pausada', 'warn'] };
+    const lgWhen = (iso) => { const d = new Date(iso); return isNaN(d) ? '—' : String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+    const lgDur = (ms) => ms == null ? '—' : ms < 60000 ? Math.round(ms / 1000) + ' s' : Math.floor(ms / 60000) + ' min ' + Math.round((ms % 60000) / 1000) + ' s';
+    const lgTok = (u) => { if (!u) return 'sem dados de tokens'; const t = (u.inputTokens || 0) + (u.outputTokens || 0); const parts = []; if (t) parts.push(t.toLocaleString('pt-BR') + ' tok'); if (u.costUsd != null) parts.push('US$ ' + u.costUsd.toFixed(4)); return parts.join(' · ') || 'sem dados de tokens'; };
+    // Sinais de alucinação: o motor disse que fez, mas o disco não mudou; ou terminou com erro e foi aceito.
+    const lgFlags = (r) => { const f = []; if (r.status === 'ok' && r.mode === 'agent' && r.changesAvailable && r.filesChanged === 0) f.push('Disse que concluiu, mas nenhum arquivo mudou'); if (r.status === 'ok' && r.exitCode != null && r.exitCode !== 0) f.push('Aceita com código de saída ' + r.exitCode); if (r.status === 'ok' && r.mode === 'agent' && !r.toolCalls) f.push('Nenhuma ferramenta registrada'); if (r.toolErrors) f.push(r.toolErrors + ' de ' + (r.toolCalls || r.toolErrors) + ' chamadas de ferramenta falharam ou foram bloqueadas'); return f; };
+    const lgFailN = lgList.filter((r) => r.status === 'failed').length || null;
+    const lgShown = lgList.filter((r) => s.lgF === 'all' ? true : s.lgF === 'alerta' ? (r.status === 'failed' || lgFlags(r).length > 0) : r.kind === s.lgF);
+    const lgD = s.lgDet && s.lgDet.ok ? s.lgDet : null;
+    const lgM = lgD ? lgD.meta : null;
+    const lgViews = [['transcricao', 'Transcrição'], ['prompt', 'Pedido enviado'], ['resposta', 'Resposta'], ['diff', 'Diff do disco'], ['stdout', 'Saída bruta'], ['stderr', 'Erros (stderr)']];
+    const lgBody = !lgD ? '' : s.lgView === 'prompt' ? lgD.prompt : s.lgView === 'resposta' ? lgD.resposta : s.lgView === 'diff' ? (lgD.diff.text || (lgM.changes && lgM.changes.available ? 'Nenhuma mudança no disco durante esta execução.' : (lgM.changes && lgM.changes.note) || 'Diff indisponível.')) : s.lgView === 'stdout' ? ((lgD.stdout.cut ? '… mostrando o fim do arquivo (' + Math.round(lgD.stdout.bytes / 1024) + ' KB)\n\n' : '') + lgD.stdout.text) : s.lgView === 'stderr' ? (lgD.stderr.text || 'Sem saída de erro.') : (lgD.transcricao || 'Este motor não enviou eventos legíveis. Veja a saída bruta.');
+    const lgCh = lgM && lgM.changes ? lgM.changes : { added: [], modified: [], deleted: [] };
+    const lg = {
+      busy: s.lgBusy, err: s.lgErr, hasErr: !!s.lgErr, total: lgList.length, empty: lgShown.length === 0,
+      emptyTxt: lgList.length ? 'Nenhuma execução neste filtro.' : 'Nenhuma execução registrada ainda. Toda conversa com a Íris, etapa da esteira ou passo do trilho passa a aparecer aqui.',
+      refresh: () => self._loadRuns(true),
+      openRoot: () => { if (lgApi && lgApi.runs) lgApi.runs.openFolder(lgTarget); },
+      filters: [['all', 'Todas'], ['esteira', 'Esteira'], ['trilho', 'Trilho'], ['chat', 'Chat'], ['alerta', 'Alertas']].map((x) => ({ label: x[1], on: s.lgF === x[0] ? 'on' : '', n: x[0] === 'all' ? lgList.length : x[0] === 'alerta' ? lgList.filter((r) => r.status === 'failed' || lgFlags(r).length > 0).length : lgList.filter((r) => r.kind === x[0]).length, pick: () => self.setState({ lgF: x[0] }) })),
+      rows: lgShown.map((r) => { const st = LG_ST[r.status] || [r.status, '']; const fl = lgFlags(r); return { id: r.id, kind: LG_KIND[r.kind] || r.kind, label: r.label || r.stage || '—', who: r.owner || '', eng: r.engine + ' · ' + r.model, when: lgWhen(r.startedAt), dur: lgDur(r.durationMs), tools: (r.toolCalls || 0) + ' ferramentas' + (r.toolErrors ? ' (' + r.toolErrors + ' falharam)' : ''), files: r.changesAvailable === false ? 'disco não comparado' : (r.filesChanged || 0) + ' arquivos', tok: lgTok(r.usage), st: st[0], stCls: st[1], warn: fl.join(' · '), hasWarn: fl.length > 0, err: r.error || '', hasErr: r.status === 'failed' && !!r.error, cls: s.lgSel === r.id ? 'on' : '', open: () => self._openRun(r.id, false) }; }),
+      hasSel: !!s.lgSel, noSel: !s.lgSel, loadingDet: !!s.lgSel && !s.lgDet, detErr: s.lgDet && !s.lgDet.ok ? String(s.lgDet.error || '') : '', hasDetErr: !!(s.lgDet && !s.lgDet.ok),
+      hasDet: !!lgD,
+      d: lgM ? {
+        title: (LG_KIND[lgM.kind] || lgM.kind) + ' · ' + (lgM.label || lgM.stage || ''),
+        id: lgM.id, st: (LG_ST[lgM.status] || [lgM.status])[0], stCls: (LG_ST[lgM.status] || ['', ''])[1],
+        facts: [['Motor', lgM.engine + ' · ' + lgM.model], ['Modo', lgM.mode === 'agent' ? 'agente (pode editar)' : 'consulta (só leitura)'], ['Esforço', lgM.effort || '—'], ['Início', lgWhen(lgM.startedAt)], ['Duração', lgDur(lgM.durationMs)], ['Código de saída', lgM.exitCode == null ? '—' : String(lgM.exitCode)], ['Ferramentas', String(lgM.toolCalls || 0) + (lgM.toolErrors ? ' · ' + lgM.toolErrors + ' com falha' : '')], ['Tokens / custo', lgTok(lgM.usage)], ['Pedido', (lgM.promptChars || 0).toLocaleString('pt-BR') + ' caracteres'], ['Resposta', (lgM.replyChars || 0).toLocaleString('pt-BR') + ' caracteres']].map((x) => ({ k: x[0], v: x[1] })),
+        flags: lgFlags({ status: lgM.status, mode: lgM.mode, exitCode: lgM.exitCode, toolCalls: lgM.toolCalls, toolErrors: lgM.toolErrors, engine: lgM.engine, changesAvailable: lgM.changes ? lgM.changes.available : undefined, filesChanged: lgCh.added.length + lgCh.modified.length + lgCh.deleted.length }).map((t) => ({ t })),
+        hasFlags: false,
+        err: lgM.error || '', hasErr: !!lgM.error,
+        changes: [].concat(lgCh.added.map((f) => ({ f, op: 'criado', cls: 'action' })), lgCh.modified.map((f) => ({ f, op: 'alterado', cls: 'warn' })), lgCh.deleted.map((f) => ({ f, op: 'removido', cls: 'danger' }))).slice(0, 200),
+        hasChanges: lgCh.added.length + lgCh.modified.length + lgCh.deleted.length > 0,
+        noChanges: lgCh.added.length + lgCh.modified.length + lgCh.deleted.length === 0,
+        changesTxt: lgM.changes && lgM.changes.available === false ? (lgM.changes.note || 'O disco não foi comparado nesta execução.') : 'Nenhum arquivo mudou durante esta execução.',
+        views: lgViews.map((v) => ({ label: v[1], on: s.lgView === v[0] ? 'on' : '', pick: () => self.setState({ lgView: v[0] }) })),
+        body: lgBody,
+        openDir: () => { if (lgApi && lgApi.runs) lgApi.runs.openFolder(lgTarget, lgM.id); },
+        close: () => self.setState({ lgSel: null, lgDet: null }),
+      } : null,
+    };
+    if (lg.d) lg.d.hasFlags = lg.d.flags.length > 0;
+
     return {
       listView: !isOpen, consoleView: isOpen, spotTopo: spot === 'topology' ? 'spot' : '', isM: isM,
       // barra lateral
@@ -2302,7 +2472,7 @@ class Component extends DCLogic {
       togglePause: () => self.togglePause(P.id),
       toGeral: () => self.setState({ ptab: 'geral' }), toEsteira: () => self.setState({ ptab: 'esteira' }), toTrilho: () => self.setState({ ptab: 'trilho' }), toGuard: () => self.setState({ ptab: 'qa' }),
       toLedger: () => { self.setState({ ptab: 'esteira', lf: 'all' }); goStage(s.stage, 'ledger'); },
-      ptabs: ([['geral', 'Visão geral', P.pendN, 'warn'], ['esteira', 'Esteira', null]].concat(projFinished ? [['trilho', 'Trilho', showAltTrack ? 1 : null, showAltTrack ? 'flow' : '']] : []).concat([['kanban', 'Kanban', null], ['roadmap', 'Roadmap', null], ['arquivos', 'Workspace', pFiles.length, ''], ['qa', 'QA', qaTabN, 'danger'], ['seg', 'Segurança', segTabN, 'danger'], ['acessos', 'Acessos', missingN, 'danger']])).map((x) => ({ label: x[1], n: x[2], cls: x[3] || '', hasN: x[2] != null && x[2] !== 0, on: ptab === x[0] ? 'on' : '', pick: () => self.setState({ ptab: x[0] }) })),
+      ptabs: ([['geral', 'Visão geral', P.pendN, 'warn'], ['esteira', 'Esteira', null]].concat(projFinished ? [['trilho', 'Trilho', showAltTrack ? 1 : null, showAltTrack ? 'flow' : '']] : []).concat([['kanban', 'Kanban', null], ['roadmap', 'Roadmap', null], ['arquivos', 'Workspace', pFiles.length, ''], ['qa', 'QA', qaTabN, 'danger'], ['seg', 'Segurança', segTabN, 'danger'], ['acessos', 'Acessos', missingN, 'danger'], ['logs', 'Logs', lgFailN, 'danger']])).map((x) => ({ label: x[1], n: x[2], cls: x[3] || '', hasN: x[2] != null && x[2] !== 0, on: ptab === x[0] ? 'on' : '', pick: () => { self.setState({ ptab: x[0] }); if (x[0] === 'logs') self._loadRuns(false); } })),
       pt: pt, cs: cs, showAltTrack: showAltTrack,
       altTrack: (function () {
         const curItem = trackItems[altTrackStep] || trackItems[0];
@@ -2744,6 +2914,7 @@ class Component extends DCLogic {
       noProjFiles: shownFiles.length === 0,
       gg: { n: P.gN, pct: Math.round(P.gN / 8 * 100), col: P.gN === 8 ? 'var(--flow)' : 'var(--warning)', title: P.gN === 8 ? 'Completion Guard 8 de 8' : (8 - P.gN) + ' regras ainda abertas', note: P.gN === 8 ? 'Todas as regras físicas passaram. O gate final foi assinado.' : 'As regras fecham conforme as etapas de construção, QA e segurança terminam. Nada é marcado à mão.',
         rules: G8.map((r, i) => { const ok = i < P.gN; return { t: r[0], m: ok ? r[1] + ' · verificado' : r[1], bg: ok ? 'var(--flow-subtle)' : 'var(--surface-3)', fg: ok ? 'var(--flow)' : 'var(--text-muted)', icon: ok ? IC.check : IC.clock, st: ok ? 'ok' : 'aguardando', cls: ok ? 'flow' : '' }; }) },
+      lg: lg,
       ac: {
         target: P.target, hasMissing: missingN > 0, missingTxt: missingN + (missingN === 1 ? ' variável faltando' : ' variáveis faltando'),
         add: () => openCred(null), invite: () => app.toast('Convite enviado', 'O convite chega por e-mail com acesso de leitura. Você ajusta o papel depois.'),
@@ -2972,7 +3143,7 @@ class Component extends DCLogic {
       // Íris
       chatOpen: s.chat && isOpen, chatFab: !s.chat && isOpen, hasUnread: s.unread > 0 && isM, unread: s.unread,
       openChat: () => self.setState({ chat: true, unread: isM ? 0 : s.unread, menu: false }), closeChat: () => self.setState({ chat: false }),
-      iris: iris, typing: s.typing, draft: s.draft,
+      iris: iris, irisLive: irisLive, typing: s.typing, draft: s.draft,
       onDraft: (e) => self.setState({ draft: e.target.value }),
       sugs: (isM ? (s.stage === 4 ? ['O que mudou no último build?', 'A prévia já está no ar?'] : s.stage === 5 ? ['Quem está bloqueando o QA?', 'Quanto falta para entregar?'] : ['Resuma esta etapa', 'Quanto falta para entregar?']) : ['Resuma esta etapa', 'O que falta para entregar?']).concat(['Quais arquivos mudaram hoje?']).map((x) => ({ t: x, pick: () => self.setState({ draft: x }) })),
       send: (e) => {

@@ -278,6 +278,14 @@ const api: TavirApi = {
         return { stats: idx.getStats(), items: items.slice(0, 250) };
       }),
   },
+  iris: {
+    stop: (projectKey: string) => ipcRenderer.invoke('projects:stopIris', projectKey),
+  },
+  runs: {
+    list: (idOrPath: string, limit?: number) => ipcRenderer.invoke('runs:list', idOrPath, limit),
+    read: (idOrPath: string, runId: string) => ipcRenderer.invoke('runs:read', idOrPath, runId),
+    openFolder: (idOrPath: string, runId?: string) => ipcRenderer.invoke('runs:openFolder', idOrPath, runId),
+  },
   onEvent: (callback: (event: RunEvent) => void) => {
     const handler = (_e: Electron.IpcRendererEvent, event: RunEvent) => callback(event);
     ipcRenderer.on('run:event', handler);

@@ -449,7 +449,7 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
       const doneN = Math.min(Number(gpRow.cur != null ? gpRow.cur : ap.done) || 0, stageN);
       const finished = doneN >= stageN || String(ap.status || '').toLowerCase() === 'done' || String(ap.status || '').toLowerCase() === 'completed';
       const unlocked = !finished || !!(self.state.altOpen && self.state.altOpen[ap.id]) || !!ap.alterations_open;
-      const motorRow = (self.state.motors && self.state.motors[ap.id]) || {};
+      const motorRow = (self.state.motors && self.state.motors[ap.id]) || (typeof DEFM !== 'undefined' ? DEFM : {});
       const engName = String(motorRow.engine || 'cursor').toLowerCase();
       const engLabel = engName === 'antigravity' ? 'Antigravity' : (engName.charAt(0).toUpperCase() + engName.slice(1));
       const engModel = motorRow.model || (engName === 'claude' ? 'claude-sonnet-4-5' : engName === 'codex' ? 'gpt-5-codex' : engName === 'antigravity' ? 'gemini-2.5-pro' : 'auto-smart');

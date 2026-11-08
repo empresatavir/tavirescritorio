@@ -18,6 +18,9 @@ function handle(channel: string, listener: (...args: any[]) => any): void {
   ipcMain.handle(channel, listener);
 }
 
+/** Botão Parar do chat da Íris: encerra o motor em curso de cada projeto. */
+const irisKills = new Map<string, () => void>();
+
 export function registrarIpcHandlers(win: BrowserWindow): void {
   mainWin = win;
 
@@ -751,6 +754,44 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
+  // Livro de execuções (.tavir/runs) — leitura sem efeitos colaterais na pasta do projeto.
+  const runsWorkspace = (idOrPath: string): string => {
+    const { resolveProjectRecord } = require('./project-fs');
+    return resolveProjectRecord(String(idOrPath || '')).local_path;
+  };
+
+  handle('runs:list', (_e, idOrPath: string, limit?: number) => {
+    try {
+      const { listRuns } = require('./runLedger');
+      const workspace = runsWorkspace(idOrPath);
+      return { ok: true, workspace, runs: listRuns(workspace, Number(limit) || 100) };
+    } catch (err) {
+      return { ok: false, error: String(err), runs: [] };
+    }
+  });
+
+  handle('runs:read', (_e, idOrPath: string, runId: string) => {
+    try {
+      const { readRun } = require('./runLedger');
+      return readRun(runsWorkspace(idOrPath), String(runId || ''));
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('runs:openFolder', async (_e, idOrPath: string, runId?: string) => {
+    try {
+      const { runsRoot } = require('./runLedger');
+      const root = runsRoot(runsWorkspace(idOrPath));
+      const id = String(runId || '');
+      const target = /^[0-9]{8}-[0-9]{6}-[a-z]+-[0-9a-f]{6}$/.test(id) ? require('node:path').join(root, id) : root;
+      const error = await shell.openPath(target);
+      return { ok: !error, error: error || undefined };
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
   handle('projects:openInExplorer', (_e, idOrPath: string) => {
     try {
       const { openProjectFolderInExplorer } = require('./project-fs');
@@ -779,10 +820,40 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
+  handle('projects:stopIris', (_e, projectKey: string) => {
+    const kill = irisKills.get(String(projectKey || ''));
+    if (!kill) return { ok: false };
+    kill();
+    return { ok: true };
+  });
+
   handle('projects:askIris', async (_e, params: any) => {
+    // Fala e atividade da Íris chegam ao chat enquanto o motor trabalha.
+    const projectKey = String(params?.projectId || params?.projectPath || params?.projectName || '');
+    const chatRunId = `chat-${Date.now()}`;
+    let activity = '';
+    let speech = '';
+    const push = (type: RunEvent['type'], content: string) => {
+      if (win.isDestroyed()) return;
+      win.webContents.send('run:event', {
+        runId: chatRunId,
+        timestamp: new Date().toISOString(),
+        type,
+        content,
+        meta: { chat: true, projectKey, activity },
+      } satisfies RunEvent);
+    };
     try {
       const { askProjectIris } = require('./project-fs');
-      return await askProjectIris(params);
+      return await askProjectIris({
+        ...params,
+        onProgress: (line: string) => {
+          if (line.startsWith('→ ')) activity = line.slice(2);
+          else speech = line;
+          push('thought', speech);
+        },
+        registerKill: (kill: () => void) => irisKills.set(projectKey, kill),
+      });
     } catch (err) {
       console.error('[TAVIR IPC] askIris falhou:', err);
       return {
@@ -798,6 +869,9 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
           t: 'Não consegui completar a conversa com o agente agora. Tente de novo em instantes.',
         },
       };
+    } finally {
+      irisKills.delete(projectKey);
+      push('done', '');
     }
   });
 

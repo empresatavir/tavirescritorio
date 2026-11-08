@@ -1004,6 +1004,15 @@ export function createOrAbsorbProjectRecord(params: any): any {
 }
 
 export function resolveEngineSpec(engineName?: string, modelId?: string, effortId?: string) {
+  // Sem motor explícito (esteira, trilho, boas-vindas): vale o padrão de Configurações → Motores.
+  if (!engineName) {
+    try {
+      const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'db', 'engine_settings.json'), 'utf8'));
+      engineName = raw.defaultEngine || undefined;
+      modelId = modelId || raw.defaultModel || undefined;
+      effortId = effortId || raw.defaultEffort || undefined;
+    } catch {}
+  }
   const chosen = fitCall(engineName, modelId, effortId);
   return {
     id: chosen.motor.id,
@@ -1924,7 +1933,9 @@ export async function executeAltTrackStep(
     alterationsOpen: true,
     asChangeRequest: asChange,
     recent: [],
-    timeoutMs: 600000,
+    timeoutMs: 1800000,
+    runKind: 'trilho',
+    runLabel: focus.label,
     onProgress: (line) => pushLine(line, 'info'),
     registerKill: (kill) => {
       const live = liveAgents.get(liveKey);
@@ -1940,7 +1951,9 @@ export async function executeAltTrackStep(
   const next = normalizeAltTrack(fresh.alt_track, true);
   const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
   const current = next.items[next.step] || focus;
-  if (agentRes.ok) current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · ${focus.owner}\n${reply}\n`;
+  const exec = agentRes.runId ? ` · execução ${agentRes.runId}` : '';
+  if (agentRes.runId) log.push(`Execução registrada em .tavir/runs/${agentRes.runId}`);
+  if (agentRes.ok) current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · ${focus.owner}${exec}\n${reply}\n`;
   if (agentRes.ok && (focus.kind === 'plan' || focus.kind === 'map')) next.items = applyProposedTracks(next.items, reply);
   next.notes = notesFromItems(next.items);
   next.waitingQuestion = needsApproval ? reply.replace(/^AGUARDANDO APROVAÇÃO:\s*/i, '').trim() : '';
@@ -2055,12 +2068,8 @@ export function getProjectChatHistory(idOrPath: string): any {
     engine: welcomeEng.name,
     model: welcomeEng.model,
     ts: nowHM(),
-    thoughts: [
-      `[${welcomeEng.caption}] Conectada à pasta isolada: ${rootPath}`,
-      `[Estrutura] ${info.dirCount} pastas e ${info.fileCount} arquivos mapeados (${info.stacks})`,
-      `[Isolamento] Verificado .tavir/isolation.json e .env.project sem vazamento externo`,
-    ],
-    t: `Olá, Carlos! Sou a Íris via ${welcomeEng.caption}, conectada ao projeto "${info.name}" (${info.dirCount} pastas · ${info.fileCount} arquivos · ${info.stacks}). Pergunte sobre arquivos, etapas ou peça ajustes — o motor ativo fica no seletor do chat.`,
+    thoughts: [`[Workspace] ${rootPath}`, `[Estrutura] ${info.dirCount} pastas e ${info.fileCount} arquivos (${info.stacks})`],
+    t: `Olá, Carlos! Sou a Íris do projeto "${info.name}". Posso ler o código e os documentos para responder, e fazer mudanças quando você enviar um «Pedir alteração». O motor fica no seletor do chat.`,
   };
 
   try {
@@ -2088,7 +2097,7 @@ export async function askProjectIris(params: any): Promise<any> {
   let memoryText = '';
   try {
     const memPath = path.join(rootPath, 'memory', 'projeto', 'MEMORY.md');
-    if (fs.existsSync(memPath)) memoryText = fs.readFileSync(memPath, 'utf8').slice(-1200);
+    if (fs.existsSync(memPath)) memoryText = fs.readFileSync(memPath, 'utf8').slice(-3000);
   } catch {}
 
   const absorbMemory = (line: string) => {
@@ -2130,7 +2139,8 @@ export async function askProjectIris(params: any): Promise<any> {
 
   const recent = history
     .filter((m) => m && (m.role === 'me' || m.role === 'ag' || m.cls === 'me' || m.cls === 'ag'))
-    .slice(-8)
+    .filter((m) => !String(m.id || '').startsWith('iris-welcome'))
+    .slice(-14)
     .map((m) => ({
       role: (m.role === 'me' || m.cls === 'me' ? 'user' : 'assistant') as 'user' | 'assistant',
       text: String(m.t || m.text || ''),
@@ -2145,26 +2155,29 @@ export async function askProjectIris(params: any): Promise<any> {
   ];
 
   let reply = '';
+  let runId = '';
+  let agentOk = false;
   const wantsChange =
     forceChange ||
     /\b(alter|muda|ajuste|corrija|corri|implement|adicione|remova|refator)\w*/i.test(question);
 
-  // Projeto fechado: resposta curta local, sem agent.
-  if (control.finished && !control.chat_unlocked) {
-    if (wantsChange || forceChange) {
-      reply =
-        `O projeto **${info.name}** está **fechado para alterações**.\n` +
-        `Use **Liberar alterações** para conversar com os agentes e pedir mudanças — a esteira não reabre.`;
-    } else {
-      reply =
-        `**${info.name}** está entregue (Handoff) e **fechado para alterações**.\n` +
-        `Posso só consultar o status. Libere alterações se quiser conversa real com o motor no workspace.`;
-    }
-    thoughts.push('[Local] Projeto fechado — sem chamada ao agente');
+  // Projeto fechado: a conversa segue em modo leitura; só o pedido de alteração depende de liberar.
+  if (forceChange && !control.chat_unlocked) {
+    reply =
+      `O projeto **${info.name}** está **fechado para alterações**.\n` +
+      `Use **Liberar alterações** e envie o pedido de novo. Enquanto isso, posso responder perguntas sobre o projeto.`;
+    thoughts.push('[Local] Pedido de alteração com o projeto fechado');
   } else {
-    // Conversa real com o Cursor Agent no workspace do projeto aberto.
     const { converseWithIrisAgent } = require('./irisAgent') as typeof import('./irisAgent');
-    thoughts.push('[IrisAgent] Chamando agente conversacional…');
+    const track = control.alt_track;
+    const projectFacts = [
+      info.stacks ? `Stack detectada: ${info.stacks}` : '',
+      info.fileCount ? `Tamanho: ${info.fileCount} arquivos em ${info.dirCount} pastas` : '',
+      control.finished && control.alterations_open && track?.items?.length
+        ? `Trilho de alteração: passo ${Number(track.step) + 1} de ${track.items.length} (${track.items[track.step]?.label || stageName})`
+        : '',
+      'Documentos do projeto costumam ficar em context/ (levantamento, dossiê), specs/, memory/projeto/ e qa/.',
+    ].filter(Boolean);
     const agentRes = await converseWithIrisAgent({
       workspace: rootPath,
       question,
@@ -2175,23 +2188,30 @@ export async function askProjectIris(params: any): Promise<any> {
       model: eng.model,
       effort: eng.effort,
       finished: control.finished,
-      alterationsOpen: control.alterations_open,
+      alterationsOpen: control.chat_unlocked,
       asChangeRequest: Boolean(forceChange),
       recent,
       memorySnippet: memoryText,
-      timeoutMs: 120000,
+      projectFacts,
+      timeoutMs: forceChange ? 900000 : 300000,
+      onProgress: typeof params?.onProgress === 'function' ? params.onProgress : undefined,
+      registerKill: typeof params?.registerKill === 'function' ? params.registerKill : undefined,
+      runKind: 'chat',
+      runLabel: forceChange ? 'Pedido de alteração' : 'Chat com a Íris',
     });
+    runId = agentRes.runId || '';
+    agentOk = agentRes.ok;
     thoughts.push(...(agentRes.thoughts || []));
     reply = String(agentRes.text || '').trim();
     if (!reply) {
       reply = 'Não consegui obter resposta do agente neste turno. Tente de novo em instantes.';
     }
-    absorbMemory(`(${eng.name} · chat) "${question.slice(0, 120)}" → ${reply.slice(0, 160)}`);
-    if (forceChange || wantsChange) {
+    if (agentRes.ok) absorbMemory(`(${eng.name} · chat) "${question.slice(0, 160)}" → ${reply.replace(/\s+/g, ' ').slice(0, 240)}`);
+    if (forceChange) {
       absorbChangeRequest(question);
       thoughts.push('[Absorção] CHANGE_REQUESTS.md atualizado (pedido de alteração)');
     }
-    if (control.finished && control.alterations_open) {
+    if (agentOk && control.finished && control.alterations_open) {
       const tracked = recordIrisOnAltTrack(idOrPath, question, reply);
       if (tracked) {
         thoughts.push(
@@ -2223,8 +2243,11 @@ export async function askProjectIris(params: any): Promise<any> {
     engine: eng.name,
     model: eng.model,
     ts: nowHM(),
+    at: new Date().toISOString(),
+    ok: agentOk,
     thoughts,
     t: reply,
+    ...(runId ? { runId } : {}),
   };
 
   history.push(userMsg, agentMsg);
@@ -2251,7 +2274,7 @@ export async function askProjectIris(params: any): Promise<any> {
   };
 }
 
-type EsteiraStageRecord = { instruction: string; note: string; status: 'idle' | 'running' | 'paused' | 'done' | 'stopped'; files: string[] };
+type EsteiraStageRecord = { instruction: string; note: string; status: 'idle' | 'running' | 'paused' | 'done' | 'stopped'; files: string[]; runs?: string[] };
 type EsteiraDesk = { auto: boolean; stages: EsteiraStageRecord[] };
 
 function emptyEsteiraStage(): EsteiraStageRecord {
@@ -2294,6 +2317,7 @@ function readEsteira(rootPath: string, count: number): EsteiraDesk {
       note: String(row.note || ''),
       status,
       files: Array.isArray(row.files) ? row.files.map((x: unknown) => String(x)).slice(0, 12) : [],
+      runs: Array.isArray(row.runs) ? row.runs.map((x: unknown) => String(x)).slice(-30) : [],
     });
   }
   return { auto: Boolean(raw.auto), stages };
@@ -2400,7 +2424,9 @@ export async function runEsteiraStage(idOrPath: string, index: number, stageName
     alterationsOpen: true,
     asChangeRequest: !gate,
     recent: [],
-    timeoutMs: 600000,
+    timeoutMs: 1800000,
+    runKind: 'esteira',
+    runLabel: stageName,
     onProgress: (line) => {
       const live = liveAgents.get(key);
       if (live && line.length > 80) live.speech = line;
@@ -2420,13 +2446,15 @@ export async function runEsteiraStage(idOrPath: string, index: number, stageName
     if (agentRes.text && agentRes.text !== 'Pausado por Carlos.') current.note = (current.note ? current.note + '\n' : '') + agentRes.text.trim();
   } else if (agentRes.ok) {
     const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
-    current.note = (current.note ? current.note + '\n\n' : '') + `### ${stamp} · ${stageOwner}\n${agentRes.text.trim()}\n`;
+    const exec = agentRes.runId ? ` · execução ${agentRes.runId}` : '';
+    current.note = (current.note ? current.note + '\n\n' : '') + `### ${stamp} · ${stageOwner}${exec}\n${agentRes.text.trim()}\n`;
     current.status = 'done';
   } else {
     current.status = 'idle';
     current.note = (current.note ? current.note + '\n' : '') + String(agentRes.text || '').slice(0, 500);
   }
   current.files = stageArtifactFiles(info.rootPath, at, stageName);
+  if (agentRes.runId) current.runs = (current.runs || []).concat(agentRes.runId).slice(-30);
   fresh.stages[at] = current;
   writeEsteira(info.rootPath, fresh);
   const last = at >= fresh.stages.length - 1;
