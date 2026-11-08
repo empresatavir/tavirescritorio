@@ -264,10 +264,36 @@ export function registrarEventoJob(jobId: string, action: string, details: strin
         `INSERT INTO events (id, job_id, event_type, actor, action, details, created_at)
          VALUES (?, ?, ?, 'trilho', ?, ?, ?)`,
       )
-      .run(`ev-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`, jobId, eventType.slice(0, 50), action.slice(0, 100), details.slice(0, 2000), new Date().toISOString());
+      .run(`ev-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`, jobId, eventType.slice(0, 50), action.slice(0, 100), details, new Date().toISOString());
   } catch (err) {
     console.error('[TAVIR DB] Não gravou o evento do job:', err);
   }
+}
+
+export function registrarPassoCrescente(jobId: string, details: string, level: 'info' | 'error' = 'info'): void {
+  const sqlite = getSqlite();
+  const next = String(details || '');
+  if (!sqlite || !jobId || !next.trim()) return;
+  try {
+    const last = sqlite
+      .prepare(`SELECT id, details FROM events WHERE job_id = ? AND action = 'passo' ORDER BY created_at DESC LIMIT 1`)
+      .get(jobId) as { id?: string; details?: string } | undefined;
+    const prev = String(last?.details || '');
+    const rowId = last?.id || '';
+    const extendsPrev = !!rowId && !!prev && next.startsWith(prev.slice(0, Math.min(prev.length, 120))) && next.length >= prev.length;
+    if (extendsPrev) {
+      sqlite.prepare('UPDATE events SET details = ?, event_type = ?, created_at = ? WHERE id = ?').run(
+        next,
+        level === 'error' ? 'error' : 'info',
+        new Date().toISOString(),
+        rowId,
+      );
+      return;
+    }
+  } catch (err) {
+    console.error('[TAVIR DB] Não atualizou o passo do job:', err);
+  }
+  registrarEventoJob(jobId, 'passo', next, level === 'error' ? 'error' : 'info');
 }
 
 export function listarLogsJobs(): Record<string, Array<{ ts: string; lvl: string; cls: string; text: string }>> {
@@ -286,13 +312,24 @@ export function listarLogsJobs(): Record<string, Array<{ ts: string; lvl: string
     for (const row of rows) {
       const bad = /error|erro|fail/i.test(String(row.event_type || ''));
       const bucket = out[row.job_id] || [];
-      bucket.push({
+      const text = String(row.details || '');
+      const prev = bucket[bucket.length - 1];
+      const entry = {
         ts: formatJobWhen(row.created_at) || '—',
         lvl: bad ? 'erro' : 'info',
         cls: bad ? 'err' : 'info',
-        text: String(row.details || '').slice(0, 400),
-      });
-      out[row.job_id] = bucket.slice(-80);
+        text,
+      };
+      if (
+        prev &&
+        text.startsWith(String(prev.text).slice(0, Math.min(String(prev.text).length, 120))) &&
+        text.length >= String(prev.text).length
+      ) {
+        bucket[bucket.length - 1] = entry;
+      } else {
+        bucket.push(entry);
+      }
+      out[row.job_id] = bucket;
     }
   } catch (err) {
     console.error('[TAVIR DB] Não leu o log dos jobs:', err);

@@ -391,12 +391,14 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   // Factory Projects (Esteiras)
   handle('projects:list', () => {
     try {
+      const { purgeFixtureProjects } = require('./project-fs');
+      purgeFixtureProjects();
       const { DatabaseSync } = require('node:sqlite');
       const pathMod = require('node:path');
       const sqlite = new DatabaseSync(pathMod.join(process.cwd(), 'backend', 'tavir.db'));
       const rows = sqlite
         .prepare(
-          'SELECT id, slug, name, client, company, template_code, stages_done, total_stages, status, local_path, stack, description FROM projects ORDER BY created_at DESC',
+          'SELECT id, slug, name, client, company, template_code, stages_done, total_stages, status, local_path, stack, description, files FROM projects ORDER BY created_at DESC',
         )
         .all();
       sqlite.close();
@@ -682,8 +684,22 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     return newProj;
   };
 
-  handle('projects:create', (_e, params: any) => createOrAbsorbProject(params));
-  handle('projects:absorb', (_e, params: any) => createOrAbsorbProject({ ...params, absorb: true }));
+  handle('projects:create', (_e, params: any) => {
+    const { createOrAbsorbProjectRecord } = require('./project-fs');
+    return createOrAbsorbProjectRecord(params);
+  });
+  handle('projects:absorb', (_e, params: any) => {
+    const { createOrAbsorbProjectRecord } = require('./project-fs');
+    return createOrAbsorbProjectRecord({ ...params, absorb: true });
+  });
+  handle('projects:survey', (_e, idOrPath: string) => {
+    try {
+      const { refreshProjectSurvey } = require('./project-fs');
+      return refreshProjectSurvey(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
 
   handle('projects:pickFolder', async () => {
     const opts: Electron.OpenDialogOptions = {
@@ -887,7 +903,7 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     };
     const stamp = () => new Date().toISOString();
     const { executeAltTrackStep } = require('./project-fs');
-    const { abrirJobTrilho, atualizarJobTrilho, registrarEventoJob } = require('./db');
+    const { abrirJobTrilho, atualizarJobTrilho, registrarEventoJob, registrarPassoCrescente } = require('./db');
     try {
       const step = typeof stepOverride === 'number' && Number.isFinite(stepOverride) ? stepOverride : undefined;
       const res = await executeAltTrackStep(idOrPath, {
@@ -905,7 +921,7 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
           });
         },
         onLine(text: string, level: 'info' | 'error') {
-          if (jobId) registrarEventoJob(jobId, level === 'error' ? 'erro' : 'passo', text, level === 'error' ? 'error' : 'info');
+          if (jobId) registrarPassoCrescente(jobId, text, level);
           send({
             runId: jobId || 'trilho-local',
             timestamp: stamp(),
@@ -915,7 +931,7 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
           });
         },
         onEnd(info: { ok: boolean; status: string; text: string }) {
-          const status = info.status === 'failed' ? 'failed' : info.status === 'waiting' ? 'paused' : 'completed';
+          const status = info.status === 'failed' ? 'failed' : info.status === 'waiting' || info.status === 'paused' ? 'paused' : 'completed';
           if (jobId) {
             atualizarJobTrilho(jobId, status, info.ok ? '' : info.text);
             registrarEventoJob(jobId, 'fim', info.text, info.ok ? 'info' : 'error');
@@ -923,7 +939,7 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
           send({
             runId: jobId || 'trilho-local',
             timestamp: stamp(),
-            type: info.ok ? 'done' : 'error',
+            type: info.ok ? 'done' : info.status === 'paused' ? 'thought' : 'error',
             content: info.text,
             meta: { track: true, status, progress: 100, title: jobTitle },
           });
@@ -950,6 +966,60 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
         meta: { track: true, status: 'failed', progress: 100, title: jobTitle },
       });
       return { ok: false, error: message, jobId };
+    }
+  });
+
+  handle('projects:pauseAltTrack', (_e, idOrPath: string) => {
+    try {
+      const { pauseProjectAltTrack } = require('./project-fs');
+      return pauseProjectAltTrack(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:getEsteira', (_e, idOrPath: string, count?: number) => {
+    try {
+      const { getProjectEsteira } = require('./project-fs');
+      return getProjectEsteira(idOrPath, Number(count) || 9);
+    } catch (err) {
+      return { ok: false, error: String(err), esteira: { auto: false, stages: [] } };
+    }
+  });
+
+  handle('projects:saveEsteiraInstruction', (_e, idOrPath: string, index: number, text: string) => {
+    try {
+      const { saveEsteiraInstruction } = require('./project-fs');
+      return saveEsteiraInstruction(idOrPath, index, text);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:setEsteiraAuto', (_e, idOrPath: string, auto: boolean) => {
+    try {
+      const { setEsteiraAuto } = require('./project-fs');
+      return setEsteiraAuto(idOrPath, Boolean(auto));
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:controlEsteira', (_e, idOrPath: string, index: number, action: string) => {
+    try {
+      const { controlEsteiraStage } = require('./project-fs');
+      return controlEsteiraStage(idOrPath, index, action);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:runEsteira', async (_e, idOrPath: string, index: number, stageName: string, stageOwner: string) => {
+    try {
+      const { runEsteiraStage } = require('./project-fs');
+      return await runEsteiraStage(idOrPath, index, stageName, stageOwner);
+    } catch (err) {
+      return { ok: false, error: String(err) };
     }
   });
 

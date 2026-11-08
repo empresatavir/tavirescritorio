@@ -126,7 +126,7 @@ export interface AltTrackState {
   updated_at?: string;
   notes?: { map?: string; plan?: string; fix?: string; build?: string };
   auto?: boolean;
-  runStatus?: 'idle' | 'running' | 'waiting' | 'done';
+  runStatus?: 'idle' | 'running' | 'waiting' | 'paused' | 'done';
   waitingQuestion?: string;
   runLog?: string[];
   runError?: string;
@@ -271,6 +271,7 @@ export interface TavirApi {
     delete: (id: string, deleteFiles?: boolean, localPath?: string) => Promise<{ ok: boolean; deletedFiles?: boolean; path?: string | null }>;
     pickFolder: () => Promise<{ canceled: boolean; path: string | null }>;
     absorb: (params: CreateFactoryProjectParams) => Promise<FactoryProjectItem>;
+    survey: (idOrPath: string) => Promise<any>;
     inspectFolder: (idOrPath: string) => Promise<any>;
     openInExplorer: (idOrPath: string) => Promise<{ ok: boolean; path?: string }>;
     readFile: (filePath: string) => Promise<{ ok: boolean; content?: string; size?: number }>;
@@ -286,7 +287,13 @@ export interface TavirApi {
     startAltTrackCycle: (idOrPath: string) => Promise<ProjectAlterationsControl>;
     setAltTrackAuto: (idOrPath: string, auto: boolean) => Promise<ProjectAlterationsControl>;
     approveAltTrack: (idOrPath: string) => Promise<ProjectAlterationsControl>;
-    runAltTrack: (idOrPath: string, step?: number) => Promise<ProjectAlterationsControl & { needsApproval?: boolean; continued?: boolean; reply?: string }>;
+    runAltTrack: (idOrPath: string, step?: number) => Promise<ProjectAlterationsControl & { needsApproval?: boolean; continued?: boolean; paused?: boolean; reply?: string }>;
+    pauseAltTrack: (idOrPath: string) => Promise<ProjectAlterationsControl>;
+    getEsteira: (idOrPath: string, count?: number) => Promise<any>;
+    saveEsteiraInstruction: (idOrPath: string, index: number, text: string) => Promise<any>;
+    setEsteiraAuto: (idOrPath: string, auto: boolean) => Promise<any>;
+    controlEsteira: (idOrPath: string, index: number, action: string) => Promise<any>;
+    runEsteira: (idOrPath: string, index: number, stageName: string, stageOwner: string) => Promise<any>;
     runWithThinking: (params: any) => Promise<any>;
   };
   agents: {

@@ -140,6 +140,11 @@ const api: TavirApi = {
         const { createOrAbsorbProjectRecord } = require('../main/project-fs');
         return createOrAbsorbProjectRecord(Object.assign({}, params, { absorb: true }));
       }),
+    survey: (idOrPath: string) =>
+      ipcRenderer.invoke('projects:survey', idOrPath).catch(() => {
+        const { refreshProjectSurvey } = require('../main/project-fs');
+        return refreshProjectSurvey(idOrPath);
+      }),
     inspectFolder: (idOrPath: string) =>
       ipcRenderer.invoke('projects:inspectFolder', idOrPath).catch(() => {
         const { inspectProjectFolder } = require('../main/project-fs');
@@ -219,6 +224,36 @@ const api: TavirApi = {
       ipcRenderer.invoke('projects:runAltTrack', idOrPath, step).catch(() => {
         const { executeAltTrackStep } = require('../main/project-fs');
         return executeAltTrackStep(idOrPath, undefined, step);
+      }),
+    pauseAltTrack: (idOrPath: string) =>
+      ipcRenderer.invoke('projects:pauseAltTrack', idOrPath).catch(() => {
+        const { pauseProjectAltTrack } = require('../main/project-fs');
+        return pauseProjectAltTrack(idOrPath);
+      }),
+    getEsteira: (idOrPath: string, count?: number) =>
+      ipcRenderer.invoke('projects:getEsteira', idOrPath, count).catch(() => {
+        const { getProjectEsteira } = require('../main/project-fs');
+        return getProjectEsteira(idOrPath, count);
+      }),
+    saveEsteiraInstruction: (idOrPath: string, index: number, text: string) =>
+      ipcRenderer.invoke('projects:saveEsteiraInstruction', idOrPath, index, text).catch(() => {
+        const { saveEsteiraInstruction } = require('../main/project-fs');
+        return saveEsteiraInstruction(idOrPath, index, text);
+      }),
+    setEsteiraAuto: (idOrPath: string, auto: boolean) =>
+      ipcRenderer.invoke('projects:setEsteiraAuto', idOrPath, auto).catch(() => {
+        const { setEsteiraAuto } = require('../main/project-fs');
+        return setEsteiraAuto(idOrPath, auto);
+      }),
+    controlEsteira: (idOrPath: string, index: number, action: string) =>
+      ipcRenderer.invoke('projects:controlEsteira', idOrPath, index, action).catch(() => {
+        const { controlEsteiraStage } = require('../main/project-fs');
+        return controlEsteiraStage(idOrPath, index, action);
+      }),
+    runEsteira: (idOrPath: string, index: number, stageName: string, stageOwner: string) =>
+      ipcRenderer.invoke('projects:runEsteira', idOrPath, index, stageName, stageOwner).catch(() => {
+        const { runEsteiraStage } = require('../main/project-fs');
+        return runEsteiraStage(idOrPath, index, stageName, stageOwner);
       }),
     runWithThinking: (params: any) =>
       ipcRenderer.invoke('projects:runWithThinking', params).catch(() => {

@@ -25,6 +25,7 @@ export interface IrisAgentRequest {
   memorySnippet?: string;
   timeoutMs?: number;
   onProgress?: (line: string) => void;
+  registerKill?: (kill: () => void) => void;
 }
 
 export interface IrisAgentResult {
@@ -544,7 +545,8 @@ function runAgentProcess(
   timeoutMs: number,
   motor?: MotorKey,
   onChunk?: (line: string) => void,
-): Promise<{ stdout: string; stderr: string; code: number | null }> {
+  onKill?: (kill: () => void) => void,
+): Promise<{ stdout: string; stderr: string; code: number | null; aborted: boolean }> {
   return new Promise((resolve, reject) => {
     const isWinScript = process.platform === 'win32' && /\.(cmd|bat)$/i.test(binary);
     const cmd = isWinScript ? 'cmd.exe' : binary;
@@ -563,6 +565,7 @@ function runAgentProcess(
     let speech = '';
     let lastEmit = '';
     let lastEmitAt = 0;
+    let aborted = false;
     const idleMs = Math.min(180000, Math.max(45000, timeoutMs));
     let idleTimer: ReturnType<typeof setTimeout>;
     let hardTimer: ReturnType<typeof setTimeout>;
@@ -599,7 +602,7 @@ function runAgentProcess(
       if (!onChunk || !speech.trim()) return;
       const now = Date.now();
       if (!force && now - lastEmitAt < 700) return;
-      const shown = (speech.length > 1800 ? speech.slice(-1800) : speech).trim();
+      const shown = speech.trim();
       if (!shown || shown === lastEmit) return;
       lastEmit = shown;
       lastEmitAt = now;
@@ -643,6 +646,14 @@ function runAgentProcess(
       clearTimeout(hardTimer);
       reject(err);
     });
+    const kill = () => {
+      aborted = true;
+      emitSpeech(true);
+      try {
+        child.kill();
+      } catch {}
+    };
+    onKill?.(kill);
     child.on('close', (code) => {
       clearTimeout(idleTimer);
       clearTimeout(hardTimer);
@@ -652,7 +663,7 @@ function runAgentProcess(
         take(`${rest}\n`);
       }
       emitSpeech(true);
-      resolve({ stdout, stderr, code });
+      resolve({ stdout, stderr, code, aborted });
     });
   });
 }
@@ -715,7 +726,7 @@ export async function converseWithIrisAgent(req: IrisAgentRequest): Promise<Iris
       });
     } catch {}
 
-    const proc = await runAgentProcess(binary, args, req.workspace, timeoutMs, motor, req.onProgress);
+    const proc = await runAgentProcess(binary, args, req.workspace, timeoutMs, motor, req.onProgress, req.registerKill);
     let text = '';
     try {
       text = extractAgentText(proc.stdout + '\n' + proc.stderr, motor);
@@ -771,6 +782,17 @@ export async function converseWithIrisAgent(req: IrisAgentRequest): Promise<Iris
       };
     }
 
+    if (proc.aborted) {
+      return {
+        ok: false,
+        text: text.trim() || 'Pausado por Carlos.',
+        thoughts,
+        engine: motor,
+        model: modelLabel,
+        mode,
+        error: 'paused',
+      };
+    }
     thoughts.push(`[OK] ${motor} · ${text.length} chars · code ${proc.code}`);
     return {
       ok: true,

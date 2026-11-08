@@ -372,6 +372,8 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             ? TPL_STAGES[code]
             : (typeof STG !== 'undefined' ? STG.map(function(x, i) { return [x[0], x[1], x[3], [1,1,1,1,2,1,2,2,2][i] || 1]; }) : [['Início', 'Paula PM', 'orquestração', 1]]);
           const st = String(p.status || '').toLowerCase();
+          let survey = {};
+          try { survey = (JSON.parse(p.files || '{}') || {}).survey || {}; } catch (e) { survey = {}; }
           const fullPath = String(p.local_path || p.slug || p.id || '');
           const rootFlat = String(typeof ROOT !== 'undefined' ? ROOT : '').replace(/\\\\/g, '/').toLowerCase();
           const fullFlat = fullPath.replace(/\\\\/g, '/');
@@ -395,17 +397,17 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             stages: stages,
             pends: [],
             acts: [['agora', 'Sincronizado do SQLite', 'Sistema']],
-            inv: [['Etapas', String(total)], ['Feitas', String(done)], ['Status', p.status || 'run'], ['Pasta', relSlug.replace(/\\\\/g, '/')]],
+            inv: [['O que é', survey.about || p.description || 'Levantamento ainda não rodou'], ['Linguagens', survey.languages || p.stack || '—'], ['Git', survey.git || '—'], ['Deploy', survey.deploy || '—'], ['Arquivos', survey.files != null ? String(survey.files) : '—']],
             env: [],
-            target: 'local · tavir',
-            acc: [],
+            target: survey.deploy || 'local · tavir',
+            acc: survey.gitRemote ? [['Git', survey.gitRemote, 'remote', 'ok']] : [],
             people: [['CH', 'Carlos Henrique', 'CEO · aprovador', 'admin']],
             slug: relSlug,
-            git: 'TAVIR',
+            git: survey.gitRemote || survey.git || 'local',
             cost: [0, 25],
-            disk: [6, 12, 'pasta isolada'],
+            disk: [Number(survey.dirs) || 0, Number(survey.files) || 0, survey.languages || 'pasta isolada'],
             tok0: [0, 0, 0],
-            think: p.description || (done >= total ? 'Esteira concluída' : 'Em execução'),
+            think: survey.about || p.description || (done >= total ? 'Esteira concluída' : 'Em execução'),
             local_path: p.local_path || null,
             alterations_open: false
           });
@@ -2127,6 +2129,14 @@ if (!templateMatch) {
 
 let templateHtml = JSON.parse(templateMatch[1]);
 console.log('Template HTML decodificado! Tamanho:', templateHtml.length);
+templateHtml = templateHtml.replace(
+  '.log{font-family:var(--font-mono);font-size:12px;line-height:1.7;padding:14px 18px;display:flex;flex-direction:column;gap:2px;max-height:300px;overflow:auto}',
+  '.log{font-family:var(--font-mono);font-size:12px;line-height:1.7;padding:14px 18px;display:flex;flex-direction:column;gap:8px;max-height:560px;overflow:auto}'
+);
+templateHtml = templateHtml.replace(
+  '.log div{animation:fade 300ms var(--ease) both;display:flex;gap:12px}',
+  '.log div{animation:fade 300ms var(--ease) both;display:flex;gap:12px;align-items:flex-start}.log div > span:last-child{white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;flex:1}'
+);
 
 // 2.1 Limpa os JOBS mockados
 const origJobsIdx = templateHtml.indexOf('const JOBS = [');
@@ -2321,7 +2331,13 @@ const newMount = `componentDidMount() {
           const d = new Date();
           const ts = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
           const bad = evt.type === 'error';
-          logs[evt.runId] = (logs[evt.runId] || []).concat([{ ts: ts, lvl: bad ? 'erro' : 'info', cls: bad ? 'err' : 'info', text: String(evt.content || '').slice(0, 400) }]).slice(-80);
+          const text = String(evt.content || '');
+          const bucket = (logs[evt.runId] || []).slice();
+          const prev = bucket[bucket.length - 1];
+          const entry = { ts: ts, lvl: bad ? 'erro' : 'info', cls: bad ? 'err' : 'info', text: text };
+          if (prev && text && String(prev.text || '').length && text.startsWith(String(prev.text).slice(0, Math.min(String(prev.text).length, 120))) && text.length >= String(prev.text).length) bucket[bucket.length - 1] = entry;
+          else bucket.push(entry);
+          logs[evt.runId] = bucket;
           const patch = { jobs: list, logs: logs };
           if (!self.state.jobId) patch.jobId = evt.runId;
           self.setState(patch);
@@ -2878,11 +2894,6 @@ const newSubmitProjectAndFactory = `if (id === 'factory-delete') {
         local_path: pLocalPath || null,
         description: 'Escopo: ' + pOwnership + ' · Esteira: ' + tplCode + ' · ' + (isAbsorb ? 'Absorvido (Product Lab)' : isMaint ? 'Manutenção' : 'Criação') + ' · Git: ' + gitLabel
       };
-      try {
-        const curLocal = JSON.parse(localStorage.getItem('tavir_factory_projects') || '[]');
-        curLocal.unshift(fallbackProj);
-        localStorage.setItem('tavir_factory_projects', JSON.stringify(curLocal));
-      } catch (e) {}
       const tavir = (typeof window !== 'undefined' && window.tavir) || null;
       const rpcMethod = (tavir && tavir.projects) ? (isAbsorb && tavir.projects.absorb ? tavir.projects.absorb : tavir.projects.create) : null;
       if (rpcMethod) {
@@ -2908,7 +2919,6 @@ const newSubmitProjectAndFactory = `if (id === 'factory-delete') {
           window.dispatchEvent(new CustomEvent('tavir:project-created', { detail: { project: created || fallbackProj, openConsole: isAbsorb } }));
         }).catch(function(err) {
           console.error('[TAVIR IPC] Erro ao criar/absorver projeto:', err);
-          window.dispatchEvent(new CustomEvent('tavir:project-created', { detail: { project: fallbackProj, openConsole: isAbsorb } }));
         });
       } else {
         window.dispatchEvent(new CustomEvent('tavir:project-created', { detail: { project: fallbackProj, openConsole: isAbsorb } }));

@@ -385,11 +385,12 @@ export function deleteProjectWithOptions(
   id: string,
   deleteFiles: boolean = false,
   fallbackPath?: string,
-): { ok: boolean; deletedFiles: boolean; path: string | null } {
+): { ok: boolean; deletedFiles: boolean; path: string | null; error?: string } {
   let targetPath: string | null = fallbackPath ? String(fallbackPath).trim() : null;
+  let sqlite: any = null;
   try {
     const { DatabaseSync } = require('node:sqlite');
-    const sqlite = new DatabaseSync(getDbPath());
+    sqlite = new DatabaseSync(getDbPath());
     const row = sqlite.prepare('SELECT id, slug, local_path FROM projects WHERE id = ?').get(id);
     if (row && row.local_path) {
       targetPath = String(row.local_path).trim();
@@ -397,10 +398,39 @@ export function deleteProjectWithOptions(
       const candidate = path.join(process.cwd(), 'tavir-interno', String(row.slug));
       if (fs.existsSync(candidate)) targetPath = candidate;
     }
-    sqlite.prepare('DELETE FROM projects WHERE id = ?').run(id);
+    sqlite.exec('BEGIN');
+    const run = (sql: string, ...args: string[]) => sqlite.prepare(sql).run(...args);
+    const jobsOf = 'SELECT id FROM jobs WHERE project_id = ? OR task_id IN (SELECT id FROM tasks WHERE project_id = ?)';
+    run(`DELETE FROM events WHERE job_id IN (${jobsOf})`, id, id);
+    run('DELETE FROM events WHERE task_id IN (SELECT id FROM tasks WHERE project_id = ?)', id);
+    run(`DELETE FROM events WHERE approval_id IN (SELECT id FROM approvals WHERE job_id IN (${jobsOf}) OR task_id IN (SELECT id FROM tasks WHERE project_id = ?))`, id, id, id);
+    run(`DELETE FROM events WHERE artifact_id IN (SELECT id FROM artifacts WHERE job_id IN (${jobsOf}) OR task_id IN (SELECT id FROM tasks WHERE project_id = ?))`, id, id, id);
+    run(`DELETE FROM approvals WHERE job_id IN (${jobsOf}) OR task_id IN (SELECT id FROM tasks WHERE project_id = ?)`, id, id, id);
+    run(`DELETE FROM artifacts WHERE job_id IN (${jobsOf}) OR task_id IN (SELECT id FROM tasks WHERE project_id = ?)`, id, id, id);
+    run(`DELETE FROM usage_samples WHERE job_id IN (${jobsOf})`, id, id);
+    run(`DELETE FROM job_attempts WHERE job_id IN (${jobsOf})`, id, id);
+    run('UPDATE proposals SET project_id = NULL WHERE project_id = ?', id);
+    run('UPDATE proposals SET task_id = NULL WHERE task_id IN (SELECT id FROM tasks WHERE project_id = ?)', id);
+    run('DELETE FROM jobs WHERE project_id = ? OR task_id IN (SELECT id FROM tasks WHERE project_id = ?)', id, id);
+    run('DELETE FROM tasks WHERE project_id = ?', id);
+    run('DELETE FROM factory_stages WHERE project_id = ?', id);
+    run('DELETE FROM factory_demands WHERE project_id = ?', id);
+    run('DELETE FROM factory_runs WHERE project_id = ?', id);
+    run('DELETE FROM pieces WHERE project_id = ?', id);
+    run('DELETE FROM ideas WHERE project_id = ?', id);
+    run('DELETE FROM edit_cues WHERE project_id = ?', id);
+    run('UPDATE office_settings SET focused_project_id = NULL WHERE focused_project_id = ?', id);
+    const removed = sqlite.prepare('DELETE FROM projects WHERE id = ?').run(id);
+    sqlite.exec('COMMIT');
     sqlite.close();
+    if (!removed || Number(removed.changes) < 1) {
+      return { ok: false, deletedFiles: false, path: targetPath, error: 'O projeto não estava na base.' };
+    }
   } catch (err) {
     console.error('[TAVIR ProjectFS] Erro ao remover projeto do SQLite:', err);
+    try { sqlite && sqlite.exec('ROLLBACK'); } catch { /* transação já encerrada */ }
+    try { sqlite && sqlite.close(); } catch { /* conexão já fechada */ }
+    return { ok: false, deletedFiles: false, path: targetPath, error: 'Não consegui tirar o projeto da base. Os registros ligados a ele continuam no lugar.' };
   }
 
   let deletedFromDisk = false;
@@ -426,6 +456,318 @@ export function deleteProjectWithOptions(
   }
 
   return { ok: true, deletedFiles: deletedFromDisk, path: targetPath };
+}
+
+const SURVEY_SKIP_DIRS = new Set([
+  'node_modules', '.git', 'dist', 'build', '.next', 'out', 'coverage', '__pycache__',
+  '.venv', 'venv', '.dart_tool', '.gradle', 'ephemeral', '.idea', '.pytest_cache', 'Pods',
+]);
+
+const SURVEY_LANG: Record<string, string> = {
+  ts: 'TypeScript', tsx: 'TypeScript', js: 'JavaScript', jsx: 'JavaScript', mjs: 'JavaScript',
+  py: 'Python', dart: 'Dart', kt: 'Kotlin', kts: 'Kotlin', java: 'Java', go: 'Go', rs: 'Rust',
+  php: 'PHP', rb: 'Ruby', cs: 'C#', vue: 'Vue', svelte: 'Svelte', html: 'HTML', css: 'CSS',
+  scss: 'SCSS', sql: 'SQL', swift: 'Swift', xml: 'XML',
+};
+
+function gitText(args: string[], cwd: string): string {
+  try {
+    return execFileSync('git', args, { cwd, windowsHide: true, encoding: 'utf8', timeout: 8000 }).trim();
+  } catch {
+    return '';
+  }
+}
+
+export function surveyWorkspace(wsPath: string): any {
+  const root = path.resolve(wsPath);
+  const extCount: Record<string, number> = {};
+  const langCount: Record<string, number> = {};
+  const topDirs: string[] = [];
+  const topFiles: string[] = [];
+  const notable: string[] = [];
+  const deploy: string[] = [];
+  const envKeys: string[] = [];
+  const stacks = new Set<string>();
+  const sample: string[] = [];
+  let fileCount = 0;
+  let dirCount = 0;
+  let truncated = false;
+
+  const noteDeploy = (rel: string) => {
+    const base = path.basename(rel).toLowerCase();
+    if (base === 'vercel.json') deploy.push('Vercel (`vercel.json`)');
+    else if (base === 'netlify.toml') deploy.push('Netlify (`netlify.toml`)');
+    else if (base === 'fly.toml') deploy.push('Fly.io (`fly.toml`)');
+    else if (base === 'dockerfile') deploy.push('Docker (`Dockerfile`)');
+    else if (base === 'wrangler.toml') deploy.push('Cloudflare Workers (`wrangler.toml`)');
+    else if (base === 'render.yaml') deploy.push('Render (`render.yaml`)');
+    else if (base === 'firebase.json') deploy.push('Firebase (`firebase.json`)');
+    else if (base === 'app.yaml') deploy.push('App Engine (`app.yaml`)');
+    else if (base === 'eas.json') deploy.push('Expo EAS (`eas.json`)');
+    else if (rel.replace(/\\/g, '/').includes('.github/workflows/')) deploy.push('GitHub Actions');
+  };
+
+  const walk = (dir: string, rel: string, depth: number) => {
+    if (depth > 8 || fileCount >= 2500) {
+      truncated = fileCount >= 2500;
+      return;
+    }
+    let entries: fs.Dirent[] = [];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    entries.sort((a, b) => a.name.localeCompare(b.name));
+    for (const ent of entries) {
+      if (fileCount >= 2500) {
+        truncated = true;
+        break;
+      }
+      if (ent.name === '.DS_Store') continue;
+      const childRel = rel ? `${rel}/${ent.name}` : ent.name;
+      const full = path.join(dir, ent.name);
+      if (ent.isDirectory()) {
+        if (SURVEY_SKIP_DIRS.has(ent.name)) continue;
+        dirCount++;
+        if (depth === 0) topDirs.push(ent.name);
+        if (ent.name === 'frontend') stacks.add('Frontend Web');
+        if (ent.name === 'backend') stacks.add('Backend API');
+        if (ent.name === 'aplicativo' || ent.name === 'android' || ent.name === 'ios') stacks.add('App móvel');
+        walk(full, childRel, depth + 1);
+      } else if (ent.isFile()) {
+        fileCount++;
+        if (depth === 0) topFiles.push(ent.name);
+        if (sample.length < 180) sample.push(childRel);
+        const ext = ent.name.includes('.') ? (ent.name.split('.').pop() || '').toLowerCase() : '';
+        if (ext) extCount[ext] = (extCount[ext] || 0) + 1;
+        const lang = SURVEY_LANG[ext];
+        if (lang) langCount[lang] = (langCount[lang] || 0) + 1;
+        noteDeploy(childRel);
+        const low = ent.name.toLowerCase();
+        if (/^(readme|pubspec\.yaml|package\.json|pyproject\.toml|requirements\.txt|cargo\.toml|go\.mod|composer\.json|gemfile)$/i.test(ent.name) && notable.length < 24) {
+          notable.push(childRel);
+        }
+        if (low === 'package.json' && depth <= 2) {
+          try {
+            const pkg = JSON.parse(fs.readFileSync(full, 'utf8'));
+            const deps = Object.assign({}, pkg.dependencies || {}, pkg.devDependencies || {});
+            if (deps.react) stacks.add('React');
+            if (deps['react-native']) stacks.add('React Native');
+            if (deps['solid-js']) stacks.add('SolidJS');
+            if (deps.next) stacks.add('Next.js');
+            if (deps.vue || deps.nuxt) stacks.add('Vue/Nuxt');
+            if (deps.electron) stacks.add('Electron');
+            if (deps.typescript) stacks.add('TypeScript');
+            if (deps.express || deps.fastify || deps.fastify) stacks.add('Node');
+            if (deps.tailwindcss || deps['@tailwindcss/vite']) stacks.add('Tailwind CSS');
+            if (deps.flutter) stacks.add('Flutter');
+          } catch { /* pacote ilegível */ }
+        }
+        if (low === 'pubspec.yaml') stacks.add('Flutter / Dart');
+        if (low === 'pyproject.toml' || low === 'requirements.txt') stacks.add('Python');
+        if (low === 'cargo.toml') stacks.add('Rust');
+        if (low === 'go.mod') stacks.add('Go');
+        if (/^\.env/.test(ent.name) && envKeys.length < 80) {
+          try {
+            const lines = fs.readFileSync(full, 'utf8').split(/\r?\n/);
+            for (const ln of lines) {
+              const m = ln.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/);
+              if (m && !envKeys.includes(m[1])) envKeys.push(m[1]);
+            }
+          } catch { /* ignora */ }
+        }
+      }
+    }
+  };
+  walk(root, '', 0);
+
+  let about = '';
+  const readme = ['README.md', 'readme.md', 'README.txt'].map((n) => path.join(root, n)).find((p) => fs.existsSync(p));
+  if (readme) {
+    try {
+      const raw = fs.readFileSync(readme, 'utf8').replace(/\r/g, '').split('\n');
+      const line = raw.map((l) => l.replace(/^#+\s*/, '').trim()).find((l) => l && !l.startsWith('![') && !l.startsWith('<'));
+      about = (line || '').slice(0, 280);
+    } catch { /* sem readme */ }
+  }
+  const pkgPath = path.join(root, 'package.json');
+  if (!about && fs.existsSync(pkgPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      about = String(pkg.description || pkg.name || '').slice(0, 280);
+    } catch { /* sem descrição */ }
+  }
+  if (!about) about = `Pasta ${path.basename(root)} sem README. O inventário abaixo descreve o que está no disco.`;
+
+  const languages = Object.entries(langCount).sort((a, b) => b[1] - a[1]).map(([name, n]) => `${name} (${n})`);
+  const hasGit = fs.existsSync(path.join(root, '.git'));
+  const remote = hasGit ? gitText(['remote', 'get-url', 'origin'], root) : '';
+  const branch = hasGit ? gitText(['rev-parse', '--abbrev-ref', 'HEAD'], root) : '';
+  const last = hasGit ? gitText(['log', '-1', '--pretty=%h %s'], root) : '';
+  const dirtyRaw = hasGit ? gitText(['status', '--porcelain'], root) : '';
+  const dirty = dirtyRaw ? dirtyRaw.split(/\r?\n/).filter(Boolean).length : 0;
+  const gitLine = hasGit
+    ? [branch && `branch ${branch}`, remote || 'sem remote', last && `último ${last}`, `${dirty} alteração(ões) locais`].filter(Boolean).join(' · ')
+    : 'esta pasta não tem repositório Git';
+  const deployLine = Array.from(new Set(deploy)).join(', ') || 'nenhum alvo de deploy encontrado nos arquivos';
+  const stackLine = Array.from(stacks).join(', ') || (languages[0] ? languages[0].replace(/ \(\d+\)$/, '') : 'não identificada');
+
+  const survey = {
+    about,
+    languages: languages.join(', ') || 'nenhuma linguagem de código reconhecida',
+    stacks: stackLine,
+    git: gitLine,
+    gitRemote: remote || '',
+    branch: branch || '',
+    lastCommit: last || '',
+    dirty,
+    hasGit,
+    deploy: deployLine,
+    envKeys,
+    files: fileCount,
+    dirs: dirCount,
+    truncated,
+    topDirs,
+    topFiles,
+    notable,
+    sample,
+    extCount,
+  };
+
+  fs.mkdirSync(path.join(root, 'context'), { recursive: true });
+  fs.mkdirSync(path.join(root, '.tavir'), { recursive: true });
+  const inventario = [
+    `# Inventário · ${path.basename(root)}`,
+    '',
+    `- Arquivos lidos: ${fileCount}${truncated ? ' (corte em 2500)' : ''}`,
+    `- Pastas: ${dirCount}`,
+    `- Linguagens: ${survey.languages}`,
+    `- Stack: ${stackLine}`,
+    `- Git: ${gitLine}`,
+    `- Deploy: ${deployLine}`,
+    `- Chaves de ambiente (só nomes): ${envKeys.length ? envKeys.join(', ') : 'nenhuma'}`,
+    '',
+    '## Pastas da raiz',
+    topDirs.length ? topDirs.map((d) => `- ${d}/`).join('\n') : '- (nenhuma)',
+    '',
+    '## Arquivos da raiz',
+    topFiles.length ? topFiles.map((d) => `- ${d}`).join('\n') : '- (nenhum)',
+    '',
+    '## Arquivos de identidade',
+    notable.length ? notable.map((d) => `- ${d}`).join('\n') : '- (nenhum)',
+    '',
+    '## Amostra de caminhos',
+    sample.map((d) => `- ${d}`).join('\n') || '- (vazia)',
+    '',
+  ].join('\n');
+  const dossie = [
+    `# Dossiê de descoberta · ${path.basename(root)}`,
+    '',
+    `## O que é`,
+    about,
+    '',
+    `## Linguagem e stack`,
+    survey.languages,
+    '',
+    stackLine,
+    '',
+    `## Git`,
+    gitLine,
+    '',
+    `## Deploy`,
+    deployLine,
+    '',
+    `## Ambiente`,
+    envKeys.length ? envKeys.map((k) => `- \`${k}\``).join('\n') : 'Nenhuma chave encontrada. Valores não são copiados.',
+    '',
+    'O inventário completo está em `context/inventario.md` e `context/levantamento.json`.',
+    '',
+  ].join('\n');
+  fs.writeFileSync(path.join(root, 'context', 'levantamento.json'), JSON.stringify(survey, null, 2), 'utf8');
+  fs.writeFileSync(path.join(root, 'context', 'inventario.md'), inventario, 'utf8');
+  fs.writeFileSync(path.join(root, 'context', 'dossie.md'), dossie, 'utf8');
+  fs.writeFileSync(path.join(root, '.tavir', 'survey.json'), JSON.stringify(survey, null, 2), 'utf8');
+  fs.writeFileSync(
+    path.join(root, 'context', 'diagnosis.md'),
+    `# Diagnóstico · ${path.basename(root)}\n\n${about}\n\n- **Stack**: ${stackLine}\n- **Linguagens**: ${survey.languages}\n- **Git**: ${gitLine}\n- **Deploy**: ${deployLine}\n- **Arquivos**: ${fileCount} · **Pastas**: ${dirCount}\n`,
+    'utf8',
+  );
+
+  try {
+    const desk = readEsteira(root, 12);
+    const lead = desk.stages[0];
+    const marker = 'Levantamento da absorção';
+    if (lead && (!lead.note || lead.note.startsWith(marker))) {
+      lead.note = `${marker}\n\n${about}\n\nLinguagens: ${survey.languages}\nStack: ${stackLine}\nGit: ${gitLine}\nDeploy: ${deployLine}\nArquivos: ${fileCount} · Pastas: ${dirCount}`;
+      lead.status = lead.status === 'running' ? 'running' : 'done';
+      lead.files = ['context/dossie.md', 'context/inventario.md', 'context/levantamento.json', 'context/diagnosis.md'];
+      if (!lead.instruction) {
+        lead.instruction = 'O levantamento da pasta já foi feito na absorção. Revise o dossiê e complemente só o que faltar. Não recomece do zero.';
+      }
+      writeEsteira(root, desk);
+    }
+  } catch { /* esteira ainda não inicializada */ }
+
+  return survey;
+}
+
+export function refreshProjectSurvey(idOrPath: string): any {
+  const proj = resolveProjectRecord(idOrPath);
+  const survey = surveyWorkspace(proj.local_path);
+  const description = `${survey.about} · ${survey.git}`;
+  const filesJson = JSON.stringify({
+    context_files: ['context/dossie.md', 'context/inventario.md', 'context/levantamento.json', 'context/diagnosis.md'],
+    survey: {
+      about: survey.about,
+      languages: survey.languages,
+      stacks: survey.stacks,
+      git: survey.git,
+      gitRemote: survey.gitRemote,
+      deploy: survey.deploy,
+      files: survey.files,
+      dirs: survey.dirs,
+    },
+  });
+  try {
+    const { DatabaseSync } = require('node:sqlite');
+    const sqlite = new DatabaseSync(getDbPath());
+    sqlite.prepare('UPDATE projects SET stack = ?, description = ?, files = ?, updated_at = ? WHERE id = ?').run(
+      survey.stacks,
+      description.slice(0, 500),
+      filesJson,
+      new Date().toISOString(),
+      proj.id,
+    );
+    sqlite.close();
+  } catch (err) {
+    console.error('[TAVIR ProjectFS] Erro ao gravar levantamento:', err);
+  }
+  return { ok: true, id: proj.id, survey };
+}
+
+export function purgeFixtureProjects(): number {
+  try {
+    const { DatabaseSync } = require('node:sqlite');
+    const sqlite = new DatabaseSync(getDbPath());
+    const rows = sqlite.prepare('SELECT id, name, local_path FROM projects').all() as Array<{ id: string; name: string; local_path: string }>;
+    let removed = 0;
+    for (const row of rows) {
+      const name = String(row.name || '');
+      const id = String(row.id || '');
+      const lp = String(row.local_path || '');
+      const fake = id === 'meridian' || id === '_vazio' || /meridian capital|nenhum projeto|loja aurora|^mock\b|fixture/i.test(name);
+      const missing = !lp || !fs.existsSync(lp);
+      if (fake && missing) {
+        sqlite.prepare('DELETE FROM projects WHERE id = ?').run(id);
+        removed++;
+      }
+    }
+    sqlite.close();
+    return removed;
+  } catch {
+    return 0;
+  }
 }
 
 export function createOrAbsorbProjectRecord(params: any): any {
@@ -479,10 +821,7 @@ export function createOrAbsorbProjectRecord(params: any): any {
   const rootFolder = ownership === 'externo' ? 'tavir-exterrno' : 'tavir-interno';
   const wsPath = customPath && !customPath.startsWith('~') ? path.resolve(customPath) : path.join(process.cwd(), rootFolder, slug);
 
-  let detectedStacks: string[] = [];
-  let envVarsFound: string[] = [];
-  let topDirs: string[] = [];
-  let topFiles: string[] = [];
+  let survey: any = null;
 
   try {
     ensureProjectStructureOnDisk({
@@ -495,51 +834,9 @@ export function createOrAbsorbProjectRecord(params: any): any {
       description: gitProfile,
     });
 
-    const entries = fs.readdirSync(wsPath, { withFileTypes: true });
-    for (const ent of entries) {
-      if (ent.name.startsWith('.git') || ent.name === 'node_modules' || ent.name === '.venv' || ent.name === 'dist') continue;
-      if (ent.isDirectory()) topDirs.push(ent.name);
-      else topFiles.push(ent.name);
-    }
-
-    const checkPkg = (p: string) => {
-      if (!fs.existsSync(p)) return;
-      try {
-        const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
-        const deps = Object.assign({}, pkg.dependencies || {}, pkg.devDependencies || {});
-        if (deps.react) detectedStacks.push('React');
-        if (deps['solid-js']) detectedStacks.push('SolidJS');
-        if (deps.vue || deps.nuxt) detectedStacks.push('Vue/Nuxt');
-        if (deps.next) detectedStacks.push('Next.js');
-        if (deps.tailwindcss || deps['@tailwindcss/vite']) detectedStacks.push('Tailwind CSS');
-        if (deps.electron) detectedStacks.push('Electron');
-        if (deps.typescript) detectedStacks.push('TypeScript');
-        if (deps.express || deps.fastify) detectedStacks.push('Node Backend');
-      } catch {}
-    };
-    checkPkg(path.join(wsPath, 'package.json'));
-    checkPkg(path.join(wsPath, 'frontend', 'package.json'));
-
-    if (fs.existsSync(path.join(wsPath, 'pyproject.toml')) || fs.existsSync(path.join(wsPath, 'requirements.txt')) || fs.existsSync(path.join(wsPath, 'backend', 'pyproject.toml'))) {
-      detectedStacks.push('Python / FastAPI');
-    }
-    if (fs.existsSync(path.join(wsPath, 'pubspec.yaml')) || fs.existsSync(path.join(wsPath, 'aplicativo', 'pubspec.yaml'))) {
-      detectedStacks.push('Flutter / Dart');
-    }
-    if (!detectedStacks.length) detectedStacks.push(cat === 'sy' ? 'Fullstack / Sistema' : 'Web / Frontend');
-
-    for (const envFile of ['.env', '.env.local', '.env.example', '.env.project']) {
-      const ep = path.join(wsPath, envFile);
-      if (fs.existsSync(ep)) {
-        try {
-          const lines = fs.readFileSync(ep, 'utf8').split(/\r?\n/);
-          for (const ln of lines) {
-            const m = ln.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/);
-            if (m && !envVarsFound.includes(m[1])) envVarsFound.push(m[1]);
-          }
-        } catch {}
-      }
-    }
+    survey = surveyWorkspace(wsPath);
+    const detectedStacks = String(survey.stacks || '').split(', ').filter(Boolean);
+    const envVarsFound: string[] = Array.isArray(survey.envKeys) ? survey.envKeys : [];
 
     const isolationMeta = {
       isolated: true,
@@ -571,11 +868,12 @@ export function createOrAbsorbProjectRecord(params: any): any {
     fs.writeFileSync(path.join(wsPath, '.tavir', 'isolation.json'), JSON.stringify(isolationMeta, null, 2), 'utf8');
 
     try {
-      if (!fs.existsSync(path.join(wsPath, '.git'))) {
+      const hadGit = fs.existsSync(path.join(wsPath, '.git'));
+      if (!hadGit && !isAbsorb) {
         execFileSync('git', ['init'], { cwd: wsPath, windowsHide: true });
+        execFileSync('git', ['config', '--local', 'user.name', gitUserName], { cwd: wsPath, windowsHide: true });
+        execFileSync('git', ['config', '--local', 'user.email', gitUserEmail], { cwd: wsPath, windowsHide: true });
       }
-      execFileSync('git', ['config', '--local', 'user.name', gitUserName], { cwd: wsPath, windowsHide: true });
-      execFileSync('git', ['config', '--local', 'user.email', gitUserEmail], { cwd: wsPath, windowsHide: true });
       if (repoUrl) {
         try {
           execFileSync('git', ['remote', 'set-url', 'origin', repoUrl], { cwd: wsPath, windowsHide: true });
@@ -583,35 +881,62 @@ export function createOrAbsorbProjectRecord(params: any): any {
           execFileSync('git', ['remote', 'add', 'origin', repoUrl], { cwd: wsPath, windowsHide: true });
         }
       }
-      const excludePath = path.join(wsPath, '.git', 'info', 'exclude');
-      fs.mkdirSync(path.dirname(excludePath), { recursive: true });
-      const curExclude = fs.existsSync(excludePath) ? fs.readFileSync(excludePath, 'utf8') : '';
-      if (!curExclude.includes('.env.project')) {
-        fs.writeFileSync(excludePath, `${curExclude}\n.env.project\n.tavir/credentials.json\n`, 'utf8');
+      if (fs.existsSync(path.join(wsPath, '.git'))) {
+        const excludePath = path.join(wsPath, '.git', 'info', 'exclude');
+        fs.mkdirSync(path.dirname(excludePath), { recursive: true });
+        const curExclude = fs.existsSync(excludePath) ? fs.readFileSync(excludePath, 'utf8') : '';
+        if (!curExclude.includes('.env.project')) {
+          fs.writeFileSync(excludePath, `${curExclude}\n.env.project\n.tavir/credentials.json\n`, 'utf8');
+        }
       }
     } catch {}
-
-    const diagMd = `# Diagnóstico & Estrutura (Product Lab) · ${name}\n\n- **Agente Responsável**: ${absorbAgent}\n- **Pasta Isolada**: \`${wsPath}\`\n- **Stacks Detectadas**: ${detectedStacks.join(', ')}\n- **Identidade Git Local**: \`${gitUserName} <${gitUserEmail}>\` (${gitProfile})\n- **Alvo de Deploy Isolado**: ${deployTarget}\n- **Variáveis de Ambiente Mapeadas (${envVarsFound.length})**: ${envVarsFound.length ? envVarsFound.map((k) => '`' + k + '`').join(', ') : 'Nenhuma chave exposta (cofre .env.project pronto)'}\n\n## Estrutura da Pasta do Projeto\n- **Diretórios (${topDirs.length})**: ${topDirs.join(', ') || 'raiz limpa'}\n- **Arquivos na Raiz (${topFiles.length})**: ${topFiles.slice(0, 15).join(', ') || 'nenhum'}\n\n> Isolamento ativo: credenciais, commits, PRs e tokens de deploy operam exclusivamente dentro desta pasta.\n`;
-    fs.writeFileSync(path.join(wsPath, 'context', 'diagnosis.md'), diagMd, 'utf8');
   } catch (e) {
     console.error('[TAVIR ProjectFS] Aviso ao preparar workspace:', e);
   }
 
-  const stackStr = detectedStacks.join(', ') || null;
+  const stackStr = (survey && survey.stacks) || null;
   const nowIso = new Date().toISOString();
-  const stagesDoneInit = isAbsorb ? 2 : 0;
-  const description = `Escopo: ${ownership} · Esteira: ${templateCode} · ${isAbsorb ? 'Absorvido (Product Lab)' : isMaint ? 'Manutenção' : 'Criação'} · Git: ${gitUserName}`;
+  const stagesDoneInit = isAbsorb ? 1 : 0;
+  const description = survey
+    ? `${survey.about} · Git: ${survey.git} · Deploy: ${survey.deploy}`.slice(0, 500)
+    : `Escopo: ${ownership} · Esteira: ${templateCode}`;
   const filesJson = JSON.stringify({
-    context_files: ['context/diagnosis.md', 'context/contrato.json'],
+    context_files: ['context/dossie.md', 'context/inventario.md', 'context/levantamento.json', 'context/diagnosis.md'],
     ownership,
     template_code: templateCode,
     git_profile: gitProfile,
-    deploy_target: deployTarget,
+    deploy_target: (survey && survey.deploy) || deployTarget,
     absorb_agent: absorbAgent,
     absorbed: isAbsorb,
+    survey: survey
+      ? {
+          about: survey.about,
+          languages: survey.languages,
+          stacks: survey.stacks,
+          git: survey.git,
+          gitRemote: survey.gitRemote,
+          deploy: survey.deploy,
+          files: survey.files,
+          dirs: survey.dirs,
+        }
+      : null,
   });
 
-  const newProj = {
+  const newProj: {
+    id: string;
+    slug: string;
+    name: string;
+    client: string;
+    company: string;
+    template_code: string;
+    stages_done: number;
+    total_stages: number;
+    status: string;
+    local_path: string;
+    stack: string | null;
+    description: string;
+    survey: any;
+  } = {
     id: projectId,
     slug,
     name,
@@ -624,32 +949,52 @@ export function createOrAbsorbProjectRecord(params: any): any {
     local_path: wsPath,
     stack: stackStr,
     description,
+    survey,
   };
 
   try {
     const sqlite = new DatabaseSync(getDbPath());
-    sqlite
-      .prepare(
-        `INSERT INTO projects (id, slug, name, client, company, template_code, stages_done, total_stages, status, local_path, stack, files, description, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      )
-      .run(
-        projectId,
-        slug,
+    const rows = sqlite.prepare('SELECT id, slug, stages_done, total_stages, status, local_path FROM projects').all() as Array<{ id: string; slug: string; stages_done: number; total_stages: number; status: string; local_path: string }>;
+    const want = wsPath.replace(/\//g, '\\').toLowerCase();
+    const existing = rows.find((row) => String(row.local_path || '').replace(/\//g, '\\').toLowerCase() === want);
+    if (existing) {
+      sqlite.prepare('UPDATE projects SET name = ?, stack = ?, files = ?, description = ?, updated_at = ? WHERE id = ?').run(
         name,
-        company,
-        company,
-        templateCode,
-        stagesDoneInit,
-        totalStages,
-        'running',
-        wsPath,
         stackStr,
         filesJson,
         description,
         nowIso,
-        nowIso,
+        existing.id,
       );
+      newProj.id = existing.id;
+      newProj.slug = existing.slug;
+      newProj.stages_done = existing.stages_done;
+      newProj.total_stages = existing.total_stages;
+      newProj.status = existing.status;
+    } else {
+      sqlite
+        .prepare(
+          `INSERT INTO projects (id, slug, name, client, company, template_code, stages_done, total_stages, status, local_path, stack, files, description, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .run(
+          projectId,
+          slug,
+          name,
+          company,
+          company,
+          templateCode,
+          stagesDoneInit,
+          totalStages,
+          'running',
+          wsPath,
+          stackStr,
+          filesJson,
+          description,
+          nowIso,
+          nowIso,
+        );
+    }
     sqlite.close();
   } catch (err) {
     console.error('[TAVIR ProjectFS] Erro ao gravar projeto no SQLite:', err);
@@ -768,7 +1113,7 @@ export type AltTrackState = {
   notes: AltTrackNotes;
   /** Agentes seguem item a item depois do mapeamento, sem passar pela Íris. */
   auto: boolean;
-  runStatus: 'idle' | 'running' | 'waiting' | 'done';
+  runStatus: 'idle' | 'running' | 'waiting' | 'paused' | 'done';
   waitingQuestion: string;
   runLog: string[];
   runError: string;
@@ -910,7 +1255,7 @@ function normalizeCheckpoint(raw: unknown): AltTrackCheckpoint | null {
   const row = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : null;
   if (!row) return null;
   const itemId = String(row.itemId || '').trim();
-  const partial = String(row.partial || '').slice(-6000);
+  const partial = String(row.partial || '');
   const reason = String(row.reason || '').slice(0, 400);
   if (!itemId || (!partial.trim() && !reason.trim())) return null;
   return {
@@ -937,6 +1282,29 @@ function writeCheckpointFile(rootPath: string, checkpoint: AltTrackCheckpoint): 
   fs.writeFileSync(target, JSON.stringify(checkpoint), 'utf8');
 }
 
+function proofFilePath(rootPath: string): string {
+  return path.join(rootPath, '.tavir', 'provas', 'ultima.md');
+}
+
+function readProof(rootPath: string): string {
+  try {
+    return fs.readFileSync(proofFilePath(rootPath), 'utf8');
+  } catch {
+    return '';
+  }
+}
+
+function writeProof(rootPath: string, title: string, request: string, reply: string): void {
+  const target = proofFilePath(rootPath);
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  const body =
+    `# Prova integral · ${title}\n\n` +
+    `Arquivo: .tavir/provas/ultima.md\n\n` +
+    `## Solicitação\n\n${request}\n\n` +
+    `## Resposta\n\n${reply || '(ainda em curso)'}\n`;
+  fs.writeFileSync(target, body, 'utf8');
+}
+
 function clearCheckpointFile(rootPath: string): void {
   try {
     fs.rmSync(checkpointFilePath(rootPath), { force: true });
@@ -946,6 +1314,17 @@ function clearCheckpointFile(rootPath: string): void {
 function sameCheckpoint(checkpoint: AltTrackCheckpoint | null | undefined, itemId: string): checkpoint is AltTrackCheckpoint {
   return !!checkpoint && checkpoint.itemId === itemId && !!(checkpoint.partial.trim() || checkpoint.reason.trim());
 }
+
+type LiveAgent = {
+  paused: boolean;
+  speech: string;
+  kill?: () => void;
+  step: number;
+  itemId: string;
+  label: string;
+};
+
+const liveAgents = new Map<string, LiveAgent>();
 
 function normalizeNotes(raw: unknown): AltTrackNotes {
   const base = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
@@ -974,9 +1353,11 @@ function normalizeAltTrack(raw: unknown, alterationsOpen: boolean): AltTrackStat
         ? 'done'
         : base.runStatus === 'waiting'
           ? 'waiting'
-          : 'idle',
+          : base.runStatus === 'paused'
+            ? 'paused'
+            : 'idle',
     waitingQuestion: String(base.waitingQuestion || ''),
-    runLog: Array.isArray(base.runLog) ? base.runLog.map((x) => String(x)).slice(-40) : [],
+    runLog: Array.isArray(base.runLog) ? base.runLog.map((x) => String(x)) : [],
     runError: String(base.runError || ''),
     runJobId: String(base.runJobId || ''),
     checkpoint: normalizeCheckpoint(base.checkpoint),
@@ -1400,7 +1781,7 @@ export async function executeAltTrackStep(
       model: string;
     }) => void;
     onLine?: (text: string, level: 'info' | 'error') => void;
-    onEnd?: (info: { ok: boolean; status: 'completed' | 'failed' | 'waiting'; text: string }) => void;
+    onEnd?: (info: { ok: boolean; status: 'completed' | 'failed' | 'waiting' | 'paused'; text: string }) => void;
   },
   stepOverride?: number,
 ): Promise<any> {
@@ -1446,22 +1827,32 @@ export async function executeAltTrackStep(
       : focus.kind === 'work'
         ? `Você é ${focus.owner}. A Paula PM designou você para este trecho a partir dos gaps da Íris. Execute só o que está no seu trilho e no plano dela, no workspace. A esteira original não reabre.`
         : 'Você é o QA do trilho. Os gaps e o plano estão abaixo. Valide o que foi pedido ali e, se for app mobile, rode o build do APK. Resuma o artefato gerado.';
+  const previousProof = readProof(ctrl.rootPath);
+  if (previousProof.trim()) {
+    try {
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      fs.copyFileSync(proofFilePath(ctrl.rootPath), path.join(path.dirname(proofFilePath(ctrl.rootPath)), `${stamp}.md`));
+    } catch {}
+  }
   const resumeBlock = resume
     ? 'CHECKPOINT — esta etapa já começou e a comunicação caiu no meio. Não recomece do zero. Não refaça o que o texto abaixo diz que já foi feito e não desfaça arquivo que o workspace já mostra alterado. Continue exatamente deste ponto. Se o bloco TRILHOS já tinha linhas, complete as que faltam em vez de inventar outra lista.\n' +
       `Parou em: ${resume.at || 'tentativa anterior'}\n` +
       (resume.reason ? `Motivo: ${resume.reason}\n` : '') +
       (resume.partial.trim()
-        ? `O que já estava feito quando parou:\n${resume.partial.trim().slice(-5000)}\n\n`
+        ? `O que já estava feito quando parou:\n${resume.partial.trim()}\n\n`
         : 'A tentativa anterior caiu antes de registrar texto. Confira o workspace e siga o item a partir do que já existir nele.\n\n')
     : '';
-  const question =
+  const pedido =
     `${role}\n` +
     `Foco: ${focus.label} (${focus.owner}). ${focus.skill}\n` +
     'Se faltar uma decisão do Carlos, comece a resposta exatamente com "AGUARDANDO APROVAÇÃO:" e uma pergunta. Não invente a decisão.\n' +
     'Se puder seguir, entregue o resultado do item sem pedir a Íris de novo.\n\n' +
     resumeBlock +
-    (mapText ? `MAPEAMENTO DE GAPS (Íris) — fonte de todas as etapas seguintes:\n${mapText.slice(0, 8000)}\n\n` : '') +
+    (mapText ? `MAPEAMENTO DE GAPS (Íris) — fonte de todas as etapas seguintes:\n${mapText}\n\n` : '') +
     (earlier ? `O QUE AS ETAPAS ANTERIORES JÁ ENTREGARAM:\n${earlier}\n` : '');
+  const question = previousProof
+    ? `PROVA INTEGRAL DA EXECUÇÃO ANTERIOR — leia do começo ao fim. O mesmo texto está em .tavir/provas/ e a última ficou em ultima.md antes desta etapa:\n${previousProof}\n\n${pedido}`
+    : pedido;
 
   track.runStatus = 'running';
   track.runError = '';
@@ -1475,7 +1866,7 @@ export async function executeAltTrackStep(
   let latestSpeech = resume?.partial || '';
   let lastCheckpointAt = 0;
   const saveCheckpoint = (reason: string, force: boolean) => {
-    const partial = (latestSpeech.trim() || resume?.partial || '').slice(-6000);
+    const partial = latestSpeech.trim() || resume?.partial || '';
     if (!force && partial.length < 40) return;
     const now = Date.now();
     if (!force && now - lastCheckpointAt < 12000) return;
@@ -1496,18 +1887,20 @@ export async function executeAltTrackStep(
   const pushLine = (text: string, level: 'info' | 'error' = 'info') => {
     const line = String(text || '').trim();
     if (!line) return;
-    const clipped = line.slice(0, 1800);
     const prevLine = log[log.length - 1] || '';
-    const grows = prevLine && clipped.startsWith(prevLine.slice(0, Math.min(prevLine.length, 80)));
-    if (grows) log[log.length - 1] = clipped;
-    else log.push(clipped);
-    if (log.length > 40) log.shift();
-    if (clipped.length > 80 && !/^(Iniciando|Retomando) /.test(clipped)) {
-      if (clipped.length >= latestSpeech.length || clipped.startsWith(latestSpeech.slice(0, 48))) latestSpeech = clipped;
+    const grows = prevLine && line.startsWith(prevLine.slice(0, Math.min(prevLine.length, 80))) && line.length >= prevLine.length;
+    if (grows) log[log.length - 1] = line;
+    else log.push(line);
+    if (line.length > 80 && !/^(Iniciando|Retomando) /.test(line)) {
+      if (line.length >= latestSpeech.length || line.startsWith(latestSpeech.slice(0, 48))) latestSpeech = line;
+      const live = liveAgents.get(`${ctrl.rootPath}:track`);
+      if (live) live.speech = latestSpeech;
+      try { writeProof(ctrl.rootPath, focus.label, pedido, latestSpeech); } catch {}
       saveCheckpoint('', false);
     }
-    hooks?.onLine?.(clipped, level);
+    hooks?.onLine?.(line, level);
   };
+  try { writeProof(ctrl.rootPath, focus.label, pedido, latestSpeech); } catch {}
   hooks?.onStart?.({
     projectName: ctrl.projectName,
     projectPath: ctrl.rootPath,
@@ -1516,6 +1909,8 @@ export async function executeAltTrackStep(
     motor: eng.name,
     model: eng.model,
   });
+  const liveKey = `${ctrl.rootPath}:track`;
+  liveAgents.set(liveKey, { paused: false, speech: latestSpeech, step: track.step, itemId: focus.id, label: focus.label });
   const agentRes = await converseWithIrisAgent({
     workspace: ctrl.rootPath,
     question,
@@ -1531,8 +1926,13 @@ export async function executeAltTrackStep(
     recent: [],
     timeoutMs: 600000,
     onProgress: (line) => pushLine(line, 'info'),
+    registerKill: (kill) => {
+      const live = liveAgents.get(liveKey);
+      if (live) live.kill = kill;
+    },
   });
   const reply = String(agentRes.text || '').trim() || 'O agente não devolveu texto neste item.';
+  try { writeProof(ctrl.rootPath, focus.label, pedido, reply); } catch {}
   if (agentRes.ok) pushLine(reply.slice(0, 240), 'info');
   else log.push(reply.slice(0, 240));
   const needsApproval = agentRes.ok && /AGUARDANDO APROVAÇÃO/i.test(reply);
@@ -1544,10 +1944,15 @@ export async function executeAltTrackStep(
   if (agentRes.ok && (focus.kind === 'plan' || focus.kind === 'map')) next.items = applyProposedTracks(next.items, reply);
   next.notes = notesFromItems(next.items);
   next.waitingQuestion = needsApproval ? reply.replace(/^AGUARDANDO APROVAÇÃO:\s*/i, '').trim() : '';
+  const pausedByUser = agentRes.error === 'paused' || !!liveAgents.get(liveKey)?.paused;
+  liveAgents.delete(liveKey);
   next.runLog = log;
-  next.runError = agentRes.ok ? '' : reply.slice(0, 400);
+  next.runError = agentRes.ok || pausedByUser ? '' : reply.slice(0, 400);
   let continued = false;
-  if (!agentRes.ok) {
+  if (pausedByUser) {
+    next.runStatus = 'paused';
+    next.checkpoint = readCheckpointFile(ctrl.rootPath) || saveCheckpoint('Pausado por Carlos. A retomada continua deste ponto.', true) || resume;
+  } else if (!agentRes.ok) {
     next.runStatus = 'idle';
     next.checkpoint = saveCheckpoint(reply.slice(0, 400), true) || resume;
   } else if (needsApproval) {
@@ -1577,16 +1982,56 @@ export async function executeAltTrackStep(
   } catch {}
   hooks?.onEnd?.({
     ok: Boolean(agentRes.ok),
-    status: !agentRes.ok ? 'failed' : needsApproval ? 'waiting' : 'completed',
-    text: reply.slice(0, 500),
+    status: pausedByUser ? 'paused' : !agentRes.ok ? 'failed' : needsApproval ? 'waiting' : 'completed',
+    text: pausedByUser ? 'Pausado. O checkpoint guarda o ponto desta etapa.' : reply,
   });
   return {
     ...getProjectAlterationsControl(idOrPath),
     ok: Boolean(agentRes.ok),
+    paused: pausedByUser,
     needsApproval,
     continued,
     reply,
   };
+}
+
+export function pauseProjectAltTrack(idOrPath: string): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.ok || !ctrl.rootPath) return { ...ctrl, ok: false, error: 'Projeto não encontrado.' };
+  const live = liveAgents.get(`${ctrl.rootPath}:track`);
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  const focus = track.items[track.step];
+  const partial = String(live?.speech || track.checkpoint?.partial || '').slice(-6000);
+  const checkpoint: AltTrackCheckpoint = {
+    step: track.step,
+    itemId: focus?.id || live?.itemId || 'etapa',
+    label: focus?.label || live?.label || 'Etapa',
+    at: new Date().toISOString(),
+    reason: 'Pausado por Carlos. A retomada continua deste ponto.',
+    partial,
+  };
+  try {
+    writeCheckpointFile(ctrl.rootPath, checkpoint);
+  } catch {}
+  track.checkpoint = checkpoint;
+  track.runStatus = 'paused';
+  track.runError = '';
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, {
+    ...prev,
+    alterations_open: true,
+    updated_at: track.updated_at,
+    alt_track: track,
+  });
+  if (live) {
+    live.paused = true;
+    live.speech = partial;
+    try {
+      live.kill?.();
+    } catch {}
+  }
+  return getProjectAlterationsControl(idOrPath);
 }
 
 export function getProjectChatHistory(idOrPath: string): any {
@@ -1803,6 +2248,195 @@ export async function askProjectIris(params: any): Promise<any> {
     userMessage: userMsg,
     replyMessage: agentMsg,
     messages: history,
+  };
+}
+
+type EsteiraStageRecord = { instruction: string; note: string; status: 'idle' | 'running' | 'paused' | 'done' | 'stopped'; files: string[] };
+type EsteiraDesk = { auto: boolean; stages: EsteiraStageRecord[] };
+
+function emptyEsteiraStage(): EsteiraStageRecord {
+  return { instruction: '', note: '', status: 'idle', files: [] };
+}
+
+function esteiraFile(rootPath: string): string {
+  return path.join(rootPath, '.tavir', 'esteira.json');
+}
+
+function stageArtifactFiles(rootPath: string, index: number, label: string): string[] {
+  const dir = path.join(rootPath, 'artifacts');
+  if (!fs.existsSync(dir)) return [];
+  const slug = String(index + 1).padStart(2, '0');
+  const hint = label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').slice(0, 16);
+  try {
+    return fs
+      .readdirSync(dir)
+      .filter((name) => name.includes(slug) || (hint.length > 4 && name.toLowerCase().includes(hint.replace(/\s+/g, '-'))))
+      .slice(0, 12)
+      .map((name) => `artifacts/${name}`);
+  } catch {
+    return [];
+  }
+}
+
+function readEsteira(rootPath: string, count: number): EsteiraDesk {
+  let raw: any = {};
+  try {
+    raw = JSON.parse(fs.readFileSync(esteiraFile(rootPath), 'utf8'));
+  } catch {}
+  const stages: EsteiraStageRecord[] = [];
+  const saved = Array.isArray(raw.stages) ? raw.stages : [];
+  const total = Math.max(count, saved.length, 1);
+  for (let i = 0; i < total; i++) {
+    const row = saved[i] && typeof saved[i] === 'object' ? saved[i] : {};
+    const status = ['idle', 'running', 'paused', 'done', 'stopped'].includes(row.status) ? row.status : 'idle';
+    stages.push({
+      instruction: String(row.instruction || ''),
+      note: String(row.note || ''),
+      status,
+      files: Array.isArray(row.files) ? row.files.map((x: unknown) => String(x)).slice(0, 12) : [],
+    });
+  }
+  return { auto: Boolean(raw.auto), stages };
+}
+
+function writeEsteira(rootPath: string, desk: EsteiraDesk): void {
+  fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
+  fs.writeFileSync(esteiraFile(rootPath), JSON.stringify(desk, null, 2), 'utf8');
+}
+
+export function getProjectEsteira(idOrPath: string, count = 9): any {
+  const info = inspectProjectFolder(idOrPath);
+  const desk = readEsteira(info.rootPath, count);
+  desk.stages = desk.stages.map((stage, index) => ({
+    ...stage,
+    files: stage.files.length ? stage.files : stageArtifactFiles(info.rootPath, index, ''),
+  }));
+  return { ok: true, rootPath: info.rootPath, esteira: desk };
+}
+
+export function saveEsteiraInstruction(idOrPath: string, index: number, text: string): any {
+  const info = inspectProjectFolder(idOrPath);
+  const desk = readEsteira(info.rootPath, Math.max(1, index + 1));
+  const at = Math.max(0, Math.min(desk.stages.length - 1, Number(index) || 0));
+  desk.stages[at].instruction = String(text || '');
+  writeEsteira(info.rootPath, desk);
+  return getProjectEsteira(idOrPath, desk.stages.length);
+}
+
+export function setEsteiraAuto(idOrPath: string, auto: boolean): any {
+  const info = inspectProjectFolder(idOrPath);
+  const desk = readEsteira(info.rootPath, 1);
+  desk.auto = Boolean(auto);
+  writeEsteira(info.rootPath, desk);
+  return getProjectEsteira(idOrPath, desk.stages.length);
+}
+
+export function controlEsteiraStage(idOrPath: string, index: number, action: string): any {
+  const info = inspectProjectFolder(idOrPath);
+  const desk = readEsteira(info.rootPath, Math.max(1, index + 1));
+  const at = Math.max(0, Math.min(desk.stages.length - 1, Number(index) || 0));
+  const stage = desk.stages[at];
+  const live = liveAgents.get(`${info.rootPath}:esteira`);
+  if (action === 'pause') {
+    stage.status = 'paused';
+    if (live && live.step === at) {
+      live.paused = true;
+      try { live.kill?.(); } catch {}
+      if (live.speech.trim()) stage.note = (stage.note ? stage.note + '\n' : '') + live.speech.trim();
+    }
+  } else if (action === 'stop') {
+    stage.status = 'stopped';
+    if (live && live.step === at) {
+      live.paused = true;
+      try { live.kill?.(); } catch {}
+    }
+  } else if (action === 'restart') {
+    stage.status = 'idle';
+    stage.note = '';
+    if (live && live.step === at) {
+      live.paused = true;
+      try { live.kill?.(); } catch {}
+    }
+  } else if (action === 'review') {
+    const line = 'Revisar o levantamento desta etapa e corrigir só o que estiver inconsistente com a pasta.';
+    stage.instruction = stage.instruction.includes(line) ? stage.instruction : `${stage.instruction}\n${line}`.trim();
+    stage.status = 'idle';
+  }
+  writeEsteira(info.rootPath, desk);
+  return getProjectEsteira(idOrPath, desk.stages.length);
+}
+
+export async function runEsteiraStage(idOrPath: string, index: number, stageName: string, stageOwner: string): Promise<any> {
+  const info = inspectProjectFolder(idOrPath);
+  const at = Math.max(0, Number(index) || 0);
+  const desk = readEsteira(info.rootPath, at + 1);
+  const stage = desk.stages[at] || emptyEsteiraStage();
+  const gate = /gate|aprova|revis[aã]o humana/i.test(stageName);
+  const prior = stage.note.trim();
+  const instruction = stage.instruction.trim() || 'Levante o que esta etapa pede a partir dos arquivos do workspace. Não invente fato que não esteja na pasta.';
+  const question =
+    `Você conduz a etapa "${stageName}" da esteira, com ${stageOwner}.\n` +
+    `Instrução desta etapa:\n${instruction}\n\n` +
+    (prior ? `CHECKPOINT — a etapa já tem este levantamento. Não recomece do zero. Continue ou revise a partir dele:\n${prior.slice(-5000)}\n\n` : '') +
+    (gate
+      ? 'Esta etapa é um gate. Não edite código. Resuma o que foi levantado e diga o que precisa da decisão do Carlos.'
+      : 'Pode alterar o workspace só no que a instrução pede. Grave o resultado de forma objetiva.');
+  stage.status = 'running';
+  writeEsteira(info.rootPath, desk);
+  const key = `${info.rootPath}:esteira`;
+  liveAgents.set(key, { paused: false, speech: prior, step: at, itemId: `esteira-${at}`, label: stageName });
+  const { converseWithIrisAgent } = require('./irisAgent') as typeof import('./irisAgent');
+  const eng = resolveEngineSpec();
+  const agentRes = await converseWithIrisAgent({
+    workspace: info.rootPath,
+    question,
+    projectName: info.name,
+    stageName,
+    stageOwner,
+    engineId: eng.id,
+    model: eng.model,
+    effort: eng.effort,
+    finished: true,
+    alterationsOpen: true,
+    asChangeRequest: !gate,
+    recent: [],
+    timeoutMs: 600000,
+    onProgress: (line) => {
+      const live = liveAgents.get(key);
+      if (live && line.length > 80) live.speech = line;
+    },
+    registerKill: (kill) => {
+      const live = liveAgents.get(key);
+      if (live) live.kill = kill;
+    },
+  });
+  const live = liveAgents.get(key);
+  const paused = agentRes.error === 'paused' || !!live?.paused;
+  liveAgents.delete(key);
+  const fresh = readEsteira(info.rootPath, desk.stages.length);
+  const current = fresh.stages[at] || emptyEsteiraStage();
+  if (paused) {
+    current.status = current.status === 'stopped' ? 'stopped' : 'paused';
+    if (agentRes.text && agentRes.text !== 'Pausado por Carlos.') current.note = (current.note ? current.note + '\n' : '') + agentRes.text.trim();
+  } else if (agentRes.ok) {
+    const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    current.note = (current.note ? current.note + '\n\n' : '') + `### ${stamp} · ${stageOwner}\n${agentRes.text.trim()}\n`;
+    current.status = 'done';
+  } else {
+    current.status = 'idle';
+    current.note = (current.note ? current.note + '\n' : '') + String(agentRes.text || '').slice(0, 500);
+  }
+  current.files = stageArtifactFiles(info.rootPath, at, stageName);
+  fresh.stages[at] = current;
+  writeEsteira(info.rootPath, fresh);
+  const last = at >= fresh.stages.length - 1;
+  return {
+    ...getProjectEsteira(idOrPath, fresh.stages.length),
+    ok: Boolean(agentRes.ok) && !paused,
+    paused,
+    gate,
+    continued: Boolean(agentRes.ok) && !paused && !gate && !last && fresh.auto,
+    reply: agentRes.text,
   };
 }
 

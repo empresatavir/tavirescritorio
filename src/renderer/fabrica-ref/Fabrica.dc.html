@@ -317,10 +317,11 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
             <sc-if value="{{altTrack.liveRun}}" hint-placeholder-val="{{false}}"><i class="spin" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i></sc-if>
             <div class="grow" style="min-width: 180px"><div class="eyebrow">Execução do trilho</div><b style="font-size: 15px">{{altTrack.liveTitle}}</b></div>
             <span class="badge {{altTrack.liveCls}}"><i></i>{{altTrack.liveStatus}}</span>
+            <sc-if value="{{altTrack.showPause}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.pause}}">Pausar</button></sc-if>
             <button class="btn sm ghost" onClick="{{toTrilho}}">Abrir no trilho</button>
           </div>
           <sc-if value="{{altTrack.liveErr}}" hint-placeholder-val="{{false}}"><div class="fb-warn"><span class="grow">{{altTrack.liveError}}<sc-if value="{{altTrack.hasCheckpoint}}" hint-placeholder-val="{{false}}"><span style="display: block; margin-top: 4px">Há um checkpoint desta etapa. A nova tentativa continua dali.</span></sc-if></span><button type="button" class="btn sm primary" onClick="{{altTrack.run}}">{{altTrack.retryLbl}}</button><sc-if value="{{altTrack.showNext}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.advance}}">{{altTrack.nextLbl}}</button></sc-if></div></sc-if>
-          <div class="fb-log" style="max-height: 220px"><div class="fb-ls"><sc-for list="{{altTrack.liveLines}}" as="l" hint-placeholder-count="3"><div class="fb-ll" style="border-left-color: {{l.bd}}"><div style="display: block; white-space: pre-wrap; overflow-wrap: break-word; font-size: 12px; line-height: 1.45; color: {{l.fg}}">{{l.t}}</div></div></sc-for></div></div>
+          <div class="fb-log" style="max-height: 420px; overflow: auto"><div class="fb-ls"><sc-for list="{{altTrack.liveLines}}" as="l" hint-placeholder-count="3"><div class="fb-ll" style="border-left-color: {{l.bd}}"><div style="display: block; white-space: pre-wrap; overflow-wrap: break-word; font-size: 12px; line-height: 1.45; color: {{l.fg}}">{{l.t}}</div></div></sc-for></div></div>
         </section>
       </sc-if>
       <section class="card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px; border-color: {{cs.bd}}">
@@ -412,7 +413,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
       </section>
       <section class="card">
         <div class="card-h"><h3>Inventário</h3></div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line)"><sc-for list="{{inv}}" as="f" hint-placeholder-count="4"><div style="background: var(--surface-2); padding: 14px 18px"><div class="eyebrow" style="font-size: 9.5px">{{f.k}}</div><div class="num" style="font-size: 18px; margin-top: 4px">{{f.v}}</div></div></sc-for></div>
+        <div style="display: flex; flex-direction: column; min-width: 0"><sc-for list="{{inv}}" as="f" hint-placeholder-count="4"><div style="padding: 12px 16px; border-top: 1px solid var(--line); min-width: 0"><div class="eyebrow" style="font-size: 9.5px">{{f.k}}</div><div style="margin-top: 6px; font-size: 13px; line-height: 1.45; font-weight: 550; white-space: pre-wrap; overflow-wrap: anywhere">{{f.v}}</div></div></sc-for></div>
       </section>
       <section class="card">
         <div class="card-h"><h3>Mesas</h3><span class="muted" style="font-size: 12px">{{mesasN}}</span></div>
@@ -479,9 +480,10 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
             <sc-if value="{{altTrack.liveRun}}" hint-placeholder-val="{{false}}"><i class="spin" style="width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i></sc-if>
             <b style="font-size: 13.5px" class="grow">{{altTrack.liveTitle}}</b>
             <span class="badge {{altTrack.liveCls}}"><i></i>{{altTrack.liveStatus}}</span>
+            <sc-if value="{{altTrack.showPause}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.pause}}">Pausar</button></sc-if>
           </div>
           <sc-if value="{{altTrack.liveErr}}" hint-placeholder-val="{{false}}"><div style="font-size: 13px; color: var(--danger)">{{altTrack.liveError}}</div><sc-if value="{{altTrack.hasCheckpoint}}" hint-placeholder-val="{{false}}"><div style="font-size: 12.5px; color: var(--text-secondary)">Há um checkpoint desta etapa. A nova tentativa continua dali.</div></sc-if><div style="display: flex; gap: 8px; flex-wrap: wrap"><button type="button" class="btn sm primary" onClick="{{altTrack.run}}">{{altTrack.retryLbl}}</button><sc-if value="{{altTrack.showNext}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.advance}}">{{altTrack.nextLbl}}</button></sc-if><button type="button" class="btn sm secondary" onClick="{{altTrack.dismiss}}">Dispensar falha</button></div></sc-if>
-          <div style="max-height: 240px; overflow: auto; display: flex; flex-direction: column; gap: 6px"><sc-for list="{{altTrack.liveLines}}" as="l" hint-placeholder-count="3"><div style="font-size: 12.5px; line-height: 1.45; color: {{l.fg}}; border-left: 2px solid {{l.bd}}; padding-left: 8px; white-space: pre-wrap; overflow-wrap: break-word">{{l.t}}</div></sc-for></div>
+          <div style="max-height: 420px; overflow: auto; display: flex; flex-direction: column; gap: 6px"><sc-for list="{{altTrack.liveLines}}" as="l" hint-placeholder-count="3"><div style="font-size: 12.5px; line-height: 1.45; color: {{l.fg}}; border-left: 2px solid {{l.bd}}; padding-left: 8px; white-space: pre-wrap; overflow-wrap: break-word">{{l.t}}</div></sc-for></div>
         </div>
       </sc-if>
       <div class="rows">
@@ -503,6 +505,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
           <div class="muted" style="font-size: 12.5px; margin-top: 4px">{{altTrack.sel.owner}} · {{altTrack.sel.skill}}</div>
         </div>
         <button type="button" class="btn sm secondary" onClick="{{altTrack.openCurrent}}" disabled="{{altTrack.locked}}">Abrir foco atual</button>
+        <sc-if value="{{altTrack.showPause}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.pause}}">Pausar</button></sc-if>
         <sc-if value="{{altTrack.showIris}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.ask}}" disabled="{{altTrack.locked}}">Pedir à Íris neste foco</button></sc-if>
         <sc-if value="{{altTrack.showRun}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm {{altTrack.runCls}}" onClick="{{altTrack.run}}" disabled="{{altTrack.running}}">{{altTrack.runLbl}}</button></sc-if>
         <sc-if value="{{altTrack.showNext}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm primary" onClick="{{altTrack.advance}}" disabled="{{altTrack.locked}}">{{altTrack.nextLbl}}</button></sc-if>
@@ -520,8 +523,8 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
   <!-- ESTEIRA (demais projetos) -->
   <sc-if value="{{pt.esteiraG}}" hint-placeholder-val="{{false}}">
     <section class="card" style="animation: fade 200ms var(--ease) both">
-      <div class="card-h"><h3>Esteira {{P.line}} · {{P.n}} etapas</h3><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>concluída</span><span><i style="background: var(--warning)"></i>agora</span><span><i style="background: var(--line-strong)"></i>a seguir</span></div></div>
-      <p class="muted" style="padding: 0 18px 10px; font-size: 12.5px; margin: 0">Clique numa etapa/gate para ver responsável, escopo e o que dá para pedir à Íris.</p>
+      <div class="card-h"><h3>Esteira {{P.line}} · {{P.n}} etapas</h3><div class="grow"></div><button type="button" class="btn sm secondary" onClick="{{esteira.survey}}">Refazer levantamento</button><button type="button" class="btn sm {{esteira.autoCls}}" onClick="{{esteira.toggleAuto}}">{{esteira.autoLbl}}</button><div class="legend"><span><i style="background: var(--flow)"></i>concluída</span><span><i style="background: var(--warning)"></i>agora</span><span><i style="background: var(--line-strong)"></i>a seguir</span></div></div>
+      <p class="muted" style="padding: 0 18px 10px; font-size: 12.5px; margin: 0">Clique numa etapa para ver o levantamento, a instrução, os arquivos e para pausar, parar ou recomeçar. Com a execução automática ligada, a esteira segue sozinha até um gate.</p>
       <div class="rows">
         <sc-for list="{{gsteps}}" as="v" hint-placeholder-count="10">
           <button type="button" class="row" onClick="{{v.pick}}" style="cursor: pointer; gap: 14px; background: {{v.rowBg}}; width: 100%; text-align: left; border: 0; color: inherit">
@@ -543,6 +546,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
           <div class="muted" style="font-size: 12.5px; margin-top: 4px">{{gSel.owner}} · {{gSel.skill}} · {{gSel.when}}</div>
         </div>
         <span class="badge {{gSel.cls}}"><i></i>{{gSel.state}}</span>
+        <button type="button" class="btn sm secondary" onClick="{{gSel.open}}">Abrir detalhe</button>
         <button type="button" class="btn sm secondary" onClick="{{gSel.ask}}">Pedir à Íris nesta etapa</button>
       </div>
       <div style="padding: 0 18px 16px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.45">{{gSel.note}}</div>
@@ -1052,6 +1056,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
     </div>
     <div class="mfoot" style="flex-wrap: wrap; justify-content: flex-end; row-gap: 8px">
       <button class="btn secondary" onClick="{{closeTrack}}">Fechar</button>
+      <sc-if value="{{altTrack.showPause}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" onClick="{{altTrack.pause}}">Pausar</button></sc-if>
       <button class="btn secondary" onClick="{{trackSave}}">Salvar texto</button>
       <button class="btn secondary" onClick="{{trackAsk}}">Pedir complemento à Íris</button>
       <button class="btn primary" onClick="{{trackGo}}" disabled="{{trackGoOff}}">{{trackGoLbl}}</button>
@@ -1059,11 +1064,31 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
   </div></div>
 </sc-if>
 
+<sc-if value="{{stageModal.open}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{stageModal.bg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Detalhe da etapa" style="width: min(720px, calc(100vw - 48px))">
+    <div class="mhead"><div class="grow"><div class="eyebrow">Etapa {{stageModal.n}} · {{stageModal.status}} · {{stageModal.owner}}</div><h2>{{stageModal.title}}</h2><p>{{stageModal.skill}}. {{stageModal.gateTxt}}</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 14px">
+      <div><div class="eyebrow" style="margin-bottom: 6px">O que foi levantado</div><pre class="mono" style="margin: 0; padding: 12px; max-height: 160px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: var(--surface-0); border: 1px solid var(--line); border-radius: 10px; color: var(--text-secondary)">{{stageModal.note}}</pre></div>
+      <label class="field"><span>Instrução desta etapa</span><textarea class="input" rows="6" value="{{stageModal.draft}}" onChange="{{stageModal.onDraft}}" placeholder="O que o agente deve levantar ou alterar nesta etapa" style="resize: vertical; min-height: 120px; border-radius: 12px; line-height: 1.45"></textarea></label>
+      <div><div class="eyebrow" style="margin-bottom: 6px">Arquivos desta etapa</div><sc-if value="{{stageModal.hasFiles}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 6px"><sc-for list="{{stageModal.files}}" as="f" hint-placeholder-count="2"><code class="mono" style="font-size: 12px; padding: 8px 10px; border-radius: 8px; background: var(--surface-0); border: 1px solid var(--line)">{{f.name}}</code></sc-for></div></sc-if><sc-if value="{{stageModal.emptyFiles}}" hint-placeholder-val="{{false}}"><p class="muted" style="margin: 0; font-size: 13px">{{stageModal.noFiles}}</p></sc-if></div>
+    </div>
+    <div class="mfoot" style="flex-wrap: wrap; justify-content: flex-end; row-gap: 8px">
+      <button class="btn secondary" onClick="{{stageModal.close}}">Fechar</button>
+      <button class="btn secondary" onClick="{{stageModal.save}}">Salvar instrução</button>
+      <button class="btn secondary" onClick="{{stageModal.pause}}">Pausar</button>
+      <button class="btn secondary" onClick="{{stageModal.stop}}">Parar</button>
+      <button class="btn secondary" onClick="{{stageModal.restart}}">Recomeçar</button>
+      <button class="btn secondary" onClick="{{stageModal.review}}">Pedir revisão</button>
+      <button class="btn primary" onClick="{{stageModal.run}}">Executar esta etapa</button>
+    </div>
+  </div></div>
+</sc-if>
+
 <!-- remover projeto -->
 <sc-if value="{{rmOpen}}" hint-placeholder-val="{{false}}">
   <div class="back" onClick="{{rmBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Remover projeto">
-    <div class="mhead"><span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--danger-subtle); color: var(--danger); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg></span><div class="grow"><h2>Remover {{P.name}}?</h2><p>O projeto sai do painel e das esteiras. A pasta isolada no disco não é apagada e pode ser absorvida de novo.</p></div></div>
-    <div class="mbody"><code class="mono" style="font-size: 11.5px; padding: 10px 12px; border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); word-break: break-all">{{P.path}}</code></div>
+    <div class="mhead"><span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--danger-subtle); color: var(--danger); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg></span><div class="grow"><h2>Remover {{P.name}}?</h2><p>O projeto sai da Fábrica, das tarefas e dos jobs. A pasta no disco só é apagada se você marcar essa opção.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px"><code class="mono" style="font-size: 11.5px; padding: 10px 12px; border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); word-break: break-all">{{P.path}}</code><label style="display: flex; gap: 8px; align-items: flex-start; font-size: 13px"><input type="checkbox" checked="{{rmWipe}}" onChange="{{rmToggleWipe}}" style="margin-top: 3px">Apagar também a pasta e os arquivos no disco</label></div>
     <div class="mfoot"><button class="btn secondary" onClick="{{rmClose}}">Cancelar</button><button class="btn danger" onClick="{{rmConfirm}}">Remover projeto</button></div>
   </div></div>
 </sc-if>
@@ -1807,20 +1832,8 @@ class Component extends DCLogic {
     const mPends = [];
     if (!s.signed) mPends.push({ id: 'gate', kind: 'gate', t: 'Gate de QA · Completion Guard', d: pending ? pending + (pending === 1 ? ' critério ainda segura' : ' critérios ainda seguram') + ' a entrega. Resolva e assine para liberar Security.' : 'Tudo verificado. Falta a sua assinatura para seguir para Security.', who: 'Edna E2E', at: 'hoje 14:18', btn: pending ? 'Abrir gate' : 'Assinar no gate', act: () => goStage(5, 'guard') });
     if (!s.envOk) mPends.push({ id: 'env', kind: 'erro', t: 'Build de preview falhou', d: 'A variável SUPABASE_URL não está cadastrada na conta vercel · tavir. Cadastre em Acessos e o preview é refeito sozinho.', code: 'HTTP 409 FABRICA-COMPLETION-001', who: 'Vitor Construtor', at: 'hoje 14:02', btn: 'Resolver em Acessos', act: () => self.setState({ pid: 'meridian', ptab: 'acessos' }) });
-    const PL = [{
-      id: 'meridian', name: 'Landing Meridian Capital', code: 'LP-C', line: 'LP-C1', kind: 'LPs · Criação', client: 'Meridian Capital', base: [2026, 10, 23],
-      tags: [['code', 'Nuxt 3 estático'], ['db', 'Supabase PostgreSQL'], ['cms', 'Sem CMS na v1']],
-      stages: STG.map((x, i) => [x[0], x[1], x[3], [1, 1, 1, 1, 2, 1, 2, 2, 2][i], x[2]]), done: cur, gN: gN, status: s.mPaused ? 'paused' : 'run', gateNow: !s.signed,
-      pends: mPends.map((p) => decorate('meridian', 'Landing Meridian Capital', p)),
-      acts: ledgerAll.slice(0, 6).map((e) => [e[0], e[2], e[3]]),
-      inv: [['Seções', '5'], ['Rotas', '5 pré-render.'], ['Links verificados', '38'], ['Lighthouse', '92 · 96']],
-      env: [['NUXT_PUBLIC_SITE', 'meridian.com.br', 'produção'], ['SUPABASE_ANON_KEY', 'eyJh••••••••Qk', 'produção · preview'], s.envOk ? ['SUPABASE_URL', 'https://mrdn••••.supabase.co', 'produção · preview'] : ['SUPABASE_URL', '', 'produção · preview', 'missing']], target: 'vercel · tavir',
-      acc: [['Vercel', 'tavir · meridian-lp', 'deploy e preview', s.envOk ? 'ok' : 'falta variável'], ['Supabase', 'Meridian · meridian-leads', 'banco de leads', 'ok'], ['GitHub', 'tavir/meridian-lp', 'código', 'ok'], ['Registro.br', 'meridian.com.br', 'domínio', 'DNS no handoff']],
-      people: [['CH', 'Carlos Henrique', 'CEO · aprovador', 'admin'], ['PP', 'Paula PM', 'orquestradora', 'edição'], ['VC', 'Vitor Construtor', 'construção', 'edição'], ['MC', 'Meridian Capital', 'cliente', 'leitura']],
-      pauseNote: 'Os agentes param ao fim da tarefa atual. Nada é perdido.', gates: [3, 5, 8],
-      slug: META.meridian[0], git: 'MERIDIAN', cost: [s.signed ? 9.96 : 9.74, 25], disk: META.meridian[3], tok0: META.meridian[4], think: s.signed ? 'QA assinado · Security em andamento' : 'Gate de QA aberto · ' + pending + (pending === 1 ? ' critério aguardando' : ' critérios aguardando')
-    }];
-    GP.concat(s.absorbed).forEach((g) => {
+    const PL = [];
+        GP.concat(s.absorbed).forEach((g) => {
       if (!g || !Array.isArray(g.stages) || !g.stages.length) return;
       const d = s.gp[g.id] || { cur: 0, paused: false, resolved: {}, extra: [] }; const n = g.stages.length; const done = Math.min(Number(d.cur) || 0, n);
       const resolved = d.resolved || {};
@@ -1829,14 +1842,48 @@ class Component extends DCLogic {
     });
     const STAT = { run: ['Em andamento', 'flow', '#1BC5BD'], paused: ['Pausado', 'warn', 'oklch(.80 .155 78)'], done: ['Concluído', 'action', '#B7F34A'] };
     for (let i = PL.length - 1; i >= 0; i--) { if (s.removed[PL[i].id]) PL.splice(i, 1); }
-    PL.forEach((p) => { p.motor = s.motors[p.id] || DEFM; p.cap = motorCap(p.motor); p.path = ROOT + p.slug; const r = s.runs[p.id]; p.spent = p.cost[0] + (r ? r.cost - p.tok0[2] : 0); });
+    PL.forEach((p) => { p.motor = s.motors[p.id] || DEFM; p.cap = motorCap(p.motor); p.path = p.local_path || p.path || ((p.slug && /^[a-z]:\\/i.test(p.slug)) ? p.slug : (ROOT + (p.slug || ''))); const r = s.runs[p.id]; p.spent = (p.cost ? p.cost[0] : 0) + (r ? r.cost - (p.tok0 ? p.tok0[2] : 0) : 0); });
     PL.forEach((p) => { p.n = p.stages.length; p.pct = Math.round(p.done / p.n * 100); p.pendN = p.pends.length; p.ci = Math.min(p.done, p.n - 1); p.stepName = p.done >= p.n ? 'Entregue' : p.stages[p.ci][0]; p.owner = p.done >= p.n ? 'gate final assinado' : p.stages[p.ci][1]; });
     const allPends = [].concat.apply([], PL.map((p) => p.pends));
     const openProj = (id, tb) => self.setState({ pid: id, ptab: tb || 'geral', ff: 'all', menu: false, cfgOpen: false, evf: 'all', repF: 'all', sevF: 'all', credF: 'all', evw: null });
-    if (!PL.length) {
-      PL.push({ id: '_vazio', name: 'Nenhum projeto ainda', code: '—', line: '—', kind: '—', client: '—', base: [2026, 11, 1], tags: [], stages: [['Aguardando', '—', '—', 1]], done: 0, gN: 0, status: 'paused', pends: [], acts: [], gates: [0], slug: '', git: '', cost: [0, 1], disk: [0, 0, ''], tok0: [0, 0, 0], think: '', people: [], inv: [], env: [], acc: [], pauseNote: '', n: 1, pct: 0, pendN: 0, ci: 0, stepName: 'Aguardando', owner: '—', motor: DEFM, cap: '', path: ROOT, spent: 0 });
-    }
-    const P = PL.find((p) => p.id === pid) || PL[0];
+    const EMPTY = { id: '_painel', name: 'Fábrica', code: '—', line: '—', kind: '—', client: '—', base: [2026, 11, 1], tags: [], stages: [['Aguardando', '—', '—', 1]], done: 0, gN: 0, status: 'paused', pends: [], acts: [], gates: [0], slug: '', git: '', cost: [0, 1], disk: [0, 0, ''], tok0: [0, 0, 0], think: '', people: [], inv: [], env: [], acc: [], pauseNote: '', n: 1, pct: 0, pendN: 0, ci: 0, stepName: 'Aguardando', owner: '—', motor: DEFM, cap: '', path: '', spent: 0, local_path: '' };
+    const P = PL.find((p) => p.id === pid) || PL[0] || EMPTY;
+    const applyEsteira = (desk) => {
+      const map = Object.assign({}, self.state.esteiraById || {});
+      map[P.id] = desk || { auto: false, stages: [] };
+      self.setState({ esteiraById: map });
+    };
+    self._openEsteira = (index) => {
+      const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+      const target = P.local_path || P.path || P.slug || P.id;
+      self.setState({ stage: index, ptab: 'esteira', stageModal: index });
+      if (!tavir || !tavir.projects || !tavir.projects.getEsteira) return;
+      tavir.projects.getEsteira(target, (P.stages || []).length).then(function (res) {
+        const desk = (res && res.esteira) || { auto: false, stages: [] };
+        const stage = (desk.stages || [])[index] || {};
+        applyEsteira(desk);
+        self.setState({ stageDraft: stage.instruction || '' });
+      }).catch(function () {});
+    };
+    self._runEsteira = (index) => {
+      const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+      const app = self.props.app || NOOP;
+      const target = P.local_path || P.path || P.slug || P.id;
+      const st = (P.stages || [])[index];
+      if (!st || !tavir || !tavir.projects || !tavir.projects.runEsteira) {
+        app.toast('Esteira', 'A execução desta etapa não está ligada.');
+        return;
+      }
+      app.toast('Esteira', st[1] + ' assumiu «' + st[0] + '».');
+      tavir.projects.runEsteira(target, index, st[0], st[1]).then(function (res) {
+        if (res && res.esteira) applyEsteira(res.esteira);
+        if (res && res.paused) { app.toast('Etapa pausada', 'O levantamento ficou guardado. Retomar continua deste ponto.'); return; }
+        if (res && res.ok === false) { app.toast('Esteira', res.error || res.reply || 'A etapa não concluiu.'); return; }
+        if (res && res.continued) self._runEsteira(index + 1);
+        else if (res && res.gate) app.toast('Gate', 'A etapa parou para a sua decisão.');
+        else app.toast('Etapa concluída', st[0]);
+      }).catch(function (err) { app.toast('Esteira', String(err && err.message || err)); });
+    };
     const projFinished = !!(P && (P.status === 'done' || P.done >= P.n));
     const altFromState = !!(s.altOpen && P && s.altOpen[P.id]);
     const altFromProj = !!(P && P.alterations_open);
@@ -1934,6 +1981,10 @@ class Component extends DCLogic {
           }
           if (window.__tavirFabPing) window.__tavirFabPing();
           app.toast('Trilho', msg);
+        }
+        if (res && res.paused) {
+          app.toast('Trilho pausado', 'O checkpoint ficou gravado. Retomar continua deste ponto.');
+          return;
         }
         if (res && res.needsApproval) {
           app.toast('Decisão sua', 'Um agente parou e precisa da sua aprovação.');
@@ -2264,6 +2315,7 @@ class Component extends DCLogic {
         const checkpoint = persistedTrack.checkpoint && typeof persistedTrack.checkpoint === 'object' ? persistedTrack.checkpoint : null;
         const finished = persistedTrack.runStatus === 'done' && altTrackStep >= trackItems.length - 1;
         const running = persistedTrack.runStatus === 'running';
+        const pausedTrack = persistedTrack.runStatus === 'paused';
         const nextItem = trackItems[altTrackStep + 1] || null;
         const mapItem = trackItems.filter(function (x) { return x.kind === 'map'; })[0] || trackItems[0];
         const mapText = String((mapItem && mapItem.note) || '').trim();
@@ -2286,7 +2338,7 @@ class Component extends DCLogic {
         const liveMap = {
           running: ['executando', 'flow', 'var(--flow)'],
           waiting: ['aguardando você', 'warn', 'var(--warning)'],
-          paused: ['aguardando você', 'warn', 'var(--warning)'],
+          paused: ['pausado', 'warn', 'var(--warning)'],
           failed: ['falhou', 'danger', 'var(--danger)'],
           completed: ['concluído neste item', 'flow', 'var(--flow)'],
           done: ['concluído', 'flow', 'var(--flow)'],
@@ -2321,8 +2373,9 @@ class Component extends DCLogic {
           checkpointHint: checkpoint && checkpoint.partial
             ? String(checkpoint.partial).trim().slice(-280)
             : 'A tentativa anterior parou antes de registrar texto. A próxima continua a partir do que já estiver no workspace.',
-          retryLbl: (checkpoint && checkpoint.itemId === curItem.id) ? 'Continuar do checkpoint' : 'Tentar de novo',
-          runLbl: running ? 'Executando…' : ((checkpoint && checkpoint.itemId === curItem.id) ? 'Continuar do checkpoint' : 'Executar este item'),
+          retryLbl: pausedTrack ? 'Retomar do checkpoint' : ((checkpoint && checkpoint.itemId === curItem.id) ? 'Continuar do checkpoint' : 'Tentar de novo'),
+          showPause: running,
+          runLbl: running ? 'Executando…' : (pausedTrack ? 'Retomar do checkpoint' : ((checkpoint && checkpoint.itemId === curItem.id) ? 'Continuar do checkpoint' : 'Executar este item')),
           runCls: (pack.trim() && nextItem) ? 'secondary' : 'primary',
           showNext: alterationsOpen && !waitingQ && !finished && !!pack.trim() && !!nextItem,
           nextLbl: nextItem ? ('Seguir para ' + nextItem.label) : 'Seguir',
@@ -2336,8 +2389,8 @@ class Component extends DCLogic {
           liveError: String((useLive ? liveBox.error : persistedTrack.runError) || ''),
           liveLines: rawLines.filter(function (l) {
             const t = String(l.t || '').trim();
-            return t && t !== '[object Object]' && (t.length >= 12 || /erro|falha|timeout|não |nao /i.test(t));
-          }).slice(-8).map(function (l) { return { t: l.t, bd: l.bad ? 'var(--danger)' : 'var(--flow)', fg: l.bad ? 'var(--danger)' : 'var(--text-secondary)' }; }),
+            return t && t !== '[object Object]';
+          }).map(function (l) { return { t: l.t, bd: l.bad ? 'var(--danger)' : 'var(--flow)', fg: l.bad ? 'var(--danger)' : 'var(--text-secondary)' }; }),
           badgeCls: alterationsOpen ? 'flow' : 'warn',
           locked: !alterationsOpen,
           atFirst: altTrackStep <= 0 || !alterationsOpen,
@@ -2414,6 +2467,24 @@ class Component extends DCLogic {
                 }
               }).catch(function () {});
             }
+          },
+          pause: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            const target = P.local_path || P.path || P.slug || P.id;
+            if (!tavir || !tavir.projects || !tavir.projects.pauseAltTrack) {
+              app.toast('Trilho', 'A pausa não está ligada a este painel.');
+              return;
+            }
+            tavir.projects.pauseAltTrack(target).then(function (res) {
+              window.__tavirTrackBusy = false;
+              if (res && res.alt_track) applyAltTrack(res.alt_track);
+              if (window.__tavirFabTrack) {
+                window.__tavirFabTrack.status = 'paused';
+                window.__tavirFabTrack.error = '';
+              }
+              if (window.__tavirFabPing) window.__tavirFabPing();
+              app.toast('Trilho pausado', 'O checkpoint ficou gravado. Retomar continua deste ponto.');
+            }).catch(function (err) { app.toast('Trilho', String(err && err.message || err)); });
           },
           run: () => {
             if (window.__tavirFabTrack && window.__tavirFabTrack.status === 'failed') window.__tavirTrackBusy = false;
@@ -2531,7 +2602,7 @@ class Component extends DCLogic {
       timeline: P.acts.slice(0, 6).map((e, i) => ({ t: e[0], x: e[1], w: e[2], c: i === 0 ? 'var(--flow)' : 'var(--line-strong)' })),
       vsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], now: k === 'run' || k === 'gate' || k === 'paused', st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: k === 'run' || k === 'gate' || k === 'paused' ? 'var(--surface-3)' : 'transparent', pick: stepPick(i) }; }),
       gsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; const isCur = i === P.done && P.status !== 'done'; const isSel = Number(s.stage) === i; const blockP = P.pends[0]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], skill: x[2], st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: isSel ? 'var(--surface-3)' : (isCur ? 'var(--surface-3)' : 'transparent'), when: ddmm(P.base, startOf(i)) + (x[3] > 1 ? ' → ' + ddmm(P.base, startOf(i) + x[3] - 1) : ''),
-        pick: stepPick(i), hasAct: isCur && P.status === 'run', actLbl: blockP ? 'Autorizar' : 'Concluir etapa', act: blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy) }; }),
+        pick: () => self._openEsteira(i), hasAct: isCur && P.status === 'run', actLbl: blockP ? 'Autorizar' : 'Concluir etapa', act: blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy) }; }),
       gSel: (function() {
         const idx = Math.max(0, Math.min(Number(s.stage) || 0, P.stages.length - 1));
         const st = P.stages[idx] || P.stages[0] || ['Etapa', '—', '—', 1];
@@ -2555,7 +2626,99 @@ class Component extends DCLogic {
             const txt = 'Quero trabalhar o gate/etapa "' + st[0] + '" (' + st[1] + '). Detalhe o que falta e prepare o handoff para Paula planejar.';
             self.setState({ chat: true, draft: txt, ptab: 'esteira' });
             if (self.sendIrisMessage) self.sendIrisMessage(txt, { asChangeRequest: !!(P.status === 'done' || P.alterations_open) });
+          },
+          open: function() { self._openEsteira(idx); }
+        };
+      })(),
+      esteira: (function () {
+        const desk = (s.esteiraById && s.esteiraById[P.id]) || { auto: false, stages: [] };
+        const auto = !!desk.auto;
+        return {
+          autoLbl: auto ? 'Execução automática: ligada' : 'Execução automática: desligada',
+          survey: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            if (!tavir || !tavir.projects || !tavir.projects.survey) {
+              (self.props.app || NOOP).toast('Levantamento', 'Reinicie o Escritório para reler a pasta.');
+              return;
+            }
+            (self.props.app || NOOP).toast('Lendo a pasta', 'Inventário, linguagem, Git e deploy.');
+            const target = P.local_path || P.path || P.slug || P.id;
+            tavir.projects.survey(target).then(function (res) {
+              const sry = res && res.survey;
+              if (sry) {
+                const note = 'Levantamento da absorção\n\n' + (sry.about || '') + '\n\nLinguagens: ' + (sry.languages || '—') + '\nGit: ' + (sry.git || '—') + '\nDeploy: ' + (sry.deploy || '—');
+                const next = Object.assign({}, desk, { stages: (desk.stages || []).slice() });
+                next.stages[0] = Object.assign({}, next.stages[0] || {}, { note: note, status: 'done', files: ['context/dossie.md', 'context/inventario.md', 'context/levantamento.json'] });
+                applyEsteira(next);
+              }
+              if (self._openEsteira) self._openEsteira(0);
+              (self.props.app || NOOP).toast('Levantamento pronto', (sry && sry.stacks) || 'Dossiê gravado na pasta.');
+              if (self.reloadIpcProjects) self.reloadIpcProjects();
+            }).catch(function (err) {
+              (self.props.app || NOOP).toast('Levantamento', String(err && err.message || err));
+            });
+          },
+          autoCls: auto ? 'primary' : 'secondary',
+          toggleAuto: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            const target = P.local_path || P.path || P.slug || P.id;
+            const next = !auto;
+            applyEsteira(Object.assign({}, desk, { auto: next }));
+            if (tavir && tavir.projects && tavir.projects.setEsteiraAuto) {
+              tavir.projects.setEsteiraAuto(target, next).then(function (res) {
+                if (res && res.esteira) applyEsteira(res.esteira);
+                (self.props.app || NOOP).toast(next ? 'Esteira automática ligada' : 'Esteira automática desligada', next ? 'Ela segue sozinha até um gate.' : 'Cada etapa volta a esperar o seu clique.');
+              }).catch(function () {});
+            }
           }
+        };
+      })(),
+      stageModal: (function () {
+        const open = s.stageModal != null && s.stageModal !== false;
+        const index = open ? Number(s.stageModal) : 0;
+        const st = (P.stages || [])[index] || ['Etapa', '—', '—', 1];
+        const desk = (s.esteiraById && s.esteiraById[P.id]) || { auto: false, stages: [] };
+        const saved = (desk.stages || [])[index] || { instruction: '', note: '', status: 'idle', files: [] };
+        const files = (saved.files || []).map(function (name) { return { name: name }; });
+        const gate = /gate|aprova/i.test(st[0]);
+        const target = P.local_path || P.path || P.slug || P.id;
+        const refresh = (res) => { if (res && res.esteira) applyEsteira(res.esteira); };
+        const control = (action) => {
+          const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+          if (!tavir || !tavir.projects || !tavir.projects.controlEsteira) return;
+          tavir.projects.controlEsteira(target, index, action).then(refresh).catch(function (err) { (self.props.app || NOOP).toast('Esteira', String(err && err.message || err)); });
+        };
+        return {
+          open: open,
+          n: String(index + 1).padStart(2, '0'),
+          title: st[0],
+          owner: st[1],
+          skill: st[2],
+          status: saved.status || 'idle',
+          gate: gate,
+          gateTxt: gate ? 'Esta etapa é um gate. A execução automática para aqui e espera você.' : 'A execução automática segue para a próxima etapa quando esta fechar.',
+          draft: s.stageDraft != null ? s.stageDraft : (saved.instruction || ''),
+          onDraft: (e) => self.setState({ stageDraft: e.target.value }),
+          note: saved.note || 'Ainda não há levantamento desta etapa.',
+          hasFiles: files.length > 0,
+          emptyFiles: files.length === 0,
+          files: files,
+          noFiles: 'Nenhum arquivo desta etapa em artifacts/.',
+          close: () => self.setState({ stageModal: null }),
+          bg: (e) => { if (e && e.target === e.currentTarget) self.setState({ stageModal: null }); },
+          save: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            if (!tavir || !tavir.projects || !tavir.projects.saveEsteiraInstruction) return;
+            tavir.projects.saveEsteiraInstruction(target, index, self.state.stageDraft || '').then(function (res) {
+              refresh(res);
+              (self.props.app || NOOP).toast('Instrução salva', st[0]);
+            }).catch(function (err) { (self.props.app || NOOP).toast('Esteira', String(err && err.message || err)); });
+          },
+          run: () => self._runEsteira(index),
+          pause: () => control('pause'),
+          stop: () => control('stop'),
+          restart: () => control('restart'),
+          review: () => control('review')
         };
       })(),
       inv: P.inv.map((f) => ({ k: f[0], v: f[1] })),
@@ -2785,8 +2948,25 @@ class Component extends DCLogic {
       copyPath: () => { try { navigator.clipboard.writeText(P.path); } catch (er) { /* sem acesso à área de transferência */ } app.toast('Caminho copiado', P.path); },
       menuOpen: s.menu, menuExp: s.menu ? 'true' : 'false', toggleMenu: () => self.setState({ menu: !s.menu }),
       menuItems: [[ICX.folder, 'Abrir pasta', 'Abre a pasta isolada no Explorer', openExplorer, ''], [ICX.folderPlus, 'Absorver pasta', 'Product Lab · novo projeto a partir de uma pasta', openAbsorb, ''], [IC.shield, 'Controle e isolamento', 'Git, .env, rede e permissões', () => { self.setState({ menu: false }); app.modal('control', { name: P.name }); }, ''], [P.status === 'paused' ? ICN.play : ICN.pause, P.status === 'paused' ? 'Retomar projeto' : 'Pausar projeto', 'Os agentes param ao fim da tarefa atual', () => { self.setState({ menu: false }); self.togglePause(P.id); }, ''], [ICX.trash, 'Remover projeto', 'Sai do painel · a pasta continua no disco', () => self.setState({ menu: false, rmOpen: true }), 'danger']].map((m) => ({ icon: m[0], t: m[1], d: m[2], pick: m[3], cls: m[4] })),
-      rmOpen: s.rmOpen, rmClose: () => self.setState({ rmOpen: false }), rmBg: (e) => { if (e && e.target === e.currentTarget) self.setState({ rmOpen: false }); },
-      rmConfirm: () => { if (PL.length <= 1) { app.toast('Não dá para remover', 'O painel precisa de pelo menos um projeto.'); return; } const rmv = Object.assign({}, s.removed); rmv[P.id] = true; self.setState({ removed: rmv, rmOpen: false, pid: null, lastRm: [P.id, P.name], chat: false }); app.toast('Projeto removido', P.name + ' saiu do painel. A pasta no disco foi mantida.'); },
+      rmOpen: s.rmOpen, rmWipe: !!s.rmWipe, rmClose: () => self.setState({ rmOpen: false, rmWipe: false }), rmBg: (e) => { if (e && e.target === e.currentTarget) self.setState({ rmOpen: false, rmWipe: false }); },
+      rmToggleWipe: (e) => self.setState({ rmWipe: !!(e && e.target && e.target.checked) }),
+      rmConfirm: () => {
+        const projId = P.id; const projName = P.name; const projPath = P.local_path || P.path || P.slug;
+        const wipe = !!self.state.rmWipe;
+        if (!projId || projId === '_painel' || projId === '_vazio') { app.toast('Nada para remover', 'Abra um projeto da lista.'); return; }
+        const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+        const done = function(res) {
+          if (!res || res.ok === false) {
+            app.toast('Não removi', (res && res.error) || 'A base manteve o projeto.');
+            return;
+          }
+          self.setState({ rmOpen: false, rmWipe: false, pid: null, menu: false, chat: false });
+          if (self.reloadIpcProjects) self.reloadIpcProjects();
+          app.toast(wipe && res.deletedFiles ? 'Projeto e pasta apagados' : 'Projeto removido da Fábrica', wipe && res.deletedFiles ? projName + ' saiu da base e a pasta foi apagada.' : projName + ' saiu da base. A pasta no disco foi mantida.');
+        };
+        if (!tavir || !tavir.projects || !tavir.projects.delete) { app.toast('Não removi', 'A ponte com a base não está disponível. Reinicie o Escritório.'); return; }
+        tavir.projects.delete(projId, wipe, projPath).then(done).catch(function(err) { app.toast('Não removi', String(err && err.message || err)); });
+      },
       hasRemoved: !!(s.lastRm && s.removed[s.lastRm[0]]), removedTxt: s.lastRm ? s.lastRm[1] + ' foi removido do painel. A pasta isolada continua no disco.' : '',
       undoRemove: () => { if (!s.lastRm) return; const rmv = Object.assign({}, s.removed); delete rmv[s.lastRm[0]]; self.setState({ removed: rmv, lastRm: null }); },
       // Íris
