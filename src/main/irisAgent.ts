@@ -5,7 +5,7 @@
  * com o mesmo prompt, o mesmo histórico e o mesmo significado de leitura/escrita.
  * Toda chamada fica no livro de execuções (.tavir/runs).
  */
-import { startRun, type RunHandle, type RunKind } from './runLedger';
+import { startRun, type RunChanges, type RunHandle, type RunKind } from './runLedger';
 import {
   MOTOR_LABEL,
   buildInvocation,
@@ -52,6 +52,8 @@ export interface IrisAgentResult {
   error?: string;
   /** Pasta da execução em .tavir/runs, quando o motor chegou a rodar. */
   runId?: string;
+  /** O que a execução mudou no disco (retrato do git sombra). */
+  changes?: RunChanges;
 }
 
 // ---------------------------------------------------------------- prompt
@@ -256,6 +258,7 @@ export async function converseWithIrisAgent(req: IrisAgentRequest): Promise<Iris
         reply: res.text || text,
       });
       result.runId = meta.id;
+      result.changes = meta.changes;
       thoughts.push(`[Execução] .tavir/runs/${meta.id}`);
       if (meta.toolCalls) thoughts.push(`[Ferramentas] ${meta.toolCalls}${meta.toolErrors ? ` · ${meta.toolErrors} com falha` : ''}`);
       const c = meta.changes;

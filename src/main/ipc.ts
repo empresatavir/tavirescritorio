@@ -411,282 +411,6 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
-  const createOrAbsorbProject = (params: any) => {
-    const fs = require('node:fs');
-    const pathMod = require('node:path');
-    const crypto = require('node:crypto');
-    const { execFileSync } = require('node:child_process');
-    const { DatabaseSync } = require('node:sqlite');
-
-    const customPath = String(params?.local_path || params?.path || '').trim();
-    const isAbsorb = Boolean(params?.absorb || (customPath && fs.existsSync(customPath)));
-    const folderBaseName = customPath ? pathMod.basename(customPath.replace(/[\\/]+$/, '')) : '';
-
-    const name = String(params?.name || folderBaseName || '').trim() || 'Novo Projeto';
-    const company = String(params?.company || 'TAVIR').trim() || 'TAVIR';
-    const ownership = String(params?.ownership || 'interno').trim().toLowerCase() === 'externo' ? 'externo' : 'interno';
-    const gitProfile = String(params?.git_profile || 'TAVIR (Empresa)').trim();
-    const isPersonalGit = gitProfile.toLowerCase().includes('pessoal') || gitProfile.toLowerCase().includes('carlos');
-    const gitUserName = String(params?.git_name || (isPersonalGit ? 'Carlos' : 'TAVIR')).trim();
-    const gitUserEmail = String(params?.git_email || (isPersonalGit ? 'carlos@pessoal.local' : 'engenharia@tavir.com.br')).trim();
-    const repoUrl = String(params?.repo_url || '').trim();
-    const deployTarget = String(params?.deploy_target || 'Isolado por projeto').trim();
-    const absorbAgent = String(params?.absorb_agent || 'Squad Product Lab (Ari Arquiteto + Enzo Extrator + Dora Descoberta)').trim();
-
-    let cat = String(params?.template_category || params?.template || (isAbsorb ? 'sy' : 'lp')).trim().toLowerCase();
-    if (cat.includes('oferta') || cat === 'of') cat = 'of';
-    else if (cat.includes('sistema') || cat === 'sy' || cat === 'sys') cat = 'sy';
-    else cat = 'lp';
-
-    const rawMode = String(params?.mode || params?.track || (isAbsorb ? 'manutencao' : 'zero')).trim().toLowerCase();
-    const isMaint = isAbsorb || rawMode.includes('manuten') || rawMode.includes('absorv') || rawMode === 'pronto' || rawMode === 'm';
-    const modeCode = isMaint ? 'm' : 'c';
-    const templateCode = `${cat}-${modeCode}`;
-
-    const totalStagesMap: Record<string, number> = {
-      'lp-c': 12,
-      'lp-m': 8,
-      'of-c': 12,
-      'of-m': 8,
-      'sy-c': 15,
-      'sy-m': 12,
-    };
-    const totalStages = totalStagesMap[templateCode] || 12;
-
-    const slugBase =
-      name
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/-{2,}/g, '-')
-        .replace(/^-|-$/g, '') || 'projeto';
-    const projectId = crypto.randomUUID();
-    const slug = `${slugBase}-${projectId.slice(0, 6)}`;
-
-    const rootFolder = ownership === 'externo' ? 'tavir-exterrno' : 'tavir-interno';
-    const wsPath = customPath && !customPath.startsWith('~') ? pathMod.resolve(customPath) : pathMod.join(process.cwd(), rootFolder, slug);
-
-    let detectedStacks: string[] = [];
-    let envVarsFound: string[] = [];
-    let topDirs: string[] = [];
-    let topFiles: string[] = [];
-
-    try {
-      fs.mkdirSync(pathMod.join(wsPath, '.tavir'), { recursive: true });
-      fs.mkdirSync(pathMod.join(wsPath, 'context'), { recursive: true });
-      fs.mkdirSync(pathMod.join(wsPath, 'memory', 'projeto'), { recursive: true });
-
-      const entries = fs.readdirSync(wsPath, { withFileTypes: true });
-      for (const ent of entries) {
-        if (ent.name.startsWith('.git') || ent.name === 'node_modules' || ent.name === '.venv' || ent.name === 'dist') continue;
-        if (ent.isDirectory()) topDirs.push(ent.name);
-        else topFiles.push(ent.name);
-      }
-
-      const checkPkg = (p: string) => {
-        if (!fs.existsSync(p)) return;
-        try {
-          const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
-          const deps = Object.assign({}, pkg.dependencies || {}, pkg.devDependencies || {});
-          if (deps.react) detectedStacks.push('React');
-          if (deps['solid-js']) detectedStacks.push('SolidJS');
-          if (deps.vue || deps.nuxt) detectedStacks.push('Vue/Nuxt');
-          if (deps.next) detectedStacks.push('Next.js');
-          if (deps.tailwindcss || deps['@tailwindcss/vite']) detectedStacks.push('Tailwind CSS');
-          if (deps.electron) detectedStacks.push('Electron');
-          if (deps.typescript) detectedStacks.push('TypeScript');
-          if (deps.express || deps.fastify) detectedStacks.push('Node Backend');
-        } catch {}
-      };
-      checkPkg(pathMod.join(wsPath, 'package.json'));
-      checkPkg(pathMod.join(wsPath, 'frontend', 'package.json'));
-
-      if (fs.existsSync(pathMod.join(wsPath, 'pyproject.toml')) || fs.existsSync(pathMod.join(wsPath, 'requirements.txt')) || fs.existsSync(pathMod.join(wsPath, 'backend', 'pyproject.toml'))) {
-        detectedStacks.push('Python / FastAPI');
-      }
-      if (fs.existsSync(pathMod.join(wsPath, 'pubspec.yaml')) || fs.existsSync(pathMod.join(wsPath, 'aplicativo', 'pubspec.yaml'))) {
-        detectedStacks.push('Flutter / Dart');
-      }
-      if (!detectedStacks.length) detectedStacks.push(cat === 'sy' ? 'Fullstack / Sistema' : 'Web / Frontend');
-
-      for (const envFile of ['.env', '.env.local', '.env.example', '.env.project']) {
-        const ep = pathMod.join(wsPath, envFile);
-        if (fs.existsSync(ep)) {
-          try {
-            const lines = fs.readFileSync(ep, 'utf8').split(/\r?\n/);
-            for (const ln of lines) {
-              const m = ln.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/);
-              if (m && !envVarsFound.includes(m[1])) envVarsFound.push(m[1]);
-            }
-          } catch {}
-        }
-      }
-
-      // Isolamento estrito do projeto (.tavir/isolation.json + .env.project + Git local)
-      const isolationMeta = {
-        isolated: true,
-        project_id: projectId,
-        slug,
-        workspace_path: wsPath,
-        ownership,
-        git_identity: {
-          profile: gitProfile,
-          user_name: gitUserName,
-          user_email: gitUserEmail,
-          repo_url: repoUrl || null,
-          scope: 'local-only (.git/config)',
-        },
-        deploy_isolation: {
-          target: deployTarget,
-          env_file: '.env.project',
-          detected_env_keys: envVarsFound,
-          leaks_blocked: true,
-        },
-        product_lab: {
-          absorbed: isAbsorb,
-          agent: absorbAgent,
-          detected_stacks: detectedStacks,
-          absorbed_at: new Date().toISOString(),
-        },
-      };
-
-      fs.writeFileSync(
-        pathMod.join(wsPath, '.tavir', 'project.json'),
-        JSON.stringify({ ownership, slug, template_code: templateCode, git_profile: gitProfile, deploy_target: deployTarget, absorb_agent: absorbAgent }, null, 2),
-        'utf8',
-      );
-      fs.writeFileSync(
-        pathMod.join(wsPath, '.tavir', 'isolation.json'),
-        JSON.stringify(isolationMeta, null, 2),
-        'utf8',
-      );
-      const envProjPath = pathMod.join(wsPath, '.env.project');
-      if (!fs.existsSync(envProjPath)) {
-        fs.writeFileSync(
-          envProjPath,
-          `# Cofre Isolado do Projeto: ${name}\n# NUNCA compartilhado com outros projetos ou com o ambiente global.\nTAVIR_PROJECT_ID=${projectId}\nTAVIR_GIT_PROFILE=${gitProfile}\nTAVIR_DEPLOY_TARGET=${deployTarget}\n`,
-          'utf8',
-        );
-      }
-
-      // Aplica identidade Git estritamente local na pasta do projeto (sem tocar no --global)
-      try {
-        if (!fs.existsSync(pathMod.join(wsPath, '.git'))) {
-          execFileSync('git', ['init'], { cwd: wsPath, windowsHide: true });
-        }
-        execFileSync('git', ['config', '--local', 'user.name', gitUserName], { cwd: wsPath, windowsHide: true });
-        execFileSync('git', ['config', '--local', 'user.email', gitUserEmail], { cwd: wsPath, windowsHide: true });
-        if (repoUrl) {
-          try {
-            execFileSync('git', ['remote', 'set-url', 'origin', repoUrl], { cwd: wsPath, windowsHide: true });
-          } catch {
-            execFileSync('git', ['remote', 'add', 'origin', repoUrl], { cwd: wsPath, windowsHide: true });
-          }
-        }
-        const excludePath = pathMod.join(wsPath, '.git', 'info', 'exclude');
-        fs.mkdirSync(pathMod.dirname(excludePath), { recursive: true });
-        const curExclude = fs.existsSync(excludePath) ? fs.readFileSync(excludePath, 'utf8') : '';
-        if (!curExclude.includes('.env.project')) {
-          fs.writeFileSync(excludePath, `${curExclude}\n.env.project\n.tavir/credentials.json\n`, 'utf8');
-        }
-      } catch {}
-
-      // Gera artefatos de absorção (Product Lab) se for Manutenção / Absorção
-      const diagMd = `# Diagnóstico & Absorção (Product Lab) · ${name}\n\n- **Agente Responsável**: ${absorbAgent}\n- **Pasta Isolada**: \`${wsPath}\`\n- **Stacks Detectadas**: ${detectedStacks.join(', ')}\n- **Identidade Git Local**: \`${gitUserName} <${gitUserEmail}>\` (${gitProfile})\n- **Alvo de Deploy Isolado**: ${deployTarget}\n- **Variáveis de Ambiente Mapeadas (${envVarsFound.length})**: ${envVarsFound.length ? envVarsFound.map((k) => '`' + k + '`').join(', ') : 'Nenhuma chave exposta (cofre .env.project pronto)'}\n\n## Estrutura da Pasta Absorvida\n- **Diretórios (${topDirs.length})**: ${topDirs.join(', ') || 'raiz limpa'}\n- **Arquivos na Raiz (${topFiles.length})**: ${topFiles.slice(0, 15).join(', ') || 'nenhum'}\n\n> Isolamento ativo: credenciais, commits, PRs e tokens de deploy (Vercel/Netlify) operam exclusivamente dentro desta pasta.\n`;
-      fs.writeFileSync(pathMod.join(wsPath, 'context', 'diagnosis.md'), diagMd, 'utf8');
-      fs.writeFileSync(
-        pathMod.join(wsPath, 'context', 'contrato.json'),
-        JSON.stringify(
-          {
-            produto: name,
-            resumo: `Projeto ${isAbsorb ? 'absorvido via Product Lab' : 'criado'} com isolamento estrito (${gitProfile}).`,
-            stack_frontend: detectedStacks.join(', '),
-            stack_backend: detectedStacks.includes('Python / FastAPI') ? 'FastAPI' : 'Node/Local',
-            stack_database: 'SQLite / Isolado',
-            telas: topDirs.slice(0, 8),
-            regras: ['Isolamento estrito de credenciais e Git por pasta', `Git user: ${gitUserName} <${gitUserEmail}>`],
-            criterios: ['Completion Guard 8/8', 'Sem vazamento de .env entre projetos'],
-            entregavel: 'web',
-          },
-          null,
-          2,
-        ),
-        'utf8',
-      );
-    } catch (e) {
-      console.error('[TAVIR IPC] Aviso ao preparar workspace isolado:', e);
-    }
-
-    const stackStr = detectedStacks.join(', ') || null;
-    const nowIso = new Date().toISOString();
-    const stagesDoneInit = isAbsorb ? 2 : 0;
-    const description = `Escopo: ${ownership} · Esteira: ${templateCode} · ${isAbsorb ? 'Absorvido (Product Lab)' : isMaint ? 'Manutenção' : 'Criação'} · Git: ${gitUserName}`;
-    const filesJson = JSON.stringify({
-      context_files: ['context/diagnosis.md', 'context/contrato.json'],
-      design_system: [],
-      design_system_files: [],
-      track: isMaint ? 'manutencao' : 'zero',
-      ownership,
-      workspace_root: ownership,
-      template_category: cat,
-      template_code: templateCode,
-      git_profile: gitProfile,
-      git_user_name: gitUserName,
-      git_user_email: gitUserEmail,
-      repo_url: repoUrl,
-      deploy_target: deployTarget,
-      absorb_agent: absorbAgent,
-      absorbed: isAbsorb,
-    });
-
-    const newProj = {
-      id: projectId,
-      slug,
-      name,
-      client: company,
-      company,
-      template_code: templateCode,
-      stages_done: stagesDoneInit,
-      total_stages: totalStages,
-      status: 'running',
-      local_path: wsPath,
-      stack: stackStr,
-      description,
-    };
-
-    try {
-      const sqlite = new DatabaseSync(pathMod.join(process.cwd(), 'backend', 'tavir.db'));
-      sqlite
-        .prepare(
-          `INSERT INTO projects (id, slug, name, client, company, template_code, stages_done, total_stages, status, local_path, stack, files, description, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        )
-        .run(
-          projectId,
-          slug,
-          name,
-          company,
-          company,
-          templateCode,
-          stagesDoneInit,
-          totalStages,
-          'running',
-          wsPath,
-          stackStr,
-          filesJson,
-          description,
-          nowIso,
-          nowIso,
-        );
-      sqlite.close();
-    } catch (err) {
-      console.error('[TAVIR IPC] Erro ao gravar projeto no SQLite:', err);
-    }
-
-    return newProj;
-  };
-
   handle('projects:create', (_e, params: any) => {
     const { createOrAbsorbProjectRecord } = require('./project-fs');
     return createOrAbsorbProjectRecord(params);
@@ -958,10 +682,10 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
-  handle('projects:approveAltTrack', (_e, idOrPath: string) => {
+  handle('projects:approveAltTrack', (_e, idOrPath: string, decision?: string, note?: string) => {
     try {
       const { approveAltTrackGate } = require('./project-fs');
-      return approveAltTrackGate(idOrPath);
+      return approveAltTrackGate(idOrPath, decision === 'reprovado' ? 'reprovado' : 'aprovado', String(note || ''));
     } catch (err) {
       return { ok: false, error: String(err) };
     }
@@ -1097,12 +821,30 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
-  handle('projects:runWithThinking', (_e, params: any) => {
+  handle('projects:decideEsteira', (_e, idOrPath: string, index: number, decision: string, note?: string) => {
     try {
-      const { runProjectStageWithThinking } = require('./project-fs');
-      return runProjectStageWithThinking(params);
+      const { decideEsteiraGate } = require('./project-fs');
+      return decideEsteiraGate(idOrPath, Number(index) || 0, decision === 'reprovado' ? 'reprovado' : 'aprovado', String(note || ''));
     } catch (err) {
-      return { ok: false, thoughts: [], steps: [] };
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:decisions', (_e, idOrPath: string) => {
+    try {
+      const { listProjectDecisions } = require('./project-fs');
+      return listProjectDecisions(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err), decisions: [] };
+    }
+  });
+
+  handle('projects:setEngine', (_e, idOrPath: string, choice: { engine?: string; model?: string; effort?: string }) => {
+    try {
+      const { setProjectEngine } = require('./project-fs');
+      return setProjectEngine(idOrPath, choice || {});
+    } catch (err) {
+      return { ok: false, error: String(err) };
     }
   });
 

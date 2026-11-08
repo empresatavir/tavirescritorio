@@ -503,7 +503,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
           </button>
         </sc-for>
       </div>
-      <sc-if value="{{altTrack.waiting}}" hint-placeholder-val="{{false}}"><div style="margin: 0 18px 12px; padding: 12px 14px; border-radius: 10px; background: var(--warning-subtle); border: 1px solid var(--warning); font-size: 13.5px; line-height: 1.45"><b>Precisa da sua decisão.</b> {{altTrack.waitingQuestion}}<div style="margin-top: 10px"><button type="button" class="btn sm primary" onClick="{{altTrack.approve}}">Aprovar e seguir</button></div></div></sc-if>
+      <sc-if value="{{altTrack.waiting}}" hint-placeholder-val="{{false}}"><div style="margin: 0 18px 12px; padding: 12px 14px; border-radius: 10px; background: var(--warning-subtle); border: 1px solid var(--warning); font-size: 13.5px; line-height: 1.45"><b>Precisa da sua decisão.</b> {{altTrack.waitingQuestion}}<textarea class="input" rows="2" value="{{altTrack.decisionNote}}" onChange="{{altTrack.onDecisionNote}}" placeholder="Sua resposta ou orientação (vai para o agente)" style="margin-top: 10px; width: 100%; resize: vertical; border-radius: 10px; line-height: 1.45"></textarea><div style="margin-top: 8px; display: flex; gap: 8px"><button type="button" class="btn sm primary" onClick="{{altTrack.approve}}">Aprovar</button><button type="button" class="btn sm secondary" onClick="{{altTrack.reject}}">Reprovar</button></div></div></sc-if>
       <sc-if value="{{altTrack.hasCheckpoint}}" hint-placeholder-val="{{false}}"><div style="margin: 0 18px 12px; padding: 12px 14px; border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); font-size: 13px; line-height: 1.45; color: var(--text-secondary)"><b style="color: var(--text-primary)">Checkpoint · {{altTrack.checkpointAt}}</b><div style="margin-top: 4px">{{altTrack.checkpointHint}}</div></div></sc-if>
       <div style="padding: 16px 18px; border-top: 1px solid var(--line); display: flex; gap: 14px; align-items: center; flex-wrap: wrap">
         <span class="av" style="width: 40px; height: 40px; font-size: 11px; flex: none">{{altTrack.sel.ini}}</span>
@@ -1136,6 +1136,9 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
     <div class="mbody" style="display: flex; flex-direction: column; gap: 14px">
       <div><div class="eyebrow" style="margin-bottom: 6px">O que foi levantado</div><pre class="mono" style="margin: 0; padding: 12px; max-height: 160px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: var(--surface-0); border: 1px solid var(--line); border-radius: 10px; color: var(--text-secondary)">{{stageModal.note}}</pre></div>
       <label class="field"><span>Instrução desta etapa</span><textarea class="input" rows="6" value="{{stageModal.draft}}" onChange="{{stageModal.onDraft}}" placeholder="O que o agente deve levantar ou alterar nesta etapa" style="resize: vertical; min-height: 120px; border-radius: 12px; line-height: 1.45"></textarea></label>
+      <sc-if value="{{stageModal.awaiting}}" hint-placeholder-val="{{false}}"><div style="padding: 12px 14px; border-radius: 10px; background: var(--warning-subtle); border: 1px solid var(--warning); display: flex; flex-direction: column; gap: 8px"><b style="font-size: 13.5px">Este gate espera a sua decisão.</b><textarea class="input" rows="3" value="{{stageModal.gateNote}}" onChange="{{stageModal.onGateNote}}" placeholder="Orientação para a equipe (obrigatória para reprovar)" style="resize: vertical; border-radius: 10px; line-height: 1.45"></textarea><div style="display: flex; gap: 8px; justify-content: flex-end"><button type="button" class="btn sm secondary" onClick="{{stageModal.reject}}">Reprovar</button><button type="button" class="btn sm primary" onClick="{{stageModal.approve}}">Aprovar e seguir</button></div></div></sc-if>
+      <sc-if value="{{stageModal.hasDecision}}" hint-placeholder-val="{{false}}"><p class="muted" style="margin: 0; font-size: 12.5px">{{stageModal.decisionTxt}}</p></sc-if>
+      <sc-if value="{{stageModal.hasRuns}}" hint-placeholder-val="{{false}}"><p class="muted" style="margin: 0; font-size: 12.5px">{{stageModal.runsN}}</p></sc-if>
       <div><div class="eyebrow" style="margin-bottom: 6px">Arquivos desta etapa</div><sc-if value="{{stageModal.hasFiles}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 6px"><sc-for list="{{stageModal.files}}" as="f" hint-placeholder-count="2"><code class="mono" style="font-size: 12px; padding: 8px 10px; border-radius: 8px; background: var(--surface-0); border: 1px solid var(--line)">{{f.name}}</code></sc-for></div></sc-if><sc-if value="{{stageModal.emptyFiles}}" hint-placeholder-val="{{false}}"><p class="muted" style="margin: 0; font-size: 13px">{{stageModal.noFiles}}</p></sc-if></div>
     </div>
     <div class="mfoot" style="flex-wrap: wrap; justify-content: flex-end; row-gap: 8px">
@@ -1682,13 +1685,6 @@ class Component extends DCLogic {
       const app = this.props.app || NOOP; app.toast('Autorizado', p.t + (p.advance ? '. A esteira seguiu para a próxima etapa.' : '. A etapa voltou a rodar.')); if (app.log) app.log('Carlos', 'autorizou ' + p.t, '#B7F34A');
     }, 900);
   }
-  conclude(id) {
-    const s = this.state; const g = this.findG(id); if (!g) return; const n = g.stages.length; const d = Object.assign({}, s.gp[id]); if (d.cur >= n || d.paused) return;
-    const name = g.stages[d.cur][0], who = g.stages[d.cur][1]; d.cur = d.cur + 1;
-    d.extra = [[hm(), (d.cur >= n ? 'Projeto entregue · ' : 'Etapa concluída · ') + name, who]].concat(d.extra);
-    const gp = Object.assign({}, s.gp); gp[id] = d; this.setState({ gp: gp });
-    (this.props.app || NOOP).toast(d.cur >= n ? 'Projeto entregue' : 'Etapa concluída', d.cur >= n ? g.name + ' com Guard 8 de 8.' : name + '. Próxima: ' + g.stages[d.cur][0] + '.');
-  }
   togglePause(id) {
     const s = this.state; const app = this.props.app || NOOP;
     if (id === 'meridian') { this.setState({ mPaused: !s.mPaused }); app.toast(s.mPaused ? 'Esteira retomada' : 'Esteira pausada', 'Landing Meridian Capital'); return; }
@@ -1698,20 +1694,6 @@ class Component extends DCLogic {
   }
   findG(id) { return GP.find((x) => x.id === id) || this.state.absorbed.find((x) => x.id === id); }
   setRun(pid, r) { const rs = Object.assign({}, this.state.runs); rs[pid] = r; this.setState({ runs: rs }); }
-  runStage(pid, ctx) {
-    const cur0 = this.state.runs[pid]; if (cur0 && cur0.running) return;
-    const r = { running: true, lines: (cur0 ? cur0.lines : ctx.lines).concat(['[' + ctx.eng.toUpperCase() + '] Iniciando a execução de ' + ctx.stage]), tok: cur0 ? cur0.tok : ctx.tok[0], sec: cur0 ? cur0.sec : ctx.tok[1], cost: cur0 ? cur0.cost : ctx.tok[2] };
-    const th = Object.assign({}, this.state.think); th[pid] = true; this.setState({ think: th }); this.setRun(pid, r);
-    const seq = ['[PENSAMENTO] Lendo os critérios de pronto de ' + ctx.stage + ' e o contexto da pasta isolada.', '[EXECUÇÃO] Gerando e validando artefatos dentro do workspace.', '[GUARD] Critérios da etapa conferidos.'];
-    seq.forEach((line, k) => this.later(() => { const rr = Object.assign({}, this.state.runs[pid]); rr.lines = rr.lines.concat([line]); rr.tok += 760 + k * 180; rr.sec = Math.round((rr.sec + 1.3) * 10) / 10; rr.cost = Math.round((rr.cost + 0.03) * 100) / 100; this.setRun(pid, rr); }, 750 * (k + 1)));
-    this.later(() => {
-      const app = this.props.app || NOOP; let res;
-      if (ctx.meridian) { if (!this.state.signed && !this.state.guard[5]) { this.check(5, 'Nina SEO'); res = 'SEO assinado pelo motor · critério marcado no Guard'; } else res = 'Nada automático pendente · o próximo passo é decisão humana'; }
-      else { this.conclude(pid); res = 'Etapa ' + ctx.stage + ' concluída · próxima mesa chamada'; }
-      const rr = Object.assign({}, this.state.runs[pid]); rr.running = false; rr.lines = rr.lines.concat(['[RESULTADO] ' + res]); this.setRun(pid, rr);
-      app.toast('Execução concluída', res + '.');
-    }, 750 * 4);
-  }
   analyze(tail) {
     this.setState({ abs: Object.assign({}, this.state.abs, { step: 'busy', logN: 0 }) });
     [1, 2, 3, 4].forEach((n) => this.later(() => this.setState({ abs: Object.assign({}, this.state.abs, n === 4 ? { step: 'result', logN: 4, name: this.state.abs.name || tail } : { logN: n }) }), 450 * n));
@@ -1974,13 +1956,18 @@ class Component extends DCLogic {
         return;
       }
       app.toast('Esteira', st[1] + ' assumiu «' + st[0] + '».');
+      const cur = Object.assign({ auto: false, stages: [] }, (self.state.esteiraById || {})[P.id] || {});
+      const running = (cur.stages || []).slice(); running[index] = Object.assign({}, running[index] || {}, { status: 'running' });
+      applyEsteira(Object.assign({}, cur, { stages: running }));
       tavir.projects.runEsteira(target, index, st[0], st[1]).then(function (res) {
         if (res && res.esteira) applyEsteira(res.esteira);
+        if (self.reloadIpcProjects) self.reloadIpcProjects();
         if (res && res.paused) { app.toast('Etapa pausada', 'O levantamento ficou guardado. Retomar continua deste ponto.'); return; }
-        if (res && res.ok === false) { app.toast('Esteira', res.error || res.reply || 'A etapa não concluiu.'); return; }
+        if (res && res.ok === false) { app.toast(res.gate ? 'Gate pendente' : 'Esteira', res.error || res.reply || 'A etapa não concluiu.'); return; }
+        const commitTxt = res && res.commit ? (res.commit.sha ? ' · commit ' + res.commit.sha : '') : '';
+        if (res && res.awaiting) { app.toast('Gate · aguarda você', '«' + st[0] + '» foi resumida. Aprove ou reprove para a esteira seguir.'); self.setState({ stageModal: index }); return; }
         if (res && res.continued) self._runEsteira(index + 1);
-        else if (res && res.gate) app.toast('Gate', 'A etapa parou para a sua decisão.');
-        else app.toast('Etapa concluída', st[0]);
+        else app.toast('Etapa concluída', st[0] + commitTxt);
       }).catch(function (err) { app.toast('Esteira', String(err && err.message || err)); });
     };
     const projFinished = !!(P && (P.status === 'done' || P.done >= P.n));
@@ -2046,6 +2033,21 @@ class Component extends DCLogic {
       };
       if (window.__tavirFabPing) window.__tavirFabPing();
     };
+    self._decideAltTrack = function (verdict) {
+      const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+      const app = self.props.app || NOOP;
+      const target = P.local_path || P.path || P.slug || P.id;
+      if (!tavir || !tavir.projects || !tavir.projects.approveAltTrack) return;
+      const note = String(self.state.trackDecision || '').trim();
+      if (verdict === 'reprovado' && !note) { app.toast('Trilho', 'Escreva o que precisa mudar antes de reprovar.'); return; }
+      tavir.projects.approveAltTrack(target, verdict, note).then(function (res) {
+        if (res && res.alt_track) applyAltTrack(res.alt_track);
+        self.setState({ trackDecision: '' });
+        app.toast(verdict === 'aprovado' ? 'Aprovado' : 'Reprovado', 'Decisão registrada. O item continua com a sua resposta.');
+        // O mesmo item roda de novo com a decisão; no manual, fica para o seu clique.
+        if (res && res.alt_track && res.alt_track.auto) self._runAltTrackChain({ track: res.alt_track, force: true, once: false });
+      }).catch(function (err) { app.toast('Trilho', String(err && err.message || err)); });
+    };
     self._runAltTrackChain = function (opts) {
       const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
       if (!P || !tavir || !tavir.projects || !tavir.projects.runAltTrack) {
@@ -2110,20 +2112,34 @@ class Component extends DCLogic {
     const runN = PL.filter((p) => p.status === 'run').length;
 
     // etapa atual do projeto aberto
-    const conclude = () => self.conclude(P.id);
+    const conclude = () => { if (self._openEsteira) self._openEsteira(Math.min(P.ci, P.stages.length - 1)); };
+    const curDesk = ((((s.esteiraById && s.esteiraById[P.id]) || { stages: [] }).stages) || [])[P.ci] || null;
+    const curSt = curDesk ? curDesk.status : '';
+    const curTxt = { awaiting: 'aguarda sua decisão', running: 'em execução', paused: 'pausada', stopped: 'parada', done: 'concluída', idle: 'pronta para executar' }[curSt] || 'em execução';
+    const curD = { awaiting: 'O agente resumiu a etapa. Ela só fecha quando você aprovar ou reprovar o gate.', running: 'O agente está trabalhando nesta etapa. A transcrição fica na aba Logs.', paused: 'Etapa pausada. O levantamento ficou guardado; retomar continua deste ponto.', stopped: 'Etapa parada. Recomece ou ajuste a instrução para rodar de novo.', idle: 'Etapa pronta. Abra para revisar a instrução e executar o agente.' }[curSt] || 'O agente está trabalhando nesta etapa.';
+    const curBtn = curSt === 'awaiting' ? 'Decidir gate' : curSt === 'running' ? 'Acompanhar etapa' : 'Abrir etapa';
     let cs;
     if (isM) {
       cs = { eyebrow: 'Etapa 0' + (cur + 1) + ' de 09 · ' + (s.signed ? 'em andamento' : 'no gate'), name: STG[cur][0], owner: STG[cur][1], ini: STG[cur][2], skill: STG[cur][3], status: s.mPaused ? 'pausada' : s.signed ? 'em execução' : 'aguardando gate', cls: s.mPaused ? 'warn' : s.signed ? 'flow' : 'warn', d: now.d, btn: now.btn, go: now.go, dis: false, secLbl: 'Ver na esteira', sec: () => goStage(cur), blocked: !s.signed && pending > 0, blockTxt: 'A etapa só fecha com o Guard em 8 de 8. Os critérios em âmbar têm a ação ao lado.', icon: now.icon, ibg: s.signed ? 'var(--flow-subtle)' : 'var(--warning-subtle)', ifg: s.signed ? 'var(--flow)' : 'var(--warning)', anim: s.signed ? 'none' : 'ringwarn 2s var(--ease) infinite', bd: s.signed ? 'var(--line)' : 'oklch(.80 .155 78 / .45)' };
     } else {
       const st = P.stages[P.ci]; const blockP = P.pends[0]; const dn = P.status === 'done', pz = P.status === 'paused';
       cs = { eyebrow: 'Etapa ' + String(P.ci + 1).padStart(2, '0') + ' de ' + String(P.n).padStart(2, '0'), name: dn ? 'Projeto entregue' : st[0], owner: st[1], ini: PEOPLE[st[1]] || st[1].slice(0, 2).toUpperCase(), skill: st[2],
-        status: dn ? 'entregue' : pz ? 'pausada' : blockP ? 'aguardando autorização' : 'em execução', cls: dn ? 'action' : pz || blockP ? 'warn' : 'flow',
-        d: dn ? 'Gate final assinado com o Guard em 8 de 8. O runbook e os acessos ficam aqui para consulta.' : pz ? P.pauseNote : blockP ? blockP.d : 'O agente está trabalhando nesta etapa. Concluir registra a entrega e chama a próxima mesa.',
-        btn: dn ? 'Ver Completion Guard' : pz ? 'Retomar esteira' : blockP ? 'Autorizar' : 'Concluir etapa', go: dn ? () => self.setState({ ptab: 'qa' }) : pz ? () => self.togglePause(P.id) : blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy),
+        status: dn ? 'entregue' : pz ? 'pausada' : blockP ? 'aguardando autorização' : curTxt, cls: dn ? 'action' : pz || blockP || curSt === 'awaiting' ? 'warn' : 'flow',
+        d: dn ? 'Esteira concluída. O runbook e os acessos ficam aqui para consulta.' : pz ? P.pauseNote : blockP ? blockP.d : curD,
+        btn: dn ? 'Ver Completion Guard' : pz ? 'Retomar esteira' : blockP ? 'Autorizar' : curBtn, go: dn ? () => self.setState({ ptab: 'qa' }) : pz ? () => self.togglePause(P.id) : blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy),
         secLbl: 'Ver esteira', sec: () => self.setState({ ptab: 'esteira' }), blocked: !!blockP && !pz, blockTxt: 'Esta etapa está bloqueada. Resolva a pendência para continuar.',
         icon: dn ? IC.check : pz ? ICN.pause : blockP ? ICN.key : IC.run, ibg: dn ? 'var(--action-subtle)' : pz || blockP ? 'var(--warning-subtle)' : 'var(--flow-subtle)', ifg: dn ? 'var(--action-subtle-text)' : pz || blockP ? 'var(--warning)' : 'var(--flow)', anim: blockP && !pz ? 'ringwarn 2s var(--ease) infinite' : 'none', bd: blockP && !pz ? 'oklch(.80 .155 78 / .45)' : 'var(--line)' };
     }
-    const stState = (i) => i < P.done ? 'done' : i === P.done ? (P.status === 'paused' ? 'paused' : (isM ? (s.signed ? 'run' : 'gate') : (P.pends.length ? 'gate' : 'run'))) : 'todo';
+    const deskRow = (i) => (((s.esteiraById && s.esteiraById[P.id]) || { stages: [] }).stages || [])[i] || null;
+    const stState = (i) => {
+      const r = deskRow(i);
+      if (r && r.status === 'done') return 'done';
+      if (r && r.status === 'awaiting') return 'gate';
+      if (r && r.status === 'running') return 'run';
+      if (r && (r.status === 'paused' || r.status === 'stopped')) return 'paused';
+      if (r) return 'todo';
+      return i < P.done ? 'done' : i === P.done ? (P.status === 'paused' ? 'paused' : (isM ? (s.signed ? 'run' : 'gate') : (P.pends.length ? 'gate' : 'run'))) : 'todo';
+    };
     const SS = { done: ['concluída', 'flow', 'var(--flow)', 'var(--surface-1)', 'var(--flow)'], run: ['em execução', 'flow', 'var(--flow-subtle)', 'var(--flow)', 'var(--flow-subtle-line)'], gate: [isM ? 'no gate' : 'aguarda você', 'warn', 'var(--warning-subtle)', 'var(--warning)', 'var(--warning)'], paused: ['pausada', 'warn', 'var(--warning-subtle)', 'var(--warning)', 'var(--warning)'], todo: ['a seguir', '', 'var(--surface-0)', 'var(--text-muted)', 'var(--line)'] };
     const stepPick = (i) => () => goStage(i);
     // roadmap
@@ -2153,7 +2169,16 @@ class Component extends DCLogic {
     const baseLines = ['[' + Eng.label + '] $ agent --output-format stream-json --workspace ".../' + slugTail + '" --model ' + (Mo[0] === 'auto' ? 'auto-smart' : Mo[0]) + ' · ' + P.cap, '[WORKSPACE] Pasta isolada conectada (' + P.disk[0] + ' pastas · ' + P.disk[1] + ' arquivos · ' + P.disk[2] + ')', '[PENSAMENTO] ' + P.think];
     const exLines = run ? run.lines : baseLines;
     const exBlocked = !isM && P.pends.length > 0, exDone = P.status === 'done', exPaused = P.status === 'paused';
-    const setMotor = (patch) => { const m = Object.assign({}, motor, patch); const ms = Object.assign({}, s.motors); ms[P.id] = m; self.setState({ motors: ms }); };
+    const setMotor = (patch) => {
+      const m = Object.assign({}, motor, patch); const ms = Object.assign({}, s.motors); ms[P.id] = m; self.setState({ motors: ms });
+      const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+      const target = P.local_path || P.path || P.slug || P.id;
+      if (tavir && tavir.projects && tavir.projects.setEngine) {
+        tavir.projects.setEngine(target, { engine: m.engine, model: m.model, effort: m.effort }).then(function (res) {
+          if (res && res.ok === false) app.toast('Motor', res.error || 'Não consegui salvar o motor deste projeto.');
+        }).catch(function (err) { app.toast('Motor', String(err && err.message || err)); });
+      }
+    };
     const thinkOpen = !!s.think[P.id];
     const meterOf = (r) => milhar(r[0]) + ' tok · ' + String(r[1]).replace('.', ',') + ' s · US$ ' + brl(r[2]);
     const ex = {
@@ -2164,7 +2189,7 @@ class Component extends DCLogic {
       cantRun: running || exDone || exPaused || exBlocked,
       runLbl: running ? 'Executando…' : exDone ? 'Esteira concluída' : 'Executar etapa no ' + Eng.label,
       hasHint: exBlocked || exPaused, hint: exBlocked ? 'O motor espera a sua autorização na pendência acima.' : 'Retome a esteira para o motor continuar de onde parou.',
-      run: () => self.runStage(P.id, { lines: baseLines, stage: stName, eng: Eng.label, tok: P.tok0, meridian: isM }),
+      run: () => { if (self._runEsteira) self._runEsteira(Math.min(P.ci, P.stages.length - 1)); },
       thinkOpen: thinkOpen, thinkLbl: thinkOpen ? 'Ocultar pensamento' : 'Ver pensamento',
       toggleThink: () => { const t2 = Object.assign({}, s.think); t2[P.id] = !thinkOpen; self.setState({ think: t2 }); },
       cfgOpen: s.cfgOpen, cfgExp: s.cfgOpen ? 'true' : 'false', toggleCfg: () => self.setState({ cfgOpen: !s.cfgOpen }),
@@ -2703,16 +2728,10 @@ class Component extends DCLogic {
             }
             self.setState({ trackPulse: Date.now() });
           },
-          approve: () => {
-            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
-            const target = P.local_path || P.path || P.slug || P.id;
-            if (!tavir || !tavir.projects || !tavir.projects.approveAltTrack) return;
-            tavir.projects.approveAltTrack(target).then(function (res) {
-              if (res && res.alt_track) applyAltTrack(res.alt_track);
-              app.toast('Aprovado', 'O trilho segue para o próximo item.');
-              if (res && res.alt_track && res.alt_track.auto) self._runAltTrackChain({ track: res.alt_track });
-            }).catch(function (err) { app.toast('Trilho', String(err && err.message || err)); });
-          },
+          decisionNote: s.trackDecision || '',
+          onDecisionNote: (e) => self.setState({ trackDecision: e.target.value }),
+          approve: () => self._decideAltTrack('aprovado'),
+          reject: () => self._decideAltTrack('reprovado'),
           closeItem: () => {
             const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
             const target = P.local_path || P.path || P.slug || P.id;
@@ -2772,7 +2791,7 @@ class Component extends DCLogic {
       timeline: P.acts.slice(0, 6).map((e, i) => ({ t: e[0], x: e[1], w: e[2], c: i === 0 ? 'var(--flow)' : 'var(--line-strong)' })),
       vsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], now: k === 'run' || k === 'gate' || k === 'paused', st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: k === 'run' || k === 'gate' || k === 'paused' ? 'var(--surface-3)' : 'transparent', pick: stepPick(i) }; }),
       gsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; const isCur = i === P.done && P.status !== 'done'; const isSel = Number(s.stage) === i; const blockP = P.pends[0]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], skill: x[2], st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: isSel ? 'var(--surface-3)' : (isCur ? 'var(--surface-3)' : 'transparent'), when: ddmm(P.base, startOf(i)) + (x[3] > 1 ? ' → ' + ddmm(P.base, startOf(i) + x[3] - 1) : ''),
-        pick: () => self._openEsteira(i), hasAct: isCur && P.status === 'run', actLbl: blockP ? 'Autorizar' : 'Concluir etapa', act: blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy) }; }),
+        pick: () => self._openEsteira(i), hasAct: isCur && P.status === 'run', actLbl: blockP ? 'Autorizar' : (k === 'gate' ? 'Decidir gate' : 'Abrir etapa'), act: blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy) }; }),
       gSel: (function() {
         const idx = Math.max(0, Math.min(Number(s.stage) || 0, P.stages.length - 1));
         const st = P.stages[idx] || P.stages[0] || ['Etapa', '—', '—', 1];
@@ -2850,9 +2869,27 @@ class Component extends DCLogic {
         const desk = (s.esteiraById && s.esteiraById[P.id]) || { auto: false, stages: [] };
         const saved = (desk.stages || [])[index] || { instruction: '', note: '', status: 'idle', files: [] };
         const files = (saved.files || []).map(function (name) { return { name: name }; });
-        const gate = /gate|aprova/i.test(st[0]);
+        const gate = /^gate\b|aprova/i.test(st[0]) || /aprova[cç][aã]o humana/i.test(String(st[2] || ''));
         const target = P.local_path || P.path || P.slug || P.id;
         const refresh = (res) => { if (res && res.esteira) applyEsteira(res.esteira); };
+        const awaiting = saved.status === 'awaiting';
+        const dec = saved.decision || null;
+        const statusTxt = { idle: 'a fazer', running: 'em execução', paused: 'pausada', stopped: 'parada', done: 'concluída', awaiting: 'aguarda sua decisão' }[saved.status || 'idle'] || saved.status;
+        const decide = (verdict) => {
+          const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+          const app = self.props.app || NOOP;
+          if (!tavir || !tavir.projects || !tavir.projects.decideEsteira) return;
+          const note = String(self.state.gateNote || '').trim();
+          if (verdict === 'reprovado' && !note) { app.toast('Gate', 'Escreva o que precisa mudar antes de reprovar.'); return; }
+          tavir.projects.decideEsteira(target, index, verdict, note).then(function (res) {
+            refresh(res);
+            if (self.reloadIpcProjects) self.reloadIpcProjects();
+            if (res && res.ok === false) { app.toast('Gate', res.error || 'Não registrou a decisão.'); return; }
+            self.setState({ gateNote: '' });
+            app.toast(verdict === 'aprovado' ? 'Gate aprovado' : 'Gate reprovado', verdict === 'aprovado' ? 'Decisão registrada em .tavir/decisoes.jsonl.' : 'A etapa volta com a sua orientação.');
+            if (res && res.continued) { self.setState({ stageModal: null }); self._runEsteira(index + 1); }
+          }).catch(function (err) { app.toast('Gate', String(err && err.message || err)); });
+        };
         const control = (action) => {
           const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
           if (!tavir || !tavir.projects || !tavir.projects.controlEsteira) return;
@@ -2864,9 +2901,18 @@ class Component extends DCLogic {
           title: st[0],
           owner: st[1],
           skill: st[2],
-          status: saved.status || 'idle',
+          status: statusTxt,
           gate: gate,
-          gateTxt: gate ? 'Esta etapa é um gate. A execução automática para aqui e espera você.' : 'A execução automática segue para a próxima etapa quando esta fechar.',
+          gateTxt: gate ? 'Esta etapa é um gate: o agente resume e ela só fecha com a sua aprovação.' : 'A execução automática segue para a próxima etapa quando esta fechar.',
+          awaiting: awaiting,
+          gateNote: s.gateNote || '',
+          onGateNote: (e) => self.setState({ gateNote: e.target.value }),
+          approve: () => decide('aprovado'),
+          reject: () => decide('reprovado'),
+          hasDecision: !!dec,
+          decisionTxt: dec ? ('Última decisão: ' + dec.decision + ' em ' + String(dec.at || '').slice(0, 16).replace('T', ' ') + (dec.note ? ' · ' + dec.note : '')) : '',
+          runsN: (saved.runs || []).length ? ((saved.runs || []).length + ' execução(ões) no livro · aba Logs') : '',
+          hasRuns: (saved.runs || []).length > 0,
           draft: s.stageDraft != null ? s.stageDraft : (saved.instruction || ''),
           onDraft: (e) => self.setState({ stageDraft: e.target.value }),
           note: saved.note || 'Ainda não há levantamento desta etapa.',

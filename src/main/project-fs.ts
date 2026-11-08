@@ -4,6 +4,9 @@ import * as os from 'node:os';
 import * as crypto from 'node:crypto';
 import { execFile, execFileSync, spawn } from 'node:child_process';
 import { fitCall } from '../shared/engineCatalog';
+import { esteiraTemplate, type EsteiraStage } from '../shared/esteiras';
+import { commitStep, type StepCommitResult } from './stepCommit';
+import { annotateRun, type RunChanges } from './runLedger';
 
 function getDbPath(): string {
   return path.join(process.cwd(), 'backend', 'tavir.db');
@@ -694,22 +697,50 @@ export function surveyWorkspace(wsPath: string): any {
     'utf8',
   );
 
+  const esteiraNote = `${about}\n\nLinguagens: ${survey.languages}\nStack: ${stackLine}\nGit: ${gitLine}\nDeploy: ${deployLine}\nArquivos: ${fileCount} · Pastas: ${dirCount}`;
+  // Na absorção o projeto ainda não está no banco: quem grava a etapa 1 é createOrAbsorbProjectRecord, depois do INSERT.
+  if (projectInDb(root)) seedEsteiraFromSurvey(root, esteiraNote);
+
+  return Object.assign(survey, { note: esteiraNote });
+}
+
+function projectInDb(rootPath: string): boolean {
   try {
-    const desk = readEsteira(root, 12);
+    const { DatabaseSync } = require('node:sqlite');
+    const sqlite = new DatabaseSync(getDbPath());
+    const want = path.resolve(rootPath).replace(/\//g, '\\').toLowerCase();
+    const rows = sqlite.prepare('SELECT local_path FROM projects').all() as Array<{ local_path: string }>;
+    sqlite.close();
+    return rows.some((r) => String(r.local_path || '').replace(/\//g, '\\').toLowerCase() === want);
+  } catch {
+    return false;
+  }
+}
+
+/** O levantamento determinístico da pasta vira o registro da primeira etapa (gate continua esperando o Carlos). */
+function seedEsteiraFromSurvey(root: string, summary: string): void {
+  try {
+    const desk = readEsteira(root);
+    const leadIsGate = !!projectStages(root).stages[0]?.gate;
     const lead = desk.stages[0];
     const marker = 'Levantamento da absorção';
     if (lead && (!lead.note || lead.note.startsWith(marker))) {
-      lead.note = `${marker}\n\n${about}\n\nLinguagens: ${survey.languages}\nStack: ${stackLine}\nGit: ${gitLine}\nDeploy: ${deployLine}\nArquivos: ${fileCount} · Pastas: ${dirCount}`;
-      lead.status = lead.status === 'running' ? 'running' : 'done';
+      // Refazer o levantamento troca o resumo, mas mantém as decisões que o Carlos já tomou neste gate.
+      const decisions = lead.note
+        .split(/\n(?=### )/)
+        .filter((block) => block.startsWith('### ') && block.includes('Decisão do Carlos'))
+        .join('\n');
+      lead.note = `${marker}\n\n${summary}${decisions ? `\n\n${decisions.trim()}` : ''}`;
+      if (lead.status !== 'running' && lead.status !== 'done') lead.status = leadIsGate ? 'awaiting' : 'done';
       lead.files = ['context/dossie.md', 'context/inventario.md', 'context/levantamento.json', 'context/diagnosis.md'];
       if (!lead.instruction) {
         lead.instruction = 'O levantamento da pasta já foi feito na absorção. Revise o dossiê e complemente só o que faltar. Não recomece do zero.';
       }
       writeEsteira(root, desk);
     }
-  } catch { /* esteira ainda não inicializada */ }
-
-  return survey;
+  } catch (err) {
+    console.error('[TAVIR ProjectFS] Falha ao registrar o levantamento na esteira:', err);
+  }
 }
 
 export function refreshProjectSurvey(idOrPath: string): any {
@@ -797,15 +828,7 @@ export function createOrAbsorbProjectRecord(params: any): any {
   const modeCode = isMaint ? 'm' : 'c';
   const templateCode = `${cat}-${modeCode}`;
 
-  const totalStagesMap: Record<string, number> = {
-    'lp-c': 12,
-    'lp-m': 8,
-    'of-c': 12,
-    'of-m': 8,
-    'sy-c': 15,
-    'sy-m': 12,
-  };
-  const totalStages = totalStagesMap[templateCode] || 12;
+  const totalStages = esteiraTemplate(templateCode).stages.length;
 
   const slugBase =
     name
@@ -896,7 +919,8 @@ export function createOrAbsorbProjectRecord(params: any): any {
 
   const stackStr = (survey && survey.stacks) || null;
   const nowIso = new Date().toISOString();
-  const stagesDoneInit = isAbsorb ? 1 : 0;
+  // Progresso só conta etapa que rodou de verdade na esteira.
+  const stagesDoneInit = 0;
   const description = survey
     ? `${survey.about} · Git: ${survey.git} · Deploy: ${survey.deploy}`.slice(0, 500)
     : `Escopo: ${ownership} · Esteira: ${templateCode}`;
@@ -999,6 +1023,7 @@ export function createOrAbsorbProjectRecord(params: any): any {
   } catch (err) {
     console.error('[TAVIR ProjectFS] Erro ao gravar projeto no SQLite:', err);
   }
+  if (survey?.note) seedEsteiraFromSurvey(wsPath, String(survey.note));
 
   return newProj;
 }
@@ -1028,48 +1053,86 @@ export function resolveEngineSpec(engineName?: string, modelId?: string, effortI
   };
 }
 
-export const ENGINE_SPECS: Record<string, { id: string; name: string; cli: string; sdkPath: string; model: string; protocol: string }> = {
-  cursor: {
-    id: 'cursor',
-    name: 'Cursor',
-    cli: 'agent --output-format stream-json',
-    sdkPath: '~/.cursor',
-    model: 'auto-smart',
-    protocol: 'Cursor Agent Stream-JSON · Extended Thinking',
-  },
-  claude: {
-    id: 'claude',
-    name: 'Claude',
-    cli: 'claude -p --output-format json',
-    sdkPath: '~/.claude',
-    model: 'claude-opus-5-5',
-    protocol: 'Claude Code SDK · Anthropic Extended Thinking',
-  },
-  anthropic: {
-    id: 'claude',
-    name: 'Claude',
-    cli: 'claude -p --output-format json',
-    sdkPath: '~/.claude',
-    model: 'claude-opus-5-5',
-    protocol: 'Claude Code SDK · Anthropic Extended Thinking',
-  },
-  codex: {
-    id: 'codex',
-    name: 'Codex',
-    cli: 'codex exec --reasoning high',
-    sdkPath: '~/.codex',
-    model: 'gpt-5-codex',
-    protocol: 'OpenAI Codex CLI · Reasoning Effort High',
-  },
-  antigravity: {
-    id: 'antigravity',
-    name: 'Antigravity',
-    cli: 'agy --thought-stream',
-    sdkPath: '~/.gemini/antigravity',
-    model: 'gemini-2.5-pro',
-    protocol: 'Google Antigravity SDK · Native <thought> Stream',
-  },
+
+export type ProjectEngineChoice = { engine: string; model: string; effort: string };
+
+/** Motor escolhido para o projeto no painel (fica em .tavir/control.json). */
+export function getProjectEngine(rootPath: string): ProjectEngineChoice | null {
+  const raw = readControlJson(rootPath).engine as Record<string, unknown> | undefined;
+  if (!raw || typeof raw !== 'object' || !raw.engine) return null;
+  return { engine: String(raw.engine), model: String(raw.model || ''), effort: String(raw.effort || '') };
+}
+
+export function setProjectEngine(idOrPath: string, choice: Partial<ProjectEngineChoice>): any {
+  const rec = resolveProjectRecord(idOrPath);
+  const rootPath = rec.local_path || inspectProjectFolder(idOrPath).rootPath;
+  if (!rootPath) return { ok: false, error: 'Projeto não encontrado.' };
+  const spec = resolveEngineSpec(choice.engine, choice.model, choice.effort);
+  const prev = readControlJson(rootPath);
+  const engine = { engine: spec.id, model: spec.model, effort: spec.effort };
+  writeControlJson(rootPath, { ...prev, engine, updated_at: new Date().toISOString() });
+  return { ok: true, engine, caption: spec.caption };
+}
+
+/** Esteira, trilho e boas-vindas usam o motor do projeto; sem escolha, o padrão de Configurações. */
+export function projectEngineSpec(rootPath: string) {
+  const own = rootPath ? getProjectEngine(rootPath) : null;
+  return own ? resolveEngineSpec(own.engine, own.model, own.effort) : resolveEngineSpec();
+}
+
+export type DecisionEntry = {
+  at: string;
+  kind: 'esteira' | 'trilho';
+  stage: string;
+  decision: 'aprovado' | 'reprovado';
+  question?: string;
+  note?: string;
+  by: string;
 };
+
+/** Livro de decisões do CEO: uma linha por gate, em .tavir/decisoes.jsonl. */
+function logDecision(rootPath: string, entry: Omit<DecisionEntry, 'at' | 'by'>): DecisionEntry {
+  const full: DecisionEntry = { at: new Date().toISOString(), by: 'Carlos Henrique', ...entry };
+  try {
+    fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
+    fs.appendFileSync(path.join(rootPath, '.tavir', 'decisoes.jsonl'), JSON.stringify(full) + '\n', 'utf8');
+  } catch {}
+  return full;
+}
+
+export function listProjectDecisions(idOrPath: string): any {
+  const info = inspectProjectFolder(idOrPath);
+  try {
+    const rows = fs
+      .readFileSync(path.join(info.rootPath, '.tavir', 'decisoes.jsonl'), 'utf8')
+      .split(/\r?\n/)
+      .filter(Boolean)
+      .map((line) => {
+        try {
+          return JSON.parse(line);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+    return { ok: true, decisions: rows.reverse() };
+  } catch {
+    return { ok: true, decisions: [] };
+  }
+}
+
+/** Commit por passo: só o que a execução mudou, com a etapa e a execução na mensagem. */
+function commitRunStep(rootPath: string, title: string, runId: string | undefined, changes: RunChanges | undefined): StepCommitResult {
+  const res = commitStep(rootPath, changes, `tavir: ${title}${runId ? `\n\nExecução: .tavir/runs/${runId}` : ''}`);
+  if (runId) annotateRun(rootPath, runId, { commit: { sha: res.sha, files: res.files, skipped: res.skipped, error: res.error } });
+  return res;
+}
+
+function commitLine(res: StepCommitResult): string {
+  if (res.sha) return `Commit ${res.sha} · ${res.files} arquivo(s)`;
+  if (res.error) return `Commit falhou: ${res.error}`;
+  return `Sem commit: ${res.skipped}`;
+}
 
 function nowHM(): string {
   const d = new Date();
@@ -1360,11 +1423,9 @@ function normalizeAltTrack(raw: unknown, alterationsOpen: boolean): AltTrackStat
     runStatus:
       base.runStatus === 'done' && step >= items.length - 1
         ? 'done'
-        : base.runStatus === 'waiting'
-          ? 'waiting'
-          : base.runStatus === 'paused'
-            ? 'paused'
-            : 'idle',
+        : base.runStatus === 'waiting' || base.runStatus === 'paused' || base.runStatus === 'running'
+          ? base.runStatus
+          : 'idle',
     waitingQuestion: String(base.waitingQuestion || ''),
     runLog: Array.isArray(base.runLog) ? base.runLog.map((x) => String(x)) : [],
     runError: String(base.runError || ''),
@@ -1455,6 +1516,7 @@ export function getProjectAlterationsControl(idOrPath: string): {
   alterations_open: boolean;
   chat_unlocked: boolean;
   alt_track: AltTrackState;
+  engine: ProjectEngineChoice | null;
 } {
   const rec = resolveProjectRecord(idOrPath);
   const info = inspectProjectFolder(rec.local_path || idOrPath);
@@ -1476,6 +1538,10 @@ export function getProjectAlterationsControl(idOrPath: string): {
   const parsed = readControlJson(rootPath);
   const alterationsOpen = Boolean(parsed?.alterations_open);
   const altTrack = normalizeAltTrack(parsed?.alt_track, alterationsOpen);
+  // "running" gravado sem agente vivo é resto de uma execução que caiu (app fechado no meio).
+  if (altTrack.runStatus === 'running' && !liveAgents.has(`${rootPath}:track`)) {
+    altTrack.runStatus = altTrack.checkpoint ? 'paused' : 'idle';
+  }
 
   const finished = status === 'done' || status === 'completed';
   // Em esteira ativa o chat com agentes fica liberado; no Handoff exige liberação explícita.
@@ -1490,6 +1556,7 @@ export function getProjectAlterationsControl(idOrPath: string): {
     alterations_open: alterationsOpen,
     chat_unlocked: chatUnlocked,
     alt_track: altTrack,
+    engine: getProjectEngine(rootPath),
   };
 }
 
@@ -1580,8 +1647,8 @@ export function setProjectAltTrackAuto(idOrPath: string, auto: boolean): any {
   }
   const prev = readControlJson(ctrl.rootPath);
   const track = normalizeAltTrack(prev.alt_track, true);
+  // Desligar o automático não interrompe o item em execução; só impede o próximo de começar sozinho.
   track.auto = Boolean(auto);
-  if (!auto && track.runStatus === 'running') track.runStatus = 'idle';
   track.updated_at = new Date().toISOString();
   writeControlJson(ctrl.rootPath, {
     ...prev,
@@ -1759,15 +1826,32 @@ export function startNewAltTrackCycle(idOrPath: string): any {
   return getProjectAlterationsControl(idOrPath);
 }
 
-export function approveAltTrackGate(idOrPath: string): any {
+export function approveAltTrackGate(idOrPath: string, decision: 'aprovado' | 'reprovado' = 'aprovado', note = ''): any {
   const ctrl = getProjectAlterationsControl(idOrPath);
   if (!ctrl.alterations_open) return { ...ctrl, ok: false, error: 'Trilho fechado.' };
   const prev = readControlJson(ctrl.rootPath);
   const track = normalizeAltTrack(prev.alt_track, true);
   if (!track.waitingQuestion) return getProjectAlterationsControl(idOrPath);
+  const item = track.items[track.step];
+  const verdict = decision === 'reprovado' ? 'reprovado' : 'aprovado';
+  const entry = logDecision(ctrl.rootPath, {
+    kind: 'trilho',
+    stage: item?.label || 'Trilho',
+    decision: verdict,
+    question: track.waitingQuestion,
+    note: String(note || '').trim() || undefined,
+  });
+  // A decisão entra no próprio item: a próxima execução dele lê e segue a partir dela.
+  if (item) {
+    const block =
+      `### ${entry.at.slice(0, 16).replace('T', ' ')} · Decisão do Carlos: ${verdict}\n` +
+      `Pergunta: ${track.waitingQuestion}\n` +
+      (entry.note ? `Orientação: ${entry.note}\n` : '');
+    item.note = (item.note ? item.note.trim() + '\n\n' : '') + block;
+  }
+  track.notes = notesFromItems(track.items);
   track.waitingQuestion = '';
-  track.runStatus = track.step >= track.items.length - 1 ? 'done' : 'idle';
-  if (track.step < track.items.length - 1) track.step += 1;
+  track.runStatus = 'idle';
   track.updated_at = new Date().toISOString();
   writeControlJson(ctrl.rootPath, {
     ...prev,
@@ -1775,8 +1859,14 @@ export function approveAltTrackGate(idOrPath: string): any {
     updated_at: track.updated_at,
     alt_track: track,
   });
-  return getProjectAlterationsControl(idOrPath);
+  try {
+    writeTrackMarkdown(ctrl.rootPath, track);
+  } catch {}
+  return { ...getProjectAlterationsControl(idOrPath), decision: entry };
 }
+
+/** O agente só pede decisão quando a resposta começa com o marcador (aceita negrito/título antes). */
+export const APPROVAL_RE = /^[\s>*_#`]*AGUARDANDO APROVA[ÇC][ÃA]O\s*:/i;
 
 export async function executeAltTrackStep(
   idOrPath: string,
@@ -1807,6 +1897,9 @@ export async function executeAltTrackStep(
     track.runError = '';
     if (track.runStatus !== 'waiting') track.runStatus = 'idle';
   }
+  if (liveAgents.has(`${ctrl.rootPath}:track`)) {
+    return { ...ctrl, ok: false, error: 'Já há um agente executando este trilho. Pause antes de rodar outro item.' };
+  }
   if (track.step <= 0) {
     return { ...ctrl, ok: false, error: 'O mapeamento fica com a Íris. Avance quando o pacote estiver fechado.' };
   }
@@ -1828,6 +1921,7 @@ export async function executeAltTrackStep(
     .filter((item) => item.note.trim() && item.id !== focus.id && item.kind !== 'map')
     .map((item) => `${item.label} (${item.owner}):\n${item.note.slice(0, 2500)}`)
     .join('\n\n');
+  const ownNote = String(focus.note || '').trim();
   const storedCheckpoint = readCheckpointFile(ctrl.rootPath) || track.checkpoint || null;
   const resume = sameCheckpoint(storedCheckpoint, focus.id) ? storedCheckpoint : null;
   const role =
@@ -1858,7 +1952,8 @@ export async function executeAltTrackStep(
     'Se puder seguir, entregue o resultado do item sem pedir a Íris de novo.\n\n' +
     resumeBlock +
     (mapText ? `MAPEAMENTO DE GAPS (Íris) — fonte de todas as etapas seguintes:\n${mapText}\n\n` : '') +
-    (earlier ? `O QUE AS ETAPAS ANTERIORES JÁ ENTREGARAM:\n${earlier}\n` : '');
+    (earlier ? `O QUE AS ETAPAS ANTERIORES JÁ ENTREGARAM:\n${earlier}\n\n` : '') +
+    (ownNote ? `O QUE JÁ ESTÁ REGISTRADO NESTE ITEM (inclui as decisões do Carlos — siga-as):\n${ownNote.slice(-4000)}\n` : '');
   const question = previousProof
     ? `PROVA INTEGRAL DA EXECUÇÃO ANTERIOR — leia do começo ao fim. O mesmo texto está em .tavir/provas/ e a última ficou em ultima.md antes desta etapa:\n${previousProof}\n\n${pedido}`
     : pedido;
@@ -1870,7 +1965,7 @@ export async function executeAltTrackStep(
   writeControlJson(ctrl.rootPath, { ...prev, alterations_open: true, alt_track: track, updated_at: track.updated_at });
 
   const { converseWithIrisAgent } = require('./irisAgent') as typeof import('./irisAgent');
-  const eng = resolveEngineSpec();
+  const eng = projectEngineSpec(ctrl.rootPath);
   const log: string[] = track.runLog.slice();
   let latestSpeech = resume?.partial || '';
   let lastCheckpointAt = 0;
@@ -1946,17 +2041,23 @@ export async function executeAltTrackStep(
   try { writeProof(ctrl.rootPath, focus.label, pedido, reply); } catch {}
   if (agentRes.ok) pushLine(reply.slice(0, 240), 'info');
   else log.push(reply.slice(0, 240));
-  const needsApproval = agentRes.ok && /AGUARDANDO APROVAÇÃO/i.test(reply);
+  const needsApproval = agentRes.ok && APPROVAL_RE.test(reply);
+  let commitNote = '';
+  if (agentRes.ok && !needsApproval && asChange) {
+    const res = commitRunStep(ctrl.rootPath, `trilho · ${focus.label} (${focus.owner})`, agentRes.runId, agentRes.changes);
+    commitNote = commitLine(res);
+    log.push(commitNote);
+  }
   const fresh = readControlJson(ctrl.rootPath);
   const next = normalizeAltTrack(fresh.alt_track, true);
   const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
   const current = next.items[next.step] || focus;
   const exec = agentRes.runId ? ` · execução ${agentRes.runId}` : '';
   if (agentRes.runId) log.push(`Execução registrada em .tavir/runs/${agentRes.runId}`);
-  if (agentRes.ok) current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · ${focus.owner}${exec}\n${reply}\n`;
+  if (agentRes.ok) current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · ${focus.owner}${exec}\n${reply}\n${commitNote ? `\n_${commitNote}_\n` : ''}`;
   if (agentRes.ok && (focus.kind === 'plan' || focus.kind === 'map')) next.items = applyProposedTracks(next.items, reply);
   next.notes = notesFromItems(next.items);
-  next.waitingQuestion = needsApproval ? reply.replace(/^AGUARDANDO APROVAÇÃO:\s*/i, '').trim() : '';
+  next.waitingQuestion = needsApproval ? reply.replace(APPROVAL_RE, '').trim() : '';
   const pausedByUser = agentRes.error === 'paused' || !!liveAgents.get(liveKey)?.paused;
   liveAgents.delete(liveKey);
   next.runLog = log;
@@ -1974,6 +2075,11 @@ export async function executeAltTrackStep(
     clearCheckpointFile(ctrl.rootPath);
   } else if (next.step >= next.items.length - 1) {
     next.runStatus = 'done';
+    next.checkpoint = null;
+    clearCheckpointFile(ctrl.rootPath);
+  } else if (!next.auto) {
+    // Manual: o item fica entregue no foco e só avança no "Seguir para…" do Carlos.
+    next.runStatus = 'idle';
     next.checkpoint = null;
     clearCheckpointFile(ctrl.rootPath);
   } else {
@@ -2060,7 +2166,7 @@ export function getProjectChatHistory(idOrPath: string): any {
     }
   } catch {}
 
-  const welcomeEng = resolveEngineSpec();
+  const welcomeEng = projectEngineSpec(rootPath);
   const welcomeMsg = {
     id: 'iris-welcome-' + Date.now(),
     who: `Íris · ${welcomeEng.name}`,
@@ -2083,7 +2189,9 @@ export function getProjectChatHistory(idOrPath: string): any {
 export async function askProjectIris(params: any): Promise<any> {
   const idOrPath = String(params?.projectId || params?.projectPath || params?.projectName || 'projeto').trim();
   const question = String(params?.question || params?.message || '').trim();
-  const eng = resolveEngineSpec(params?.engine, params?.model, params?.effort);
+  const eng = params?.engine
+    ? resolveEngineSpec(params.engine, params.model, params.effort)
+    : projectEngineSpec(resolveProjectRecord(idOrPath).local_path);
   const stageName = String(params?.stageName || 'Arquitetura & Construção').trim();
   const stageOwner = String(params?.stageOwner || 'Paula PM').trim();
   const persona = String(params?.persona || 'Íris · Inteligência do Projeto').trim();
@@ -2274,8 +2382,21 @@ export async function askProjectIris(params: any): Promise<any> {
   };
 }
 
-type EsteiraStageRecord = { instruction: string; note: string; status: 'idle' | 'running' | 'paused' | 'done' | 'stopped'; files: string[]; runs?: string[] };
-type EsteiraDesk = { auto: boolean; stages: EsteiraStageRecord[] };
+type EsteiraStatus = 'idle' | 'running' | 'paused' | 'done' | 'stopped' | 'awaiting';
+type EsteiraStageRecord = {
+  instruction: string;
+  note: string;
+  status: EsteiraStatus;
+  files: string[];
+  runs?: string[];
+  /** Commits que a Fábrica fez com o que esta etapa mudou. */
+  commits?: string[];
+  /** Última decisão do Carlos neste gate. */
+  decision?: DecisionEntry | null;
+};
+type EsteiraDesk = { auto: boolean; template: string; stages: EsteiraStageRecord[] };
+
+const ESTEIRA_STATUS: EsteiraStatus[] = ['idle', 'running', 'paused', 'done', 'stopped', 'awaiting'];
 
 function emptyEsteiraStage(): EsteiraStageRecord {
   return { instruction: '', note: '', status: 'idle', files: [] };
@@ -2289,7 +2410,7 @@ function stageArtifactFiles(rootPath: string, index: number, label: string): str
   const dir = path.join(rootPath, 'artifacts');
   if (!fs.existsSync(dir)) return [];
   const slug = String(index + 1).padStart(2, '0');
-  const hint = label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').slice(0, 16);
+  const hint = label.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').slice(0, 16);
   try {
     return fs
       .readdirSync(dir)
@@ -2301,298 +2422,322 @@ function stageArtifactFiles(rootPath: string, index: number, label: string): str
   }
 }
 
-function readEsteira(rootPath: string, count: number): EsteiraDesk {
+/** Etapas do projeto vêm do molde (src/shared/esteiras.ts), pelo template_code gravado no banco. */
+function projectStages(rootPath: string): { code: string; stages: EsteiraStage[] } {
+  const rec = resolveProjectRecord(rootPath);
+  const tpl = esteiraTemplate(rec.template_code);
+  return { code: tpl.code, stages: tpl.stages };
+}
+
+/** stages_done gravado antes de existir o livro da esteira. */
+function legacyStagesDone(rootPath: string): number {
+  try {
+    const { DatabaseSync } = require('node:sqlite');
+    const sqlite = new DatabaseSync(getDbPath());
+    const rec = resolveProjectRecord(rootPath);
+    const row = sqlite.prepare('SELECT stages_done FROM projects WHERE id = ?').get(rec.id) as { stages_done?: number } | undefined;
+    sqlite.close();
+    return Math.max(0, Number(row?.stages_done) || 0);
+  } catch {
+    return 0;
+  }
+}
+
+function readEsteira(rootPath: string): EsteiraDesk {
   let raw: any = {};
+  let fresh = false;
   try {
     raw = JSON.parse(fs.readFileSync(esteiraFile(rootPath), 'utf8'));
-  } catch {}
-  const stages: EsteiraStageRecord[] = [];
-  const saved = Array.isArray(raw.stages) ? raw.stages : [];
-  const total = Math.max(count, saved.length, 1);
-  for (let i = 0; i < total; i++) {
+  } catch {
+    fresh = true;
+  }
+  const { code, stages: defs } = projectStages(rootPath);
+  let saved = Array.isArray(raw.stages) ? raw.stages : [];
+  if (fresh) {
+    // Projeto de antes do livro: preserva o progresso do banco e deixa claro que não há execução registrada.
+    const done = Math.min(defs.length, legacyStagesDone(rootPath));
+    saved = defs.map((_d, i) => (i < done ? { status: 'done', note: 'Marcada como concluída no registro anterior da Fábrica, sem execução registrada no livro.' } : {}));
+  }
+  const live = liveAgents.get(`${rootPath}:esteira`);
+  const stages: EsteiraStageRecord[] = defs.map((_def, i) => {
     const row = saved[i] && typeof saved[i] === 'object' ? saved[i] : {};
-    const status = ['idle', 'running', 'paused', 'done', 'stopped'].includes(row.status) ? row.status : 'idle';
-    stages.push({
+    let status: EsteiraStatus = ESTEIRA_STATUS.includes(row.status) ? row.status : 'idle';
+    // "running" sem agente vivo é resto de execução que caiu.
+    if (status === 'running' && !(live && live.step === i)) status = String(row.note || '').trim() ? 'paused' : 'idle';
+    return {
       instruction: String(row.instruction || ''),
       note: String(row.note || ''),
       status,
       files: Array.isArray(row.files) ? row.files.map((x: unknown) => String(x)).slice(0, 12) : [],
       runs: Array.isArray(row.runs) ? row.runs.map((x: unknown) => String(x)).slice(-30) : [],
-    });
-  }
-  return { auto: Boolean(raw.auto), stages };
+      commits: Array.isArray(row.commits) ? row.commits.map((x: unknown) => String(x)).slice(-30) : [],
+      decision: row.decision && typeof row.decision === 'object' ? (row.decision as DecisionEntry) : null,
+    };
+  });
+  return { auto: Boolean(raw.auto), template: code, stages };
 }
 
 function writeEsteira(rootPath: string, desk: EsteiraDesk): void {
   fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
   fs.writeFileSync(esteiraFile(rootPath), JSON.stringify(desk, null, 2), 'utf8');
+  syncEsteiraProgress(rootPath, desk);
 }
 
-export function getProjectEsteira(idOrPath: string, count = 9): any {
-  const info = inspectProjectFolder(idOrPath);
-  const desk = readEsteira(info.rootPath, count);
+/**
+ * O banco (stages_done / total_stages / status) espelha a esteira: conta as etapas
+ * concluídas em sequência desde a primeira. Projeto só vira "done" com todas fechadas.
+ */
+function syncEsteiraProgress(rootPath: string, desk: EsteiraDesk): void {
+  const total = desk.stages.length;
+  let done = 0;
+  while (done < total && desk.stages[done].status === 'done') done += 1;
+  try {
+    const { DatabaseSync } = require('node:sqlite');
+    const sqlite = new DatabaseSync(getDbPath());
+    const rec = resolveProjectRecord(rootPath);
+    const row = sqlite.prepare('SELECT status FROM projects WHERE id = ?').get(rec.id) as { status?: string } | undefined;
+    if (row) {
+      const prev = String(row.status || 'running');
+      const status = done >= total ? 'done' : prev === 'done' || prev === 'completed' ? 'running' : prev;
+      sqlite
+        .prepare('UPDATE projects SET stages_done = ?, total_stages = ?, status = ?, updated_at = ? WHERE id = ?')
+        .run(done, total, status, new Date().toISOString(), rec.id);
+    }
+    sqlite.close();
+  } catch (err) {
+    console.error('[TAVIR ProjectFS] Falha ao gravar progresso da esteira:', err);
+  }
+}
+
+function esteiraPayload(rootPath: string, desk: EsteiraDesk) {
+  const { code, stages } = projectStages(rootPath);
   desk.stages = desk.stages.map((stage, index) => ({
     ...stage,
-    files: stage.files.length ? stage.files : stageArtifactFiles(info.rootPath, index, ''),
+    files: stage.files.length ? stage.files : stageArtifactFiles(rootPath, index, ''),
   }));
-  return { ok: true, rootPath: info.rootPath, esteira: desk };
+  return { ok: true, rootPath, esteira: desk, template: { code, stages } };
+}
+
+export function getProjectEsteira(idOrPath: string, _count?: number): any {
+  const info = inspectProjectFolder(idOrPath);
+  return esteiraPayload(info.rootPath, readEsteira(info.rootPath));
+}
+
+function clampStage(desk: EsteiraDesk, index: number): number {
+  return Math.max(0, Math.min(desk.stages.length - 1, Number(index) || 0));
 }
 
 export function saveEsteiraInstruction(idOrPath: string, index: number, text: string): any {
   const info = inspectProjectFolder(idOrPath);
-  const desk = readEsteira(info.rootPath, Math.max(1, index + 1));
-  const at = Math.max(0, Math.min(desk.stages.length - 1, Number(index) || 0));
-  desk.stages[at].instruction = String(text || '');
+  const desk = readEsteira(info.rootPath);
+  desk.stages[clampStage(desk, index)].instruction = String(text || '');
   writeEsteira(info.rootPath, desk);
-  return getProjectEsteira(idOrPath, desk.stages.length);
+  return esteiraPayload(info.rootPath, desk);
 }
 
 export function setEsteiraAuto(idOrPath: string, auto: boolean): any {
   const info = inspectProjectFolder(idOrPath);
-  const desk = readEsteira(info.rootPath, 1);
+  const desk = readEsteira(info.rootPath);
   desk.auto = Boolean(auto);
   writeEsteira(info.rootPath, desk);
-  return getProjectEsteira(idOrPath, desk.stages.length);
+  return esteiraPayload(info.rootPath, desk);
 }
 
 export function controlEsteiraStage(idOrPath: string, index: number, action: string): any {
   const info = inspectProjectFolder(idOrPath);
-  const desk = readEsteira(info.rootPath, Math.max(1, index + 1));
-  const at = Math.max(0, Math.min(desk.stages.length - 1, Number(index) || 0));
+  const desk = readEsteira(info.rootPath);
+  const at = clampStage(desk, index);
   const stage = desk.stages[at];
   const live = liveAgents.get(`${info.rootPath}:esteira`);
+  const killLive = () => {
+    if (live && live.step === at) {
+      live.paused = true;
+      try { live.kill?.(); } catch {}
+    }
+  };
   if (action === 'pause') {
     stage.status = 'paused';
-    if (live && live.step === at) {
-      live.paused = true;
-      try { live.kill?.(); } catch {}
-      if (live.speech.trim()) stage.note = (stage.note ? stage.note + '\n' : '') + live.speech.trim();
-    }
+    if (live && live.step === at && live.speech.trim()) stage.note = (stage.note ? stage.note + '\n' : '') + live.speech.trim();
+    killLive();
   } else if (action === 'stop') {
     stage.status = 'stopped';
-    if (live && live.step === at) {
-      live.paused = true;
-      try { live.kill?.(); } catch {}
-    }
+    killLive();
   } else if (action === 'restart') {
     stage.status = 'idle';
     stage.note = '';
-    if (live && live.step === at) {
-      live.paused = true;
-      try { live.kill?.(); } catch {}
-    }
+    stage.decision = null;
+    killLive();
   } else if (action === 'review') {
     const line = 'Revisar o levantamento desta etapa e corrigir só o que estiver inconsistente com a pasta.';
     stage.instruction = stage.instruction.includes(line) ? stage.instruction : `${stage.instruction}\n${line}`.trim();
     stage.status = 'idle';
   }
   writeEsteira(info.rootPath, desk);
-  return getProjectEsteira(idOrPath, desk.stages.length);
+  return esteiraPayload(info.rootPath, desk);
 }
 
-export async function runEsteiraStage(idOrPath: string, index: number, stageName: string, stageOwner: string): Promise<any> {
+/** Decisão do Carlos num gate da esteira: aprova (fecha a etapa) ou reprova (volta com a orientação). */
+export function decideEsteiraGate(idOrPath: string, index: number, decision: 'aprovado' | 'reprovado', note = ''): any {
   const info = inspectProjectFolder(idOrPath);
+  const desk = readEsteira(info.rootPath);
+  const at = clampStage(desk, index);
+  const stage = desk.stages[at];
+  const def = projectStages(info.rootPath).stages[at];
+  if (!def?.gate) return { ...esteiraPayload(info.rootPath, desk), ok: false, error: 'Esta etapa não é um gate.' };
+  if (stage.status !== 'awaiting') {
+    return { ...esteiraPayload(info.rootPath, desk), ok: false, error: 'O gate ainda não tem resumo para decidir. Execute a etapa antes.' };
+  }
+  const verdict = decision === 'reprovado' ? 'reprovado' : 'aprovado';
+  const entry = logDecision(info.rootPath, {
+    kind: 'esteira',
+    stage: def.name,
+    decision: verdict,
+    question: stage.note.trim().slice(-600) || undefined,
+    note: String(note || '').trim() || undefined,
+  });
+  stage.decision = entry;
+  stage.note =
+    (stage.note ? stage.note.trim() + '\n\n' : '') +
+    `### ${entry.at.slice(0, 16).replace('T', ' ')} · Decisão do Carlos: ${verdict}\n` +
+    (entry.note ? `${entry.note}\n` : '');
+  stage.status = verdict === 'aprovado' ? 'done' : 'idle';
+  writeEsteira(info.rootPath, desk);
+  const last = at >= desk.stages.length - 1;
+  return {
+    ...esteiraPayload(info.rootPath, desk),
+    ok: true,
+    decision: entry,
+    continued: verdict === 'aprovado' && desk.auto && !last,
+  };
+}
+
+/** Resumo do que as etapas anteriores entregaram, para a etapa atual não trabalhar no escuro. */
+function earlierStagesDigest(desk: EsteiraDesk, defs: EsteiraStage[], at: number): string {
+  const parts: string[] = [];
+  let budget = 8000;
+  for (let i = at - 1; i >= 0 && budget > 0; i--) {
+    const note = desk.stages[i]?.note.trim();
+    if (!note || desk.stages[i].status !== 'done') continue;
+    const piece = `${defs[i]?.name || `Etapa ${i + 1}`} (${defs[i]?.owner || '—'}):\n${note.slice(-Math.min(2000, budget))}`;
+    parts.unshift(piece);
+    budget -= piece.length;
+  }
+  return parts.join('\n\n');
+}
+
+export async function runEsteiraStage(idOrPath: string, index: number, _stageName?: string, _stageOwner?: string): Promise<any> {
+  const info = inspectProjectFolder(idOrPath);
+  const desk = readEsteira(info.rootPath);
+  const { stages: defs } = projectStages(info.rootPath);
   const at = Math.max(0, Number(index) || 0);
-  const desk = readEsteira(info.rootPath, at + 1);
-  const stage = desk.stages[at] || emptyEsteiraStage();
-  const gate = /gate|aprova|revis[aã]o humana/i.test(stageName);
+  const def = defs[at];
+  if (!def) return { ...esteiraPayload(info.rootPath, desk), ok: false, error: `A esteira deste projeto não tem a etapa ${at + 1}.` };
+  const key = `${info.rootPath}:esteira`;
+  if (liveAgents.has(key)) {
+    return { ...esteiraPayload(info.rootPath, desk), ok: false, error: 'Já há uma etapa desta esteira em execução.' };
+  }
+  const pendingGate = defs.findIndex((d, i) => i < at && d.gate && desk.stages[i].status !== 'done');
+  if (pendingGate >= 0) {
+    return {
+      ...esteiraPayload(info.rootPath, desk),
+      ok: false,
+      gate: true,
+      error: `«${defs[pendingGate].name}» é um gate e ainda espera a sua decisão.`,
+    };
+  }
+  const stage = desk.stages[at];
   const prior = stage.note.trim();
   const instruction = stage.instruction.trim() || 'Levante o que esta etapa pede a partir dos arquivos do workspace. Não invente fato que não esteja na pasta.';
+  const digest = earlierStagesDigest(desk, defs, at);
   const question =
-    `Você conduz a etapa "${stageName}" da esteira, com ${stageOwner}.\n` +
+    `Você conduz a etapa ${at + 1} de ${defs.length}, "${def.name}", com ${def.owner} (${def.skill}).\n` +
     `Instrução desta etapa:\n${instruction}\n\n` +
+    (digest ? `O QUE AS ETAPAS ANTERIORES ENTREGARAM (use como base, não refaça):\n${digest}\n\n` : '') +
     (prior ? `CHECKPOINT — a etapa já tem este levantamento. Não recomece do zero. Continue ou revise a partir dele:\n${prior.slice(-5000)}\n\n` : '') +
-    (gate
-      ? 'Esta etapa é um gate. Não edite código. Resuma o que foi levantado e diga o que precisa da decisão do Carlos.'
-      : 'Pode alterar o workspace só no que a instrução pede. Grave o resultado de forma objetiva.');
+    (def.gate
+      ? 'Esta etapa é um gate. Não edite arquivos. Resuma o que foi entregue até aqui com caminhos de arquivo, aponte riscos e liste exatamente o que precisa da decisão do Carlos. A etapa só fecha quando ele aprovar.'
+      : 'Pode alterar o workspace só no que a instrução pede. Ao terminar, liste os arquivos que criou ou alterou.');
   stage.status = 'running';
   writeEsteira(info.rootPath, desk);
-  const key = `${info.rootPath}:esteira`;
-  liveAgents.set(key, { paused: false, speech: prior, step: at, itemId: `esteira-${at}`, label: stageName });
+  liveAgents.set(key, { paused: false, speech: prior, step: at, itemId: `esteira-${at}`, label: def.name });
   const { converseWithIrisAgent } = require('./irisAgent') as typeof import('./irisAgent');
-  const eng = resolveEngineSpec();
-  const agentRes = await converseWithIrisAgent({
-    workspace: info.rootPath,
-    question,
-    projectName: info.name,
-    stageName,
-    stageOwner,
-    engineId: eng.id,
-    model: eng.model,
-    effort: eng.effort,
-    finished: true,
-    alterationsOpen: true,
-    asChangeRequest: !gate,
-    recent: [],
-    timeoutMs: 1800000,
-    runKind: 'esteira',
-    runLabel: stageName,
-    onProgress: (line) => {
-      const live = liveAgents.get(key);
-      if (live && line.length > 80) live.speech = line;
-    },
-    registerKill: (kill) => {
-      const live = liveAgents.get(key);
-      if (live) live.kill = kill;
-    },
-  });
+  const eng = projectEngineSpec(info.rootPath);
+  let agentRes: Awaited<ReturnType<typeof converseWithIrisAgent>>;
+  try {
+    agentRes = await converseWithIrisAgent({
+      workspace: info.rootPath,
+      question,
+      projectName: info.name,
+      stageName: def.name,
+      stageOwner: def.owner,
+      engineId: eng.id,
+      model: eng.model,
+      effort: eng.effort,
+      finished: true,
+      alterationsOpen: true,
+      asChangeRequest: !def.gate,
+      recent: [],
+      timeoutMs: 1800000,
+      runKind: 'esteira',
+      runLabel: def.name,
+      onProgress: (line) => {
+        const live = liveAgents.get(key);
+        if (live && line.length > 80) live.speech = line;
+      },
+      registerKill: (kill) => {
+        const live = liveAgents.get(key);
+        if (live) live.kill = kill;
+      },
+    });
+  } catch (err) {
+    agentRes = { ok: false, text: `A etapa falhou antes do motor responder: ${err instanceof Error ? err.message : String(err)}`, thoughts: [], engine: eng.name, model: eng.model, mode: 'agent' } as any;
+  }
   const live = liveAgents.get(key);
   const paused = agentRes.error === 'paused' || !!live?.paused;
   liveAgents.delete(key);
-  const fresh = readEsteira(info.rootPath, desk.stages.length);
+  const fresh = readEsteira(info.rootPath);
   const current = fresh.stages[at] || emptyEsteiraStage();
+  const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  const exec = agentRes.runId ? ` · execução ${agentRes.runId}` : '';
+  let commit: StepCommitResult | null = null;
   if (paused) {
     current.status = current.status === 'stopped' ? 'stopped' : 'paused';
     if (agentRes.text && agentRes.text !== 'Pausado por Carlos.') current.note = (current.note ? current.note + '\n' : '') + agentRes.text.trim();
   } else if (agentRes.ok) {
-    const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
-    const exec = agentRes.runId ? ` · execução ${agentRes.runId}` : '';
-    current.note = (current.note ? current.note + '\n\n' : '') + `### ${stamp} · ${stageOwner}${exec}\n${agentRes.text.trim()}\n`;
-    current.status = 'done';
+    const c = agentRes.changes;
+    const changed = c?.available ? c.added.length + c.modified.length + c.deleted.length : null;
+    if (!def.gate) commit = commitRunStep(info.rootPath, `esteira · ${def.name} (${def.owner})`, agentRes.runId, c);
+    const facts = [
+      changed == null ? '' : changed ? `${changed} arquivo(s) mudaram` : def.gate ? '' : 'Atenção: nenhum arquivo mudou nesta etapa',
+      commit ? commitLine(commit) : '',
+    ].filter(Boolean);
+    current.note =
+      (current.note ? current.note + '\n\n' : '') +
+      `### ${stamp} · ${def.owner}${exec}\n${agentRes.text.trim()}\n` +
+      (facts.length ? `\n_${facts.join(' · ')}_\n` : '');
+    current.status = def.gate ? 'awaiting' : 'done';
+    if (commit?.sha) current.commits = (current.commits || []).concat(commit.sha).slice(-30);
   } else {
     current.status = 'idle';
-    current.note = (current.note ? current.note + '\n' : '') + String(agentRes.text || '').slice(0, 500);
+    current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · falhou${exec}\n${String(agentRes.text || '').slice(0, 500)}\n`;
   }
-  current.files = stageArtifactFiles(info.rootPath, at, stageName);
+  current.files = stageArtifactFiles(info.rootPath, at, def.name);
   if (agentRes.runId) current.runs = (current.runs || []).concat(agentRes.runId).slice(-30);
   fresh.stages[at] = current;
   writeEsteira(info.rootPath, fresh);
   const last = at >= fresh.stages.length - 1;
+  const ok = Boolean(agentRes.ok) && !paused;
   return {
-    ...getProjectEsteira(idOrPath, fresh.stages.length),
-    ok: Boolean(agentRes.ok) && !paused,
+    ...esteiraPayload(info.rootPath, fresh),
+    ok,
     paused,
-    gate,
-    continued: Boolean(agentRes.ok) && !paused && !gate && !last && fresh.auto,
+    gate: def.gate,
+    awaiting: ok && def.gate,
+    commit,
+    continued: ok && !def.gate && !last && fresh.auto,
     reply: agentRes.text,
+    error: ok || paused ? undefined : String(agentRes.text || 'A etapa não concluiu.'),
   };
-}
-
-export function runProjectStageWithThinking(params: any): any {
-  const idOrPath = String(params?.projectId || params?.projectPath || params?.projectName || 'projeto').trim();
-  const stageIndex = Number(params?.stageIndex || 0);
-  const stageName = String(params?.stageName || 'Entender').trim();
-  const stageOwner = String(params?.stageOwner || 'Paula PM').trim();
-  const stageRole = String(params?.stageRole || 'Especialista da Esteira').trim();
-  const instruction = String(params?.instruction || '').trim();
-  const eng = resolveEngineSpec(params?.engine, params?.model, params?.effort);
-  const effort = eng.effortLabel;
-
-  const info = inspectProjectFolder(idOrPath);
-  const rootPath = info.rootPath;
-  const topDirs = info.tree.filter((x: any) => x.isDir && x.depth === 0).map((x: any) => x.name);
-  const sampleFiles = info.tree.filter((x: any) => !x.isDir).slice(0, 6).map((x: any) => x.relPath);
-  const gitUser = info.isolation?.git_identity?.user_name || 'TAVIR';
-
-  const ts = nowHM();
-  const engineSpecificHeader: Record<string, string> = {
-    cursor: `[Cursor Agent CLI] $ ${eng.cli} --workspace "${rootPath}" --model ${eng.model}`,
-    claude: `[Claude Code SDK] $ ${eng.cli} --cwd "${rootPath}" --model ${eng.model} --thinking-budget 16000`,
-    codex: `[OpenAI Codex CLI] $ ${eng.cli} --cd "${rootPath}" --model ${eng.model} --sandbox workspace-write`,
-    antigravity: `[Antigravity SDK] $ ${eng.cli} --workspace "${rootPath}" --model ${eng.model} ( ~/.gemini/antigravity )`,
-  };
-
-  const thoughts: Array<{ step: number; ts: string; tag: string; text: string }> = [
-    {
-      step: 1,
-      ts,
-      tag: eng.name.toUpperCase(),
-      text: engineSpecificHeader[eng.id] || engineSpecificHeader.cursor,
-    },
-    {
-      step: 2,
-      ts,
-      tag: 'WORKSPACE',
-      text: `Inspecionando pasta isolada "${rootPath}" (${info.dirCount} pastas: ${topDirs.join(', ') || 'raiz'} · ${info.fileCount} arquivos · stack: ${info.stacks}).`,
-    },
-    {
-      step: 3,
-      ts,
-      tag: 'ISOLAMENTO',
-      text: `Validado .tavir/isolation.json · Git local=${gitUser} · cofre=.env.project · leitura de ${sampleFiles.slice(0, 4).join(', ') || 'context/escopo.md'}.`,
-    },
-    {
-      step: 4,
-      ts,
-      tag: 'RACIOCÍNIO',
-      text: instruction
-        ? `Incorporando instrução em tempo real do operador: "${instruction}" na etapa "${stageName}" com ${stageOwner}.`
-        : `Executando cadeia de pensamento (${effort}) para a etapa "${stageName}" sob responsabilidade de ${stageOwner} (${stageRole}).`,
-    },
-    {
-      step: 5,
-      ts,
-      tag: 'ARTEFATO',
-      text: `Gerando e persistindo artefato auditável em artifacts/etapa-${String(stageIndex + 1).padStart(2, '0')}-${stageName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.md dentro da pasta do projeto.`,
-    },
-  ];
-
-  const artifactSlug = `etapa-${String(stageIndex + 1).padStart(2, '0')}-${stageName
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')}.md`;
-  const artifactRelPath = `artifacts/${artifactSlug}`;
-  const artifactFullPath = path.join(rootPath, 'artifacts', artifactSlug);
-
-  const artifactContent =
-    `# Relatório de Execução · Etapa ${stageIndex + 1}: ${stageName}\n\n` +
-    `- **Projeto**: ${info.name}\n` +
-    `- **Agente Responsável**: ${stageOwner} (${stageRole})\n` +
-    `- **Motor Utilizado**: ${eng.name} (\`${eng.model}\` · ${eng.protocol})\n` +
-    `- **Esforço de Pensamento**: ${effort}\n` +
-    `- **Horário**: ${new Date().toISOString()}\n` +
-    (instruction ? `- **Instrução do Operador**: ${instruction}\n` : '') +
-    `\n## Cadeia de Pensamento (${eng.name})\n` +
-    thoughts.map((t) => `${t.step}. **[${t.tag}]** ${t.text}`).join('\n') +
-    `\n\n## Arquivos & Estrutura Auditada\n` +
-    `- **Raiz**: \`${rootPath}\`\n` +
-    `- **Stacks**: ${info.stacks}\n` +
-    `- **Amostra de arquivos verificados**: ${sampleFiles.join(', ') || 'context/escopo.md'}\n`;
-
-  try {
-    fs.mkdirSync(path.join(rootPath, 'artifacts'), { recursive: true });
-    fs.writeFileSync(artifactFullPath, artifactContent, 'utf8');
-  } catch {}
-
-  const steps = [
-    { label: `Conectar SDK local do motor ${eng.name} (${eng.sdkPath})`, state: 'done', meta: eng.model },
-    { label: `Ler árvore de arquivos e isolamento (${info.dirCount} pastas · ${info.fileCount} arq)`, state: 'done', meta: info.stacks },
-    { label: `Executar raciocínio ${effort} da etapa ${stageName} (${stageOwner})`, state: 'done', meta: '5 blocos de pensamento' },
-    { label: `Gravar artefato ${artifactRelPath} no workspace do projeto`, state: 'done', meta: ts },
-  ];
-
-  const liveRecord = {
-    ok: true,
-    projectId: info.id,
-    projectName: info.name,
-    rootPath,
-    engine: eng.name,
-    engineId: eng.id,
-    model: eng.model,
-    protocol: eng.protocol,
-    sdkPath: eng.sdkPath,
-    effort,
-    stageIndex,
-    stageName,
-    stageOwner,
-    instruction: instruction || null,
-    status: 'completed',
-    ts,
-    tokens: '2.480 tok',
-    cost: 'US$ 0,04',
-    elapsed: '3,2 s',
-    artifactRelPath,
-    thoughts,
-    steps,
-  };
-
-  try {
-    fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
-    fs.writeFileSync(path.join(rootPath, '.tavir', 'live-execution.json'), JSON.stringify(liveRecord, null, 2), 'utf8');
-  } catch {}
-
-  return liveRecord;
 }
 
 function normalizePriorityLabel(p?: string | null): 'Normal' | 'Alta' | 'Crítica' {

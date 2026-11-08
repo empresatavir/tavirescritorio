@@ -286,15 +286,17 @@ export interface TavirApi {
     closeAltTrackItem: (idOrPath: string, fromStep?: number) => Promise<ProjectAlterationsControl>;
     startAltTrackCycle: (idOrPath: string) => Promise<ProjectAlterationsControl>;
     setAltTrackAuto: (idOrPath: string, auto: boolean) => Promise<ProjectAlterationsControl>;
-    approveAltTrack: (idOrPath: string) => Promise<ProjectAlterationsControl>;
+    approveAltTrack: (idOrPath: string, decision?: 'aprovado' | 'reprovado', note?: string) => Promise<ProjectAlterationsControl>;
     runAltTrack: (idOrPath: string, step?: number) => Promise<ProjectAlterationsControl & { needsApproval?: boolean; continued?: boolean; paused?: boolean; reply?: string }>;
     pauseAltTrack: (idOrPath: string) => Promise<ProjectAlterationsControl>;
     getEsteira: (idOrPath: string, count?: number) => Promise<any>;
     saveEsteiraInstruction: (idOrPath: string, index: number, text: string) => Promise<any>;
     setEsteiraAuto: (idOrPath: string, auto: boolean) => Promise<any>;
     controlEsteira: (idOrPath: string, index: number, action: string) => Promise<any>;
-    runEsteira: (idOrPath: string, index: number, stageName: string, stageOwner: string) => Promise<any>;
-    runWithThinking: (params: any) => Promise<any>;
+    runEsteira: (idOrPath: string, index: number, stageName?: string, stageOwner?: string) => Promise<any>;
+    decideEsteira: (idOrPath: string, index: number, decision: 'aprovado' | 'reprovado', note?: string) => Promise<any>;
+    decisions: (idOrPath: string) => Promise<{ ok: boolean; decisions: any[] }>;
+    setEngine: (idOrPath: string, choice: { engine?: string; model?: string; effort?: string }) => Promise<{ ok: boolean; engine?: { engine: string; model: string; effort: string }; caption?: string; error?: string }>;
   };
   agents: {
     list: () => Promise<AgentItem[]>;

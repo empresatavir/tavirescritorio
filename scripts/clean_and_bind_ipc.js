@@ -102,9 +102,8 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
     }
   }
   if (!fabHtml) {
-    const buf = Buffer.from(manifest[fabUuid].data, 'base64');
-    fabHtml = zlib.gunzipSync(buf).toString('utf8');
-    console.log('Fábrica: fallback para fragmento legado do manifest');
+    // O fragmento legado do manifest simulava execução (tokens e custo fixos). Melhor falhar o build.
+    throw new Error('Fábrica: src/renderer/fabrica-ref/Fabrica.dc.html não encontrado.');
   }
 
   if (fabFromRef) {
@@ -137,6 +136,20 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
           tplMark + '\nGP.splice(0, GP.length); Object.keys(GP_INIT).forEach((k) => { delete GP_INIT[k]; });',
         );
         console.log('Fábrica: GP demo esvaziado após TPL_STAGES');
+      }
+      // Fonte única: o mesmo molde que o main usa para contar etapas e achar gates.
+      const esteirasJs = path.resolve(__dirname, '../dist/shared/esteiras.js');
+      if (!fs.existsSync(esteirasJs)) throw new Error('Rode npm run build:main antes: falta dist/shared/esteiras.js');
+      delete require.cache[esteirasJs];
+      const shared = require(esteirasJs).templateStagesForPanel();
+      if (fabHtml.includes(tplMark)) {
+        fabHtml = fabHtml.replace(
+          tplMark,
+          tplMark + '\nObject.keys(TPL_STAGES).forEach((k) => { delete TPL_STAGES[k]; }); Object.assign(TPL_STAGES, ' + JSON.stringify(shared) + ');',
+        );
+        console.log('Fábrica: TPL_STAGES vindo de src/shared/esteiras.ts');
+      } else {
+        throw new Error('Fábrica: não achei TPL_STAGES no Fabrica.dc.html para injetar os moldes.');
       }
     }
 
@@ -388,7 +401,7 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             name: p.name || 'Projeto',
             code: code.slice(0, 4),
             line: code,
-            kind: code.indexOf('OF') === 0 ? 'Ofertas' : code.indexOf('SY') === 0 ? 'Sistemas' : 'LPs · Criação',
+            kind: ((typeof ESTEIRAS !== 'undefined' && ESTEIRAS.find(function(e) { return e[0] === code; })) || [0, 0, code])[2],
             client: p.company || p.client || '—',
             guard: st === 'done' || st === 'completed' || done >= total ? 8 : Math.min(7, Math.round((done / total) * 8)),
             base: [2026, 1, 1],
@@ -430,8 +443,27 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             altMap[proj.id] = open;
             const trackMap = Object.assign({}, self.state.altTrack || {});
             if (ctrl.alt_track) trackMap[proj.id] = ctrl.alt_track;
-            self.setState({ absorbed: nextAbs, altOpen: altMap, altTrack: trackMap });
+            const motors = Object.assign({}, self.state.motors || {});
+            if (ctrl.engine && ctrl.engine.engine && typeof ENG !== 'undefined' && ENG[ctrl.engine.engine]) {
+              const E = ENG[ctrl.engine.engine];
+              const M = E.models.find(function(x) { return x[0] === ctrl.engine.model; }) || E.models[0];
+              const effLabel = (function() {
+                const ids = { low: 'Baixo', medium: 'Médio', high: 'Alto', xhigh: 'Máximo', cost: 'Cost', balanced: 'Balance', intelligence: 'Intelligence' };
+                const want = ids[ctrl.engine.effort] || ctrl.engine.effort;
+                return M[2].indexOf(want) >= 0 ? want : M[2][0];
+              })();
+              motors[proj.id] = { engine: ctrl.engine.engine, model: M[0], effort: effLabel };
+            }
+            self.setState({ absorbed: nextAbs, altOpen: altMap, altTrack: trackMap, motors: motors });
           }).catch(function() {});
+          if (tavir.projects.getEsteira) {
+            tavir.projects.getEsteira(key).then(function(res) {
+              if (!res || !res.esteira) return;
+              const map = Object.assign({}, self.state.esteiraById || {});
+              map[proj.id] = res.esteira;
+              self.setState({ esteiraById: map });
+            }).catch(function() {});
+          }
         });
       }).catch(function(err) { console.error('[Fábrica] falha ao listar projects:', err); });
     };

@@ -60,6 +60,8 @@ export interface RunMeta {
   toolErrors?: number;
   usage?: RunUsage;
   changes?: RunChanges;
+  /** Commit que a Fábrica fez no projeto com o que esta execução mudou. */
+  commit?: { sha?: string; files: number; skipped?: string; error?: string };
   stdoutBytes?: number;
   stderrBytes?: number;
 }
@@ -644,6 +646,16 @@ function readMeta(workspace: string, id: string): RunMeta | null {
   } catch {
     return null;
   }
+}
+
+/** Acrescenta campos ao meta.json depois que a execução fechou (commit do passo, decisão…). */
+export function annotateRun(workspace: string, id: string, patch: Partial<RunMeta>): void {
+  if (!isRunId(id)) return;
+  const meta = readMeta(workspace, id);
+  if (!meta) return;
+  try {
+    writeJson(path.join(runsRoot(workspace), id, 'meta.json'), { ...meta, ...patch });
+  } catch {}
 }
 
 export function listRuns(workspace: string, limit = 100): RunSummary[] {
