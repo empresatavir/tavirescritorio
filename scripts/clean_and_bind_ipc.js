@@ -90,11 +90,9 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
     'C:/Users/carlo/Downloads/Referencias/Fábrica-html/Fabrica.dc.html',
   ];
   let fabHtml = null;
-  let fabFromRef = false;
   for (const cand of fabRefCandidates) {
     try {
       fabHtml = fs.readFileSync(cand, 'utf8');
-      fabFromRef = true;
       console.log('Fábrica: layout de referência carregado de', cand);
       break;
     } catch {
@@ -102,12 +100,11 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
     }
   }
   if (!fabHtml) {
-    const buf = Buffer.from(manifest[fabUuid].data, 'base64');
-    fabHtml = zlib.gunzipSync(buf).toString('utf8');
-    console.log('Fábrica: fallback para fragmento legado do manifest');
+    // O fragmento legado do manifest simulava execução (tokens e custo fixos). Melhor falhar o build.
+    throw new Error('Fábrica: src/renderer/fabrica-ref/Fabrica.dc.html não encontrado.');
   }
 
-  if (fabFromRef) {
+  {
     // Bundler já fornece React — remove vendors do mockup
     fabHtml = fabHtml.replace(/<script src="\.\/vendor\/react\.js"><\/script>\s*/g, '');
     fabHtml = fabHtml.replace(/<script src="\.\/vendor\/react-dom\.js"><\/script>\s*/g, '');
@@ -137,6 +134,20 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
           tplMark + '\nGP.splice(0, GP.length); Object.keys(GP_INIT).forEach((k) => { delete GP_INIT[k]; });',
         );
         console.log('Fábrica: GP demo esvaziado após TPL_STAGES');
+      }
+      // Fonte única: o mesmo molde que o main usa para contar etapas e achar gates.
+      const esteirasJs = path.resolve(__dirname, '../dist/shared/esteiras.js');
+      if (!fs.existsSync(esteirasJs)) throw new Error('Rode npm run build:main antes: falta dist/shared/esteiras.js');
+      delete require.cache[esteirasJs];
+      const shared = require(esteirasJs).templateStagesForPanel();
+      if (fabHtml.includes(tplMark)) {
+        fabHtml = fabHtml.replace(
+          tplMark,
+          tplMark + '\nObject.keys(TPL_STAGES).forEach((k) => { delete TPL_STAGES[k]; }); Object.assign(TPL_STAGES, ' + JSON.stringify(shared) + ');',
+        );
+        console.log('Fábrica: TPL_STAGES vindo de src/shared/esteiras.ts');
+      } else {
+        throw new Error('Fábrica: não achei TPL_STAGES no Fabrica.dc.html para injetar os moldes.');
       }
     }
 
@@ -372,6 +383,8 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             ? TPL_STAGES[code]
             : (typeof STG !== 'undefined' ? STG.map(function(x, i) { return [x[0], x[1], x[3], [1,1,1,1,2,1,2,2,2][i] || 1]; }) : [['Início', 'Paula PM', 'orquestração', 1]]);
           const st = String(p.status || '').toLowerCase();
+          let survey = {};
+          try { survey = (JSON.parse(p.files || '{}') || {}).survey || {}; } catch (e) { survey = {}; }
           const fullPath = String(p.local_path || p.slug || p.id || '');
           const rootFlat = String(typeof ROOT !== 'undefined' ? ROOT : '').replace(/\\\\/g, '/').toLowerCase();
           const fullFlat = fullPath.replace(/\\\\/g, '/');
@@ -386,7 +399,7 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             name: p.name || 'Projeto',
             code: code.slice(0, 4),
             line: code,
-            kind: code.indexOf('OF') === 0 ? 'Ofertas' : code.indexOf('SY') === 0 ? 'Sistemas' : 'LPs · Criação',
+            kind: ((typeof ESTEIRAS !== 'undefined' && ESTEIRAS.find(function(e) { return e[0] === code; })) || [0, 0, code])[2],
             client: p.company || p.client || '—',
             guard: st === 'done' || st === 'completed' || done >= total ? 8 : Math.min(7, Math.round((done / total) * 8)),
             base: [2026, 1, 1],
@@ -395,17 +408,17 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             stages: stages,
             pends: [],
             acts: [['agora', 'Sincronizado do SQLite', 'Sistema']],
-            inv: [['Etapas', String(total)], ['Feitas', String(done)], ['Status', p.status || 'run'], ['Pasta', relSlug.replace(/\\\\/g, '/')]],
+            inv: [['O que é', survey.about || p.description || 'Levantamento ainda não rodou'], ['Linguagens', survey.languages || p.stack || '—'], ['Git', survey.git || '—'], ['Deploy', survey.deploy || '—'], ['Arquivos', survey.files != null ? String(survey.files) : '—']],
             env: [],
-            target: 'local · tavir',
-            acc: [],
+            target: survey.deploy || 'local · tavir',
+            acc: survey.gitRemote ? [['Git', survey.gitRemote, 'remote', 'ok']] : [],
             people: [['CH', 'Carlos Henrique', 'CEO · aprovador', 'admin']],
             slug: relSlug,
-            git: 'TAVIR',
+            git: survey.gitRemote || survey.git || 'local',
             cost: [0, 25],
-            disk: [6, 12, 'pasta isolada'],
+            disk: [Number(survey.dirs) || 0, Number(survey.files) || 0, survey.languages || 'pasta isolada'],
             tok0: [0, 0, 0],
-            think: p.description || (done >= total ? 'Esteira concluída' : 'Em execução'),
+            think: survey.about || p.description || (done >= total ? 'Esteira concluída' : 'Em execução'),
             local_path: p.local_path || null,
             alterations_open: false
           });
@@ -428,8 +441,27 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             altMap[proj.id] = open;
             const trackMap = Object.assign({}, self.state.altTrack || {});
             if (ctrl.alt_track) trackMap[proj.id] = ctrl.alt_track;
-            self.setState({ absorbed: nextAbs, altOpen: altMap, altTrack: trackMap });
+            const motors = Object.assign({}, self.state.motors || {});
+            if (ctrl.engine && ctrl.engine.engine && typeof ENG !== 'undefined' && ENG[ctrl.engine.engine]) {
+              const E = ENG[ctrl.engine.engine];
+              const M = E.models.find(function(x) { return x[0] === ctrl.engine.model; }) || E.models[0];
+              const effLabel = (function() {
+                const ids = { low: 'Baixo', medium: 'Médio', high: 'Alto', xhigh: 'Máximo', cost: 'Cost', balanced: 'Balance', intelligence: 'Intelligence' };
+                const want = ids[ctrl.engine.effort] || ctrl.engine.effort;
+                return M[2].indexOf(want) >= 0 ? want : M[2][0];
+              })();
+              motors[proj.id] = { engine: ctrl.engine.engine, model: M[0], effort: effLabel };
+            }
+            self.setState({ absorbed: nextAbs, altOpen: altMap, altTrack: trackMap, motors: motors });
           }).catch(function() {});
+          if (tavir.projects.getEsteira) {
+            tavir.projects.getEsteira(key).then(function(res) {
+              if (!res || !res.esteira) return;
+              const map = Object.assign({}, self.state.esteiraById || {});
+              map[proj.id] = res.esteira;
+              self.setState({ esteiraById: map });
+            }).catch(function() {});
+          }
         });
       }).catch(function(err) { console.error('[Fábrica] falha ao listar projects:', err); });
     };
@@ -447,7 +479,7 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
       const doneN = Math.min(Number(gpRow.cur != null ? gpRow.cur : ap.done) || 0, stageN);
       const finished = doneN >= stageN || String(ap.status || '').toLowerCase() === 'done' || String(ap.status || '').toLowerCase() === 'completed';
       const unlocked = !finished || !!(self.state.altOpen && self.state.altOpen[ap.id]) || !!ap.alterations_open;
-      const motorRow = (self.state.motors && self.state.motors[ap.id]) || {};
+      const motorRow = (self.state.motors && self.state.motors[ap.id]) || (typeof DEFM !== 'undefined' ? DEFM : {});
       const engName = String(motorRow.engine || 'cursor').toLowerCase();
       const engLabel = engName === 'antigravity' ? 'Antigravity' : (engName.charAt(0).toUpperCase() + engName.slice(1));
       const engModel = motorRow.model || (engName === 'claude' ? 'claude-sonnet-4-5' : engName === 'codex' ? 'gpt-5-codex' : engName === 'antigravity' ? 'gemini-2.5-pro' : 'auto-smart');
@@ -556,1220 +588,7 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
 
     manifest[fabUuid].data = zlib.gzipSync(Buffer.from(fabHtml, 'utf8')).toString('base64');
     console.log('Fábrica limpa e atualizada! (referência sem mock + IPC)');
-  } else {
-
-  // Botão extra "Absorver pasta (Product Lab)" ao lado de "Nova esteira"
-  fabHtml = fabHtml.replace(
-    '<div class="actions"><button class="btn primary" onClick="{{newLine}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Nova esteira</button></div>',
-    '<div class="actions"><button class="btn secondary" onClick="{{absorbLine}}">Absorver pasta (Product Lab)</button><button class="btn primary" onClick="{{newLine}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Nova esteira</button></div>'
-  );
-
-  // Conecta cada botão "Usar esteira" com t.use (que passa o template pré-selecionado)
-  fabHtml = fabHtml.replace(
-    '<button class="btn sm secondary" onClick="{{newLine}}">Usar esteira</button>',
-    '<button class="btn sm secondary" onClick="{{t.use}}">Usar esteira</button>'
-  );
-
-  // Atualiza tpls para incluir a callback use: () => app.modal('factory-new', { tpl: x[1] })
-  fabHtml = fabHtml.replace(
-    ".map((x) => ({ k: x[0], name: x[1], x: x[2], n: x[3], st: x[4].map((y) => ({ t: y })), lead: x[5] }))",
-    ".map((x) => ({ k: x[0], name: x[1], x: x[2], n: x[3], st: x[4].map((y) => ({ t: y })), lead: x[5], use: () => app.modal('factory-new', { tpl: x[1] }) }))"
-  );
-
-  // Na lista "Esteiras ao vivo", mostra o que está sendo executado no momento + pensamento em curso
-  fabHtml = fabHtml.replace(
-    '<div style="display: flex; gap: 8px; align-items: center; font-size: 12px"><span class="muted">Agora:</span><b>{{l.stage}}</b><span class="muted">· {{l.owner}}</span></div>',
-    `<div style="display: flex; gap: 8px; align-items: center; font-size: 12px; flex-wrap: wrap"><span class="muted">Executando agora:</span><b style="color: var(--flow)">{{l.stage}}</b><span class="muted">· {{l.owner}}</span><span class="badge flow" style="font-size: 10px; height: 19px; padding: 0 7px">{{l.motorBadge}}</span></div>
-            <div class="mono" style="font-size: 11px; color: var(--text-secondary); padding: 5px 9px; border-radius: 7px; background: var(--surface-0); border: 1px solid var(--line); display: flex; align-items: center; gap: 6px"><span style="color: var(--flow)">🧠 Pensamento:</span><span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{l.thoughtPreview}}</span></div>`
-  );
-
-  // Na lista "Esteiras ao vivo", adiciona botões de Pausar/Retomar e Remover em cada linha
-  fabHtml = fabHtml.replace(
-    '<button class="row" onClick="{{l.open}}" style="padding: 20px 18px; gap: 20px; flex-wrap: wrap">',
-    '<div class="row" onClick="{{l.open}}" style="padding: 20px 18px; gap: 20px; flex-wrap: wrap; cursor: pointer">'
-  );
-  fabHtml = fabHtml.replace(
-    '<div style="display: flex; align-items: center; gap: 14px"><span class="num" style="font-size: 22px">{{l.pct}}%</span><span class="badge {{l.cls}}">{{l.state}}</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></div>\n        </button>',
-    '<div style="display: flex; align-items: center; gap: 10px"><span class="num" style="font-size: 22px">{{l.pct}}%</span><span class="badge {{l.cls}}">{{l.state}}</span><button class="btn sm ghost" onClick="{{l.togglePause}}" title="{{l.pauseLabel}}">{{l.pauseLabel}}</button><button class="btn sm ghost" onClick="{{l.del}}" style="color: var(--danger)" title="Remover projeto (perguntar sobre arquivos locais)">Remover</button><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></div>\n        </div>'
-  );
-
-  // Injeta estado inicial de projects + estrutura de pastas (projTree) + Execução ao Vivo (4 Motores) + Íris Chat
-  const origFabState = "this.state = { open: false, stage: 5,";
-  const newFabState = `this.state = { projects: [], activeProject: null, projTree: null, showTreePanel: false, showTreeModal: false, showThinkingPanel: false, expandedMsgThoughts: {}, engineCatalog: [], execEngine: 'Cursor', execEngineId: 'cursor', execModel: 'auto-smart', execModelLabel: 'Auto', execEffort: 'balanced', execEffortLabel: 'Balance', execRunning: false, execDraft: '', execThoughts: [], execSteps: [], execTokens: '2.480 tok', execElapsed: '3,2 s', execCost: 'US$ 0,04', chatPersona: 'Íris · Inteligência do Projeto', open: false, stage: 5,`;
-  fabHtml = fabHtml.replace(origFabState, newFabState);
-
-  // Limpa mensagens iniciais mockadas da Meridian no state do chat
-  fabHtml = fabHtml.replace(
-    "chat: false, unread: 2, typing: false, draft: '', msgs: [['Yuri UX', 'A hero ainda compete com o menu em 390 px. Proponho cortar o subtítulo e virar o menu ícone.', 'ag'], ['Vitor Construtor', 'Ajuste pronto no branch hero-390. Preciso da prova visual de novo.', 'ag']]",
-    "chat: false, unread: 1, typing: false, draft: '', msgs: []"
-  );
-
-  const origFabUnmount = "componentWillUnmount() { clearTimeout(this.t1); clearTimeout(this.t2); clearTimeout(this.t3); }";
-  const newFabLifecycle = `componentDidMount() {
-    const self = this;
-    const getTavir = function() {
-      return (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
-    };
-    this.saveLocalProjects = function(list) {
-      try { localStorage.setItem('tavir_factory_projects', JSON.stringify(list || [])); } catch (e) {}
-    };
-    this.getEngineMeta = function(engName, modelId, effortId) {
-      const catalog = self.state.engineCatalog || [];
-      const k = String(engName || self.state.execEngineId || 'cursor').toLowerCase();
-      let motor = catalog.find(function(m) { return m.id === k || String(m.label || '').toLowerCase() === k; });
-      if (!motor) {
-        if (k.indexOf('claude') >= 0) motor = { id: 'claude', label: 'Claude', sdk: '~/.claude', cli: 'claude -p --output-format json', protocol: 'Claude Code SDK · Extended Thinking', models: [{ id: 'claude-opus-5-5', label: 'Opus 5.5', efforts: [{ id: 'medium', label: 'Médio' }] }] };
-        else if (k.indexOf('codex') >= 0) motor = { id: 'codex', label: 'Codex', sdk: '~/.codex', cli: 'codex exec --reasoning high', protocol: 'OpenAI Codex CLI · Reasoning Sandbox', models: [{ id: 'gpt-5-codex', label: 'GPT-5 Codex', efforts: [{ id: 'medium', label: 'Médio' }] }] };
-        else if (k.indexOf('anti') >= 0) motor = { id: 'antigravity', label: 'Antigravity', sdk: '~/.gemini/antigravity', cli: 'agy --thought-stream', protocol: 'Google Antigravity SDK · Native <thought> Stream', models: [{ id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro', efforts: [{ id: 'medium', label: 'Médio' }] }] };
-        else motor = { id: 'cursor', label: 'Cursor', sdk: '~/.cursor', cli: 'agent --output-format stream-json', protocol: 'Cursor Agent Stream-JSON · Extended Thinking', models: [{ id: 'auto-smart', label: 'Auto', efforts: [{ id: 'balanced', label: 'Balance' }] }] };
-      }
-      const wantedModel = modelId || self.state.execModel;
-      const model = (motor.models || []).find(function(m) { return m.id === wantedModel; }) || (motor.models || [])[0] || { id: 'auto-smart', label: 'Auto', efforts: [{ id: 'balanced', label: 'Balance' }] };
-      const wantedEffort = effortId || self.state.execEffort;
-      const effort = (model.efforts || []).find(function(e) { return e.id === wantedEffort; }) || (model.efforts || [])[0] || { id: 'balanced', label: 'Balance' };
-      const caption = model.id === 'auto-smart' ? (motor.label + ' · ' + model.label) : (motor.label + ' · ' + model.label + ' · ' + effort.label);
-      return { id: motor.id, name: motor.label, sdk: motor.sdk, cli: motor.cli, protocol: motor.protocol, model: model.id, modelLabel: model.label, effort: effort.id, effortLabel: effort.label, caption: caption, models: motor.models || [] };
-    };
-    this.applyEngineSelection = function(engineId, modelId, effortId) {
-      const eng = self.getEngineMeta(engineId, modelId, effortId);
-      self.setState({
-        execEngine: eng.name,
-        execEngineId: eng.id,
-        execModel: eng.model,
-        execModelLabel: eng.modelLabel,
-        execEffort: eng.effort,
-        execEffortLabel: eng.effortLabel
-      });
-      return eng;
-    };
-    this.loadEngineCatalog = function() {
-      const tavir = getTavir();
-      if (!tavir || !tavir.engines || !tavir.engines.getCatalog) return;
-      tavir.engines.getCatalog().then(function(cat) {
-        const engines = (cat && cat.engines) || [];
-        const settings = (cat && cat.settings) || {};
-        const defId = settings.defaultEngine || ((engines[0] && engines[0].id) || 'cursor');
-        const eng = self.getEngineMeta(defId, settings.defaultModel, settings.defaultEffort);
-        self.setState({
-          engineCatalog: engines,
-          execEngine: eng.name,
-          execEngineId: eng.id,
-          execModel: eng.model,
-          execModelLabel: eng.modelLabel,
-          execEffort: eng.effort,
-          execEffortLabel: eng.effortLabel
-        });
-        if (self.syncLiveThinkingState) self.syncLiveThinkingState(self.state.activeProject, self.state.projTree, eng.name, eng.effort, self.state.stage);
-      }).catch(function() {});
-    };
-    this.loadEngineCatalog();
-    this.syncLiveThinkingState = function(proj, info, engineOverride, effortOverride, stageOverride) {
-      const targetProj = proj || self.state.activeProject;
-      const eng = self.getEngineMeta(engineOverride || self.state.execEngineId || self.state.execEngine, self.state.execModel, effortOverride || self.state.execEffort);
-      const eff = eng.effortLabel;
-      const stgIdx = stageOverride != null ? stageOverride : (self.state.stage || 0);
-      const stgRow = STG[Math.min(STG.length - 1, Math.max(0, stgIdx))] || STG[0];
-      const pName = (targetProj && targetProj.name) || 'Projeto';
-      const rootP = (info && info.rootPath) || (targetProj && targetProj.local_path) || ('tavir-interno/' + ((targetProj && targetProj.slug) || 'projeto'));
-      const dCount = (info && info.dirCount != null) ? info.dirCount : 6;
-      const fCount = (info && info.fileCount != null) ? info.fileCount : 4;
-      const stacks = (info && info.stacks) || (targetProj && targetProj.stack) || 'Fullstack / Sistema';
-      const isDone = targetProj && (targetProj.status === 'done' || targetProj.status === 'completed' || (Number(targetProj.stages_done) >= Number(targetProj.total_stages) && Number(targetProj.total_stages) > 0));
-      const isPaused = targetProj && targetProj.status === 'paused';
-      const ts = hm();
-      const thoughts = [
-        { step: 1, ts: ts, tag: eng.name.toUpperCase(), text: '$ ' + eng.cli + ' --workspace "' + rootP + '" --model ' + eng.model + ' (' + eng.sdk + ') · ' + eng.caption },
-        { step: 2, ts: ts, tag: 'WORKSPACE', text: 'Conectado à pasta isolada de "' + pName + '" (' + dCount + ' pastas · ' + fCount + ' arquivos · stack: ' + stacks + ').' },
-        { step: 3, ts: ts, tag: 'ISOLAMENTO', text: 'Verificado .tavir/isolation.json e cofre .env.project — credenciais e Git confinados exclusivamente ao diretório do projeto.' },
-        { step: 4, ts: ts, tag: 'PENSAMENTO', text: isDone
-            ? 'Esteira 100% concluída. Monitorando integridade dos artefatos de Handoff e pronto para novas demandas de evolução.'
-            : isPaused
-            ? 'Projeto pausado pelo operador na etapa "' + stgRow[0] + '". Contexto preservado em memória para retomada imediata.'
-            : 'Executando raciocínio (' + eff + ') da etapa "' + stgRow[0] + '" com ' + stgRow[1] + ' (' + stgRow[3] + ') em ' + eng.caption + '.' }
-      ];
-      const steps = [
-        { label: 'SDK local conectado: ' + eng.name + ' (' + eng.sdk + ')', state: 'done', meta: eng.modelLabel || eng.model },
-        { label: 'Leitura da árvore física e isolamento (.tavir/isolation.json)', state: 'done', meta: dCount + ' pastas · ' + fCount + ' arq' },
-        { label: isDone ? 'Todas as etapas da esteira finalizadas' : ('Etapa ativa: ' + stgRow[0] + ' · ' + stgRow[1]), state: isDone ? 'done' : isPaused ? 'paused' : 'running', meta: isDone ? '100%' : isPaused ? 'pausado' : 'em execução' }
-      ];
-      self.setState({ execThoughts: thoughts, execSteps: steps });
-    };
-    this.loadProjectChat = function(proj) {
-      const target = proj || self.state.activeProject;
-      if (!target) return;
-      const tavir = getTavir();
-      const key = target.id || target.local_path || target.slug || target.name;
-      if (tavir && tavir.projects && tavir.projects.getChat) {
-        tavir.projects.getChat(key).then(function(res) {
-          if (res && Array.isArray(res.messages) && res.messages.length) {
-            self.setState({ msgs: res.messages });
-          }
-        }).catch(function() {});
-      } else {
-        const welcome = {
-          id: 'w-' + Date.now(),
-          who: 'Íris · Inteligência do Projeto',
-          role: 'ag',
-          engine: self.state.execEngine || 'Cursor',
-          ts: hm(),
-          thoughts: [
-            '[Workspace] Conectada ao projeto ' + (target.name || 'Projeto'),
-            '[Contexto] Pronta para responder sobre arquivos, arquitetura, etapas e execução nos 4 motores'
-          ],
-          t: 'Olá, Carlos! Sou a Íris, conectada ao projeto "' + (target.name || 'Projeto') + '". Pergunte sobre o que está sendo executado, estrutura de pastas, arquivos ou peça qualquer alteração.'
-        };
-        self.setState({ msgs: [welcome] });
-      }
-    };
-    this.sendIrisMessage = function(rawText) {
-      let txt = String(rawText != null ? rawText : (self.state.draft || '')).trim();
-      if (!txt && typeof document !== 'undefined') {
-        const inp = document.querySelector('#tavir-iris-chat-input');
-        if (inp && inp.value) txt = String(inp.value).trim();
-      }
-      if (!txt) return;
-      if (typeof document !== 'undefined') {
-        const inp = document.querySelector('#tavir-iris-chat-input');
-        if (inp) inp.value = '';
-      }
-      const ap = self.state.activeProject;
-      const stgRow = STG[Math.min(STG.length - 1, Math.max(0, self.state.stage || 0))] || STG[0];
-      const eng = self.getEngineMeta(self.state.execEngineId || self.state.execEngine, self.state.execModel, self.state.execEffort);
-      const userMsg = {
-        id: 'u-' + Date.now(),
-        who: 'Carlos',
-        role: 'me',
-        engine: eng.name,
-        ts: hm(),
-        thoughts: [],
-        t: txt
-      };
-      const curMsgs = (Array.isArray(self.state.msgs) && self.state.msgs.length) ? self.state.msgs.slice() : [{
-        id: 'w-init',
-        who: 'Íris · Inteligência do Projeto',
-        role: 'ag',
-        engine: eng.name,
-        ts: hm(),
-        thoughts: ['[Workspace] Conectada ao projeto ' + ((ap && ap.name) || 'Projeto')],
-        t: 'Olá, Carlos! Sou a Íris, conectada ao projeto "' + ((ap && ap.name) || 'Projeto') + '".'
-      }];
-      curMsgs.push(userMsg);
-      self.setState({ msgs: curMsgs, draft: '', typing: true, chat: true, unread: 0 });
-      const tavir = getTavir();
-      const key = (ap && (ap.id || ap.local_path || ap.slug || ap.name)) || 'projeto';
-      const finishWithReply = function(replyObj) {
-        const updated = (self.state.msgs || []).slice();
-        updated.push(replyObj);
-        const newThoughts = (Array.isArray(replyObj.thoughts) && replyObj.thoughts.length)
-          ? replyObj.thoughts.map(function(tLine, idx) { return { step: idx + 1, ts: hm(), tag: eng.name.toUpperCase(), text: tLine }; })
-          : self.state.execThoughts;
-        self.setState({
-          msgs: updated,
-          typing: false,
-          execThoughts: newThoughts,
-          showThinkingPanel: false,
-          extra: [[hm(), 'chat', 'Íris (' + eng.name + '): ' + txt.slice(0, 48), 'Íris', '—', (self.state.stage || 0) + 1]].concat(self.state.extra || [])
-        });
-      };
-      if (tavir && tavir.projects && tavir.projects.askIris) {
-        tavir.projects.askIris({
-          projectId: key,
-          projectName: (ap && ap.name) || 'Projeto',
-          projectPath: (ap && ap.local_path) || '',
-          stageName: stgRow[0],
-          stageOwner: stgRow[1],
-          engine: eng.name,
-          model: eng.model,
-          effort: eng.effort,
-          persona: self.state.chatPersona || 'Íris · Inteligência do Projeto',
-          question: txt
-        }).then(function(res) {
-          if (res && res.replyMessage) {
-            finishWithReply(res.replyMessage);
-          } else {
-            finishWithReply({
-              id: 'a-' + Date.now(),
-              who: 'Íris · ' + eng.name,
-              role: 'ag',
-              engine: eng.name,
-              ts: hm(),
-              thoughts: ['[' + eng.name + '] Contexto do projeto ' + ((ap && ap.name) || '') + ' analisado na etapa ' + stgRow[0]],
-              t: 'Analisei sua solicitação ("' + txt + '") no projeto ' + ((ap && ap.name) || 'ativo') + ' com o motor ' + eng.name + '. Diretriz vinculada à etapa ' + stgRow[0] + ' (' + stgRow[1] + ').'
-            });
-          }
-        }).catch(function() {
-          finishWithReply({
-            id: 'a-' + Date.now(),
-            who: 'Íris · ' + eng.name,
-            role: 'ag',
-            engine: eng.name,
-            ts: hm(),
-            thoughts: ['[' + eng.name + '] Leitura local do projeto ' + ((ap && ap.name) || '')],
-            t: 'Recebi seu pedido ("' + txt + '") para ' + ((ap && ap.name) || 'o projeto') + '. Registrado na etapa ' + stgRow[0] + ' com ' + stgRow[1] + ' via ' + eng.name + '.'
-          });
-        });
-      } else {
-        clearTimeout(self.t3);
-        self.t3 = setTimeout(function() {
-          finishWithReply({
-            id: 'a-' + Date.now(),
-            who: 'Íris · ' + eng.name,
-            role: 'ag',
-            engine: eng.name,
-            ts: hm(),
-            thoughts: ['[' + eng.name + '] Inspecionando ' + ((ap && ap.name) || 'projeto') + ' na etapa ' + stgRow[0]],
-            t: 'Analisei "' + txt + '" no contexto de ' + ((ap && ap.name) || 'projeto') + ' (etapa ' + stgRow[0] + ' · ' + stgRow[1] + '). Tudo sincronizado com o motor ' + eng.name + '.'
-          });
-        }, 500);
-      }
-    };
-    this.runStageWithEngine = function(customInstruction) {
-      const ap = self.state.activeProject;
-      const app = self.props.app || NOOP;
-      const stgIdx = self.state.stage || 0;
-      const stgRow = STG[Math.min(STG.length - 1, Math.max(0, stgIdx))] || STG[0];
-      const eng = self.getEngineMeta(self.state.execEngineId || self.state.execEngine, self.state.execModel, self.state.execEffort);
-      const eff = eng.effortLabel;
-      let instr = String(customInstruction != null ? customInstruction : (self.state.execDraft || '')).trim();
-      if (customInstruction === undefined && !instr && typeof document !== 'undefined') {
-        const inp = document.querySelector('#tavir-live-exec-input');
-        if (inp && inp.value) instr = String(inp.value).trim();
-      }
-      if (typeof document !== 'undefined') {
-        const inp = document.querySelector('#tavir-live-exec-input');
-        if (inp) inp.value = '';
-      }
-      self.setState({
-        execRunning: true,
-        execDraft: '',
-        showThinkingPanel: false,
-        execThoughts: [
-          { step: 1, ts: hm(), tag: eng.name.toUpperCase(), text: 'Iniciando ' + eng.protocol + ' · ' + eng.caption + ' na pasta do projeto...' }
-        ],
-        execSteps: [
-          { label: 'Inicializando ' + eng.name + ' (' + eng.sdk + ')', state: 'running', meta: eng.modelLabel },
-          { label: 'Executando raciocínio (' + eff + ') na etapa ' + stgRow[0], state: 'queued', meta: stgRow[1] }
-        ]
-      });
-      const tavir = getTavir();
-      const key = (ap && (ap.id || ap.local_path || ap.slug || ap.name)) || 'projeto';
-      if (tavir && tavir.projects && tavir.projects.runWithThinking) {
-        tavir.projects.runWithThinking({
-          projectId: key,
-          projectName: (ap && ap.name) || 'Projeto',
-          projectPath: (ap && ap.local_path) || '',
-          stageIndex: stgIdx,
-          stageName: stgRow[0],
-          stageOwner: stgRow[1],
-          stageRole: stgRow[3],
-          engine: eng.name,
-          model: eng.model,
-          effort: eng.effort,
-          instruction: instr
-        }).then(function(res) {
-          const allThoughts = (res && Array.isArray(res.thoughts) && res.thoughts.length) ? res.thoughts : [
-            { step: 1, ts: hm(), tag: eng.name.toUpperCase(), text: 'Executado via ' + eng.protocol },
-            { step: 2, ts: hm(), tag: 'CONCLUÍDO', text: 'Artefato da etapa ' + stgRow[0] + ' atualizado no workspace.' }
-          ];
-          // Anima a entrada dos pensamentos para experiência em tempo real estilo Concierge
-          let idx = 1;
-          clearInterval(self.tThink);
-          self.tThink = setInterval(function() {
-            if (idx < allThoughts.length) {
-              idx++;
-              self.setState({ execThoughts: allThoughts.slice(0, idx) });
-            } else {
-              clearInterval(self.tThink);
-              self.setState({
-                execRunning: false,
-                execThoughts: allThoughts,
-                execSteps: (res && Array.isArray(res.steps)) ? res.steps : self.state.execSteps,
-                execTokens: (res && res.tokens) || '2.840 tok',
-                execElapsed: (res && res.elapsed) || '2,9 s',
-                execCost: (res && res.cost) || 'US$ 0,04',
-                extra: [[hm(), 'run', '[' + eng.name + '] Etapa ' + stgRow[0] + (instr ? (' · "' + instr.slice(0, 40) + '"') : ' executada com pensamento'), stgRow[1], (res && res.cost) || 'US$ 0,04', stgIdx + 1]].concat(self.state.extra || [])
-              });
-              if (ap) self.loadProjectTree(ap);
-              app.toast('Execução concluída · ' + eng.name, 'Etapa ' + stgRow[0] + ' processada e artefato gravado na pasta do projeto.');
-            }
-          }, 260);
-        }).catch(function() {
-          self.setState({ execRunning: false });
-          self.syncLiveThinkingState(ap, self.state.projTree, eng.name, eff, stgIdx);
-        });
-      } else {
-        setTimeout(function() {
-          self.setState({ execRunning: false });
-          self.syncLiveThinkingState(ap, self.state.projTree, eng.name, eff, stgIdx);
-          app.toast('Execução concluída · ' + eng.name, 'Pensamento finalizado na etapa ' + stgRow[0] + '.');
-        }, 900);
-      }
-    };
-    this.loadProjectTree = function(proj) {
-      if (!proj) return;
-      const tavir = getTavir();
-      const key = proj.id || proj.local_path || proj.slug || proj.name;
-      self.syncLiveThinkingState(proj, null);
-      self.loadProjectChat(proj);
-      if (tavir && tavir.projects && tavir.projects.inspectFolder) {
-        tavir.projects.inspectFolder(key).then(function(info) {
-          if (info) {
-            self.setState({ projTree: info });
-            self.syncLiveThinkingState(proj, info);
-          }
-        }).catch(function(err) {
-          console.error('[TAVIR Factory] Erro ao ler estrutura da pasta:', err);
-        });
-      }
-    };
-    this.openProjectInExplorer = function(proj) {
-      const target = proj || self.state.activeProject;
-      if (!target) return;
-      const app = self.props.app || NOOP;
-      const tavir = getTavir();
-      const key = target.local_path || target.id || target.slug;
-      if (tavir && tavir.projects && tavir.projects.openInExplorer) {
-        tavir.projects.openInExplorer(key).then(function(res) {
-          app.toast('Pasta aberta no Windows Explorer', (res && res.path) || target.local_path || key);
-        });
-      } else {
-        app.toast('Caminho da pasta', target.local_path || ('tavir-interno/' + (target.slug || 'projeto')));
-      }
-    };
-    this.inspectTreeItem = function(item) {
-      if (!item) return;
-      const app = self.props.app || NOOP;
-      const tavir = getTavir();
-      if (tavir && tavir.projects && tavir.projects.readFile && item.fullPath) {
-        tavir.projects.readFile(item.fullPath).then(function(res) {
-          app.modal('evidence', {
-            title: (item.isDir ? '📁 ' : '📄 ') + item.relPath,
-            sc: 'Projeto Isolado',
-            dom: (self.state.activeProject && self.state.activeProject.name) || 'Fábrica',
-            src: item.fullPath,
-            conf: 'observado',
-            text: (res && res.content) || ('Caminho: ' + item.fullPath)
-          });
-        });
-      } else {
-        app.modal('evidence', {
-          title: (item.isDir ? '📁 ' : '📄 ') + item.relPath,
-          sc: 'Projeto Isolado',
-          dom: (self.state.activeProject && self.state.activeProject.name) || 'Fábrica',
-          src: item.fullPath || item.relPath,
-          conf: 'observado',
-          text: 'Caminho local: ' + (item.fullPath || item.relPath)
-        });
-      }
-    };
-    this.toggleProjectPause = function(proj, ev) {
-      if (ev && ev.stopPropagation) ev.stopPropagation();
-      if (!proj || !proj.id) return;
-      const app = self.props.app || NOOP;
-      const nextStatus = proj.status === 'paused' ? 'running' : 'paused';
-      const tavir = getTavir();
-      if (tavir && tavir.projects && tavir.projects.updateStatus) {
-        tavir.projects.updateStatus(proj.id, nextStatus).catch(function() {});
-      }
-      const updatedList = (self.state.projects || []).map(function(x) {
-        return x.id === proj.id ? Object.assign({}, x, { status: nextStatus }) : x;
-      });
-      self.saveLocalProjects(updatedList);
-      const nextActive = self.state.activeProject && self.state.activeProject.id === proj.id
-        ? Object.assign({}, self.state.activeProject, { status: nextStatus })
-        : self.state.activeProject;
-      self.setState({ projects: updatedList, activeProject: nextActive });
-      app.toast(nextStatus === 'paused' ? 'Projeto pausado' : 'Projeto retomado', (proj.name || 'Projeto') + (nextStatus === 'paused' ? ' foi pausado com segurança.' : ' voltou a rodar na esteira.'));
-    };
-    this.deleteProject = function(proj, ev) {
-      if (ev && ev.stopPropagation) ev.stopPropagation();
-      if (!proj || !proj.id) return;
-      const app = self.props.app || NOOP;
-      const fallbackPath = proj.local_path || ((self.state.projTree && self.state.projTree.id === proj.id) ? self.state.projTree.rootPath : '') || ('tavir-interno/' + (proj.slug || 'projeto'));
-      app.modal('factory-delete', {
-        id: proj.id,
-        name: proj.name || 'Projeto',
-        slug: proj.slug || '',
-        path: fallbackPath
-      });
-    };
-    this.loadProjects = function() {
-      const tavir = getTavir();
-      let localList = [];
-      try {
-        const raw = localStorage.getItem('tavir_factory_projects');
-        if (raw) localList = JSON.parse(raw) || [];
-      } catch (e) {}
-      if (tavir && tavir.projects && tavir.projects.list) {
-        tavir.projects.list().then(function(rows) {
-          const dbList = Array.isArray(rows) ? rows : [];
-          self.saveLocalProjects(dbList);
-          const nextActive = self.state.activeProject
-            ? (dbList.find(function(x) { return x.id === self.state.activeProject.id; }) || self.state.activeProject)
-            : null;
-          self.setState({ projects: dbList, activeProject: nextActive });
-          if (nextActive) self.loadProjectTree(nextActive);
-        }).catch(function() {
-          self.setState({ projects: localList });
-        });
-      } else {
-        self.setState({ projects: localList });
-      }
-    };
-    this.loadProjects();
-    this.onProjCreated = function(ev) {
-      self.loadProjects();
-      if (ev && ev.detail && ev.detail.project) {
-        self.loadProjectTree(ev.detail.project);
-      }
-      if (ev && ev.detail && ev.detail.openConsole) {
-        self.setState({ activeProject: ev.detail.project || null, open: true, stage: 0, showTreePanel: false, showTreeModal: false, showThinkingPanel: false });
-      }
-    };
-    this.onProjDeleted = function(ev) {
-      const delId = ev && ev.detail && ev.detail.id;
-      if (!delId) { self.loadProjects(); return; }
-      const updatedList = (self.state.projects || []).filter(function(x) { return x.id !== delId; });
-      self.saveLocalProjects(updatedList);
-      const isClosingActive = self.state.activeProject && self.state.activeProject.id === delId;
-      self.setState({
-        projects: updatedList,
-        activeProject: isClosingActive ? null : self.state.activeProject,
-        projTree: isClosingActive ? null : self.state.projTree,
-        open: isClosingActive ? false : self.state.open
-      });
-    };
-    if (typeof window !== 'undefined') {
-      window.addEventListener('tavir:project-created', this.onProjCreated);
-      window.addEventListener('tavir:project-deleted', this.onProjDeleted);
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.addEventListener('tavir:project-created', this.onProjCreated);
-          window.parent.addEventListener('tavir:project-deleted', this.onProjDeleted);
-        }
-      } catch (e) {}
-    }
   }
-  componentWillUnmount() {
-    clearTimeout(this.t1); clearTimeout(this.t2); clearTimeout(this.t3); clearInterval(this.tThink);
-    if (typeof window !== 'undefined') {
-      if (this.onProjCreated) window.removeEventListener('tavir:project-created', this.onProjCreated);
-      if (this.onProjDeleted) window.removeEventListener('tavir:project-deleted', this.onProjDeleted);
-      try {
-        if (window.parent && window.parent !== window) {
-          if (this.onProjCreated) window.parent.removeEventListener('tavir:project-created', this.onProjCreated);
-          if (this.onProjDeleted) window.parent.removeEventListener('tavir:project-deleted', this.onProjDeleted);
-        }
-      } catch (e) {}
-    }
-  }`;
-  fabHtml = fabHtml.replace(origFabUnmount, newFabLifecycle);
-
-  // Atualiza métricas de Esteiras ativas para refletir a quantidade real
-  fabHtml = fabHtml.replace(
-    '<div class="metric"><span class="eyebrow">Esteiras ativas</span><strong>3</strong><small>2 criação · 1 manutenção</small></div>',
-    '<div class="metric"><span class="eyebrow">Esteiras ativas</span><strong>{{activeLinesN}}</strong><small>{{activeLinesSub}}</small></div>'
-  );
-
-  // Unifica o cálculo de cur, pct e etapas no renderVals() do Console com o projeto ativo clicado
-  fabHtml = fabHtml.replace(
-    "const cur = s.signed ? 6 : 5;",
-    `const ap = s.activeProject;
-    const apTotal = ap ? Math.max(1, Number(ap.total_stages) || 9) : 9;
-    const apDone = ap ? Math.min(apTotal, Math.max(0, Number(ap.stages_done) || 0)) : (s.signed ? 6 : 5);
-    const apPct = ap ? Math.round((apDone / apTotal) * 100) : (s.signed ? 72 : 64);
-    const apIsDone = ap ? (ap.status === 'done' || ap.status === 'completed' || apDone >= apTotal) : false;
-    const apIsPaused = ap ? (ap.status === 'paused') : false;
-    const cur = ap ? (apIsDone ? STG.length : Math.min(STG.length - 1, Math.floor((apDone / apTotal) * STG.length))) : (s.signed ? 6 : 5);
-    const apStageN = ap ? (apIsDone ? apTotal : Math.min(apTotal, apDone + 1)) : (cur + 1);
-    const pt = (s.projTree && (!ap || s.projTree.id === ap.id || s.projTree.slug === ap.slug)) ? s.projTree : null;
-    const projFolderPath = (pt && pt.rootPath) || (ap && ap.local_path) || ('tavir-interno/' + ((ap && ap.slug) || 'projeto'));
-    const projTreeList = (pt && Array.isArray(pt.tree)) ? pt.tree : [];`
-  );
-
-  // Atualiza o card "Agora" no Console do Projeto para refletir 100% concluído ou pausado
-  const origNowBlock = `    const now = s.signed
-      ? { t: 'Security em andamento', d: 'QA assinado às ' + s.signedAt + '. O Auditor confere headers, segredos e LGPD.', icon: IC.clock, bg: 'rgba(27,197,189,.08)', bd: 'rgba(27,197,189,.3)', ibg: 'rgba(27,197,189,.16)', ifg: '#1BC5BD', anim: 'none', btn: 'Abrir Security', btnCls: 'onink-sec', go: () => goStage(6) }
-      : { t: 'Gate de QA · ' + pending + (pending === 1 ? ' critério aberto' : ' critérios abertos'), d: pending ? 'Prova em 390 px e assinatura de SEO seguram a entrega. O resto passou.' : 'Tudo verificado. Falta a sua assinatura.', icon: IC.shield, bg: 'rgba(230,177,90,.08)', bd: 'oklch(.80 .155 78 / .35)', ibg: 'oklch(.80 .155 78 / .18)', ifg: 'oklch(.80 .155 78)', anim: 'ringwarn 2s var(--ease) infinite', btn: pending ? 'Resolver gate' : 'Assinar gate', btnCls: 'onink', go: () => goStage(5, 'guard') };`;
-  const newNowBlock = `    const now = apIsDone
-      ? { t: 'Esteira 100% concluída', d: 'Todas as ' + apTotal + ' etapas foram finalizadas. Pacote e artefatos isolados na pasta do projeto.', icon: IC.check, bg: 'rgba(27,197,189,.08)', bd: 'rgba(27,197,189,.3)', ibg: 'rgba(27,197,189,.16)', ifg: '#1BC5BD', anim: 'none', btn: 'Ver Handoff', btnCls: 'onink-sec', go: () => goStage(STG.length - 1) }
-      : apIsPaused
-      ? { t: 'Esteira pausada pelo operador', d: 'Execução suspensa em ' + apPct + '% (etapa ' + apStageN + ' de ' + apTotal + '). Nenhum token consumido.', icon: IC.clock, bg: 'rgba(230,177,90,.08)', bd: 'oklch(.80 .155 78 / .35)', ibg: 'oklch(.80 .155 78 / .18)', ifg: 'oklch(.80 .155 78)', anim: 'none', btn: 'Retomar projeto', btnCls: 'onink', go: () => self.toggleProjectPause(ap) }
-      : s.signed
-      ? { t: 'Security em andamento', d: 'QA assinado às ' + s.signedAt + '. O Auditor confere headers, segredos e LGPD.', icon: IC.clock, bg: 'rgba(27,197,189,.08)', bd: 'rgba(27,197,189,.3)', ibg: 'rgba(27,197,189,.16)', ifg: '#1BC5BD', anim: 'none', btn: 'Abrir Security', btnCls: 'onink-sec', go: () => goStage(6) }
-      : { t: 'Etapa ' + apStageN + ' de ' + apTotal + ' · ' + (STG[Math.min(STG.length - 1, cur)] || STG[0])[0], d: 'Responsável: ' + (STG[Math.min(STG.length - 1, cur)] || STG[0])[1] + '. Ambiente isolado (.tavir/isolation.json).', icon: IC.run, bg: 'rgba(27,197,189,.08)', bd: 'rgba(27,197,189,.3)', ibg: 'rgba(27,197,189,.16)', ifg: '#1BC5BD', anim: 'none', btn: 'Inspecionar etapa', btnCls: 'onink-sec', go: () => goStage(Math.min(STG.length - 1, cur)) };`;
-  fabHtml = fabHtml.replace(origNowBlock, newNowBlock);
-
-  // Substitui lines mockadas por mapeamento dinâmico de s.projects
-  const origFabLinesIdx = fabHtml.indexOf('lines: [');
-  if (origFabLinesIdx !== -1) {
-    const origFabLinesEnd = fabHtml.indexOf('].map((l)', origFabLinesIdx);
-    const dynamicLinesExpr = `absorbLine: () => app.modal('factory-absorb', { tpl: 'Sistemas', mode: 'Manutenção' }),
-      activeLinesN: (s.projects || []).length,
-      activeLinesSub: (s.projects || []).filter((p) => !String(p.template_code || '').endsWith('-m')).length + ' criação · ' + (s.projects || []).filter((p) => String(p.template_code || '').endsWith('-m')).length + ' manutenção',
-      lines: (s.projects || []).map((p) => {
-        const code = String(p.template_code || 'lp-c').toLowerCase();
-        const catLabel = code.startsWith('of') ? 'Ofertas' : code.startsWith('sy') ? 'Sistemas' : 'Landing Pages';
-        const modeLabel = code.endsWith('-m') ? 'Manutenção' : 'Criação';
-        const total = Math.max(1, Number(p.total_stages) || 9);
-        const done = Math.min(total, Math.max(0, Number(p.stages_done) || 0));
-        const isDone = p.status === 'done' || p.status === 'completed' || done >= total;
-        const isPaused = p.status === 'paused';
-        const curIdx = isDone ? STG.length - 1 : Math.min(STG.length - 1, Math.floor((done / total) * STG.length));
-        const pct = Math.round((done / total) * 100);
-        const stg = STG[curIdx] || STG[0];
-        const shortFolder = p.local_path ? ('📁 ' + String(p.local_path).split(/[\\\\/]/).slice(-2).join('/')) : ('📁 tavir-interno/' + (p.slug || 'projeto'));
-        return {
-          id: p.id,
-          name: p.name || 'Projeto sem nome',
-          kind: catLabel + ' · ' + modeLabel,
-          client: p.company || p.client || 'TAVIR',
-          due: (isDone ? 'concluída' : isPaused ? 'pausada' : 'ativa') + ' · ' + shortFolder,
-          dueColor: isDone ? 'var(--flow)' : isPaused ? 'var(--warning)' : 'var(--text-muted)',
-          n: Math.min(16, total),
-          cur: isDone ? Math.min(16, total) : Math.min(Math.min(16, total) - 1, done),
-          gate: done === 0 && !isDone && !isPaused,
-          stage: isDone ? 'Concluído (Handoff)' : stg[0],
-          owner: stg[1],
-          motorBadge: (s.execEngine || 'Cursor') + ' · SDK',
-          thoughtPreview: isDone
-            ? ('[' + (s.execEngine || 'Cursor') + '] Esteira 100% concluída · artefatos validados na pasta isolada do projeto.')
-            : isPaused
-            ? ('[' + (s.execEngine || 'Cursor') + '] Execução pausada na etapa ' + stg[0] + ' · contexto preservado.')
-            : ('[' + (s.execEngine || 'Cursor') + '] Raciocinando na etapa ' + stg[0] + ' com ' + stg[1] + ' (' + stg[3] + ')...'),
-          pct: pct,
-          cls: isDone ? 'flow' : isPaused ? 'warn' : 'flow',
-          state: isDone ? 'concluída' : isPaused ? 'pausada' : 'rodando',
-          pauseLabel: isPaused ? 'Retomar' : 'Pausar',
-          togglePause: (ev) => self.toggleProjectPause(p, ev),
-          del: (ev) => self.deleteProject(p, ev),
-          open: () => {
-            self.setState({ activeProject: p, stage: curIdx, open: true });
-            self.loadProjectTree(p);
-          }
-        };
-      }).map((l)`;
-    fabHtml = fabHtml.slice(0, origFabLinesIdx) + dynamicLinesExpr + fabHtml.slice(origFabLinesEnd + 9);
-    console.log('Linhas da Fábrica conectadas dinamicamente a s.projects com Pausar/Remover e Pasta!');
-  }
-
-  // Personaliza o cabeçalho, barra da pasta local, Painel de Execução ao Vivo & Pensamento (4 Motores) e Estrutura de Pastas no Console
-  fabHtml = fabHtml.replace(
-    '<span style="font-size: 14px; font-weight: 600">Meridian</span>',
-    '<span style="font-size: 14px; font-weight: 600">{{projName}}</span>'
-  );
-  fabHtml = fabHtml.replace(
-    '<button class="btn sm ghost" onClick="{{control}}">Controle do projeto</button>\n    <button class="btn sm secondary" onClick="{{askChange}}">Pedir alteração</button>',
-    '<button class="btn sm primary" onClick="{{openChat}}">💬 Íris · Chat do Projeto</button>\n    <button class="btn sm secondary" onClick="{{absorbIntoProj}}">Absorver pasta (Product Lab)</button>\n    <button class="btn sm ghost" onClick="{{openProjExplorer}}">Abrir pasta</button>\n    <button class="btn sm ghost" onClick="{{togglePauseActive}}">{{activePauseLabel}}</button>\n    <button class="btn sm ghost" style="color: var(--danger)" onClick="{{deleteActive}}">Remover projeto</button>\n    <button class="btn sm ghost" onClick="{{control}}">Controle e Isolamento</button>\n    <button class="btn sm secondary" onClick="{{askChange}}">Pedir alteração</button>'
-  );
-  fabHtml = fabHtml.replace(
-    '<span class="eyebrow">LP · Criação · Meridian Capital</span>',
-    '<span class="eyebrow">{{projEyebrow}}</span>'
-  );
-  fabHtml = fabHtml.replace(
-    '<h1 style="font-size: 30px; font-weight: 600; letter-spacing: -.03em; line-height: 1.1">Meridian — landing institucional</h1>',
-    '<h1 style="font-size: 30px; font-weight: 600; letter-spacing: -.03em; line-height: 1.1">{{projTitle}}</h1>'
-  );
-  fabHtml = fabHtml.replace(
-    '<div style="display: flex; gap: 8px; flex-wrap: wrap"><span class="badge">entrega 04/11 · faltam 6 dias</span><span class="badge flow">PRO-005 assinada</span><span class="badge">6 agentes</span></div>',
-    `<div style="display: flex; gap: 8px; flex-wrap: wrap"><span class="badge {{projStateCls}}">{{projStateBadge}}</span><span class="badge flow">{{projIsolationBadge}}</span><span class="badge">{{projGitBadge}}</span><span class="badge flow">{{execModelBadge}}</span></div>
-      <div style="margin-top: 4px; padding: 10px 14px; border-radius: 10px; background: rgba(7,13,24,.65); border: 1px solid var(--on-ink-line); display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
-        <span class="eyebrow" style="color: var(--teal); font-size: 10px">📁 Pasta do Projeto:</span>
-        <code class="mono" style="font-size: 12px; color: #F4F6F2; word-break: break-all; flex: 1; min-width: 180px">{{projFolderPath}}</code>
-        <button type="button" class="btn sm onink-sec" onClick="{{openProjExplorer}}" style="height: 28px; padding: 0 10px; font-size: 11.5px">Abrir no Explorer</button>
-        <button type="button" class="btn sm onink-sec" onClick="{{openTreeModal}}" style="height: 28px; padding: 0 10px; font-size: 11.5px">📁 Estrutura</button>
-      </div>`
-  );
-
-  // Bloco compacto de execução (pensamento colapsado) + modal de estrutura — sem poluir a tela
-  fabHtml = fabHtml.replace(
-    '  <!-- topologia -->',
-    `  <!-- execução compacta · pensamento colapsável · workspace em modal -->
-  <section class="card" style="padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--flow-subtle-line)">
-    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
-      <span style="width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 5 14h6l-1 7 8-11h-6z"></path></svg>
-      </span>
-      <div class="grow" style="min-width: 200px">
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
-          <span class="eyebrow" style="color: var(--flow)">Motor & execução</span>
-          <span class="badge {{execStatusCls}}" style="font-size: 10px; height: 18px">{{execStatusBadge}}</span>
-          <span class="badge flow" style="font-size: 10px; height: 18px">{{execModelBadge}}</span>
-        </div>
-        <div style="font-size: 13.5px; font-weight: 600; margin-top: 2px; line-height: 1.35">{{execNowHeadline}}</div>
-      </div>
-      <span class="mono muted" style="font-size: 11px">{{execTelemetry}}</span>
-      <button type="button" class="btn sm primary" onClick="{{runStageNow}}" style="height: 32px">{{runStageBtnLabel}}</button>
-      <button type="button" class="btn sm secondary" onClick="{{openChat}}" style="height: 32px">💬 Íris</button>
-      <button type="button" class="btn sm ghost" onClick="{{toggleThinkingPanel}}" style="height: 32px">{{showThinkingBtnLabel}}</button>
-      <button type="button" class="btn sm ghost" onClick="{{openTreeModal}}" style="height: 32px">📁 Pasta</button>
-    </div>
-
-    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding-top: 6px; border-top: 1px solid var(--line)">
-      <span class="eyebrow" style="font-size: 9.5px">Motor ({{engineCount}}):</span>
-      <div class="segs">
-        <sc-for list="{{engineOpts}}" as="eo" hint-placeholder-count="4">
-          <button type="button" class="seg {{eo.on}}" onClick="{{eo.pick}}" style="height: 26px; font-size: 11.5px">{{eo.label}}</button>
-        </sc-for>
-      </div>
-      <span class="eyebrow" style="font-size: 9.5px">Modelo:</span>
-      <div class="segs">
-        <sc-for list="{{modelOpts}}" as="mo" hint-placeholder-count="4">
-          <button type="button" class="seg {{mo.on}}" onClick="{{mo.pick}}" style="height: 26px; font-size: 11.5px">{{mo.label}}</button>
-        </sc-for>
-      </div>
-      <sc-if value="{{showEffortPicker}}" hint-placeholder-val="{{true}}">
-        <span class="eyebrow" style="font-size: 9.5px">Esforço:</span>
-        <div class="segs">
-          <sc-for list="{{effortOpts}}" as="ef" hint-placeholder-count="4">
-            <button type="button" class="seg {{ef.on}}" onClick="{{ef.pick}}" style="height: 26px; font-size: 11.5px">{{ef.label}}</button>
-          </sc-for>
-        </div>
-      </sc-if>
-      <sc-if value="{{showAutoNote}}" hint-placeholder-val="{{false}}">
-        <span class="muted" style="font-size: 11px">Auto não aplica Cost/Balance/Intelligence nesta instalação.</span>
-      </sc-if>
-    </div>
-
-    <sc-if value="{{showThinkingPanel}}" hint-placeholder-val="{{false}}">
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; animation: rise 180ms var(--ease) both">
-        <div style="border-radius: 10px; background: #070d18; border: 1px solid rgba(27,197,189,.28); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; max-height: 220px">
-          <div style="display: flex; align-items: center; gap: 8px">
-            <span class="eyebrow" style="color: #1BC5BD; font-size: 10px">🧠 Pensamento · {{execEngine}}</span>
-            <div class="grow"></div>
-            <button type="button" class="btn sm ghost" onClick="{{toggleThinkingPanel}}" style="height: 24px; font-size: 11px; padding: 0 8px">Ocultar</button>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 6px; overflow: auto">
-            <sc-for list="{{execThoughtsList}}" as="th" hint-placeholder-count="3">
-              <div style="font-family: var(--font-mono); font-size: 11.5px; line-height: 1.45; color: #E2E8F0; padding: 5px 8px; border-radius: 7px; background: rgba(15,23,41,.85); border-left: 2px solid #1BC5BD">
-                <div style="display: flex; gap: 8px; font-size: 10px; color: #94A3B8; margin-bottom: 2px"><b style="color: #1BC5BD">[{{th.tag}}]</b><span>#{{th.step}}</span><div class="grow"></div><span>{{th.ts}}</span></div>
-                <div>{{th.text}}</div>
-              </div>
-            </sc-for>
-          </div>
-        </div>
-        <div style="border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px">
-          <div style="display: flex; align-items: center; gap: 8px">
-            <span class="eyebrow" style="font-size: 10px">Passos</span>
-            <div class="grow"></div>
-            <span class="badge flow" style="font-size: 10px; height: 18px">{{execStepsCount}}</span>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 5px; max-height: 120px; overflow: auto">
-            <sc-for list="{{execStepsList}}" as="st" hint-placeholder-count="3">
-              <div style="display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 7px; background: var(--surface-1); border: 1px solid var(--line); font-size: 12px">
-                <span class="mono" style="color: {{st.color}}; font-weight: 700">{{st.icon}}</span>
-                <span class="grow" style="font-weight: 500">{{st.label}}</span>
-                <span class="mono muted" style="font-size: 10.5px">{{st.meta}}</span>
-              </div>
-            </sc-for>
-          </div>
-          <div style="display: flex; gap: 8px; align-items: center; padding-top: 4px; border-top: 1px solid var(--line)">
-            <input id="tavir-live-exec-input" class="input" style="height: 32px; font-size: 12px; flex: 1" value="{{execDraft}}" onInput="{{onExecDraft}}" onChange="{{onExecDraft}}" onKeyDown="{{onExecKey}}" placeholder="Instrução ao motor {{execEngine}}...">
-            <button type="button" class="btn sm secondary" onClick="{{sendLiveInstruction}}" style="height: 32px; flex: none">Injetar</button>
-          </div>
-        </div>
-      </div>
-    </sc-if>
-  </section>
-
-  <sc-if value="{{showTreeModal}}" hint-placeholder-val="{{false}}">
-    <div role="dialog" aria-modal="true" aria-label="Estrutura do workspace" style="position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgba(7,13,24,.72); padding: 24px; animation: rise 160ms var(--ease) both">
-      <div class="card" style="width: min(720px, 100%); max-height: min(78vh, 640px); display: flex; flex-direction: column; gap: 12px; padding: 16px 18px; border: 1px solid var(--flow-subtle-line); box-shadow: var(--shadow-elevated); pointer-events: auto">
-        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
-          <div class="grow" style="min-width: 180px">
-            <div class="eyebrow" style="color: var(--flow)">Workspace isolado</div>
-            <h3 style="font-size: 16px; font-weight: 600; margin-top: 2px">{{projName}} — estrutura no disco</h3>
-            <div class="mono muted" style="font-size: 11.5px; margin-top: 2px; word-break: break-all">{{projFolderPath}}</div>
-          </div>
-          <span class="badge flow">{{projDirCount}} pastas</span>
-          <span class="badge">{{projFileCount}} arquivos</span>
-          <button type="button" class="btn sm ghost" onClick="{{refreshProjTree}}" style="height: 30px">Atualizar</button>
-          <button type="button" class="btn sm secondary" onClick="{{openProjExplorer}}" style="height: 30px">Explorer</button>
-          <button type="button" class="btn sm primary" onClick="{{closeTreeModal}}" style="height: 30px; padding: 0 12px">Fechar</button>
-        </div>
-        <div style="flex: 1; min-height: 0; overflow: auto; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-0); padding: 6px 10px">
-          <sc-for list="{{projTreeItems}}" as="item" hint-placeholder-count="8">
-            <div onClick="{{item.open}}" style="display: flex; align-items: center; gap: 10px; padding: 6px 8px; padding-left: {{item.padLeft}}px; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 12.5px">
-              <span class="mono" style="font-size: 12px; color: {{item.iconColor}}">{{item.icon}}</span>
-              <b class="mono" style="font-weight: {{item.fw}}; color: {{item.textColor}}">{{item.relPath}}</b>
-              <div class="grow"></div>
-              <span class="badge {{item.badgeCls}}" style="font-size: 10px; height: 18px; padding: 0 6px">{{item.ext}}</span>
-              <span class="mono muted" style="font-size: 10.5px; min-width: 56px; text-align: right">{{item.sizeLabel}}</span>
-            </div>
-          </sc-for>
-          <sc-if value="{{projTreeEmpty}}" hint-placeholder-val="{{false}}">
-            <div class="muted" style="padding: 16px; font-size: 13px">Carregando estrutura...</div>
-          </sc-if>
-        </div>
-      </div>
-    </div>
-  </sc-if>
-
-  <!-- topologia -->`
-  );
-
-  fabHtml = fabHtml.replace(
-    '<div class="num" style="font-size: 28px; margin-top: 4px">{{stageN}}<span style="font-size: 14px; color: var(--on-ink-muted)"> / 9</span></div>',
-    '<div class="num" style="font-size: 28px; margin-top: 4px">{{stageN}}<span style="font-size: 14px; color: var(--on-ink-muted)"> / {{totalStagesN}}</span></div>'
-  );
-  fabHtml = fabHtml.replace(
-    '<div class="eyebrow">Etapa {{sel.n}} de 09 · {{sel.state}}</div>',
-    '<div class="eyebrow">Etapa {{sel.n}} de {{totalStagesPad}} · {{sel.state}}</div>'
-  );
-
-  // Substitui o drawer do Chat do Projeto pelo Chat estilo Íris (Concierge) com os 4 motores + Pensamento visível
-  const origChatDrawer = `<sc-if value="{{chatOpen}}" hint-placeholder-val="{{false}}">
-  <section role="dialog" aria-label="Chat do projeto" style="position: fixed; right: 28px; bottom: 28px; z-index: 46; width: min(400px, calc(100vw - 32px)); height: min(560px, calc(100vh - 120px)); display: flex; flex-direction: column; background: var(--surface-1); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow-elevated); overflow: hidden; animation: rise 220ms var(--ease) both">
-    <div class="ink" style="border-radius: 0; border: 0; padding: 14px 16px; display: flex; gap: 12px; align-items: center">
-      <div style="display: flex"><sc-for list="{{chatPeople}}" as="p" hint-placeholder-count="3"><span class="av" style="width: 28px; height: 28px; font-size: 9px; margin-right: -8px; border: 2px solid #0B1220">{{p.i}}</span></sc-for></div>
-      <div class="grow" style="padding-left: 6px"><b style="font-size: 14px">Chat do projeto</b><div style="font-size: 12px; color: var(--on-ink-muted)">Meridian · 4 participantes</div></div>
-      <button class="ibtn sm" onClick="{{closeChat}}" aria-label="Fechar chat" style="border-color: var(--on-ink-line); color: var(--on-ink-muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
-    </div>
-    <div style="padding: 8px 14px; border-bottom: 1px solid var(--line); display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span class="eyebrow" style="font-size: 10px">Contexto</span><span class="badge flow">etapa {{sel.label}}</span><span class="badge warn">não reabre a esteira</span></div>
-    <div style="flex: 1; overflow: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px">
-      <sc-for list="{{msgs}}" as="m" hint-placeholder-count="3"><div class="bubble {{m.cls}}" style="font-size: 13px; max-width: 86%"><div class="eyebrow" style="font-size: 9.5px; margin-bottom: 4px">{{m.who}}</div>{{m.t}}</div></sc-for>
-      <sc-if value="{{typing}}" hint-placeholder-val="{{false}}"><div class="typing"><i></i><i></i><i></i></div></sc-if>
-    </div>
-    <div style="padding: 10px 14px 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px">
-      <div class="segs noscroll" style="flex-wrap: nowrap; overflow-x: auto"><sc-for list="{{sugs}}" as="g" hint-placeholder-count="3"><button class="seg" onClick="{{g.pick}}" style="height: 28px; font-size: 12px; white-space: nowrap; flex: none">{{g.t}}</button></sc-for></div>
-      <form onSubmit="{{send}}" style="display: flex; gap: 8px"><input class="input" style="border-radius: 999px; height: 40px" value="{{draft}}" onChange="{{onDraft}}" placeholder="Pedido para a esteira" aria-label="Pedido para a esteira"><button type="submit" class="ibtn" aria-label="Enviar" style="background: var(--action-bg); color: var(--action-fg); border: 0; flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 20 4l-6 16-3-7z"></path></svg></button></form>
-    </div>
-  </section>
-</sc-if>`;
-
-  const newChatDrawer = `<sc-if value="{{chatOpen}}" hint-placeholder-val="{{false}}">
-  <section role="dialog" aria-label="Íris · Chat do projeto" style="position: fixed; right: 24px; bottom: 24px; z-index: 50; width: min(440px, calc(100vw - 32px)); height: min(580px, calc(100vh - 96px)); display: flex; flex-direction: column; background: var(--surface-1); border: 1px solid var(--flow-subtle-line); border-radius: 18px; box-shadow: var(--shadow-elevated); overflow: hidden; animation: rise 220ms var(--ease) both">
-    <div class="ink" style="border-radius: 0; border: 0; padding: 12px 14px; display: flex; gap: 10px; align-items: center">
-      <span class="av" style="width: 32px; height: 32px; font-size: 11px; background: rgba(27,197,189,.2); color: #1BC5BD; border: 1px solid rgba(27,197,189,.45)">ÍR</span>
-      <div class="grow" style="min-width: 0">
-        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap">
-          <b style="font-size: 13.5px">Íris</b>
-          <span class="badge flow" style="font-size: 9.5px; height: 18px; padding: 0 6px">{{execModelBadge}}</span>
-        </div>
-        <div style="font-size: 11px; color: var(--on-ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{projName}} · etapa {{sel.label}}</div>
-      </div>
-      <button type="button" class="ibtn sm" onClick="{{closeChat}}" aria-label="Fechar chat" style="border-color: var(--on-ink-line); color: var(--on-ink-muted)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
-    </div>
-    <div style="padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--surface-0); display: flex; flex-direction: column; gap: 6px">
-      <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap">
-        <span class="eyebrow" style="font-size: 9.5px">Motor ({{engineCount}}):</span>
-        <div class="segs">
-          <sc-for list="{{engineOpts}}" as="eo" hint-placeholder-count="4">
-            <button type="button" class="seg {{eo.on}}" onClick="{{eo.pick}}" style="height: 24px; font-size: 11px; padding: 0 8px">{{eo.label}}</button>
-          </sc-for>
-        </div>
-      </div>
-      <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap">
-        <span class="eyebrow" style="font-size: 9.5px">Modelo:</span>
-        <div class="segs">
-          <sc-for list="{{modelOpts}}" as="mo" hint-placeholder-count="4">
-            <button type="button" class="seg {{mo.on}}" onClick="{{mo.pick}}" style="height: 22px; font-size: 10.5px; padding: 0 7px">{{mo.label}}</button>
-          </sc-for>
-        </div>
-      </div>
-    </div>
-    <div style="flex: 1; overflow: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px">
-      <sc-for list="{{msgs}}" as="m" hint-placeholder-count="3">
-        <div class="bubble {{m.cls}}" style="font-size: 13px; max-width: 94%; display: flex; flex-direction: column; gap: 6px">
-          <div style="display: flex; align-items: center; gap: 6px">
-            <span class="eyebrow" style="font-size: 9.5px; color: var(--flow)">{{m.who}}</span>
-            <sc-if value="{{m.showEngineBadge}}" hint-placeholder-val="{{false}}">
-              <span class="badge" style="font-size: 9px; height: 16px; padding: 0 5px">{{m.engine}}</span>
-            </sc-if>
-            <div class="grow"></div>
-            <span class="mono muted" style="font-size: 10px">{{m.ts}}</span>
-          </div>
-          <sc-if value="{{m.hasThoughts}}" hint-placeholder-val="{{false}}">
-            <button type="button" class="btn sm ghost" onClick="{{m.toggleThoughts}}" style="height: 24px; font-size: 11px; align-self: flex-start; padding: 0 8px">{{m.thoughtToggleLabel}}</button>
-            <sc-if value="{{m.thoughtsOpen}}" hint-placeholder-val="{{false}}">
-              <div style="padding: 7px 9px; border-radius: 8px; background: rgba(7,13,24,.75); border-left: 2px solid #1BC5BD; font-family: var(--font-mono); font-size: 11px; color: #94A3B8; display: flex; flex-direction: column; gap: 3px">
-                <sc-for list="{{m.thoughtItems}}" as="ti" hint-placeholder-count="2">
-                  <div style="line-height: 1.4">• {{ti.t}}</div>
-                </sc-for>
-              </div>
-            </sc-if>
-          </sc-if>
-          <div style="white-space: pre-line; line-height: 1.5">{{m.t}}</div>
-        </div>
-      </sc-for>
-      <sc-if value="{{typing}}" hint-placeholder-val="{{false}}">
-        <div class="bubble ag" style="font-size: 12px; display: flex; align-items: center; gap: 8px">
-          <span class="mono" style="color: var(--flow)">Íris · {{execEngine}}...</span>
-          <div class="typing"><i></i><i></i><i></i></div>
-        </div>
-      </sc-if>
-    </div>
-    <div style="padding: 10px 12px 12px; border-top: 1px solid var(--line); background: var(--surface-0); display: flex; flex-direction: column; gap: 8px">
-      <div class="segs noscroll" style="flex-wrap: nowrap; overflow-x: auto; gap: 6px">
-        <sc-for list="{{sugs}}" as="g" hint-placeholder-count="4">
-          <button type="button" class="seg" onClick="{{g.pick}}" style="height: 26px; font-size: 11px; white-space: nowrap; flex: none">{{g.t}}</button>
-        </sc-for>
-      </div>
-      <div style="display: flex; gap: 8px; align-items: center">
-        <input id="tavir-iris-chat-input" class="input" style="border-radius: 999px; height: 38px; flex: 1" value="{{draft}}" onInput="{{onDraft}}" onChange="{{onDraft}}" onKeyDown="{{onDraftKey}}" placeholder="Pergunte à Íris..." aria-label="Conversar com a Íris">
-        <button type="button" class="btn sm primary" onClick="{{sendBtn}}" aria-label="Enviar" style="height: 38px; padding: 0 14px; border-radius: 999px; flex: none">Enviar</button>
-      </div>
-    </div>
-  </section>
-</sc-if>`;
-
-  if (fabHtml.includes(origChatDrawer)) {
-    fabHtml = fabHtml.replace(origChatDrawer, newChatDrawer);
-    console.log('Drawer da Íris (Chat do Projeto com 4 motores e pensamento) injetado!');
-  }
-
-  // Atualiza goStage para também sincronizar o pensamento da etapa clicada
-  fabHtml = fabHtml.replace(
-    "const goStage = (i, t) => { const tb = Object.assign({}, s.tabs); if (t) tb[i] = t; self.setState({ stage: i, tabs: tb, open: true }); };",
-    "const goStage = (i, t) => { const tb = Object.assign({}, s.tabs); if (t) tb[i] = t; self.setState({ stage: i, tabs: tb, open: true, ptab: 'esteira' }); if (self.syncLiveThinkingState) self.syncLiveThinkingState(ap, pt, s.execEngineId || s.execEngine, s.execEffort, i); };"
-  );
-
-  // Clique em etapa/gate funciona em TODOS os projetos (não só Meridian)
-  fabHtml = fabHtml.replace(
-    "const stepPick = (i) => isM ? () => goStage(i) : () => self.setState({ ptab: 'esteira' });",
-    "const stepPick = (i) => () => goStage(i);"
-  );
-
-  // gsteps: seleção visual + pick para inspecionar quem/o quê da etapa
-  fabHtml = fabHtml.replace(
-    "gsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; const isCur = i === P.done && P.status !== 'done'; const blockP = P.pends[0]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], skill: x[2], st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: isCur ? 'var(--surface-3)' : 'transparent', when: ddmm(P.base, startOf(i)) + (x[3] > 1 ? ' → ' + ddmm(P.base, startOf(i) + x[3] - 1) : ''),\n        hasAct: isCur && P.status === 'run', actLbl: blockP ? 'Autorizar' : 'Concluir etapa', act: blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy) }; }),",
-    `gsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; const isCur = i === P.done && P.status !== 'done'; const isSel = Number(s.stage) === i; const blockP = P.pends[0]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], skill: x[2], st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: isSel ? 'var(--surface-3)' : (isCur ? 'var(--surface-3)' : 'transparent'), when: ddmm(P.base, startOf(i)) + (x[3] > 1 ? ' → ' + ddmm(P.base, startOf(i) + x[3] - 1) : ''),
-        pick: stepPick(i), hasAct: isCur && P.status === 'run', actLbl: blockP ? 'Autorizar' : 'Concluir etapa', act: blockP ? blockP.act : conclude, dis: !!(blockP && blockP.busy) }; }),
-      gSel: (function() {
-        const idx = Math.max(0, Math.min(Number(s.stage) || 0, P.stages.length - 1));
-        const st = P.stages[idx] || P.stages[0] || ['Etapa', '—', '—', 1];
-        const k = stState(idx); const Z = SS[k];
-        const ini = PEOPLE[st[1]] || (st[4] || String(st[1] || '—').slice(0, 2).toUpperCase());
-        return {
-          n: String(idx + 1).padStart(2, '0'),
-          label: st[0],
-          owner: st[1],
-          ini: ini,
-          skill: st[2],
-          state: Z[0],
-          cls: Z[1],
-          when: ddmm(P.base, startOf(idx)) + (st[3] > 1 ? ' → ' + ddmm(P.base, startOf(idx) + st[3] - 1) : ''),
-          note: k === 'done'
-            ? 'Etapa concluída. Você pode inspecionar o responsável e o escopo; a esteira encerrada não reabre automaticamente.'
-            : (k === 'gate' || k === 'paused')
-              ? 'Gate/etapa sob sua atenção. Use Pedir alteração ou libere o responsável para seguir.'
-              : (k === 'run' ? 'Etapa em andamento com ' + st[1] + '.' : 'Etapa planejada — ainda não começou.'),
-          ask: function() {
-            const txt = 'Quero trabalhar o gate/etapa \"' + st[0] + '\" (' + st[1] + '). Detalhe o que falta e prepare o handoff para Paula planejar.';
-            self.setState({ chat: true, draft: txt, ptab: 'esteira' });
-            if (self.sendIrisMessage) self.sendIrisMessage(txt, { asChangeRequest: !!(P.status === 'done' || P.alterations_open) });
-          }
-        };
-      })(),`
-  );
-
-  // Esteira genérica: linhas clicáveis + painel da etapa selecionada
-  fabHtml = fabHtml.replace(
-    `  <!-- ESTEIRA (demais projetos) -->
-  <sc-if value="{{pt.esteiraG}}" hint-placeholder-val="{{false}}">
-    <section class="card" style="animation: fade 200ms var(--ease) both">
-      <div class="card-h"><h3>Esteira {{P.line}} · {{P.n}} etapas</h3><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>concluída</span><span><i style="background: var(--warning)"></i>agora</span><span><i style="background: var(--line-strong)"></i>a seguir</span></div></div>
-      <div class="rows">
-        <sc-for list="{{gsteps}}" as="v" hint-placeholder-count="10">
-          <div class="row" style="cursor: default; gap: 14px; background: {{v.rowBg}}">
-            <span class="fb-nb" style="background: {{v.bg}}; color: {{v.fg}}; border: 1px solid {{v.bd}}">{{v.n}}</span>
-            <div class="grow" style="min-width: 0"><div class="t" style="font-size: 14px; color: {{v.tc}}">{{v.t}}</div><div class="m">{{v.who}} · <span class="mono" style="font-size: 11px">{{v.skill}}</span></div></div>
-            <span class="num muted" style="font-size: 11px">{{v.when}}</span>
-            <span class="badge {{v.cls}}"><i></i>{{v.st}}</span>
-            <sc-if value="{{v.hasAct}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{v.act}}" disabled="{{v.dis}}">{{v.actLbl}}</button></sc-if>
-          </div>
-        </sc-for>
-      </div>
-    </section>
-  </sc-if>`,
-    `  <!-- ESTEIRA (demais projetos) -->
-  <sc-if value="{{pt.esteiraG}}" hint-placeholder-val="{{false}}">
-    <section class="card" style="animation: fade 200ms var(--ease) both">
-      <div class="card-h"><h3>Esteira {{P.line}} · {{P.n}} etapas</h3><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>concluída</span><span><i style="background: var(--warning)"></i>agora</span><span><i style="background: var(--line-strong)"></i>a seguir</span></div></div>
-      <p class="muted" style="padding: 0 18px 10px; font-size: 12.5px; margin: 0">Clique numa etapa/gate para ver responsável, escopo e o que dá para pedir à Íris.</p>
-      <div class="rows">
-        <sc-for list="{{gsteps}}" as="v" hint-placeholder-count="10">
-          <button type="button" class="row" onClick="{{v.pick}}" style="cursor: pointer; gap: 14px; background: {{v.rowBg}}; width: 100%; text-align: left; border: 0; color: inherit">
-            <span class="fb-nb" style="background: {{v.bg}}; color: {{v.fg}}; border: 1px solid {{v.bd}}">{{v.n}}</span>
-            <div class="grow" style="min-width: 0"><div class="t" style="font-size: 14px; color: {{v.tc}}">{{v.t}}</div><div class="m">{{v.who}} · <span class="mono" style="font-size: 11px">{{v.skill}}</span></div></div>
-            <span class="num muted" style="font-size: 11px">{{v.when}}</span>
-            <span class="badge {{v.cls}}"><i></i>{{v.st}}</span>
-            <sc-if value="{{v.hasAct}}" hint-placeholder-val="{{false}}"><span class="btn sm secondary" style="pointer-events: none">{{v.actLbl}}</span></sc-if>
-          </button>
-        </sc-for>
-      </div>
-    </section>
-    <section class="card" style="margin-top: 14px; animation: fade 200ms var(--ease) both; overflow: hidden">
-      <div style="padding: 16px 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap">
-        <span class="av" style="width: 40px; height: 40px; font-size: 11px; flex: none">{{gSel.ini}}</span>
-        <div class="grow" style="min-width: 200px">
-          <div class="eyebrow">Etapa {{gSel.n}} · {{gSel.state}}</div>
-          <h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.02em; margin-top: 4px">{{gSel.label}}</h2>
-          <div class="muted" style="font-size: 12.5px; margin-top: 4px">{{gSel.owner}} · {{gSel.skill}} · {{gSel.when}}</div>
-        </div>
-        <span class="badge {{gSel.cls}}"><i></i>{{gSel.state}}</span>
-        <button type="button" class="btn sm secondary" onClick="{{gSel.ask}}">Pedir à Íris nesta etapa</button>
-      </div>
-      <div style="padding: 0 18px 16px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.45">{{gSel.note}}</div>
-    </section>
-  </sc-if>`
-  );
-
-  const engMetaExpr = `const curEng = (typeof self.getEngineMeta === 'function')
-      ? self.getEngineMeta(s.execEngineId || s.execEngine, s.execModel, s.execEffort)
-      : { id: 'cursor', name: 'Cursor', model: s.execModel || 'auto-smart', modelLabel: s.execModelLabel || 'Auto', effort: s.execEffort || 'balanced', effortLabel: s.execEffortLabel || 'Balance', caption: 'Cursor · Auto', sdk: '~/.cursor', protocol: 'Cursor Agent CLI · ~/.cursor', models: [] };
-    const curEngName = curEng.name;
-    const curEngModel = curEng.modelLabel || curEng.model;
-    const curEngCaption = curEng.caption || (curEngName + ' · ' + curEngModel);
-    const curEngProtocol = curEng.protocol || 'Cursor Agent CLI · ~/.cursor';
-    const catalogEngines = (Array.isArray(s.engineCatalog) && s.engineCatalog.length)
-      ? s.engineCatalog
-      : [{ id: curEng.id, label: curEngName, sdk: curEng.sdk || '~/.cursor', models: curEng.models || [] }];
-    const currentModels = (catalogEngines.find(function(m) { return m.id === curEng.id; }) || catalogEngines[0] || {}).models || curEng.models || [];
-    const currentEfforts = ((currentModels.find(function(m) { return m.id === curEng.model; }) || currentModels[0] || {}).efforts) || [];
-    const showAutoNote = curEng.model === 'auto-smart';
-    const fallbackThoughts = [
-      { step: 1, ts: hm(), tag: curEngName.toUpperCase(), text: 'Conectado via ' + curEngProtocol + ' · ' + curEngCaption },
-      { step: 2, ts: hm(), tag: 'WORKSPACE', text: 'Pasta isolada: ' + projFolderPath + ' (' + (pt ? pt.dirCount : 6) + ' pastas · ' + (pt ? pt.fileCount : 4) + ' arquivos · stack: ' + ((pt && pt.stacks) || (ap && ap.stack) || 'Sistemas / Fullstack') + ')' },
-      { step: 3, ts: hm(), tag: 'ETAPA ATUAL', text: apIsDone ? 'Esteira 100% concluída. Artefatos auditados e prontos no diretório do projeto.' : apIsPaused ? ('Execução pausada na etapa ' + S[0] + ' (' + S[1] + ').') : ('Raciocinando (' + (curEng.effortLabel || s.execEffortLabel || 'Balance') + ') na etapa ' + S[0] + ' com ' + S[1] + ' (' + S[3] + ').') }
-    ];
-    const activeThoughts = (Array.isArray(s.execThoughts) && s.execThoughts.length) ? s.execThoughts : fallbackThoughts;
-    const fallbackSteps = [
-      { label: 'SDK local conectado: ' + curEngName, state: 'done', meta: curEngModel },
-      { label: 'Leitura da estrutura física e .tavir/isolation.json', state: 'done', meta: (pt ? pt.dirCount : 6) + ' pastas · ' + (pt ? pt.fileCount : 4) + ' arq' },
-      { label: apIsDone ? 'Esteira 100% finalizada (Handoff concluído)' : ('Etapa em foco: ' + S[0] + ' · ' + S[1]), state: apIsDone ? 'done' : apIsPaused ? 'paused' : 'running', meta: apIsDone ? '100%' : apIsPaused ? 'pausado' : 'ativo' }
-    ];
-    const activeSteps = (Array.isArray(s.execSteps) && s.execSteps.length) ? s.execSteps : fallbackSteps;`;
-
-  fabHtml = fabHtml.replace(
-    "const S = STG[s.stage];",
-    "const S = STG[Math.min(STG.length - 1, Math.max(0, s.stage || 0))] || STG[0];\n    " + engMetaExpr
-  );
-
-  fabHtml = fabHtml.replace(
-    "back: () => self.setState({ open: false }),\n      control: () => app.modal('control', { name: 'Meridian' }), askChange: () => app.modal('ai'),\n      pct: s.signed ? 72 : 64, stageN: cur + 1,",
-    `projName: (ap && ap.name) || 'Projeto',
-      projEyebrow: ap ? ((String(ap.template_code || 'sy-c').toUpperCase()) + ' · ' + (ap.company || ap.client || 'TAVIR')) : 'SY-C · TAVIR',
-      projTitle: (ap && ap.name) || 'Projeto na esteira',
-      projStateCls: apIsDone ? 'flow' : apIsPaused ? 'warn' : 'flow',
-      projStateBadge: apIsDone ? '100% CONCLUÍDA' : apIsPaused ? 'PAUSADA' : 'EM EXECUÇÃO',
-      projIsolationBadge: 'ISOLAMENTO GIT/.ENV ATIVO',
-      projGitBadge: (ap && ap.description && ap.description.indexOf('Git:') >= 0) ? ap.description.split('·').pop().trim() : ('GIT: ' + ((ap && ap.company) || 'TAVIR')),
-      projFolderPath: projFolderPath,
-      projDirCount: pt ? pt.dirCount : 6,
-      projFileCount: pt ? pt.fileCount : 4,
-      projStacks: (pt && pt.stacks) || (ap && ap.stack) || 'Sistemas / Fullstack',
-      execEngine: curEngName,
-      execEngineUpper: curEngName.toUpperCase(),
-      execModelBadge: curEngCaption,
-      execProtocolLabel: curEngProtocol,
-      engineCount: catalogEngines.length,
-      engineCountPlural: catalogEngines.length === 1 ? '' : 's',
-      showEffortPicker: currentEfforts.length > 0,
-      showAutoNote: !!showAutoNote,
-      execStatusCls: s.execRunning ? 'flow' : apIsPaused ? 'warn' : 'flow',
-      execStatusBadge: s.execRunning ? 'EXECUTANDO PENSAMENTO AGORA' : apIsDone ? '100% CONCLUÍDO · MONITORANDO' : apIsPaused ? 'PAUSADO' : 'EM EXECUÇÃO · AO VIVO',
-      execNowHeadline: s.execRunning
-        ? ('Executando Etapa ' + apStageN + ' (' + S[0] + ') em ' + curEngCaption + '...')
-        : apIsDone
-        ? ('Esteira 100% Concluída · Monitorada por ' + curEngCaption)
-        : apIsPaused
-        ? ('Execução Pausada na Etapa ' + apStageN + ' (' + S[0] + ' · ' + S[1] + ')')
-        : ('Executando Etapa ' + apStageN + ' de ' + apTotal + ': ' + S[0] + ' · Agente: ' + S[1] + ' (' + S[3] + ')'),
-      execNowSub: 'Chamada: ' + curEngCaption + ' · Pasta isolada: ' + projFolderPath,
-      execTelemetry: (s.execTokens || '2.480 tok') + ' · ' + (s.execElapsed || '3,2 s') + ' · ' + (s.execCost || 'US$ 0,04'),
-      runStageBtnLabel: s.execRunning ? '⟳ Executando pensamento...' : ('▶ Executar etapa no ' + curEngName),
-      runStageNow: () => { if (!s.execRunning && self.runStageWithEngine) self.runStageWithEngine(''); },
-      showThinkingPanel: !!s.showThinkingPanel,
-      showThinkingBtnLabel: s.showThinkingPanel ? 'Ocultar pensamento' : '🧠 Ver pensamento',
-      toggleThinkingPanel: () => self.setState({ showThinkingPanel: !s.showThinkingPanel }),
-      showTreeModal: !!s.showTreeModal,
-      openTreeModal: () => { if (ap && self.loadProjectTree) self.loadProjectTree(ap); self.setState({ showTreeModal: true }); },
-      closeTreeModal: () => self.setState({ showTreeModal: false }),
-      stopTreeModalBubble: (e) => { try { e.stopPropagation(); } catch (err) {} },
-      engineOpts: catalogEngines.map((m) => ({
-        label: m.label,
-        sdk: m.sdk,
-        on: curEng.id === m.id ? 'on' : '',
-        pick: () => {
-          const firstModel = (m.models && m.models[0]) || { id: 'auto-smart', label: 'Auto', efforts: [{ id: 'balanced', label: 'Balance' }] };
-          const firstEffort = (firstModel.efforts && firstModel.efforts[0]) || { id: 'balanced', label: 'Balance' };
-          const nextModel = (m.models || []).find(function(item) { return item.id === s.execModel; }) || firstModel;
-          const nextEffort = (nextModel.efforts || []).find(function(item) { return item.id === s.execEffort; }) || (nextModel.efforts && nextModel.efforts[0]) || firstEffort;
-          self.applyEngineSelection(m.id, nextModel.id, nextEffort.id);
-          if (self.syncLiveThinkingState) self.syncLiveThinkingState(ap, pt, m.id, nextEffort.id, s.stage);
-        }
-      })),
-      modelOpts: currentModels.map((m) => ({
-        label: m.label,
-        on: curEng.model === m.id ? 'on' : '',
-        pick: () => {
-          const nextEffort = (m.efforts || []).find(function(item) { return item.id === s.execEffort; }) || (m.efforts && m.efforts[0]) || { id: 'balanced', label: 'Balance' };
-          self.applyEngineSelection(curEng.id, m.id, nextEffort.id);
-          if (self.syncLiveThinkingState) self.syncLiveThinkingState(ap, pt, curEng.id, nextEffort.id, s.stage);
-        }
-      })),
-      effortOpts: currentEfforts.map((ef) => ({
-        label: ef.label,
-        on: curEng.effort === ef.id ? 'on' : '',
-        pick: () => {
-          self.applyEngineSelection(curEng.id, curEng.model, ef.id);
-          if (self.syncLiveThinkingState) self.syncLiveThinkingState(ap, pt, curEng.id, ef.id, s.stage);
-        }
-      })),
-      execThoughtsList: activeThoughts,
-      execStepsCount: activeSteps.length,
-      execStepsList: activeSteps.map((st) => ({
-        label: st.label,
-        meta: st.meta || '',
-        icon: st.state === 'done' ? '✓' : st.state === 'paused' ? '⏸' : '⟳',
-        color: st.state === 'done' ? 'var(--flow)' : st.state === 'paused' ? 'var(--warning)' : '#B7F34A'
-      })),
-      execDraft: s.execDraft || '',
-      onExecDraft: (e) => self.setState({ execDraft: e.target.value }),
-      onExecKey: (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const val = (e.target && e.target.value) || s.execDraft || '';
-          if (val.trim() && self.runStageWithEngine) self.runStageWithEngine(val);
-        }
-      },
-      sendLiveInstruction: () => {
-        if (self.runStageWithEngine) self.runStageWithEngine(undefined);
-      },
-      showTreePanel: false,
-      showTreeBtnLabel: '📁 Estrutura',
-      toggleTreePanel: () => { if (ap && self.loadProjectTree) self.loadProjectTree(ap); self.setState({ showTreeModal: true }); },
-      refreshProjTree: () => { if (ap) self.loadProjectTree(ap); },
-      openProjExplorer: () => self.openProjectInExplorer(ap),
-      projTreeEmpty: projTreeList.length === 0,
-      projTreeItems: projTreeList.map((item) => ({
-        relPath: item.relPath,
-        name: item.name,
-        ext: item.ext,
-        sizeLabel: item.sizeLabel,
-        padLeft: 10 + (item.indent || 0),
-        icon: item.isDir ? '📁' : (item.name.startsWith('.env') || item.name === 'isolation.json') ? '🔒' : '📄',
-        iconColor: item.isDir ? 'var(--flow)' : 'var(--text-secondary)',
-        fw: item.isDir ? '600' : '400',
-        textColor: item.isDir ? 'var(--text-primary)' : 'var(--text-secondary)',
-        badgeCls: item.isDir ? 'flow' : (item.name.startsWith('.env') || item.name === 'isolation.json') ? 'warn' : '',
-        open: () => self.inspectTreeItem(item)
-      })),
-      activePauseLabel: apIsPaused ? 'Retomar projeto' : 'Pausar projeto',
-      togglePauseActive: () => { if (ap) self.toggleProjectPause(ap); },
-      deleteActive: () => { if (ap) self.deleteProject(ap); },
-      absorbIntoProj: () => app.modal('factory-absorb', { name: ap ? ap.name : '', tpl: 'Sistemas', mode: 'Manutenção', path: projFolderPath }),
-      back: () => self.setState({ open: false }),
-      control: () => app.modal('control', { name: (ap && ap.name) || 'Projeto', path: projFolderPath, company: (ap && ap.company) || 'TAVIR' }),
-      askChange: () => app.modal('ai', { name: (ap && ap.name) || 'Projeto' }),
-      pct: apPct, stageN: apStageN, totalStagesN: apTotal, totalStagesPad: String(apTotal).padStart(2, '0'),`
-  );
-
-  // Substitui a lógica antiga de chat na Fábrica pela lógica real da Íris com os 4 motores e pensamento
-  const origChatLogic = `      // chat
-      chatOpen: s.chat, chatClosed: !s.chat, hasUnread: s.unread > 0, unread: s.unread,
-      openChat: () => self.setState({ chat: true, unread: 0 }), closeChat: () => self.setState({ chat: false }),
-      chatPeople: ['PP', 'YU', 'VC', 'EE'].map((i) => ({ i: i })),
-      msgs: s.msgs.map((m) => ({ who: m[0], t: m[1], cls: m[2] })), typing: s.typing, draft: s.draft,
-      onDraft: (e) => self.setState({ draft: e.target.value }),
-      sugs: (s.stage === 4 ? ['O que mudou no último build?', 'A prévia já está no ar?'] : s.stage === 5 ? ['Quem está bloqueando o QA?', 'Quanto falta para entregar?'] : ['Resuma esta etapa', 'Quanto falta para entregar?']).concat(['Mostre o que mudou hoje']).map((x) => ({ t: x, pick: () => self.setState({ draft: x }) })),
-      send: (e) => {
-        e.preventDefault(); const txt = s.draft.trim(); if (!txt) return;
-        self.setState({ msgs: s.msgs.concat([['Carlos', txt, 'me']]), draft: '', typing: true });
-        clearTimeout(self.t3);
-        self.t3 = setTimeout(() => { const st = self.state; const left = GUARD.length - st.guard.filter(Boolean).length; const reply = st.signed ? 'QA assinado. Security deve fechar hoje e SEO amanhã. Entrega mantida para 04/11.' : left ? 'Faltam ' + left + ' critérios de QA. Depois vêm Security, SEO e Handoff. Com o gate assinado hoje, a entrega fica em 04/11.' : 'O Guard está verde. Só falta a sua assinatura para seguir para Security.'; self.setState({ msgs: st.msgs.concat([['Paula PM', reply, 'ag']]), typing: false }); }, 1200);
-      },`;
-
-  const newChatLogic = `      // chat (Íris · Inteligência do Projeto · 4 Motores)
-      chatOpen: s.chat, chatClosed: !s.chat, hasUnread: s.unread > 0, unread: s.unread,
-      openChat: () => {
-        self.setState({ chat: true, unread: 0 });
-        if ((!s.msgs || !s.msgs.length) && self.loadProjectChat) self.loadProjectChat(ap);
-      },
-      closeChat: () => self.setState({ chat: false }),
-      chatPeople: ['ÍR', 'PP', 'AR', 'EN'].map((i) => ({ i: i })),
-      msgs: ((Array.isArray(s.msgs) && s.msgs.length) ? s.msgs : [{
-        id: 'default-iris',
-        who: 'Íris · ' + curEngName,
-        role: 'ag',
-        engine: curEngName,
-        ts: hm(),
-        thoughts: [
-          '[' + curEngCaption + '] Conectada à pasta ' + projFolderPath,
-          '[Árvore] ' + (pt ? pt.dirCount : 6) + ' pastas e ' + (pt ? pt.fileCount : 4) + ' arquivos mapeados'
-        ],
-        t: 'Olá, Carlos! Sou a Íris neste projeto via ' + curEngCaption + '. Pergunte sobre arquivos, etapas ou peça ajustes.'
-      }]).map((m, mi) => {
-        const isArr = Array.isArray(m);
-        const msgId = (!isArr && m.id) ? String(m.id) : ('idx-' + mi);
-        const whoRaw = isArr ? m[0] : (m.who || 'Íris');
-        const txt = isArr ? m[1] : (m.t || m.text || '');
-        const cls = isArr ? m[2] : (m.role || m.cls || 'ag');
-        const thArr = (!isArr && Array.isArray(m.thoughts)) ? m.thoughts : [];
-        const engLabel = (!isArr && m.engine) ? String(m.engine) : curEngName;
-        const expandedMap = s.expandedMsgThoughts || {};
-        const thoughtsOpen = !!expandedMap[msgId];
-        const whoClean = String(whoRaw).replace(/\\s*·\\s*(Cursor|Claude|Codex|Antigravity)\\s*$/i, '').trim() || whoRaw;
-        return {
-          who: cls === 'me' ? whoClean : ('Íris · ' + engLabel),
-          t: txt,
-          cls: cls,
-          ts: (!isArr && m.ts) ? m.ts : hm(),
-          engine: engLabel,
-          showEngineBadge: false,
-          hasThoughts: cls !== 'me' && thArr.length > 0,
-          thoughtCount: thArr.length,
-          thoughtsOpen: thoughtsOpen,
-          thoughtToggleLabel: thoughtsOpen ? 'Ocultar pensamento (' + thArr.length + ')' : '🧠 Ver pensamento (' + thArr.length + ')',
-          thoughtItems: thArr.map((x) => ({ t: String(x) })),
-          toggleThoughts: () => {
-            const next = Object.assign({}, self.state.expandedMsgThoughts || {});
-            next[msgId] = !next[msgId];
-            self.setState({ expandedMsgThoughts: next });
-          }
-        };
-      }),
-      typing: s.typing,
-      draft: s.draft,
-      onDraft: (e) => self.setState({ draft: e.target.value }),
-      onDraftKey: (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const val = (e.target && e.target.value) || s.draft || '';
-          if (self.sendIrisMessage) self.sendIrisMessage(val);
-        }
-      },
-      sugs: [
-        'O que está sendo executado agora?',
-        'Qual a estrutura desta pasta e stacks?',
-        'Resuma a etapa ' + S[0],
-        'Como está o isolamento Git e .env?'
-      ].map((x) => ({
-        t: x,
-        pick: () => {
-          if (self.sendIrisMessage) self.sendIrisMessage(x);
-        }
-      })),
-      sendBtn: () => {
-        if (self.sendIrisMessage) self.sendIrisMessage(undefined);
-      },
-      send: (e) => {
-        if (e && e.preventDefault) e.preventDefault();
-        if (self.sendIrisMessage) self.sendIrisMessage(undefined);
-      },`;
-
-  if (fabHtml.includes(origChatLogic)) {
-    fabHtml = fabHtml.replace(origChatLogic, newChatLogic);
-    console.log('Lógica de conversação da Íris conectada com sucesso!');
-  }
-
-  fabHtml = fabHtml.replace("gateN: s.signed ? 0 : 1,", "gateN: (s.projects || []).filter((p) => p.status === 'running' && !p.stages_done).length,");
-  fabHtml = fabHtml.replace("gateNote: s.signed ? 'nenhum gate aberto' : 'Meridian · QA',", "gateNote: (s.projects || []).length ? 'esteiras sincronizadas' : 'nenhum gate aberto',");
-
-  manifest[fabUuid].data = zlib.gzipSync(Buffer.from(fabHtml, 'utf8')).toString('base64');
-  console.log('Fábrica limpa e atualizada! (legado)');
-  } // fim else !fabFromRef
 }
 
 // 1.2b Atualizar d4030abe (Sistema / Configurações: Motores de IA via SDK Local + Módulos em vez de Projetos)
@@ -2127,6 +946,14 @@ if (!templateMatch) {
 
 let templateHtml = JSON.parse(templateMatch[1]);
 console.log('Template HTML decodificado! Tamanho:', templateHtml.length);
+templateHtml = templateHtml.replace(
+  '.log{font-family:var(--font-mono);font-size:12px;line-height:1.7;padding:14px 18px;display:flex;flex-direction:column;gap:2px;max-height:300px;overflow:auto}',
+  '.log{font-family:var(--font-mono);font-size:12px;line-height:1.7;padding:14px 18px;display:flex;flex-direction:column;gap:8px;max-height:560px;overflow:auto}'
+);
+templateHtml = templateHtml.replace(
+  '.log div{animation:fade 300ms var(--ease) both;display:flex;gap:12px}',
+  '.log div{animation:fade 300ms var(--ease) both;display:flex;gap:12px;align-items:flex-start}.log div > span:last-child{white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;flex:1}'
+);
 
 // 2.1 Limpa os JOBS mockados
 const origJobsIdx = templateHtml.indexOf('const JOBS = [');
@@ -2321,7 +1148,13 @@ const newMount = `componentDidMount() {
           const d = new Date();
           const ts = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
           const bad = evt.type === 'error';
-          logs[evt.runId] = (logs[evt.runId] || []).concat([{ ts: ts, lvl: bad ? 'erro' : 'info', cls: bad ? 'err' : 'info', text: String(evt.content || '').slice(0, 400) }]).slice(-80);
+          const text = String(evt.content || '');
+          const bucket = (logs[evt.runId] || []).slice();
+          const prev = bucket[bucket.length - 1];
+          const entry = { ts: ts, lvl: bad ? 'erro' : 'info', cls: bad ? 'err' : 'info', text: text };
+          if (prev && text && String(prev.text || '').length && text.startsWith(String(prev.text).slice(0, Math.min(String(prev.text).length, 120))) && text.length >= String(prev.text).length) bucket[bucket.length - 1] = entry;
+          else bucket.push(entry);
+          logs[evt.runId] = bucket;
           const patch = { jobs: list, logs: logs };
           if (!self.state.jobId) patch.jobId = evt.runId;
           self.setState(patch);
@@ -2878,11 +1711,6 @@ const newSubmitProjectAndFactory = `if (id === 'factory-delete') {
         local_path: pLocalPath || null,
         description: 'Escopo: ' + pOwnership + ' · Esteira: ' + tplCode + ' · ' + (isAbsorb ? 'Absorvido (Product Lab)' : isMaint ? 'Manutenção' : 'Criação') + ' · Git: ' + gitLabel
       };
-      try {
-        const curLocal = JSON.parse(localStorage.getItem('tavir_factory_projects') || '[]');
-        curLocal.unshift(fallbackProj);
-        localStorage.setItem('tavir_factory_projects', JSON.stringify(curLocal));
-      } catch (e) {}
       const tavir = (typeof window !== 'undefined' && window.tavir) || null;
       const rpcMethod = (tavir && tavir.projects) ? (isAbsorb && tavir.projects.absorb ? tavir.projects.absorb : tavir.projects.create) : null;
       if (rpcMethod) {
@@ -2908,7 +1736,6 @@ const newSubmitProjectAndFactory = `if (id === 'factory-delete') {
           window.dispatchEvent(new CustomEvent('tavir:project-created', { detail: { project: created || fallbackProj, openConsole: isAbsorb } }));
         }).catch(function(err) {
           console.error('[TAVIR IPC] Erro ao criar/absorver projeto:', err);
-          window.dispatchEvent(new CustomEvent('tavir:project-created', { detail: { project: fallbackProj, openConsole: isAbsorb } }));
         });
       } else {
         window.dispatchEvent(new CustomEvent('tavir:project-created', { detail: { project: fallbackProj, openConsole: isAbsorb } }));

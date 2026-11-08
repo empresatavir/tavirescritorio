@@ -126,7 +126,7 @@ export interface AltTrackState {
   updated_at?: string;
   notes?: { map?: string; plan?: string; fix?: string; build?: string };
   auto?: boolean;
-  runStatus?: 'idle' | 'running' | 'waiting' | 'done';
+  runStatus?: 'idle' | 'running' | 'waiting' | 'paused' | 'done';
   waitingQuestion?: string;
   runLog?: string[];
   runError?: string;
@@ -271,6 +271,7 @@ export interface TavirApi {
     delete: (id: string, deleteFiles?: boolean, localPath?: string) => Promise<{ ok: boolean; deletedFiles?: boolean; path?: string | null }>;
     pickFolder: () => Promise<{ canceled: boolean; path: string | null }>;
     absorb: (params: CreateFactoryProjectParams) => Promise<FactoryProjectItem>;
+    survey: (idOrPath: string) => Promise<any>;
     inspectFolder: (idOrPath: string) => Promise<any>;
     openInExplorer: (idOrPath: string) => Promise<{ ok: boolean; path?: string }>;
     readFile: (filePath: string) => Promise<{ ok: boolean; content?: string; size?: number }>;
@@ -285,9 +286,17 @@ export interface TavirApi {
     closeAltTrackItem: (idOrPath: string, fromStep?: number) => Promise<ProjectAlterationsControl>;
     startAltTrackCycle: (idOrPath: string) => Promise<ProjectAlterationsControl>;
     setAltTrackAuto: (idOrPath: string, auto: boolean) => Promise<ProjectAlterationsControl>;
-    approveAltTrack: (idOrPath: string) => Promise<ProjectAlterationsControl>;
-    runAltTrack: (idOrPath: string, step?: number) => Promise<ProjectAlterationsControl & { needsApproval?: boolean; continued?: boolean; reply?: string }>;
-    runWithThinking: (params: any) => Promise<any>;
+    approveAltTrack: (idOrPath: string, decision?: 'aprovado' | 'reprovado', note?: string) => Promise<ProjectAlterationsControl>;
+    runAltTrack: (idOrPath: string, step?: number) => Promise<ProjectAlterationsControl & { needsApproval?: boolean; continued?: boolean; paused?: boolean; reply?: string }>;
+    pauseAltTrack: (idOrPath: string) => Promise<ProjectAlterationsControl>;
+    getEsteira: (idOrPath: string, count?: number) => Promise<any>;
+    saveEsteiraInstruction: (idOrPath: string, index: number, text: string) => Promise<any>;
+    setEsteiraAuto: (idOrPath: string, auto: boolean) => Promise<any>;
+    controlEsteira: (idOrPath: string, index: number, action: string) => Promise<any>;
+    runEsteira: (idOrPath: string, index: number, stageName?: string, stageOwner?: string) => Promise<any>;
+    decideEsteira: (idOrPath: string, index: number, decision: 'aprovado' | 'reprovado', note?: string) => Promise<any>;
+    decisions: (idOrPath: string) => Promise<{ ok: boolean; decisions: any[] }>;
+    setEngine: (idOrPath: string, choice: { engine?: string; model?: string; effort?: string }) => Promise<{ ok: boolean; engine?: { engine: string; model: string; effort: string }; caption?: string; error?: string }>;
   };
   agents: {
     list: () => Promise<AgentItem[]>;
@@ -297,6 +306,29 @@ export interface TavirApi {
     list: () => Promise<any[]>;
     stats: () => Promise<any>;
     reindex: () => Promise<{ stats: any; items: any[] }>;
+  };
+  /** Chat da Íris: parar a resposta em curso de um projeto. */
+  iris: {
+    stop: (projectKey: string) => Promise<{ ok: boolean }>;
+  };
+  /** Livro de execuções dos motores (.tavir/runs de cada projeto). */
+  seg: {
+    run: (idOrPath: string) => Promise<{ ok: boolean; run?: any; error?: string }>;
+    list: (idOrPath: string) => Promise<{ ok: boolean; runs: any[]; running: boolean; lines: string[] }>;
+    stop: (idOrPath: string) => Promise<{ ok: boolean }>;
+    accept: (idOrPath: string, fp: string, accept: boolean, note?: string, title?: string) => Promise<{ ok: boolean; error?: string }>;
+    open: (idOrPath: string, runId: string, rel?: string) => Promise<{ ok: boolean; error?: string; path?: string }>;
+  };
+  qa: {
+    run: (idOrPath: string) => Promise<{ ok: boolean; run?: any; error?: string }>;
+    list: (idOrPath: string) => Promise<{ ok: boolean; runs: any[]; running: boolean; lines: string[] }>;
+    stop: (idOrPath: string) => Promise<{ ok: boolean }>;
+    open: (idOrPath: string, runId: string, rel?: string) => Promise<{ ok: boolean; error?: string; path?: string }>;
+  };
+  runs: {
+    list: (idOrPath: string, limit?: number) => Promise<any>;
+    read: (idOrPath: string, runId: string) => Promise<any>;
+    openFolder: (idOrPath: string, runId?: string) => Promise<{ ok: boolean; error?: string }>;
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
 }

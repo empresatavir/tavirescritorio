@@ -49,3 +49,11 @@ Este arquivo é lido automaticamente pelo Claude (Claude Code, Claude Desktop, e
 - **Porta dinâmica:** Sempre verifique a porta retornada pelo `preview_start` — pode não ser 5173 se houver conflito. Use essa porta em todas as chamadas subsequentes de `navigate`.
 - **Encerramento:** Use `preview_stop(serverId)` ao finalizar para liberar a porta.
 - **Disponibilidade:** Este protocolo funciona em qualquer conversa, agente ou solicitação dentro do Claude Desktop/Code desde que o projeto esteja associado à sessão.
+
+### 8. Fábrica: quem decide é a checagem, não o motor
+- O app em uso é o Electron (`src/`). Mapa completo em `docs/modules/fabrica.md`.
+- Etapa ou item de trilho só fecha por gate do CEO (`decideEsteiraGate`), portão de QA (`src/main/qa/`) ou portão de segurança (`src/main/seg/`). Nunca marque etapa como concluída pela resposta do motor.
+- Moldes das esteiras só em `src/shared/esteiras.ts`. Ao inserir etapa no meio de um molde que já tem projetos, registre os nomes antigos em `LEGACY_STAGE_NAMES`.
+- Evidências ficam em `qa/evidencias/` e `qa/seguranca/` do projeto, fora do git dele. Segredo em relatório sempre mascarado (`maskSecret`).
+- Absorção dispara o retrato inicial (QA + segurança). Em scripts de teste, absorva com `baseline: false`.
+- Mudança que envolva motores precisa passar em `npm run test:motores` nos quatro (claude, codex, antigravity, cursor).

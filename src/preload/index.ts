@@ -98,133 +98,49 @@ const api: TavirApi = {
   proposals: {
     list: () => ipcRenderer.invoke('proposals:list'),
   },
+  // Fábrica: tudo passa pelo main. Sem fallback que rode project-fs dentro do preload —
+  // dois processos escrevendo no mesmo banco e no mesmo control.json davam estado divergente.
   projects: {
     list: () => ipcRenderer.invoke('projects:list'),
-    create: (params) =>
-      ipcRenderer.invoke('projects:create', params).catch(() => {
-        const { createOrAbsorbProjectRecord } = require('../main/project-fs');
-        return createOrAbsorbProjectRecord(params);
-      }),
-    updateStatus: (id: string, status: string) =>
-      ipcRenderer.invoke('projects:updateStatus', id, status).catch(() => {
-        try {
-          const { DatabaseSync } = require('node:sqlite');
-          const pathMod = require('node:path');
-          const sqlite = new DatabaseSync(pathMod.join(process.cwd(), 'backend', 'tavir.db'));
-          sqlite.prepare('UPDATE projects SET status = ?, updated_at = ? WHERE id = ?').run(status, new Date().toISOString(), id);
-          sqlite.close();
-          return { ok: true, status };
-        } catch {
-          return { ok: false, status };
-        }
-      }),
-    delete: (id: string, deleteFiles: boolean = false, localPath?: string) => {
-      if (deleteFiles) {
-        try {
-          const { deleteProjectWithOptions } = require('../main/project-fs');
-          return Promise.resolve(deleteProjectWithOptions(id, true, localPath));
-        } catch {}
-      }
-      return ipcRenderer.invoke('projects:delete', id, deleteFiles, localPath).catch(() => {
-        const { deleteProjectWithOptions } = require('../main/project-fs');
-        return deleteProjectWithOptions(id, Boolean(deleteFiles), localPath);
-      });
-    },
-    pickFolder: () =>
-      ipcRenderer.invoke('projects:pickFolder').catch(() => {
-        const { pickFolderViaPowerShell } = require('../main/project-fs');
-        return pickFolderViaPowerShell();
-      }),
-    absorb: (params) =>
-      ipcRenderer.invoke('projects:absorb', params).catch(() => {
-        const { createOrAbsorbProjectRecord } = require('../main/project-fs');
-        return createOrAbsorbProjectRecord(Object.assign({}, params, { absorb: true }));
-      }),
-    inspectFolder: (idOrPath: string) =>
-      ipcRenderer.invoke('projects:inspectFolder', idOrPath).catch(() => {
-        const { inspectProjectFolder } = require('../main/project-fs');
-        return inspectProjectFolder(idOrPath);
-      }),
-    openInExplorer: (idOrPath: string) =>
-      ipcRenderer.invoke('projects:openInExplorer', idOrPath).catch(() => {
-        const { openProjectFolderInExplorer } = require('../main/project-fs');
-        return openProjectFolderInExplorer(idOrPath);
-      }),
-    readFile: (filePath: string) =>
-      ipcRenderer.invoke('projects:readFile', filePath).catch(() => {
-        const { readProjectFileContent } = require('../main/project-fs');
-        return readProjectFileContent(filePath);
-      }),
-    getChat: (idOrPath: string) =>
-      ipcRenderer.invoke('projects:getChat', idOrPath).catch(() => {
-        const { getProjectChatHistory } = require('../main/project-fs');
-        return getProjectChatHistory(idOrPath);
-      }),
-    askIris: (params: any) =>
-      ipcRenderer.invoke('projects:askIris', params).catch(async () => {
-        const { askProjectIris } = require('../main/project-fs');
-        return askProjectIris(params);
-      }),
-    getAlterationsControl: (idOrPath: string) =>
-      ipcRenderer.invoke('projects:getAlterationsControl', idOrPath).catch(() => {
-        const { getProjectAlterationsControl } = require('../main/project-fs');
-        return getProjectAlterationsControl(idOrPath);
-      }),
-    setAlterationsOpen: (idOrPath: string, open: boolean) =>
-      ipcRenderer.invoke('projects:setAlterationsOpen', idOrPath, open).catch(() => {
-        const { setProjectAlterationsOpen } = require('../main/project-fs');
-        return setProjectAlterationsOpen(idOrPath, open);
-      }),
-    clearAltTrackFault: (idOrPath: string) =>
-      ipcRenderer.invoke('projects:clearAltTrackFault', idOrPath).catch(() => {
-        const { clearProjectAltTrackFault } = require('../main/project-fs');
-        return clearProjectAltTrackFault(idOrPath);
-      }),
-    advanceAltTrack: (idOrPath: string, fromStep?: number) =>
-      ipcRenderer.invoke('projects:advanceAltTrack', idOrPath, fromStep).catch(() => {
-        const { advanceProjectAltTrack } = require('../main/project-fs');
-        return advanceProjectAltTrack(idOrPath, fromStep);
-      }),
-    closeAltTrackItem: (idOrPath: string, fromStep?: number) =>
-      ipcRenderer.invoke('projects:closeAltTrackItem', idOrPath, fromStep).catch(() => {
-        const { closeProjectAltTrackItem } = require('../main/project-fs');
-        return closeProjectAltTrackItem(idOrPath, fromStep);
-      }),
-    startAltTrackCycle: (idOrPath: string) =>
-      ipcRenderer.invoke('projects:startAltTrackCycle', idOrPath).catch(() => {
-        const { startNewAltTrackCycle } = require('../main/project-fs');
-        return startNewAltTrackCycle(idOrPath);
-      }),
+    create: (params) => ipcRenderer.invoke('projects:create', params),
+    updateStatus: (id: string, status: string) => ipcRenderer.invoke('projects:updateStatus', id, status),
+    delete: (id: string, deleteFiles: boolean = false, localPath?: string) =>
+      ipcRenderer.invoke('projects:delete', id, deleteFiles, localPath),
+    pickFolder: () => ipcRenderer.invoke('projects:pickFolder'),
+    absorb: (params) => ipcRenderer.invoke('projects:absorb', params),
+    survey: (idOrPath: string) => ipcRenderer.invoke('projects:survey', idOrPath),
+    inspectFolder: (idOrPath: string) => ipcRenderer.invoke('projects:inspectFolder', idOrPath),
+    openInExplorer: (idOrPath: string) => ipcRenderer.invoke('projects:openInExplorer', idOrPath),
+    readFile: (filePath: string) => ipcRenderer.invoke('projects:readFile', filePath),
+    getChat: (idOrPath: string) => ipcRenderer.invoke('projects:getChat', idOrPath),
+    askIris: (params: any) => ipcRenderer.invoke('projects:askIris', params),
+    getAlterationsControl: (idOrPath: string) => ipcRenderer.invoke('projects:getAlterationsControl', idOrPath),
+    setAlterationsOpen: (idOrPath: string, open: boolean) => ipcRenderer.invoke('projects:setAlterationsOpen', idOrPath, open),
+    clearAltTrackFault: (idOrPath: string) => ipcRenderer.invoke('projects:clearAltTrackFault', idOrPath),
+    advanceAltTrack: (idOrPath: string, fromStep?: number) => ipcRenderer.invoke('projects:advanceAltTrack', idOrPath, fromStep),
+    closeAltTrackItem: (idOrPath: string, fromStep?: number) => ipcRenderer.invoke('projects:closeAltTrackItem', idOrPath, fromStep),
+    startAltTrackCycle: (idOrPath: string) => ipcRenderer.invoke('projects:startAltTrackCycle', idOrPath),
     saveAltTrackNote: (idOrPath: string, index: number, text: string) =>
-      ipcRenderer.invoke('projects:saveAltTrackNote', idOrPath, index, text).catch(() => {
-        const { saveProjectAltTrackNote } = require('../main/project-fs');
-        return saveProjectAltTrackNote(idOrPath, index, text);
-      }),
-    setAltTrackStep: (idOrPath: string, step: number) =>
-      ipcRenderer.invoke('projects:setAltTrackStep', idOrPath, step).catch(() => {
-        const { setProjectAltTrackStep } = require('../main/project-fs');
-        return setProjectAltTrackStep(idOrPath, step);
-      }),
-    setAltTrackAuto: (idOrPath: string, auto: boolean) =>
-      ipcRenderer.invoke('projects:setAltTrackAuto', idOrPath, auto).catch(() => {
-        const { setProjectAltTrackAuto } = require('../main/project-fs');
-        return setProjectAltTrackAuto(idOrPath, auto);
-      }),
-    approveAltTrack: (idOrPath: string) =>
-      ipcRenderer.invoke('projects:approveAltTrack', idOrPath).catch(() => {
-        const { approveAltTrackGate } = require('../main/project-fs');
-        return approveAltTrackGate(idOrPath);
-      }),
-    runAltTrack: (idOrPath: string, step?: number) =>
-      ipcRenderer.invoke('projects:runAltTrack', idOrPath, step).catch(() => {
-        const { executeAltTrackStep } = require('../main/project-fs');
-        return executeAltTrackStep(idOrPath, undefined, step);
-      }),
-    runWithThinking: (params: any) =>
-      ipcRenderer.invoke('projects:runWithThinking', params).catch(() => {
-        const { runProjectStageWithThinking } = require('../main/project-fs');
-        return runProjectStageWithThinking(params);
-      }),
+      ipcRenderer.invoke('projects:saveAltTrackNote', idOrPath, index, text),
+    setAltTrackStep: (idOrPath: string, step: number) => ipcRenderer.invoke('projects:setAltTrackStep', idOrPath, step),
+    setAltTrackAuto: (idOrPath: string, auto: boolean) => ipcRenderer.invoke('projects:setAltTrackAuto', idOrPath, auto),
+    approveAltTrack: (idOrPath: string, decision?: 'aprovado' | 'reprovado', note?: string) =>
+      ipcRenderer.invoke('projects:approveAltTrack', idOrPath, decision, note),
+    runAltTrack: (idOrPath: string, step?: number) => ipcRenderer.invoke('projects:runAltTrack', idOrPath, step),
+    pauseAltTrack: (idOrPath: string) => ipcRenderer.invoke('projects:pauseAltTrack', idOrPath),
+    getEsteira: (idOrPath: string, count?: number) => ipcRenderer.invoke('projects:getEsteira', idOrPath, count),
+    saveEsteiraInstruction: (idOrPath: string, index: number, text: string) =>
+      ipcRenderer.invoke('projects:saveEsteiraInstruction', idOrPath, index, text),
+    setEsteiraAuto: (idOrPath: string, auto: boolean) => ipcRenderer.invoke('projects:setEsteiraAuto', idOrPath, auto),
+    controlEsteira: (idOrPath: string, index: number, action: string) =>
+      ipcRenderer.invoke('projects:controlEsteira', idOrPath, index, action),
+    runEsteira: (idOrPath: string, index: number, stageName?: string, stageOwner?: string) =>
+      ipcRenderer.invoke('projects:runEsteira', idOrPath, index, stageName, stageOwner),
+    decideEsteira: (idOrPath: string, index: number, decision: 'aprovado' | 'reprovado', note?: string) =>
+      ipcRenderer.invoke('projects:decideEsteira', idOrPath, index, decision, note),
+    decisions: (idOrPath: string) => ipcRenderer.invoke('projects:decisions', idOrPath),
+    setEngine: (idOrPath: string, choice: { engine?: string; model?: string; effort?: string }) =>
+      ipcRenderer.invoke('projects:setEngine', idOrPath, choice),
   },
   agents: {
     list: () => ipcRenderer.invoke('agents:list'),
@@ -242,6 +158,27 @@ const api: TavirApi = {
         const items = idx.indexAll();
         return { stats: idx.getStats(), items: items.slice(0, 250) };
       }),
+  },
+  iris: {
+    stop: (projectKey: string) => ipcRenderer.invoke('projects:stopIris', projectKey),
+  },
+  seg: {
+    run: (idOrPath: string) => ipcRenderer.invoke('seg:run', idOrPath),
+    list: (idOrPath: string) => ipcRenderer.invoke('seg:list', idOrPath),
+    stop: (idOrPath: string) => ipcRenderer.invoke('seg:stop', idOrPath),
+    accept: (idOrPath: string, fp: string, accept: boolean, note?: string, title?: string) => ipcRenderer.invoke('seg:accept', idOrPath, fp, accept, note, title),
+    open: (idOrPath: string, runId: string, rel?: string) => ipcRenderer.invoke('seg:open', idOrPath, runId, rel),
+  },
+  qa: {
+    run: (idOrPath: string) => ipcRenderer.invoke('qa:run', idOrPath),
+    list: (idOrPath: string) => ipcRenderer.invoke('qa:list', idOrPath),
+    stop: (idOrPath: string) => ipcRenderer.invoke('qa:stop', idOrPath),
+    open: (idOrPath: string, runId: string, rel?: string) => ipcRenderer.invoke('qa:open', idOrPath, runId, rel),
+  },
+  runs: {
+    list: (idOrPath: string, limit?: number) => ipcRenderer.invoke('runs:list', idOrPath, limit),
+    read: (idOrPath: string, runId: string) => ipcRenderer.invoke('runs:read', idOrPath, runId),
+    openFolder: (idOrPath: string, runId?: string) => ipcRenderer.invoke('runs:openFolder', idOrPath, runId),
   },
   onEvent: (callback: (event: RunEvent) => void) => {
     const handler = (_e: Electron.IpcRendererEvent, event: RunEvent) => callback(event);
