@@ -312,6 +312,12 @@ export interface TavirApi {
     stop: (projectKey: string) => Promise<{ ok: boolean }>;
   };
   /** Livro de execuções dos motores (.tavir/runs de cada projeto). */
+  qa: {
+    run: (idOrPath: string) => Promise<{ ok: boolean; run?: any; error?: string }>;
+    list: (idOrPath: string) => Promise<{ ok: boolean; runs: any[]; running: boolean; lines: string[] }>;
+    stop: (idOrPath: string) => Promise<{ ok: boolean }>;
+    open: (idOrPath: string, runId: string, rel?: string) => Promise<{ ok: boolean; error?: string; path?: string }>;
+  };
   runs: {
     list: (idOrPath: string, limit?: number) => Promise<any>;
     read: (idOrPath: string, runId: string) => Promise<any>;

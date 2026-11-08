@@ -7,6 +7,7 @@ import { fitCall } from '../shared/engineCatalog';
 import { esteiraTemplate, type EsteiraStage } from '../shared/esteiras';
 import { commitStep, type StepCommitResult } from './stepCommit';
 import { annotateRun, type RunChanges } from './runLedger';
+import { listQaRuns, qaSummary, runQa, type QaRun } from './qa/qaRunner';
 
 function getDbPath(): string {
   return path.join(process.cwd(), 'backend', 'tavir.db');
@@ -1134,6 +1135,69 @@ function commitLine(res: StepCommitResult): string {
   return `Sem commit: ${res.skipped}`;
 }
 
+// ------------------------------------------------------------------ portão de QA
+
+type QaListener = (event: { projectKey: string; rootPath: string; line?: string; done?: QaRun; running: boolean }) => void;
+let qaListener: QaListener | null = null;
+const qaLive = new Map<string, { kill?: () => void; label: string; lines: string[] }>();
+
+/** O IPC registra aqui para mandar o progresso de qualquer QA (painel, esteira, trilho) para a tela. */
+export function setQaListener(fn: QaListener | null): void {
+  qaListener = fn;
+}
+
+/** Roda a suíte de QA do projeto. Um QA por projeto por vez. */
+export async function runProjectQa(idOrPath: string, opts: { label?: string; onProgress?: (line: string) => void } = {}): Promise<{ ok: boolean; run?: QaRun; error?: string }> {
+  const rec = resolveProjectRecord(idOrPath);
+  const rootPath = rec.local_path;
+  if (!rootPath || !fs.existsSync(rootPath)) return { ok: false, error: 'Pasta do projeto não encontrada.' };
+  if (qaLive.has(rootPath)) return { ok: false, error: 'Já há um QA rodando neste projeto.' };
+  const live = { label: opts.label || 'Painel', lines: [] as string[] } as { kill?: () => void; label: string; lines: string[] };
+  qaLive.set(rootPath, live);
+  const emit = (line?: string, done?: QaRun) => {
+    try {
+      qaListener?.({ projectKey: rec.id, rootPath, line, done, running: !done });
+    } catch {}
+  };
+  try {
+    const run = await runQa({
+      workspace: rootPath,
+      projectName: rec.name,
+      label: opts.label,
+      onProgress: (line) => {
+        live.lines = live.lines.concat(line).slice(-80);
+        opts.onProgress?.(line);
+        emit(line);
+      },
+      registerKill: (kill) => {
+        live.kill = kill;
+      },
+    });
+    emit(undefined, run);
+    return { ok: true, run };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    emit(`QA falhou antes de terminar: ${message}`);
+    return { ok: false, error: message };
+  } finally {
+    qaLive.delete(rootPath);
+  }
+}
+
+export function stopProjectQa(idOrPath: string): { ok: boolean } {
+  const live = qaLive.get(resolveProjectRecord(idOrPath).local_path);
+  try {
+    live?.kill?.();
+  } catch {}
+  return { ok: !!live };
+}
+
+export function listProjectQa(idOrPath: string): { ok: boolean; runs: QaRun[]; running: boolean; lines: string[] } {
+  const rootPath = resolveProjectRecord(idOrPath).local_path;
+  const live = qaLive.get(rootPath);
+  return { ok: true, runs: rootPath ? listQaRuns(rootPath) : [], running: !!live, lines: live?.lines || [] };
+}
+
 function nowHM(): string {
   const d = new Date();
   return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
@@ -2048,6 +2112,18 @@ export async function executeAltTrackStep(
     commitNote = commitLine(res);
     log.push(commitNote);
   }
+  // Portão de QA no item de validação: o trilho só fecha se a suíte automática passar.
+  let qa: QaRun | null = null;
+  let qaNote = '';
+  let qaFailed = false;
+  if (agentRes.ok && !needsApproval && focus.kind === 'build' && !liveAgents.get(liveKey)?.paused) {
+    pushLine('Portão de QA: rodando a suíte automática');
+    const res = await runProjectQa(ctrl.rootPath, { label: `Trilho · ${focus.label}`, onProgress: (line) => pushLine(line) });
+    qa = res.run || null;
+    qaFailed = !qa?.ok;
+    qaNote = qa ? qaSummary(qa) : `QA não rodou: ${res.error}`;
+    log.push(qaNote.split('\n')[0]);
+  }
   const fresh = readControlJson(ctrl.rootPath);
   const next = normalizeAltTrack(fresh.alt_track, true);
   const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
@@ -2055,13 +2131,14 @@ export async function executeAltTrackStep(
   const exec = agentRes.runId ? ` · execução ${agentRes.runId}` : '';
   if (agentRes.runId) log.push(`Execução registrada em .tavir/runs/${agentRes.runId}`);
   if (agentRes.ok) current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · ${focus.owner}${exec}\n${reply}\n${commitNote ? `\n_${commitNote}_\n` : ''}`;
+  if (qaNote) current.note = `${current.note.trim()}\n\n### ${stamp} · Portão de QA\n${qaNote}\n`;
   if (agentRes.ok && (focus.kind === 'plan' || focus.kind === 'map')) next.items = applyProposedTracks(next.items, reply);
   next.notes = notesFromItems(next.items);
   next.waitingQuestion = needsApproval ? reply.replace(APPROVAL_RE, '').trim() : '';
   const pausedByUser = agentRes.error === 'paused' || !!liveAgents.get(liveKey)?.paused;
   liveAgents.delete(liveKey);
   next.runLog = log;
-  next.runError = agentRes.ok || pausedByUser ? '' : reply.slice(0, 400);
+  next.runError = pausedByUser ? '' : !agentRes.ok ? reply.slice(0, 400) : qaFailed ? qaNote.slice(0, 400) : '';
   let continued = false;
   if (pausedByUser) {
     next.runStatus = 'paused';
@@ -2069,6 +2146,11 @@ export async function executeAltTrackStep(
   } else if (!agentRes.ok) {
     next.runStatus = 'idle';
     next.checkpoint = saveCheckpoint(reply.slice(0, 400), true) || resume;
+  } else if (qaFailed) {
+    // Reprovado no QA: fica no item de validação, com o relatório no registro, até corrigir e rodar de novo.
+    next.runStatus = 'idle';
+    next.checkpoint = null;
+    clearCheckpointFile(ctrl.rootPath);
   } else if (needsApproval) {
     next.runStatus = 'waiting';
     next.checkpoint = null;
@@ -2101,16 +2183,18 @@ export async function executeAltTrackStep(
   } catch {}
   hooks?.onEnd?.({
     ok: Boolean(agentRes.ok),
-    status: pausedByUser ? 'paused' : !agentRes.ok ? 'failed' : needsApproval ? 'waiting' : 'completed',
-    text: pausedByUser ? 'Pausado. O checkpoint guarda o ponto desta etapa.' : reply,
+    status: pausedByUser ? 'paused' : !agentRes.ok || qaFailed ? 'failed' : needsApproval ? 'waiting' : 'completed',
+    text: pausedByUser ? 'Pausado. O checkpoint guarda o ponto desta etapa.' : qaFailed ? qaNote : reply,
   });
   return {
     ...getProjectAlterationsControl(idOrPath),
-    ok: Boolean(agentRes.ok),
+    ok: Boolean(agentRes.ok) && !qaFailed,
     paused: pausedByUser,
     needsApproval,
     continued,
     reply,
+    qa,
+    ...(qaFailed ? { error: qaNote.split('\n')[0] } : {}),
   };
 }
 
@@ -2393,6 +2477,8 @@ type EsteiraStageRecord = {
   commits?: string[];
   /** Última decisão do Carlos neste gate. */
   decision?: DecisionEntry | null;
+  /** Execuções do portão de QA (qa/evidencias/<id>). */
+  qa?: string[];
 };
 type EsteiraDesk = { auto: boolean; template: string; stages: EsteiraStageRecord[] };
 
@@ -2472,6 +2558,7 @@ function readEsteira(rootPath: string): EsteiraDesk {
       runs: Array.isArray(row.runs) ? row.runs.map((x: unknown) => String(x)).slice(-30) : [],
       commits: Array.isArray(row.commits) ? row.commits.map((x: unknown) => String(x)).slice(-30) : [],
       decision: row.decision && typeof row.decision === 'object' ? (row.decision as DecisionEntry) : null,
+      qa: Array.isArray(row.qa) ? row.qa.map((x: unknown) => String(x)).slice(-30) : [],
     };
   });
   return { auto: Boolean(raw.auto), template: code, stages };
@@ -2723,10 +2810,35 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
   }
   current.files = stageArtifactFiles(info.rootPath, at, def.name);
   if (agentRes.runId) current.runs = (current.runs || []).concat(agentRes.runId).slice(-30);
+  // Portão de QA: o agente terminou, mas a etapa só fecha se a suíte automática passar.
+  const qaGate = def.qa && agentRes.ok && !paused;
+  if (qaGate) current.status = 'running';
   fresh.stages[at] = current;
   writeEsteira(info.rootPath, fresh);
+  let qa: QaRun | null = null;
+  let qaError = '';
+  if (qaGate) {
+    liveAgents.set(key, { paused: false, speech: 'Portão de QA rodando', step: at, itemId: `esteira-${at}`, label: def.name });
+    const res = await runProjectQa(info.rootPath, { label: `Esteira · ${def.name}` });
+    liveAgents.delete(key);
+    qa = res.run || null;
+    qaError = res.error || '';
+    const after = readEsteira(info.rootPath);
+    const row = after.stages[at];
+    const passed = !!qa?.ok;
+    row.note =
+      (row.note ? row.note.trim() + '\n\n' : '') +
+      `### ${new Date().toISOString().slice(0, 16).replace('T', ' ')} · Portão de QA\n` +
+      (qa ? qaSummary(qa) : `QA não rodou: ${qaError}`) +
+      '\n';
+    row.status = passed ? 'done' : 'idle';
+    if (qa) row.qa = (row.qa || []).concat(qa.id).slice(-30);
+    writeEsteira(info.rootPath, after);
+    fresh.stages[at] = row;
+  }
   const last = at >= fresh.stages.length - 1;
-  const ok = Boolean(agentRes.ok) && !paused;
+  const qaOk = !qaGate || !!qa?.ok;
+  const ok = Boolean(agentRes.ok) && !paused && qaOk;
   return {
     ...esteiraPayload(info.rootPath, fresh),
     ok,
@@ -2734,9 +2846,14 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     gate: def.gate,
     awaiting: ok && def.gate,
     commit,
+    qa,
     continued: ok && !def.gate && !last && fresh.auto,
     reply: agentRes.text,
-    error: ok || paused ? undefined : String(agentRes.text || 'A etapa não concluiu.'),
+    error: ok || paused
+      ? undefined
+      : !qaOk
+        ? qa ? `QA reprovou «${def.name}»: ${qa.empty ? 'nenhum teste rodou' : `${qa.fail} de ${qa.total} testes falharam`}.` : `QA não rodou: ${qaError}`
+        : String(agentRes.text || 'A etapa não concluiu.'),
   };
 }
 

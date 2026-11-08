@@ -516,6 +516,68 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
+  // ---------------- Portão de QA ----------------
+  {
+    const { setQaListener } = require('./project-fs');
+    setQaListener((ev: { projectKey: string; rootPath: string; line?: string; done?: any; running: boolean }) => {
+      const event = {
+        runId: `qa-${ev.projectKey}`,
+        type: ev.done ? 'done' : 'thought',
+        content: ev.line || (ev.done ? (ev.done.ok ? 'QA aprovado' : 'QA reprovado') : ''),
+        meta: { qa: true, projectKey: ev.projectKey, rootPath: ev.rootPath, runQa: ev.done ? ev.done.id : undefined, ok: ev.done ? ev.done.ok : undefined },
+      };
+      for (const w of BrowserWindow.getAllWindows()) {
+        try {
+          w.webContents.send('run:event', event);
+        } catch {}
+      }
+    });
+  }
+
+  handle('qa:run', async (_e, idOrPath: string) => {
+    try {
+      const { runProjectQa } = require('./project-fs');
+      return await runProjectQa(idOrPath, { label: 'Painel' });
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('qa:list', (_e, idOrPath: string) => {
+    try {
+      const { listProjectQa } = require('./project-fs');
+      return listProjectQa(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err), runs: [], running: false, lines: [] };
+    }
+  });
+
+  handle('qa:stop', (_e, idOrPath: string) => {
+    try {
+      const { stopProjectQa } = require('./project-fs');
+      return stopProjectQa(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  // Abre relatório, evidência ou a pasta da execução. Só dentro de qa/evidencias/<id> do projeto.
+  handle('qa:open', async (_e, idOrPath: string, runId: string, rel?: string) => {
+    try {
+      const pathMod = require('node:path');
+      const { qaRoot } = require('./qa/qaRunner');
+      const id = String(runId || '');
+      if (!/^QA-\d{8}-\d{6}$/.test(id)) return { ok: false, error: 'Execução de QA inválida.' };
+      const base = pathMod.join(qaRoot(runsWorkspace(idOrPath)), id);
+      const target = pathMod.resolve(base, String(rel || ''));
+      if (target !== base && !target.startsWith(base + pathMod.sep)) return { ok: false, error: 'Caminho fora da execução.' };
+      const error = await shell.openPath(target);
+      return { ok: !error, error: error || undefined, path: target };
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
   handle('projects:openInExplorer', (_e, idOrPath: string) => {
     try {
       const { openProjectFolderInExplorer } = require('./project-fs');

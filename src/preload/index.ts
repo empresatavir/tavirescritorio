@@ -162,6 +162,12 @@ const api: TavirApi = {
   iris: {
     stop: (projectKey: string) => ipcRenderer.invoke('projects:stopIris', projectKey),
   },
+  qa: {
+    run: (idOrPath: string) => ipcRenderer.invoke('qa:run', idOrPath),
+    list: (idOrPath: string) => ipcRenderer.invoke('qa:list', idOrPath),
+    stop: (idOrPath: string) => ipcRenderer.invoke('qa:stop', idOrPath),
+    open: (idOrPath: string, runId: string, rel?: string) => ipcRenderer.invoke('qa:open', idOrPath, runId, rel),
+  },
   runs: {
     list: (idOrPath: string, limit?: number) => ipcRenderer.invoke('runs:list', idOrPath, limit),
     read: (idOrPath: string, runId: string) => ipcRenderer.invoke('runs:read', idOrPath, runId),

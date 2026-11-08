@@ -812,14 +812,14 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
       <div style="display: flex; gap: 18px; flex-wrap: wrap"><sc-for list="{{qa.stats}}" as="x" hint-placeholder-count="5"><div><div class="eyebrow" style="font-size: 9.5px">{{x.k}}</div><div class="num" style="font-size: 17px; color: {{x.c}}">{{x.v}}</div></div></sc-for></div>
       <button class="btn sm primary" onClick="{{qa.run}}" disabled="{{qa.running}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>{{qa.runLbl}}</button>
     </section>
-    <sc-if value="{{qa.running}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 14px 18px; display: flex; gap: 12px; align-items: center"><i class="spin" style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i><span class="grow" style="font-size: 13px">Executando {{qa.planN}} testes em {{qa.browsers}} via {{P.cap}}. Gravando vídeo, GIFs e prints.</span><div class="track" style="max-width: 220px; height: 6px"><div class="fill run" style="width: {{qa.prog}}%"></div></div></div></sc-if>
+    <sc-if value="{{qa.running}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 14px 18px; display: flex; gap: 12px; align-items: center"><i class="spin" style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i><span class="grow" style="font-size: 13px">{{qa.note}}</span><div class="track" style="max-width: 220px; height: 6px"><div class="fill run" style="width: {{qa.prog}}%"></div></div></div></sc-if>
     <sc-if value="{{qa.hasHint}}" hint-placeholder-val="{{false}}"><div class="fb-warn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2 20h20zM12 10v4M12 17h.01"></path></svg><span>{{qa.hint}}</span></div></sc-if>
     <sc-if value="{{qa.has}}" hint-placeholder-val="{{true}}">
     <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
       <section class="card" style="flex: 0 1 270px; min-width: 230px; overflow: hidden">
         <div class="card-h"><h3>Execuções</h3><div class="grow"></div><span class="num muted" style="font-size: 11px">mais recente primeiro</span></div>
         <sc-for list="{{qa.runs}}" as="r" hint-placeholder-count="2"><button class="fb-run {{r.on}}" onClick="{{r.pick}}"><div style="display: flex; gap: 8px; align-items: center"><b class="mono" style="font-size: 13px">{{r.id}}</b><div class="grow"></div><span class="badge {{r.cls}}">{{r.res}}</span></div><small>{{r.when}} · {{r.by}}</small><div class="fb-pb"><i style="width: {{r.pp}}%"></i></div></button></sc-for>
-        <div style="padding: 12px 16px; display: flex; flex-direction: column; gap: 6px"><span class="eyebrow" style="font-size: 9.5px">Armazenadas em</span><code class="mono" style="font-size: 10.5px; color: var(--text-secondary); word-break: break-all">{{qa.store}}</code><button class="btn sm ghost" onClick="{{qa.openFolder}}" style="align-self: flex-start; padding: 0">Abrir pasta de evidências</button></div>
+        <div style="padding: 12px 16px; display: flex; flex-direction: column; gap: 6px"><span class="eyebrow" style="font-size: 9.5px">Armazenadas em</span><code class="mono" style="font-size: 10.5px; color: var(--text-secondary); word-break: break-all">{{qa.store}}</code><button class="btn sm ghost" onClick="{{qa.openFolder}}" style="align-self: flex-start; padding: 0">Abrir pasta de evidências</button><sc-if value="{{qa.hasReport}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{qa.openReport}}" style="align-self: flex-start; padding: 0">Abrir relatório HTML</button></sc-if></div>
       </section>
       <div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap"><b style="font-size: 14px">Evidências · {{qa.selId}}</b><div class="grow"></div><div class="segs"><sc-for list="{{qa.evf}}" as="f" hint-placeholder-count="5"><button class="seg {{f.on}}" onClick="{{f.pick}}" style="height: 28px; font-size: 12px">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div></div>
@@ -827,7 +827,8 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
           <sc-for list="{{qa.ev}}" as="e" hint-placeholder-count="6">
             <button class="card lift fb-ev" onClick="{{e.open}}">
             <div class="fb-th" style="background: {{e.bg}}">
-              <sc-if value="{{e.isShot}}" hint-placeholder-val="{{true}}"><div class="fb-mini" style="width: {{e.mw}}"><i class="n"></i><i class="h1"></i><i class="h2"></i><i class="b"></i><i class="c"></i><sc-if value="{{e.fail}}" hint-placeholder-val="{{false}}"><span class="fb-mini-bug"></span></sc-if></div></sc-if>
+              <sc-if value="{{e.real}}" hint-placeholder-val="{{false}}"><img src="{{e.src}}" alt="" loading="lazy" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top"></sc-if>
+              <sc-if value="{{e.mockShot}}" hint-placeholder-val="{{true}}"><div class="fb-mini" style="width: {{e.mw}}"><i class="n"></i><i class="h1"></i><i class="h2"></i><i class="b"></i><i class="c"></i><sc-if value="{{e.fail}}" hint-placeholder-val="{{false}}"><span class="fb-mini-bug"></span></sc-if></div></sc-if>
               <sc-if value="{{e.isDoc}}" hint-placeholder-val="{{false}}"><div class="fb-doc"><i class="t"></i><i></i><i class="ok"></i><i class="er"></i><i></i><i style="width: 70%"></i><i style="width: 50%"></i></div></sc-if>
               <sc-if value="{{e.isVideo}}" hint-placeholder-val="{{false}}"><span class="fb-playc"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span></sc-if>
               <sc-if value="{{e.isGif}}" hint-placeholder-val="{{false}}"><span class="fb-gifdot"></span></sc-if>
@@ -931,7 +932,8 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
           <section class="card" style="padding: 14px; display: flex; flex-direction: column; gap: 10px">
             <h3 style="font-size: 14px; font-weight: 600">Imagens da varredura</h3>
             <sc-for list="{{sec.imgs}}" as="e" hint-placeholder-count="1"><button class="card lift fb-ev" onClick="{{e.open}}"><div class="fb-th" style="background: {{e.bg}}">
-              <sc-if value="{{e.isShot}}" hint-placeholder-val="{{true}}"><div class="fb-mini" style="width: {{e.mw}}"><i class="n"></i><i class="h1"></i><i class="h2"></i><i class="b"></i><i class="c"></i><sc-if value="{{e.fail}}" hint-placeholder-val="{{false}}"><span class="fb-mini-bug"></span></sc-if></div></sc-if>
+              <sc-if value="{{e.real}}" hint-placeholder-val="{{false}}"><img src="{{e.src}}" alt="" loading="lazy" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top"></sc-if>
+              <sc-if value="{{e.mockShot}}" hint-placeholder-val="{{true}}"><div class="fb-mini" style="width: {{e.mw}}"><i class="n"></i><i class="h1"></i><i class="h2"></i><i class="b"></i><i class="c"></i><sc-if value="{{e.fail}}" hint-placeholder-val="{{false}}"><span class="fb-mini-bug"></span></sc-if></div></sc-if>
               <sc-if value="{{e.isDoc}}" hint-placeholder-val="{{false}}"><div class="fb-doc"><i class="t"></i><i></i><i class="ok"></i><i class="er"></i><i></i><i style="width: 70%"></i><i style="width: 50%"></i></div></sc-if>
               <sc-if value="{{e.isVideo}}" hint-placeholder-val="{{false}}"><span class="fb-playc"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span></sc-if>
               <sc-if value="{{e.isGif}}" hint-placeholder-val="{{false}}"><span class="fb-gifdot"></span></sc-if>
@@ -1218,6 +1220,9 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
         <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; background: #070d18">
           <div style="flex: 1; min-height: 0; overflow: auto; display: grid; place-items: center; padding: 24px">
             <div style="display: flex; flex-direction: column; gap: 10px; align-items: center">
+              <sc-if value="{{evv.realImg}}" hint-placeholder-val="{{false}}"><img src="{{evv.src}}" alt="{{evv.name}}" style="max-width: min(1100px, 100%); max-height: 72vh; border-radius: 10px; border: 1px solid var(--line); background: #fff"></sc-if>
+              <sc-if value="{{evv.realVideo}}" hint-placeholder-val="{{false}}"><video src="{{evv.src}}" controls autoplay muted playsinline style="max-width: min(1100px, 100%); max-height: 72vh; border-radius: 10px; border: 1px solid var(--line); background: #000"></video></sc-if>
+              <sc-if value="{{evv.mock}}" hint-placeholder-val="{{true}}">
               <div class="fb-wf" style="width: {{evv.w}}px; height: {{evv.h}}px">
                 <div class="fb-wf-nav"><i class="lg"></i><sc-if value="{{evv.desk}}" hint-placeholder-val="{{true}}"><span class="lk"><i></i><i></i><i></i><i></i></span></sc-if><sc-if value="{{evv.mob}}" hint-placeholder-val="{{false}}"><i class="hb"></i></sc-if></div>
                 <div class="fb-wf-hero"><i class="ey"></i><i class="t1"></i><i class="t2"></i><i class="p"></i><i class="cta"></i></div>
@@ -1228,10 +1233,11 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
                 <sc-if value="{{evv.hasCur}}" hint-placeholder-val="{{false}}"><div class="fb-wf-cur {{evv.curCls}}" style="left: {{evv.cx}}%; top: {{evv.cy}}%"></div></sc-if>
                 <sc-if value="{{evv.hasCap}}" hint-placeholder-val="{{false}}"><div class="fb-wf-cap"><span class="badge {{evv.capCls}}">{{evv.capSt}}</span><span>{{evv.cap}}</span></div></sc-if>
               </div>
+              </sc-if>
               <span class="mono" style="font-size: 11.5px; color: #aeb7c4">{{evv.note}}</span>
             </div>
           </div>
-          <sc-if value="{{evv.isVideo}}" hint-placeholder-val="{{false}}">
+          <sc-if value="{{evv.mockVideo}}" hint-placeholder-val="{{false}}">
             <div class="fb-vc">
               <button class="ibtn" onClick="{{evv.toggle}}" aria-label="{{evv.playLbl}}" style="background: var(--cloud); color: var(--ink); border: 0"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="{{evv.playIcon}}"></path></svg></button>
               <span class="mono" style="font-size: 12px; min-width: 86px">{{evv.tc}}</span>
@@ -1834,6 +1840,22 @@ class Component extends DCLogic {
         if (window.__tavirFabPing) window.__tavirFabPing();
       });
     }
+    if (typeof window !== 'undefined' && window.tavir && !window.__tavirQaLiveOn) {
+      window.__tavirQaLiveOn = true;
+      window.__tavirQaLive = {};
+      window.tavir.onEvent(function (evt) {
+        if (!evt || !evt.meta || !evt.meta.qa) return;
+        const k = String(evt.meta.projectKey || '');
+        const cur = window.__tavirQaLive[k] || { lines: [] };
+        if (evt.type === 'done') {
+          delete window.__tavirQaLive[k];
+          if (window.__tavirQaDone) window.__tavirQaDone(k, evt.meta);
+        } else {
+          window.__tavirQaLive[k] = { lines: cur.lines.concat(String(evt.content || '')).slice(-60) };
+        }
+        if (window.__tavirFabPing) window.__tavirFabPing();
+      });
+    }
     if (typeof window !== 'undefined') window.__tavirFabPing = function () { self.setState({ trackPulse: Date.now() }); };
     const pid = spot === 'topology' ? 'meridian' : s.pid;
     const ptab = spot === 'topology' ? 'esteira' : s.ptab;
@@ -2276,36 +2298,60 @@ class Component extends DCLogic {
       if (!qReached) return [];
       return [qaRun(fam, { id: 'QA-00' + (50 + P.id.length), when: P.status === 'done' ? ddmm(P.base, startOf(qIdx)) + ' 16:00' : 'ontem 18:10', fails: [], commit: P.slug.slice(-4) + 'e1c', by: fam === 'SY' ? 'Talita QA · mobile-mcp' : 'Talita QA · playwright' })];
     };
-    const qaRuns = s.qaRuns[P.id] || seedQA();
+    // Execuções reais (qa/evidencias/<id>/resultado.json). O gerador de demonstração fica só para os projetos de exemplo.
+    const qaRuns = s.qaRuns[P.id] || (P.local_path ? [] : seedQA());
+    const qaLive = (typeof window !== 'undefined' && window.__tavirQaLive && window.__tavirQaLive[P.id]) || null;
+    const fileUrl = (f) => 'file:///' + String(f || '').replace(/\\/g, '/').split('/').map(encodeURIComponent).join('/').replace(/^([A-Za-z])%3A/, '$1:');
+    const qaApi = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+    const qaTarget = P.local_path || P.path || P.slug || P.id;
     const qSel = qaRuns.length ? Math.min(s.qaSel[P.id] != null ? s.qaSel[P.id] : qaRuns.length - 1, qaRuns.length - 1) : -1;
     const QR = qSel >= 0 ? qaRuns[qSel] : null;
-    const qProg = s.prog['qa:' + P.id];
-    const evStore = 'evidencias/qa/' + (QR ? QR.id : '');
+    const qProg = qaLive ? Math.min(95, 8 + qaLive.lines.length * 3) : s.prog['qa:' + P.id];
+    const evStore = QR && QR.real ? 'qa/evidencias/' + QR.id : 'evidencias/qa/' + (QR ? QR.id : '');
     const kindLbl = { video: 'Vídeo', gif: 'GIF', img: 'Print', report: 'Relatório' };
     const openEv = (sec, idx) => { clearInterval(self.vi); self.setState({ evw: { pid: P.id, sec: sec, i: idx }, vt: 0, vplay: false }); };
-    const thumbOf = (e) => ({ name: e.name, tag: e.kind === 'report' ? 'HTML' : e.name.split('.').pop().toUpperCase(), kind: kindLbl[e.kind] || 'Imagem', isDoc: e.kind === 'report', isShot: e.kind !== 'report', isVideo: e.kind === 'video', isGif: e.kind === 'gif', fail: !!e.fail, mw: e.mobile ? '52px' : '150px', bg: e.fail ? 'oklch(.635 .185 27 / .14)' : '#0e1626', hasDur: e.kind === 'video', dur: e.kind === 'video' ? mmss(e.dur) : '', meta: (kindLbl[e.kind] || 'Imagem') + ' · ' + e.size + (e.fail ? ' · falha' : ''), mc: e.fail ? 'var(--danger)' : 'var(--text-muted)' });
+    const thumbOf = (e) => ({ real: !!e.file && (e.kind === 'img' || e.kind === 'gif'), mock: !(e.file && (e.kind === 'img' || e.kind === 'gif')), src: e.file ? fileUrl(e.file) : '', name: e.name, tag: e.kind === 'report' ? 'HTML' : e.name.split('.').pop().toUpperCase(), kind: kindLbl[e.kind] || 'Imagem', isDoc: e.kind === 'report', isShot: e.kind !== 'report', mockShot: e.kind !== 'report' && !(e.file && (e.kind === 'img' || e.kind === 'gif')), isVideo: e.kind === 'video', isGif: e.kind === 'gif', fail: !!e.fail, mw: e.mobile ? '52px' : '150px', bg: e.fail ? 'oklch(.635 .185 27 / .14)' : '#0e1626', hasDur: e.kind === 'video', dur: e.kind === 'video' ? mmss(e.dur) : '', meta: (kindLbl[e.kind] || 'Imagem') + ' · ' + e.size + (e.fail ? ' · falha' : ''), mc: e.fail ? 'var(--danger)' : 'var(--text-muted)' });
     const qaEv = QR ? QR.ev.filter((e) => s.evf === 'all' || e.kind === s.evf) : [];
     const failNow = QR ? QR.fail : 0;
-    const passPct = QR ? Math.round(QR.pass / QR.total * 100) : 0;
+    const passPct = QR && QR.total ? Math.round(QR.pass / QR.total * 100) : 0;
     const qa = {
-      has: !!QR, none: !QR, running: qProg != null, prog: qProg || 0,
+      has: !!QR, none: !QR, running: qProg != null, prog: qProg || 0, hasLive: !!qaLive,
       runLbl: qProg != null ? 'Executando…' : QR ? 'Rodar suíte de QA' : 'Rodar prévia de QA',
       planN: (QA_TPL[fam] || []).reduce((a, su) => a + su[1].length, 0), browsers: fam === 'SY' ? 'Chromium e emulador tavir_qa' : 'Chromium 1440 e WebKit 390',
-      run: () => self.runTests('qa', P.id, qaRuns, () => { const last = qaRuns.length ? parseInt(qaRuns[qaRuns.length - 1].id.slice(3), 10) : 100; return qaRun(fam, { id: 'QA-' + String(last + 1).padStart(4, '0'), when: 'agora ' + hm(), fails: isM && !s.guard[4] ? ['Layout em 390 px', 'Menu vira ícone abaixo de 768 px'] : [], commit: Math.random().toString(16).slice(2, 9), motor: P.cap, preview: !qReached, by: fam === 'SY' ? 'Talita QA · mobile-mcp' : 'Talita QA · playwright' }); }, 'Suíte de QA concluída'),
+      run: P.local_path ? () => {
+        if (!qaApi || !qaApi.qa) { app.toast('QA', 'O portão de QA só roda no app desktop.'); return; }
+        if (window.__tavirQaLive) window.__tavirQaLive[P.id] = { lines: ['Preparando o QA de ' + P.name] };
+        self.setState({ trackPulse: Date.now() });
+        qaApi.qa.run(qaTarget).then(function (res) {
+          if (window.__tavirQaLive) delete window.__tavirQaLive[P.id];
+          self._loadQa();
+          if (!res || res.ok === false) { app.toast('QA', (res && res.error) || 'O QA não rodou.'); return; }
+          const r = res.run;
+          app.toast(r.ok ? 'QA aprovado' : 'QA reprovado', r.ok ? r.pass + ' de ' + r.total + ' testes passaram.' : (r.empty ? 'Nenhum teste rodou nesta pasta.' : r.fail + ' de ' + r.total + ' testes falharam. Veja as evidências.'));
+        }).catch(function (err) { if (window.__tavirQaLive) delete window.__tavirQaLive[P.id]; app.toast('QA', String(err && err.message || err)); });
+      } : () => self.runTests('qa', P.id, qaRuns, () => { const last = qaRuns.length ? parseInt(qaRuns[qaRuns.length - 1].id.slice(3), 10) : 100; return qaRun(fam, { id: 'QA-' + String(last + 1).padStart(4, '0'), when: 'agora ' + hm(), fails: isM && !s.guard[4] ? ['Layout em 390 px', 'Menu vira ícone abaixo de 768 px'] : [], commit: Math.random().toString(16).slice(2, 9), motor: P.cap, preview: !qReached, by: fam === 'SY' ? 'Talita QA · mobile-mcp' : 'Talita QA · playwright' }); }, 'Suíte de QA concluída'),
       pct: passPct, ring: failNow ? 'var(--danger)' : 'var(--flow)',
-      title: !QR ? 'Nenhuma execução ainda' : failNow ? failNow + (failNow === 1 ? ' teste falhou' : ' testes falharam') + ' em ' + QR.id : 'Todos os ' + QR.total + ' testes passaram em ' + QR.id,
-      note: !QR ? 'A etapa de QA começa em ' + (qIdx >= 0 ? P.stages[qIdx][0] : 'uma etapa futura') + '. Uma prévia roda agora no build atual.' : QR.when + ' · ' + QR.by + ' · ' + QR.browsers,
+      title: qaLive ? 'QA em execução' : !QR ? 'Nenhuma execução ainda' : QR.empty ? 'Nenhum teste rodou em ' + QR.id : failNow ? failNow + (failNow === 1 ? ' teste falhou' : ' testes falharam') + ' em ' + QR.id : 'Todos os ' + QR.total + ' testes passaram em ' + QR.id,
+      note: qaLive ? (qaLive.lines[qaLive.lines.length - 1] || 'Preparando…') : !QR ? (P.local_path ? 'Roda testes, tipos, lint e build do projeto, sobe o app e percorre as páginas em 1440 e 390 px gravando vídeo, GIFs e prints.' : 'A etapa de QA começa em ' + (qIdx >= 0 ? P.stages[qIdx][0] : 'uma etapa futura') + '. Uma prévia roda agora no build atual.') : QR.when + ' · ' + QR.by + ' · ' + QR.browsers + (QR.label ? ' · ' + QR.label : ''),
       hint: isM && QR && QR.fail && s.guard[4] ? 'O ajuste hero-390 entrou depois desta execução. Rode a suíte de novo para gerar evidências novas.' : '', hasHint: !!(isM && QR && QR.fail && s.guard[4]),
       stats: QR ? [['Testes', String(QR.total), 'var(--text-primary)'], ['Passaram', String(QR.pass), 'var(--flow)'], ['Falharam', String(QR.fail), QR.fail ? 'var(--danger)' : 'var(--text-muted)'], ['Duração', fmtDurS(QR.dur), 'var(--text-primary)'], ['Evidências', String(QR.ev.length), 'var(--text-primary)']].map((x) => ({ k: x[0], v: x[1], c: x[2] })) : [],
-      runs: qaRuns.map((r, i) => ({ id: r.id, when: r.when + (r.preview ? ' · prévia' : ''), by: r.motor, res: r.fail ? r.fail + ' falha' + (r.fail > 1 ? 's' : '') : 'ok', cls: r.fail ? 'danger' : 'flow', pp: Math.round(r.pass / r.total * 100), on: i === qSel ? 'on' : '', pick: () => { const q2 = Object.assign({}, s.qaSel); q2[P.id] = i; self.setState({ qaSel: q2 }); } })).reverse(),
-      store: P.slug.replace(/\\/g, '/') + '/' + evStore,
-      openFolder: () => app.toast('Pasta de evidências', P.path + '\\' + evStore.replace(/\//g, '\\')),
+      runs: qaRuns.map((r, i) => ({ id: r.id, when: r.when + (r.preview ? ' · prévia' : ''), by: r.real ? (r.label || 'Painel') : r.motor, res: r.empty ? 'sem testes' : r.fail ? r.fail + ' falha' + (r.fail > 1 ? 's' : '') : 'ok', cls: r.fail || r.empty ? 'danger' : 'flow', pp: r.total ? Math.round(r.pass / r.total * 100) : 0, on: i === qSel ? 'on' : '', pick: () => { const q2 = Object.assign({}, s.qaSel); q2[P.id] = i; self.setState({ qaSel: q2 }); } })).reverse(),
+      store: QR && QR.real ? QR.dir : P.slug.replace(/\\/g, '/') + '/' + evStore,
+      openFolder: () => {
+        if (QR && QR.real && qaApi && qaApi.qa) { qaApi.qa.open(qaTarget, QR.id).then(function (r) { if (r && r.ok === false) app.toast('Evidências', r.error || 'Não abriu a pasta.'); }); return; }
+        app.toast('Pasta de evidências', P.path + '\\' + evStore.replace(/\//g, '\\'));
+      },
+      openReport: () => { if (QR && QR.real && qaApi && qaApi.qa) qaApi.qa.open(qaTarget, QR.id, 'index.html'); },
+      hasReport: !!(QR && QR.real),
+      liveLines: qaLive ? qaLive.lines.slice(-8).map(function (t) { return { t: t, bad: /^✗|reprovado|falh/i.test(t) }; }) : [],
       evf: [['all', 'Todas'], ['video', 'Vídeos'], ['gif', 'GIFs'], ['img', 'Prints'], ['report', 'Relatório']].map((f) => ({ label: f[1], n: QR ? QR.ev.filter((e) => f[0] === 'all' || e.kind === f[0]).length : 0, on: s.evf === f[0] ? 'on' : '', pick: () => self.setState({ evf: f[0] }) })),
       ev: qaEv.map((e) => Object.assign(thumbOf(e), { open: () => openEv(false, e.i) })),
       selId: QR ? QR.id : '',
       rf: [['all', 'Todos'], ['fail', 'Falhas'], ['pass', 'Passaram']].map((f) => ({ label: f[1], on: s.repF === f[0] ? 'on' : '', pick: () => self.setState({ repF: f[0] }) })),
       suites: QR ? QR.suites.map((su) => ({ name: su.name, ok: su.tests.filter((x) => x.st === 'pass').length + '/' + su.tests.length, cls: su.tests.some((x) => x.st === 'fail') ? 'danger' : 'flow', tests: su.tests.filter((x) => s.repF === 'all' || x.st === s.repF).map((x) => { const evi = QR.ev.find((e) => e.test === x.name) || QR.ev.find((e) => e.kind === 'video' && QR.suites[e.suite] === su); return { cls2: x.st === 'fail' ? 'f' : '', bg: 'transparent', name: x.name, dur: String(x.dur).replace('.', ',') + ' s', fail: x.st === 'fail', pass: x.st === 'pass', msg: x.err ? x.err.msg : '', at: x.err ? x.err.at : '', icon: x.st === 'pass' ? IC.check : 'M6 6l12 12M18 6 6 18', ic: x.st === 'pass' ? 'var(--flow)' : 'var(--danger)', hasEv: !!evi, ev: () => evi && openEv(false, evi.i) }; }) })).filter((su) => su.tests.length) : [],
-      planned: (QA_TPL[fam] || []).map((su) => ({ t: su[0], n: su[1].length + ' testes' })),
+      planned: P.local_path
+        ? [['Checagens do projeto', 'testes · tipos · lint · build'], ['App no ar', 'dev server ou estático'], ['Carregamento e navegação', 'páginas e links'], ['Acessibilidade básica', 'alt · nomes · idioma'], ['Responsivo 390 px', 'rolagem horizontal']].map((x) => ({ t: x[0], n: x[1] }))
+        : (QA_TPL[fam] || []).map((su) => ({ t: su[0], n: su[1].length + ' testes' })),
       rules: G8.filter((r) => !/Segurança/.test(r[0])).map((r, i) => { const ok = i < Math.min(P.gN, 7); return { t: r[0], ok: ok, icon: ok ? IC.check : IC.clock, c: ok ? 'var(--flow)' : 'var(--text-muted)' }; })
     };
 
@@ -2364,7 +2410,8 @@ class Component extends DCLogic {
       if (e) {
         const isVideo = e.kind === 'video', isGif = e.kind === 'gif', isImg = e.kind === 'img', isRep = e.kind === 'report';
         let steps = [], total = 0, cur = 0, region = e.region || (e.test ? regionOf(e.test) : 'hero'), bug = e.bug || null, cap = '', capSt = '', capCls = '';
-        if (isVideo) { const su = QR.suites[e.suite]; total = su.tests.length * 2.5; cur = Math.min(su.tests.length - 1, Math.floor(s.vt / 2.5)); const tc = su.tests[cur]; region = regionOf(tc.name); bug = tc.st === 'fail' && tc.err ? tc.err.bug : null; cap = tc.name; capSt = tc.st === 'fail' ? 'falhou' : 'passou'; capCls = tc.st === 'fail' ? 'danger' : 'flow'; steps = su.tests.map((x, i) => ({ t: x.name, at: mmss(i * 2.5), on: i === cur ? 'on' : '', st: x.st === 'fail' ? 'falhou' : 'passou', cls: x.st === 'fail' ? 'danger' : 'flow', pick: () => { clearInterval(self.vi); self.setState({ vt: i * 2.5 + 0.05, vplay: false }); } })); }
+        const realEv = !!e.file;
+        if (isVideo && !realEv) { const su = QR.suites[e.suite]; total = su.tests.length * 2.5; cur = Math.min(su.tests.length - 1, Math.floor(s.vt / 2.5)); const tc = su.tests[cur]; region = regionOf(tc.name); bug = tc.st === 'fail' && tc.err ? tc.err.bug : null; cap = tc.name; capSt = tc.st === 'fail' ? 'falhou' : 'passou'; capCls = tc.st === 'fail' ? 'danger' : 'flow'; steps = su.tests.map((x, i) => ({ t: x.name, at: mmss(i * 2.5), on: i === cur ? 'on' : '', st: x.st === 'fail' ? 'falhou' : 'passou', cls: x.st === 'fail' ? 'danger' : 'flow', pick: () => { clearInterval(self.vi); self.setState({ vt: i * 2.5 + 0.05, vplay: false }); } })); }
         if (isGif) { cap = e.test || ''; capSt = e.fail ? 'falhou' : 'passou'; capCls = e.fail ? 'danger' : 'flow'; }
         const R = REGION[region] || REGION.hero; const mob = !!e.mobile;
         const testObj = e.test && QR ? [].concat.apply([], QR.suites.map((su) => su.tests)).find((x) => x.name === e.test) : null;
@@ -2372,13 +2419,14 @@ class Component extends DCLogic {
         const allQ = QR ? [].concat.apply([], QR.suites.map((su) => su.tests.map((x) => Object.assign({ suite: su.name }, x)))) : [];
         evv = {
           open: true, name: e.name, kind: kindLbl[e.kind] || 'Imagem', size: e.size, sec: EW.sec, src: EW.sec ? 'Segurança · ' + (SR ? SR.id : '') : 'QA · ' + (QR ? QR.id : ''),
-          path: (EW.sec ? sec.store : qa.store) + '/' + e.name, idx: (EW.i + 1) + ' de ' + list.length,
+          path: realEv ? e.file : (EW.sec ? sec.store : qa.store) + '/' + e.name, idx: (EW.i + 1) + ' de ' + list.length,
           prev: () => { clearInterval(self.vi); self.setState({ evw: Object.assign({}, EW, { i: (EW.i - 1 + list.length) % list.length }), vt: 0, vplay: false }); },
           next: () => { clearInterval(self.vi); self.setState({ evw: Object.assign({}, EW, { i: (EW.i + 1) % list.length }), vt: 0, vplay: false }); },
           close: () => { clearInterval(self.vi); self.setState({ evw: null, vplay: false }); }, bg: (ev) => { if (ev && ev.target === ev.currentTarget) { clearInterval(self.vi); self.setState({ evw: null, vplay: false }); } },
+          realImg: realEv && (isImg || isGif), realVideo: realEv && isVideo, mock: !realEv, mockVideo: !realEv && isVideo, src: realEv ? fileUrl(e.file) : '',
           isMedia: !isRep, isRep: isRep, isQARep: isRep && !EW.sec, isSecRep: isRep && EW.sec, isVideo: isVideo, isGif: isGif, isImg: isImg,
           w: mob ? 270 : 720, h: mob ? 540 : 450, desk: !mob, mob: mob,
-          hasHl: isVideo || isGif || (isImg && (e.fail || !!e.region)), hl: { t: R[0], l: R[1], w: R[2], h: R[3], c: (isVideo ? capCls === 'danger' : e.fail) ? 'oklch(.635 .185 27)' : '#1BC5BD' },
+          hasHl: !realEv && (isVideo || isGif || (isImg && (e.fail || !!e.region))), hl: { t: R[0], l: R[1], w: R[2], h: R[3], c: (isVideo ? capCls === 'danger' : e.fail) ? 'oklch(.635 .185 27)' : '#1BC5BD' },
           bug: !!bug, bugBox: bug ? BUGBOX[bug][0] : '', bugTxt: bug ? BUGBOX[bug][1] : '',
           hasCur: isVideo || isGif, cx: R[2] / 2 + R[1], cy: R[0] + R[3] / 2, curCls: isGif ? 'gif' : '',
           hasCap: isVideo || isGif, cap: cap, capSt: capSt, capCls: capCls,
@@ -2388,13 +2436,13 @@ class Component extends DCLogic {
           seek: (ev) => { const r = ev.currentTarget.getBoundingClientRect(); const f = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)); clearInterval(self.vi); self.setState({ vt: f * total, vplay: false }); },
           marks: steps.map((x, i) => ({ x: (i / Math.max(1, steps.length) * 100).toFixed(2), c: x.cls === 'danger' ? 'oklch(.635 .185 27)' : '#1BC5BD', t: x.t })),
           steps: steps, hasSteps: steps.length > 0,
-          info: isVideo ? [['Suíte', QR.suites[e.suite].name], ['Testes', QR.suites[e.suite].tests.length + ''], ['Navegador', e.mobile ? 'WebKit · 390 × 844' : 'Chromium · 1440 × 900'], ['Duração', mmss(total)]] : isGif ? [['Teste', e.test || ''], ['Resultado', e.fail ? 'falhou' : 'passou'], ['Navegador', e.mobile ? 'WebKit · 390 × 844' : 'Chromium · 1440 × 900']] : isImg ? [['Origem', EW.sec ? 'Varredura ' + (SR ? SR.id : '') : 'Execução ' + (QR ? QR.id : '')], ['Resolução', e.size.split(' · ')[1] || (e.mobile ? '390 × 844' : '1440 × 900')], ['Achado', e.note || '']] : [],
+          info: realEv ? [['Tipo', kindLbl[e.kind] || e.kind], ['Teste', e.test || e.note || '—'], ['Resultado', e.fail ? 'falhou' : 'passou'], ['Tela', e.mobile ? 'Chromium · 390 × 844' : 'Chromium · 1440 × 900'], ['Arquivo', e.path], ['Tamanho', e.size]] : isVideo ? [['Suíte', QR.suites[e.suite].name], ['Testes', QR.suites[e.suite].tests.length + ''], ['Navegador', e.mobile ? 'WebKit · 390 × 844' : 'Chromium · 1440 × 900'], ['Duração', mmss(total)]] : isGif ? [['Teste', e.test || ''], ['Resultado', e.fail ? 'falhou' : 'passou'], ['Navegador', e.mobile ? 'WebKit · 390 × 844' : 'Chromium · 1440 × 900']] : isImg ? [['Origem', EW.sec ? 'Varredura ' + (SR ? SR.id : '') : 'Execução ' + (QR ? QR.id : '')], ['Resolução', e.size.split(' · ')[1] || (e.mobile ? '390 × 844' : '1440 × 900')], ['Achado', e.note || '']] : [],
           infoRows: [], hasErr: !!(testObj && testObj.err) || !!fnd, errT: testObj && testObj.err ? testObj.err.msg : fnd ? fnd.id + ' · ' + fnd.title : '', errD: testObj && testObj.err ? 'Esperado: ' + testObj.err.exp + '. Recebido: ' + testObj.err.rec + '.' : fnd ? fnd.desc : '', errAt: testObj && testObj.err ? testObj.err.at : fnd ? fnd.where : '',
-          dl: () => self.dl(e.name, EW.sec ? secHtmlNow() : qaHtml(P, QR)), canDl: isRep,
+          dl: () => { if (!EW.sec && QR && QR.real && qaApi && qaApi.qa) { qaApi.qa.open(qaTarget, QR.id, 'index.html'); return; } self.dl(e.name, EW.sec ? secHtmlNow() : qaHtml(P, QR)); }, canDl: isRep,
           // relatório de QA
-          rep: QR && !EW.sec ? { title: P.name + ' · ' + QR.id, meta: QR.when + ' · ' + QR.by + ' · motor ' + QR.motor + ' · commit ' + QR.commit, k: [['Total', QR.total, 'var(--text-primary)'], ['Passaram', QR.pass, 'var(--flow)'], ['Falharam', QR.fail, QR.fail ? 'var(--danger)' : 'var(--text-muted)'], ['Duração', fmtDurS(QR.dur), 'var(--text-primary)']].map((x) => ({ k: x[0], v: String(x[1]), c: x[2] })), pp: Math.round(QR.pass / QR.total * 100),
-            env: [['Navegadores', QR.browsers], ['Ferramenta', fam === 'SY' ? 'Playwright 1.48 · mobile-mcp' : 'Playwright 1.48'], ['Commit', QR.commit], ['Evidências', qa.store]].map((x) => ({ k: x[0], v: x[1] })),
-            suites: QR.suites.map((su) => ({ name: su.name, ok: su.tests.filter((x) => x.st === 'pass').length + '/' + su.tests.length, tests: su.tests.map((x) => { const evs = QR.ev.filter((v) => v.test === x.name || (v.kind === 'video' && QR.suites[v.suite] === su && x.st === 'fail')); return { name: x.name, dur: String(x.dur).replace('.', ',') + ' s', fail: x.st === 'fail', st: x.st === 'fail' ? 'falhou' : 'passou', cls: x.st === 'fail' ? 'danger' : 'flow', msg: x.err ? x.err.msg : '', exp: x.err ? x.err.exp : '', rec: x.err ? x.err.rec : '', at: x.err ? x.err.at : '', code: x.err ? x.err.code : '', steps: x.err ? ['Abrir a página no navegador', 'Ajustar a viewport do teste', 'Localizar o elemento', 'Validar a asserção'].map((t2, i) => ({ t: t2, ms: (120 + i * 210) + ' ms', ok: i < 3 })) : [], att: evs.map((v) => ({ t: v.name, open: () => self.setState({ evw: Object.assign({}, EW, { i: v.i }), vt: 0, vplay: false }) })) }; }) })) } : REP0,
+          rep: QR && !EW.sec ? { title: P.name + ' · ' + QR.id, meta: QR.when + ' · ' + QR.by + ' · motor ' + QR.motor + ' · commit ' + QR.commit, k: [['Total', QR.total, 'var(--text-primary)'], ['Passaram', QR.pass, 'var(--flow)'], ['Falharam', QR.fail, QR.fail ? 'var(--danger)' : 'var(--text-muted)'], ['Duração', fmtDurS(QR.dur), 'var(--text-primary)']].map((x) => ({ k: x[0], v: String(x[1]), c: x[2] })), pp: QR.total ? Math.round(QR.pass / QR.total * 100) : 0,
+            env: [['Navegadores', QR.browsers], ['Ferramenta', QR.real ? QR.by + ' · ' + QR.stack : fam === 'SY' ? 'Playwright 1.48 · mobile-mcp' : 'Playwright 1.48'], ['Commit', QR.commit], ['Evidências', qa.store]].map((x) => ({ k: x[0], v: x[1] })),
+            suites: QR.suites.map((su) => ({ name: su.name, ok: su.tests.filter((x) => x.st === 'pass').length + '/' + su.tests.length, tests: su.tests.map((x) => { const evs = QR.ev.filter((v) => v.test === x.name || (v.kind === 'video' && QR.suites[v.suite] === su && x.st === 'fail')); return { name: x.name, dur: String(x.dur).replace('.', ',') + ' s', fail: x.st === 'fail', st: x.st === 'fail' ? 'falhou' : 'passou', cls: x.st === 'fail' ? 'danger' : 'flow', msg: x.err ? x.err.msg : '', exp: x.err ? x.err.exp : '', rec: x.err ? x.err.rec : '', at: x.err ? x.err.at : '', code: x.err ? x.err.code : '', steps: x.err && !QR.real ? ['Abrir a página no navegador', 'Ajustar a viewport do teste', 'Localizar o elemento', 'Validar a asserção'].map((t2, i) => ({ t: t2, ms: (120 + i * 210) + ' ms', ok: i < 3 })) : [], att: evs.map((v) => ({ t: v.name, open: () => self.setState({ evw: Object.assign({}, EW, { i: v.i }), vt: 0, vplay: false }) })) }; }) })) } : REP0,
           // relatório de segurança
           srep: SR && EW.sec ? { title: P.name + ' · ' + SR.id, meta: SR.when + (SR.preview ? ' · prévia' : '') + ' · ' + SR.by + ' · alvo ' + SR.target, score: score, ring: sec.ring, k: [['Nota', score + '/100'], ['Testes', String(checks.length)], ['Abertas', String(fOpen.length)], ['Corrigidas', String(fIn.length - fOpen.length)]].map((x) => ({ k: x[0], v: x[1] })), tools: SR.tools.map((x) => ({ t: x })), checks: checks,
             finds: fIn.slice().sort((a, b) => SEV[a.sev][0] - SEV[b.sev][0]).map((f) => ({ id: f.id, sev: f.sev, sevCls: SEV[f.sev][1], title: f.title, where: f.where, desc: f.desc, ev: f.ev, impact: f.impact, fix: f.fix, code: f.code, refs: f.refs.map((r) => ({ t: r })), st: f.st, stCls: f.st === 'corrigida' ? 'flow' : f.st === 'em correção' ? 'warn' : 'danger' })), noFinds: fIn.length === 0 } : SREP0
@@ -2408,6 +2456,17 @@ class Component extends DCLogic {
     const lgApi = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
     const lgTarget = P.local_path || P.path || P.slug || P.id;
     const lgList = (s.lgRuns || {})[P.id] || [];
+    self._loadQa = () => {
+      if (!lgApi || !lgApi.qa) return;
+      lgApi.qa.list(lgTarget).then(function (res) {
+        const map = Object.assign({}, self.state.qaRuns || {});
+        map[P.id] = ((res && res.runs) || []).map(function (r) { return Object.assign({ real: true }, r); });
+        const sel = Object.assign({}, self.state.qaSel || {}); delete sel[P.id];
+        self.setState({ qaRuns: map, qaSel: sel });
+        if (res && res.running && window.__tavirQaLive && !window.__tavirQaLive[P.id]) window.__tavirQaLive[P.id] = { lines: res.lines || [] };
+      }).catch(function () {});
+    };
+    if (typeof window !== 'undefined') window.__tavirQaDone = function (k) { if (k === P.id && self._loadQa) self._loadQa(); if (self.reloadIpcProjects) self.reloadIpcProjects(); };
     self._loadRuns = (keepSel) => {
       if (!lgApi || !lgApi.runs) { self.setState({ lgErr: 'O livro de execuções só existe no app desktop.' }); return; }
       self.setState({ lgBusy: true });
@@ -2497,7 +2556,7 @@ class Component extends DCLogic {
       togglePause: () => self.togglePause(P.id),
       toGeral: () => self.setState({ ptab: 'geral' }), toEsteira: () => self.setState({ ptab: 'esteira' }), toTrilho: () => self.setState({ ptab: 'trilho' }), toGuard: () => self.setState({ ptab: 'qa' }),
       toLedger: () => { self.setState({ ptab: 'esteira', lf: 'all' }); goStage(s.stage, 'ledger'); },
-      ptabs: ([['geral', 'Visão geral', P.pendN, 'warn'], ['esteira', 'Esteira', null]].concat(projFinished ? [['trilho', 'Trilho', showAltTrack ? 1 : null, showAltTrack ? 'flow' : '']] : []).concat([['kanban', 'Kanban', null], ['roadmap', 'Roadmap', null], ['arquivos', 'Workspace', pFiles.length, ''], ['qa', 'QA', qaTabN, 'danger'], ['seg', 'Segurança', segTabN, 'danger'], ['acessos', 'Acessos', missingN, 'danger'], ['logs', 'Logs', lgFailN, 'danger']])).map((x) => ({ label: x[1], n: x[2], cls: x[3] || '', hasN: x[2] != null && x[2] !== 0, on: ptab === x[0] ? 'on' : '', pick: () => { self.setState({ ptab: x[0] }); if (x[0] === 'logs') self._loadRuns(false); } })),
+      ptabs: ([['geral', 'Visão geral', P.pendN, 'warn'], ['esteira', 'Esteira', null]].concat(projFinished ? [['trilho', 'Trilho', showAltTrack ? 1 : null, showAltTrack ? 'flow' : '']] : []).concat([['kanban', 'Kanban', null], ['roadmap', 'Roadmap', null], ['arquivos', 'Workspace', pFiles.length, ''], ['qa', 'QA', qaTabN, 'danger'], ['seg', 'Segurança', segTabN, 'danger'], ['acessos', 'Acessos', missingN, 'danger'], ['logs', 'Logs', lgFailN, 'danger']])).map((x) => ({ label: x[1], n: x[2], cls: x[3] || '', hasN: x[2] != null && x[2] !== 0, on: ptab === x[0] ? 'on' : '', pick: () => { self.setState({ ptab: x[0] }); if (x[0] === 'logs') self._loadRuns(false); if (x[0] === 'qa' && self._loadQa) self._loadQa(); } })),
       pt: pt, cs: cs, showAltTrack: showAltTrack,
       altTrack: (function () {
         const curItem = trackItems[altTrackStep] || trackItems[0];

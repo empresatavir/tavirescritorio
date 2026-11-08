@@ -14,6 +14,8 @@ export interface EsteiraStage {
   weight: number;
   /** Gate: o agente resume e a etapa só fecha com a decisão do Carlos. */
   gate: boolean;
+  /** Portão de QA: depois do agente, a suíte automática roda e a etapa só fecha se passar. */
+  qa: boolean;
 }
 
 export interface EsteiraTemplate {
@@ -25,11 +27,12 @@ export interface EsteiraTemplate {
 type Row = [name: string, owner: string, skill: string, weight: number];
 
 const isGate = (name: string, skill: string) => /^gate\b|aprova/i.test(name) || /aprova[cç][aã]o humana/i.test(skill);
+const isQa = (name: string) => /^QA\b|Loop Linter|Completion Guard/i.test(name);
 
 const build = (code: EsteiraCode, name: string, rows: Row[]): EsteiraTemplate => ({
   code,
   name,
-  stages: rows.map(([n, owner, skill, weight]) => ({ name: n, owner, skill, weight, gate: isGate(n, skill) })),
+  stages: rows.map(([n, owner, skill, weight]) => ({ name: n, owner, skill, weight, gate: isGate(n, skill), qa: !isGate(n, skill) && isQa(n) })),
 });
 
 export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {

@@ -104,6 +104,7 @@ const SHADOW_EXCLUDES = [
   '.git/',
   '.tavir/',
   'qa/orders/',
+  'qa/evidencias/',
   'node_modules/',
   'dist/',
   'build/',
@@ -225,12 +226,12 @@ async function ensureShadow(workspace: string): Promise<void> {
 }
 
 /** Garante que o git do cliente (se houver) ignore os registros da Fábrica. */
-function excludeFromProjectGit(workspace: string): void {
+export function excludeFromProjectGit(workspace: string): void {
   const excludeFile = path.join(workspace, '.git', 'info', 'exclude');
   if (!fs.existsSync(path.join(workspace, '.git'))) return;
   try {
     const current = fs.existsSync(excludeFile) ? fs.readFileSync(excludeFile, 'utf8') : '';
-    const want = ['.tavir/runs/', '.tavir/shadow.git/', 'qa/orders/'];
+    const want = ['.tavir/runs/', '.tavir/shadow.git/', 'qa/orders/', 'qa/evidencias/'];
     const missing = want.filter((line) => !current.split(/\r?\n/).includes(line));
     if (!missing.length) return;
     fs.mkdirSync(path.dirname(excludeFile), { recursive: true });
