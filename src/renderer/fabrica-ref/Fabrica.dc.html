@@ -319,6 +319,11 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
   <sc-if value="{{pt.geral}}" hint-placeholder-val="{{true}}">
   <div style="display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; animation: fade 200ms var(--ease) both">
     <div style="flex: 2 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+      <sc-if value="{{health.show}}" hint-placeholder-val="{{false}}">
+        <section class="card" style="padding: 14px 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px">
+          <sc-for list="{{health.items}}" as="h" hint-placeholder-count="2"><button class="card lift" onClick="{{h.pick}}" style="text-align: left; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; background: var(--surface-2)"><span class="eyebrow" style="font-size: 10px">{{h.k}} · portão automático</span><span style="display: flex; gap: 8px; align-items: center"><span class="badge {{h.cls}}">{{h.t}}</span></span><span class="muted" style="font-size: 12px">{{h.d}}</span></button></sc-for>
+        </section>
+      </sc-if>
       <sc-if value="{{altTrack.liveShow}}" hint-placeholder-val="{{false}}">
         <section class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; border-color: {{altTrack.liveBd}}">
           <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
@@ -2530,6 +2535,11 @@ class Component extends DCLogic {
       }).catch(function () {});
     };
     if (typeof window !== 'undefined') window.__tavirSegDone = function (k) { if (k === P.id && self._loadSeg) self._loadSeg(); };
+    self._healthReq = self._healthReq || {};
+    if (P.local_path && !self._healthReq[P.id]) {
+      self._healthReq[P.id] = true;
+      setTimeout(function () { if (self._loadQa) self._loadQa(); if (self._loadSeg) self._loadSeg(); }, 0);
+    }
     if (typeof window !== 'undefined') window.__tavirQaDone = function (k) { if (k === P.id && self._loadQa) self._loadQa(); if (self.reloadIpcProjects) self.reloadIpcProjects(); };
     self._loadRuns = (keepSel) => {
       if (!lgApi || !lgApi.runs) { self.setState({ lgErr: 'O livro de execuções só existe no app desktop.' }); return; }
@@ -3282,6 +3292,21 @@ class Component extends DCLogic {
       // chat
       // motor, workspace e menus
       qa: qa, sec: sec, evv: evv, isNotM: !isM,
+      health: (function () {
+        const qaLast = qaRuns.length ? qaRuns[qaRuns.length - 1] : null;
+        const segLast = secRuns.length ? secRuns[secRuns.length - 1] : null;
+        const qaBase = qaRuns.find(function (r) { return r.label === 'Retrato inicial'; });
+        const segBase = secRuns.find(function (r) { return r.label === 'Retrato inicial'; });
+        const segRun = segLast && segLast.real ? segLast.run : null;
+        const items = [];
+        items.push(qaLive ? { k: 'QA', t: 'Rodando', d: qaLive.lines[qaLive.lines.length - 1] || 'Preparando…', cls: 'flow', go: 'qa' }
+          : !qaLast ? { k: 'QA', t: 'Sem execução', d: 'Rode a suíte na aba QA.', cls: '', go: 'qa' }
+          : { k: 'QA', t: qaLast.ok ? 'Aprovado' : qaLast.empty ? 'Sem testes' : qaLast.fail + ' falha' + (qaLast.fail > 1 ? 's' : ''), d: qaLast.id + ' · ' + qaLast.when + (qaLast.regress && qaLast.regress.length ? ' · ' + qaLast.regress.length + ' regressão(ões) desde ' + qaLast.prevId : '') + (qaBase && qaBase !== qaLast ? ' · retrato ' + (qaBase.ok ? 'aprovado' : qaBase.fail + ' falha(s)') : ''), cls: qaLast.ok ? 'flow' : 'danger', go: 'qa' });
+        items.push(segLive ? { k: 'Segurança', t: 'Varrendo', d: segLive.lines[segLive.lines.length - 1] || 'Preparando…', cls: 'flow', go: 'seg' }
+          : !segRun ? { k: 'Segurança', t: 'Sem varredura', d: 'Rode a varredura na aba Segurança.', cls: '', go: 'seg' }
+          : { k: 'Segurança', t: segRun.ok ? 'Nota ' + segRun.score + '/100' : segRun.blocking + ' crítico(s)/alto(s)', d: segRun.id + ' · ' + segRun.when + ' · ' + segRun.findings.filter(function (f) { return f.st === 'aberta'; }).length + ' aberto(s), ' + segRun.findings.filter(function (f) { return f.st === 'corrigida'; }).length + ' corrigido(s)' + (segBase && segBase !== segLast ? ' · retrato nota ' + segBase.run.score : ''), cls: segRun.ok ? 'flow' : 'danger', go: 'seg' });
+        return { show: !!P.local_path, items: items.map(function (x) { return Object.assign(x, { pick: function () { self.setState({ ptab: x.go }); if (x.go === 'qa' && self._loadQa) self._loadQa(); if (x.go === 'seg' && self._loadSeg) self._loadSeg(); } }); }) };
+      })(),
       ex: ex, tree: tree, treeInfo: P.disk[0] + ' pastas · ' + P.disk[1] + ' arquivos',
       refreshTree: () => app.toast('Árvore atualizada', P.disk[0] + ' pastas e ' + P.disk[1] + ' arquivos mapeados na pasta isolada.'),
       toWorkspace: () => self.setState({ ptab: 'arquivos' }), openExplorer: openExplorer, openAbsorb: openAbsorb, abs: abs,

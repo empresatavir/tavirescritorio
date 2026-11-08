@@ -393,6 +393,13 @@ export function deleteProjectWithOptions(
 ): { ok: boolean; deletedFiles: boolean; path: string | null; error?: string } {
   let targetPath: string | null = fallbackPath ? String(fallbackPath).trim() : null;
   let sqlite: any = null;
+  for (const live of [qaLive, segLive]) {
+    for (const [root, entry] of live) {
+      if (targetPath && path.resolve(root).toLowerCase() === path.resolve(targetPath).toLowerCase()) {
+        try { entry.kill?.(); } catch {}
+      }
+    }
+  }
   try {
     const { DatabaseSync } = require('node:sqlite');
     sqlite = new DatabaseSync(getDbPath());
@@ -1026,8 +1033,27 @@ export function createOrAbsorbProjectRecord(params: any): any {
     console.error('[TAVIR ProjectFS] Erro ao gravar projeto no SQLite:', err);
   }
   if (survey?.note) seedEsteiraFromSurvey(wsPath, String(survey.note));
+  if (isAbsorb && params?.baseline !== false) scheduleBaseline(wsPath);
 
   return newProj;
+}
+
+/**
+ * Retrato inicial do projeto absorvido: varredura de segurança e QA em segundo plano,
+ * para as próximas execuções terem com o que comparar. Não bloqueia a absorção.
+ */
+function scheduleBaseline(rootPath: string): void {
+  setTimeout(() => {
+    (async () => {
+      const seg = await runProjectSeg(rootPath, { label: 'Retrato inicial' });
+      const qa = await runProjectQa(rootPath, { label: 'Retrato inicial' });
+      try {
+        const ctrl = readControlJson(rootPath);
+        ctrl.baseline = { at: new Date().toISOString(), seg: seg.run?.id || null, qa: qa.run?.id || null };
+        writeControlJson(rootPath, ctrl);
+      } catch {}
+    })().catch(() => {});
+  }, 500);
 }
 
 export function resolveEngineSpec(engineName?: string, modelId?: string, effortId?: string) {
@@ -2188,6 +2214,7 @@ export async function executeAltTrackStep(
   }
   // Portão de QA no item de validação: o trilho só fecha se a suíte automática passar.
   let qa: QaRun | null = null;
+  let seg: SegRun | null = null;
   let qaNote = '';
   let qaFailed = false;
   if (agentRes.ok && !needsApproval && focus.kind === 'build' && !liveAgents.get(liveKey)?.paused) {
@@ -2197,6 +2224,16 @@ export async function executeAltTrackStep(
     qaFailed = !qa?.ok;
     qaNote = qa ? qaSummary(qa) : `QA não rodou: ${res.error}`;
     log.push(qaNote.split('\n')[0]);
+    // Regressão de segurança no mesmo ciclo: crítico ou alto aberto segura o item, como o QA.
+    if (!liveAgents.get(liveKey)?.paused) {
+      pushLine('Portão de segurança: rodando a varredura white box');
+      const sres = await runProjectSeg(ctrl.rootPath, { label: `Trilho · ${focus.label}`, onProgress: (line) => pushLine(line) });
+      seg = sres.run || null;
+      const segNote = seg ? segSummary(seg) : `A varredura de segurança não rodou: ${sres.error}`;
+      log.push(segNote.split('\n')[0]);
+      qaNote = `${qaNote}\n\n${segNote}`;
+      if (!seg?.ok) qaFailed = true;
+    }
   }
   const fresh = readControlJson(ctrl.rootPath);
   const next = normalizeAltTrack(fresh.alt_track, true);
@@ -2205,7 +2242,7 @@ export async function executeAltTrackStep(
   const exec = agentRes.runId ? ` · execução ${agentRes.runId}` : '';
   if (agentRes.runId) log.push(`Execução registrada em .tavir/runs/${agentRes.runId}`);
   if (agentRes.ok) current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · ${focus.owner}${exec}\n${reply}\n${commitNote ? `\n_${commitNote}_\n` : ''}`;
-  if (qaNote) current.note = `${current.note.trim()}\n\n### ${stamp} · Portão de QA\n${qaNote}\n`;
+  if (qaNote) current.note = `${current.note.trim()}\n\n### ${stamp} · Portão de QA e segurança\n${qaNote}\n`;
   if (agentRes.ok && (focus.kind === 'plan' || focus.kind === 'map')) next.items = applyProposedTracks(next.items, reply);
   next.notes = notesFromItems(next.items);
   next.waitingQuestion = needsApproval ? reply.replace(APPROVAL_RE, '').trim() : '';
@@ -2268,7 +2305,8 @@ export async function executeAltTrackStep(
     continued,
     reply,
     qa,
-    ...(qaFailed ? { error: qaNote.split('\n')[0] } : {}),
+    seg,
+    ...(qaFailed ? { error: (qa && !qa.ok ? qaNote : qaNote.split('\n\n').pop() || qaNote).split('\n')[0] } : {}),
   };
 }
 

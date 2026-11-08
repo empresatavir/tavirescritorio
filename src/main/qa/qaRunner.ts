@@ -71,6 +71,10 @@ export interface QaRun {
   dir: string;
   report: string;
   label?: string;
+  /** Execução anterior usada na comparação. */
+  prevId?: string;
+  /** Testes que passavam na execução anterior e falham nesta. */
+  regress?: string[];
 }
 
 export interface QaRunOptions {
@@ -558,6 +562,13 @@ export async function runQa(opts: QaRunOptions): Promise<QaRun> {
     report: path.join(dir, 'index.html'),
     label: opts.label,
   };
+  // Regressão: o que passava na execução anterior e quebrou agora.
+  const prev = listQaRuns(workspace).filter((r) => r.id !== id).pop();
+  if (prev) {
+    const passedBefore = new Set(prev.suites.flatMap((su) => su.tests.filter((t) => t.st === 'pass').map((t) => `${su.name} · ${t.name}`)));
+    run.prevId = prev.id;
+    run.regress = suites.flatMap((su) => su.tests.filter((t) => t.st === 'fail' && passedBefore.has(`${su.name} · ${t.name}`)).map((t) => `${su.name} · ${t.name}`));
+  }
   run.ev = [{ kind: 'report' as const, name: 'index.html', path: 'index.html', file: run.report, fail: fail > 0, mobile: false, size: '', note: 'Relatório completo' }, ...ev].map((e, i) => ({ ...e, i }));
   fs.writeFileSync(run.report, renderQaReport(opts.projectName, run), 'utf8');
   run.ev[0].size = sizeOf(run.report);
@@ -586,9 +597,10 @@ export function listQaRuns(workspace: string, limit = 30): QaRun[] {
 
 /** Resumo curto para nota de etapa e trilho. */
 export function qaSummary(run: QaRun): string {
+  const regress = run.regress && run.regress.length ? [`Regressões desde ${run.prevId}: ${run.regress.length}`, ...run.regress.slice(0, 5).map((r) => `- ${r}`)] : [];
   const head = run.ok ? `QA aprovado · ${run.pass}/${run.total} testes` : run.empty ? 'QA reprovado · nenhum teste rodou' : `QA reprovado · ${run.fail} de ${run.total} testes falharam`;
   const fails = run.suites
     .flatMap((s) => s.tests.filter((t) => t.st === 'fail').map((t) => `- ${s.name} · ${t.name}: ${t.err?.msg || 'falhou'}`))
     .slice(0, 8);
-  return [head, `Relatório: qa/evidencias/${run.id}/index.html`, ...fails, ...run.notes.slice(0, 3).map((n) => `Obs.: ${n}`)].join('\n');
+  return [head, `Relatório: qa/evidencias/${run.id}/index.html`, ...regress, ...fails, ...run.notes.slice(0, 3).map((n) => `Obs.: ${n}`)].join('\n');
 }

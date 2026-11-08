@@ -108,6 +108,7 @@ ${t.err?.code ? `<pre>${esc(t.err.code)}</pre>` : ''}${media(t)}</div>`,
 <div style="height:40px"></div></header>
 <main>
 <div class="kpis"><div class="kpi"><span class="eyebrow">Testes</span><b>${run.total}</b></div><div class="kpi"><span class="eyebrow">Passaram</span><b class="ok">${run.pass}</b></div><div class="kpi"><span class="eyebrow">Falharam</span><b class="${run.fail ? 'bad' : ''}">${run.fail}</b></div><div class="kpi"><span class="eyebrow">Duração</span><b>${dur(run.dur)}</b></div></div>
+${run.regress && run.regress.length ? `<section><div class="eyebrow">Passavam em ${esc(run.prevId)} e quebraram agora</div><h2>Regressões</h2><div class="card fail"><ul class="notes">${run.regress.map((r) => `<li>${esc(r)}</li>`).join('')}</ul></div></section>` : ''}
 <section><div class="eyebrow">Primeiro o que quebrou</div><h2>Falhas</h2>${failHtml}</section>
 <section><div class="eyebrow">Tudo que rodou</div><h2>Suítes</h2>${suitesHtml || '<div class="card"><p>Nenhuma suíte rodou.</p></div>'}</section>
 <section><div class="eyebrow">Vídeos, GIFs e prints</div><h2>Evidências</h2>${gallery ? `<div class="grid">${gallery}</div>` : '<div class="card"><p>Sem evidência visual nesta execução.</p></div>'}
