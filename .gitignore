@@ -87,3 +87,4 @@ nul
 logs/
 frontend/test-results/
 visual/*_test.png
+db/git_accounts.json

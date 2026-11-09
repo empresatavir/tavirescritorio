@@ -509,6 +509,17 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
         </sc-for>
       </div>
       <sc-if value="{{altTrack.waiting}}" hint-placeholder-val="{{false}}"><div style="margin: 0 18px 12px; padding: 12px 14px; border-radius: 10px; background: var(--warning-subtle); border: 1px solid var(--warning); font-size: 13.5px; line-height: 1.45"><b>Precisa da sua decisão.</b> {{altTrack.waitingQuestion}}<textarea class="input" rows="2" value="{{altTrack.decisionNote}}" onChange="{{altTrack.onDecisionNote}}" placeholder="Sua resposta ou orientação (vai para o agente)" style="margin-top: 10px; width: 100%; resize: vertical; border-radius: 10px; line-height: 1.45"></textarea><div style="margin-top: 8px; display: flex; gap: 8px"><button type="button" class="btn sm primary" onClick="{{altTrack.approve}}">Aprovar</button><button type="button" class="btn sm secondary" onClick="{{altTrack.reject}}">Reprovar</button></div></div></sc-if>
+      <sc-if value="{{altTrack.branchAsk}}" hint-placeholder-val="{{false}}"><div style="margin: 0 18px 12px; padding: 12px 14px; border-radius: 10px; background: var(--warning-subtle); border: 1px solid var(--warning); font-size: 13.5px; line-height: 1.45"><b>Precisa da sua decisão antes de trocar de branch.</b> {{altTrack.branchAskText}}<pre class="mono" style="margin: 8px 0 0; padding: 8px 10px; max-height: 110px; overflow: auto; white-space: pre-wrap; font-size: 12px; background: var(--surface-0); border: 1px solid var(--line); border-radius: 8px; color: var(--text-secondary)">{{altTrack.branchDirty}}</pre><div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap"><button type="button" class="btn sm primary" onClick="{{altTrack.branchStash}}" disabled="{{altTrack.pubBusy}}">Guardar no stash e abrir a branch do ciclo</button><button type="button" class="btn sm secondary" onClick="{{altTrack.branchHere}}" disabled="{{altTrack.pubBusy}}">Seguir na branch atual</button></div></div></sc-if>
+      <sc-if value="{{altTrack.pubShow}}" hint-placeholder-val="{{false}}"><div id="tavir-ciclo-pub" style="margin: 0 18px 12px; padding: 12px 14px; border-radius: 10px; background: var(--surface-0); border: 1px solid {{altTrack.pubBd}}; font-size: 13px; line-height: 1.45; display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><div class="grow" style="min-width: 200px"><div class="eyebrow">Branch do ciclo</div><b class="mono" style="font-size: 13px">{{altTrack.pubBranch}}</b><div class="muted" style="font-size: 12.5px; margin-top: 2px">{{altTrack.pubMeta}}</div></div>
+          <sc-if value="{{altTrack.pubHasPr}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" onClick="{{altTrack.openPr}}">Ver PR #{{altTrack.pubPrN}}</button></sc-if>
+          <sc-if value="{{altTrack.pubPickAcc}}" hint-placeholder-val="{{false}}"><select class="input" value="{{altTrack.pubAccId}}" onChange="{{altTrack.onPubAcc}}" style="height: 32px; width: auto; font-size: 12.5px" aria-label="Conta do GitHub"><sc-for list="{{altTrack.pubAccOpts}}" as="o" hint-placeholder-count="2"><option value="{{o.id}}" selected="{{o.sel}}">{{o.label}}</option></sc-for></select></sc-if>
+          <sc-if value="{{altTrack.pubCan}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm primary" onClick="{{altTrack.publish}}" disabled="{{altTrack.pubBusy}}">{{altTrack.pubBtn}}</button></sc-if>
+        </div>
+        <sc-if value="{{altTrack.pubHasReason}}" hint-placeholder-val="{{false}}"><div class="muted" style="font-size: 12.5px">{{altTrack.pubReason}}</div></sc-if>
+        <sc-if value="{{altTrack.pubHasDone}}" hint-placeholder-val="{{false}}"><div style="font-size: 12.5px; color: var(--flow)">{{altTrack.pubDone}}</div></sc-if>
+        <sc-if value="{{altTrack.pubHasErr}}" hint-placeholder-val="{{false}}"><div style="font-size: 12.5px; color: var(--danger)">{{altTrack.pubErr}}</div></sc-if>
+      </div></sc-if>
       <sc-if value="{{altTrack.hasCheckpoint}}" hint-placeholder-val="{{false}}"><div style="margin: 0 18px 12px; padding: 12px 14px; border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); font-size: 13px; line-height: 1.45; color: var(--text-secondary)"><b style="color: var(--text-primary)">Checkpoint · {{altTrack.checkpointAt}}</b><div style="margin-top: 4px">{{altTrack.checkpointHint}}</div></div></sc-if>
       <div style="padding: 16px 18px; border-top: 1px solid var(--line); display: flex; gap: 14px; align-items: center; flex-wrap: wrap">
         <span class="av" style="width: 40px; height: 40px; font-size: 11px; flex: none">{{altTrack.sel.ini}}</span>
@@ -2673,6 +2684,32 @@ class Component extends DCLogic {
           idle: ['em espera', '', 'var(--line)']
         };
         const liveMeta = liveMap[liveStatusKey] || ['', '', 'var(--line)'];
+        // Branch do ciclo e publicação (PR ou merge local). Publicar é sempre clique do CEO.
+        const tvPub = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+        const pubTarget = P.local_path || P.path || P.slug || P.id;
+        const pubMap = s.pubInfo || {};
+        const pub = pubMap[P.id] || null;
+        const pubKey = [persistedTrack.updated_at || '', persistedTrack.runStatus || '', (persistedTrack.branch && persistedTrack.branch.name) || '', useLive ? (liveBox.status || '') : ''].join('|');
+        self._pubKey = self._pubKey || {};
+        const loadPub = function (force) {
+          if (!tvPub || !tvPub.projects || !tvPub.projects.altTrackPublishInfo || !P.local_path) return;
+          if (!force && self._pubKey[P.id] === pubKey) return;
+          self._pubKey[P.id] = pubKey;
+          tvPub.projects.altTrackPublishInfo(pubTarget).then(function (info) {
+            const m = Object.assign({}, self.state.pubInfo || {}); m[P.id] = info; self.setState({ pubInfo: m });
+          }).catch(function () {});
+        };
+        if (alterationsOpen && s.ptab === 'trilho') setTimeout(function () { loadPub(false); }, 0);
+        const pubUi = (s.pubUi && s.pubUi[P.id]) || {};
+        const setPubUi = function (patch) { const m = Object.assign({}, self.state.pubUi || {}); m[P.id] = Object.assign({}, m[P.id] || {}, patch); self.setState({ pubUi: m }); };
+        const pubBranchObj = (pub && pub.branch) || persistedTrack.branch || null;
+        const pubRec = (pub && pub.publish) || persistedTrack.publish || null;
+        const pendingBranch = (pub && pub.branchPending) || persistedTrack.branchPending || null;
+        const pubAccounts = (pub && pub.accounts) || [];
+        const pubAcc = pub && pub.account;
+        const pubAccId = pubUi.acc || (pubAcc && pubAcc.id) || '';
+        const pubCommits = (pub && pub.commits) || [];
+        const pubBtnLbl = !pub ? '' : pub.mode === 'pr' ? (pubRec && pubRec.kind === 'pr' ? 'Atualizar PR' : 'Abrir PR') : ('Juntar na principal (' + ((pubBranchObj && pubBranchObj.base) || 'principal') + ')');
         return {
           title: 'Trilho de alteração',
           lead: !alterationsOpen
@@ -2686,6 +2723,67 @@ class Component extends DCLogic {
           showGoBuild: alterationsOpen && !waitingQ && !finished && curItem.kind !== 'build' && trackItems.some(function (x) { return x.kind === 'build'; }),
           showRerun: alterationsOpen && finished && curItem.kind === 'build',
           showNewCycle: alterationsOpen && finished,
+          branchAsk: alterationsOpen && !!(pendingBranch && pendingBranch.dirty && pendingBranch.dirty.length),
+          branchAskText: pendingBranch ? pendingBranch.error + ' Guardar leva essas alterações para um stash (recuperável com git stash pop). Seguir aqui roda o ciclo na branch atual, sem branch própria nem PR.' : '',
+          branchDirty: pendingBranch && pendingBranch.dirty ? pendingBranch.dirty.slice(0, 20).join('\n') + (pendingBranch.dirty.length > 20 ? '\n… e mais ' + (pendingBranch.dirty.length - 20) : '') : '',
+          branchStash: () => {
+            if (!tvPub || !tvPub.projects.resolveAltTrackBranch) return;
+            setPubUi({ busy: true, err: '' });
+            tvPub.projects.resolveAltTrackBranch(pubTarget, 'stash').then(function (res) {
+              setPubUi({ busy: false, err: res && res.ok === false ? (res.error || '') : '' });
+              if (res && res.alt_track) applyAltTrack(res.alt_track);
+              loadPub(true);
+              if (res && res.ok !== false) app.toast('Branch do ciclo', 'Alterações guardadas no stash. Rode o item de novo.');
+            }).catch(function (err) { setPubUi({ busy: false, err: String(err && err.message || err) }); });
+          },
+          branchHere: () => {
+            if (!tvPub || !tvPub.projects.resolveAltTrackBranch) return;
+            setPubUi({ busy: true, err: '' });
+            tvPub.projects.resolveAltTrackBranch(pubTarget, 'here').then(function (res) {
+              setPubUi({ busy: false });
+              if (res && res.alt_track) applyAltTrack(res.alt_track);
+              loadPub(true);
+              app.toast('Branch do ciclo', 'Este ciclo segue na branch atual. Rode o item de novo.');
+            }).catch(function (err) { setPubUi({ busy: false, err: String(err && err.message || err) }); });
+          },
+          pubShow: alterationsOpen && !!(pubBranchObj || (pub && finished && pub.mode !== 'none')),
+          pubBd: pubRec ? 'var(--flow)' : (pub && pub.canPublish ? 'var(--flow)' : 'var(--line)'),
+          pubBranch: pubBranchObj ? pubBranchObj.name : 'sem branch',
+          pubMeta: pubBranchObj
+            ? (pubBranchObj.here ? 'Ciclo rodando direto nesta branch' : 'saiu de ' + pubBranchObj.base + (pubRec && pubRec.kind === 'merge' && !pubCommits.length ? ' · tudo juntado' : ' · ' + pubCommits.length + ' commit(s)') + (pub && pub.repo ? ' · ' + pub.repo : pub && pub.mode === 'merge' ? ' · sem remoto' : '') + (pub && pub.mode === 'pr' && pubAcc ? ' · conta @' + pubAcc.login + ' (' + pubAcc.label + ')' : ''))
+            : '',
+          pubHasPr: !!(pubRec && pubRec.kind === 'pr' && pubRec.url),
+          pubPrN: pubRec && pubRec.number ? pubRec.number : '',
+          openPr: () => { if (tvPub && tvPub.projects.openAltTrackPr) tvPub.projects.openAltTrackPr(pubTarget); },
+          pubPickAcc: !!(pub && pub.mode === 'pr' && pub.canPublish && pubAccounts.length > 1),
+          pubAccId: pubAccId,
+          pubAccOpts: pubAccounts.map(function (a) { return { id: a.id, label: '@' + a.login + ' · ' + a.label, sel: a.id === pubAccId }; }),
+          onPubAcc: (e) => {
+            const id = e.target.value;
+            setPubUi({ acc: id });
+            if (tvPub && tvPub.projects.setGitAccount) tvPub.projects.setGitAccount(pubTarget, id).then(function (info) { const m = Object.assign({}, self.state.pubInfo || {}); m[P.id] = info; self.setState({ pubInfo: m }); });
+          },
+          pubCan: !!(pub && pub.canPublish),
+          pubBusy: !!pubUi.busy,
+          pubBtn: pubUi.busy ? (pub && pub.mode === 'pr' ? 'Enviando e abrindo PR…' : 'Juntando…') : pubBtnLbl,
+          pubHasReason: !!(pub && !pub.canPublish && pub.reason && !(pubRec && pubRec.kind === 'merge')),
+          pubReason: pub ? pub.reason : '',
+          pubHasDone: !!pubRec,
+          pubDone: pubRec ? (pubRec.kind === 'pr' ? 'PR #' + pubRec.number + ' aberto em ' + (pubRec.repo || '') + ' por @' + pubRec.account + ' · ' + String(pubRec.at || '').slice(0, 16).replace('T', ' ') : 'Juntado em ' + ((pubBranchObj && pubBranchObj.base) || 'principal') + ' · ' + (pubRec.sha || '') + ' · ' + String(pubRec.at || '').slice(0, 16).replace('T', ' ')) : '',
+          pubHasErr: !!pubUi.err,
+          pubErr: pubUi.err || '',
+          publish: () => {
+            if (!tvPub || !tvPub.projects.publishAltTrack || !pub) return;
+            setPubUi({ busy: true, err: '' });
+            tvPub.projects.publishAltTrack(pubTarget, pubUi.acc || undefined).then(function (res) {
+              const m = Object.assign({}, self.state.pubInfo || {}); m[P.id] = res; self.setState({ pubInfo: m });
+              setPubUi({ busy: false, err: res && res.ok === false ? (res.error || 'Não deu certo.') : '' });
+              if (res && res.ok && res.published) {
+                app.toast(res.published.kind === 'pr' ? 'PR aberto' : 'Ciclo juntado', res.published.kind === 'pr' ? (res.published.url || '') : 'O ciclo entrou em ' + ((pubBranchObj && pubBranchObj.base) || 'principal') + '.');
+                if (tvPub.projects.getAlterationsControl) tvPub.projects.getAlterationsControl(pubTarget).then(function (c) { if (c && c.alt_track) applyAltTrack(c.alt_track); }).catch(function () {});
+              }
+            }).catch(function (err) { setPubUi({ busy: false, err: String(err && err.message || err) }); });
+          },
           cycleN: Array.isArray(persistedTrack.cycles) ? persistedTrack.cycles.length : 0,
           badge: alterationsOpen ? (autoOn ? 'automático · não reabre a esteira' : 'manual · não reabre a esteira') : 'fechado',
           autoOn: autoOn,

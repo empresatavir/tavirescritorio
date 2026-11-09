@@ -788,6 +788,94 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     }
   }
 
+  // Contas e cofre: contas do GitHub (TAVIR e Pessoal) com token cifrado no cofre desta máquina.
+  // A tela só recebe login, rótulo e prévia mascarada; o token fica no processo main (src/main/gitAccounts.ts).
+  if (!cfgHtml.includes('id="tavir-contas"')) {
+    cfgHtml = cfgHtml.replace("['motores', 'Motores de IA', 4], ", "['motores', 'Motores de IA', 4], ['contas', 'Contas e cofre'], ");
+    const contasBlock = `<sc-if value="{{v.contas}}" hint-placeholder-val="{{false}}">
+        <div id="tavir-contas" style="display: flex; align-items: flex-end"><div class="grow"><h2 style="font-size: 20px; font-weight: 600">Contas e cofre</h2><p class="muted" style="font-size: 13px; margin-top: 4px">Suas contas do GitHub, da TAVIR e a pessoal. A Fábrica usa a conta do perfil git de cada projeto para abrir PR.</p></div><span class="badge flow">{{accCount}}</span></div>
+        <div class="rows card">
+          <sc-if value="{{accEmpty}}" hint-placeholder-val="{{false}}"><div class="row" style="cursor: default"><div class="grow"><div class="t">Nenhuma conta cadastrada</div><div class="m">Cadastre abaixo a conta da TAVIR e a pessoal.</div></div></div></sc-if>
+          <sc-for list="{{accounts}}" as="a" hint-placeholder-count="2">
+            <div class="row" style="cursor: default; gap: 14px">
+              <button class="choice {{a.def}}" onClick="{{a.setDef}}" style="width: auto; padding: 0; border: 0; background: transparent" aria-label="Tornar {{a.login}} padrão"><span class="rd"></span></button>
+              <div class="grow"><div class="t">{{a.title}} <span class="badge {{a.labelCls}}" style="margin-left: 6px">{{a.label}}</span><sc-if value="{{a.isDef}}" hint-placeholder-val="{{false}}"><span class="badge action" style="margin-left: 6px">padrão</span></sc-if><sc-if value="{{a.noPush}}" hint-placeholder-val="{{false}}"><span class="badge warn" style="margin-left: 6px">sem escopo repo</span></sc-if></div><div class="m mono">{{a.meta}}</div></div>
+              <button class="btn sm secondary" onClick="{{a.test}}">Testar</button>
+              <button class="btn sm ghost" onClick="{{a.remove}}">Remover</button>
+            </div>
+          </sc-for>
+        </div>
+        <div class="card" style="padding: 14px; background: var(--surface-0); display: flex; flex-direction: column; gap: 10px">
+          <div class="eyebrow">Entrar com uma conta do GitHub</div>
+          <p class="muted" style="font-size: 12.5px; margin: 0">Gere um token clássico com escopo <b>repo</b> (o botão abre a página do GitHub já preenchida), cole aqui e diga de quem é a conta. O app confere o token no GitHub antes de guardar.</p>
+          <div class="field" style="margin: 0"><span>Conta</span><div class="segs"><sc-for list="{{accLabels}}" as="o" hint-placeholder-count="2"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+          <input class="input" type="password" autocomplete="off" spellcheck="false" placeholder="ghp_… ou github_pat_…" value="{{accToken}}" onChange="{{onAccToken}}" aria-label="Token do GitHub">
+          <div class="actions" style="margin: 0"><button class="btn ghost" onClick="{{openTokenPage}}">Gerar token no GitHub</button><div class="grow"></div><button class="btn primary" onClick="{{addAccount}}" disabled="{{accBusy}}">{{accBtn}}</button></div>
+          <sc-if value="{{accHasMsg}}" hint-placeholder-val="{{false}}"><div style="font-size: 12.5px; color: {{accMsgColor}}">{{accMsg}}</div></sc-if>
+        </div>
+        <div class="card" style="padding: 12px 14px; display: flex; gap: 10px; font-size: 13px; background: var(--surface-0)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3"></path></svg><span class="sec">O token fica cifrado (AES-256-GCM) no cofre desta máquina. Só o app usa, por variável de ambiente, para push e PR; nunca vai para tela, log, chat ou linha de comando.</span></div>
+      </sc-if>
+
+      `;
+    cfgHtml = cfgHtml.replace('<sc-if value="{{v.aparencia}}"', contasBlock + '<sc-if value="{{v.aparencia}}"');
+    cfgHtml = cfgHtml.replace(
+      '    return {\n      v: v,',
+      `    const tvAcc = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+    const accApi = tvAcc && tvAcc.accounts;
+    const accApply = function(res, okMsg) {
+      const patch = { accBusy: false };
+      if (res && Array.isArray(res.accounts)) patch.accList = res.accounts;
+      if (res && res.ok === false) { patch.accMsg = res.error || 'Não deu certo.'; patch.accErr = true; }
+      else if (okMsg) { patch.accMsg = okMsg; patch.accErr = false; }
+      self.setState(patch);
+    };
+    if (accApi && !s.accLoaded && !self._accLoading) {
+      self._accLoading = true;
+      accApi.list().then(function(res) { self._accLoading = false; self.setState({ accLoaded: true, accList: (res && res.accounts) || [] }); }).catch(function() { self._accLoading = false; self.setState({ accLoaded: true }); });
+    }
+    const accList = s.accList || [];
+    const accLabel = s.accLabel || 'TAVIR';
+    return {
+      accounts: accList.map(function(a) {
+        return {
+          login: a.login,
+          title: (a.name && a.name !== a.login ? a.name + ' · ' : '') + '@' + a.login,
+          label: a.label,
+          labelCls: a.label === 'Pessoal' ? 'warn' : 'flow',
+          isDef: !!a.is_default,
+          def: a.is_default ? 'on' : '',
+          noPush: !a.canPush,
+          meta: 'token ' + a.preview + (a.scopes && a.scopes.length ? ' · escopos ' + a.scopes.join(', ') : ' · token fine-grained') + ' · conferido ' + String(a.updated_at || '').slice(0, 10),
+          setDef: function() { if (!accApi) return; accApi.setDefault(a.id).then(function(r) { accApply(r, '@' + a.login + ' é a conta padrão.'); }); },
+          test: function() { if (!accApi) return; self.setState({ accBusy: true, accMsg: 'Conferindo @' + a.login + ' no GitHub…', accErr: false }); accApi.test(a.id).then(function(r) { accApply(r, 'Token de @' + a.login + ' válido.'); }).catch(function(e) { accApply({ ok: false, error: String(e) }); }); },
+          remove: function() { if (!accApi) return; if (typeof window !== 'undefined' && window.confirm && !window.confirm('Remover @' + a.login + ' (' + a.label + ') do cofre?')) return; accApi.remove(a.id).then(function(r) { accApply(r, '@' + a.login + ' removida do cofre.'); }); },
+        };
+      }),
+      accEmpty: accList.length === 0,
+      accCount: accList.length === 1 ? '1 conta' : accList.length + ' contas',
+      accLabels: ['TAVIR', 'Pessoal'].map(function(x) { return { label: x === 'TAVIR' ? 'TAVIR (empresa)' : 'Pessoal', on: accLabel === x ? 'on' : '', pick: function() { self.setState({ accLabel: x }); } }; }),
+      accToken: s.accToken || '',
+      onAccToken: function(e) { self.setState({ accToken: e.target.value }); },
+      accBusy: !!s.accBusy,
+      accBtn: s.accBusy ? 'Conferindo…' : 'Guardar no cofre',
+      accHasMsg: !!s.accMsg,
+      accMsg: s.accMsg || '',
+      accMsgColor: s.accErr ? 'var(--danger, #e5484d)' : 'var(--text-secondary)',
+      openTokenPage: function() { if (accApi) accApi.openTokenPage(); },
+      addAccount: function() {
+        const token = String(s.accToken || '').trim();
+        if (!accApi) { self.setState({ accMsg: 'Disponível só no app desktop.', accErr: true }); return; }
+        if (!token) { self.setState({ accMsg: 'Cole o token do GitHub.', accErr: true }); return; }
+        self.setState({ accBusy: true, accMsg: 'Conferindo o token no GitHub…', accErr: false });
+        accApi.add({ label: accLabel, token: token }).then(function(r) {
+          if (r && r.ok) self.setState({ accToken: '' });
+          accApply(r, r && r.account ? '@' + r.account.login + ' guardada no cofre como ' + r.account.label + '.' : '');
+        }).catch(function(e) { accApply({ ok: false, error: String(e) }); });
+      },
+      v: v,`
+    );
+  }
+
   manifest[cfgUuid].data = zlib.gzipSync(Buffer.from(cfgHtml, 'utf8')).toString('base64');
   console.log('Configurações (Módulos + Motores SDK local + Antigravity) atualizadas!');
 }

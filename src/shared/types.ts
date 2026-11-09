@@ -133,7 +133,70 @@ export interface AltTrackState {
   runJobId?: string;
   checkpoint?: { step: number; itemId: string; label: string; at: string; reason: string; partial: string } | null;
   items?: Array<{ id: string; label: string; owner: string; skill: string; kind?: string; note?: string }>;
-  cycles?: Array<{ closed_at: string; title: string; items: Array<{ id: string; label: string; note?: string }> }>;
+  cycles?: Array<{
+    closed_at: string;
+    title: string;
+    items: Array<{ id: string; label: string; note?: string }>;
+    branch?: CycleBranchInfo | null;
+    publish?: CyclePublishInfo | null;
+  }>;
+  branch?: CycleBranchInfo | null;
+  branchPending?: { dirty: string[]; error: string } | null;
+  publish?: CyclePublishInfo | null;
+}
+
+export interface CycleBranchInfo {
+  name: string;
+  base: string;
+  created_at: string;
+  here?: boolean;
+  stash?: string;
+}
+
+export interface CyclePublishInfo {
+  kind: 'pr' | 'merge';
+  at: string;
+  url?: string;
+  number?: number;
+  sha?: string;
+  account?: string;
+  repo?: string;
+}
+
+export interface GitAccountView {
+  id: string;
+  label: 'TAVIR' | 'Pessoal';
+  login: string;
+  name: string;
+  avatar: string;
+  scopes: string[];
+  preview: string;
+  is_default: boolean;
+  updated_at: string;
+  canPush: boolean;
+}
+
+export interface GitAccountResult {
+  ok: boolean;
+  error?: string;
+  account?: GitAccountView;
+  accounts: GitAccountView[];
+}
+
+export interface AltTrackPublishInfo {
+  ok: boolean;
+  error?: string;
+  mode: 'pr' | 'merge' | 'none';
+  canPublish: boolean;
+  reason: string;
+  branch: CycleBranchInfo | null;
+  branchPending: { dirty: string[]; error: string } | null;
+  publish: CyclePublishInfo | null;
+  repo: string | null;
+  account: GitAccountView | null;
+  accounts: GitAccountView[];
+  commits: Array<{ sha: string; subject: string }>;
+  current: string;
 }
 
 export interface ProjectAlterationsControl {
@@ -285,6 +348,11 @@ export interface TavirApi {
     advanceAltTrack: (idOrPath: string, fromStep?: number) => Promise<ProjectAlterationsControl>;
     closeAltTrackItem: (idOrPath: string, fromStep?: number) => Promise<ProjectAlterationsControl>;
     startAltTrackCycle: (idOrPath: string) => Promise<ProjectAlterationsControl>;
+    altTrackPublishInfo: (idOrPath: string) => Promise<AltTrackPublishInfo>;
+    publishAltTrack: (idOrPath: string, accountId?: string) => Promise<AltTrackPublishInfo & { published?: CyclePublishInfo }>;
+    resolveAltTrackBranch: (idOrPath: string, choice: 'stash' | 'here') => Promise<ProjectAlterationsControl>;
+    setGitAccount: (idOrPath: string, accountId: string) => Promise<AltTrackPublishInfo>;
+    openAltTrackPr: (idOrPath: string) => Promise<{ ok: boolean; error?: string; url?: string }>;
     setAltTrackAuto: (idOrPath: string, auto: boolean) => Promise<ProjectAlterationsControl>;
     approveAltTrack: (idOrPath: string, decision?: 'aprovado' | 'reprovado', note?: string) => Promise<ProjectAlterationsControl>;
     runAltTrack: (idOrPath: string, step?: number) => Promise<ProjectAlterationsControl & { needsApproval?: boolean; continued?: boolean; paused?: boolean; reply?: string }>;
@@ -312,6 +380,15 @@ export interface TavirApi {
     stop: (projectKey: string) => Promise<{ ok: boolean }>;
   };
   /** Livro de execuções dos motores (.tavir/runs de cada projeto). */
+  /** Contas do GitHub no cofre (TAVIR e Pessoal). O token nunca volta para a tela. */
+  accounts: {
+    list: () => Promise<{ ok: boolean; accounts: GitAccountView[] }>;
+    add: (payload: { label: string; token: string }) => Promise<GitAccountResult>;
+    remove: (id: string) => Promise<GitAccountResult>;
+    setDefault: (id: string) => Promise<GitAccountResult>;
+    test: (id: string) => Promise<GitAccountResult>;
+    openTokenPage: () => Promise<{ ok: boolean; error?: string; url?: string }>;
+  };
   seg: {
     run: (idOrPath: string) => Promise<{ ok: boolean; run?: any; error?: string }>;
     list: (idOrPath: string) => Promise<{ ok: boolean; runs: any[]; running: boolean; lines: string[] }>;
