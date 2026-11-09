@@ -18,6 +18,8 @@ Não rodei `npm test` inteiro. Três testes de `tests/backend.spec.ts` já falha
 
 `npm run test:motores:motion` não foi repetido. A prova anterior continua em `relatorios/motores/motion-2026-11-09T07-25-20.md`.
 
+Em Configurações › Sistema, a seção Sistemas ligados mostra DarkFlow e Docuflow, os dois «no ar» (`17-sistemas.png`). Os botões iniciar e parar não foram usados.
+
 ## D1
 
 A página [License FAQ](https://www.remotion.dev/docs/license/faq) diz que a licença gratuita vale para uma pessoa, para uma organização de até 3 pessoas e para certas entidades sem fins lucrativos. Fora isso, a Company License é paga. Não decidi em qual caso a TAVIR entra. Sem essa resposta, o GOAL não fecha.
