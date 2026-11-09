@@ -591,6 +591,22 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
   }
 }
 
+// 1.2c Raio-X: página própria + IPC
+const raioxUuid = 'd11b3692-f681-4d6a-9af2-a0e63665359e';
+{
+  const raioxPath = path.resolve(__dirname, '../src/renderer/raiox-ref/RaioX.dc.html');
+  if (!fs.existsSync(raioxPath)) {
+    throw new Error('Raio-X: src/renderer/raiox-ref/RaioX.dc.html não encontrado.');
+  }
+  let raioxHtml = fs.readFileSync(raioxPath, 'utf8');
+  raioxHtml = raioxHtml.replace(/<script src="\.\/vendor\/react\.js"><\/script>\s*/g, '');
+  raioxHtml = raioxHtml.replace(/<script src="\.\/vendor\/react-dom\.js"><\/script>\s*/g, '');
+  if (!manifest[raioxUuid]) manifest[raioxUuid] = { compressed: true };
+  manifest[raioxUuid].data = zlib.gzipSync(Buffer.from(raioxHtml, 'utf8')).toString('base64');
+  manifest[raioxUuid].compressed = true;
+  console.log('Raio-X: página própria injetada');
+}
+
 // 1.2b Atualizar d4030abe (Sistema / Configurações: Motores de IA via SDK Local + Módulos em vez de Projetos)
 const cfgUuid = 'd4030abe-7d50-46bc-9c56-a7466a8847e7';
 if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
