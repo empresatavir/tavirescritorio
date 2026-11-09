@@ -27,6 +27,14 @@
     </div>
   </div>
 
+  <sc-if value="{{needsChrome}}" hint-placeholder-val="{{false}}">
+    <section class="card pad" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
+      <div class="grow"><b>Chrome Headless do Remotion</b><p class="muted" style="font-size: 13px; margin-top: 4px">{{chromeNote}}</p></div>
+      <button class="btn secondary" onClick="{{updateMotion}}">Atualizar base de motion</button>
+      <button class="btn primary" onClick="{{downloadChrome}}">Baixar o Chrome do Remotion</button>
+    </section>
+  </sc-if>
+
   <!-- perfis -->
   <section class="card" style="padding: 14px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap">
     <div style="display: flex; gap: 8px; flex-wrap: wrap">
@@ -374,7 +382,7 @@ function kitFrom(form) {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM) };
+    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '' };
     var self = this;
     this._pautaTimer = null;
     setTimeout(function () { self.reload(); }, 0);
@@ -390,6 +398,10 @@ class Component extends DCLogic {
       var mine = pecas.filter(function (p) { return p.perfil_id === perfilId; });
       var pecaId = self.state.pecaId && mine.some(function (p) { return p.id === self.state.pecaId; }) ? self.state.pecaId : (mine[0] ? mine[0].id : '');
       self.setState({ perfis: perfis, pecas: pecas, series: all[2] || [], perfilId: perfilId, pecaId: pecaId, error: '' });
+      if (api.preflight) api.preflight().then(function (items) {
+        var chrome = (items || []).filter(function (item) { return item.item === 'chrome-headless'; })[0];
+        self.setState({ needsChrome: !!(chrome && !chrome.ok), chromeNote: chrome && !chrome.ok ? (chrome.detalhe + ' ' + chrome.comoResolver) : '' });
+      }).catch(function () {});
     }).catch(function (err) { self.setState({ error: err && err.message ? err.message : String(err) }); });
   }
   after(res) {
@@ -494,6 +506,9 @@ class Component extends DCLogic {
       steps: stages.map(function (id, i) { return { n: String(i + 1).padStart(2, '0'), label: STAGE_LABEL[id], cls: i < curIndex ? 'done' : i === viewIndex ? 'on' : '', pick: function () { if (i <= curIndex) self.setState({ view: id }); } }; }),
       past: locked, pastInfo: { t: STAGE_LABEL[viewed] || '', d: 'Etapa já cumprida. Só leitura.' }, backToCurrent: function () { self.setState({ view: null }); }, curStageLabel: STAGE_LABEL[cur] || cur,
       sv: sv, locked: locked, custo: s.custo, error: s.error || '', loadingAngles: s.loading,
+      needsChrome: !!s.needsChrome, chromeNote: s.chromeNote || '',
+      downloadChrome: function () { var studio = studioApi(); if (studio && studio.motion) studio.motion.downloadBrowser(true).then(function (res) { self.after(res); }); },
+      updateMotion: function () { var studio = studioApi(); if (studio && studio.motion) studio.motion.updateBase().then(function (res) { self.after(res); }); },
       pauta: { tema: pauta.tema || '', fonte: pauta.fonte || '' },
       onTema: function (e) { self.savePauta('tema', e.target.value); },
       onFonte: function (e) { self.savePauta('fonte', e.target.value); },

@@ -1,12 +1,9 @@
 import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
+import * as os from 'node:os';
 import * as path from 'node:path';
 import type { PreflightItem } from '../../shared/studio';
 import { ensureStudioTree } from './paths';
-
-function repoRoot(): string {
-  return path.resolve(__dirname, '../../..');
-}
 
 function firstLine(output: string): string {
   return output.split(/\r?\n/).map((line) => line.trim()).find(Boolean) ?? '';
@@ -72,20 +69,66 @@ function checkDataDir(): PreflightItem {
   }
 }
 
-/** `studio-motion/node_modules` é aviso até a F2: não reprova o preflight. */
-function checkMotionModules(): PreflightItem {
-  const dir = path.join(repoRoot(), 'studio-motion', 'node_modules');
-  if (fs.existsSync(dir)) {
-    return item('studio-motion/node_modules', true, 'presente', '');
+function browserRoots(): string[] {
+  const local = process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local');
+  return [
+    path.join(local, 'remotion'),
+    path.join(os.homedir(), '.cache', 'remotion'),
+    path.join(os.homedir(), 'Library', 'Caches', 'remotion'),
+    path.join(ensureStudioTree().motion, 'node_modules', '.remotion'),
+  ];
+}
+
+function walkBrowser(dir: string, depth: number): string | null {
+  if (depth > 5 || !fs.existsSync(dir)) return null;
+  for (const name of fs.readdirSync(dir)) {
+    const full = path.join(dir, name);
+    if (/chrome-headless-shell(\.exe)?$/i.test(name)) return full;
+    let stat: fs.Stats;
+    try {
+      stat = fs.statSync(full);
+    } catch {
+      continue;
+    }
+    if (stat.isDirectory()) {
+      const found = walkBrowser(full, depth + 1);
+      if (found) return found;
+    }
   }
-  return {
-    item: 'studio-motion/node_modules',
-    ok: true,
-    detalhe: 'aviso: ainda não instalado (entra na F2)',
-    comoResolver: 'A fase 2 cria studio-motion e instala as dependências.',
-  };
+  return null;
+}
+
+/** Onde o Remotion guarda o Chrome Headless depois do download autorizado. */
+export function findRemotionBrowser(): string | null {
+  for (const root of browserRoots()) {
+    const found = walkBrowser(root, 0);
+    if (found) return found;
+  }
+  return null;
+}
+
+function checkMotionModules(): PreflightItem {
+  const dir = path.join(ensureStudioTree().motion, 'node_modules');
+  if (fs.existsSync(dir)) return item('motion/node_modules', true, dir, '');
+  return item(
+    'motion/node_modules',
+    false,
+    'a base de motion ainda não foi instalada na pasta de dados',
+    'Abra o Studio e use Atualizar base de motion. Isso roda npm ci em %USERPROFILE%\\TAVIR\\Studio\\motion.',
+  );
+}
+
+function checkChrome(): PreflightItem {
+  const found = findRemotionBrowser();
+  if (found) return item('chrome-headless', true, found, '');
+  return item(
+    'chrome-headless',
+    false,
+    'O Chrome Headless do Remotion não está na máquina.',
+    'Na tela do Studio, confirme o download do Chrome Headless do Remotion. Nada é baixado antes dessa confirmação.',
+  );
 }
 
 export function runPreflight(): PreflightItem[] {
-  return [checkNode(), checkBinary('ffmpeg'), checkBinary('ffprobe'), checkDataDir(), checkMotionModules()];
+  return [checkNode(), checkBinary('ffmpeg'), checkBinary('ffprobe'), checkDataDir(), checkMotionModules(), checkChrome()];
 }
