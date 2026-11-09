@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.invite-case]
 verify_jwt = false
+
+[functions.office-raiox-sync]
+verify_jwt = false
