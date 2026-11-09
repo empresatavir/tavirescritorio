@@ -20,6 +20,7 @@
   <div class="tabs"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.hasN}}" hint-placeholder-val="{{false}}"><span class="n">{{t.n}}</span></sc-if></button></sc-for></div>
 
   <sc-if value="{{isSocial}}" hint-placeholder-val="{{true}}">
+    <div class="g4"><sc-for list="{{scorecard}}" as="m" hint-placeholder-count="1"><div class="metric"><span class="eyebrow">{{m.k}}</span><strong>{{m.v}}</strong></div></sc-for></div>
     <div class="card" style="overflow-x: auto">
       <div class="card-h"><h3>Perfis</h3><div class="grow"></div><span class="eyebrow">cadastro</span></div>
       <table class="tbl"><thead><tr><th>Perfil</th><th>Rede</th><th>Seguidores</th><th>Tendência</th><th>Engajamento</th><th>Posts</th><th>Melhor horário</th></tr></thead>
@@ -55,7 +56,7 @@ function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padSta
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { v: 'social', perfis: [], pecas: [] };
+    this.state = { v: 'social', perfis: [], pecas: [], scorecard: [{ k: 'scorecard', v: '—' }] };
     var self = this;
     setTimeout(function () { self.reload(); }, 0);
   }
@@ -66,6 +67,7 @@ class Component extends DCLogic {
     Promise.all([api.perfis.list(), api.pecas.list()]).then(function (all) {
       self.setState({ perfis: all[0] || [], pecas: all[1] || [] });
     }).catch(function () {});
+    if (api.darkflow) api.darkflow.scorecard().then(function (rows) { self.setState({ scorecard: rows && rows.length ? rows : [{ k: 'scorecard', v: '—' }] }); }).catch(function () { self.setState({ scorecard: [{ k: 'scorecard', v: '—' }] }); });
   }
   renderVals() {
     var self = this;
@@ -101,6 +103,7 @@ class Component extends DCLogic {
         { label: 'Comunicações', hasN: false, n: '', on: view === 'comms' ? 'on' : '', pick: function () { if (app && app.go) app.go('comms'); else self.setState({ v: 'comms' }); } }
       ],
       goStudio: function () { if (app && app.go) app.go('studio'); },
+      scorecard: s.scorecard || [{ k: 'scorecard', v: '—' }],
       profiles: rows, upcoming: upcoming, platOk: plats.length, plats: plats
     };
   }

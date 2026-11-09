@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Edição</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet><style>body{margin:0}</style></helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page" data-tavir-page="Edicao.dc.html" style="max-width: 1100px">
+  <div class="phead"><div class="grow"><div class="eyebrow">Edição</div><h1 style="margin-top: 8px">Docuflow</h1><p>Composições e jobs locais. O upload para o YouTube fica fora.</p></div><button class="btn primary" onClick="{{openStudio}}">Abrir no Docuflow Studio</button></div>
+  <p class="muted">{{error}}</p>
+  <section class="card"><div class="card-h"><h3>Composições</h3></div><div class="rows"><sc-for list="{{compositions}}" as="item" hint-placeholder-count="0"><div class="row" style="cursor: default"><span class="grow">{{item.nome}}</span><span class="muted">{{item.rev}}</span></div></sc-for></div></section>
+  <section class="card"><div class="card-h"><h3>Jobs</h3></div><div class="rows"><sc-for list="{{jobs}}" as="item" hint-placeholder-count="0"><div class="row" style="cursor: default"><span class="grow">{{item.nome}}</span><span class="muted">{{item.estado}}</span></div></sc-for></div></section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+function studioApi() {
+  var w = typeof window !== 'undefined' ? window : null;
+  var t = w && w.tavir ? w.tavir : (w && w.parent && w.parent.tavir ? w.parent.tavir : null);
+  return t && t.studio ? t.studio : null;
+}
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { error: '', compositions: [], jobs: [] };
+    var self = this;
+    setTimeout(function () { self.reload(); }, 0);
+  }
+  reload() {
+    var api = studioApi();
+    var self = this;
+    if (!api || !api.docuflow) { this.setState({ error: 'Docuflow indisponível neste modo.' }); return; }
+    api.docuflow.board().then(function (res) {
+      if (!res || res.ok === false) { self.setState({ error: (res && res.error) || 'Docuflow indisponível', compositions: [], jobs: [] }); return; }
+      self.setState({ error: '', compositions: res.compositions || [], jobs: res.jobs || [] });
+    }).catch(function () { self.setState({ error: 'Docuflow indisponível' }); });
+  }
+  renderVals() {
+    var self = this;
+    var s = this.state;
+    return {
+      error: s.error || '',
+      openStudio: function () { var api = studioApi(); if (api && api.docuflow) api.docuflow.open(); },
+      compositions: (s.compositions || []).map(function (item) { return { nome: item.title || item.projectId || '—', rev: item.revision == null ? '—' : String(item.revision) }; }),
+      jobs: (s.jobs || []).map(function (item) { return { nome: item.jobId || '—', estado: item.status || '—' }; }),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { BrowserWindow } from 'electron';
 import type { GateDecision, PecaCreateInput, PecaFiltro, PecaUpdate, PerfilInput, PerfilRedeInput, PieceStage, SerieInput } from '../../shared/studio';
 import { decideMotionGate, latestMotionView, startMotionJob, type MotionDecision } from './motionAuthor';
 import { downloadRemotionBrowser, updateMotionBase } from './motionHome';
@@ -15,7 +16,8 @@ import { synthesizeScenes } from './audio';
 import { polishPrompt } from './promptPolish';
 import { getStudioStore } from './store';
 import { suggestForPiece, type SuggestAlvo } from './suggest';
-import { createSidecarManager, sidecarConfigPath } from '../sidecars';
+import { createSidecarManager, loadSidecars, sidecarConfigPath } from '../sidecars';
+import { activateDarkflowSchedule, darkflowBoard, editionBoard, prepareDarkflowSchedule, readScorecard, sendToDocuflow } from './ecosystem';
 
 type Handle = (channel: string, listener: (...args: any[]) => any) => void;
 
@@ -193,6 +195,42 @@ export function registerStudioIpc(handle: Handle): void {
   handle('studio:sidecars:list', () => sidecars.status());
   handle('studio:sidecars:start', (_e, id: string) => sidecars.start(id));
   handle('studio:sidecars:stop', (_e, id: string) => sidecars.stop(id));
+  handle('studio:darkflow:prepare', async (_e, pecaId: string) => {
+    try {
+      const darkflow = loadSidecars(sidecarConfigPath()).find((item) => item.id === 'darkflow');
+      if (!darkflow) return { ok: false, error: 'DarkFlow não está configurado' };
+      return await prepareDarkflowSchedule(getStudioStore(), pecaId, 'http://127.0.0.1:8765', path.join(darkflow.pasta, 'storage', 'output'), darkflow.pasta);
+    } catch (err) {
+      return { ok: false, error: message(err) };
+    }
+  });
+  handle('studio:darkflow:activate', async (_e, pecaId: string) => {
+    try {
+      return await activateDarkflowSchedule(getStudioStore(), pecaId, 'http://127.0.0.1:8765');
+    } catch (err) {
+      return { ok: false, error: message(err) };
+    }
+  });
+  handle('studio:darkflow:scorecard', () => readScorecard('http://127.0.0.1:8765'));
+  handle('studio:darkflow:board', () => darkflowBoard('http://127.0.0.1:8765'));
+  handle('studio:docuflow:send', async (_e, pecaId: string) => {
+    try {
+      const store = getStudioStore();
+      const peca = store.getPeca(pecaId);
+      if (!peca) return { ok: false, error: 'peça não encontrada' };
+      const perfil = store.getPerfil(peca.perfil_id);
+      if (!perfil) return { ok: false, error: 'perfil não encontrado' };
+      return await sendToDocuflow('http://127.0.0.1:5000', perfil, peca);
+    } catch (err) {
+      return { ok: false, error: message(err) };
+    }
+  });
+  handle('studio:docuflow:board', () => editionBoard('http://127.0.0.1:5000'));
+  handle('studio:docuflow:open', () => {
+    const win = new BrowserWindow({ width: 1280, height: 800, webPreferences: { nodeIntegration: false, contextIsolation: true } });
+    void win.loadURL('http://127.0.0.1:3000');
+    return { ok: true };
+  });
   watchInbox(getStudioStore(), (pecaId, frame) => {
     startRender(pecaId, 'still', frame).catch(() => undefined);
   });

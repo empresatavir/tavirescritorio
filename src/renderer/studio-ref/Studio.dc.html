@@ -253,7 +253,7 @@
               <label class="field"><span>Hashtags · {{tagCount}} / 5</span><input class="input" value="{{tagText}}" onChange="{{onTags}}" aria-label="Hashtags"></label>
               <label class="field"><span>Quando publicar</span><input class="input" value="{{when}}" onChange="{{onWhen}}" aria-label="Quando publicar"></label>
             </div>
-            <sc-if value="{{notConfirming}}" hint-placeholder-val="{{true}}"><div class="actions"><button class="btn secondary" onClick="{{buildPack}}">Montar pacote</button><button class="btn secondary" onClick="{{openPack}}">Abrir pasta</button><button class="btn primary" onClick="{{askPublish}}">Enviar para publicação</button><span class="muted" style="font-size: 12px">Publicar passa por um gate seu.</span></div></sc-if>
+            <sc-if value="{{notConfirming}}" hint-placeholder-val="{{true}}"><div class="actions"><button class="btn secondary" onClick="{{buildPack}}">Montar pacote</button><button class="btn secondary" onClick="{{openPack}}">Abrir pasta</button><sc-if value="{{isLong}}" hint-placeholder-val="{{false}}"><button class="btn secondary" onClick="{{sendEdition}}">Enviar para Edição</button></sc-if><button class="btn primary" onClick="{{askPublish}}">Enviar para publicação</button><span class="muted" style="font-size: 12px">Publicar passa por um gate seu.</span></div></sc-if>
             <sc-if value="{{confirming}}" hint-placeholder-val="{{false}}">
               <div class="ink" style="padding: 20px 22px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; animation: slideup 220ms var(--ease) both">
                 <span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(183,243,74,.14); color: #B7F34A; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4"></path></svg></span>
@@ -760,7 +760,37 @@ class Component extends DCLogic {
       buildPack: function () { var api = studioApi(); if (!api || !api.pacote || !peca) return; api.pacote.build(peca.id).then(function (res) { self.after(res); }); },
       openPack: function () { var api = studioApi(); if (!api || !api.pacote || !peca) return; api.pacote.open(peca.id); },
       cancelPublish: function () { self.setState({ confirm: false }); },
-      doPublish: function () { if (!locked) self.gate('aprovado'); },
+      askPublish: function () {
+        if (peca && peca.formato_id === 'ig-reels-9x16') {
+          var flow = studioApi();
+          if (!flow || !flow.darkflow) return;
+          flow.darkflow.prepare(peca.id).then(function (res) {
+            if (!res || res.ok === false) { self.setState({ error: (res && res.error) || 'não agendou' }); return; }
+            self.setState({ confirm: true, error: '' });
+          });
+          return;
+        }
+        self.setState({ confirm: true });
+      },
+      doPublish: function () {
+        if (locked) return;
+        if (peca && peca.formato_id === 'ig-reels-9x16') {
+          var api = studioApi();
+          if (!api || !api.darkflow) return;
+          api.darkflow.activate(peca.id).then(function (res) {
+            if (!res || res.ok === false) { self.setState({ error: (res && res.error) || 'não ativou', confirm: false }); return; }
+            self.gate('aprovado');
+          });
+          return;
+        }
+        self.gate('aprovado');
+      },
+      sendEdition: function () {
+        var api = studioApi();
+        if (!api || !api.docuflow || !peca) return;
+        api.docuflow.send(peca.id).then(function (res) { self.after(res); });
+      },
+      isLong: !!(peca && peca.formato_id === 'yt-longo-16x9'),
       slotLabel: (peca && peca.agendado_para) || '—',
       profName: perfil ? perfil.nome : '—',
       pubWhen: (peca && peca.atualizado_em) || '—', isLive: false, pubNote: '—',

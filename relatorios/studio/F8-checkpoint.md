@@ -8,24 +8,27 @@ A F6 continua sem as 3 imagens do Flow. A F7 continua sem o whisper e sem o reel
 - Antes de subir, a porta ocupada gera recusa com o nome do processo. Se um dos dois já está no ar, o outro não sobe: a mensagem diz que a porta 8765 é dos dois.
 - O comando configurado com `--enable-meta-publish` é recusado. O Escritório não acrescenta essa flag.
 - **8.2** A produção do Studio mostra "Sistemas ligados", com iniciar e parar. A página de Configurações ainda não ganhou a seção; o controle está na tela do Studio.
-- **8.3 / 8.4** Cliente HTTP do DarkFlow com `X-CSRF-Token`, cópia do MP4 mais manifesto no formato que `storage/output` varre, e mapeamento do perfil para canal e brand kit do Docuflow. A voz não entra no JSON do brand kit porque esse modelo recusa campo desconhecido; ela volta ao lado.
+- **8.3** O Reel do Instagram, com data e hora, é copiado para `storage/output` do DarkFlow com manifesto. A agenda nasce com `activate: false`. O botão «Aprovar publicação» é que manda `editorial_attested` e `activate: true`. Sem `--enable-meta-publish`.
+- A página Flow lista biblioteca e agendas. O Social mostra o scorecard real ou «—».
+- **8.4** «Enviar para Edição» vale só para `yt-longo-16x9`: cria o canal se o Docuflow ainda não tiver (409 segue) e o projeto com o tema e o roteiro no campo `topic`, porque a API não tem campo de roteiro. A voz não entra no brand kit. A página Edição lista composições e jobs e abre `http://127.0.0.1:3000` sem `nodeIntegration`. A rota de dev `edicao` não usa mais o `StudioView`.
 
 ## Comandos
 
-`npx vitest run tests/unit/studio.sidecars.spec.ts` — 8 testes, saída 0.
+`npx vitest run tests/unit/studio.sidecars.spec.ts tests/unit/studio.ecosystem.spec.ts` — 11 testes, saída 0.
 
 `npm run typecheck` — saída 0.
 
-`npm run build` — `dist/renderer/index.html` 699.9 KB.
+`npm run build` — Flow e Edição injetados. `dist/renderer/index.html` 691.2 KB.
 
 ## Portão
 
 | Item | Resultado |
 | --- | --- |
-| Testes do sidecar, do CSRF e do mapeamento | ✅ |
-| Reel agendado no DarkFlow em simulação | ❌ não rodei os dois sistemas |
-| Projeto criado no Docuflow | ❌ |
+| Testes do sidecar, do CSRF, da agenda em rascunho e do canal | ✅ |
+| Reel agendado no DarkFlow em simulação, com os sistemas no ar | ❌ |
+| Projeto criado no Docuflow de verdade | ❌ |
 | Prints dos dois fluxos | ❌ |
-| `git status` limpo no DarkFlow e no Docuflow | ❌ os dois repositórios já tinham alterações antes desta sessão; nenhum arquivo deles foi escrito agora |
+| `git status` limpo no DarkFlow e no Docuflow | ❌ os dois já estavam sujos; esta sessão não escreveu neles |
 
 A F8 não fecha.
+

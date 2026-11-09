@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Flow</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet><style>body{margin:0}</style></helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page" data-tavir-page="Flow.dc.html" style="max-width: 1100px">
+  <div class="phead"><div class="grow"><div class="eyebrow">Flow</div><h1 style="margin-top: 8px">DarkFlow</h1><p>Agenda do Reel. A publicação real continua no DarkFlow, e este escritório não liga a Meta.</p></div></div>
+  <p class="muted">{{error}}</p>
+  <section class="card"><div class="card-h"><h3>Biblioteca</h3></div><div class="rows"><sc-for list="{{library}}" as="item" hint-placeholder-count="0"><div class="row" style="cursor: default"><span class="grow">{{item.nome}}</span><span class="muted">{{item.medida}}</span></div></sc-for></div></section>
+  <section class="card"><div class="card-h"><h3>Agendas</h3></div><div class="rows"><sc-for list="{{schedules}}" as="item" hint-placeholder-count="0"><div class="row" style="cursor: default"><span class="grow">{{item.nome}}</span><span class="muted">{{item.estado}}</span></div></sc-for></div></section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+function studioApi() {
+  var w = typeof window !== 'undefined' ? window : null;
+  var t = w && w.tavir ? w.tavir : (w && w.parent && w.parent.tavir ? w.parent.tavir : null);
+  return t && t.studio ? t.studio : null;
+}
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { error: '', library: [], schedules: [] };
+    var self = this;
+    setTimeout(function () { self.reload(); }, 0);
+  }
+  reload() {
+    var api = studioApi();
+    var self = this;
+    if (!api || !api.darkflow || !api.darkflow.board) { this.setState({ error: 'DarkFlow indisponível neste modo.' }); return; }
+    api.darkflow.board().then(function (res) {
+      if (!res || res.ok === false) { self.setState({ error: (res && res.error) || 'DarkFlow indisponível', library: [], schedules: [] }); return; }
+      self.setState({ error: '', library: res.library || [], schedules: res.schedules || [] });
+    }).catch(function () { self.setState({ error: 'DarkFlow indisponível' }); });
+  }
+  renderVals() {
+    var s = this.state;
+    return {
+      error: s.error || '',
+      library: (s.library || []).map(function (item) { return { nome: item.display_name || item.nome || '—', medida: item.width ? item.width + '×' + item.height : '—' }; }),
+      schedules: (s.schedules || []).map(function (item) { return { nome: item.name || '—', estado: item.status || '—' }; }),
+    };
+  }
+}
+</script>
+</body>
+</html>

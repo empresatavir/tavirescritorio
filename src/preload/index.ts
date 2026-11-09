@@ -275,6 +275,17 @@ const api: TavirApi = {
       start: (id) => ipcRenderer.invoke('studio:sidecars:start', id),
       stop: (id) => ipcRenderer.invoke('studio:sidecars:stop', id),
     },
+    darkflow: {
+      prepare: (pecaId) => ipcRenderer.invoke('studio:darkflow:prepare', pecaId),
+      activate: (pecaId) => ipcRenderer.invoke('studio:darkflow:activate', pecaId),
+      scorecard: () => ipcRenderer.invoke('studio:darkflow:scorecard'),
+      board: () => ipcRenderer.invoke('studio:darkflow:board'),
+    },
+    docuflow: {
+      send: (pecaId) => ipcRenderer.invoke('studio:docuflow:send', pecaId),
+      board: () => ipcRenderer.invoke('studio:docuflow:board'),
+      open: () => ipcRenderer.invoke('studio:docuflow:open'),
+    },
   },
   onStudioEvent: (callback) => {
     const handler = (_e: Electron.IpcRendererEvent, event: StudioEvent) => callback(event);

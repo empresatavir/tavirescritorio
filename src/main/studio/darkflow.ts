@@ -1,4 +1,4 @@
-export async function darkflowRequest(base: string, pathname: string, options: { method?: string; csrf?: string; body?: unknown } = {}): Promise<Record<string, unknown>> {
+export async function darkflowRequest(base: string, pathname: string, options: { method?: string; csrf?: string; body?: unknown } = {}): Promise<any> {
   const headers: Record<string, string> = {};
   if (options.csrf) headers['X-CSRF-Token'] = options.csrf;
   if (options.body !== undefined) headers['Content-Type'] = 'application/json';
@@ -8,7 +8,7 @@ export async function darkflowRequest(base: string, pathname: string, options: {
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
   });
   const text = await response.text();
-  const payload = text ? JSON.parse(text) as Record<string, unknown> : {};
+  const payload = text ? JSON.parse(text) : {};
   if (!response.ok) {
     throw new Error(typeof payload.detail === 'string' ? payload.detail : `DarkFlow respondeu ${response.status}`);
   }

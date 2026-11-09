@@ -1304,6 +1304,8 @@ function injectStudioPage(uuid, relName, label) {
 }
 injectStudioPage('16017d18-269b-4357-ad7b-a062bb3012c1', 'Studio.dc.html', 'Studio');
 injectStudioPage('4de11384-84d7-4565-aa6e-7c22c5e8ecbd', 'Social.dc.html', 'Social');
+injectStudioPage('1661c4ce-e992-453f-aac1-d7e20e73d1c5', 'Flow.dc.html', 'Flow');
+injectStudioPage('508d093f-1272-42dd-9a7b-df8fdbe3246d', 'Edicao.dc.html', 'Edição');
 
 // ==========================================
 // 2. LIMPAR PÁGINA RAIZ __bundler/template
