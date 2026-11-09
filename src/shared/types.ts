@@ -14,6 +14,8 @@ import type {
   PerfilRedeInput,
   PieceStage,
   PreflightItem,
+  Serie,
+  SerieInput,
 } from './studio';
 
 export type DomainId = 'op' | 'mod' | 'com' | 'soc' | 'kn' | 'est' | 'sys';
@@ -490,6 +492,11 @@ export interface TavirApi {
       update: (id: string, campos: PecaUpdate) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
       gate: (id: string, etapa: PieceStage, decisao: GateDecision, comentario?: string) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
       advance: (id: string) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
+      suggest: (id: string, alvo: 'angulos' | 'roteiro') => Promise<{ ok: boolean; peca?: Peca; error?: string; custo: string }>;
+    };
+    series: {
+      list: (perfilId?: string) => Promise<Serie[]>;
+      save: (input: SerieInput) => Promise<{ ok: boolean; serie?: Serie; error?: string }>;
     };
     preflight: () => Promise<PreflightItem[]>;
   };

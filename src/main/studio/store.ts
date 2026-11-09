@@ -322,6 +322,10 @@ export class StudioStore {
     return (this.db.prepare('SELECT * FROM series WHERE perfil_id = ? ORDER BY nome').all(perfilId) as unknown as SerieRow[]).map((r) => ({ ...r }));
   }
 
+  listAllSeries(): Serie[] {
+    return (this.db.prepare('SELECT * FROM series ORDER BY nome').all() as unknown as SerieRow[]).map((r) => ({ ...r }));
+  }
+
   removeSerie(id: string): void {
     const row = this.getSerie(id);
     if (!row) throw new StudioError('série não encontrada');

@@ -219,6 +219,11 @@ const api: TavirApi = {
       update: (id: string, campos) => ipcRenderer.invoke('studio:pecas:update', id, campos),
       gate: (id: string, etapa, decisao, comentario) => ipcRenderer.invoke('studio:pecas:gate', id, etapa, decisao, comentario),
       advance: (id: string) => ipcRenderer.invoke('studio:pecas:advance', id),
+      suggest: (id: string, alvo: 'angulos' | 'roteiro') => ipcRenderer.invoke('studio:pecas:suggest', id, alvo),
+    },
+    series: {
+      list: (perfilId?: string) => ipcRenderer.invoke('studio:series:list', perfilId),
+      save: (input) => ipcRenderer.invoke('studio:series:save', input),
     },
     preflight: () => ipcRenderer.invoke('studio:preflight'),
   },

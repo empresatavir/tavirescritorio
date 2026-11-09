@@ -1,6 +1,7 @@
-import type { GateDecision, PecaCreateInput, PecaFiltro, PecaUpdate, PerfilInput, PerfilRedeInput, PieceStage } from '../../shared/studio';
+import type { GateDecision, PecaCreateInput, PecaFiltro, PecaUpdate, PerfilInput, PerfilRedeInput, PieceStage, SerieInput } from '../../shared/studio';
 import { runPreflight } from './preflight';
 import { getStudioStore } from './store';
+import { suggestForPiece, type SuggestAlvo } from './suggest';
 
 type Handle = (channel: string, listener: (...args: any[]) => any) => void;
 
@@ -64,5 +65,24 @@ export function registerStudioIpc(handle: Handle): void {
     getStudioStore().gatePeca(id, etapa, decisao, comentario ?? ''),
   );
   handle('studio:pecas:advance', (_e, id: string) => getStudioStore().advancePeca(id));
+  handle('studio:pecas:suggest', async (_e, id: string, alvo: SuggestAlvo) => {
+    try {
+      return await suggestForPiece(id, alvo === 'roteiro' ? 'roteiro' : 'angulos');
+    } catch (err) {
+      return { ok: false, error: message(err), custo: '—' };
+    }
+  });
+
+  handle('studio:series:list', (_e, perfilId?: string) =>
+    perfilId ? getStudioStore().listSeries(perfilId) : getStudioStore().listAllSeries(),
+  );
+  handle('studio:series:save', (_e, input: SerieInput) => {
+    try {
+      return { ok: true, serie: getStudioStore().saveSerie(input) };
+    } catch (err) {
+      return { ok: false, error: message(err) };
+    }
+  });
+
   handle('studio:preflight', () => runPreflight());
 }
