@@ -25,9 +25,9 @@ A F6 continua sem as 3 imagens do Flow. A F7 continua sem o whisper e sem o reel
 | Item | Resultado |
 | --- | --- |
 | Testes do sidecar, do CSRF, da agenda em rascunho e do canal | ✅ |
-| Reel agendado no DarkFlow em simulação, com os sistemas no ar | ❌ |
-| Projeto criado no Docuflow de verdade | ❌ |
-| Prints dos dois fluxos | ❌ |
+| Reel agendado no DarkFlow em simulação, com os sistemas no ar | ✅ agenda `b187a77d-a262-4a52-b72f-860c425037c0`, modo simulation |
+| Projeto criado no Docuflow de verdade | ✅ `o-arquivo-de-1974-1794222367`, parado em `research` |
+| Prints dos dois fluxos | ✅ `relatorios/studio/F8/darkflow-calendario.png` e `docuflow-studio.png` |
 | `git status` limpo no DarkFlow e no Docuflow | ❌ os dois já estavam sujos; esta sessão não escreveu neles |
 
 A F8 não fecha.
@@ -38,7 +38,11 @@ O DarkFlow subiu pelo `start.ps1`, sem `--enable-meta-publish` e sem abrir o nav
 
 O reel `relatorios/studio/F7/reel-2cenas.mp4` entrou em `storage/output` e virou a agenda `b187a77d-a262-4a52-b72f-860c425037c0`, nome «Reel de duas cenas», status `agendado`, ateste verdadeiro. Essa pasta é ignorada pelo git do DarkFlow. O único status de código dele continua sendo `D storage/input/.gitkeep`, que já existia.
 
-O Studio do Docuflow respondeu 200 em `http://127.0.0.1:3000`. A API na porta 5000 não sobe com o Python global: o FastAPI instalado chama `on_startup` e o Starlette atual recusa. Subi a mesma API num ambiente temporário, fora do repositório, com FastAPI 0.119.1 e Starlette 0.45.3. `GET /docs` devolveu 200. `GET /compositions` lista 2 projetos que já estavam lá. `GET /jobs` lista 0. Não criei um projeto novo: o `POST /projects` dispara o pipeline inteiro.
+O Studio do Docuflow respondeu 200 em `http://127.0.0.1:3000`. A API na porta 5000 não sobe com o Python global: o FastAPI instalado chama `on_startup` e o Starlette atual recusa. Subi a mesma API num ambiente temporário, fora do repositório, com FastAPI 0.119.1 e Starlette 0.45.3. `GET /docs` devolveu 200.
 
-Os dois repositórios externos continuam sujos como já estavam. Nenhum arquivo de código deles foi editado.
+O projeto `o-arquivo-de-1974-1794222367` foi criado com `POST /projects` e `stop=research`. O status ficou `stopped:research`. A pesquisa da Wikipedia rodou; o render não. A tela do Studio em `http://127.0.0.1:3000` continua em «Nenhum projeto»: ela não lista os projetos dessa API.
+
+O calendário do DarkFlow mostra `final.mp4`, «Reel de duas cenas», 01 de dez. às 09:30, estado Agendado, com o aviso Local / Simulação.
+
+Os dois repositórios externos continuam sujos como já estavam. Nenhum arquivo de código deles foi editado. A F8 não fecha por causa disso.
 
