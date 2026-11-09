@@ -1286,6 +1286,25 @@ if (manifest[conUuid] && manifest[conUuid].compressed) {
   console.log('Conhecimento (Cérebro + Memória e Biblioteca + Indexação na Abertura) atualizado!');
 }
 
+// 1.3 Studio — páginas próprias no lugar da referência
+function injectStudioPage(uuid, relName, label) {
+  const file = path.resolve(__dirname, '../src/renderer/studio-ref', relName);
+  if (!fs.existsSync(file)) {
+    throw new Error(label + ': src/renderer/studio-ref/' + relName + ' não encontrado.');
+  }
+  if (!manifest[uuid]) {
+    throw new Error(label + ': uuid ' + uuid + ' ausente no manifest.');
+  }
+  let page = fs.readFileSync(file, 'utf8');
+  page = page.replace(/<script src="\.\/vendor\/react\.js"><\/script>\s*/g, '');
+  page = page.replace(/<script src="\.\/vendor\/react-dom\.js"><\/script>\s*/g, '');
+  manifest[uuid].data = zlib.gzipSync(Buffer.from(page, 'utf8')).toString('base64');
+  manifest[uuid].compressed = true;
+  console.log(label + ': ' + relName + ' injetado.');
+}
+injectStudioPage('16017d18-269b-4357-ad7b-a062bb3012c1', 'Studio.dc.html', 'Studio');
+injectStudioPage('4de11384-84d7-4565-aa6e-7c22c5e8ecbd', 'Social.dc.html', 'Social');
+
 // ==========================================
 // 2. LIMPAR PÁGINA RAIZ __bundler/template
 // ==========================================
