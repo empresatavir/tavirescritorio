@@ -169,6 +169,7 @@ export async function startMotionJob(ask: MotionAsk): Promise<MotionJob> {
   const fileName = `${componentName(ask.preset)}.tsx`;
   fs.mkdirSync(path.join(workspace, 'src', 'kits', kit.id), { recursive: true });
   fs.writeFileSync(path.join(workspace, 'src', 'kits', kit.id, fileName), stubSource(ask.preset));
+  registerKitInRoot(path.join(workspace, 'src', 'Root.tsx'), kit.id, ask.preset);
   const before = snapshotTree(workspace);
   let job = store.saveMotionJob({
     kit_id: kit.id,

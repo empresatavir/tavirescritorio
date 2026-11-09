@@ -69,6 +69,8 @@ describe('job de motion', () => {
       checkImpl: async () => checks(true),
     });
     expect(job.status).toBe('aguardando_gate');
+    expect(fs.readFileSync(path.join(job.workspace, 'src', 'Root.tsx'), 'utf8')).toContain('id="titulo-entrada"');
+    expect(fs.readFileSync(path.join(source, 'src', 'Root.tsx'), 'utf8')).not.toContain('id="titulo-entrada"');
     const approved = await decideMotionGate(job.id, 'aprovado', '', home, store, source);
     expect(approved.status).toBe('aprovado');
     expect(fs.existsSync(path.join(source, 'src', 'kits', job.kit_id, 'TituloEntrada.tsx'))).toBe(true);
