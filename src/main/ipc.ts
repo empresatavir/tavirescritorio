@@ -839,7 +839,8 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
 
   // Contas do GitHub no cofre: o token entra aqui e nunca volta para a tela.
   handle('accounts:list', async () => {
-    const { listGitAccounts } = await import('./gitAccounts');
+    const { listGitAccounts, backfillGitAccounts } = await import('./gitAccounts');
+    await backfillGitAccounts().catch(() => undefined);
     return { ok: true, accounts: listGitAccounts() };
   });
 

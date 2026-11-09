@@ -251,6 +251,18 @@ export async function testGitAccount(
   }
 }
 
+/**
+ * Contas gravadas antes do id/e-mail do GitHub entrarem no cofre: confere de novo
+ * para a assinatura dos commits sair com o noreply certo (id+login).
+ */
+export async function backfillGitAccounts(
+  validate: (token: string) => Promise<GithubUser> = fetchGithubUser,
+): Promise<void> {
+  for (const a of readStore().filter((x) => !x.gh_id)) {
+    await testGitAccount(a.id, validate).catch(() => undefined);
+  }
+}
+
 /** Só no main: devolve o token em claro para push/PR. */
 export function getGitAccountToken(id: string): string {
   const acc = readStore().find((a) => a.id === id);
