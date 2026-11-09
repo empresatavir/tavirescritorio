@@ -1,0 +1,14 @@
+# Conteúdo coletado e derivados podem conter dados pessoais e mídia de terceiros.
+perfis/*
+!perfis/.gitkeep
+# Guarda contra invocação com cwd errado (workspace default vira analise-instagram/analise-instagram/perfis).
+analise-instagram/
+**/perfis/
+
+# Ambiente Python local opcional.
+.venv/
+
+# Credenciais RapidAPI e estado de quota — somente arquivos de exemplo entram no Git.
+config/api_keys.env
+config/instagram_rapidapi.env
+config/.rapidapi-usage.json

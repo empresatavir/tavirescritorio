@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Raio X — TAVIR</title>
+    <style>
+      :root { --ink:#122018; --paper:#f6f4ed; --green:#1d7b54; --line:#d8d5c9; }
+      * { box-sizing:border-box; } body { margin:0; font:16px/1.5 Inter,Arial,sans-serif; color:var(--ink); background:var(--paper); }
+      main { max-width:720px; margin:0 auto; padding:52px 22px 72px; } .eyebrow { color:var(--green); font-weight:800; letter-spacing:.08em; text-transform:uppercase; font-size:.76rem; }
+      h1 { font-size:clamp(2rem,5vw,3.6rem); line-height:1.04; margin:.5rem 0 1rem; } .lead { max-width:58ch; color:#455148; }
+      form { margin-top:32px; background:#fffefa; border:1px solid var(--line); border-radius:18px; padding:26px; box-shadow:0 12px 30px #1220180d; }
+      .step { display:none; } .step.active { display:block; } label { display:block; margin:18px 0 7px; font-weight:700; } input, select, textarea { width:100%; padding:12px; border:1px solid #a7aea5; border-radius:9px; background:#fff; font:inherit; }
+      textarea { min-height:96px; } .choices { display:grid; gap:8px; grid-template-columns:repeat(3,1fr); } .choices label { margin:0; font-weight:500; }
+      .choices input { width:auto; margin-right:6px; } .checks label { display:flex; gap:9px; align-items:flex-start; font-weight:500; } .checks input { width:auto; margin-top:5px; }
+      .actions { display:flex; justify-content:space-between; gap:12px; margin-top:26px; } button { border:0; border-radius:9px; padding:12px 18px; font:inherit; font-weight:800; cursor:pointer; } button.primary { background:var(--green); color:white; } button.secondary { background:#e8e9e3; color:var(--ink); } .note { font-size:.9rem; color:#59655d; } .progress { height:5px; background:#e3e5dd; border-radius:99px; overflow:hidden; } .progress i { display:block; height:100%; width:25%; background:var(--green); transition:width .2s; } #summary { white-space:pre-wrap; background:#edf3ec; border-radius:10px; padding:15px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">TAVIR · Diagnóstico inicial</p>
+      <h1>Vamos enxergar o negócio antes de recomendar algo.</h1>
+      <p class="lead">Maquete local do formulário. Nada é enviado, salvo ou analisado nesta página.</p>
+      <form id="raiox-form" novalidate>
+        <div class="progress"><i id="bar"></i></div>
+        <section class="step active">
+          <h2>1. Empresa e contato</h2>
+          <label>Seu nome<input name="contato" required autocomplete="name" /></label>
+          <label>Nome da empresa<input name="empresa" required /></label>
+          <label>E-mail para entrega<input name="email" required type="email" autocomplete="email" /></label>
+          <label>Nicho<select name="nicho" required><option value="">Selecione</option><option>Alimentação e bebidas</option><option>Varejo</option><option>Serviços</option><option>Outro</option></select></label>
+        </section>
+        <section class="step">
+          <h2>2. Onde vocês atuam</h2>
+          <p>Hoje:</p><div class="choices"><label><input type="radio" name="atual" value="Física" required />Física</label><label><input type="radio" name="atual" value="Online" />Online</label><label><input type="radio" name="atual" value="Ambas" />Ambas</label></div>
+          <p>Desejado:</p><div class="choices"><label><input type="radio" name="desejada" value="Física" required />Física</label><label><input type="radio" name="desejada" value="Online" />Online</label><label><input type="radio" name="desejada" value="Ambas" />Ambas</label></div>
+          <label>Cidade / UF<input name="cidade" required placeholder="Ex.: Campinas / SP" /></label>
+          <label>Endereço completo <span class="note">(obrigatório se houver loja física)</span><input name="endereco" placeholder="Rua, número, bairro, cidade/UF, CEP" /></label>
+        </section>
+        <section class="step">
+          <h2>3. Presença e operação</h2>
+          <label>Instagram<input name="instagram" type="url" placeholder="https://instagram.com/..." /></label>
+          <label>Site, catálogo ou loja online<input name="site" type="url" placeholder="https://..." /></label>
+          <label>Google Maps<input name="maps" type="url" placeholder="https://maps.google.com/..." /></label>
+          <label>WhatsApp, delivery ou outro link<input name="canais" placeholder="Links separados por vírgula" /></label>
+          <label>Como chegam pedidos hoje e o que você gostaria que melhorasse?<textarea name="objetivo"></textarea></label>
+        </section>
+        <section class="step">
+          <h2>4. Permissões para este Raio X</h2>
+          <div class="checks">
+            <label><input type="checkbox" name="publico" required />Autorizo verificar os links e informações públicas que forneci.</label>
+            <label><input type="checkbox" name="emailok" required />Autorizo receber os documentos neste e-mail.</label>
+            <label><input type="checkbox" name="privado" />Podem me pedir autorização depois caso uma análise privada seja útil. Não é acesso concedido.</label>
+            <label><input type="checkbox" name="metricas" />Autorizo uso anonimizado deste processo para melhorar a esteira.</label>
+          </div>
+          <p class="note">Acesso a painel, mensagens ou métricas privadas nunca é solicitado neste formulário.</p>
+          <div id="summary" hidden></div>
+        </section>
+        <div class="actions"><button class="secondary" type="button" id="back" hidden>Voltar</button><button class="primary" type="button" id="next">Continuar</button></div>
+      </form>
+    </main>
+    <script>
+      const form = document.querySelector('#raiox-form'), steps = [...document.querySelectorAll('.step')], bar = document.querySelector('#bar');
+      let current = 0; const back = document.querySelector('#back'), next = document.querySelector('#next');
+      function render() { steps.forEach((s,i)=>s.classList.toggle('active',i===current)); bar.style.width = `${(current+1)*25}%`; back.hidden = current===0; next.textContent = current===3 ? 'Ver resumo local' : 'Continuar'; }
+      function valid() { const fields=[...steps[current].querySelectorAll('[required]')]; const radioNames=[...new Set(fields.filter(x=>x.type==='radio').map(x=>x.name))]; const regular=fields.filter(x=>x.type!=='radio'); const base=regular.every(x=>x.checked || x.value.trim()); const radios=radioNames.every(n=>form.querySelector(`input[name="${n}"]:checked`)); const physical=form.querySelector('input[name="atual"]:checked')?.value; const address=form.elements.endereco.value.trim(); if ((physical==='Física'||physical==='Ambas') && current===1 && !address) { form.elements.endereco.setCustomValidity('Informe o endereço completo da loja física.'); form.elements.endereco.reportValidity(); return false; } form.elements.endereco.setCustomValidity(''); return base && radios && form.reportValidity(); }
+      next.onclick=()=>{ if(!valid()) return; if(current<3){current++;render();return;} const data=Object.fromEntries(new FormData(form)); const permissions=['publico','emailok','privado','metricas'].filter(k=>data[k]==='on'); document.querySelector('#summary').hidden=false; document.querySelector('#summary').textContent=`Resumo somente local\n\nEmpresa: ${data.empresa}\nAtuação: ${data.atual} → ${data.desejada}\nFontes informadas: ${[data.instagram,data.site,data.maps,data.canais].filter(Boolean).length}\nPermissões: ${permissions.join(', ') || 'nenhuma'}\n\nEm produção, esta etapa criará uma solicitação de aprovação no Telegram privado da TAVIR.`; next.hidden=true; back.hidden=true; };
+      back.onclick=()=>{ current--;render(); }; render();
+    </script>
+  </body>
+</html>

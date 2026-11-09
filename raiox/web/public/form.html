@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#0B1220">
+  <title>Raio X | TAVIR</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="brandbar"><a href="https://tavir.com.br" rel="noreferrer">TAVIR</a><span>Inteligência que entra em operação.</span></header>
+  <main class="layout">
+    <aside class="context" aria-label="Como funciona">
+      <p class="eyebrow">Diagnóstico de presença e crescimento</p>
+      <h2>Um plano construído a partir do que sua empresa vive hoje.</h2>
+      <ol class="steps">
+        <li><strong>Você compartilha o contexto</strong><span>Operação, presença digital, objetivo e links públicos.</span></li>
+        <li><strong>A TAVIR investiga os sinais</strong><span>Sem acessar contas privadas e sem inventar métricas ausentes.</span></li>
+        <li><strong>Você recebe direção</strong><span>Diagnóstico e plano priorizado, revisados antes da entrega.</span></li>
+      </ol>
+      <div class="boundary"><strong>Este Raio X não promete faturamento ou posição no Google.</strong> Ele organiza evidências, gargalos e próximos testes para apoiar decisões melhores.</div>
+    </aside>
+
+    <section class="formpanel" id="status" data-state="loading" aria-live="polite">
+      <p class="eyebrow" id="eyebrow">Validando convite</p>
+      <p class="company" id="company" hidden></p>
+      <h1 id="title">Preparando seu Raio X.</h1>
+      <p class="intro" id="intro">Estamos verificando se este convite ainda está disponível.</p>
+      <div class="loading" data-loading><span></span><span></span><span></span></div>
+
+      <form id="form" hidden novalidate>
+        <input class="honeypot" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="error" id="error" role="alert" hidden></p>
+        <div class="formprogress" data-progress hidden>
+          <div><strong id="progress-label">Etapa 1 de 2</strong><span id="progress-note">Contexto e objetivo</span></div>
+          <div class="progressbar" aria-hidden="true"><span id="progress-bar"></span></div>
+        </div>
+        <section data-stage="1">
+          <div class="sectionhead"><span>01</span><div><h3>Contexto da empresa</h3><p>O convite já identifica a empresa, a pessoa responsável e o e-mail de entrega.</p></div></div>
+          <div class="fieldgrid">
+            <label>Seu cargo ou função<select name="cargo_contato"><option value="">Selecione</option><option>Proprietário(a) ou sócio(a)</option><option>Gestor(a)</option><option>Marketing ou comunicação</option><option>Atendimento ou vendas</option><option>Outro</option></select></label>
+            <label>Cidade e estado da operação<input name="cidade_uf" data-required maxlength="120" placeholder="Ex.: Campo Grande, Rio de Janeiro - RJ" autocomplete="address-level2"></label>
+          </div>
+          <label>Nicho ou atividade principal<input name="nicho" data-required maxlength="120" placeholder="Ex.: moda feminina, restaurante, clínica"></label>
+          <div class="fieldgrid">
+            <label>Como a empresa atua hoje?<select name="atuacao_atual" data-required><option value="">Selecione</option><option>Física</option><option>Online</option><option>Física e online</option></select></label>
+            <label>Como deseja atuar?<select name="atuacao_desejada" data-required><option value="">Selecione</option><option>Física</option><option>Online</option><option>Física e online</option></select></label>
+          </div>
+          <div class="sectionhead"><span>02</span><div><h3>Objetivo e decisão</h3><p>O plano precisa ajudar a tomar uma decisão concreta, não apenas reunir sugestões.</p></div></div>
+          <div class="fieldgrid">
+            <label>Qual é a prioridade principal?<select name="objetivo_principal" data-required><option value="">Selecione</option><option>Aumentar visitas à loja física</option><option>Gerar mais conversas no WhatsApp</option><option>Gerar mais pedidos ou vendas</option><option>Fortalecer a presença e a confiança</option><option>Melhorar recorrência e pós-venda</option><option>Organizar marketing e conteúdo</option><option>Lançar uma oferta ou canal</option><option>Entender qual gargalo atacar primeiro</option></select></label>
+            <label>Em qual horizonte essa prioridade importa?<select name="horizonte_prioridade" data-required><option value="">Selecione</option><option>Próximos 30 dias</option><option>Entre 30 e 90 dias</option><option>Entre 3 e 6 meses</option><option>Ainda não há prazo definido</option></select></label>
+          </div>
+          <label>Que decisão este diagnóstico precisa ajudar você a tomar?<textarea name="decisao_diagnostico" data-required maxlength="800" placeholder="Ex.: decidir se devo corrigir minha presença no Google, melhorar o Instagram ou organizar o atendimento primeiro."></textarea></label>
+          <label>Links públicos<textarea name="links" maxlength="3000" placeholder="Instagram, site, Maps, WhatsApp, catálogo ou delivery. Um por linha."></textarea><small>Não informe senhas, tokens, documentos ou conversas de clientes.</small></label>
+          <label>Existe algum contexto importante sobre o objetivo?<textarea name="objetivo" maxlength="1800" placeholder="Conte o que está acontecendo hoje e por que essa prioridade se tornou importante."></textarea></label>
+        </section>
+        <div class="formactions" data-first-actions>
+          <button id="next" type="button">Continuar para operação e capacidade</button>
+          <p class="submitnote">Nada será enviado nesta etapa. Suas respostas permanecem nesta página.</p>
+        </div>
+        <section data-stage="2" hidden>
+          <div class="sectionhead"><span>03</span><div><h3>Oferta e capacidade</h3><p>Recomendações só são viáveis quando respeitam o que a empresa vende e consegue atender.</p></div></div>
+          <label>Qual produto, serviço ou oferta deve receber prioridade?<textarea name="oferta_prioritaria" data-required maxlength="600" placeholder="Informe o que mais importa vender ou promover agora."></textarea></label>
+          <label>Por que um cliente escolhe sua empresa em vez de outra?<textarea name="diferencial" maxlength="600" placeholder="Pode ser preço, conveniência, confiança, variedade, localização, atendimento ou outro motivo real."></textarea></label>
+          <div class="fieldgrid">
+            <label>Faixa de valor da compra mais comum<select name="ticket_faixa"><option value="">Selecione</option><option>Até R$ 50</option><option>De R$ 51 a R$ 150</option><option>De R$ 151 a R$ 500</option><option>De R$ 501 a R$ 2.000</option><option>Acima de R$ 2.000</option><option>Varia muito</option><option>Ainda não medimos</option><option>Prefiro não informar</option></select></label>
+            <label>A empresa conhece a margem dos produtos ou serviços?<select name="margem_status"><option value="">Selecione</option><option>Sim, por produto ou serviço</option><option>Temos uma estimativa geral</option><option>Ainda não calculamos</option><option>Prefiro não informar</option></select></label>
+          </div>
+          <div class="fieldgrid">
+            <label>Como está a capacidade para receber mais demanda?<select name="capacidade_status" data-required><option value="">Selecione</option><option>Há capacidade disponível</option><option>Há capacidade limitada</option><option>Já estamos próximos do limite</option><option>Não sabemos ainda</option></select></label>
+            <label>Quantidade adicional que conseguiria atender por semana<input name="capacidade_semanal" maxlength="80" placeholder="Ex.: 20 pedidos; não sei; varia por dia"></label>
+          </div>
+
+          <div class="sectionhead"><span>04</span><div><h3>Jornada de compra</h3><p>Vamos mapear como a pessoa descobre, conversa e conclui a compra hoje.</p></div></div>
+          <fieldset class="choicegroup" data-required-group="origem_pedidos">
+            <legend>Por onde chegam clientes ou pedidos hoje? <span>Selecione todas as opções aplicáveis.</span></legend>
+            <div class="choicegrid">
+              <label><input type="checkbox" name="origem_pedidos" value="Loja física ou passagem na rua">Loja física ou passagem na rua</label>
+              <label><input type="checkbox" name="origem_pedidos" value="Instagram">Instagram</label>
+              <label><input type="checkbox" name="origem_pedidos" value="Google ou Maps">Google ou Maps</label>
+              <label><input type="checkbox" name="origem_pedidos" value="WhatsApp">WhatsApp</label>
+              <label><input type="checkbox" name="origem_pedidos" value="Indicação ou boca a boca">Indicação ou boca a boca</label>
+              <label><input type="checkbox" name="origem_pedidos" value="Site ou loja virtual">Site ou loja virtual</label>
+              <label><input type="checkbox" name="origem_pedidos" value="Marketplace ou aplicativo de delivery">Marketplace ou delivery</label>
+              <label><input type="checkbox" name="origem_pedidos" value="Anúncios pagos">Anúncios pagos</label>
+              <label><input type="checkbox" name="origem_pedidos" value="Não sabemos">Não sabemos</label>
+            </div>
+          </fieldset>
+          <label>Como a compra normalmente começa e termina?<textarea name="pedidos_atual" data-required maxlength="1600" placeholder="Ex.: a pessoa vê no Instagram, pergunta no WhatsApp e retira na loja. Conte também onde costuma haver demora ou desistência."></textarea></label>
+          <div class="fieldgrid">
+            <label>Tempo normal para responder um novo contato<select name="tempo_resposta" data-required><option value="">Selecione</option><option>Até 5 minutos</option><option>De 6 a 30 minutos</option><option>De 31 minutos a 2 horas</option><option>No mesmo dia</option><option>Mais de um dia</option><option>Varia muito ou não sabemos</option></select></label>
+            <label>Onde a compra é concluída?<select name="canal_fechamento" data-required><option value="">Selecione</option><option>No balcão ou presencialmente</option><option>No WhatsApp</option><option>No site ou loja virtual</option><option>Em marketplace ou delivery</option><option>Por telefone</option><option>Em mais de um canal</option><option>Não há um processo definido</option></select></label>
+          </div>
+          <fieldset class="choicegroup">
+            <legend>Quais modalidades estão disponíveis?</legend>
+            <div class="choicegrid">
+              <label><input type="checkbox" name="modalidades_entrega" value="Retirada no local">Retirada no local</label>
+              <label><input type="checkbox" name="modalidades_entrega" value="Entrega própria">Entrega própria</label>
+              <label><input type="checkbox" name="modalidades_entrega" value="Entrega por aplicativo ou terceiro">Entrega por terceiro</label>
+              <label><input type="checkbox" name="modalidades_entrega" value="Atendimento no local">Atendimento no local</label>
+              <label><input type="checkbox" name="modalidades_entrega" value="Serviço remoto ou digital">Serviço remoto ou digital</label>
+              <label><input type="checkbox" name="modalidades_entrega" value="Nenhuma destas">Nenhuma destas</label>
+            </div>
+          </fieldset>
+          <label>Como vocês identificam de onde veio cada contato ou venda?<select name="mensuracao_status" data-required><option value="">Selecione</option><option>CRM ou sistema com origem registrada</option><option>Planilha ou etiquetas no WhatsApp</option><option>Perguntamos ao cliente</option><option>Observamos informalmente</option><option>Não registramos a origem</option><option>Não sei</option></select></label>
+
+          <div class="sectionhead"><span>05</span><div><h3>Conteúdo e execução</h3><p>O plano será dimensionado para a rotina que a equipe realmente consegue manter.</p></div></div>
+          <div class="fieldgrid">
+            <label>Com que frequência a empresa publica hoje?<select name="frequencia_conteudo" data-required><option value="">Selecione</option><option>Todos ou quase todos os dias</option><option>De 2 a 4 vezes por semana</option><option>Uma vez por semana</option><option>Algumas vezes por mês</option><option>Raramente</option><option>Não publica</option></select></label>
+            <label>Tempo disponível por semana para conteúdo<select name="disponibilidade_conteudo" data-required><option value="">Selecione</option><option>Menos de 1 hora</option><option>De 1 a 3 horas</option><option>De 4 a 6 horas</option><option>Mais de 6 horas</option><option>Não há tempo disponível hoje</option></select></label>
+          </div>
+          <fieldset class="choicegroup">
+            <legend>Quais formatos a empresa consegue produzir hoje?</legend>
+            <div class="choicegrid">
+              <label><input type="checkbox" name="formatos_conteudo" value="Fotos de produtos ou serviços">Fotos de produtos ou serviços</label>
+              <label><input type="checkbox" name="formatos_conteudo" value="Vídeos curtos ou Reels">Vídeos curtos ou Reels</label>
+              <label><input type="checkbox" name="formatos_conteudo" value="Stories de rotina">Stories de rotina</label>
+              <label><input type="checkbox" name="formatos_conteudo" value="Bastidores e processos">Bastidores e processos</label>
+              <label><input type="checkbox" name="formatos_conteudo" value="Depoimentos ou avaliações autorizadas">Depoimentos autorizados</label>
+              <label><input type="checkbox" name="formatos_conteudo" value="Nenhum com consistência">Nenhum com consistência</label>
+            </div>
+          </fieldset>
+          <div class="fieldgrid">
+            <label>Alguém da empresa pode aparecer em vídeos?<select name="aparicao_conteudo"><option value="">Selecione</option><option>Sim, com frequência</option><option>Sim, ocasionalmente</option><option>Preferimos mostrar produtos, ambiente e mãos</option><option>Não neste momento</option></select></label>
+            <label>Quem cuida de marketing e conteúdo?<select name="equipe_operacao"><option value="">Selecione</option><option>O próprio dono ou sócio</option><option>Uma pessoa da equipe acumula a função</option><option>Equipe interna dedicada</option><option>Freelancer ou agência</option><option>Ninguém de forma definida</option></select></label>
+          </div>
+          <label>Faixa mensal disponível para testar melhorias, se houver<select name="investimento_faixa"><option value="">Selecione</option><option>Sem verba definida</option><option>Até R$ 500</option><option>De R$ 501 a R$ 1.500</option><option>De R$ 1.501 a R$ 5.000</option><option>Acima de R$ 5.000</option><option>Depende da proposta</option><option>Prefiro não informar</option></select></label>
+
+          <div class="sectionhead"><span>06</span><div><h3>Presença local</h3><p>Este bloco aparece para operações com loja, escritório ou atendimento presencial.</p></div></div>
+          <fieldset class="choicegroup compact" data-radio-group="possui_loja_fisica">
+            <legend>A empresa possui local físico ou atende clientes presencialmente?</legend>
+            <div class="choicegrid">
+              <label><input type="radio" name="possui_loja_fisica" value="Sim" data-required>Sim</label>
+              <label><input type="radio" name="possui_loja_fisica" value="Não" data-required>Não</label>
+            </div>
+          </fieldset>
+          <div class="conditional" data-conditional="loja-fisica" hidden>
+            <label>Endereço completo da operação<textarea name="endereco" data-conditional-required maxlength="600" autocomplete="street-address" placeholder="Rua, número, complemento, bairro, cidade e estado."></textarea></label>
+            <div class="fieldgrid">
+              <label>Situação do Perfil da Empresa no Google<select name="google_perfil_status" data-conditional-required><option value="">Selecione</option><option>Existe, está verificado e temos acesso</option><option>Existe, mas não temos acesso</option><option>Existe, mas não sabemos se está verificado</option><option>Não existe</option><option>Não sabemos</option></select></label>
+              <label>Área atendida<input name="area_atendida" maxlength="300" placeholder="Ex.: bairro e regiões próximas; toda a cidade"></label>
+            </div>
+            <label>Horários atuais de funcionamento ou atendimento<input name="horarios_funcionamento" maxlength="400" placeholder="Inclua diferenças entre dias úteis, fins de semana e feriados, se houver."></label>
+            <div class="fieldgrid">
+              <label>Dias ou horários de maior movimento<input name="pico_atendimento" maxlength="200" placeholder="Ex.: sexta após 18h"></label>
+              <label>Como a empresa lida com avaliações no Google?<select name="avaliacoes_processo"><option value="">Selecione</option><option>Pede avaliações e responde com frequência</option><option>Responde, mas não pede avaliações</option><option>Pede ocasionalmente</option><option>Não há processo</option><option>Não sabemos</option></select></label>
+            </div>
+            <label>Há alguma informação de acesso que ajude o cliente?<textarea name="acesso_local" maxlength="300" placeholder="Ex.: estacionamento, referência, acessibilidade, retirada rápida ou entrada específica."></textarea></label>
+          </div>
+
+          <div class="sectionhead"><span>07</span><div><h3>Histórico e restrições</h3><p>Fatos anteriores evitam repetir tentativas que já falharam.</p></div></div>
+          <label>O que já foi tentado e qual foi o resultado?<textarea name="tentativas" maxlength="1600" placeholder="Ex.: impulsionamento, promoções, site, parceria, calendário de posts. Diga o que aconteceu, mesmo que não tenha sido medido."></textarea></label>
+          <label>Existe alguma limitação importante?<textarea name="limitacoes" maxlength="1200" placeholder="Considere equipe, estoque, horário, entrega, aprovação, verba, região ou regras do setor."></textarea></label>
+        </section>
+        <div data-final-step hidden>
+          <fieldset class="checks" data-consents>
+            <legend>Autorizações deste diagnóstico</legend>
+            <label><input name="consentimento_publico" type="checkbox" required>Autorizo a TAVIR a consultar somente os links públicos que informei para preparar este Raio X.</label>
+            <label><input name="consentimento_email" type="checkbox" required>Autorizo o envio do diagnóstico e do plano para o e-mail indicado neste convite.</label>
+          </fieldset>
+          <details class="privacy" id="aviso-privacidade">
+            <summary>Aviso de privacidade do piloto</summary>
+            <p>A TAVIR usa os dados apenas para operar este Raio X, consultar as fontes autorizadas, revisar os documentos e realizar a entrega. O processamento pode usar fornecedores de infraestrutura e IA sob controle da TAVIR.</p>
+            <p>Cases concluídos ficam retidos por até 90 dias para suporte e auditoria do piloto. Para pedir correção ou exclusão antes disso, responda ao e-mail de entrega ou use o mesmo canal pelo qual recebeu o convite.</p>
+          </details>
+          <div class="formactions finalactions">
+            <button id="back" class="secondary" type="button">Voltar e revisar</button>
+            <button id="submit" type="submit">Enviar Raio X completo</button>
+          </div>
+          <p class="submitnote">Este é o único envio. Depois dele, o link individual deixa de aceitar alterações.</p>
+        </div>
+      </form>
+      <div class="after-submit" data-after-submit hidden><p>Você não precisa preencher outro formulário. A TAVIR revisará o intake antes de iniciar a análise.</p></div>
+    </section>
+  </main>
+  <footer><span>TAVIR</span><span>Diagnóstico assistido e revisão humana.</span></footer>
+  <script src="/form.js" defer></script>
+</body>
+</html>

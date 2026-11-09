@@ -1,0 +1,11 @@
+{
+  "name": "tavir-raiox-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "check": "node --check api/_raiox.mjs && node --check api/forms/[token]/status.mjs && node --check api/forms/[token]/submit.mjs && node --check api/cron/supabase-health.mjs",
+    "test": "node --test test/*.test.mjs",
+    "build": "npm run check && npm test"
+  }
+}

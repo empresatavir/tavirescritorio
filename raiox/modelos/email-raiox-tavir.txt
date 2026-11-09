@@ -1,0 +1,17 @@
+{{{CONTACT_NAME_TEXT}}},
+
+Concluímos o Raio-X de {{{COMPANY_NAME_TEXT}}} com revisão humana da TAVIR.
+
+Você receberá dois documentos anexos:
+
+1. Relatório de Raio-X — cenário atual, pontos de atenção e oportunidades identificadas.
+2. Plano de crescimento — prioridades, decisões sugeridas e experimentos para orientar a execução.
+
+As recomendações organizam decisões e experimentos; não representam promessa de resultado.
+
+Para conversar sobre a execução, basta responder a este e-mail.
+
+TAVIR
+Inteligência que entra em operação.
+
+Mensagem transacional referente ao Raio-X solicitado.

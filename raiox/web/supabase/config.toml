@@ -1,0 +1,19 @@
+project_id = "skcbjwqajdovxlsxeszv"
+
+[functions.notify-dora]
+verify_jwt = false
+
+[functions.delivery-case]
+verify_jwt = false
+
+[functions.review-case]
+verify_jwt = false
+
+[functions.continue-case]
+verify_jwt = false
+
+[functions.create-case]
+verify_jwt = false
+
+[functions.invite-case]
+verify_jwt = false
