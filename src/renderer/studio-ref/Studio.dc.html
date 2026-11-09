@@ -70,6 +70,17 @@
       </div>
     </div>
 
+    <section class="card" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+      <span class="eyebrow">Sistemas ligados</span>
+      <sc-for list="{{sistemas}}" as="sys" hint-placeholder-count="0">
+        <div class="row" style="cursor: default">
+          <div class="grow"><div class="t">{{sys.nome}}</div><div class="m">{{sys.pasta}} · {{sys.estado}}</div></div>
+          <button class="btn sm secondary" onClick="{{sys.start}}">iniciar</button>
+          <button class="btn sm secondary" onClick="{{sys.stop}}">parar</button>
+        </div>
+      </sc-for>
+    </section>
+
     <div style="display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start">
       <!-- workspace -->
       <section style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
@@ -494,7 +505,7 @@ function kitFrom(form) {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '', motionJob: null, motionStill: '', preview: null, previewIndex: 0, previewFormatId: '', showSafe: false, showGrid: false, realSize: false, prompts: [], orphans: [], promptQuery: '', library: [], clips: [] };
+    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '', motionJob: null, motionStill: '', preview: null, previewIndex: 0, previewFormatId: '', showSafe: false, showGrid: false, realSize: false, prompts: [], orphans: [], promptQuery: '', library: [], clips: [], sistemas: [] };
     var self = this;
     this._pautaTimer = null;
     this._stillTimer = null;
@@ -535,6 +546,7 @@ class Component extends DCLogic {
         var chrome = (items || []).filter(function (item) { return item.item === 'chrome-headless'; })[0];
         self.setState({ needsChrome: !!(chrome && !chrome.ok), chromeNote: chrome && !chrome.ok ? (chrome.detalhe + ' ' + chrome.comoResolver) : '' });
       }).catch(function () {});
+      if (api.sidecars) api.sidecars.list().then(function (rows) { self.setState({ sistemas: rows || [] }); }).catch(function () {});
     }).catch(function (err) { self.setState({ error: err && err.message ? err.message : String(err) }); });
   }
   after(res) {
@@ -622,6 +634,23 @@ class Component extends DCLogic {
         var r = p.redes && p.redes[0];
         var n = (s.pecas || []).filter(function (x) { return x.perfil_id === p.id && GATES[x.etapa]; }).length;
         return { name: p.nome, ini: p.iniciais, net: r ? r.rede : '—', size: r && r.handle ? r.handle : '—', ck: n ? n + ' gate' : '', hasCk: n > 0, bd: p.id === s.perfilId ? 'var(--flow)' : 'var(--line)', bg: 'var(--surface-2)', avbg: p.cor_avatar || '#1BC5BD', avfg: '#0B1220', pick: function () { self.setState({ perfilId: p.id, pecaId: '', view: null, pautaDraft: null, error: '', motionJob: null, motionStill: '' }); var api = studioApi(); if (api && api.motion && api.motion.latest) api.motion.latest(p.id).then(function (view) { if (self.state.perfilId !== p.id) return; self.setState({ motionJob: view && view.job ? view.job : null, motionStill: view && view.still ? view.still : '' }); }).catch(function () {}); } };
+      }),
+      sistemas: (s.sistemas || []).map(function (sys) {
+        return {
+          nome: sys.nome,
+          pasta: sys.pasta,
+          estado: sys.saudavel ? 'no ar' : (sys.dono || 'parado'),
+          start: function () {
+            var api = studioApi();
+            if (!api || !api.sidecars) return;
+            api.sidecars.start(sys.id).then(function (res) { if (!res || res.ok === false) self.setState({ error: (res && res.error) || 'não subiu' }); self.reload(); });
+          },
+          stop: function () {
+            var api = studioApi();
+            if (!api || !api.sidecars) return;
+            api.sidecars.stop(sys.id).then(function (res) { if (!res || res.ok === false) self.setState({ error: (res && res.error) || 'não parou' }); self.reload(); });
+          },
+        };
       }),
       kpis: [
         { k: 'Peças no mês', v: String(mine.filter(function (p) { return (p.criado_em || '').slice(0, 7) === month; }).length) },

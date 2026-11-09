@@ -270,6 +270,11 @@ const api: TavirApi = {
       gate: (jobId, decisao, comentario) => ipcRenderer.invoke('studio:motion:gate', jobId, decisao, comentario),
       latest: (perfilId) => ipcRenderer.invoke('studio:motion:latest', perfilId),
     },
+    sidecars: {
+      list: () => ipcRenderer.invoke('studio:sidecars:list'),
+      start: (id) => ipcRenderer.invoke('studio:sidecars:start', id),
+      stop: (id) => ipcRenderer.invoke('studio:sidecars:stop', id),
+    },
   },
   onStudioEvent: (callback) => {
     const handler = (_e: Electron.IpcRendererEvent, event: StudioEvent) => callback(event);

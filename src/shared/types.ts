@@ -546,6 +546,11 @@ export interface TavirApi {
       gate: (jobId: string, decisao: 'aprovado' | 'ajuste' | 'recusado', comentario?: string) => Promise<{ ok: boolean; job?: MotionJob; error?: string }>;
       latest: (perfilId: string) => Promise<{ job: MotionJob | null; still: string }>;
     };
+    sidecars: {
+      list: () => Promise<Array<{ id: string; nome: string; pasta: string; saudavel: boolean; nosso: boolean; dono: string; portas: number[] }>>;
+      start: (id: string) => Promise<{ ok: boolean; error?: string }>;
+      stop: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    };
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
   onStudioEvent: (callback: (event: StudioEvent) => void) => () => void;

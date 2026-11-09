@@ -15,6 +15,7 @@ import { synthesizeScenes } from './audio';
 import { polishPrompt } from './promptPolish';
 import { getStudioStore } from './store';
 import { suggestForPiece, type SuggestAlvo } from './suggest';
+import { createSidecarManager, sidecarConfigPath } from '../sidecars';
 
 type Handle = (channel: string, listener: (...args: any[]) => any) => void;
 
@@ -188,6 +189,10 @@ export function registerStudioIpc(handle: Handle): void {
   });
   handle('studio:motion:latest', (_e, perfilId: string) => latestMotionView(perfilId));
   handle('studio:preflight', () => runPreflight());
+  const sidecars = createSidecarManager(sidecarConfigPath());
+  handle('studio:sidecars:list', () => sidecars.status());
+  handle('studio:sidecars:start', (_e, id: string) => sidecars.start(id));
+  handle('studio:sidecars:stop', (_e, id: string) => sidecars.stop(id));
   watchInbox(getStudioStore(), (pecaId, frame) => {
     startRender(pecaId, 'still', frame).catch(() => undefined);
   });
