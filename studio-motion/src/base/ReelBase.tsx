@@ -5,14 +5,14 @@ import { mediaSrc } from './mediaSrc';
 import { SafeArea, type SafeZone } from './SafeArea';
 import { tokensOf, type MotionTokens } from './tokens';
 
-export interface ReelScene {
+export type ReelScene = {
   src: string;
   kind: 'image' | 'video';
   durationFrames: number;
   caption: string;
-}
+};
 
-export interface ReelProps {
+export type ReelProps = {
   width: number;
   height: number;
   fps: number;
@@ -27,7 +27,7 @@ export interface ReelProps {
   backgroundColor: string;
   titleColor: string;
   accent: string;
-}
+};
 
 export const ReelBase: React.FC<ReelProps> = (props) => {
   const frame = useCurrentFrame();

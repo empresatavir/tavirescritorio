@@ -4,7 +4,7 @@ import { mediaSrc } from './mediaSrc';
 import { SafeArea, type SafeZone } from './SafeArea';
 import { tokensOf, type MotionTokens } from './tokens';
 
-export interface SlideProps {
+export type SlideProps = {
   width: number;
   height: number;
   fps: number;
@@ -21,7 +21,7 @@ export interface SlideProps {
   tokens: MotionTokens;
   zone: SafeZone;
   debugSafeZone: boolean;
-}
+};
 
 export const Slide: React.FC<SlideProps> = (props) => {
   tokensOf(props.tokens);
