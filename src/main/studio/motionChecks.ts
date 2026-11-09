@@ -128,17 +128,27 @@ function run(command: string, args: string[], cwd: string): Promise<{ code: numb
     const child = spawn(command, args, {
       cwd,
       windowsHide: true,
-      shell: process.platform === 'win32' && command === 'npm',
+      shell: process.platform === 'win32' && (command === 'npm' || command === 'npx'),
     });
     let output = '';
+    let settled = false;
+    const finish = (code: number) => {
+      if (settled) return;
+      settled = true;
+      resolve({ code, output });
+    };
     child.stdout?.on('data', (chunk) => { output += chunk.toString('utf8'); });
     child.stderr?.on('data', (chunk) => { output += chunk.toString('utf8'); });
-    child.on('close', (code) => resolve({ code: code ?? 1, output }));
+    child.on('error', (err) => {
+      output += err.message;
+      finish(1);
+    });
+    child.on('close', (code) => finish(code ?? 1));
   });
 }
 
 async function defaultTypecheck(workspace: string): Promise<{ ok: boolean; detalhe: string }> {
-  const result = await run('npx', ['tsc', '--noEmit'], workspace);
+  const result = await run('npx', ['--yes', 'tsc', '--noEmit'], workspace);
   return { ok: result.code === 0, detalhe: result.code === 0 ? 'tsc ok' : result.output.slice(-400) || 'tsc falhou' };
 }
 
