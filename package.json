@@ -24,6 +24,7 @@
     "test:watch": "vitest",
     "test:motion": "vitest run tests/motion.spec.ts",
     "test:motores": "npm run build:main && node scripts/conformidade_motores.js",
+    "test:motores:motion": "npm run build:main && node scripts/conformidade_motion.js",
     "test:studio:render": "npm run build:main && node scripts/test_studio_render.mjs"
   },
   "dependencies": {
