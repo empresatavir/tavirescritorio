@@ -1,3 +1,5 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import type { GateDecision, PecaCreateInput, PecaFiltro, PecaUpdate, PerfilInput, PerfilRedeInput, PieceStage, SerieInput } from '../../shared/studio';
 import { decideMotionGate, latestMotionView, startMotionJob, type MotionDecision } from './motionAuthor';
 import { downloadRemotionBrowser, updateMotionBase } from './motionHome';
@@ -7,6 +9,7 @@ import { assignSlotImage, buildPacote } from './pacote';
 import { reviewChecklist } from './rules';
 import { readPreview } from './previewMedia';
 import { assignInboxFile, scanInbox, watchInbox } from './inbox';
+import { ensureStudioTree } from './paths';
 import { compilePiecePrompts, exportShotList } from './shotList';
 import { synthesizeScenes } from './audio';
 import { polishPrompt } from './promptPolish';
@@ -144,6 +147,29 @@ export function registerStudioIpc(handle: Handle): void {
   }));
   handle('studio:inbox:assign', (_e, fileName: string, slotId: string) => assignInboxFile(fileName, slotId, getStudioStore()));
   handle('studio:audio:narrate', async (_e, pecaId: string, index?: number) => synthesizeScenes(pecaId, getStudioStore(), index));
+  handle('studio:audio:clip', (_e, pecaId: string, index: number) => {
+    const dir = ensureStudioTree().pecaDirs(pecaId).ativos;
+    const file = ['mp3', 'wav'].map((ext) => path.join(dir, `narracao-${String(index + 1).padStart(2, '0')}.${ext}`)).find((item) => fs.existsSync(item));
+    if (!file) return { ok: false, error: 'narração ainda não existe' };
+    const bytes = fs.readFileSync(file);
+    if (bytes.length > 8_000_000) return { ok: false, error: 'arquivo grande demais para ouvir aqui' };
+    const mime = file.endsWith('.wav') ? 'audio/wav' : 'audio/mpeg';
+    return { ok: true, src: `data:${mime};base64,${bytes.toString('base64')}` };
+  });
+  handle('studio:audio:word', (_e, pecaId: string, index: number, text: string) => {
+    const store = getStudioStore();
+    const peca = store.getPeca(pecaId);
+    if (!peca?.roteiro) return { ok: false, error: 'legenda não encontrada' };
+    if (peca.roteiro.legendas?.[index]) {
+      const legendas = peca.roteiro.legendas.slice();
+      legendas[index] = { ...legendas[index], text };
+      return { ok: true, peca: store.updatePeca(pecaId, { roteiro: { ...peca.roteiro, legendas } }) };
+    }
+    if (!peca.roteiro.cenas?.[index]) return { ok: false, error: 'legenda não encontrada' };
+    const cenas = peca.roteiro.cenas.slice();
+    cenas[index] = { ...cenas[index], texto_tela: text };
+    return { ok: true, peca: store.updatePeca(pecaId, { roteiro: { ...peca.roteiro, cenas } }) };
+  });
   handle('studio:motion:updateBase', () => updateMotionBase());
   handle('studio:motion:downloadBrowser', (_e, confirm?: boolean) => downloadRemotionBrowser(confirm === true));
   handle('studio:motion:ask', async (_e, input: { perfilId: string; preset: string; pedido: string }) => {

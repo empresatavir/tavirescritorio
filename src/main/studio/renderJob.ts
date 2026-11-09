@@ -40,7 +40,10 @@ export function buildRenderJob(input: {
   output: string;
   frame?: number;
   background?: string;
-  scenes?: Array<{ src: string; kind: 'image' | 'video'; durationFrames: number; caption: string }>;
+  scenes?: Array<{ src: string; kind: 'image' | 'video'; durationFrames: number; caption: string; preset?: string }>;
+  durationInFrames?: number;
+  narrations?: Array<{ src: string; from: number; durationFrames: number }>;
+  music?: string;
 }): RenderJob {
   const format = formatById(input.peca.formato_id);
   if (!format) throw new Error('formato desconhecido');
@@ -54,7 +57,7 @@ export function buildRenderJob(input: {
   const slide = slides[input.frame ?? 0] ?? slides[0];
   const video = format.kind === 'video';
   const seconds = Math.min(3, format.maxSeconds ?? 3);
-  const durationInFrames = video ? Math.max(1, Math.round(fps * seconds)) : 1;
+  const durationInFrames = input.durationInFrames ?? (video ? Math.max(1, Math.round(fps * seconds)) : 1);
   return {
     composition: video ? 'TavirReel' : 'TavirSlide',
     type: input.tipo,
@@ -80,9 +83,10 @@ export function buildRenderJob(input: {
       zone: { top: zone.top, bottom: zone.bottom, left: zone.left, right: zone.right },
       debugSafeZone: false,
       layout: slide?.layout || ((input.frame ?? 0) === 0 ? 'capa' : 'texto'),
-      scenes: input.scenes ?? [],
+      scenes: (input.scenes ?? []).map((scene) => ({ ...scene, preset: scene.preset || 'zoom-lento' })),
+      narrations: input.narrations ?? [],
       narration: '',
-      music: '',
+      music: input.music ?? '',
     },
   };
 }

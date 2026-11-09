@@ -161,6 +161,7 @@ export interface Roteiro {
   cenas?: RoteiroCena[];
   legenda?: string;
   hashtags?: string[];
+  legendas?: Array<{ text: string; startMs: number; endMs: number }>;
 }
 
 export interface StudioEvent {

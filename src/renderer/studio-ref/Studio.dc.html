@@ -198,7 +198,13 @@
             <p class="muted">A duração de cada cena sai da narração. A voz é a do brand kit, ou Francisca se ele não tiver voz.</p>
             <sc-for list="{{scenes}}" as="c" hint-placeholder-count="0">
               <div class="row" style="cursor: default; align-items: flex-start">
-                <div class="grow"><div class="t">{{c.n}} · {{c.preset}}</div><div class="m">{{c.texto}}</div><div class="m">{{c.tela}}</div></div>
+                <div class="grow">
+                  <div class="t">{{c.n}} · {{c.preset}}</div>
+                  <div class="m">{{c.texto}}</div>
+                  <label class="field"><span>Texto na tela</span><input class="input" value="{{c.tela}}" onChange="{{c.onTela}}"></label>
+                  <sc-if value="{{c.playing}}" hint-placeholder-val="{{false}}"><audio src="{{c.src}}" controls></audio></sc-if>
+                </div>
+                <button class="btn sm secondary" onClick="{{c.hear}}">ouvir</button>
                 <button class="btn sm secondary" onClick="{{c.redo}}">refazer narração</button>
               </div>
             </sc-for>
@@ -488,7 +494,7 @@ function kitFrom(form) {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '', motionJob: null, motionStill: '', preview: null, previewIndex: 0, previewFormatId: '', showSafe: false, showGrid: false, realSize: false, prompts: [], orphans: [], promptQuery: '', library: [] };
+    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '', motionJob: null, motionStill: '', preview: null, previewIndex: 0, previewFormatId: '', showSafe: false, showGrid: false, realSize: false, prompts: [], orphans: [], promptQuery: '', library: [], clips: [] };
     var self = this;
     this._pautaTimer = null;
     this._stillTimer = null;
@@ -806,11 +812,29 @@ class Component extends DCLogic {
       compilePrompts: function () { var api = studioApi(); if (!api || !api.prompts || !peca) return; api.prompts.compile(peca.id).then(function (res) { self.after(res); }); },
       exportPrompts: function () { var api = studioApi(); if (!api || !api.prompts || !peca) return; api.prompts.export(peca.id).then(function (res) { self.after(res); }); },
       scenes: ((peca && peca.roteiro && peca.roteiro.cenas) || []).map(function (scene, index) {
+        var words = (peca.roteiro && peca.roteiro.legendas) || [];
+        var heard = (s.clips || [])[index] || '';
         return {
           n: String(index + 1).padStart(2, '0'),
           preset: scene.preset || '—',
           texto: scene.texto_narrado || '',
-          tela: scene.texto_tela || '',
+          tela: (words[index] && words[index].text) || scene.texto_tela || '',
+          playing: !!heard,
+          src: heard,
+          onTela: function (e) {
+            var api = studioApi();
+            if (words[index] && api && api.audio && peca) api.audio.word(peca.id, index, e.target.value).then(function (res) { self.after(res); });
+          },
+          hear: function () {
+            var api = studioApi();
+            if (!api || !api.audio || !peca) return;
+            api.audio.clip(peca.id, index).then(function (res) {
+              if (!res || res.ok === false) { self.setState({ error: (res && res.error) || 'sem narração' }); return; }
+              var clips = (self.state.clips || []).slice();
+              clips[index] = res.src;
+              self.setState({ clips: clips, error: '' });
+            });
+          },
           redo: function () {
             var api = studioApi();
             if (!api || !api.audio || !peca) return;

@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import * as fs from 'node:fs';
+import * as os from 'node:os';
+import * as path from 'node:path';
 import { captionsFromWhisper, toSrt } from '../../src/main/studio/captions';
 import { scenesFromRoteiro } from '../../src/main/studio/cenas';
 import { loudnessChecks, parseLoudnorm, visualHookOk } from '../../src/main/studio/loudnorm';
 import { ttsCommand, voiceOf } from '../../src/main/studio/audio';
+import { framesForScene, licensedTracks } from '../../src/main/studio/reel';
 import type { BrandKit } from '../../src/shared/studio';
 
 const KIT = {
@@ -56,5 +60,16 @@ describe('reel', () => {
     expect(voiceOf({ ...KIT, voice: { provider: 'edge-tts', voiceId: 'pt-BR-AntonioNeural' } }).voiceId).toBe('pt-BR-AntonioNeural');
     const command = ttsCommand({ provider: 'edge-tts', voiceId: 'pt-BR-FranciscaNeural', text: 'A porta abre.', output: 'narracao-01.mp3' });
     expect('args' in command && command.args).toContain('A porta abre.');
+  });
+
+  it('mede a cena pela narração e só aceita música com licença', () => {
+    expect(framesForScene(1, 2.4, 30)).toBe(72);
+    expect(framesForScene(4, 1, 30)).toBe(120);
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tavir-musica-'));
+    fs.writeFileSync(path.join(dir, 'tema.mp3'), 'x');
+    fs.writeFileSync(path.join(dir, 'tema.licenca.txt'), 'trilha própria');
+    fs.writeFileSync(path.join(dir, 'solta.mp3'), 'x');
+    expect(licensedTracks(dir).map((file) => path.basename(file))).toEqual(['tema.mp3']);
+    fs.rmSync(dir, { recursive: true, force: true });
   });
 });

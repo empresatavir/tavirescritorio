@@ -3,20 +3,47 @@ export interface Loudness {
   truePeak: number;
 }
 
-/** Lê o JSON que o `loudnorm` imprime no modo de análise. */
-export function parseLoudnorm(log: string): Loudness | null {
+export interface LoudnormMeasure {
+  inputI: number;
+  inputTp: number;
+  inputLra: number;
+  inputThresh: number;
+  targetOffset: number;
+}
+
+function loudnormJson(log: string): Record<string, string> | null {
   const start = log.lastIndexOf('{');
   const end = log.lastIndexOf('}');
   if (start < 0 || end <= start) return null;
   try {
-    const raw = JSON.parse(log.slice(start, end + 1)) as { input_i?: string; input_tp?: string };
-    const integrated = Number(raw.input_i);
-    const truePeak = Number(raw.input_tp);
-    if (!Number.isFinite(integrated) || !Number.isFinite(truePeak)) return null;
-    return { integrated, truePeak };
+    return JSON.parse(log.slice(start, end + 1)) as Record<string, string>;
   } catch {
     return null;
   }
+}
+
+/** Lê o JSON que o `loudnorm` imprime no modo de análise. */
+export function parseLoudnorm(log: string): Loudness | null {
+  const raw = loudnormJson(log);
+  if (!raw) return null;
+  const integrated = Number(raw.input_i);
+  const truePeak = Number(raw.input_tp);
+  if (!Number.isFinite(integrated) || !Number.isFinite(truePeak)) return null;
+  return { integrated, truePeak };
+}
+
+/** Campos medidos para o segundo passe do `loudnorm`. */
+export function parseLoudnormMeasure(log: string): LoudnormMeasure | null {
+  const raw = loudnormJson(log);
+  if (!raw) return null;
+  const measure = {
+    inputI: Number(raw.input_i),
+    inputTp: Number(raw.input_tp),
+    inputLra: Number(raw.input_lra),
+    inputThresh: Number(raw.input_thresh),
+    targetOffset: Number(raw.target_offset),
+  };
+  return Object.values(measure).every((value) => Number.isFinite(value)) ? measure : null;
 }
 
 export function loudnessChecks(level: Loudness | null, duration: number, maxSeconds?: number): Array<{ nome: string; ok: boolean; detalhe: string }> {

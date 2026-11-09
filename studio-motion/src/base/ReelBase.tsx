@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, useCurrentFrame } from 'remotion';
+import { Audio, AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, useCurrentFrame } from 'remotion';
 import { easingFrom } from './easing';
 import { mediaSrc } from './mediaSrc';
 import { SafeArea, type SafeZone } from './SafeArea';
@@ -10,6 +10,13 @@ export type ReelScene = {
   kind: 'image' | 'video';
   durationFrames: number;
   caption: string;
+  preset: string;
+};
+
+export type ReelNarration = {
+  src: string;
+  from: number;
+  durationFrames: number;
 };
 
 export type ReelProps = {
@@ -19,6 +26,7 @@ export type ReelProps = {
   durationInFrames: number;
   scenes: ReelScene[];
   narration: string;
+  narrations: ReelNarration[];
   music: string;
   handle: string;
   tokens: MotionTokens;
@@ -40,11 +48,13 @@ export const ReelBase: React.FC<ReelProps> = (props) => {
         const from = cursor;
         cursor += scene.durationFrames;
         const local = frame - from;
-        const zoom = interpolate(local, [0, Math.max(1, scene.durationFrames - 1)], [tokens.zoomFrom, tokens.zoomTo], {
-          extrapolateLeft: 'clamp',
-          extrapolateRight: 'clamp',
-          easing: ease,
-        });
+        const zoom = scene.preset === 'zoom-lento' || scene.preset === 'titulo-entrada'
+          ? interpolate(local, [0, Math.max(1, scene.durationFrames - 1)], [tokens.zoomFrom, tokens.zoomTo], {
+            extrapolateLeft: 'clamp',
+            extrapolateRight: 'clamp',
+            easing: ease,
+          })
+          : 1;
         const opacity = interpolate(local, [0, tokens.enterFrames], [0, 1], {
           extrapolateLeft: 'clamp',
           extrapolateRight: 'clamp',
@@ -61,7 +71,7 @@ export const ReelBase: React.FC<ReelProps> = (props) => {
             </AbsoluteFill>
             <SafeArea zone={props.zone} debugSafeZone={props.debugSafeZone} frame={{ width: props.width, height: props.height, title: scene.caption }}>
               <AbsoluteFill style={{ justifyContent: 'flex-end', opacity }}>
-                <div style={{ color: props.titleColor, fontFamily: 'Instrument Sans, sans-serif', fontSize: 42 }}>
+                <div style={{ color: scene.preset === 'encerramento-cta' ? props.accent : props.titleColor, fontFamily: 'Instrument Sans, sans-serif', fontSize: 42 }}>
                   {scene.caption}
                 </div>
                 <div style={{ marginTop: 12, color: props.accent, fontSize: 22 }}>{props.handle}</div>
@@ -70,6 +80,17 @@ export const ReelBase: React.FC<ReelProps> = (props) => {
           </Sequence>
         );
       })}
+      {(props.narrations || []).filter((item) => item.src).map((item) => (
+        <Sequence key={item.src + item.from} from={item.from} durationInFrames={Math.max(1, item.durationFrames)}>
+          <Audio src={mediaSrc(item.src)} />
+        </Sequence>
+      ))}
+      {props.music ? (
+        <Audio src={mediaSrc(props.music)} volume={(f) => {
+          const speaking = (props.narrations || []).some((item) => f >= item.from && f < item.from + item.durationFrames);
+          return speaking ? 0.15 : 0.45;
+        }} />
+      ) : null}
     </AbsoluteFill>
   );
 };

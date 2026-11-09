@@ -5,6 +5,7 @@ import { formatById } from '../../shared/studio';
 import { ensureStudioTree } from './paths';
 import { slotCode } from './rules';
 import { slidesFromRoteiro } from './slides';
+import { buildReelPacote } from './reel';
 import type { StudioStore } from './store';
 import { getStudioStore } from './store';
 
@@ -32,7 +33,8 @@ export function buildPacote(pecaId: string, store: StudioStore = getStudioStore(
   const peca = store.getPeca(pecaId);
   if (!peca) return { ok: false, error: 'peça não encontrada' };
   const format = formatById(peca.formato_id);
-  if (!format || format.kind === 'video') return { ok: false, error: 'o pacote de imagens é de carrossel ou post' };
+  if (!format) return { ok: false, error: 'formato desconhecido' };
+  if (format.kind === 'video') return buildReelPacote(pecaId, store, home);
   const perfil = store.getPerfil(peca.perfil_id);
   const slides = slidesFromRoteiro(peca.roteiro, perfil?.brand_kit.canon ?? [], peca.pauta?.fonte ?? '');
   if (!slides.length) return { ok: false, error: 'roteiro sem slides' };

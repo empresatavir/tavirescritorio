@@ -36,6 +36,11 @@ try {
   if (Array.isArray(props.scenes)) {
     props.scenes = props.scenes.map((scene) => ({ ...scene, src: stageLocal(scene.src) }));
   }
+  if (props.narration) props.narration = stageLocal(props.narration);
+  if (props.music) props.music = stageLocal(props.music);
+  if (Array.isArray(props.narrations)) {
+    props.narrations = props.narrations.map((item) => ({ ...item, src: stageLocal(item.src) }));
+  }
   if (job.type === 'proxy') {
     props.width = even(job.format.width / 2);
     props.height = even(job.format.height / 2);
