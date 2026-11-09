@@ -24,6 +24,7 @@ import {
   type RaioxEvidenceInput,
   type RaioxPriorityInput,
 } from './raioxRules';
+import { syncCases } from './raioxBridge';
 import { listCases, raioxRoot, readCase, storeFile, writeCase, caseDir } from './raioxStore';
 import { playbookStatusFor, lintPlaybook, loadPlaybooks, requirePlaybook } from './playbooks';
 
@@ -168,6 +169,14 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:playbook', (_e, id: string) => {
     try {
       return { ok: true, playbook: requirePlaybook(id) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:sync', async () => {
+    try {
+      return await syncCases({ root: raioxRoot() });
     } catch (err) {
       return fail(err);
     }

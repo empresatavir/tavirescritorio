@@ -304,6 +304,7 @@ const api: TavirApi = {
     setPriority: (id: string, input: unknown) => ipcRenderer.invoke('raiox:setPriority', id, input),
     setDebrief: (id: string, input: unknown) => ipcRenderer.invoke('raiox:setDebrief', id, input),
     openFolder: (id: string) => ipcRenderer.invoke('raiox:openFolder', id),
+    sync: () => ipcRenderer.invoke('raiox:sync'),
     playbooks: () => ipcRenderer.invoke('raiox:playbooks'),
     playbook: (id: string) => ipcRenderer.invoke('raiox:playbook', id),
   },

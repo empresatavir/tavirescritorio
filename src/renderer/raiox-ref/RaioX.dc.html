@@ -22,8 +22,14 @@
       <h1 style="margin-top: 8px">Raio-X</h1>
       <p>Leitura de presença, atendimento e oferta antes de vender. Nenhuma proposta sai sem caso aberto e evidência classificada.</p>
     </div>
-    <div class="actions"><button class="btn primary" onClick="{{newCase}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Novo caso</button></div>
+    <div class="actions">
+      <button class="btn secondary" onClick="{{syncForms}}">Sincronizar formulários</button>
+      <button class="btn primary" onClick="{{newCase}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Novo caso</button>
+    </div>
   </div>
+  <sc-if value="{{hasSyncError}}" hint-placeholder-val="{{false}}">
+    <p style="color: var(--danger); font-size: 13px; margin: 0">{{syncError}}</p>
+  </sc-if>
 
   <div class="g3">
     <sc-for list="{{modes}}" as="m" hint-placeholder-count="3">
@@ -271,7 +277,7 @@ function tavirApi() {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { cases: [], catalog: [], gaps: [], filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), error: '', removeId: null };
+    this.state = { cases: [], catalog: [], gaps: [], filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), error: '', syncError: '', removeId: null };
   }
   componentDidMount() {
     const self = this;
@@ -384,6 +390,31 @@ class Component extends DCLogic {
       caseView: !!s.caseId,
       emptyList: shown.length === 0,
       newCase: function () { self.setState({ modal: 'new', error: '', form: blankCase() }); },
+      hasSyncError: !!s.syncError,
+      syncError: s.syncError || '',
+      syncForms: function () {
+        if (self._syncing) return;
+        const api = tavirApi();
+        if (!api || !api.raiox || !api.raiox.sync) {
+          self.setState({ syncError: 'Não foi possível concluir. Nada foi gravado.' });
+          return;
+        }
+        self._syncing = true;
+        self.setState({ syncError: '' });
+        api.raiox.sync().then(function (res) {
+          self._syncing = false;
+          if (!self._alive) return;
+          if (!res || !res.ok) {
+            self.setState({ syncError: (res && res.error) || 'Não foi possível concluir. Nada foi gravado.' });
+            return;
+          }
+          self.setState({ syncError: '' });
+          if (self.reload) self.reload();
+        }).catch(function () {
+          self._syncing = false;
+          if (self._alive) self.setState({ syncError: 'Não foi possível concluir. Nada foi gravado.' });
+        });
+      },
       modes: modes.map(function (item, index) { return { n: String(index + 1).padStart(2, '0'), t: item.name, d: MODE_DAYS[item.id] || '', x: item.promise }; }),
       filters: filterDefs.map(function (item) { return { label: item[1], n: cases.filter(fdef[item[0]]).length, on: s.filter === item[0] ? 'on' : '', pick: function () { self.setState({ filter: item[0] }); } }; }),
       cases: shown.map(function (item) {
