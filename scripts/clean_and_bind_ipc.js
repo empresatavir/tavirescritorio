@@ -1161,7 +1161,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     );
   }
   const sysLine = "sys: [['API', '127.0.0.1:9001'], ['Frontend (Vite)', '127.0.0.1:9002'], ['Banco', '~/tavir/escritorio.db'], ['Workspaces', '~/tavir/workspaces/']].map((x) => ({ k: x[0], v: x[1] })),";
-  if (cfgHtml.includes(sysLine) && !cfgHtml.includes('sidecars:')) {
+  if (cfgHtml.includes(sysLine) && !cfgHtml.includes('sidecars: (s.sidecars')) {
     cfgHtml = cfgHtml.replace(
       sysLine,
       `${sysLine}
