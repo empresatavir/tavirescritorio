@@ -13,7 +13,7 @@ import * as path from 'node:path';
 import * as crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
 
-export type RunKind = 'chat' | 'esteira' | 'trilho';
+export type RunKind = 'chat' | 'esteira' | 'trilho' | 'raiox';
 export type RunStatus = 'running' | 'ok' | 'failed' | 'paused';
 
 export interface RunUsage {
@@ -144,7 +144,7 @@ function newRunId(kind: RunKind): string {
 }
 
 function isRunId(id: string): boolean {
-  return /^[0-9]{8}-[0-9]{6}-(chat|esteira|trilho)-[0-9a-f]{6}$/.test(id);
+  return /^[0-9]{8}-[0-9]{6}-(chat|esteira|trilho|raiox)-[0-9a-f]{6}$/.test(id);
 }
 
 // ---------------------------------------------------------------- segredos
