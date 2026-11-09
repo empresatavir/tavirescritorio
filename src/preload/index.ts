@@ -233,6 +233,9 @@ const api: TavirApi = {
       final: (id: string) => ipcRenderer.invoke('studio:render:final', id),
       cancel: (id: string) => ipcRenderer.invoke('studio:render:cancel', id),
     },
+    preview: {
+      get: (pecaId: string, frame?: number, formatId?: string) => ipcRenderer.invoke('studio:preview:get', pecaId, frame, formatId),
+    },
     motion: {
       updateBase: () => ipcRenderer.invoke('studio:motion:updateBase'),
       downloadBrowser: (confirm: boolean) => ipcRenderer.invoke('studio:motion:downloadBrowser', confirm),

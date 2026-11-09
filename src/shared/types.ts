@@ -19,6 +19,7 @@ import type {
   StudioEvent,
   SerieInput,
 } from './studio';
+import type { PreviewView } from './studioPreview';
 
 export type DomainId = 'op' | 'mod' | 'com' | 'soc' | 'kn' | 'est' | 'sys';
 
@@ -506,6 +507,9 @@ export interface TavirApi {
       proxy: (id: string) => Promise<{ ok: boolean; renderId?: string; error?: string }>;
       final: (id: string) => Promise<{ ok: boolean; renderId?: string; error?: string }>;
       cancel: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    preview: {
+      get: (pecaId: string, frame?: number, formatId?: string) => Promise<PreviewView>;
     };
     motion: {
       updateBase: () => Promise<{ ok: boolean; error?: string }>;

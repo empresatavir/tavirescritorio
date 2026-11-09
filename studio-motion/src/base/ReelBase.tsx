@@ -59,7 +59,7 @@ export const ReelBase: React.FC<ReelProps> = (props) => {
                 <Img src={mediaSrc(scene.src)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               )}
             </AbsoluteFill>
-            <SafeArea zone={props.zone} debugSafeZone={props.debugSafeZone}>
+            <SafeArea zone={props.zone} debugSafeZone={props.debugSafeZone} frame={{ width: props.width, height: props.height, title: scene.caption }}>
               <AbsoluteFill style={{ justifyContent: 'flex-end', opacity }}>
                 <div style={{ color: props.titleColor, fontFamily: 'Instrument Sans, sans-serif', fontSize: 42 }}>
                   {scene.caption}

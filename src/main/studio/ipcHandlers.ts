@@ -3,6 +3,7 @@ import { decideMotionGate, latestMotionView, startMotionJob, type MotionDecision
 import { downloadRemotionBrowser, updateMotionBase } from './motionHome';
 import { runPreflight } from './preflight';
 import { cancelRender, startRender } from './render';
+import { readPreview } from './previewMedia';
 import { getStudioStore } from './store';
 import { suggestForPiece, type SuggestAlvo } from './suggest';
 
@@ -91,6 +92,7 @@ export function registerStudioIpc(handle: Handle): void {
   handle('studio:render:proxy', (_e, id: string) => startRender(id, 'proxy'));
   handle('studio:render:final', (_e, id: string) => startRender(id, 'final'));
   handle('studio:render:cancel', (_e, id: string) => cancelRender(id));
+  handle('studio:preview:get', (_e, pecaId: string, frame?: number, formatId?: string) => readPreview(pecaId, frame ?? 0, formatId ?? ''));
   handle('studio:motion:updateBase', () => updateMotionBase());
   handle('studio:motion:downloadBrowser', (_e, confirm?: boolean) => downloadRemotionBrowser(confirm === true));
   handle('studio:motion:ask', async (_e, input: { perfilId: string; preset: string; pedido: string }) => {

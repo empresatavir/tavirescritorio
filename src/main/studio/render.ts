@@ -47,10 +47,9 @@ export async function startRender(pecaId: string, tipo: RenderTipo, frame = 0, e
   if (!installed.ok) return { ok: false, error: installed.error };
   const dirs = ensureStudioTree().pecaDirs(pecaId);
   fs.mkdirSync(dirs.render, { recursive: true });
-  const ext = tipo === 'still' ? 'png' : 'mp4';
-  const output = path.join(dirs.render, `${tipo}-${Date.now()}.${ext}`);
+  const output = path.join(dirs.render, tipo === 'still' ? `still-f${frame}-${Date.now()}.png` : `${tipo}-${Date.now()}.mp4`);
   const job = buildRenderJob({ peca, perfil, tipo, output, frame, background: extras?.background, scenes: extras?.scenes });
-  const jobPath = path.join(dirs.render, `${path.basename(output, `.${ext}`)}.json`);
+  const jobPath = path.join(dirs.render, `${path.basename(output, path.extname(output))}.json`);
   fs.writeFileSync(jobPath, JSON.stringify(job));
   const row = store.saveRender({ peca_id: pecaId, tipo, caminho: output, status: 'rodando', checks: null });
   const script = path.join(motionDir(), 'scripts', 'render.mjs');

@@ -237,28 +237,68 @@
       </section>
 
       <!-- prévia -->
-      <aside style="flex: 0 0 316px; display: flex; flex-direction: column; gap: 12px; align-items: center; position: sticky; top: 12px">
+      <aside style="flex: 0 0 {{frameCol}}px; display: flex; flex-direction: column; gap: 12px; align-items: center; position: sticky; top: 12px">
         <div style="display: flex; align-items: center; width: 100%"><span class="eyebrow">Prévia no dispositivo</span><div class="grow"></div><span class="badge {{prevBadgeCls}}">{{prevBadge}}</span></div>
-        <div style="width: 300px; padding: 12px; border-radius: 38px; background: #070d18; border: 1px solid var(--line-strong)">
-          <div style="border-radius: 28px; overflow: hidden; background: #0B1220; display: flex; flex-direction: column">
-            <div style="display: flex; align-items: center; gap: 8px; padding: 12px 14px"><span class="av" style="width: 26px; height: 26px; font-size: 9px">{{prof.ini}}</span><b style="font-size: 12px; color: #F4F6F2">{{prof.handle}}</b><div class="grow"></div><span class="mono" style="font-size: 10px; color: #aeb7c4">{{phoneTag}}</span></div>
-            <div class="{{ph.cls}}" style="position: relative; width: 100%; height: {{ph.h}}px; background-color: {{ph.bg}}; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; transition: height 240ms var(--ease)">
-              <sc-if value="{{ph.empty}}" hint-placeholder-val="{{false}}"><div style="position: absolute; inset: 16px; border: 1.5px dashed rgba(244,246,242,.2); border-radius: 12px; display: grid; place-items: center; text-align: center; padding: 20px"><span style="font-size: 12px; color: #aeb7c4">A prévia aparece quando o roteiro existir.</span></div></sc-if>
-              <sc-if value="{{ph.art}}" hint-placeholder-val="{{true}}"><svg viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{ph.decor}}" fill="none" stroke="#1BC5BD" stroke-width="1.2" stroke-linecap="round" opacity=".75"></path></svg></sc-if>
-              <sc-if value="{{ph.draft}}" hint-placeholder-val="{{false}}"><div style="position: absolute; inset: 16px; border: 1.5px dashed rgba(244,246,242,.22); border-radius: 12px"></div><span class="mono" style="position: absolute; top: 24px; left: 26px; font-size: 10px; color: #aeb7c4">rascunho</span></sc-if>
-              <sc-if value="{{ph.hasText}}" hint-placeholder-val="{{true}}"><b style="position: relative; font-size: 22px; line-height: 1.1; letter-spacing: -.02em; color: {{ph.fg}}; animation: fade 240ms var(--ease) both">{{ph.t}}</b><span style="position: relative; font-size: 12px; color: rgba(244,246,242,.7); margin-top: 6px">{{ph.s}}</span></sc-if>
-              <span class="mono" style="position: absolute; top: 12px; right: 12px; font-size: 10px; color: rgba(244,246,242,.75); background: rgba(7,13,24,.6); padding: 3px 8px; border-radius: 999px">{{ph.pos}}</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px 4px; color: #F4F6F2">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14v11H9l-4 3z"></path></svg>
-              <div class="grow" style="display: flex; justify-content: center; gap: 4px"><sc-for list="{{phDots}}" as="d" hint-placeholder-count="7"><i style="width: 5px; height: 5px; border-radius: 50%; background: {{d.bg}}"></i></sc-for></div>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"></path></svg>
-            </div>
-            <div style="padding: 4px 14px 14px; min-height: 52px"><sc-if value="{{showCaption}}" hint-placeholder-val="{{false}}"><p style="font-size: 11.5px; line-height: 1.45; color: #cbd3de; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden"><b style="color: #F4F6F2">{{prof.handle}}</b> {{caption}}</p></sc-if></div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; width: 100%"><sc-for list="{{formats}}" as="f" hint-placeholder-count="2"><button class="btn sm secondary" onClick="{{f.pick}}" style="border-color: {{f.bd}}">{{f.label}}</button></sc-for></div>
+        <sc-if value="{{showGrid}}" hint-placeholder-val="{{false}}">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%">
+            <sc-for list="{{covers}}" as="c" hint-placeholder-count="3"><div style="aspect-ratio: 3 / 4; overflow: hidden; border-radius: 8px; background: #0B1220"><sc-if value="{{c.has}}" hint-placeholder-val="{{false}}"><img src="{{c.src}}" alt="" style="width: 100%; height: 100%; object-fit: cover; display: block"></sc-if></div></sc-for>
           </div>
+        </sc-if>
+        <sc-if value="{{showPhone}}" hint-placeholder-val="{{true}}">
+          <div style="width: {{frameW}}px; padding: 12px; border-radius: 38px; background: #070d18; border: 1px solid var(--line-strong)">
+            <div style="border-radius: 28px; overflow: hidden; background: #0B1220; display: flex; flex-direction: column">
+              <sc-if value="{{isFeed}}" hint-placeholder-val="{{true}}">
+                <div style="display: flex; align-items: center; gap: 8px; padding: 12px 14px"><span class="av" style="width: 26px; height: 26px; font-size: 9px">{{prof.ini}}</span><b style="font-size: 12px; color: #F4F6F2">{{prof.handle}}</b><div class="grow"></div><span class="mono" style="font-size: 10px; color: #aeb7c4">{{phoneTag}}</span></div>
+              </sc-if>
+              <sc-if value="{{isLinkedin}}" hint-placeholder-val="{{false}}">
+                <div style="padding: 12px 14px 8px"><b style="font-size: 13px; color: #F4F6F2">{{prof.handle}}</b><p style="font-size: 12px; color: #cbd3de; margin: 6px 0 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden">{{caption}}</p></div>
+              </sc-if>
+              <div onMouseDown="{{dragStart}}" onMouseUp="{{dragEnd}}" style="position: relative; width: 100%; aspect-ratio: {{aspect}}; background: #0B1220">
+                <sc-if value="{{hasImage}}" hint-placeholder-val="{{false}}"><img src="{{image}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover"></sc-if>
+                <sc-if value="{{hasVideo}}" hint-placeholder-val="{{false}}"><video src="{{video}}" muted playsinline style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover"></video></sc-if>
+                <sc-if value="{{emptyMedia}}" hint-placeholder-val="{{true}}"><div style="position: absolute; inset: 16px; border: 1.5px dashed rgba(244,246,242,.2); border-radius: 12px; display: grid; place-items: center; text-align: center; padding: 20px"><span style="font-size: 12px; color: #aeb7c4">A prévia aparece quando o roteiro existir.</span></div></sc-if>
+                <sc-if value="{{showSafe}}" hint-placeholder-val="{{false}}">
+                  <div style="position: absolute; left: 0; right: 0; top: 0; height: {{safeTop}}%; background: rgba(220,38,38,.35); pointer-events: none"></div>
+                  <div style="position: absolute; left: 0; right: 0; bottom: 0; height: {{safeBottom}}%; background: rgba(220,38,38,.35); pointer-events: none"></div>
+                  <div style="position: absolute; left: 0; top: {{safeTop}}%; bottom: {{safeBottom}}%; width: {{safeLeft}}%; background: rgba(220,38,38,.35); pointer-events: none"></div>
+                  <div style="position: absolute; right: 0; top: {{safeTop}}%; bottom: {{safeBottom}}%; width: {{safeRight}}%; background: rgba(220,38,38,.35); pointer-events: none"></div>
+                </sc-if>
+                <sc-if value="{{isVertical}}" hint-placeholder-val="{{false}}">
+                  <div style="position: absolute; top: 14px; left: 14px; display: flex; gap: 8px; align-items: center"><span class="av" style="width: 28px; height: 28px; font-size: 9px">{{prof.ini}}</span><b style="font-size: 12px; color: #F4F6F2">{{prof.handle}}</b></div>
+                  <div style="position: absolute; right: 10px; bottom: 18%; display: flex; flex-direction: column; gap: 12px; color: #F4F6F2">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14v11H9l-4 3z"></path></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"></path></svg>
+                  </div>
+                  <p style="position: absolute; left: 14px; right: 48px; bottom: 16px; margin: 0; font-size: 12px; color: #F4F6F2">{{caption}}</p>
+                </sc-if>
+                <sc-if value="{{isFeed}}" hint-placeholder-val="{{false}}"><span class="mono" style="position: absolute; top: 12px; right: 12px; font-size: 10px; color: rgba(244,246,242,.75); background: rgba(7,13,24,.6); padding: 3px 8px; border-radius: 999px">{{slidePos}}</span></sc-if>
+              </div>
+              <sc-if value="{{isFeed}}" hint-placeholder-val="{{false}}">
+                <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px 4px; color: #F4F6F2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14v11H9l-4 3z"></path></svg>
+                  <div class="grow" style="display: flex; justify-content: center; gap: 4px"><sc-for list="{{phDots}}" as="d" hint-placeholder-count="4"><i style="width: 5px; height: 5px; border-radius: 50%; background: {{d.bg}}"></i></sc-for></div>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"></path></svg>
+                </div>
+                <div style="padding: 4px 14px 14px; min-height: 52px"><p style="font-size: 11.5px; line-height: 1.45; color: #cbd3de; margin: 0"><b style="color: #F4F6F2">{{prof.handle}}</b> {{caption}}</p></div>
+              </sc-if>
+              <sc-if value="{{isThumb}}" hint-placeholder-val="{{false}}">
+                <div style="display: flex; flex-direction: column; gap: 8px; padding: 10px">
+                  <sc-for list="{{thumbs}}" as="t" hint-placeholder-count="3"><div><div style="width: {{t.w}}%; aspect-ratio: 16 / 9; background: #0B1220; overflow: hidden; border-radius: 6px"><sc-if value="{{hasImage}}" hint-placeholder-val="{{false}}"><img src="{{image}}" alt="" style="width: 100%; height: 100%; object-fit: cover"></sc-if></div><p style="margin: 4px 0 0; font-size: 11px; line-height: 1.3; color: #F4F6F2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden">{{title}}</p><span class="muted" style="font-size: 10px">{{t.label}}</span></div></sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div class="actions"><button class="ibtn" onClick="{{prevSlide}}" aria-label="Slide anterior"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button><span class="num muted" style="font-size: 12px; width: 48px; text-align: center">{{slidePos}}</span><button class="ibtn" onClick="{{nextSlide}}" aria-label="Próximo slide"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button></div>
+        </sc-if>
+        <div class="actions" style="width: 100%; justify-content: center">
+          <button class="btn sm secondary" onClick="{{toggleSafe}}">Zona segura</button>
+          <button class="btn sm secondary" onClick="{{toggleGrid}}">Grade do perfil</button>
+          <button class="btn sm secondary" onClick="{{toggleReal}}">Tamanho real</button>
         </div>
-        <div class="actions"><button class="ibtn" onClick="{{prev}}" aria-label="Slide anterior"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button><span class="num muted" style="font-size: 12px; width: 48px; text-align: center">{{ph.pos}}</span><button class="ibtn" onClick="{{next}}" aria-label="Próximo slide"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button></div>
+        <sc-for list="{{alerts}}" as="a" hint-placeholder-count="0"><p style="margin: 0; width: 100%; font-size: 12px; color: var(--warning)">{{a.text}}</p></sc-for>
       </aside>
     </div>
   </sc-if>
@@ -399,9 +439,15 @@ function kitFrom(form) {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '', motionJob: null, motionStill: '' };
+    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '', motionJob: null, motionStill: '', preview: null, previewIndex: 0, previewFormatId: '', showSafe: false, showGrid: false, realSize: false };
     var self = this;
     this._pautaTimer = null;
+    this._stillTimer = null;
+    if (window.tavir && window.tavir.onStudioEvent) {
+      window.tavir.onStudioEvent(function (ev) {
+        if (ev && ev.kind === 'render' && (ev.type === 'done' || ev.type === 'error')) self.loadPreview();
+      });
+    }
     setTimeout(function () { self.reload(); }, 0);
   }
   reload() {
@@ -415,6 +461,7 @@ class Component extends DCLogic {
       var mine = pecas.filter(function (p) { return p.perfil_id === perfilId; });
       var pecaId = self.state.pecaId && mine.some(function (p) { return p.id === self.state.pecaId; }) ? self.state.pecaId : (mine[0] ? mine[0].id : '');
       self.setState({ perfis: perfis, pecas: pecas, series: all[2] || [], perfilId: perfilId, pecaId: pecaId, error: '' });
+      self.loadPreview(self.state.previewIndex || 0, pecaId);
       if (perfilId && api.motion && api.motion.latest) api.motion.latest(perfilId).then(function (view) {
         self.setState({ motionJob: view && view.job ? view.job : null, motionStill: view && view.still ? view.still : '' });
       }).catch(function () {});
@@ -457,6 +504,7 @@ class Component extends DCLogic {
   renderVals() {
     var self = this;
     var s = this.state;
+    var pv = s.preview || {};
     var perfil = (s.perfis || []).filter(function (p) { return p.id === s.perfilId; })[0] || null;
     var mine = (s.pecas || []).filter(function (p) { return !perfil || p.perfil_id === perfil.id; });
     var peca = mine.filter(function (p) { return p.id === s.pecaId; })[0] || null;
@@ -610,11 +658,40 @@ class Component extends DCLogic {
       prof: { ini: perfil ? perfil.iniciais : '—', handle: rede && rede.handle ? rede.handle : '—' },
       phoneTag: peca ? fmtOf(peca.formato_id)[2] : '—',
       prevBadge: STAGE_LABEL[viewed] || '—', prevBadgeCls: GATES[viewed] ? 'warn' : '',
-      ph: { cls: '', h: 360, bg: '#0B1220', empty: !slides.length, art: false, decor: '', pos: slides.length ? '1 / ' + slides.length : '—' },
-      phDots: slides.map(function () { return { bg: 'rgba(244,246,242,.28)' }; }),
-      showCaption: viewed === 'pacote' || viewed === 'publicado',
-      caption2: (peca && peca.legenda) || '',
-      prev: function () {}, next: function () {},
+      frameCol: s.realSize ? 430 : 316,
+      frameW: s.realSize ? 390 : 300,
+      showGrid: !!s.showGrid,
+      showPhone: !s.showGrid,
+      showSafe: !!s.showSafe,
+      isFeed: (pv.chrome || 'feed') === 'feed' || (pv.chrome || 'feed') === 'landscape',
+      isVertical: pv.chrome === 'vertical',
+      isLinkedin: pv.chrome === 'linkedin',
+      isThumb: pv.chrome === 'thumb',
+      aspect: pv.aspect || '4 / 5',
+      image: pv.image || '',
+      video: pv.video || '',
+      hasImage: !!pv.image,
+      hasVideo: !!pv.video && !pv.image,
+      emptyMedia: !pv.image && !pv.video,
+      caption: pv.caption || '',
+      title: pv.title || (peca ? peca.titulo : ''),
+      safeTop: pv.safe ? pv.safe.top : 0,
+      safeBottom: pv.safe ? pv.safe.bottom : 0,
+      safeLeft: pv.safe ? pv.safe.left : 0,
+      safeRight: pv.safe ? pv.safe.right : 0,
+      slidePos: pv.slideCount ? ((pv.index || 0) + 1) + ' / ' + pv.slideCount : '—',
+      phDots: (function () { var n = pv.slideCount || 0; var out = []; for (var i = 0; i < n; i++) out.push({ bg: i === (pv.index || 0) ? '#F4F6F2' : 'rgba(244,246,242,.28)' }); return out; })(),
+      covers: (pv.covers || []).map(function (src) { return { has: !!src, src: src }; }),
+      alerts: pv.alerts || [],
+      formats: (pv.formats || []).map(function (f) { return { label: f.label, bd: f.id === (s.previewFormatId || (peca && peca.formato_id)) ? 'var(--flow)' : 'var(--line)', pick: function () { self.setState({ previewFormatId: f.id }); self.loadPreview(self.state.previewIndex || 0, self.state.pecaId, f.id); } }; }),
+      thumbs: [{ w: 100, label: 'busca no celular' }, { w: 46, label: 'sugestão lateral' }, { w: 88, label: 'tela inicial' }],
+      toggleSafe: function () { self.setState({ showSafe: !s.showSafe }); },
+      toggleGrid: function () { self.setState({ showGrid: !s.showGrid }); },
+      toggleReal: function () { self.setState({ realSize: !s.realSize }); },
+      prevSlide: function () { self.stepPreview(-1); },
+      nextSlide: function () { self.stepPreview(1); },
+      dragStart: function (e) { self._dragX = e.clientX; },
+      dragEnd: function (e) { if (self._dragX == null) return; var dx = e.clientX - self._dragX; self._dragX = null; if (dx > 40) self.stepPreview(-1); else if (dx < -40) self.stepPreview(1); },
       week: week, weekLabel: ymd(monday) + ' a ' + ymd(sunday),
       editInstr: function () { self.setState({ modal: 'canon', form: Object.assign({}, s.form, { tom: kit.tone || '', canon: (kit.canon || []).join('\n') }) }); },
       canonText: ['Tom: ' + (kit.tone || '—')].concat(kit.canon || []).join('\n') || '—',
@@ -638,6 +715,36 @@ class Component extends DCLogic {
     while (slides.length <= index) slides.push({ titulo: '', apoio: '' });
     slides[index] = Object.assign({}, slides[index], { titulo: titulo });
     this.patch({ roteiro: Object.assign({}, peca.roteiro || {}, { slides: slides }) });
+    this.scheduleStill();
+  }
+  scheduleStill() {
+    var self = this;
+    clearTimeout(this._stillTimer);
+    this._stillTimer = setTimeout(function () {
+      var api = studioApi();
+      if (!api || !api.render || !self.state.pecaId) return;
+      api.render.still(self.state.pecaId, self.state.previewIndex || 0).then(function (res) {
+        if (!res || res.ok === false) self.setState({ error: (res && res.error) || 'não foi possível renderizar a prévia' });
+      });
+    }, 800);
+  }
+  loadPreview(frame, pecaId, formatId) {
+    var api = studioApi();
+    var self = this;
+    var id = pecaId || this.state.pecaId;
+    if (!api || !api.preview || !id) return;
+    var fmt = formatId == null ? (this.state.previewFormatId || '') : formatId;
+    api.preview.get(id, frame == null ? (this.state.previewIndex || 0) : frame, fmt).then(function (view) {
+      if (!view) return;
+      self.setState({ preview: view, previewIndex: view.index || 0 });
+    }).catch(function () {});
+  }
+  stepPreview(delta) {
+    var count = (this.state.preview && this.state.preview.slideCount) || 0;
+    if (count < 2) return;
+    var next = ((this.state.previewIndex || 0) + delta + count) % count;
+    this.setState({ previewIndex: next });
+    this.loadPreview(next);
   }
   saveAngle() {
     var peca = (this.state.pecas || []).filter(function (p) { return p.id === this.state.pecaId; }, this)[0];

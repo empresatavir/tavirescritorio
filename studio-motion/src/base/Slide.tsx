@@ -30,7 +30,7 @@ export const Slide: React.FC<SlideProps> = (props) => {
       {props.background ? (
         <Img src={mediaSrc(props.background)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : null}
-      <SafeArea zone={props.zone} debugSafeZone={props.debugSafeZone}>
+      <SafeArea zone={props.zone} debugSafeZone={props.debugSafeZone} frame={{ width: props.width, height: props.height, title: props.title }}>
         <AbsoluteFill style={{ justifyContent: 'flex-end' }}>
           <div style={{ color: props.titleColor, fontFamily: 'Instrument Sans, sans-serif' }}>
             <div style={{ fontSize: 64, fontWeight: 650, lineHeight: 1.05 }}>{props.title}</div>
