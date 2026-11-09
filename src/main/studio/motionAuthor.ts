@@ -242,7 +242,7 @@ export async function startMotionJob(ask: MotionAsk): Promise<MotionJob> {
     });
     if (passed || attempt === retries) break;
     const report = checks.filter((item) => !item.ok).map((item) => `${item.id}: ${item.detalhe}`).join('\n');
-    prompt = `${motionPrompt(ask.preset, ask.pedido.trim())}\nTentar de novo com o erro:\n${failed}\n${report}\nApague os arquivos citados fora da pasta do kit. Não grave preview em out/.\n`;
+    prompt = `${motionPrompt(ask.preset, ask.pedido.trim())}\nTentar de novo com o erro:\n${failed}\n${report}\nNão grave arquivos fora da pasta do kit.\n`;
   }
   return job;
 }

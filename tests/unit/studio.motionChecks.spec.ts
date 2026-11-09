@@ -72,6 +72,7 @@ describe('checagens de motion', () => {
     fs.mkdirSync(path.join(dir, 'out'), { recursive: true });
     fs.writeFileSync(path.join(dir, 'out', 'proxy.mp4'), 'render da checagem');
     fs.writeFileSync(path.join(dir, 'out', 'job-still.json'), 'preview do motor');
+    fs.rmSync(path.join(dir, 'out', 'proxy.mp4'));
     rememberCheckOutputs(before, dir);
     const again = checkAllowedDiff(before, snapshotTree(dir), 'kit');
     expect(again.ok).toBe(false);

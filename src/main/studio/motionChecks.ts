@@ -63,13 +63,14 @@ export function checkAllowedDiff(before: Map<string, string>, after: Map<string,
   const bad: string[] = [];
   const keys = new Set([...before.keys(), ...after.keys()]);
   for (const key of keys) {
-    if (key.startsWith(allowed)) continue;
+    if (key.startsWith(allowed) || CHECK_OUTPUT_KEYS.has(key)) continue;
     if (before.get(key) !== after.get(key)) bad.push(key);
   }
   return { id: 'C1', ok: bad.length === 0, detalhe: bad.length ? bad.slice(0, 8).join(', ') : 'só o kit mudou' };
 }
 
 const CHECK_OUTPUTS = ['frame-0.png', 'frame-mid.png', 'frame-mid-b.png', 'frame-last.png', 'frame-enter.png', 'proxy.mp4'];
+const CHECK_OUTPUT_KEYS = new Set(CHECK_OUTPUTS.map((name) => `out/${name}`));
 
 /** Os renders da própria checagem não contam como edição do motor na tentativa seguinte. */
 export function rememberCheckOutputs(before: Map<string, string>, workspace: string): void {
