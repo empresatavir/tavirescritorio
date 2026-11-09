@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Studio</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page" style="max-width: 1520px">
+
+  <div class="phead">
+    <div class="grow">
+      <div class="eyebrow">Módulo · Conversar</div>
+      <h1 style="margin-top: 8px">Studio</h1>
+      <p>Da pauta ao post publicado, numa esteira só. O Oráculo propõe, os agentes produzem e você decide nos pontos que importam: ângulo, revisão e publicação.</p>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" onClick="{{newProfile}}">Novo perfil</button>
+      <button class="btn primary" onClick="{{newProd}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Nova produção</button>
+    </div>
+  </div>
+
+  <!-- perfis -->
+  <section class="card" style="padding: 14px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap">
+    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+      <sc-for list="{{profiles}}" as="p" hint-placeholder-count="3">
+        <button onClick="{{p.pick}}" style="display: flex; gap: 10px; align-items: center; padding: 8px 14px 8px 8px; border-radius: 999px; border: 1px solid {{p.bd}}; background: {{p.bg}}; color: inherit; transition: all 160ms var(--ease)">
+          <span class="av" style="width: 32px; height: 32px; font-size: 10px; background: {{p.avbg}}; color: {{p.avfg}}; border: 0">{{p.ini}}</span>
+          <span style="text-align: left"><b style="font-size: 13px; display: block">{{p.name}}</b><span class="muted" style="font-size: 11px">{{p.net}} · {{p.size}}</span></span>
+          <sc-if value="{{p.hasCk}}" hint-placeholder-val="{{false}}"><span class="badge warn" style="margin-left: 4px">{{p.ck}}</span></sc-if>
+        </button>
+      </sc-for>
+    </div>
+    <div class="grow"></div>
+    <div style="display: flex; gap: 22px; flex-wrap: wrap; padding-right: 6px">
+      <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4"><div><div class="eyebrow" style="font-size: 10px">{{k.k}}</div><div class="num" style="font-size: 17px; margin-top: 3px">{{k.v}}</div></div></sc-for>
+    </div>
+  </section>
+
+  <div class="tabs"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="4"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.hasN}}" hint-placeholder-val="{{false}}"><span class="n">{{t.n}}</span></sc-if></button></sc-for></div>
+
+  <!-- ================= PRODUÇÃO ================= -->
+  <sc-if value="{{v.prod}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center"><span class="eyebrow">Na esteira · {{piecesN}} peças</span><div class="grow"></div><span class="muted" style="font-size: 12px">Clique numa peça para abrir a produção dela</span></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: 10px">
+        <sc-for list="{{queue}}" as="q" hint-placeholder-count="5">
+          <button class="lift" onClick="{{q.pick}}" style="text-align: left; color: inherit; padding: 12px 14px; border-radius: 14px; border: 1px solid {{q.bd}}; background: var(--surface-2); box-shadow: {{q.sh}}; display: flex; flex-direction: column; gap: 8px; width: 100%">
+            <div style="display: flex; align-items: center; gap: 8px"><span class="mono" style="font-size: 10.5px; color: var(--text-muted)">{{q.fmt}}</span><div class="grow"></div><sc-if value="{{q.ck}}" hint-placeholder-val="{{false}}"><span class="badge warn">você</span></sc-if></div>
+            <b style="font-size: 14px">{{q.title}}</b>
+            <div style="display: flex; gap: 3px"><sc-for list="{{q.dots}}" as="d" hint-placeholder-count="7"><i style="flex: 1; height: 4px; border-radius: 2px; background: {{d.bg}}"></i></sc-for></div>
+            <span class="muted" style="font-size: 12px">{{q.stage}} · {{q.due}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start">
+      <!-- workspace -->
+      <section style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 16px">
+          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
+            <span class="av">{{pc.ini}}</span>
+            <div class="grow"><div class="eyebrow" style="font-size: 10px">{{pc.fmt}} · {{pc.owner}}</div><h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.02em; margin-top: 2px">{{pc.title}} — {{pc.name}}</h2></div>
+            <div style="text-align: right"><div class="eyebrow" style="font-size: 10px">Publica</div><div class="num" style="font-size: 13px; margin-top: 2px">{{pc.due}}</div></div>
+          </div>
+          <div class="stepper">
+            <sc-for list="{{steps}}" as="st" hint-placeholder-count="7"><button class="stp {{st.cls}}" onClick="{{st.pick}}" style="min-width: 84px; padding: 9px 10px"><span class="n">{{st.n}}</span><b style="font-size: 12px">{{st.label}}</b><div class="bar"></div></button></sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{past}}" hint-placeholder-val="{{false}}">
+          <div class="card pad" style="display: flex; gap: 14px; align-items: center; animation: fade 200ms var(--ease) both">
+            <span style="width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span>
+            <div class="grow"><b>{{pastInfo.t}}</b><div class="muted" style="font-size: 13px">{{pastInfo.d}}</div></div>
+            <button class="btn sm secondary" onClick="{{backToCurrent}}">Voltar para {{curStageLabel}}</button>
+          </div>
+        </sc-if>
+
+        <!-- 0 PAUTA -->
+        <sc-if value="{{sv.s0}}" hint-placeholder-val="{{false}}">
+          <section class="card pad" style="display: flex; flex-direction: column; gap: 14px; animation: slideup 260ms var(--ease) both">
+            <div style="display: flex; align-items: center"><span class="eyebrow">Pauta · Oráculo Diretor</span><div class="grow"></div><span class="badge">rascunho</span></div>
+            <label class="field"><span>Tema</span><input class="input" value="{{pauta.tema}}" readonly></label>
+            <div class="g2" style="gap: 12px"><label class="field"><span>Fonte principal</span><input class="input" value="{{pauta.fonte}}" readonly></label><div class="field"><span>Objetivo do post</span><div class="segs"><sc-for list="{{goalsSeg}}" as="o" hint-placeholder-count="3"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div></div>
+            <sc-if value="{{loadingAngles}}" hint-placeholder-val="{{false}}">
+              <div class="g3" style="gap: 10px"><div class="shimmer" style="height: 96px; border-radius: 12px"></div><div class="shimmer" style="height: 96px; border-radius: 12px"></div><div class="shimmer" style="height: 96px; border-radius: 12px"></div></div>
+              <p class="muted" style="font-size: 13px">O Oráculo está lendo o canon e os últimos 20 posts…</p>
+            </sc-if>
+            <div class="actions"><button class="btn primary" onClick="{{askAngles}}" disabled="{{loadingAngles}}">Pedir ângulos ao Oráculo</button><span class="muted" style="font-size: 12px">Custo estimado US$ 0,08</span></div>
+          </section>
+        </sc-if>
+
+        <!-- 1 ÂNGULO -->
+        <sc-if value="{{sv.s1}}" hint-placeholder-val="{{false}}">
+          <section style="display: flex; flex-direction: column; gap: 12px; animation: slideup 260ms var(--ease) both">
+            <div style="display: flex; align-items: center; gap: 10px"><span class="badge warn">checkpoint</span><span class="sec" style="font-size: 14px">Escolha o ângulo. Os frames só são gerados depois da sua escolha.</span></div>
+            <div class="g3" style="gap: 12px">
+              <sc-for list="{{angles}}" as="a" hint-placeholder-count="3">
+                <button class="lift" onClick="{{a.pick}}" style="text-align: left; color: inherit; padding: 18px; border-radius: 14px; border: 1.5px solid {{a.bd}}; background: var(--surface-2); box-shadow: {{a.sh}}; display: flex; flex-direction: column; gap: 10px; width: 100%">
+                  <div style="display: flex; align-items: center; gap: 8px"><span class="eyebrow">Ângulo {{a.id}}</span><div class="grow"></div><sc-if value="{{a.best}}" hint-placeholder-val="{{false}}"><span class="badge flow">maior retenção</span></sc-if></div>
+                  <h3 style="font-size: 17px; font-weight: 600; letter-spacing: -.01em">{{a.title}}</h3>
+                  <p class="sec" style="font-size: 13px; line-height: 1.5">{{a.hook}}</p>
+                  <div style="display: flex; flex-direction: column; gap: 6px; margin-top: auto"><div style="display: flex; font-size: 12px" class="muted"><span>Retenção prevista aos 3 s</span><div class="grow"></div><span class="num" style="color: var(--text-primary)">{{a.ret}}%</span></div><div class="track"><div class="fill" style="width: {{a.ret}}%"></div></div></div>
+                </button>
+              </sc-for>
+            </div>
+            <div class="actions"><button class="btn primary" onClick="{{approveAngle}}">Aprovar ângulo {{selAngle}}</button><button class="btn secondary" onClick="{{ajuste}}">Ajuste fino</button><button class="btn ghost" onClick="{{newAngle}}">Novo ângulo</button></div>
+          </section>
+        </sc-if>
+
+        <!-- 2 ROTEIRO -->
+        <sc-if value="{{sv.s2}}" hint-placeholder-val="{{false}}">
+          <section class="card" style="animation: slideup 260ms var(--ease) both">
+            <div class="card-h"><span class="av" style="width: 26px; height: 26px; font-size: 9px">RR</span><h3>Roteiro · Rafael Roteiro</h3><div class="grow"></div><span class="mono muted" style="font-size: 11px">{{slidesN}} slides · ângulo {{selAngle}}</span></div>
+            <div class="rows">
+              <sc-for list="{{script}}" as="r" hint-placeholder-count="7">
+                <div class="row" style="cursor: default; align-items: flex-start; gap: 14px">
+                  <span class="num" style="font-size: 12px; color: var(--flow); padding-top: 11px; width: 22px">{{r.n}}</span>
+                  <div class="grow" style="display: flex; flex-direction: column; gap: 4px"><input class="input" style="height: 38px; font-weight: 600" value="{{r.t}}" onChange="{{r.onInput}}" aria-label="Título do slide {{r.n}}"><span class="muted" style="font-size: 12px">{{r.s}}</span></div>
+                  <span class="num" style="font-size: 11px; padding-top: 12px; color: {{r.cc}}">{{r.len}}/40</span>
+                </div>
+              </sc-for>
+            </div>
+            <div class="actions" style="padding: 14px 18px; border-top: 1px solid var(--line)"><span class="muted" style="font-size: 12px">Edite direto aqui. A prévia ao lado acompanha.</span><div class="grow"></div><button class="btn primary" onClick="{{approveScript}}">Aprovar roteiro e gerar arte</button></div>
+          </section>
+        </sc-if>
+
+        <!-- 3 ARTE -->
+        <sc-if value="{{sv.s3}}" hint-placeholder-val="{{false}}">
+          <section class="card" style="animation: slideup 260ms var(--ease) both">
+            <div class="card-h"><span class="av busy" style="width: 26px; height: 26px; font-size: 9px">AA</span><h3>Arte · Adriano Arte</h3><span class="mono muted" style="font-size: 11px">job-011 · dall-e-3</span><div class="grow"></div><span class="num" style="font-size: 13px">{{art.done}} de {{art.total}} frames</span></div>
+            <div style="padding: 14px 18px 0; display: flex; align-items: center; gap: 10px"><div class="track"><div class="fill {{art.cls}}" style="width: {{art.pct}}%"></div></div><span class="num muted" style="font-size: 11px">US$ {{art.cost}}</span></div>
+            <div style="padding: 16px 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px">
+              <sc-for list="{{frames}}" as="f" hint-placeholder-count="7">
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <div class="{{f.cls}}" style="position: relative; aspect-ratio: {{f.ar}}; border-radius: 10px; overflow: hidden; background-color: {{f.bg}}; border: 1px solid {{f.bd}}; display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; animation: {{f.anim}}">
+                    <sc-if value="{{f.ready}}" hint-placeholder-val="{{true}}">
+                      <svg viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{f.decor}}" fill="none" stroke="#1BC5BD" stroke-width="1.6" stroke-linecap="round" opacity=".7"></path></svg>
+                      <b style="position: relative; font-size: 11px; line-height: 1.2; color: #F4F6F2">{{f.t}}</b>
+                    </sc-if>
+                    <sc-if value="{{f.waiting}}" hint-placeholder-val="{{false}}"><span class="mono" style="position: relative; font-size: 10px; color: rgba(244,246,242,.6)">{{f.wait}}</span></sc-if>
+                  </div>
+                  <div style="display: flex; align-items: center"><span class="num muted" style="font-size: 10.5px">{{f.n}}</span><div class="grow"></div><sc-if value="{{f.ready}}" hint-placeholder-val="{{true}}"><button class="link" style="font-size: 11px" onClick="{{f.redo}}">refazer</button></sc-if></div>
+                </div>
+              </sc-for>
+            </div>
+            <div class="actions" style="padding: 14px 18px; border-top: 1px solid var(--line)"><span class="muted" style="font-size: 12px">{{art.note}}</span><div class="grow"></div><button class="btn primary" onClick="{{toReview}}" disabled="{{art.notReady}}">Enviar para revisão</button></div>
+          </section>
+        </sc-if>
+
+        <!-- 4 REVISÃO -->
+        <sc-if value="{{sv.s4}}" hint-placeholder-val="{{false}}">
+          <section style="display: flex; flex-direction: column; gap: 12px; animation: slideup 260ms var(--ease) both">
+            <div class="card">
+              <div class="card-h"><span class="av" style="width: 26px; height: 26px; font-size: 9px">RV</span><h3>Revisão · Rita Revisora</h3><div class="grow"></div><span class="badge {{rev.cls}}">{{rev.label}}</span></div>
+              <div class="rows">
+                <sc-for list="{{rev.items}}" as="i" hint-placeholder-count="5">
+                  <div class="row" style="cursor: default">
+                    <span style="width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: {{i.bg}}; color: {{i.fg}}; flex: none"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{i.icon}}"></path></svg></span>
+                    <div class="grow"><div class="t" style="font-size: 14px">{{i.t}}</div><div class="m">{{i.m}}</div></div>
+                    <sc-if value="{{i.fixable}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{fixReview}}">Aplicar correção da Rita</button></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div class="bubble ag" style="max-width: 100%"><div class="eyebrow" style="font-size: 10px; margin-bottom: 4px">Rita Revisora</div>{{rev.comment}}</div>
+            <div class="actions"><button class="btn primary" onClick="{{approveReview}}" disabled="{{rev.blocked}}">Aprovar revisão</button><button class="btn ghost" onClick="{{ajuste}}">Pedir outro ajuste</button></div>
+          </section>
+        </sc-if>
+
+        <!-- 5 PACOTE -->
+        <sc-if value="{{sv.s5}}" hint-placeholder-val="{{false}}">
+          <section style="display: flex; flex-direction: column; gap: 14px; animation: slideup 260ms var(--ease) both">
+            <div class="card pad" style="display: flex; flex-direction: column; gap: 14px">
+              <div style="display: flex; align-items: center"><span class="eyebrow">Pacote · Paulo Publicador</span><div class="grow"></div><span class="num muted" style="font-size: 12px">{{capLen}} / 2.200</span></div>
+              <label class="field"><span>Legenda</span><textarea class="input" rows="4" value="{{caption}}" onChange="{{onCaption}}"></textarea></label>
+              <div class="field"><span>Hashtags</span><div class="segs"><sc-for list="{{tags}}" as="t" hint-placeholder-count="5"><button class="seg {{t.on}}" onClick="{{t.pick}}" style="height: 28px; font-size: 12px">{{t.t}}</button></sc-for></div></div>
+              <div class="field"><span>Quando publicar</span><div style="display: flex; flex-direction: column; gap: 8px"><sc-for list="{{slots}}" as="o" hint-placeholder-count="3"><button class="choice {{o.on}}" onClick="{{o.pick}}"><span class="rd"></span><span class="grow"><b style="display: block; font-size: 14px">{{o.t}}</b><small>{{o.s}}</small></span><sc-if value="{{o.best}}" hint-placeholder-val="{{false}}"><span class="badge flow">recomendado</span></sc-if></button></sc-for></div></div>
+            </div>
+            <sc-if value="{{notConfirming}}" hint-placeholder-val="{{true}}"><div class="actions"><button class="btn primary" onClick="{{askPublish}}">Enviar para publicação</button><span class="muted" style="font-size: 12px">Publicar passa por um gate seu.</span></div></sc-if>
+            <sc-if value="{{confirming}}" hint-placeholder-val="{{false}}">
+              <div class="ink" style="padding: 20px 22px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; animation: slideup 220ms var(--ease) both">
+                <span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(183,243,74,.14); color: #B7F34A; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4"></path></svg></span>
+                <div class="grow" style="min-width: 220px"><b>Gate de publicação</b><p class="muted" style="font-size: 13px; margin-top: 2px">Publicar é irreversível. Paulo publica em {{slotLabel}} no perfil {{profName}} e registra no livro-razão.</p></div>
+                <button class="btn sm onink-sec" onClick="{{cancelPublish}}">Voltar</button>
+                <button class="btn sm onink" onClick="{{doPublish}}">Aprovar publicação</button>
+              </div>
+            </sc-if>
+          </section>
+        </sc-if>
+
+        <!-- 6 PUBLICADO -->
+        <sc-if value="{{sv.s6}}" hint-placeholder-val="{{false}}">
+          <section style="display: flex; flex-direction: column; gap: 14px; animation: slideup 260ms var(--ease) both">
+            <div class="ink" style="padding: 22px 24px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap">
+              <div style="width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; background: #B7F34A; color: #25360a; animation: stamp 420ms var(--ease) both; flex: none"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
+              <div class="grow"><span class="eyebrow">Publicado · {{pubWhen}}</span><h3 style="font-size: 20px; font-weight: 600; margin-top: 4px">{{pc.title}} está no ar</h3><p class="muted" style="font-size: 13px; margin-top: 4px">{{pubNote}}</p></div>
+              <sc-if value="{{isLive}}" hint-placeholder-val="{{false}}"><span class="badge flow"><i class="live-dot" style="width: 6px; height: 6px"></i>ao vivo</span></sc-if>
+            </div>
+            <div class="g4">
+              <sc-for list="{{metrics}}" as="m" hint-placeholder-count="4"><div class="metric"><span class="eyebrow">{{m.k}}</span><strong>{{m.v}}</strong><small>{{m.n}}</small></div></sc-for>
+            </div>
+            <div class="card" style="padding: 14px 16px; display: flex; gap: 12px; align-items: center"><span class="eyebrow">Lição registrada</span><span class="sec grow" style="font-size: 13px">Hook visual antes da narração manteve a retenção acima da média do perfil.</span><button class="btn sm secondary" onClick="{{newProd}}">Nova produção</button></div>
+          </section>
+        </sc-if>
+      </section>
+
+      <!-- prévia -->
+      <aside style="flex: 0 0 316px; display: flex; flex-direction: column; gap: 12px; align-items: center; position: sticky; top: 12px">
+        <div style="display: flex; align-items: center; width: 100%"><span class="eyebrow">Prévia no dispositivo</span><div class="grow"></div><span class="badge {{prevBadgeCls}}">{{prevBadge}}</span></div>
+        <div style="width: 300px; padding: 12px; border-radius: 38px; background: #070d18; border: 1px solid var(--line-strong)">
+          <div style="border-radius: 28px; overflow: hidden; background: #0B1220; display: flex; flex-direction: column">
+            <div style="display: flex; align-items: center; gap: 8px; padding: 12px 14px"><span class="av" style="width: 26px; height: 26px; font-size: 9px">{{prof.ini}}</span><b style="font-size: 12px; color: #F4F6F2">{{prof.handle}}</b><div class="grow"></div><span class="mono" style="font-size: 10px; color: #aeb7c4">{{phoneTag}}</span></div>
+            <div class="{{ph.cls}}" style="position: relative; width: 100%; height: {{ph.h}}px; background-color: {{ph.bg}}; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; transition: height 240ms var(--ease)">
+              <sc-if value="{{ph.empty}}" hint-placeholder-val="{{false}}"><div style="position: absolute; inset: 16px; border: 1.5px dashed rgba(244,246,242,.2); border-radius: 12px; display: grid; place-items: center; text-align: center; padding: 20px"><span style="font-size: 12px; color: #aeb7c4">A prévia aparece quando o roteiro existir.</span></div></sc-if>
+              <sc-if value="{{ph.art}}" hint-placeholder-val="{{true}}"><svg viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{ph.decor}}" fill="none" stroke="#1BC5BD" stroke-width="1.2" stroke-linecap="round" opacity=".75"></path></svg></sc-if>
+              <sc-if value="{{ph.draft}}" hint-placeholder-val="{{false}}"><div style="position: absolute; inset: 16px; border: 1.5px dashed rgba(244,246,242,.22); border-radius: 12px"></div><span class="mono" style="position: absolute; top: 24px; left: 26px; font-size: 10px; color: #aeb7c4">rascunho</span></sc-if>
+              <sc-if value="{{ph.hasText}}" hint-placeholder-val="{{true}}"><b style="position: relative; font-size: 22px; line-height: 1.1; letter-spacing: -.02em; color: {{ph.fg}}; animation: fade 240ms var(--ease) both">{{ph.t}}</b><span style="position: relative; font-size: 12px; color: rgba(244,246,242,.7); margin-top: 6px">{{ph.s}}</span></sc-if>
+              <span class="mono" style="position: absolute; top: 12px; right: 12px; font-size: 10px; color: rgba(244,246,242,.75); background: rgba(7,13,24,.6); padding: 3px 8px; border-radius: 999px">{{ph.pos}}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 14px 4px; color: #F4F6F2">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14v11H9l-4 3z"></path></svg>
+              <div class="grow" style="display: flex; justify-content: center; gap: 4px"><sc-for list="{{phDots}}" as="d" hint-placeholder-count="7"><i style="width: 5px; height: 5px; border-radius: 50%; background: {{d.bg}}"></i></sc-for></div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"></path></svg>
+            </div>
+            <div style="padding: 4px 14px 14px; min-height: 52px"><sc-if value="{{showCaption}}" hint-placeholder-val="{{false}}"><p style="font-size: 11.5px; line-height: 1.45; color: #cbd3de; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden"><b style="color: #F4F6F2">{{prof.handle}}</b> {{caption}}</p></sc-if></div>
+          </div>
+        </div>
+        <div class="actions"><button class="ibtn" onClick="{{prev}}" aria-label="Slide anterior"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button><span class="num muted" style="font-size: 12px; width: 48px; text-align: center">{{ph.pos}}</span><button class="ibtn" onClick="{{next}}" aria-label="Próximo slide"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button></div>
+      </aside>
+    </div>
+  </sc-if>
+
+  <!-- ================= CALENDÁRIO ================= -->
+  <sc-if value="{{v.cal}}" hint-placeholder-val="{{false}}">
+    <section class="card">
+      <div class="card-h"><h3>Semana de publicação</h3><span class="eyebrow">27/10 a 02/11</span><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>publicado</span><span><i style="background: var(--warning)"></i>em produção</span><span><i style="background: var(--line-strong)"></i>agendado ou pauta</span></div></div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; padding: 16px 18px">
+        <sc-for list="{{week}}" as="d" hint-placeholder-count="7">
+          <div style="display: flex; flex-direction: column; gap: 8px; min-height: 200px; padding: 10px; border-radius: 12px; background: {{d.bg}}; border: 1px solid {{d.bd}}">
+            <div style="display: flex; align-items: baseline; gap: 6px"><span class="eyebrow" style="font-size: 10px; color: {{d.color}}">{{d.w}}</span><span class="num" style="font-size: 15px; color: {{d.color}}">{{d.n}}</span></div>
+            <sc-for list="{{d.items}}" as="i" hint-placeholder-count="1"><button onClick="{{i.pick}}" style="text-align: left; padding: 8px; border-radius: 8px; font-size: 11.5px; line-height: 1.35; background: {{i.bg}}; color: {{i.fg}}; border: 1px solid {{i.bd}}"><span class="mono" style="font-size: 10px; display: block; opacity: .8">{{i.h}}</span><b style="display: block">{{i.t}}</b>{{i.s}}</button></sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ================= CANON ================= -->
+  <sc-if value="{{v.canon}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; gap: 16px; flex-wrap: wrap">
+      <section class="card pad" style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; align-items: center"><span class="eyebrow">Mesa do Oráculo · instruções do squad</span><div class="grow"></div><button class="btn sm secondary" onClick="{{editInstr}}">Editar instruções</button></div>
+        <div class="ink" style="padding: 16px; border-radius: 12px"><pre class="mono" style="margin: 0; white-space: pre-wrap; font-size: 12.5px; line-height: 1.7">Squad ig-studio. Não publicar sem checkpoint.
+Tom: investigativo, sem sensacionalismo.
+Toda afirmação histórica cita fonte no último slide.
+Hook visual antes da narração.</pre></div>
+        <p class="muted" style="font-size: 12px">O canon do canal prevalece sobre qualquer pedido avulso. Mudanças valem a partir da próxima pauta.</p>
+      </section>
+      <section class="card" style="flex: 1 1 320px">
+        <div class="card-h"><h3>Canon do canal</h3><div class="grow"></div><span class="eyebrow">6 regras</span></div>
+        <div class="rows"><sc-for list="{{canon}}" as="c" hint-placeholder-count="6"><div class="row" style="cursor: default"><span class="num muted" style="font-size: 11px">{{c.n}}</span><span class="grow" style="font-size: 13px">{{c.t}}</span></div></sc-for></div>
+      </section>
+    </div>
+  </sc-if>
+
+  <!-- ================= APRENDIZADOS ================= -->
+  <sc-if value="{{v.learn}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; gap: 16px; flex-wrap: wrap">
+      <section class="card" style="flex: 2 1 520px">
+        <div class="card-h"><h3>Retenção do reel anterior</h3><span class="eyebrow">ep. 13 · % que continua assistindo</span></div>
+        <div style="padding: 18px">
+          <svg viewBox="0 0 600 220" width="100%" height="220" role="img" aria-label="Curva de retenção: cai de 100% para 58% nos 3 primeiros segundos e termina em 31% aos 45 segundos">
+            <line x1="40" y1="20" x2="40" y2="190" stroke="var(--line)"></line>
+            <line x1="40" y1="190" x2="590" y2="190" stroke="var(--line)"></line>
+            <line x1="40" y1="105" x2="590" y2="105" stroke="var(--line)" stroke-dasharray="3 5"></line>
+            <text x="32" y="24" text-anchor="end" font-size="11" fill="var(--text-muted)" font-family="IBM Plex Mono">100</text>
+            <text x="32" y="109" text-anchor="end" font-size="11" fill="var(--text-muted)" font-family="IBM Plex Mono">50</text>
+            <text x="32" y="194" text-anchor="end" font-size="11" fill="var(--text-muted)" font-family="IBM Plex Mono">0</text>
+            <text x="40" y="210" font-size="11" fill="var(--text-muted)" font-family="IBM Plex Mono">0 s</text>
+            <text x="590" y="210" text-anchor="end" font-size="11" fill="var(--text-muted)" font-family="IBM Plex Mono">45 s</text>
+            <rect x="40" y="20" width="37" height="170" fill="oklch(.80 .155 78 / .12)"></rect>
+            <path class="draw" d="M40 20 L52 52 L64 78 L77 91 L120 98 L180 104 L240 112 L300 121 L360 128 L420 136 L480 142 L540 148 L590 137" fill="none" stroke="var(--flow)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="77" cy="91" r="5" fill="var(--warning)"></circle>
+            <text x="86" y="84" font-size="12" fill="var(--text-primary)" font-family="Instrument Sans">58% aos 3 s — narração começa antes da imagem</text>
+          </svg>
+          <p class="muted" style="font-size: 12px">Fonte: Instagram Insights importado em 26/10. Média do perfil aos 3 s: 64%.</p>
+        </div>
+      </section>
+      <section class="card" style="flex: 1 1 300px">
+        <div class="card-h"><h3>Metas do trimestre</h3></div>
+        <div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 16px">
+          <sc-for list="{{goals}}" as="g" hint-placeholder-count="3"><div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; font-size: 13px"><span class="grow">{{g.t}}</span><span class="num muted">{{g.cur}} / {{g.goal}}</span></div><div class="track"><div class="fill {{g.cls}}" style="width: {{g.pct}}%"></div></div></div></sc-for>
+        </div>
+        <div class="rows" style="border-top: 1px solid var(--line)"><sc-for list="{{lessons}}" as="l" hint-placeholder-count="3"><div class="row" style="cursor: default; align-items: flex-start"><span class="num muted" style="font-size: 11px; width: 40px">{{l.d}}</span><span class="grow" style="font-size: 13px">{{l.t}}</span></div></sc-for></div>
+      </section>
+    </div>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"spot":{"editor":null},"$preview":{"width":1176,"height":1700}}'>
+const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
+const STAGES = ['Pauta', 'Ângulo', 'Roteiro', 'Arte', 'Revisão', 'Pacote', 'Publicado'];
+const PROFILES = [
+  { id: 'mp', name: 'Multiverso Paranoico', ini: 'MP', handle: 'multiversoparanoico', net: 'Instagram', size: '128 mil', ck: 2, kpi: [['Seguidores', '128 mil'], ['Alcance 7 dias', '212 mil'], ['Peças ativas', '5'], ['Tempo médio', '18 min']] },
+  { id: 'il', name: 'IA Livros', ini: 'IL', handle: 'ialivros', net: 'YouTube', size: '41 mil', ck: 0, kpi: [['Inscritos', '41 mil'], ['Views 7 dias', '38 mil'], ['Peças ativas', '2'], ['Tempo médio', '2 h 10']] },
+  { id: 'ct', name: 'Canal Tavir', ini: 'CT', handle: 'tavir', net: 'LinkedIn', size: '3,2 mil', ck: 1, kpi: [['Seguidores', '3,2 mil'], ['Impressões 7 dias', '9,4 mil'], ['Peças ativas', '1'], ['Tempo médio', '35 min']] }
+];
+const EP = {
+  e14: { tema: 'O mapa oficial de 1953 que apagou uma cidade', fonte: 'Arquivo Público do Estado · carta 1953', slides: [['O mapa que mente', 'Episódio 14'], ['Todo mapa escolhe', 'o que mostrar e o que esconder'], ['1953', 'uma cidade some da carta oficial'], ['Quem pediu?', 'três versões, três respostas'], ['O que sobrou', 'ruínas que ninguém mapeou'], ['Por que importa', 'mapa é poder'], ['Fontes', 'arquivo público e 2 livros citados']], caption: 'Episódio 14 — o mapa que mente. Todo mapa escolhe o que mostrar. Este escolheu esconder uma cidade inteira. Fontes no último slide.' },
+  e13: { tema: 'A biblioteca que ninguém abre', fonte: 'Relatório municipal de 1988', slides: [['A biblioteca fechada', 'Episódio 13'], ['37 anos', 'sem um leitor'], ['A chave', 'está com quem?'], ['O acervo', '4 mil volumes catalogados'], ['O que diz a lei', 'e o que ninguém cumpre'], ['Fontes', 'relatório e 3 entrevistas']], caption: 'Episódio 13 — a biblioteca que ninguém abre. 37 anos fechada, 4 mil livros dentro. Fontes no último slide.' },
+  e15: { tema: 'O rio que mudou de nome três vezes', fonte: 'Cartas náuticas 1890–1970', slides: [['O rio sem nome', 'Episódio 15'], ['1890', 'o primeiro registro'], ['1934', 'o segundo nome'], ['1971', 'o nome de hoje'], ['Fontes', 'cartas náuticas do acervo']], caption: 'Episódio 15 — o rio que mudou de nome três vezes.' },
+  e12: { tema: 'Bastidores do episódio 12', fonte: 'Fotos da produção', slides: [['Bastidores', 'ep. 12'], ['O arquivo', 'onde tudo começou'], ['A visita', 'o que não coube no post'], ['Obrigado', 'pela audiência']], caption: 'Bastidores do episódio 12.' }
+};
+const PIECES = [
+  { id: 'p14c', ep: 'e14', title: 'Ep. 14 · carrossel', fmt: 'Carrossel 4:5', ratio: 'car', owner: 'Adriano Arte', ini: 'AA', due: 'Qui 30 · 19h', stage: 3, frames: 3 },
+  { id: 'p13r', ep: 'e13', title: 'Ep. 13 · reel', fmt: 'Reel 9:16', ratio: 'reel', owner: 'Rita Revisora', ini: 'RV', due: 'Qua 29 · 19h', stage: 4, frames: 6 },
+  { id: 'p14r', ep: 'e14', title: 'Ep. 14 · reel', fmt: 'Reel 9:16', ratio: 'reel', owner: 'Rafael Roteiro', ini: 'RR', due: 'Sex 31 · 19h', stage: 2, frames: 0 },
+  { id: 'p15c', ep: 'e15', title: 'Ep. 15 · carrossel', fmt: 'Carrossel 4:5', ratio: 'car', owner: 'Oráculo Diretor', ini: 'OD', due: 'Dom 02 · 19h', stage: 0, frames: 0 },
+  { id: 'p12s', ep: 'e12', title: 'Ep. 12 · stories', fmt: 'Stories 9:16', ratio: 'reel', owner: 'Paulo Publicador', ini: 'PU', due: 'Ter 28 · 12h', stage: 6, frames: 4 }
+];
+const ANG = [
+  { id: 'A', title: 'A cidade apagada', hook: 'Abre com o mapa e o espaço vazio onde a cidade deveria estar. A pergunta vem depois da imagem.', ret: 62, best: true },
+  { id: 'B', title: 'Quem desenhou a fronteira', hook: 'Abre com o cartógrafo e a assinatura dele. Mais narrativo, gancho mais lento.', ret: 54 },
+  { id: 'C', title: 'Três mapas, uma mentira', hook: 'Comparação lado a lado das três cartas. Forte em salvamento, fraco nos 3 s.', ret: 49 }
+];
+const DECOR = ['M8 20 C 40 30, 55 55, 60 62 M8 62 L60 62 M8 104 C 40 94, 55 70, 60 62 M60 62 L92 62', 'M50 40 a22 22 0 1 0 0.01 0 M50 52 a10 10 0 1 0 0.01 0 M50 62 L92 62', 'M10 100 L50 30 L90 100 M30 100 L50 66 L70 100'];
+const TAGS = ['#historia', '#mapas', '#cartografia', '#arquivo', '#multiverso'];
+const SLOTS = [['Qui 30 · 19h', 'Melhor horário do perfil · 19h às 20h', true], ['Hoje · 21h', 'Alcance menor, comentários mais longos', false], ['Sáb 01 · 12h', 'Fim de semana, salvamentos altos', false]];
+function fmt(n) { return Math.round(n).toLocaleString('pt-BR'); }
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const stage = {}, frames = {};
+    PIECES.forEach((p) => { stage[p.id] = p.stage; frames[p.id] = p.frames; });
+    this.state = { p: 'mp', tab: 'prod', piece: 'p14c', view: null, stage: stage, frames: frames, angle: {}, script: {}, fixed: {}, caption: {}, tags: { '#historia': true, '#mapas': true, '#arquivo': true }, slot: 0, confirm: false, loadingAngles: false, goal: 'Salvamentos', slide: 0, live: { p12s: { reach: 18400, likes: 1210, saves: 640, comments: 38, t: 99, when: 'ter 28 · 12h' } } };
+  }
+  componentDidMount() { this.iv = setInterval(() => this.tick(), 1000); }
+  componentWillUnmount() { clearInterval(this.iv); clearTimeout(this.lt); }
+  tick() {
+    const s = this.state;
+    const frames = Object.assign({}, s.frames);
+    let changed = false;
+    PIECES.forEach((p) => { const n = EP[p.ep].slides.length; if (s.stage[p.id] === 3 && frames[p.id] < n) { frames[p.id] += 1; changed = true; } });
+    const live = Object.assign({}, s.live);
+    Object.keys(live).forEach((k) => { const L = live[k]; if (L.t < 14) { live[k] = { reach: L.reach + 300 + Math.random() * 900, likes: L.likes + 20 + Math.random() * 60, saves: L.saves + 8 + Math.random() * 30, comments: L.comments + Math.random() * 3, t: L.t + 1, when: L.when }; changed = true; } });
+    if (changed) this.setState({ frames: frames, live: live });
+  }
+  renderVals() {
+    const app = this.props.app || NOOP;
+    const s = this.state, self = this;
+    const P = PROFILES.find((x) => x.id === s.p);
+    const pc = PIECES.find((x) => x.id === s.piece);
+    const E = EP[pc.ep];
+    const curStage = s.stage[pc.id];
+    const view = s.view == null ? curStage : s.view;
+    const n = E.slides.length;
+    const fr = s.frames[pc.id];
+    const setStage = (st, extra) => { const stage = Object.assign({}, s.stage); stage[pc.id] = st; self.setState(Object.assign({ stage: stage, view: null, confirm: false }, extra || {})); };
+    const titleOf = (i) => { const k = pc.id + ':' + i; return s.script[k] != null ? s.script[k] : E.slides[i][0]; };
+    const selAngle = s.angle[pc.id] || 'A';
+    const fixed = !!s.fixed[pc.id];
+    const caption = s.caption[pc.id] != null ? s.caption[pc.id] : E.caption;
+    const L = s.live[pc.id];
+    const slide = Math.min(s.slide, n - 1);
+    const reel = pc.ratio === 'reel';
+
+    // prévia
+    const artReady = (i) => curStage > 3 || (curStage === 3 && i < fr);
+    let ph;
+    if (curStage < 2) ph = { empty: true, art: false, draft: false, hasText: false, bg: '#0f1729', cls: '' };
+    else if (artReady(slide)) ph = { empty: false, art: true, draft: false, hasText: true, bg: slide % 2 ? '#0f1729' : '#121c30', cls: '', fg: '#F4F6F2' };
+    else if (curStage === 3 && slide === fr) ph = { empty: false, art: false, draft: false, hasText: false, bg: '#121c30', cls: 'shimmer' };
+    else ph = { empty: false, art: false, draft: true, hasText: true, bg: '#0f1729', cls: '', fg: 'rgba(244,246,242,.6)' };
+    ph = Object.assign(ph, { h: reel ? 420 : 345, t: titleOf(slide), s: E.slides[slide][1], decor: DECOR[slide % 3], pos: (slide + 1) + '/' + n });
+
+    const pastInfo = view < curStage ? { t: STAGES[view] + ' concluída', d: [ 'Pauta aprovada pelo Oráculo e por você.', 'Ângulo ' + selAngle + ' aprovado por Carlos no checkpoint.', 'Roteiro de ' + n + ' slides aprovado.', n + ' frames gerados pelo Adriano Arte.', 'Revisão aprovada pela Rita e por você.', 'Pacote aprovado no gate de publicação.', '' ][view] } : { t: '', d: '' };
+    const sv = {}; for (let i = 0; i < 7; i++) sv['s' + i] = view === i && view === curStage;
+
+    const revItems = [['Fonte no último slide', 'slide ' + n + ' cita arquivo e livros', true], ['Máximo de 7 slides', n + ' slides', true], ['Tom investigativo, sem sensacionalismo', 'nenhum termo da lista proibida', true], ['Legenda até 2.200 caracteres', caption.length + ' caracteres', true], [fixed ? 'Data do slide 3 com fonte' : 'Slide 3 cita uma data sem fonte', fixed ? 'fonte adicionada no rodapé do slide' : 'a Rita sugere citar a carta oficial no rodapé', fixed]];
+    const revOk = revItems.every((x) => x[2]);
+    const goodTags = TAGS.filter((t) => s.tags[t]);
+
+    return {
+      newProfile: () => app.modal('profile'), newProd: () => app.modal('production'),
+      profiles: PROFILES.map((x) => ({ name: x.name, ini: x.ini, net: x.net, size: x.size, hasCk: x.ck > 0, ck: x.ck, bd: x.id === s.p ? 'var(--flow)' : 'var(--line)', bg: x.id === s.p ? 'var(--flow-subtle)' : 'transparent', avbg: x.id === s.p ? 'var(--flow)' : 'var(--surface-3)', avfg: x.id === s.p ? 'var(--surface-1)' : 'var(--text-secondary)', pick: () => self.setState({ p: x.id }) })),
+      kpis: P.kpi.map((k) => ({ k: k[0], v: k[1] })),
+      tabs: [['prod', 'Produção', PIECES.filter((x) => [1, 4, 5].indexOf(s.stage[x.id]) >= 0).length], ['cal', 'Calendário'], ['canon', 'Canon & Oráculo'], ['learn', 'Aprendizados & Metas']].map((t) => ({ label: t[1], hasN: !!t[2], n: t[2] ? t[2] + ' com você' : '', on: s.tab === t[0] ? 'on' : '', pick: () => self.setState({ tab: t[0] }) })),
+      v: { prod: s.tab === 'prod', cal: s.tab === 'cal', canon: s.tab === 'canon', learn: s.tab === 'learn' },
+      piecesN: PIECES.length,
+      queue: PIECES.map((q) => { const st = s.stage[q.id]; return { title: q.title, fmt: q.fmt, due: q.due, stage: STAGES[st], ck: [1, 4, 5].indexOf(st) >= 0, bd: q.id === pc.id ? 'var(--flow)' : 'var(--line)', sh: q.id === pc.id ? '0 0 0 3px var(--flow-subtle)' : 'none', dots: STAGES.map((_, i) => ({ bg: i < st || st === 6 ? 'var(--flow)' : i === st ? 'var(--warning)' : 'var(--line)' })), pick: () => self.setState({ piece: q.id, view: null, slide: 0, confirm: false }) }; }),
+      pc: { title: pc.title, name: E.slides[0][0], fmt: pc.fmt, owner: pc.owner, ini: pc.ini, due: pc.due },
+      steps: STAGES.map((l, i) => ({ n: '0' + (i + 1), label: l, cls: (i < curStage || curStage === 6 ? 'done' : i === curStage ? 'now' : '') + (i === view ? ' sel' : ''), pick: () => { if (i <= curStage) self.setState({ view: i }); else app.toast('Etapa ainda não liberada', 'Conclua ' + STAGES[curStage] + ' primeiro.'); } })),
+      past: view < curStage, pastInfo: pastInfo, curStageLabel: STAGES[curStage], backToCurrent: () => self.setState({ view: null }),
+      sv: sv,
+      // pauta
+      pauta: { tema: E.tema, fonte: E.fonte },
+      goalsSeg: ['Alcance', 'Salvamentos', 'Seguidores'].map((g) => ({ label: g, on: s.goal === g ? 'on' : '', pick: () => self.setState({ goal: g }) })),
+      loadingAngles: s.loadingAngles,
+      askAngles: () => { self.setState({ loadingAngles: true }); clearTimeout(self.lt); self.lt = setTimeout(() => { const stage = Object.assign({}, self.state.stage); stage[pc.id] = 1; self.setState({ loadingAngles: false, stage: stage, view: null }); app.toast('3 ângulos prontos', 'O Oráculo espera a sua escolha.'); }, 1600); },
+      // ângulo
+      angles: ANG.map((a) => ({ id: a.id, title: a.title, hook: a.hook, ret: a.ret, best: !!a.best, bd: selAngle === a.id ? 'var(--flow)' : 'var(--line)', sh: selAngle === a.id ? '0 0 0 3px var(--flow-subtle)' : 'none', pick: () => { const an = Object.assign({}, s.angle); an[pc.id] = a.id; self.setState({ angle: an }); } })),
+      selAngle: selAngle,
+      approveAngle: () => { setStage(2); app.toast('Ângulo ' + selAngle + ' aprovado', 'Rafael começa o roteiro.'); },
+      ajuste: () => app.modal('ajuste'), newAngle: () => app.modal('angulo'), editInstr: () => app.modal('instructions'),
+      // roteiro
+      slidesN: n,
+      script: E.slides.map((x, i) => { const t = titleOf(i); return { n: '0' + (i + 1), t: t, s: x[1], len: t.length, cc: t.length > 40 ? 'var(--danger)' : 'var(--text-muted)', onInput: (e) => { const sc = Object.assign({}, s.script); sc[pc.id + ':' + i] = e.target.value; self.setState({ script: sc, slide: i }); } }; }),
+      approveScript: () => { const frames = Object.assign({}, s.frames); frames[pc.id] = 0; setStage(3, { frames: frames, slide: 0 }); app.toast('Roteiro aprovado', 'Adriano começou os frames.'); },
+      // arte
+      art: { done: Math.min(fr, n), total: n, pct: Math.round(Math.min(fr, n) / n * 100), cls: fr < n ? 'run' : '', cost: (0.18 * Math.min(fr, n)).toFixed(2).replace('.', ','), notReady: fr < n, note: fr < n ? 'Gerando o frame ' + (fr + 1) + ' de ' + n + '. A prévia ao lado mostra cada frame que fica pronto.' : 'Todos os frames prontos. Confira na prévia antes de mandar para a Rita.' },
+      frames: E.slides.map((x, i) => { const ready = i < fr || curStage > 3; const gen = !ready && i === fr; return { n: '0' + (i + 1), t: titleOf(i), ready: ready, waiting: !ready, wait: gen ? 'gerando…' : 'na fila', cls: gen ? 'shimmer' : '', ar: reel ? '9 / 16' : '4 / 5', bg: ready ? (i % 2 ? '#0f1729' : '#121c30') : '#0B1220', bd: ready ? 'transparent' : 'var(--line)', decor: DECOR[i % 3], anim: ready ? 'fade 400ms var(--ease) both' : 'none', redo: () => { const frames = Object.assign({}, s.frames); frames[pc.id] = i; self.setState({ frames: frames, slide: i }); app.toast('Refazendo o frame ' + (i + 1), 'Os frames seguintes são gerados de novo.'); } }; }),
+      toReview: () => { setStage(4); app.toast('Em revisão', 'Rita confere contra o canon.'); },
+      // revisão
+      rev: { items: revItems.map((x) => ({ t: x[0], m: x[1], fixable: !x[2], bg: x[2] ? 'var(--flow-subtle)' : 'var(--warning-subtle)', fg: x[2] ? 'var(--flow)' : 'var(--warning)', icon: x[2] ? 'M5 12.5l4.5 4.5L19 7' : 'M12 7v6M12 17h.01' })), cls: revOk ? 'flow' : 'warn', label: revOk ? 'tudo certo' : '1 ajuste', blocked: !revOk, comment: revOk ? 'Corrigido. Pode aprovar: o post segue o canon do canal.' : 'Tudo segue o canon, menos o slide 3: a data precisa de fonte. Já deixei a correção pronta.' },
+      fixReview: () => { const f = Object.assign({}, s.fixed); f[pc.id] = true; self.setState({ fixed: f, slide: 2 }); },
+      approveReview: () => { setStage(5); app.toast('Revisão aprovada', 'O pacote está pronto para você.'); },
+      // pacote
+      caption: caption, capLen: caption.length, onCaption: (e) => { const c = Object.assign({}, s.caption); c[pc.id] = e.target.value; self.setState({ caption: c }); },
+      tags: TAGS.map((t) => ({ t: t, on: s.tags[t] ? 'on' : '', pick: () => { const tg = Object.assign({}, s.tags); tg[t] = !tg[t]; self.setState({ tags: tg }); } })),
+      slots: SLOTS.map((o, i) => ({ t: o[0], s: o[1], best: o[2], on: s.slot === i ? 'on' : '', pick: () => self.setState({ slot: i }) })),
+      slotLabel: SLOTS[s.slot][0], profName: P.name,
+      confirming: s.confirm, notConfirming: !s.confirm,
+      askPublish: () => self.setState({ confirm: true }), cancelPublish: () => self.setState({ confirm: false }),
+      doPublish: () => { const live = Object.assign({}, s.live); live[pc.id] = { reach: 0, likes: 0, saves: 0, comments: 0, t: 0, when: 'agora' }; setStage(6, { live: live }); app.toast('Publicado', pc.title + ' está no ar. As métricas chegam ao vivo.'); if (app.log) app.log('Carlos', 'aprovou a publicação de ' + pc.title, '#B7F34A'); },
+      // publicado
+      pubWhen: L ? L.when : '', isLive: !!L && L.t < 14,
+      pubNote: L && L.t < 14 ? 'Primeiros minutos. Os números abaixo atualizam sozinhos.' : 'Desempenho consolidado das primeiras horas.',
+      metrics: L ? [['Alcance', fmt(L.reach), 'contas únicas'], ['Curtidas', fmt(L.likes), 'na publicação'], ['Salvamentos', fmt(L.saves), 'meta do perfil: 900'], ['Comentários', fmt(L.comments), 'respondidos pela Íris']].map((m) => ({ k: m[0], v: m[1], n: m[2] })) : [],
+      // prévia
+      prof: { ini: P.ini, handle: P.handle }, phoneTag: pc.fmt,
+      prevBadge: STAGES[curStage].toLowerCase(), prevBadgeCls: curStage === 6 ? 'flow' : [1, 4, 5].indexOf(curStage) >= 0 ? 'warn' : '',
+      ph: ph, phDots: E.slides.map((_, i) => ({ bg: i === slide ? '#B7F34A' : 'rgba(244,246,242,.28)' })),
+      showCaption: curStage >= 5, caption2: caption,
+      prev: () => self.setState({ slide: (slide + n - 1) % n }), next: () => self.setState({ slide: (slide + 1) % n }),
+      // calendário
+      week: [['Seg', '27', [['12h', 'Carrossel ep. 12', 'publicado', 'pub', 'p12s']]], ['Ter', '28', [['12h', 'Stories ep. 12', 'publicado', 'pub', 'p12s']]], ['Qua', '29', [['19h', 'Reel ep. 13', STAGES[s.stage.p13r].toLowerCase(), s.stage.p13r === 6 ? 'pub' : 'prod', 'p13r']], true], ['Qui', '30', [['19h', 'Carrossel ep. 14', STAGES[s.stage.p14c].toLowerCase(), s.stage.p14c === 6 ? 'pub' : 'prod', 'p14c']]], ['Sex', '31', [['19h', 'Reel ep. 14', STAGES[s.stage.p14r].toLowerCase(), 'prod', 'p14r']]], ['Sáb', '01', []], ['Dom', '02', [['19h', 'Carrossel ep. 15', STAGES[s.stage.p15c].toLowerCase(), 'ag', 'p15c']]]].map((d) => {
+        const ST = { pub: ['var(--flow-subtle)', 'var(--flow-subtle-text)', 'var(--flow-subtle-line)'], ag: ['transparent', 'var(--text-secondary)', 'var(--line-strong)'], prod: ['var(--warning-subtle)', 'var(--warning)', 'transparent'] };
+        return { w: d[0], n: d[1], color: d[3] ? 'var(--flow)' : 'var(--text-muted)', bg: d[3] ? 'var(--flow-subtle)' : 'var(--surface-0)', bd: d[3] ? 'var(--flow-subtle-line)' : 'var(--line)', items: d[2].map((i) => ({ h: i[0], t: i[1], s: i[2], bg: ST[i[3]][0], fg: ST[i[3]][1], bd: ST[i[3]][2], pick: () => self.setState({ tab: 'prod', piece: i[4], view: null, slide: 0 }) })) };
+      }),
+      canon: ['Tom investigativo, sem sensacionalismo', 'Fonte no último slide, sempre', 'Nunca afirmar conspiração como fato', 'Paleta do perfil: tinta, teal e papel', 'Máximo de 7 slides por carrossel', 'Rosto humano só com autorização'].map((t, i) => ({ n: '0' + (i + 1), t: t })),
+      goals: [['Retenção aos 3 s', 58, 70, '%'], ['Salvamentos por post', 640, 900, ''], ['Peças por semana', 4, 5, '']].map((g) => ({ t: g[0], cur: g[1] + g[3], goal: g[2] + g[3], pct: Math.round(g[1] / g[2] * 100), cls: g[1] / g[2] < 0.75 ? 'warn' : '' })),
+      lessons: [['26/10', 'Hook visual antes da narração. Já vale para o ep. 14.'], ['19/10', 'Carrossel com data no slide 1 salva 30% mais.'], ['12/10', 'Reel acima de 45 s perde metade da audiência.']].map((l) => ({ d: l[0], t: l[1] }))
+    };
+  }
+}
+</script>
+</body>
+</html>
