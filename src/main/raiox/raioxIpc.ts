@@ -25,6 +25,7 @@ import {
   type RaioxPriorityInput,
 } from './raioxRules';
 import { listCases, raioxRoot, readCase, storeFile, writeCase, caseDir } from './raioxStore';
+import { playbookStatusFor, lintPlaybook, loadPlaybooks, requirePlaybook } from './playbooks';
 
 type Handle = (channel: string, listener: (...args: any[]) => any) => void;
 
@@ -137,7 +138,36 @@ export function registerRaioxIpc(handle: Handle): void {
 
   handle('raiox:setDebrief', (_e, id: string, input: RaioxDebriefInput) => {
     try {
-      return mutate(id, (c) => setDebrief(c, input, 'rascunho', new Date().toISOString()));
+      const current = readCase(raioxRoot(), id);
+      const status = playbookStatusFor(current.priority?.gapId);
+      return mutate(id, (c) => setDebrief(c, input, status, new Date().toISOString()));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:playbooks', () => {
+    try {
+      return {
+        ok: true,
+        playbooks: loadPlaybooks().map((item) => ({
+          id: item.id,
+          title: item.title,
+          stage: item.stage,
+          wave: item.wave,
+          status: item.status,
+          version: item.version,
+          problems: lintPlaybook(item),
+        })),
+      };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:playbook', (_e, id: string) => {
+    try {
+      return { ok: true, playbook: requirePlaybook(id) };
     } catch (err) {
       return fail(err);
     }

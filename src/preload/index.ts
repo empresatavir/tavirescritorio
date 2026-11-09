@@ -302,6 +302,8 @@ const api: TavirApi = {
     setPriority: (id: string, input: unknown) => ipcRenderer.invoke('raiox:setPriority', id, input),
     setDebrief: (id: string, input: unknown) => ipcRenderer.invoke('raiox:setDebrief', id, input),
     openFolder: (id: string) => ipcRenderer.invoke('raiox:openFolder', id),
+    playbooks: () => ipcRenderer.invoke('raiox:playbooks'),
+    playbook: (id: string) => ipcRenderer.invoke('raiox:playbook', id),
   },
   onStudioEvent: (callback) => {
     const handler = (_e: Electron.IpcRendererEvent, event: StudioEvent) => callback(event);

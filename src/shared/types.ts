@@ -592,6 +592,11 @@ export interface TavirApi {
     setPriority: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     setDebrief: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     openFolder: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    playbooks: () => Promise<
+      | { ok: true; playbooks: Array<{ id: string; title: string; stage: string; wave: number; status: string; version: string; problems: string[] }> }
+      | { ok: false; error: string }
+    >;
+    playbook: (id: string) => Promise<{ ok: true; playbook: unknown } | { ok: false; error: string }>;
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
   onStudioEvent: (callback: (event: StudioEvent) => void) => () => void;
