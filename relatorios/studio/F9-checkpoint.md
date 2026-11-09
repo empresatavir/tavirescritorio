@@ -10,6 +10,8 @@ A F9 não fecha. Falta a jornada dos 7 itens, a resposta de D1 e a frase «GOAL 
 
 Não rodei `npm test` inteiro. Três testes de `tests/backend.spec.ts` já falham na master, fora do Studio.
 
+`npm run build` em 9 de novembro de 2026 saiu com código 0. O HTML empacotado ficou em 691,9 KB, com Studio, Social, Flow e Edição injetados. O build avisou alterações locais, que já existiam fora do Studio.
+
 `npm run test:studio:render`, `npm run test:studio:reel` e `npm run test:motores:motion` não foram repetidos neste passo. As provas anteriores continuam em `relatorios/studio/F2`, `F7` e `relatorios/motores/motion-2026-11-09T07-25-20.md`.
 
 ## D1
