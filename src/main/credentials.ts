@@ -68,8 +68,28 @@ function readStore(): Partial<Record<CredentialProvider, StoredCredential>> {
   }
 }
 
+interface StoreFile {
+  providers?: Partial<Record<CredentialProvider, StoredCredential>>;
+  bundles?: Partial<Record<BundleProvider, StoredBundle>>;
+}
+
+function readFile(): StoreFile {
+  try {
+    const data = JSON.parse(readFileSync(storePath(), 'utf8'));
+    return data && typeof data === 'object' ? data : {};
+  } catch {
+    return {};
+  }
+}
+
 function writeStore(providers: Partial<Record<CredentialProvider, StoredCredential>>): void {
-  writeFileSync(storePath(), JSON.stringify({ providers }, null, 2), 'utf8');
+  const all = readFile();
+  writeFileSync(storePath(), JSON.stringify({ providers, bundles: all.bundles || {} }, null, 2), 'utf8');
+}
+
+function writeBundles(bundles: Partial<Record<BundleProvider, StoredBundle>>): void {
+  const all = readFile();
+  writeFileSync(storePath(), JSON.stringify({ providers: all.providers || {}, bundles }, null, 2), 'utf8');
 }
 
 export function isProvider(p: unknown): p is CredentialProvider {
@@ -200,4 +220,153 @@ export async function testCredential(
 export function getCredentialToken(provider: CredentialProvider): string {
   const c = readStore()[provider];
   return c ? decifrar(c.token) : '';
+}
+
+/** Provedores com vários campos. O token único de Vercel, Supabase e Netlify não usa isto. */
+export type BundleProvider = 'raiox_supabase' | 'resend';
+
+const BUNDLE_META: Record<BundleProvider, { name: string; hint: string }> = {
+  raiox_supabase: {
+    name: 'Raio-X Supabase',
+    hint: 'URL e segredos da ponte de leitura. Cada segredo fica cifrado; a tela só mostra a prévia.',
+  },
+  resend: {
+    name: 'Resend',
+    hint: 'Conta de e-mail do Raio-X. A chave fica cifrada; remetente, resposta e modelo ficam em claro.',
+  },
+};
+
+const BUNDLE_FIELDS: Record<BundleProvider, { key: string; label: string; secret: boolean }[]> = {
+  raiox_supabase: [
+    { key: 'url', label: 'URL do projeto', secret: false },
+    { key: 'internalSecret', label: 'Segredo interno', secret: true },
+    { key: 'reviewSecret', label: 'Segredo de revisão', secret: true },
+    { key: 'deliverySecret', label: 'Segredo de entrega', secret: true },
+    { key: 'inviteSecret', label: 'Segredo de convite', secret: true },
+    { key: 'officeSyncSecret', label: 'Segredo de sincronização', secret: true },
+  ],
+  resend: [
+    { key: 'apiKey', label: 'Chave da API', secret: true },
+    { key: 'from', label: 'Remetente', secret: false },
+    { key: 'replyTo', label: 'Resposta para', secret: false },
+    { key: 'templateId', label: 'Modelo', secret: false },
+  ],
+};
+
+interface StoredBundle {
+  values: Record<string, string>;
+  updated_at: string;
+}
+
+export interface BundleFieldView {
+  key: string;
+  label: string;
+  secret: boolean;
+  /** Vazio para segredo. O valor em claro de um segredo nunca volta para a tela. */
+  value: string;
+  preview: string;
+}
+
+export interface BundleView {
+  provider: BundleProvider;
+  name: string;
+  hint: string;
+  connected: boolean;
+  fields: BundleFieldView[];
+  updated_at: string;
+}
+
+export interface BundleResult {
+  ok: boolean;
+  error?: string;
+  bundle?: BundleView;
+  bundles: BundleView[];
+}
+
+export function isBundleProvider(p: unknown): p is BundleProvider {
+  return p === 'raiox_supabase' || p === 'resend';
+}
+
+function readBundles(): Partial<Record<BundleProvider, StoredBundle>> {
+  const bundles = readFile().bundles;
+  return bundles && typeof bundles === 'object' ? bundles : {};
+}
+
+function bundleView(provider: BundleProvider, stored?: StoredBundle): BundleView {
+  const meta = BUNDLE_META[provider];
+  const values = stored?.values || {};
+  const fields = BUNDLE_FIELDS[provider].map((field) => {
+    const raw = values[field.key] || '';
+    if (!field.secret) return { ...field, value: raw, preview: raw };
+    const clear = raw ? decifrar(raw) : '';
+    return { ...field, value: '', preview: clear ? maskToken(clear) : '' };
+  });
+  const connected = fields.every((field) => (field.secret ? !!field.preview : !!field.value));
+  return { provider, name: meta.name, hint: meta.hint, connected, fields, updated_at: stored?.updated_at || '' };
+}
+
+export function listBundles(): BundleView[] {
+  const store = readBundles();
+  return (Object.keys(BUNDLE_META) as BundleProvider[]).map((provider) => bundleView(provider, store[provider]));
+}
+
+function httpsUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && !!url.hostname;
+  } catch {
+    return false;
+  }
+}
+
+export function saveBundle(providerRaw: string, input: Record<string, unknown> | null | undefined): BundleResult {
+  if (!isBundleProvider(providerRaw)) return { ok: false, error: 'Provedor desconhecido.', bundles: listBundles() };
+  const current = readBundles();
+  const existing = current[providerRaw];
+  const values: Record<string, string> = {};
+  for (const field of BUNDLE_FIELDS[providerRaw]) {
+    const text = typeof input?.[field.key] === 'string' ? String(input?.[field.key]).trim() : '';
+    if (field.secret) {
+      if (/[\r\n]/.test(text)) return { ok: false, error: `${field.label} não pode ter quebra de linha.`, bundles: listBundles() };
+      if (!text) {
+        const prev = existing?.values?.[field.key] || '';
+        if (!prev) return { ok: false, error: `Informe ${field.label}.`, bundles: listBundles() };
+        values[field.key] = prev;
+        continue;
+      }
+      values[field.key] = cifrar(text);
+      continue;
+    }
+    if (!text) return { ok: false, error: `Informe ${field.label}.`, bundles: listBundles() };
+    if (field.key === 'url' && !httpsUrl(text)) return { ok: false, error: 'A URL do projeto precisa começar com https://.', bundles: listBundles() };
+    if ((field.key === 'from' || field.key === 'replyTo') && !/@/.test(text)) {
+      return { ok: false, error: `${field.label} precisa ser um e-mail.`, bundles: listBundles() };
+    }
+    values[field.key] = text;
+  }
+  current[providerRaw] = { values, updated_at: new Date().toISOString() };
+  writeBundles(current);
+  return { ok: true, bundle: bundleView(providerRaw, current[providerRaw]), bundles: listBundles() };
+}
+
+export function removeBundle(providerRaw: string): BundleResult {
+  if (!isBundleProvider(providerRaw)) return { ok: false, error: 'Provedor desconhecido.', bundles: listBundles() };
+  const current = readBundles();
+  delete current[providerRaw];
+  writeBundles(current);
+  return { ok: true, bundles: listBundles() };
+}
+
+/** Só no main. Devolve os campos em claro, ou null se o provedor não está completo. */
+export function getBundle(provider: BundleProvider): Record<string, string> | null {
+  const stored = readBundles()[provider];
+  if (!stored) return null;
+  const out: Record<string, string> = {};
+  for (const field of BUNDLE_FIELDS[provider]) {
+    const raw = stored.values?.[field.key] || '';
+    const clear = field.secret ? (raw ? decifrar(raw) : '') : raw;
+    if (!clear) return null;
+    out[field.key] = clear;
+  }
+  return out;
 }

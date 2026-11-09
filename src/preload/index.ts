@@ -183,6 +183,8 @@ const api: TavirApi = {
     remove: (provider: string) => ipcRenderer.invoke('creds:remove', provider),
     test: (provider: string) => ipcRenderer.invoke('creds:test', provider),
     openTokenPage: (provider: string) => ipcRenderer.invoke('creds:openTokenPage', provider),
+    saveBundle: (provider: string, fields: Record<string, string>) => ipcRenderer.invoke('creds:saveBundle', provider, fields),
+    removeBundle: (provider: string) => ipcRenderer.invoke('creds:removeBundle', provider),
   },
   seg: {
     run: (idOrPath: string) => ipcRenderer.invoke('seg:run', idOrPath),

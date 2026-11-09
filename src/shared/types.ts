@@ -255,6 +255,32 @@ export interface CredentialResult {
   credentials: CredentialView[];
 }
 
+export type BundleProvider = 'raiox_supabase' | 'resend';
+
+export interface BundleFieldView {
+  key: string;
+  label: string;
+  secret: boolean;
+  value: string;
+  preview: string;
+}
+
+export interface BundleView {
+  provider: BundleProvider;
+  name: string;
+  hint: string;
+  connected: boolean;
+  fields: BundleFieldView[];
+  updated_at: string;
+}
+
+export interface BundleResult {
+  ok: boolean;
+  error?: string;
+  bundle?: BundleView;
+  bundles: BundleView[];
+}
+
 export interface AltTrackPublishInfo {
   ok: boolean;
   error?: string;
@@ -465,11 +491,13 @@ export interface TavirApi {
   };
   /** Credenciais de deploy e dados no cofre (Vercel, Supabase, Netlify). O token nunca volta para a tela. */
   creds: {
-    list: () => Promise<{ ok: boolean; credentials: CredentialView[] }>;
+    list: () => Promise<{ ok: boolean; credentials: CredentialView[]; bundles?: BundleView[] }>;
     save: (provider: CredentialProvider, token: string) => Promise<CredentialResult>;
     remove: (provider: CredentialProvider) => Promise<CredentialResult>;
     test: (provider: CredentialProvider) => Promise<CredentialResult>;
     openTokenPage: (provider: CredentialProvider) => Promise<{ ok: boolean; error?: string; url?: string }>;
+    saveBundle: (provider: BundleProvider, fields: Record<string, string>) => Promise<BundleResult>;
+    removeBundle: (provider: BundleProvider) => Promise<BundleResult>;
   };
   seg: {
     run: (idOrPath: string) => Promise<{ ok: boolean; run?: any; error?: string }>;

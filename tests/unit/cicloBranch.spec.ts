@@ -27,7 +27,7 @@ import {
   commitIdentity,
   commitIdentityEnv,
 } from '../../src/main/gitAccounts';
-import { getCredentialToken, listCredentials, removeCredential, saveCredential } from '../../src/main/credentials';
+import { getBundle, getCredentialToken, listBundles, listCredentials, removeBundle, removeCredential, saveBundle, saveCredential } from '../../src/main/credentials';
 import { commitStep } from '../../src/main/stepCommit';
 
 const git = (cwd: string, ...args: string[]) => execFileSync('git', args, { cwd, encoding: 'utf8', windowsHide: true }).trim();
@@ -308,5 +308,39 @@ describe('credenciais de deploy e dados no cofre', () => {
     expect(bad.ok).toBe(false);
     expect((await saveCredential('heroku', 'abc')).ok).toBe(false);
     expect(listCredentials().every((c) => !c.connected)).toBe(true);
+  });
+
+  it('guarda os campos do Raio-X e a tela só vê a prévia do segredo', () => {
+    isolate();
+    const secret = 'office-sync-' + 'k'.repeat(24);
+    const fields = {
+      url: 'https://exemplo.supabase.co',
+      internalSecret: secret,
+      reviewSecret: secret + '-r',
+      deliverySecret: secret + '-d',
+      inviteSecret: secret + '-i',
+      officeSyncSecret: secret + '-s',
+    };
+    const saved = saveBundle('raiox_supabase', fields);
+    expect(saved.ok).toBe(true);
+    expect(JSON.stringify(saved)).not.toContain(secret);
+    const view = saved.bundles.find((item) => item.provider === 'raiox_supabase');
+    expect(view?.connected).toBe(true);
+    expect(view?.fields.find((item) => item.key === 'url')?.preview).toBe(fields.url);
+    expect(view?.fields.find((item) => item.key === 'officeSyncSecret')?.preview).toContain('…');
+    expect(view?.fields.find((item) => item.key === 'officeSyncSecret')?.value).toBe('');
+    const raw = fs.readFileSync(path.join(dir, 'db', 'credentials.json'), 'utf8');
+    expect(raw).not.toContain(secret);
+    expect(getBundle('raiox_supabase')?.officeSyncSecret).toBe(fields.officeSyncSecret);
+    const kept = saveBundle('raiox_supabase', { ...fields, officeSyncSecret: '' });
+    expect(kept.ok).toBe(true);
+    expect(getBundle('raiox_supabase')?.officeSyncSecret).toBe(fields.officeSyncSecret);
+    expect(saveBundle('resend', { apiKey: secret, from: 'TAVIR', replyTo: 'ola@tavir.com.br', templateId: 'tpl' }).ok).toBe(false);
+    expect(saveBundle('resend', { apiKey: secret, from: 'TAVIR <ola@tavir.com.br>', replyTo: 'ola@tavir.com.br', templateId: 'tpl' }).ok).toBe(true);
+    expect(JSON.stringify(listBundles())).not.toContain(secret);
+    removeBundle('raiox_supabase');
+    removeBundle('resend');
+    expect(listBundles().every((item) => !item.connected)).toBe(true);
+    expect(listCredentials().map((item) => item.provider)).toEqual(['vercel', 'supabase', 'netlify']);
   });
 });

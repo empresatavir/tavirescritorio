@@ -869,8 +869,8 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
 
   // Credenciais de deploy e dados (Vercel, Supabase, Netlify): mesmo contrato das contas do GitHub.
   handle('creds:list', async () => {
-    const { listCredentials } = await import('./credentials');
-    return { ok: true, credentials: listCredentials() };
+    const { listBundles, listCredentials } = await import('./credentials');
+    return { ok: true, credentials: listCredentials(), bundles: listBundles() };
   });
 
   handle('creds:save', async (_e, provider: string, token: string) => {
@@ -886,6 +886,16 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   handle('creds:test', async (_e, provider: string) => {
     const { testCredential } = await import('./credentials');
     return testCredential(String(provider || ''));
+  });
+
+  handle('creds:saveBundle', async (_e, provider: string, fields: Record<string, unknown>) => {
+    const { saveBundle } = await import('./credentials');
+    return saveBundle(String(provider || ''), fields && typeof fields === 'object' ? fields : {});
+  });
+
+  handle('creds:removeBundle', async (_e, provider: string) => {
+    const { removeBundle } = await import('./credentials');
+    return removeBundle(String(provider || ''));
   });
 
   handle('creds:openTokenPage', async (_e, provider: string) => {

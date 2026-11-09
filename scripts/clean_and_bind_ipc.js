@@ -819,19 +819,24 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     cfgHtml = cfgHtml.replace("['motores', 'Motores de IA', 4], ", "['motores', 'Motores de IA', 4], ['contas', 'Contas e cofre'], ");
     const cardTpl = (list) => `<sc-for list="{{${list}}}" as="c" hint-placeholder-count="2">
             <article class="cfg-card {{c.cls}}">
-              <header class="cfg-card-h"><span class="cfg-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.ico}}"></path></svg></span><b class="grow">{{c.title}}</b><details class="cfg-help"><summary class="cfg-ibtn" title="Como gerar o token" aria-label="Como gerar o token de {{c.title}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 16v-4M12 8h.01"></path></svg></summary><div class="cfg-pop" role="dialog" aria-label="Como gerar o token de {{c.title}}"><b>Como gerar o token</b><ol><sc-for list="{{c.steps}}" as="st" hint-placeholder-count="4"><li>{{st.t}}</li></sc-for></ol><button class="btn sm secondary" onClick="{{c.openToken}}">{{c.openLbl}} ↗</button></div></details><button class="cfg-ibtn" onClick="{{c.openToken}}" title="{{c.openLbl}}" aria-label="{{c.openLbl}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></button><span class="cfg-dot {{c.cls}}" role="img" aria-label="{{c.badge}}" title="{{c.badge}}"></span></header>
+              <header class="cfg-card-h"><span class="cfg-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.ico}}"></path></svg></span><b class="grow">{{c.title}}</b><sc-if value="{{c.hasLink}}" hint-placeholder-val="{{true}}"><details class="cfg-help"><summary class="cfg-ibtn" title="Como gerar o token" aria-label="Como gerar o token de {{c.title}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 16v-4M12 8h.01"></path></svg></summary><div class="cfg-pop" role="dialog" aria-label="Como gerar o token de {{c.title}}"><b>Como gerar o token</b><ol><sc-for list="{{c.steps}}" as="st" hint-placeholder-count="4"><li>{{st.t}}</li></sc-for></ol><button class="btn sm secondary" onClick="{{c.openToken}}">{{c.openLbl}} ↗</button></div></details><button class="cfg-ibtn" onClick="{{c.openToken}}" title="{{c.openLbl}}" aria-label="{{c.openLbl}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></button></sc-if><span class="cfg-dot {{c.cls}}" role="img" aria-label="{{c.badge}}" title="{{c.badge}}"></span></header>
               <div class="cfg-card-sub">{{c.sub}}</div>
               <sc-if value="{{c.connected}}" hint-placeholder-val="{{false}}">
                 <div class="cfg-card-who"><b>{{c.who}}</b><sc-if value="{{c.isDef}}" hint-placeholder-val="{{false}}"><span class="badge action">padrão</span></sc-if><sc-if value="{{c.canDef}}" hint-placeholder-val="{{false}}"><button class="cfg-link" onClick="{{c.setDef}}">tornar padrão</button></sc-if><sc-if value="{{c.noPush}}" hint-placeholder-val="{{false}}"><span class="badge warn">sem escopo repo</span></sc-if></div>
                 <dl class="cfg-kv"><sc-for list="{{c.kv}}" as="k" hint-placeholder-count="3"><dt>{{k.k}}</dt><dd class="mono">{{k.v}}</dd></sc-for></dl>
               </sc-if>
-              <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}">
+              <sc-if value="{{c.showSingle}}" hint-placeholder-val="{{true}}">
                 <input class="input" type="password" autocomplete="off" spellcheck="false" placeholder="{{c.ph}}" value="{{c.token}}" onChange="{{c.onToken}}" aria-label="Token {{c.title}}">
+              </sc-if>
+              <sc-if value="{{c.showMulti}}" hint-placeholder-val="{{false}}">
+                <sc-for list="{{c.inputs}}" as="f" hint-placeholder-count="2">
+                  <label class="field" style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; color: var(--text-secondary)">{{f.label}}</span><input class="input" type="{{f.kind}}" autocomplete="off" spellcheck="false" placeholder="{{f.ph}}" value="{{f.value}}" onChange="{{f.on}}" aria-label="{{f.label}}"></label>
+                </sc-for>
               </sc-if>
               <sc-if value="{{c.hasMsg}}" hint-placeholder-val="{{false}}"><div class="cfg-card-msg" style="color: {{c.msgColor}}">{{c.msg}}</div></sc-if>
               <footer class="cfg-card-f">
                 <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}"><div class="grow"></div><sc-if value="{{c.editing}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{c.cancel}}">Cancelar</button></sc-if><button class="btn sm primary" onClick="{{c.save}}" disabled="{{c.busy}}">{{c.saveLbl}}</button></sc-if>
-                <sc-if value="{{c.showActions}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{c.test}}" disabled="{{c.busy}}">{{c.testLbl}}</button><button class="btn sm secondary" onClick="{{c.edit}}">Trocar token</button><div class="grow"></div><button class="btn sm ghost" onClick="{{c.remove}}">Remover</button></sc-if>
+                <sc-if value="{{c.showActions}}" hint-placeholder-val="{{false}}"><sc-if value="{{c.showTest}}" hint-placeholder-val="{{true}}"><button class="btn sm secondary" onClick="{{c.test}}" disabled="{{c.busy}}">{{c.testLbl}}</button></sc-if><button class="btn sm secondary" onClick="{{c.edit}}">{{c.editLbl}}</button><div class="grow"></div><button class="btn sm ghost" onClick="{{c.remove}}">Remover</button></sc-if>
               </footer>
             </article>
           </sc-for>`;
@@ -841,6 +846,8 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
         <div class="cfg-cards two">${cardTpl('ghCards')}</div>
         <div class="cfg-sec"><div class="eyebrow">Deploy e dados</div><p>Ficam guardadas e conferidas, prontas para quando a Fábrica publicar os projetos.</p></div>
         <div class="cfg-cards">${cardTpl('provCards')}</div>
+        <div class="cfg-sec"><div class="eyebrow">Raio-X</div><p>URL, segredos da ponte de leitura e conta de e-mail. Segredo fica cifrado; a tela só mostra a prévia. Estes dois não passam pela API do provedor ao salvar.</p></div>
+        <div class="cfg-cards">${cardTpl('bundleCards')}</div>
         <div class="card" style="padding: 12px 14px; display: flex; gap: 10px; font-size: 13px; background: var(--surface-0)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3"></path></svg><span class="sec">Cada token é conferido no provedor antes de entrar e fica cifrado (AES-256-GCM) no cofre desta máquina. Só o app usa, por variável de ambiente; nunca vai para tela, log, chat ou linha de comando.</span></div>
       </sc-if>
 
@@ -855,7 +862,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
       self._accLoading = true;
       Promise.all([accApi ? accApi.list() : null, credApi ? credApi.list() : null]).then(function(r) {
         self._accLoading = false;
-        self.setState({ accLoaded: true, accList: (r[0] && r[0].accounts) || [], credList: (r[1] && r[1].credentials) || [] });
+        self.setState({ accLoaded: true, accList: (r[0] && r[0].accounts) || [], credList: (r[1] && r[1].credentials) || [], bundleList: (r[1] && r[1].bundles) || [] });
       }).catch(function() { self._accLoading = false; self.setState({ accLoaded: true }); });
     }
     if (typeof document !== 'undefined' && !window.__cfgHelpOn) {
@@ -873,6 +880,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
       const top = Object.assign({}, extra || {});
       if (res && Array.isArray(res.accounts)) top.accList = res.accounts;
       if (res && Array.isArray(res.credentials)) top.credList = res.credentials;
+      if (res && Array.isArray(res.bundles)) top.bundleList = res.bundles;
       const m = Object.assign({}, self.state.cs || {}); m[key] = Object.assign({}, m[key] || {}, patch); top.cs = m;
       self.setState(top);
     };
@@ -881,12 +889,18 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     const baseCard = function(key, connected, extra) {
       const st = cs[key] || {};
       const editing = !!st.edit;
+      const extraMulti = !!(extra && extra.multi);
       return Object.assign({
         cls: connected ? 'on' : '',
         connected: connected,
         editing: connected && editing,
         showForm: !connected || editing,
+        showSingle: (!connected || editing) && !extraMulti,
+        showMulti: (!connected || editing) && !!extraMulti,
         showActions: connected && !editing,
+        hasLink: true,
+        showTest: true,
+        editLbl: 'Trocar token',
         token: st.token || '',
         onToken: function(e) { setCard(key, { token: e.target.value }); },
         busy: !!st.busy,
@@ -986,11 +1000,63 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
         remove: function() { if (!credApi) return; if (typeof window !== 'undefined' && window.confirm && !window.confirm('Remover o token da ' + c.name + ' do cofre?')) return; credApi.remove(c.provider).then(function(r) { done(key, r, 'Token removido do cofre.'); }); },
       });
     });
-    const connectedN = ghCards.filter(function(c) { return c.connected; }).length + provCards.filter(function(c) { return c.connected; }).length;
+    const BUNDLE_FALLBACK = [
+      { provider: 'raiox_supabase', name: 'Raio-X Supabase', hint: 'URL e segredos da ponte de leitura. Cada segredo fica cifrado; a tela só mostra a prévia.', connected: false, fields: [
+        { key: 'url', label: 'URL do projeto', secret: false, value: '', preview: '' },
+        { key: 'internalSecret', label: 'Segredo interno', secret: true, value: '', preview: '' },
+        { key: 'reviewSecret', label: 'Segredo de revisão', secret: true, value: '', preview: '' },
+        { key: 'deliverySecret', label: 'Segredo de entrega', secret: true, value: '', preview: '' },
+        { key: 'inviteSecret', label: 'Segredo de convite', secret: true, value: '', preview: '' },
+        { key: 'officeSyncSecret', label: 'Segredo de sincronização', secret: true, value: '', preview: '' },
+      ] },
+      { provider: 'resend', name: 'Resend', hint: 'Conta de e-mail do Raio-X. A chave fica cifrada; remetente, resposta e modelo ficam em claro.', connected: false, fields: [
+        { key: 'apiKey', label: 'Chave da API', secret: true, value: '', preview: '' },
+        { key: 'from', label: 'Remetente', secret: false, value: '', preview: '' },
+        { key: 'replyTo', label: 'Resposta para', secret: false, value: '', preview: '' },
+        { key: 'templateId', label: 'Modelo', secret: false, value: '', preview: '' },
+      ] },
+    ];
+    const bundleList = s.bundleList && s.bundleList.length ? s.bundleList : BUNDLE_FALLBACK;
+    const bundleCards = bundleList.map(function(c) {
+      const key = 'bd-' + c.provider;
+      const fields = c.fields || [];
+      return baseCard(key, !!c.connected, {
+        multi: true, hasLink: false, showTest: false, editLbl: 'Alterar',
+        title: c.name, sub: c.hint, ico: c.provider === 'resend' ? 'M4 6h16v12H4zM4 6l8 7 8-7' : PROV_ICO.supabase,
+        who: '', isDef: false, canDef: false, noPush: false,
+        kv: c.connected ? fields.map(function(f) { return { k: f.label, v: f.preview || '—' }; }) : [],
+        inputs: fields.map(function(f) {
+          const typed = (cs[key] || {})[f.key];
+          return {
+            label: f.label, kind: f.secret ? 'password' : 'text',
+            ph: f.secret ? (c.connected ? 'em branco mantém o atual' : '') : '',
+            value: typed != null ? typed : (f.secret ? '' : (f.value || '')),
+            on: function(e) { const patch = {}; patch[f.key] = e.target.value; setCard(key, patch); },
+          };
+        }),
+        save: function() {
+          if (!credApi || !credApi.saveBundle) { setCard(key, { msg: 'Disponível só no app desktop.', err: true }); return; }
+          const fieldsOut = {};
+          fields.forEach(function(f) {
+            const typed = (cs[key] || {})[f.key];
+            fieldsOut[f.key] = typed != null ? typed : (f.secret ? '' : (f.value || ''));
+          });
+          setCard(key, { busy: true, msg: 'Guardando no cofre…', err: false });
+          credApi.saveBundle(c.provider, fieldsOut).then(function(r) { done(key, r, c.name + ' guardado.'); }).catch(fail(key));
+        },
+        remove: function() {
+          if (!credApi || !credApi.removeBundle) return;
+          if (typeof window !== 'undefined' && window.confirm && !window.confirm('Remover ' + c.name + ' do cofre?')) return;
+          credApi.removeBundle(c.provider).then(function(r) { done(key, r, c.name + ' removido do cofre.'); });
+        },
+      });
+    });
+    const connectedN = ghCards.filter(function(c) { return c.connected; }).length + provCards.filter(function(c) { return c.connected; }).length + bundleCards.filter(function(c) { return c.connected; }).length;
     return {
       ghCards: ghCards,
       provCards: provCards,
-      credCount: connectedN + ' de ' + (ghCards.length + provCards.length) + ' conectadas',
+      bundleCards: bundleCards,
+      credCount: connectedN + ' de ' + (ghCards.length + provCards.length + bundleCards.length) + ' conectadas',
       v: v,`
     );
   }
