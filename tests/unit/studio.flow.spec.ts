@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { BrandKit } from '../../src/shared/studio';
 import { FLOW_NAME, parseFlowName } from '../../src/main/studio/flowName';
-import { scanInbox } from '../../src/main/studio/inbox';
+import { scanInbox, slotStillBackground } from '../../src/main/studio/inbox';
 import { applyRewrite, compilePrompt, validatePrompt } from '../../src/main/studio/promptCompiler';
 import { slotCode } from '../../src/main/studio/rules';
 import { compilePiecePrompts, exportShotList } from '../../src/main/studio/shotList';
@@ -108,6 +108,8 @@ describe('prompts do Flow', () => {
     const after = store.getAtivo(store.getSlot(slot.id)!.ativo_id!);
     expect(after?.caminho.endsWith(`${codigo}-v2.png`)).toBe(true);
     expect(store.listAtivos(peca.id)).toHaveLength(3);
+    store.updatePeca(peca.id, { roteiro: { slides: [{ titulo: 'Capa', slot: codigo, layout: 'imagem-cheia' }] } });
+    expect(slotStillBackground(store, peca.id, 0)).toContain(`${codigo}-v2.png`);
   });
 
   it('exporta a lista com o código e o prompt', () => {

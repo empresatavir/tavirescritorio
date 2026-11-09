@@ -488,7 +488,11 @@ class Component extends DCLogic {
     this._stillTimer = null;
     if (window.tavir && window.tavir.onStudioEvent) {
       window.tavir.onStudioEvent(function (ev) {
-        if (ev && ev.kind === 'render' && (ev.type === 'done' || ev.type === 'error')) self.loadPreview();
+        if (ev && ev.kind === 'render' && (ev.type === 'done' || ev.type === 'error')) {
+          self.loadPreview();
+          self.loadArte(self.state.pecaId);
+          self.reload();
+        }
       });
     }
     setTimeout(function () { self.reload(); }, 0);
@@ -508,7 +512,10 @@ class Component extends DCLogic {
       self.loadReview(pecaId);
       self.loadArte(pecaId, pecas);
       self.loadPrompts(pecaId);
-      if (api.inbox) api.inbox.scan().then(function (scan) { self.setState({ orphans: scan && scan.semDono ? scan.semDono : [] }); }).catch(function () {});
+      if (api.inbox) api.inbox.scan().then(function (scan) {
+        self.setState({ orphans: scan && scan.semDono ? scan.semDono : [] });
+        if (scan && scan.ligados && scan.ligados.length) self.reload();
+      }).catch(function () {});
       if (perfilId && api.motion && api.motion.latest) api.motion.latest(perfilId).then(function (view) {
         self.setState({ motionJob: view && view.job ? view.job : null, motionStill: view && view.still ? view.still : '' });
       }).catch(function () {});
@@ -785,7 +792,7 @@ class Component extends DCLogic {
       orphans: (s.orphans || []).map(function (row) {
         return { arquivo: row.arquivo, motivo: row.motivo, assign: function () {
           var api = studioApi();
-          var slot = slots[0];
+          var slot = slots.filter(function (sl) { return !sl.ativo_id; })[0] || slots[0];
           if (!api || !api.inbox || !slot) return;
           api.inbox.assign(row.arquivo, slot.id).then(function (res) { self.after(res); });
         } };

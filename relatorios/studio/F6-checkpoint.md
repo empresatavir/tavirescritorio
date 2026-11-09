@@ -22,6 +22,7 @@ O Carlos respondeu «feito, tudo certo» sobre os PNG da F5. A zona segura conti
 - `exportShotList` grava `pecas/<id>/prompts.md`.
 - O nome do arquivo segue `SIGLA-NNNN-S03.png` ou `...-v2.png`. A pasta é `entrada-flow` dentro dos dados do Studio. A versão maior fica no slot; as anteriores ficam na pasta da peça. Arquivo fora do padrão aparece como «sem dono», com «atribuir a slot».
 - A busca na bíblia lista prompts do perfil marcados como «funcionou».
+- O still do slide usa o arquivo ligado ao slot como fundo. A tela recarrega quando o render termina.
 
 ## Desvio
 

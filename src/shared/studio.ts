@@ -372,6 +372,7 @@ export interface SerieInput {
 export interface SlotRef {
   id: string;
   ativo_id: string | null;
+  codigo?: string;
 }
 
 export interface RenderCheck {

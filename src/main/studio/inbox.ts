@@ -34,6 +34,16 @@ function moveFile(source: string, dest: string): void {
   }
 }
 
+export function slotStillBackground(store: StudioStore, pecaId: string, frame: number): string {
+  const peca = store.getPeca(pecaId);
+  const slide = peca?.roteiro?.slides?.[frame];
+  if (!slide?.slot) return '';
+  const slot = store.listSlots(pecaId).find((row) => row.codigo === slide.slot);
+  const ativo = slot?.ativo_id ? store.getAtivo(slot.ativo_id) : null;
+  if (!ativo || ativo.tipo === 'video' || !fs.existsSync(ativo.caminho)) return '';
+  return ativo.caminho;
+}
+
 export function scanInbox(
   store: StudioStore,
   home?: string,

@@ -8,6 +8,7 @@ import { ensureMotionHome, motionDir, repoMotionDir } from './motionHome';
 import { findRemotionBrowser } from './preflight';
 import { ensureStudioTree } from './paths';
 import { buildRenderJob, parseProgressLine } from './renderJob';
+import { slotStillBackground } from './inbox';
 import { getStudioStore } from './store';
 
 export { buildRenderJob, parseProgressLine };
@@ -48,7 +49,8 @@ export async function startRender(pecaId: string, tipo: RenderTipo, frame = 0, e
   const dirs = ensureStudioTree().pecaDirs(pecaId);
   fs.mkdirSync(dirs.render, { recursive: true });
   const output = path.join(dirs.render, tipo === 'still' ? `still-f${frame}-${Date.now()}.png` : `${tipo}-${Date.now()}.mp4`);
-  const job = buildRenderJob({ peca, perfil, tipo, output, frame, background: extras?.background, scenes: extras?.scenes });
+  const background = extras?.background || (tipo === 'still' ? slotStillBackground(store, pecaId, frame) : undefined);
+  const job = buildRenderJob({ peca, perfil, tipo, output, frame, background, scenes: extras?.scenes });
   const jobPath = path.join(dirs.render, `${path.basename(output, path.extname(output))}.json`);
   fs.writeFileSync(jobPath, JSON.stringify(job));
   const row = store.saveRender({ peca_id: pecaId, tipo, caminho: output, status: 'rodando', checks: null });

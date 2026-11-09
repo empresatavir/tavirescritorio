@@ -355,7 +355,7 @@ export class StudioStore {
       atualizado_em: row.atualizado_em,
     };
     if (!hydrated) return peca;
-    const slots = this.listSlots(row.id).map((s) => ({ id: s.id, ativo_id: s.ativo_id }));
+    const slots = this.listSlots(row.id).map((s) => ({ id: s.id, ativo_id: s.ativo_id, codigo: s.codigo }));
     const finais = this.listRenders(row.id).filter((r) => r.tipo === 'final');
     const ultimo = finais[finais.length - 1];
     const pacote = this.tree.pecaDirs(row.id).pacote;
