@@ -534,6 +534,9 @@ export interface TavirApi {
       scan: () => Promise<{ ligados: Array<{ arquivo: string; pecaId: string; slotId: string; versao: number; venceu: boolean }>; semDono: Array<{ arquivo: string; motivo: string }> }>;
       assign: (fileName: string, slotId: string) => Promise<{ ok: boolean; error?: string }>;
     };
+    audio: {
+      narrate: (pecaId: string, index?: number) => Promise<{ ok: boolean; error?: string; files?: string[] }>;
+    };
     motion: {
       updateBase: () => Promise<{ ok: boolean; error?: string }>;
       downloadBrowser: (confirm: boolean) => Promise<{ ok: boolean; error?: string; log: string }>;

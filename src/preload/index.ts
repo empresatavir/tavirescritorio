@@ -258,6 +258,9 @@ const api: TavirApi = {
       scan: () => ipcRenderer.invoke('studio:inbox:scan'),
       assign: (fileName: string, slotId: string) => ipcRenderer.invoke('studio:inbox:assign', fileName, slotId),
     },
+    audio: {
+      narrate: (pecaId: string, index?: number) => ipcRenderer.invoke('studio:audio:narrate', pecaId, index),
+    },
     motion: {
       updateBase: () => ipcRenderer.invoke('studio:motion:updateBase'),
       downloadBrowser: (confirm: boolean) => ipcRenderer.invoke('studio:motion:downloadBrowser', confirm),

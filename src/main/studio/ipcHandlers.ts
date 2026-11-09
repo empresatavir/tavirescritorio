@@ -8,6 +8,7 @@ import { reviewChecklist } from './rules';
 import { readPreview } from './previewMedia';
 import { assignInboxFile, scanInbox, watchInbox } from './inbox';
 import { compilePiecePrompts, exportShotList } from './shotList';
+import { synthesizeScenes } from './audio';
 import { polishPrompt } from './promptPolish';
 import { getStudioStore } from './store';
 import { suggestForPiece, type SuggestAlvo } from './suggest';
@@ -142,6 +143,7 @@ export function registerStudioIpc(handle: Handle): void {
     startRender(pecaId, 'still', frame).catch(() => undefined);
   }));
   handle('studio:inbox:assign', (_e, fileName: string, slotId: string) => assignInboxFile(fileName, slotId, getStudioStore()));
+  handle('studio:audio:narrate', async (_e, pecaId: string, index?: number) => synthesizeScenes(pecaId, getStudioStore(), index));
   handle('studio:motion:updateBase', () => updateMotionBase());
   handle('studio:motion:downloadBrowser', (_e, confirm?: boolean) => downloadRemotionBrowser(confirm === true));
   handle('studio:motion:ask', async (_e, input: { perfilId: string; preset: string; pedido: string }) => {

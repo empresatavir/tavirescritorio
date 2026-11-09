@@ -129,6 +129,17 @@ function checkChrome(): PreflightItem {
   );
 }
 
+function checkEdgeTts(): PreflightItem {
+  const bin = findOnPath('edge-tts');
+  if (bin) return item('edge-tts', true, bin, '');
+  return item(
+    'edge-tts',
+    false,
+    'edge-tts não está no PATH',
+    'Instale com pip install edge-tts. Sem rede a narração não roda; o Piper entra se a voz estiver no brand kit.',
+  );
+}
+
 export function runPreflight(): PreflightItem[] {
-  return [checkNode(), checkBinary('ffmpeg'), checkBinary('ffprobe'), checkDataDir(), checkMotionModules(), checkChrome()];
+  return [checkNode(), checkBinary('ffmpeg'), checkBinary('ffprobe'), checkDataDir(), checkMotionModules(), checkChrome(), checkEdgeTts()];
 }

@@ -195,8 +195,14 @@
         <sc-if value="{{sv.audio}}" hint-placeholder-val="{{false}}">
           <section class="card pad" style="display: flex; flex-direction: column; gap: 12px">
             <span class="eyebrow">Áudio</span>
-            <p class="muted">Esta etapa existe só em vídeo. A narração entra numa fase seguinte.</p>
-            <div class="actions"><button class="btn primary" onClick="{{advance}}" disabled="{{locked}}">Seguir</button></div>
+            <p class="muted">A duração de cada cena sai da narração. A voz é a do brand kit, ou Francisca se ele não tiver voz.</p>
+            <sc-for list="{{scenes}}" as="c" hint-placeholder-count="0">
+              <div class="row" style="cursor: default; align-items: flex-start">
+                <div class="grow"><div class="t">{{c.n}} · {{c.preset}}</div><div class="m">{{c.texto}}</div><div class="m">{{c.tela}}</div></div>
+                <button class="btn sm secondary" onClick="{{c.redo}}">refazer narração</button>
+              </div>
+            </sc-for>
+            <div class="actions"><button class="btn secondary" onClick="{{narrate}}">Gerar narração</button><button class="btn primary" onClick="{{advance}}" disabled="{{locked}}">Seguir</button></div>
           </section>
         </sc-if>
 
@@ -799,6 +805,24 @@ class Component extends DCLogic {
       }),
       compilePrompts: function () { var api = studioApi(); if (!api || !api.prompts || !peca) return; api.prompts.compile(peca.id).then(function (res) { self.after(res); }); },
       exportPrompts: function () { var api = studioApi(); if (!api || !api.prompts || !peca) return; api.prompts.export(peca.id).then(function (res) { self.after(res); }); },
+      scenes: ((peca && peca.roteiro && peca.roteiro.cenas) || []).map(function (scene, index) {
+        return {
+          n: String(index + 1).padStart(2, '0'),
+          preset: scene.preset || '—',
+          texto: scene.texto_narrado || '',
+          tela: scene.texto_tela || '',
+          redo: function () {
+            var api = studioApi();
+            if (!api || !api.audio || !peca) return;
+            api.audio.narrate(peca.id, index).then(function (res) { self.after(res); });
+          },
+        };
+      }),
+      narrate: function () {
+        var api = studioApi();
+        if (!api || !api.audio || !peca) return;
+        api.audio.narrate(peca.id).then(function (res) { self.after(res); });
+      },
       canonText: ['Tom: ' + (kit.tone || '—')].concat(kit.canon || []).join('\n') || '—',
       canon: (kit.canon || []).map(function (t, i) { return { n: String(i + 1).padStart(2, '0'), t: t }; }),
       canonN: String((kit.canon || []).length) + ' regras'

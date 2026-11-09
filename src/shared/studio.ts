@@ -148,8 +148,17 @@ export interface RoteiroSlide {
   slot?: string;
 }
 
+export interface RoteiroCena {
+  texto_narrado: string;
+  texto_tela?: string;
+  slot?: string;
+  preset?: MotionPreset;
+  duracao_min?: number;
+}
+
 export interface Roteiro {
   slides?: RoteiroSlide[];
+  cenas?: RoteiroCena[];
   legenda?: string;
   hashtags?: string[];
 }
