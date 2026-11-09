@@ -32,20 +32,22 @@ O commit F0.3 importa `rules.ts`, que só entra no commit F0.4. A ponta do branc
 > tsc -p tsconfig.main.json --noEmit && tsc -p tsconfig.renderer.json --noEmit
 ```
 
-- ❌ `npm test` — exit 1. 10 arquivos passaram, 1 falhou. Os 9 testes do Studio passaram. As 3 falhas são de `tests/backend.spec.ts` e já dependem de `db/tavir_store.json` e `db/engine_settings.json`, que estavam modificados na árvore antes desta fase (aprovações vazias, `anthropicEnabled` falso, sync de tasks sem `priority`). Não alterei esses arquivos para forçar o teste. Uma execução anterior, em paralelo com o typecheck, também estourou timeout em testes de git e ffmpeg; isolada, a suíte ficou só com essas 3 falhas.
+- ❌ `npm test` — exit 1. Repetido numa cópia limpa do commit `48d7839` (worktree, sem os arquivos locais sujos). 10 arquivos passaram, 1 falhou. Os testes do Studio passaram. As 3 falhas são de `tests/backend.spec.ts` e já estão no conteúdo commitado da master, que esta fase não alterou:
+  - `carregarDb()` lê jobs de `backend/tavir.db`; a lista vem vazia, então `jobs.length > 0` falha.
+  - O teste de persistência grava o job no JSON, mas a releitura volta ao SQLite e não acha o job.
+  - `db/engine_settings.json` commitado tem `anthropicEnabled: false`.
 
-Últimas linhas de `npm test`:
+Últimas linhas dessa execução limpa:
 
 ```
- FAIL  tests/backend.spec.ts > 3. Multi-Engine Hub > deve expor os 4 motores e permitir alternância de motor padrão
+ FAIL  tests/backend.spec.ts > 3. Multi-Engine Hub > deve expor os 4 motores
  AssertionError: expected false to be true
   ❯ tests/backend.spec.ts:81:41
      81|       expect(settings.anthropicEnabled).toBe(true);
 
  Test Files  1 failed | 10 passed (11)
-      Tests  3 failed | 99 passed (102)
-   Start at  23:24:28
-   Duration  58.84s
+      Tests  3 failed | 100 passed (103)
+   Duration  56.48s
 ```
 
 - ✅ Testes do Studio, à parte: 2 arquivos, 9 testes, exit 0.
