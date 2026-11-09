@@ -15,6 +15,17 @@ export function activeWord(words: CaptionWord[], timeMs: number): CaptionWord | 
   return words.find((word) => timeMs >= word.startMs && timeMs < word.endMs) ?? null;
 }
 
+export function placeCaptions(words: CaptionWord[], offsetMs: number): CaptionWord[] {
+  if (!Number.isFinite(offsetMs)) return [];
+  return words
+    .map((word) => ({
+      text: word.text.trim(),
+      startMs: Math.round(word.startMs + offsetMs),
+      endMs: Math.round(word.endMs + offsetMs),
+    }))
+    .filter((word) => word.text && word.endMs >= word.startMs);
+}
+
 export function captionsFromWhisper(words: WhisperWord[]): CaptionWord[] {
   return words
     .filter((word) => word.word?.trim() && Number.isFinite(word.start) && Number.isFinite(word.end) && word.end >= word.start)

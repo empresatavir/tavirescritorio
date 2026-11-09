@@ -219,7 +219,7 @@
                 <button class="btn sm secondary" onClick="{{c.redo}}">refazer narração</button>
               </div>
             </sc-for>
-            <div class="actions"><button class="btn secondary" onClick="{{downloadWhisper}}">Baixar whisper.cpp</button><button class="btn secondary" onClick="{{narrate}}">Gerar narração</button><button class="btn secondary" onClick="{{renderReel}}">Renderizar reel</button><button class="btn primary" onClick="{{advance}}" disabled="{{locked}}">Seguir</button></div>
+            <div class="actions"><button class="btn secondary" onClick="{{downloadWhisper}}">Baixar whisper.cpp</button><button class="btn secondary" onClick="{{makeCaptions}}">Gerar legenda</button><button class="btn secondary" onClick="{{narrate}}">Gerar narração</button><button class="btn secondary" onClick="{{renderReel}}">Renderizar reel</button><button class="btn primary" onClick="{{advance}}" disabled="{{locked}}">Seguir</button></div>
           </section>
         </sc-if>
 
@@ -706,6 +706,7 @@ class Component extends DCLogic {
       },
       downloadChrome: function () { var studio = studioApi(); if (studio && studio.motion) studio.motion.downloadBrowser(true).then(function (res) { self.after(res); }); },
       downloadWhisper: function () { var studio = studioApi(); if (studio && studio.audio) studio.audio.whisper(true).then(function (res) { self.after(res); }); },
+      makeCaptions: function () { var studio = studioApi(); if (studio && studio.audio && peca) studio.audio.captions(peca.id).then(function (res) { self.after(res); }); },
       updateMotion: function () { var studio = studioApi(); if (studio && studio.motion) studio.motion.updateBase().then(function (res) { self.after(res); }); },
       pauta: { tema: pauta.tema || '', fonte: pauta.fonte || '' },
       onTema: function (e) { self.savePauta('tema', e.target.value); },

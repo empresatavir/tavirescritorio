@@ -263,6 +263,7 @@ const api: TavirApi = {
       clip: (pecaId: string, index: number) => ipcRenderer.invoke('studio:audio:clip', pecaId, index),
       word: (pecaId: string, index: number, text: string) => ipcRenderer.invoke('studio:audio:word', pecaId, index, text),
       whisper: (confirm: boolean) => ipcRenderer.invoke('studio:audio:whisper', confirm),
+      captions: (pecaId: string) => ipcRenderer.invoke('studio:audio:captions', pecaId),
     },
     motion: {
       updateBase: () => ipcRenderer.invoke('studio:motion:updateBase'),

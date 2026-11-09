@@ -61,7 +61,7 @@ A cópia vendida das skills do Remotion não entra no repo. O contrato que o Esc
 
 `scenesFromRoteiro` usa `roteiro.cenas` quando existe. Sem cenas, cada slide vira uma. A narração padrão é edge-tts, voz `pt-BR-FranciscaNeural`, se o kit não escolher outra. O arquivo sai em `ativos/narracao-NN.mp3`.
 
-`planReel` monta a duração pela narração. `buildReelPacote` não renderiza: exige um `final` pronto, normaliza para −14 LUFS (faixa aceita de −15 a −13) com pico de no máximo −1 dBTP, extrai `capa.png` e grava `legendas.srt`. Sem o whisper.cpp, a legenda é uma linha por cena. O botão «Baixar whisper.cpp», na etapa Áudio, só inicia o download do modelo `small` quando o clique manda a confirmação. O gancho visual passa se a diferença média entre o quadro 0 e o quadro 14 for maior que 0,25.
+`planReel` monta a duração pela narração. `buildReelPacote` não renderiza: exige um `final` pronto, normaliza para −14 LUFS (faixa aceita de −15 a −13) com pico de no máximo −1 dBTP, extrai `capa.png` e grava `legendas.srt`. Sem o whisper.cpp, a legenda é uma linha por cena. O botão «Baixar whisper.cpp», na etapa Áudio, só inicia o download do modelo `small` quando o clique manda a confirmação. «Gerar legenda» transcreve a narração só depois desse download. O gancho visual passa se a diferença média entre o quadro 0 e o quadro 14 for maior que 0,25.
 
 A música licenciada fica em 0,45 e desce para 0,15 enquanto a narração toca. Esses dois volumes não estão no GOAL; estão aqui para o próximo leitor não procurar um terceiro número.
 

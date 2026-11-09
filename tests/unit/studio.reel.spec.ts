@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { captionsFromWhisper, activeWord, toSrt } from '../../src/main/studio/captions';
-import { installWhisper } from '../../src/main/studio/whisper';
+import { captionsFromWhisper, activeWord, placeCaptions, toSrt } from '../../src/main/studio/captions';
+import { installWhisper, transcribePeca } from '../../src/main/studio/whisper';
+import { openStudioStore } from '../../src/main/studio/store';
 import { scenesFromRoteiro } from '../../src/main/studio/cenas';
 import { loudnessChecks, parseLoudnorm, visualHookOk } from '../../src/main/studio/loudnorm';
 import { ttsCommand, voiceOf } from '../../src/main/studio/audio';
@@ -46,6 +47,7 @@ describe('reel', () => {
     expect(toSrt(words)).toContain('porta');
     expect(activeWord(words, 200)?.text).toBe('a');
     expect(activeWord(words, 900)).toBeNull();
+    expect(placeCaptions(words, 1000)[1]).toEqual({ text: 'porta', startMs: 1400, endMs: 1900 });
   });
 
   it('lê o loudnorm e cobra −14 LUFS e pico até −1', () => {
@@ -80,5 +82,15 @@ describe('reel', () => {
     const result = await installWhisper(false);
     expect(result.ok).toBe(false);
     expect(result.error).toContain('confirmação');
+  });
+
+  it('não transcreve sem o whisper.cpp instalado', async () => {
+    const home = fs.mkdtempSync(path.join(os.tmpdir(), 'tavir-whisper-'));
+    const local = openStudioStore(home);
+    const result = await transcribePeca('ausente', local);
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('não está instalado');
+    local.close();
+    fs.rmSync(home, { recursive: true, force: true });
   });
 });
