@@ -19,6 +19,9 @@ interface StoredAccount {
   login: string;
   name: string;
   avatar: string;
+  /** id numérico e e-mail público do GitHub: assinam os commits do projeto. */
+  gh_id?: number;
+  email?: string;
   token: string; // cifrado (v2:)
   scopes: string[];
   preview: string;
@@ -33,6 +36,9 @@ export interface GitAccountView {
   login: string;
   name: string;
   avatar: string;
+  /** Nome e e-mail que assinam os commits feitos com esta conta. */
+  commitName: string;
+  commitEmail: string;
   scopes: string[];
   preview: string;
   is_default: boolean;
@@ -90,6 +96,7 @@ function view(a: StoredAccount): GitAccountView {
     login: a.login,
     name: a.name,
     avatar: a.avatar,
+    ...commitIdentity(a),
     scopes,
     preview: a.preview,
     is_default: !!a.is_default,
@@ -108,6 +115,28 @@ export interface GithubUser {
   name: string;
   avatar: string;
   scopes: string[];
+  id?: number;
+  email?: string;
+}
+
+/**
+ * Identidade dos commits: o e-mail público da conta ou, sem ele, o noreply do
+ * GitHub (id+login@users.noreply.github.com), que o GitHub liga ao perfil.
+ */
+export function commitIdentity(a: { login: string; name?: string; gh_id?: number; email?: string }): { commitName: string; commitEmail: string } {
+  const email = a.email || (a.gh_id ? `${a.gh_id}+${a.login}@users.noreply.github.com` : `${a.login}@users.noreply.github.com`);
+  return { commitName: a.name || a.login, commitEmail: email };
+}
+
+/** Variáveis que fazem o git assinar com a conta, sem mexer no .git/config do projeto. */
+export function commitIdentityEnv(account: { commitName: string; commitEmail: string } | null | undefined): Record<string, string> | undefined {
+  if (!account) return undefined;
+  return {
+    GIT_AUTHOR_NAME: account.commitName,
+    GIT_AUTHOR_EMAIL: account.commitEmail,
+    GIT_COMMITTER_NAME: account.commitName,
+    GIT_COMMITTER_EMAIL: account.commitEmail,
+  };
 }
 
 /** Valida o token na API do GitHub. O token vai só no cabeçalho. */
@@ -128,7 +157,14 @@ export async function fetchGithubUser(token: string): Promise<GithubUser> {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean);
-  return { login: String(body.login || ''), name: String(body.name || body.login || ''), avatar: String(body.avatar_url || ''), scopes };
+  return {
+    login: String(body.login || ''),
+    name: String(body.name || body.login || ''),
+    avatar: String(body.avatar_url || ''),
+    scopes,
+    id: Number(body.id) || undefined,
+    email: body.email ? String(body.email) : undefined,
+  };
 }
 
 export async function addGitAccount(
@@ -146,12 +182,15 @@ export async function addGitAccount(
     return { ok: false, error: err?.message || String(err), accounts: listGitAccounts() };
   }
   if (!user.login) return { ok: false, error: 'GitHub não devolveu o login da conta.', accounts: listGitAccounts() };
-  const accounts = readStore();
+  // Uma conta por rótulo: a TAVIR nova substitui a TAVIR anterior (o mesmo vale para Pessoal).
+  const all = readStore();
+  const prevOfLabel = all.find((a) => a.label === label);
+  const accounts = all.filter((a) => a.label !== label || a.login.toLowerCase() === user.login.toLowerCase());
   const now = new Date().toISOString();
-  // Mesmo rótulo e mesmo login: troca o token da conta que já existe.
-  let acc = accounts.find((a) => a.label === label && a.login.toLowerCase() === user.login.toLowerCase());
+  let acc = accounts.find((a) => a.label === label);
+  if (!acc && prevOfLabel?.is_default) accounts.forEach((a) => { a.is_default = false; });
   if (acc) {
-    Object.assign(acc, { name: user.name, avatar: user.avatar, scopes: user.scopes, token: cifrar(token), preview: maskToken(token), updated_at: now });
+    Object.assign(acc, { name: user.name, avatar: user.avatar, gh_id: user.id, email: user.email, scopes: user.scopes, token: cifrar(token), preview: maskToken(token), updated_at: now });
   } else {
     acc = {
       id: randomUUID(),
@@ -159,6 +198,8 @@ export async function addGitAccount(
       login: user.login,
       name: user.name,
       avatar: user.avatar,
+      gh_id: user.id,
+      email: user.email,
       token: cifrar(token),
       scopes: user.scopes,
       preview: maskToken(token),
@@ -202,7 +243,7 @@ export async function testGitAccount(
   if (!token) return { ok: false, error: 'Não consegui abrir o token no cofre desta máquina. Cadastre de novo.', accounts: accounts.map(view) };
   try {
     const user = await validate(token);
-    Object.assign(acc, { login: user.login || acc.login, name: user.name, avatar: user.avatar, scopes: user.scopes, updated_at: new Date().toISOString() });
+    Object.assign(acc, { login: user.login || acc.login, name: user.name, avatar: user.avatar, gh_id: user.id ?? acc.gh_id, email: user.email ?? acc.email, scopes: user.scopes, updated_at: new Date().toISOString() });
     writeStore(accounts);
     return { ok: true, account: view(acc), accounts: accounts.map(view) };
   } catch (err: any) {

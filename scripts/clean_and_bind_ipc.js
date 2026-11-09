@@ -792,28 +792,31 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
   // A tela só recebe login, rótulo e prévia mascarada; o token fica no processo main (src/main/gitAccounts.ts).
   if (!cfgHtml.includes('id="tavir-contas"')) {
     cfgHtml = cfgHtml.replace("['motores', 'Motores de IA', 4], ", "['motores', 'Motores de IA', 4], ['contas', 'Contas e cofre'], ");
+    const cardTpl = (list) => `<sc-for list="{{${list}}}" as="c" hint-placeholder-count="2">
+            <article class="cfg-card {{c.cls}}">
+              <header class="cfg-card-h"><span class="cfg-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.ico}}"></path></svg></span><b class="grow">{{c.title}}</b><span class="cfg-dot {{c.cls}}" role="img" aria-label="{{c.badge}}" title="{{c.badge}}"></span></header>
+              <div class="cfg-card-sub">{{c.sub}}</div>
+              <sc-if value="{{c.connected}}" hint-placeholder-val="{{false}}">
+                <div class="cfg-card-who"><b>{{c.who}}</b><sc-if value="{{c.isDef}}" hint-placeholder-val="{{false}}"><span class="badge action">padrão</span></sc-if><sc-if value="{{c.noPush}}" hint-placeholder-val="{{false}}"><span class="badge warn">sem escopo repo</span></sc-if></div>
+                <dl class="cfg-kv"><sc-for list="{{c.kv}}" as="k" hint-placeholder-count="3"><dt>{{k.k}}</dt><dd class="mono">{{k.v}}</dd></sc-for></dl>
+              </sc-if>
+              <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}">
+                <input class="input" type="password" autocomplete="off" spellcheck="false" placeholder="{{c.ph}}" value="{{c.token}}" onChange="{{c.onToken}}" aria-label="Token {{c.title}}">
+              </sc-if>
+              <sc-if value="{{c.hasMsg}}" hint-placeholder-val="{{false}}"><div class="cfg-card-msg" style="color: {{c.msgColor}}">{{c.msg}}</div></sc-if>
+              <footer class="cfg-card-f">
+                <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}"><button class="btn sm ghost" onClick="{{c.openToken}}">Gerar token</button><div class="grow"></div><sc-if value="{{c.editing}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{c.cancel}}">Cancelar</button></sc-if><button class="btn sm primary" onClick="{{c.save}}" disabled="{{c.busy}}">{{c.saveLbl}}</button></sc-if>
+                <sc-if value="{{c.showActions}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{c.test}}" disabled="{{c.busy}}">{{c.testLbl}}</button><button class="btn sm secondary" onClick="{{c.edit}}">Trocar token</button><sc-if value="{{c.canDef}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{c.setDef}}">Tornar padrão</button></sc-if><div class="grow"></div><button class="btn sm ghost" onClick="{{c.remove}}">Remover</button></sc-if>
+              </footer>
+            </article>
+          </sc-for>`;
     const contasBlock = `<sc-if value="{{v.contas}}" hint-placeholder-val="{{false}}">
-        <div id="tavir-contas" style="display: flex; align-items: flex-end"><div class="grow"><h2 style="font-size: 20px; font-weight: 600">Contas e cofre</h2><p class="muted" style="font-size: 13px; margin-top: 4px">Suas contas do GitHub, da TAVIR e a pessoal. A Fábrica usa a conta do perfil git de cada projeto para abrir PR.</p></div><span class="badge flow">{{accCount}}</span></div>
-        <div class="rows card">
-          <sc-if value="{{accEmpty}}" hint-placeholder-val="{{false}}"><div class="row" style="cursor: default"><div class="grow"><div class="t">Nenhuma conta cadastrada</div><div class="m">Cadastre abaixo a conta da TAVIR e a pessoal.</div></div></div></sc-if>
-          <sc-for list="{{accounts}}" as="a" hint-placeholder-count="2">
-            <div class="row" style="cursor: default; gap: 14px">
-              <button class="choice {{a.def}}" onClick="{{a.setDef}}" style="width: auto; padding: 0; border: 0; background: transparent" aria-label="Tornar {{a.login}} padrão"><span class="rd"></span></button>
-              <div class="grow"><div class="t">{{a.title}} <span class="badge {{a.labelCls}}" style="margin-left: 6px">{{a.label}}</span><sc-if value="{{a.isDef}}" hint-placeholder-val="{{false}}"><span class="badge action" style="margin-left: 6px">padrão</span></sc-if><sc-if value="{{a.noPush}}" hint-placeholder-val="{{false}}"><span class="badge warn" style="margin-left: 6px">sem escopo repo</span></sc-if></div><div class="m mono">{{a.meta}}</div></div>
-              <button class="btn sm secondary" onClick="{{a.test}}">Testar</button>
-              <button class="btn sm ghost" onClick="{{a.remove}}">Remover</button>
-            </div>
-          </sc-for>
-        </div>
-        <div class="card" style="padding: 14px; background: var(--surface-0); display: flex; flex-direction: column; gap: 10px">
-          <div class="eyebrow">Entrar com uma conta do GitHub</div>
-          <p class="muted" style="font-size: 12.5px; margin: 0">Gere um token clássico com escopo <b>repo</b> (o botão abre a página do GitHub já preenchida), cole aqui e diga de quem é a conta. O app confere o token no GitHub antes de guardar.</p>
-          <div class="field" style="margin: 0"><span>Conta</span><div class="segs"><sc-for list="{{accLabels}}" as="o" hint-placeholder-count="2"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
-          <input class="input" type="password" autocomplete="off" spellcheck="false" placeholder="ghp_… ou github_pat_…" value="{{accToken}}" onChange="{{onAccToken}}" aria-label="Token do GitHub">
-          <div class="actions" style="margin: 0"><button class="btn ghost" onClick="{{openTokenPage}}">Gerar token no GitHub</button><div class="grow"></div><button class="btn primary" onClick="{{addAccount}}" disabled="{{accBusy}}">{{accBtn}}</button></div>
-          <sc-if value="{{accHasMsg}}" hint-placeholder-val="{{false}}"><div style="font-size: 12.5px; color: {{accMsgColor}}">{{accMsg}}</div></sc-if>
-        </div>
-        <div class="card" style="padding: 12px 14px; display: flex; gap: 10px; font-size: 13px; background: var(--surface-0)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3"></path></svg><span class="sec">O token fica cifrado (AES-256-GCM) no cofre desta máquina. Só o app usa, por variável de ambiente, para push e PR; nunca vai para tela, log, chat ou linha de comando.</span></div>
+        <div id="tavir-contas" class="cfg-head"><div class="grow"><h2 class="cfg-h">Contas e cofre</h2><p class="cfg-lead">Credenciais do escritório: quem assina os commits, abre PR e faz deploy. Os segredos de cada projeto ficam no cofre do próprio projeto, na aba Acessos da Fábrica.</p></div><span class="badge flow">{{credCount}}</span></div>
+        <div class="cfg-sec"><div class="eyebrow">GitHub · quem assina e publica</div><p>Os commits e o PR de um projeto saem com a conta do perfil git dele (TAVIR ou Pessoal). Sem par, vale a padrão.</p></div>
+        <div class="cfg-cards two">${cardTpl('ghCards')}</div>
+        <div class="cfg-sec"><div class="eyebrow">Deploy e dados</div><p>Ficam guardadas e conferidas, prontas para quando a Fábrica publicar os projetos.</p></div>
+        <div class="cfg-cards">${cardTpl('provCards')}</div>
+        <div class="card" style="padding: 12px 14px; display: flex; gap: 10px; font-size: 13px; background: var(--surface-0)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3"></path></svg><span class="sec">Cada token é conferido no provedor antes de entrar e fica cifrado (AES-256-GCM) no cofre desta máquina. Só o app usa, por variável de ambiente; nunca vai para tela, log, chat ou linha de comando.</span></div>
       </sc-if>
 
       `;
@@ -822,56 +825,110 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
       '    return {\n      v: v,',
       `    const tvAcc = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
     const accApi = tvAcc && tvAcc.accounts;
-    const accApply = function(res, okMsg) {
-      const patch = { accBusy: false };
-      if (res && Array.isArray(res.accounts)) patch.accList = res.accounts;
-      if (res && res.ok === false) { patch.accMsg = res.error || 'Não deu certo.'; patch.accErr = true; }
-      else if (okMsg) { patch.accMsg = okMsg; patch.accErr = false; }
-      self.setState(patch);
-    };
-    if (accApi && !s.accLoaded && !self._accLoading) {
+    const credApi = tvAcc && tvAcc.creds;
+    if (tvAcc && !s.accLoaded && !self._accLoading) {
       self._accLoading = true;
-      accApi.list().then(function(res) { self._accLoading = false; self.setState({ accLoaded: true, accList: (res && res.accounts) || [] }); }).catch(function() { self._accLoading = false; self.setState({ accLoaded: true }); });
+      Promise.all([accApi ? accApi.list() : null, credApi ? credApi.list() : null]).then(function(r) {
+        self._accLoading = false;
+        self.setState({ accLoaded: true, accList: (r[0] && r[0].accounts) || [], credList: (r[1] && r[1].credentials) || [] });
+      }).catch(function() { self._accLoading = false; self.setState({ accLoaded: true }); });
     }
+    const cs = s.cs || {};
+    const setCard = function(key, patch) { const m = Object.assign({}, self.state.cs || {}); m[key] = Object.assign({}, m[key] || {}, patch); self.setState({ cs: m }); };
+    const done = function(key, res, okMsg, extra) {
+      const patch = { busy: false, msg: '', err: false };
+      if (res && res.ok === false) { patch.msg = res.error || 'Não deu certo.'; patch.err = true; }
+      else { patch.msg = okMsg || ''; patch.token = ''; patch.edit = false; }
+      const top = Object.assign({}, extra || {});
+      if (res && Array.isArray(res.accounts)) top.accList = res.accounts;
+      if (res && Array.isArray(res.credentials)) top.credList = res.credentials;
+      const m = Object.assign({}, self.state.cs || {}); m[key] = Object.assign({}, m[key] || {}, patch); top.cs = m;
+      self.setState(top);
+    };
+    const fail = function(key) { return function(e) { setCard(key, { busy: false, msg: String((e && e.message) || e), err: true }); }; };
+    const day = function(iso) { const t = String(iso || ''); return t ? t.slice(8, 10) + '/' + t.slice(5, 7) + '/' + t.slice(0, 4) : ''; };
+    const baseCard = function(key, connected, extra) {
+      const st = cs[key] || {};
+      const editing = !!st.edit;
+      return Object.assign({
+        cls: connected ? 'on' : '',
+        connected: connected,
+        editing: connected && editing,
+        showForm: !connected || editing,
+        showActions: connected && !editing,
+        token: st.token || '',
+        onToken: function(e) { setCard(key, { token: e.target.value }); },
+        busy: !!st.busy,
+        saveLbl: st.busy ? 'Conferindo…' : connected ? 'Trocar' : 'Conectar',
+        testLbl: st.busy ? 'Conferindo…' : 'Testar',
+        hasMsg: !!st.msg,
+        msg: st.msg || '',
+        msgColor: st.err ? 'var(--danger, #e5484d)' : 'var(--text-secondary)',
+        edit: function() { setCard(key, { edit: true, msg: '' }); },
+        cancel: function() { setCard(key, { edit: false, token: '', msg: '' }); },
+        badge: connected ? 'conectada' : 'sem token',
+        badgeCls: connected ? 'flow' : '',
+      }, extra);
+    };
     const accList = s.accList || [];
-    const accLabel = s.accLabel || 'TAVIR';
+    const GH_ICO = 'M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9';
+    const ghCards = [['TAVIR', 'TAVIR (empresa)', 'Projetos com perfil git da TAVIR'], ['Pessoal', 'Pessoal', 'Projetos com perfil git pessoal']].map(function(L) {
+      const key = 'gh-' + L[0];
+      const a = accList.filter(function(x) { return x.label === L[0]; })[0] || null;
+      return baseCard(key, !!a, {
+        title: L[1], sub: L[2], ico: GH_ICO, ph: 'ghp_… ou github_pat_…',
+        who: a ? (a.name && a.name !== a.login ? a.name + ' · @' + a.login : '@' + a.login) : '',
+        isDef: !!(a && a.is_default), canDef: !!(a && !a.is_default), noPush: !!(a && !a.canPush),
+        kv: a ? [
+          { k: 'Assina commits como', v: a.commitName + ' <' + a.commitEmail + '>' },
+          { k: 'Escopos', v: a.scopes && a.scopes.length ? a.scopes.join(', ') : 'token fine-grained' },
+          { k: 'Token', v: a.preview + ' · conferido em ' + day(a.updated_at) },
+        ] : [],
+        openToken: function() { if (accApi) accApi.openTokenPage(); },
+        save: function() {
+          const token = String((cs[key] || {}).token || '').trim();
+          if (!accApi) { setCard(key, { msg: 'Disponível só no app desktop.', err: true }); return; }
+          if (!token) { setCard(key, { msg: 'Cole o token do GitHub.', err: true }); return; }
+          setCard(key, { busy: true, msg: 'Conferindo o token no GitHub…', err: false });
+          accApi.add({ label: L[0], token: token }).then(function(r) { done(key, r, r && r.account ? '@' + r.account.login + ' conectada.' : ''); }).catch(fail(key));
+        },
+        test: function() { if (!accApi || !a) return; setCard(key, { busy: true, msg: '', err: false }); accApi.test(a.id).then(function(r) { done(key, r, 'Token válido.'); }).catch(fail(key)); },
+        setDef: function() { if (!accApi || !a) return; accApi.setDefault(a.id).then(function(r) { done(key, r, '@' + a.login + ' é a conta padrão.'); }); },
+        remove: function() { if (!accApi || !a) return; if (typeof window !== 'undefined' && window.confirm && !window.confirm('Remover @' + a.login + ' (' + L[1] + ') do cofre?')) return; accApi.remove(a.id).then(function(r) { done(key, r, 'Conta removida do cofre.'); }); },
+      });
+    });
+    const PROV_ICO = { vercel: 'M12 4l9 16H3z', supabase: 'M13 3L4 14h8l-1 7 9-11h-8z', netlify: 'M12 2l10 10-10 10L2 12z' };
+    const PROV_PH = { vercel: 'Token da Vercel', supabase: 'sbp_…', netlify: 'Token pessoal da Netlify' };
+    const credList = s.credList && s.credList.length ? s.credList : [
+      { provider: 'vercel', name: 'Vercel', hint: 'Deploy de LPs, ofertas e apps web.', connected: false },
+      { provider: 'supabase', name: 'Supabase', hint: 'Banco, autenticação e funções dos projetos.', connected: false },
+      { provider: 'netlify', name: 'Netlify', hint: 'Deploy de sites estáticos.', connected: false },
+    ];
+    const provCards = credList.map(function(c) {
+      const key = 'cr-' + c.provider;
+      return baseCard(key, !!c.connected, {
+        title: c.name, sub: c.hint, ico: PROV_ICO[c.provider] || PROV_ICO.vercel, ph: PROV_PH[c.provider] || 'Token',
+        who: c.connected ? (c.account && c.account !== c.login ? c.account + ' · ' + c.login : c.login) : '',
+        isDef: false, canDef: false, noPush: false,
+        kv: c.connected ? [{ k: 'Conta', v: c.detail || '—' }, { k: 'Token', v: c.preview + ' · conferido em ' + day(c.updated_at) }] : [],
+        openToken: function() { if (credApi) credApi.openTokenPage(c.provider); },
+        save: function() {
+          const token = String((cs[key] || {}).token || '').trim();
+          if (!credApi) { setCard(key, { msg: 'Disponível só no app desktop.', err: true }); return; }
+          if (!token) { setCard(key, { msg: 'Cole o token.', err: true }); return; }
+          setCard(key, { busy: true, msg: 'Conferindo o token na ' + c.name + '…', err: false });
+          credApi.save(c.provider, token).then(function(r) { done(key, r, c.name + ' conectada.'); }).catch(fail(key));
+        },
+        test: function() { if (!credApi) return; setCard(key, { busy: true, msg: '', err: false }); credApi.test(c.provider).then(function(r) { done(key, r, 'Token válido.'); }).catch(fail(key)); },
+        setDef: function() {},
+        remove: function() { if (!credApi) return; if (typeof window !== 'undefined' && window.confirm && !window.confirm('Remover o token da ' + c.name + ' do cofre?')) return; credApi.remove(c.provider).then(function(r) { done(key, r, 'Token removido do cofre.'); }); },
+      });
+    });
+    const connectedN = ghCards.filter(function(c) { return c.connected; }).length + provCards.filter(function(c) { return c.connected; }).length;
     return {
-      accounts: accList.map(function(a) {
-        return {
-          login: a.login,
-          title: (a.name && a.name !== a.login ? a.name + ' · ' : '') + '@' + a.login,
-          label: a.label,
-          labelCls: a.label === 'Pessoal' ? 'warn' : 'flow',
-          isDef: !!a.is_default,
-          def: a.is_default ? 'on' : '',
-          noPush: !a.canPush,
-          meta: 'token ' + a.preview + (a.scopes && a.scopes.length ? ' · escopos ' + a.scopes.join(', ') : ' · token fine-grained') + ' · conferido ' + String(a.updated_at || '').slice(0, 10),
-          setDef: function() { if (!accApi) return; accApi.setDefault(a.id).then(function(r) { accApply(r, '@' + a.login + ' é a conta padrão.'); }); },
-          test: function() { if (!accApi) return; self.setState({ accBusy: true, accMsg: 'Conferindo @' + a.login + ' no GitHub…', accErr: false }); accApi.test(a.id).then(function(r) { accApply(r, 'Token de @' + a.login + ' válido.'); }).catch(function(e) { accApply({ ok: false, error: String(e) }); }); },
-          remove: function() { if (!accApi) return; if (typeof window !== 'undefined' && window.confirm && !window.confirm('Remover @' + a.login + ' (' + a.label + ') do cofre?')) return; accApi.remove(a.id).then(function(r) { accApply(r, '@' + a.login + ' removida do cofre.'); }); },
-        };
-      }),
-      accEmpty: accList.length === 0,
-      accCount: accList.length === 1 ? '1 conta' : accList.length + ' contas',
-      accLabels: ['TAVIR', 'Pessoal'].map(function(x) { return { label: x === 'TAVIR' ? 'TAVIR (empresa)' : 'Pessoal', on: accLabel === x ? 'on' : '', pick: function() { self.setState({ accLabel: x }); } }; }),
-      accToken: s.accToken || '',
-      onAccToken: function(e) { self.setState({ accToken: e.target.value }); },
-      accBusy: !!s.accBusy,
-      accBtn: s.accBusy ? 'Conferindo…' : 'Guardar no cofre',
-      accHasMsg: !!s.accMsg,
-      accMsg: s.accMsg || '',
-      accMsgColor: s.accErr ? 'var(--danger, #e5484d)' : 'var(--text-secondary)',
-      openTokenPage: function() { if (accApi) accApi.openTokenPage(); },
-      addAccount: function() {
-        const token = String(s.accToken || '').trim();
-        if (!accApi) { self.setState({ accMsg: 'Disponível só no app desktop.', accErr: true }); return; }
-        if (!token) { self.setState({ accMsg: 'Cole o token do GitHub.', accErr: true }); return; }
-        self.setState({ accBusy: true, accMsg: 'Conferindo o token no GitHub…', accErr: false });
-        accApi.add({ label: accLabel, token: token }).then(function(r) {
-          if (r && r.ok) self.setState({ accToken: '' });
-          accApply(r, r && r.account ? '@' + r.account.login + ' guardada no cofre como ' + r.account.label + '.' : '');
-        }).catch(function(e) { accApply({ ok: false, error: String(e) }); });
-      },
+      ghCards: ghCards,
+      provCards: provCards,
+      credCount: connectedN + ' de ' + (ghCards.length + provCards.length) + ' conectadas',
       v: v,`
     );
   }
@@ -901,6 +958,29 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
 .cfg-body .rows.card{border-radius:12px}
 .cfg-body .actions{flex-wrap:wrap;gap:8px}
 .cfg-body .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.cfg-sec{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.cfg-sec p{margin:0;font-size:12.5px;color:var(--text-secondary);line-height:1.5}
+.cfg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.cfg-cards.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cfg-card{display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface-0);min-width:0}
+.cfg-card.on{border-color:color-mix(in oklab,var(--flow) 45%,var(--line))}
+.cfg-card-h{display:flex;align-items:center;gap:10px;min-width:0}
+.cfg-card-h b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cfg-card-h b{font-size:14.5px}
+.cfg-card-ico{flex:none;width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:var(--surface-2,rgba(127,127,127,.12));color:var(--text-secondary)}
+.cfg-card.on .cfg-card-ico{background:var(--flow-subtle);color:var(--flow)}
+.cfg-card-sub{font-size:12.5px;color:var(--text-secondary);margin-top:-4px;line-height:1.45;min-height:2.9em}
+.cfg-dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--line-strong,rgba(127,127,127,.5))}
+.cfg-dot.on{background:var(--flow);box-shadow:0 0 0 3px var(--flow-subtle)}
+.cfg-card-who{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13.5px}
+.cfg-kv{display:flex;flex-direction:column;gap:2px;margin:0;font-size:12px}
+.cfg-kv dt{color:var(--text-secondary);font-size:11px;margin-top:6px}
+.cfg-kv dt:first-child{margin-top:0}
+.cfg-kv dd{margin:0;overflow-wrap:anywhere;line-height:1.45}
+.cfg-card .input{height:38px}
+.cfg-card-msg{font-size:12px;line-height:1.4}
+.cfg-card-f{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:auto}
+@media (max-width:1100px){.cfg-cards.two{grid-template-columns:1fr}}
 @media (max-width:980px){.cfg-wrap{grid-template-columns:1fr}.cfg-nav{position:static;flex-direction:row;flex-wrap:wrap}.cfg-grp{display:none}.cfg-tab{width:auto}}
 </style>`;
     cfgHtml = cfgHtml.replace('<style>body{margin:0}</style>', cfgCss);
@@ -946,7 +1026,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     );
     cfgHtml = cfgHtml.replace(
       /tabs: TABS\.map\(\(t\) => \(\{[^\n]*\}\)\),/,
-      "tabs: TABS.map((t, i) => { const n = t[0] === 'contas' ? ((s.accList || []).length || 0) : (t[2] || 0); return { label: t[1], hasN: !!n, n: n || '', grp: t[3], hasGrp: i === 0 || TABS[i - 1][3] !== t[3], ico: t[4], on: s.tab === t[0] ? 'on' : '', cur: s.tab === t[0] ? 'page' : 'false', pick: () => self.setState({ tab: t[0] }) }; }),"
+      "tabs: TABS.map((t, i) => { const n = t[0] === 'contas' ? ((s.accList || []).length + (s.credList || []).filter(function (c) { return c.connected; }).length) : (t[2] || 0); return { label: t[1], hasN: !!n, n: n || '', grp: t[3], hasGrp: i === 0 || TABS[i - 1][3] !== t[3], ico: t[4], on: s.tab === t[0] ? 'on' : '', cur: s.tab === t[0] ? 'page' : 'false', pick: () => self.setState({ tab: t[0] }) }; }),"
     );
   }
 

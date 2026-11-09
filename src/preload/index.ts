@@ -175,6 +175,13 @@ const api: TavirApi = {
     test: (id: string) => ipcRenderer.invoke('accounts:test', id),
     openTokenPage: () => ipcRenderer.invoke('accounts:openTokenPage'),
   },
+  creds: {
+    list: () => ipcRenderer.invoke('creds:list'),
+    save: (provider: string, token: string) => ipcRenderer.invoke('creds:save', provider, token),
+    remove: (provider: string) => ipcRenderer.invoke('creds:remove', provider),
+    test: (provider: string) => ipcRenderer.invoke('creds:test', provider),
+    openTokenPage: (provider: string) => ipcRenderer.invoke('creds:openTokenPage', provider),
+  },
   seg: {
     run: (idOrPath: string) => ipcRenderer.invoke('seg:run', idOrPath),
     list: (idOrPath: string) => ipcRenderer.invoke('seg:list', idOrPath),

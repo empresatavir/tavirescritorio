@@ -863,6 +863,39 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     return testGitAccount(String(id || ''));
   });
 
+  // Credenciais de deploy e dados (Vercel, Supabase, Netlify): mesmo contrato das contas do GitHub.
+  handle('creds:list', async () => {
+    const { listCredentials } = await import('./credentials');
+    return { ok: true, credentials: listCredentials() };
+  });
+
+  handle('creds:save', async (_e, provider: string, token: string) => {
+    const { saveCredential } = await import('./credentials');
+    return saveCredential(String(provider || ''), String(token || ''));
+  });
+
+  handle('creds:remove', async (_e, provider: string) => {
+    const { removeCredential } = await import('./credentials');
+    return removeCredential(String(provider || ''));
+  });
+
+  handle('creds:test', async (_e, provider: string) => {
+    const { testCredential } = await import('./credentials');
+    return testCredential(String(provider || ''));
+  });
+
+  handle('creds:openTokenPage', async (_e, provider: string) => {
+    const { CREDENTIAL_PROVIDERS, isProvider } = await import('./credentials');
+    if (!isProvider(provider)) return { ok: false, error: 'Provedor desconhecido.' };
+    const url = CREDENTIAL_PROVIDERS[provider].tokenUrl;
+    try {
+      await shell.openExternal(url);
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, error: String(err), url };
+    }
+  });
+
   handle('accounts:openTokenPage', async () => {
     const { TOKEN_PAGE_URL } = await import('./gitAccounts');
     try {

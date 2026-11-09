@@ -281,7 +281,7 @@ export async function pushAndOpenPr(input: PublishPrInput): Promise<{ ok: boolea
 }
 
 /** Sem remoto: junta o ciclo na branch de origem com --no-ff e fica nela. */
-export function mergeCycleLocal(root: string, branch: CycleBranch, message: string): { ok: boolean; error?: string; sha?: string } {
+export function mergeCycleLocal(root: string, branch: CycleBranch, message: string, identity?: Record<string, string>): { ok: boolean; error?: string; sha?: string } {
   if (branch.here) return { ok: false, error: 'Este ciclo rodou direto na branch atual; não há o que juntar.' };
   const dirty = dirtyTracked(root);
   if (dirty.length) return { ok: false, error: `Há ${dirty.length} arquivo(s) alterado(s) sem commit (${dirty.slice(0, 3).join(', ')}). Resolva antes de juntar.` };
@@ -291,7 +291,7 @@ export function mergeCycleLocal(root: string, branch: CycleBranch, message: stri
     return { ok: false, error: `Não consegui ir para ${branch.base}: ${errText(err)}` };
   }
   try {
-    git(root, ['merge', '--no-ff', '-q', '-m', message, branch.name], undefined, 60000);
+    git(root, ['merge', '--no-ff', '-q', '-m', message, branch.name], identity, 60000);
     return { ok: true, sha: gitTry(root, ['rev-parse', '--short', 'HEAD']) };
   } catch (err) {
     gitTry(root, ['merge', '--abort']);

@@ -24,7 +24,11 @@ import {
   scrubToken,
   setDefaultGitAccount,
   getGitAccountToken,
+  commitIdentity,
+  commitIdentityEnv,
 } from '../../src/main/gitAccounts';
+import { getCredentialToken, listCredentials, removeCredential, saveCredential } from '../../src/main/credentials';
+import { commitStep } from '../../src/main/stepCommit';
 
 const git = (cwd: string, ...args: string[]) => execFileSync('git', args, { cwd, encoding: 'utf8', windowsHide: true }).trim();
 
@@ -227,6 +231,35 @@ describe('contas do GitHub no cofre', () => {
     expect(getGitAccountToken(again.account!.id)).toBe(fakeToken('f'));
   });
 
+  it('uma conta por rótulo: outra TAVIR substitui a anterior e não mexe na Pessoal', async () => {
+    isolate();
+    await addGitAccount({ label: 'TAVIR', token: fakeToken('i') }, user('tavir-velho'));
+    await addGitAccount({ label: 'Pessoal', token: fakeToken('j') }, user('CarlosHenriqJr'));
+    const novo = await addGitAccount({ label: 'TAVIR', token: fakeToken('k') }, user('tavir-novo'));
+    const rows = listGitAccounts().map((a) => `${a.label}:${a.login}`).sort();
+    expect(rows).toEqual(['Pessoal:CarlosHenriqJr', 'TAVIR:tavir-novo']);
+    expect(listGitAccounts().filter((a) => a.is_default)).toHaveLength(1);
+    expect(getGitAccountToken(novo.account!.id)).toBe(fakeToken('k'));
+  });
+
+  it('commits saem com o e-mail público ou o noreply do GitHub', async () => {
+    expect(commitIdentity({ login: 'tavir-bot', name: 'TAVIR', gh_id: 42 })).toEqual({ commitName: 'TAVIR', commitEmail: '42+tavir-bot@users.noreply.github.com' });
+    expect(commitIdentity({ login: 'c', email: 'c@tavir.com.br' }).commitEmail).toBe('c@tavir.com.br');
+    isolate();
+    const r = await addGitAccount({ label: 'Pessoal', token: fakeToken('l') }, async () => ({ login: 'CarlosHenriqJr', name: 'Carlos', avatar: '', scopes: ['repo'], id: 77 }));
+    expect(r.account).toMatchObject({ commitName: 'Carlos', commitEmail: '77+CarlosHenriqJr@users.noreply.github.com' });
+  });
+
+  it('commit por passo assina com a conta do Escritório, não com o .git/config do projeto', () => {
+    const dir = repo();
+    fs.writeFileSync(path.join(dir, 'novo.txt'), 'x\n');
+    const env = commitIdentityEnv({ commitName: 'Carlos', commitEmail: '77+CarlosHenriqJr@users.noreply.github.com' });
+    const res = commitStep(dir, { available: true, added: ['novo.txt'], modified: [], deleted: [] } as any, 'tavir: teste', env);
+    expect(res.ok && res.sha).toBeTruthy();
+    expect(git(dir, 'log', '-1', '--format=%an <%ae> | %cn <%ce>')).toBe('Carlos <77+CarlosHenriqJr@users.noreply.github.com> | Carlos <77+CarlosHenriqJr@users.noreply.github.com>');
+    expect(git(dir, 'config', 'user.email')).toBe('qa@tavir.local');
+  });
+
   it('sem escopo repo a conta avisa que não publica', async () => {
     isolate();
     const res = await addGitAccount({ label: 'TAVIR', token: fakeToken('g') }, user('leitor', ['read:org']));
@@ -241,5 +274,39 @@ describe('contas do GitHub no cofre', () => {
     expect(env.GIT_TERMINAL_PROMPT).toBe('0');
     const basic = Buffer.from('x-access-token:' + token).toString('base64');
     expect(scrubToken(`fatal: ${token} e ${basic}`, token)).toBe('fatal: •••• e ••••');
+  });
+});
+
+describe('credenciais de deploy e dados no cofre', () => {
+  let dir = '';
+  afterEach(() => {
+    vi.restoreAllMocks();
+    if (dir) fs.rmSync(dir, { recursive: true, force: true });
+  });
+  const isolate = () => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tavir-creds-'));
+    vi.spyOn(process, 'cwd').mockReturnValue(dir);
+  };
+
+  it('guarda cifrado por provedor e a tela só vê a prévia', async () => {
+    isolate();
+    const token = 'vrc_' + 'z'.repeat(30);
+    const res = await saveCredential('vercel', token, async () => ({ login: 'tavir', name: 'TAVIR', detail: 'engenharia@tavir.com.br' }));
+    expect(res.ok).toBe(true);
+    expect(JSON.stringify(res)).not.toContain(token);
+    expect(res.credentials.map((c) => `${c.provider}:${c.connected}`)).toEqual(['vercel:true', 'supabase:false', 'netlify:false']);
+    const raw = fs.readFileSync(path.join(dir, 'db', 'credentials.json'), 'utf8');
+    expect(raw).not.toContain(token);
+    expect(getCredentialToken('vercel')).toBe(token);
+    removeCredential('vercel');
+    expect(listCredentials().every((c) => !c.connected)).toBe(true);
+  });
+
+  it('token recusado ou provedor desconhecido não entra', async () => {
+    isolate();
+    const bad = await saveCredential('netlify', 'abc', async () => { throw new Error('Token recusado pela Netlify (inválido, expirado ou sem permissão).'); });
+    expect(bad.ok).toBe(false);
+    expect((await saveCredential('heroku', 'abc')).ok).toBe(false);
+    expect(listCredentials().every((c) => !c.connected)).toBe(true);
   });
 });

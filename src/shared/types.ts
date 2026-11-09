@@ -183,6 +183,27 @@ export interface GitAccountResult {
   accounts: GitAccountView[];
 }
 
+export type CredentialProvider = 'vercel' | 'supabase' | 'netlify';
+
+export interface CredentialView {
+  provider: CredentialProvider;
+  name: string;
+  hint: string;
+  connected: boolean;
+  login: string;
+  account: string;
+  detail: string;
+  preview: string;
+  updated_at: string;
+}
+
+export interface CredentialResult {
+  ok: boolean;
+  error?: string;
+  credential?: CredentialView;
+  credentials: CredentialView[];
+}
+
 export interface AltTrackPublishInfo {
   ok: boolean;
   error?: string;
@@ -388,6 +409,14 @@ export interface TavirApi {
     setDefault: (id: string) => Promise<GitAccountResult>;
     test: (id: string) => Promise<GitAccountResult>;
     openTokenPage: () => Promise<{ ok: boolean; error?: string; url?: string }>;
+  };
+  /** Credenciais de deploy e dados no cofre (Vercel, Supabase, Netlify). O token nunca volta para a tela. */
+  creds: {
+    list: () => Promise<{ ok: boolean; credentials: CredentialView[] }>;
+    save: (provider: CredentialProvider, token: string) => Promise<CredentialResult>;
+    remove: (provider: CredentialProvider) => Promise<CredentialResult>;
+    test: (provider: CredentialProvider) => Promise<CredentialResult>;
+    openTokenPage: (provider: CredentialProvider) => Promise<{ ok: boolean; error?: string; url?: string }>;
   };
   seg: {
     run: (idOrPath: string) => Promise<{ ok: boolean; run?: any; error?: string }>;

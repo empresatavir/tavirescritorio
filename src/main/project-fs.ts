@@ -1152,8 +1152,28 @@ export function listProjectDecisions(idOrPath: string): any {
 }
 
 /** Commit por passo: só o que a execução mudou, com a etapa e a execução na mensagem. */
+/**
+ * Conta do Escritório que assina e publica pelo projeto: a escolhida no projeto
+ * (control.json git_account), senão a do perfil git dele (TAVIR ou Pessoal), senão a padrão.
+ */
+export function projectGitAccount(rootPath: string) {
+  const { resolveGitAccount } = require('./gitAccounts') as typeof import('./gitAccounts');
+  const ctrl = readControlJson(rootPath);
+  return resolveGitAccount({ accountId: String(ctrl?.git_account || '') || null, profile: projectGitProfile(rootPath) });
+}
+
+function projectCommitIdentity(rootPath: string): Record<string, string> | undefined {
+  try {
+    const { commitIdentityEnv } = require('./gitAccounts') as typeof import('./gitAccounts');
+    return commitIdentityEnv(projectGitAccount(rootPath));
+  } catch {
+    return undefined;
+  }
+}
+
 function commitRunStep(rootPath: string, title: string, runId: string | undefined, changes: RunChanges | undefined): StepCommitResult {
-  const res = commitStep(rootPath, changes, `tavir: ${title}${runId ? `\n\nExecução: .tavir/runs/${runId}` : ''}`);
+  // Sem conta cadastrada, vale o user.name/user.email local do projeto.
+  const res = commitStep(rootPath, changes, `tavir: ${title}${runId ? `\n\nExecução: .tavir/runs/${runId}` : ''}`, projectCommitIdentity(rootPath));
   if (runId) annotateRun(rootPath, runId, { commit: { sha: res.sha, files: res.files, skipped: res.skipped, error: res.error } });
   return res;
 }
@@ -2173,7 +2193,7 @@ export function getAltTrackPublishInfo(idOrPath: string): any {
   const branch = track.branch || null;
   const commits = branch ? cycleGit.cycleCommits(root, branch) : [];
   const accounts = listGitAccounts();
-  const account = repo ? resolveGitAccount({ accountId: String(prev?.git_account || '') || null, profile: projectGitProfile(root) }) : null;
+  const account = resolveGitAccount({ accountId: String(prev?.git_account || '') || null, profile: projectGitProfile(root) });
   const passed = track.runStatus === 'done' && track.items[track.items.length - 1]?.kind === 'build';
   const mode: 'pr' | 'merge' | 'none' = !isGit || !branch || branch.here || otherRemote ? 'none' : repo ? 'pr' : 'merge';
   let reason = '';
@@ -2289,7 +2309,7 @@ export async function publishAltTrackCycle(idOrPath: string, opts: { accountId?:
     if (opts.accountId) prev.git_account = opts.accountId;
   } else {
     const list = info.commits.map((c: cycleGit.CycleCommit) => `- ${c.sha} ${c.subject}`).join('\n');
-    const res = cycleGit.mergeCycleLocal(root, branch, `tavir: ciclo ${(track.cycles?.length || 0) + 1} · ${subject}\n\n${list}`);
+    const res = cycleGit.mergeCycleLocal(root, branch, `tavir: ciclo ${(track.cycles?.length || 0) + 1} · ${subject}\n\n${list}`, projectCommitIdentity(root));
     if (!res.ok) return fail(res.error || 'Não consegui juntar na branch principal.');
     publish = { kind: 'merge', at: new Date().toISOString(), sha: res.sha };
   }
