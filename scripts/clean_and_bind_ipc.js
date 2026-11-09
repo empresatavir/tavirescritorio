@@ -876,6 +876,80 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     );
   }
 
+  // Layout: menu agrupado com ícones, cabeçalho único por seção, listas em moldura e textos curtos.
+  if (!cfgHtml.includes('class="cfg-wrap"')) {
+    const cfgCss = `<style>body{margin:0}
+.cfg-wrap{display:grid;grid-template-columns:232px minmax(0,1fr);gap:28px;align-items:start;max-width:1180px}
+.cfg-nav{position:sticky;top:16px;display:flex;flex-direction:column;gap:2px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--surface-0)}
+.cfg-grp{font-family:var(--font-mono,'IBM Plex Mono',monospace);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-secondary);opacity:.8;padding:12px 10px 6px}
+.cfg-grp:first-child{padding-top:4px}
+.cfg-tab{display:flex;align-items:center;gap:10px;width:100%;min-height:38px;padding:8px 10px;border:0;border-radius:9px;background:transparent;color:var(--text-secondary);font:inherit;font-size:13.5px;text-align:left;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+.cfg-tab:hover{background:var(--surface-2,rgba(127,127,127,.08));color:var(--text-primary)}
+.cfg-tab.on{background:var(--flow-subtle);color:var(--text-primary);font-weight:600}
+.cfg-tab svg{flex:none;opacity:.75}
+.cfg-tab.on svg{opacity:1;stroke:var(--flow)}
+.cfg-tab .cfg-l{flex:1;overflow:hidden;text-overflow:ellipsis}
+.cfg-n{flex:none;min-width:22px;height:20px;padding:0 7px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-mono,'IBM Plex Mono',monospace);font-size:11px;font-weight:500;background:var(--surface-2,rgba(127,127,127,.12));color:var(--text-secondary)}
+.cfg-tab.on .cfg-n{background:var(--flow);color:#0B1220}
+.cfg-body{min-width:0;padding:28px 30px 30px;display:flex;flex-direction:column;gap:20px;animation:fade 200ms var(--ease) both}
+.cfg-head{display:flex;align-items:flex-start;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.cfg-head .badge{margin-top:4px;flex:none}
+.cfg-h{font-size:20px;font-weight:600;margin:0;line-height:1.25}
+.cfg-lead{font-size:13px;margin:6px 0 0;color:var(--text-secondary);max-width:62ch;line-height:1.5}
+.cfg-list{border:1px solid var(--line);border-radius:12px;padding:0 16px;background:var(--surface-0)}
+.cfg-list .setrow:last-child{border-bottom:0}
+.cfg-body .rows.card{border-radius:12px}
+.cfg-body .actions{flex-wrap:wrap;gap:8px}
+.cfg-body .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:980px){.cfg-wrap{grid-template-columns:1fr}.cfg-nav{position:static;flex-direction:row;flex-wrap:wrap}.cfg-grp{display:none}.cfg-tab{width:auto}}
+</style>`;
+    cfgHtml = cfgHtml.replace('<style>body{margin:0}</style>', cfgCss);
+    cfgHtml = cfgHtml.replace(
+      /<p>Perfil, o que a Sala mostra[^<]*<\/p>/,
+      '<p>Seu perfil, o que a Sala mostra, módulos, motores de IA, contas do GitHub e a própria máquina.</p>'
+    );
+    cfgHtml = cfgHtml.replace('<div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start">', '<div class="cfg-wrap">');
+    cfgHtml = cfgHtml.replace(
+      /<nav style="flex: 0 1 220px;[\s\S]*?<\/nav>/,
+      '<nav class="cfg-nav" aria-label="Seções"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="8"><sc-if value="{{t.hasGrp}}" hint-placeholder-val="{{false}}"><div class="cfg-grp">{{t.grp}}</div></sc-if><button class="cfg-tab {{t.on}}" onClick="{{t.pick}}" aria-current="{{t.cur}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.ico}}"></path></svg><span class="cfg-l">{{t.label}}</span><sc-if value="{{t.hasN}}" hint-placeholder-val="{{false}}"><span class="cfg-n">{{t.n}}</span></sc-if></button></sc-for></nav>'
+    );
+    cfgHtml = cfgHtml.replace(/<section class="card" style="flex: 999 1 560px;[^"]*">/, '<section class="card cfg-body">');
+    // Cabeçalhos de seção num formato só
+    cfgHtml = cfgHtml.split('<h2 style="font-size: 20px; font-weight: 600">').join('<h2 class="cfg-h">');
+    cfgHtml = cfgHtml.split('<p class="muted" style="font-size: 13px; margin-top: 4px">').join('<p class="cfg-lead">');
+    cfgHtml = cfgHtml.replace(/<div><h2 class="cfg-h">([^<]*)<\/h2><p class="cfg-lead">([^<]*)<\/p><\/div>/g, '<div class="cfg-head"><div class="grow"><h2 class="cfg-h">$1</h2><p class="cfg-lead">$2</p></div></div>');
+    cfgHtml = cfgHtml.split('<div style="display: flex; align-items: flex-end"><div class="grow"><h2 class="cfg-h">').join('<div class="cfg-head"><div class="grow"><h2 class="cfg-h">');
+    cfgHtml = cfgHtml.replace('<div id="tavir-contas" style="display: flex; align-items: flex-end">', '<div id="tavir-contas" class="cfg-head">');
+    // Textos mais curtos
+    cfgHtml = cfgHtml.replace(/<p class="cfg-lead">Opções pertinentes a cada módulo[^<]*<\/p>/, '<p class="cfg-lead">Automação de gates, SLA, motor padrão e isolamento de cada módulo.</p>');
+    cfgHtml = cfgHtml.replace(/<p class="cfg-lead">Detecção automática de SDK[^<]*<\/p>/, '<p class="cfg-lead">Os motores rodam pelo CLI instalado nesta máquina. A chave de API é opcional, só como reserva.</p>');
+    cfgHtml = cfgHtml.replace(/Como no Concierge: escolha o modelo e a profundidade padrão\. Na Fábrica só aparecem os motores ligados acima\./, 'Modelo e profundidade do motor padrão no chat, na Fábrica e nos jobs. Só os motores ligados aparecem na Fábrica.');
+    // Listas de interruptores na mesma moldura das outras listas
+    cfgHtml = cfgHtml.replace('<div><sc-for list="{{blocks}}"', '<div class="cfg-list"><sc-for list="{{blocks}}"');
+    cfgHtml = cfgHtml.replace('<div><sc-for list="{{scopes}}"', '<div class="cfg-list"><sc-for list="{{scopes}}"');
+    // Ações do Sistema como botões de verdade
+    cfgHtml = cfgHtml.replace('<button class="btn ghost" onClick="{{goDoctor}}">', '<button class="btn secondary" onClick="{{goDoctor}}">');
+    cfgHtml = cfgHtml.replace('<button class="btn ghost" onClick="{{exportLedger}}">', '<button class="btn secondary" onClick="{{exportLedger}}">');
+    // Ordem e grupos do menu: [id, rótulo, contador, grupo, ícone]
+    cfgHtml = cfgHtml.replace(
+      /const TABS = \[[^\n]*\];/,
+      "const TABS = [" +
+        "['perfil', 'Perfil', 0, 'Você', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0'], " +
+        "['aparencia', 'Aparência', 0, 'Você', 'M12 3a9 9 0 1 0 0 18zM12 3a9 9 0 0 1 0 18'], " +
+        "['visao', 'Sala de Operação', 0, 'Escritório', 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z'], " +
+        "['projetos', 'Módulos', 5, 'Escritório', 'M12 2l9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5'], " +
+        "['memorias', 'Memórias', 0, 'Escritório', 'M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3'], " +
+        "['motores', 'Motores de IA', 4, 'IA e acesso', 'M6 6h12v12H6zM9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3'], " +
+        "['contas', 'Contas e cofre', 0, 'IA e acesso', 'M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3'], " +
+        "['sistema', 'Sistema', 0, 'Máquina', 'M4 5h16v10H4zM8 19h8M12 15v4']" +
+      "];"
+    );
+    cfgHtml = cfgHtml.replace(
+      /tabs: TABS\.map\(\(t\) => \(\{[^\n]*\}\)\),/,
+      "tabs: TABS.map((t, i) => { const n = t[0] === 'contas' ? ((s.accList || []).length || 0) : (t[2] || 0); return { label: t[1], hasN: !!n, n: n || '', grp: t[3], hasGrp: i === 0 || TABS[i - 1][3] !== t[3], ico: t[4], on: s.tab === t[0] ? 'on' : '', cur: s.tab === t[0] ? 'page' : 'false', pick: () => self.setState({ tab: t[0] }) }; }),"
+    );
+  }
+
   manifest[cfgUuid].data = zlib.gzipSync(Buffer.from(cfgHtml, 'utf8')).toString('base64');
   console.log('Configurações (Módulos + Motores SDK local + Antigravity) atualizadas!');
 }
