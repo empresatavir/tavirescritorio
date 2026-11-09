@@ -27,5 +27,5 @@ A página [License FAQ](https://www.remotion.dev/docs/license/faq) diz que a lic
 | Reel 1080×1920 com narração e −14 LUFS | parcial: na janela, a peça «A porta do arquivo» chegou ao pacote. Duas cenas, narração edge-tts, MP4 1080×1920, 30 fps, 2,00 s. O pacote mede −14,02 LUFS e pico −2,62 dBTP. O quadro do arquivo mostra «A porta abre.» (`reel-frame.png`). ❌ assistido no celular; ❌ whisper.cpp. O fundo é o quadro do motion, sem imagem do Flow. |
 | Prévia igual ao arquivo | ✅ o telefone do carrossel mostra o still 1080×1350 (`08-previa.png`). O telefone do reel carrega o MP4 1080×1920 (`11-reel-previa.png`). A comparação com o celular ficou nos valores iniciais. |
 | Preset novo aprovado na tela | ✅ um kit, no perfil de conformidade, não nos três perfis reais |
-| Reel na agenda do DarkFlow | ✅ simulação, agenda `b187a77d-a262-4a52-b72f-860c425037c0`; o clique foi um script, não o botão do app |
+| Reel na agenda do DarkFlow | ✅ clique em «Aprovar publicação» na peça «A porta do arquivo» (`15-publicado.png`). Agenda `eea09b49-a0fd-4829-919a-dee2debe5857`, 2 dez 2026 às 10:00, status `agendado`, `editorial_attested` true. A sessão segue em simulação, sem publicação real. As métricas na tela ficam «—». |
 | Roteiro longo no Docuflow | ✅ projeto `o-arquivo-de-1974-1794222367` parado em `research`; a tela do Studio web não lista esse projeto |
