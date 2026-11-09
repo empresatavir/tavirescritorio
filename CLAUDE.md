@@ -58,3 +58,9 @@ Este arquivo é lido automaticamente pelo Claude (Claude Code, Claude Desktop, e
 - Evidências ficam em `qa/evidencias/` e `qa/seguranca/` do projeto, fora do git dele. Segredo em relatório sempre mascarado (`maskSecret`).
 - Absorção dispara o retrato inicial (QA + segurança). Em scripts de teste, absorva com `baseline: false`.
 - Mudança que envolva motores precisa passar em `npm run test:motores` nos quatro (claude, codex, antigravity, cursor).
+
+### 9. Raio-X: dado de cliente fora do git, decisão na tela
+- Mapa em `docs/modules/raiox.md`. Casos ficam em `%APPDATA%/<app>/raiox/casos/`, nunca no repositório.
+- Prioridade sempre aponta um gap da taxonomia (`src/shared/raiox.ts`). Implantação só com playbook `validado` (`raiox/playbooks/`); status `validado` só o Carlos escreve.
+- Motor sugere evidência e redige documento; aprovação é do Carlos, por hash.
+- Antes de commitar algo do Raio-X: `npm run raiox:scan`.
