@@ -26,6 +26,8 @@ env/
 
 # Node / Frontend
 node_modules/
+studio-motion/node_modules/
+studio-motion/out/
 frontend/dist/
 frontend/.vite/
 *.tsbuildinfo

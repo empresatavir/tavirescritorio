@@ -5,6 +5,7 @@
     "rootDir": "src",
     "types": ["node"]
   },
+  "exclude": ["studio-motion"],
   "include": [
     "src/main/**/*.ts",
     "src/preload/**/*.ts",
