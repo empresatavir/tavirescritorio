@@ -37,6 +37,8 @@ describe('checagens de motion', () => {
     fs.writeFileSync(path.join(dir, 'src', 'kits', 'kit', 'TituloEntrada.tsx'), good);
     const before = snapshotTree(dir);
     fs.writeFileSync(path.join(dir, 'src', 'kits', 'kit', 'TituloEntrada.tsx'), good + '\n');
+    fs.mkdirSync(path.join(dir, '.tavir', 'runs'), { recursive: true });
+    fs.writeFileSync(path.join(dir, '.tavir', 'runs', 'stdout.log'), 'registro\n');
     const c1 = checkAllowedDiff(before, snapshotTree(dir), 'kit');
     expect(c1.ok).toBe(true);
     expect(checkContract(good).ok).toBe(true);

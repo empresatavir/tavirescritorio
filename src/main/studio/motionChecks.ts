@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto';
 import { execFileSync, spawn } from 'node:child_process';
 import * as fs from 'node:fs';
-import * as os from 'node:os';
 import * as path from 'node:path';
 import { MOTION_TOKEN_PADRAO, type MotionPreset } from '../../shared/studio';
 
@@ -29,7 +28,7 @@ const FORBIDDEN: Array<[RegExp, string]> = [
   [/https?:\/\//, 'URL remota'],
 ];
 
-const SKIP = new Set(['node_modules', '.git']);
+const SKIP = new Set(['node_modules', '.git', '.tavir']);
 
 export function componentName(preset: string): string {
   return preset.split('-').filter(Boolean).map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join('');
@@ -169,13 +168,18 @@ if (job.op === 'still') {
 }
 
 async function remotionOp(workspace: string, job: Record<string, unknown>): Promise<void> {
-  const file = path.join(os.tmpdir(), `tavir-motion-check-${process.pid}-${Date.now()}.mjs`);
+  const dir = path.join(workspace, '.tavir');
+  fs.mkdirSync(dir, { recursive: true });
+  const file = path.join(dir, `motion-check-${process.pid}.mjs`);
   const spec = `${file}.json`;
   fs.writeFileSync(file, remotionScript(''));
   fs.writeFileSync(spec, JSON.stringify(job));
   try {
     const result = await run(process.execPath, [file, spec], workspace);
-    if (result.code !== 0) throw new Error(result.output.slice(-500) || 'remotion falhou');
+    if (result.code !== 0) {
+      const text = result.output.trim();
+      throw new Error(text.length <= 500 ? text : `${text.slice(0, 220)}\n…\n${text.slice(-220)}` || 'remotion falhou');
+    }
   } finally {
     fs.rmSync(file, { force: true });
     fs.rmSync(spec, { force: true });
