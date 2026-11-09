@@ -88,7 +88,7 @@ O scorecard vem de `GET /api/publisher/telemetry/scorecard`. Sem mediana, a tela
 
 `sendToDocuflow` só aceita `yt-longo-16x9`. Cria o canal com `POST /channels` (409 significa que já existe), manda a paleta e as fontes em `POST /channels/{id}/brand-kit` e abre o projeto com `POST /projects`. O roteiro vai dentro de `topic`, porque o pedido de criação não tem campo de roteiro. A voz não entra no brand kit: o modelo do Docuflow recusa campo extra. A resposta do Escritório devolve a voz ao lado do corpo.
 
-`stop` no código do Escritório é `render`, que dispara o pipeline a partir da pesquisa. Uma prova local pode pedir `stop=research` para parar depois da Wikipedia. A tela em `http://127.0.0.1:3000` é o Studio web e não lista os projetos dessa API.
+`stop` no código do Escritório é `research`. O projeto para depois da pesquisa e não entra no pipeline de render. A tela em `http://127.0.0.1:3000` é o Studio web e não lista os projetos dessa API.
 
 «Abrir no Docuflow Studio» abre `http://127.0.0.1:3000` numa `BrowserWindow` de 1280×800, sem `nodeIntegration`, com `contextIsolation`.
 
