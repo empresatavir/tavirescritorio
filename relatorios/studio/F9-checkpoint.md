@@ -20,7 +20,7 @@ A página [License FAQ](https://www.remotion.dev/docs/license/faq) diz que a lic
 
 | Item | Estado |
 | --- | --- |
-| Três perfis cadastrados na tela | ✅ na janela isolada (`TAVIR_STUDIO_HOME` temporário): Multiverso Paranoico (Instagram e YouTube), TAVIR Oficial (Instagram) e TAVIR B2B (LinkedIn). Print `relatorios/studio/F9/01-tres-perfis.png`. O chip mostra só a primeira rede. |
+| Três perfis cadastrados na tela | ✅ na janela isolada: Multiverso Paranoico (Instagram e YouTube), TAVIR Oficial (Instagram) e TAVIR B2B (LinkedIn). O chip do Multiverso mostra `instagram, youtube · @multiverso` (`07-redes.png`). |
 | Carrossel do Multiverso com imagens do Flow na pasta | parcial: prompts `MP-0001-S01` e `MP-0001-S02`, stills 1080×1350, e a tela agora mostra 2 de 2 frames (`06-frames.png`). A revisão não abre porque os slots estão sem ativo. Falta a imagem do Flow. |
 | Reel 1080×1920 com narração e −14 LUFS | ✅ o arquivo `relatorios/studio/F7/reel-2cenas.mp4`; ❌ assistido no celular; ❌ whisper.cpp |
 | Prévia igual ao arquivo | ✅ os prints da F4; a comparação com o celular ficou nos valores iniciais |
