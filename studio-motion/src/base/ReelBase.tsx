@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, useCurrentFrame } from 'remotion';
 import { easingFrom } from './easing';
+import { mediaSrc } from './mediaSrc';
 import { SafeArea, type SafeZone } from './SafeArea';
 import { tokensOf, type MotionTokens } from './tokens';
 
@@ -53,9 +54,9 @@ export const ReelBase: React.FC<ReelProps> = (props) => {
           <Sequence key={`${scene.src}-${index}`} from={from} durationInFrames={scene.durationFrames}>
             <AbsoluteFill style={{ opacity, transform: `scale(${zoom})` }}>
               {scene.kind === 'video' ? (
-                <OffthreadVideo src={scene.src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <OffthreadVideo src={mediaSrc(scene.src)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <Img src={scene.src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <Img src={mediaSrc(scene.src)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               )}
             </AbsoluteFill>
             <SafeArea zone={props.zone} debugSafeZone={props.debugSafeZone}>

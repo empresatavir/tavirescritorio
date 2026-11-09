@@ -6,11 +6,19 @@ import * as path from 'node:path';
 
 const require = createRequire(import.meta.url);
 
-const home = path.join(os.tmpdir(), `tavir-studio-f2-${Date.now()}`);
+const home = path.join(os.tmpdir(), 'tavir-studio-f2-gate');
 process.env.TAVIR_STUDIO_HOME = home;
+fs.rmSync(path.join(home, 'studio.sqlite'), { force: true });
 fs.mkdirSync(home, { recursive: true });
 
-const { ensureMotionHome } = require('../dist/main/studio/motionHome');
+function refreshMotionSource(dir) {
+  const repo = path.resolve('studio-motion');
+  for (const name of ['src', 'scripts']) {
+    fs.cpSync(path.join(repo, name), path.join(dir, name), { recursive: true });
+  }
+}
+
+const { downloadRemotionBrowser, ensureMotionHome } = require('../dist/main/studio/motionHome');
 const { buildRenderJob } = require('../dist/main/studio/renderJob');
 const { checkMedia } = require('../dist/main/studio/mediaChecks');
 const { findRemotionBrowser } = require('../dist/main/studio/preflight');
@@ -26,7 +34,7 @@ function render(dir, job) {
   const result = spawnSync(process.execPath, ['scripts/render.mjs', '--job', jobPath], {
     cwd: dir,
     encoding: 'utf8',
-    timeout: 300000,
+    timeout: 600000,
   });
   const tail = `${result.stdout || ''}\n${result.stderr || ''}`.trim().split(/\r?\n/).slice(-12);
   console.log(tail.join('\n'));
@@ -43,9 +51,14 @@ function render(dir, job) {
     console.error(installed.log.slice(-1500));
     process.exit(1);
   }
+  refreshMotionSource(installed.dir);
   if (!findRemotionBrowser()) {
-    console.error('Chrome Headless do Remotion ausente. Confirme o download na tela do Studio antes deste teste.');
-    process.exit(1);
+    const downloaded = await downloadRemotionBrowser(true, home);
+    if (!downloaded.ok || !findRemotionBrowser()) {
+      console.error(downloaded.error || 'Chrome Headless do Remotion ausente.');
+      console.error((downloaded.log || '').slice(-800));
+      process.exit(1);
+    }
   }
   const fixtures = path.join(home, 'fixtures');
   fs.mkdirSync(fixtures, { recursive: true });

@@ -22,6 +22,20 @@ if (!jobPath) {
 try {
   const job = JSON.parse(fs.readFileSync(jobPath, 'utf8'));
   const props = { ...job.props };
+  const publicJob = path.resolve(process.cwd(), 'public', 'job');
+  let staged = 0;
+  const stageLocal = (src) => {
+    if (!src || /^(https?:|data:|blob:)/i.test(src) || !path.isAbsolute(src)) return src;
+    fs.mkdirSync(publicJob, { recursive: true });
+    staged += 1;
+    const name = `${staged}${path.extname(src).toLowerCase()}`;
+    fs.copyFileSync(src, path.join(publicJob, name));
+    return `job/${name}`;
+  };
+  if (props.background) props.background = stageLocal(props.background);
+  if (Array.isArray(props.scenes)) {
+    props.scenes = props.scenes.map((scene) => ({ ...scene, src: stageLocal(scene.src) }));
+  }
   if (job.type === 'proxy') {
     props.width = even(job.format.width / 2);
     props.height = even(job.format.height / 2);

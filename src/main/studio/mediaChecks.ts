@@ -71,11 +71,15 @@ export function checkMedia(file: string, job: RenderJob): RenderCheck[] {
     nome: 'dimensão',
     detalhe: info ? `${info.width}×${info.height}` : 'ffprobe não leu o arquivo',
   });
-  checks.push({
-    ok: !!info && Math.abs(info.fps - job.format.fps) < 0.05,
-    nome: 'fps',
-    detalhe: info ? String(info.fps) : '—',
-  });
+  if (job.type === 'still') {
+    checks.push({ ok: true, nome: 'fps', detalhe: 'imagem estática' });
+  } else {
+    checks.push({
+      ok: !!info && Math.abs(info.fps - job.format.fps) < 0.05,
+      nome: 'fps',
+      detalhe: info ? String(info.fps) : '—',
+    });
+  }
   if (job.type !== 'still') {
     const limit = job.format.maxSeconds;
     checks.push({

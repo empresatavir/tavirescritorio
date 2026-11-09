@@ -1,5 +1,6 @@
 import React from 'react';
 import { AbsoluteFill, Img } from 'remotion';
+import { mediaSrc } from './mediaSrc';
 import { SafeArea, type SafeZone } from './SafeArea';
 import { tokensOf, type MotionTokens } from './tokens';
 
@@ -27,7 +28,7 @@ export const Slide: React.FC<SlideProps> = (props) => {
   return (
     <AbsoluteFill style={{ backgroundColor: props.backgroundColor }}>
       {props.background ? (
-        <Img src={props.background} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <Img src={mediaSrc(props.background)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : null}
       <SafeArea zone={props.zone} debugSafeZone={props.debugSafeZone}>
         <AbsoluteFill style={{ justifyContent: 'flex-end' }}>

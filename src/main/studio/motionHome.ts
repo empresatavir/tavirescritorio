@@ -26,8 +26,11 @@ function copyTree(from: string, to: string): void {
 
 function run(command: string, args: string[], cwd: string): Promise<{ code: number; output: string }> {
   return new Promise((resolve) => {
-    const bin = command === 'npm' && process.platform === 'win32' ? 'npm.cmd' : command;
-    const child = spawn(bin, args, { cwd, windowsHide: true });
+    const child = spawn(command, args, {
+      cwd,
+      windowsHide: true,
+      shell: process.platform === 'win32' && command === 'npm',
+    });
     let output = '';
     child.stdout?.on('data', (chunk) => { output += chunk.toString('utf8'); });
     child.stderr?.on('data', (chunk) => { output += chunk.toString('utf8'); });
