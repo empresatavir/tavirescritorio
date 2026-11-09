@@ -15,6 +15,28 @@ export function activeWord(words: CaptionWord[], timeMs: number): CaptionWord | 
   return words.find((word) => timeMs >= word.startMs && timeMs < word.endMs) ?? null;
 }
 
+/**
+ * O whisper.cpp devolve pedaços de palavra (tokens). Pedaço que começa com espaço abre palavra nova;
+ * o que não começa (ex.: «ivo» depois de « arqu») ou é só pontuação continua a palavra anterior.
+ * Precisa rodar antes de `placeCaptions`, que tira os espaços.
+ */
+export function mergeTokens(tokens: CaptionWord[]): CaptionWord[] {
+  const out: CaptionWord[] = [];
+  for (const token of tokens) {
+    const text = token.text ?? '';
+    if (!text.trim()) continue;
+    const opensWord = /^\s/.test(text) && !/^\s*[.,;:!?…»”)\]]+$/.test(text);
+    const prev = out[out.length - 1];
+    if (prev && !opensWord) {
+      prev.text += text.trim();
+      prev.endMs = Math.max(prev.endMs, token.endMs);
+      continue;
+    }
+    out.push({ text: ` ${text.trim()}`, startMs: token.startMs, endMs: token.endMs });
+  }
+  return out;
+}
+
 export function placeCaptions(words: CaptionWord[], offsetMs: number): CaptionWord[] {
   if (!Number.isFinite(offsetMs)) return [];
   return words
