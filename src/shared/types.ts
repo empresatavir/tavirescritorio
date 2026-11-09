@@ -2,6 +2,20 @@
  * Tipos compartilhados entre o processo principal (Node/Electron) e a interface (React).
  */
 
+import type {
+  GateDecision,
+  Peca,
+  PecaCreateInput,
+  PecaFiltro,
+  PecaUpdate,
+  Perfil,
+  PerfilInput,
+  PerfilRede,
+  PerfilRedeInput,
+  PieceStage,
+  PreflightItem,
+} from './studio';
+
 export type DomainId = 'op' | 'mod' | 'com' | 'soc' | 'kn' | 'est' | 'sys';
 
 export type EngineKind = 'anthropic' | 'claude' | 'cursor' | 'antigravity' | 'codex';
@@ -457,6 +471,27 @@ export interface TavirApi {
     list: (idOrPath: string, limit?: number) => Promise<any>;
     read: (idOrPath: string, runId: string) => Promise<any>;
     openFolder: (idOrPath: string, runId?: string) => Promise<{ ok: boolean; error?: string }>;
+  };
+  studio: {
+    perfis: {
+      list: () => Promise<Perfil[]>;
+      get: (id: string) => Promise<Perfil | null>;
+      save: (perfil: PerfilInput) => Promise<{ ok: boolean; perfil?: Perfil; error?: string }>;
+      remove: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    redes: {
+      save: (perfilId: string, rede: PerfilRedeInput) => Promise<{ ok: boolean; rede?: PerfilRede; error?: string }>;
+      remove: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    pecas: {
+      list: (filtro?: PecaFiltro) => Promise<Peca[]>;
+      get: (id: string) => Promise<Peca | null>;
+      create: (input: PecaCreateInput) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
+      update: (id: string, campos: PecaUpdate) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
+      gate: (id: string, etapa: PieceStage, decisao: GateDecision, comentario?: string) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
+      advance: (id: string) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
+    };
+    preflight: () => Promise<PreflightItem[]>;
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
 }

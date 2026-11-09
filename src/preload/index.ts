@@ -201,6 +201,27 @@ const api: TavirApi = {
     read: (idOrPath: string, runId: string) => ipcRenderer.invoke('runs:read', idOrPath, runId),
     openFolder: (idOrPath: string, runId?: string) => ipcRenderer.invoke('runs:openFolder', idOrPath, runId),
   },
+  studio: {
+    perfis: {
+      list: () => ipcRenderer.invoke('studio:perfis:list'),
+      get: (id: string) => ipcRenderer.invoke('studio:perfis:get', id),
+      save: (perfil) => ipcRenderer.invoke('studio:perfis:save', perfil),
+      remove: (id: string) => ipcRenderer.invoke('studio:perfis:remove', id),
+    },
+    redes: {
+      save: (perfilId: string, rede) => ipcRenderer.invoke('studio:redes:save', perfilId, rede),
+      remove: (id: string) => ipcRenderer.invoke('studio:redes:remove', id),
+    },
+    pecas: {
+      list: (filtro) => ipcRenderer.invoke('studio:pecas:list', filtro),
+      get: (id: string) => ipcRenderer.invoke('studio:pecas:get', id),
+      create: (input) => ipcRenderer.invoke('studio:pecas:create', input),
+      update: (id: string, campos) => ipcRenderer.invoke('studio:pecas:update', id, campos),
+      gate: (id: string, etapa, decisao, comentario) => ipcRenderer.invoke('studio:pecas:gate', id, etapa, decisao, comentario),
+      advance: (id: string) => ipcRenderer.invoke('studio:pecas:advance', id),
+    },
+    preflight: () => ipcRenderer.invoke('studio:preflight'),
+  },
   onEvent: (callback: (event: RunEvent) => void) => {
     const handler = (_e: Electron.IpcRendererEvent, event: RunEvent) => callback(event);
     ipcRenderer.on('run:event', handler);
