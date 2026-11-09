@@ -48,3 +48,5 @@ Os dois repositórios externos continuam sujos como já estavam. Nenhum arquivo 
 
 A seção «Sistemas ligados» também está em Configurações, aba Sistema. O build gravou o bloco em `dist/renderer/index.html`. Ainda não cliquei nela no app empacotado.
 
+O caminho do manifesto do reel está em `docs/modules/studio.md`, na seção «Como o DarkFlow acha o reel».
+
