@@ -32,3 +32,13 @@ A F6 continua sem as 3 imagens do Flow. A F7 continua sem o whisper e sem o reel
 
 A F8 não fecha.
 
+## Prova ao vivo em 9 de novembro de 2026
+
+O DarkFlow subiu pelo `start.ps1`, sem `--enable-meta-publish` e sem abrir o navegador. `GET /api/health` devolveu 200, versão `3.0-portao1`. A sessão do publicador está em `simulation`, com `real_publish_capable` falso.
+
+O reel `relatorios/studio/F7/reel-2cenas.mp4` entrou em `storage/output` e virou a agenda `b187a77d-a262-4a52-b72f-860c425037c0`, nome «Reel de duas cenas», status `agendado`, ateste verdadeiro. Essa pasta é ignorada pelo git do DarkFlow. O único status de código dele continua sendo `D storage/input/.gitkeep`, que já existia.
+
+O Studio do Docuflow respondeu 200 em `http://127.0.0.1:3000`. A API na porta 5000 não sobe com o Python global: o FastAPI instalado chama `on_startup` e o Starlette atual recusa. Subi a mesma API num ambiente temporário, fora do repositório, com FastAPI 0.119.1 e Starlette 0.45.3. `GET /docs` devolveu 200. `GET /compositions` lista 2 projetos que já estavam lá. `GET /jobs` lista 0. Não criei um projeto novo: o `POST /projects` dispara o pipeline inteiro.
+
+Os dois repositórios externos continuam sujos como já estavam. Nenhum arquivo de código deles foi editado.
+
