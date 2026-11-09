@@ -286,8 +286,22 @@ const api: TavirApi = {
     docuflow: {
       send: (pecaId) => ipcRenderer.invoke('studio:docuflow:send', pecaId),
       board: () => ipcRenderer.invoke('studio:docuflow:board'),
-      open: () => ipcRenderer.invoke('studio:docuflow:open'),
+      open: (slug?: string) => ipcRenderer.invoke('studio:docuflow:open', slug),
     },
+  },
+  raiox: {
+    catalog: () => ipcRenderer.invoke('raiox:catalog'),
+    list: () => ipcRenderer.invoke('raiox:list'),
+    get: (id: string) => ipcRenderer.invoke('raiox:get', id),
+    create: (input: unknown) => ipcRenderer.invoke('raiox:create', input),
+    updateFrontier: (id: string, patch: unknown) => ipcRenderer.invoke('raiox:updateFrontier', id, patch),
+    addEvidence: (id: string, input: unknown) => ipcRenderer.invoke('raiox:addEvidence', id, input),
+    pickFile: (id: string, sub: 'evidencias' | 'execucao') => ipcRenderer.invoke('raiox:pickFile', id, sub),
+    reviewEvidence: (id: string, evId: string, decision: string) => ipcRenderer.invoke('raiox:reviewEvidence', id, evId, decision),
+    removeEvidence: (id: string, evId: string) => ipcRenderer.invoke('raiox:removeEvidence', id, evId),
+    setPriority: (id: string, input: unknown) => ipcRenderer.invoke('raiox:setPriority', id, input),
+    setDebrief: (id: string, input: unknown) => ipcRenderer.invoke('raiox:setDebrief', id, input),
+    openFolder: (id: string) => ipcRenderer.invoke('raiox:openFolder', id),
   },
   onStudioEvent: (callback) => {
     const handler = (_e: Electron.IpcRendererEvent, event: StudioEvent) => callback(event);

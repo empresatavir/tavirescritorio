@@ -21,6 +21,17 @@ import type {
   SerieInput,
 } from './studio';
 import type { PreviewView } from './studioPreview';
+import type { RaioxCase, RaioxCatalogItem, RaioxGap } from './raiox';
+
+export interface RaioxScreenCase extends RaioxCase {
+  coverage: { stage: string; label: string; total: number; usable: number }[];
+  confidence: { observed: number; usable: number; ratio: number };
+  classes: { cls: string; label: string; n: number }[];
+  pending: number;
+  scan?: { id: string; label: string; covered: boolean }[];
+  methodPages: { path: string; title: string }[];
+  next: string;
+}
 
 export type DomainId = 'op' | 'mod' | 'com' | 'soc' | 'kn' | 'est' | 'sys';
 
@@ -562,8 +573,25 @@ export interface TavirApi {
     docuflow: {
       send: (pecaId: string) => Promise<{ ok: boolean; error?: string; slug?: string }>;
       board: () => Promise<{ ok: boolean; error?: string; compositions: Array<{ projectId?: string; title?: string }>; jobs: Array<{ jobId?: string; status?: string }> }>;
-      open: () => Promise<{ ok: boolean }>;
+      open: (slug?: string) => Promise<{ ok: boolean }>;
     };
+  };
+  raiox: {
+    catalog: () => Promise<
+      | { ok: true; catalog: RaioxCatalogItem[]; gaps: RaioxGap[]; fronts: readonly { id: string; label: string; physicalOnly: boolean }[]; infra: unknown; ciclo: unknown }
+      | { ok: false; error: string }
+    >;
+    list: () => Promise<{ ok: true; cases: RaioxScreenCase[] } | { ok: false; error: string }>;
+    get: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    create: (input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    updateFrontier: (id: string, patch: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    addEvidence: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    pickFile: (id: string, sub: 'evidencias' | 'execucao') => Promise<{ ok: true; artifact: { file: string; sha256: string; collectedAt: string } } | { ok: false; error: string }>;
+    reviewEvidence: (id: string, evId: string, decision: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    removeEvidence: (id: string, evId: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    setPriority: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    setDebrief: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    openFolder: (id: string) => Promise<{ ok: boolean; error?: string }>;
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
   onStudioEvent: (callback: (event: StudioEvent) => void) => () => void;
