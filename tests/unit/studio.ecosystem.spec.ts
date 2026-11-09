@@ -94,7 +94,18 @@ describe('ecossistema', () => {
       seen.push(`${req.method} ${req.url}`);
       if (req.url === '/channels') { res.writeHead(409); res.end('{}'); return; }
       if (req.url === '/channels/mp/brand-kit') { res.writeHead(201); res.end('{}'); return; }
-      if (req.url === '/projects') { res.writeHead(202); res.end(JSON.stringify({ slug: 'o-arquivo' })); return; }
+      if (req.url === '/projects') {
+        let raw = '';
+        req.on('data', (chunk) => { raw += chunk; });
+        req.on('end', () => {
+          const body = JSON.parse(raw);
+          expect(body.stop).toBe('research');
+          expect(body.topic).toContain('A porta abre.');
+          res.writeHead(202);
+          res.end(JSON.stringify({ slug: 'o-arquivo' }));
+        });
+        return;
+      }
       if (req.url === '/compositions') { res.end(JSON.stringify({ projects: [{ projectId: 'c1', title: 'Corte' }] })); return; }
       if (req.url === '/jobs') { res.end(JSON.stringify({ jobs: [{ jobId: 'j1', status: 'done' }] })); return; }
       res.writeHead(404);

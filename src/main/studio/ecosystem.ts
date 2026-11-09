@@ -152,7 +152,7 @@ export async function sendToDocuflow(base: string, perfil: Perfil, peca: Peca): 
   const created = await fetch(`${base.replace(/\/$/, '')}/projects`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ topic, lang: 'pt', minutes: 3, stop: 'render' }),
+    body: JSON.stringify({ topic, lang: 'pt', minutes: 3, stop: 'research' }),
   });
   const payload = await created.json().catch(() => ({})) as { slug?: string; detail?: string };
   if (!created.ok) return { ok: false, error: payload.detail || `Docuflow recusou o projeto (${created.status})` };
