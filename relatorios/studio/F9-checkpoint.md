@@ -21,7 +21,7 @@ A página [License FAQ](https://www.remotion.dev/docs/license/faq) diz que a lic
 | Item | Estado |
 | --- | --- |
 | Três perfis cadastrados na tela | ✅ na janela isolada (`TAVIR_STUDIO_HOME` temporário): Multiverso Paranoico (Instagram e YouTube), TAVIR Oficial (Instagram) e TAVIR B2B (LinkedIn). Print `relatorios/studio/F9/01-tres-perfis.png`. O chip mostra só a primeira rede. |
-| Carrossel do Multiverso com imagens do Flow na pasta | ❌ o código existe; as imagens não foram geradas |
+| Carrossel do Multiverso com imagens do Flow na pasta | parcial: na janela isolada, a peça «O arquivo de 1974» está em `ig-carrossel-4x5`, etapa `arte`, com 3 ângulos e o escolhido aprovado, e 2 slides. Prints `02-angulo-aprovado.png` e `03-roteiro.png`. Os frames estão «sem render». As imagens do Flow não foram geradas. |
 | Reel 1080×1920 com narração e −14 LUFS | ✅ o arquivo `relatorios/studio/F7/reel-2cenas.mp4`; ❌ assistido no celular; ❌ whisper.cpp |
 | Prévia igual ao arquivo | ✅ os prints da F4; a comparação com o celular ficou nos valores iniciais |
 | Preset novo aprovado na tela | ✅ um kit, no perfil de conformidade, não nos três perfis reais |
