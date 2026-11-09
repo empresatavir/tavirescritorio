@@ -76,15 +76,12 @@ export function precondition(peca: Peca): { ok: boolean; motivo: string } {
       return { ok: true, motivo: '' };
     }
     case 'arte': {
+      const slots = peca.slots ?? [];
+      if (format.kind === 'video' && slots.length === 0) return { ok: true, motivo: '' };
       if (format.kind !== 'video') {
         const slides = peca.roteiro?.slides?.length ?? 0;
-        const slots = peca.slots ?? [];
         if (!slides && slots.length === 0) return { ok: false, motivo: 'roteiro sem slides' };
-        if (slots.some((s) => !s.ativo_id)) return { ok: false, motivo: 'há slot sem ativo' };
-        return { ok: true, motivo: '' };
       }
-      const slots = peca.slots;
-      if (!slots || slots.length === 0) return { ok: false, motivo: 'nenhum slot na peça' };
       if (slots.some((s) => !s.ativo_id)) return { ok: false, motivo: 'há slot sem ativo' };
       return { ok: true, motivo: '' };
     }

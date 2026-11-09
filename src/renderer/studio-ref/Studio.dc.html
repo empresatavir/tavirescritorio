@@ -179,7 +179,7 @@
                 </div>
               </sc-for>
             </div>
-            <div class="actions" style="padding: 14px 18px; border-top: 1px solid var(--line)"><span class="muted" style="font-size: 12px">{{art.note}}</span><div class="grow"></div><button class="btn primary" onClick="{{toReview}}" disabled="{{art.notReady}}">Enviar para revisão</button></div>
+            <div class="actions" style="padding: 14px 18px; border-top: 1px solid var(--line)"><span class="muted" style="font-size: 12px">{{art.note}}</span><div class="grow"></div><button class="btn primary" onClick="{{toReview}}" disabled="{{art.notReady}}">{{art.send}}</button></div>
           </section>
           <section class="card">
             <div class="card-h"><h3>Prompts do Flow</h3><div class="grow"></div><button class="btn sm secondary" onClick="{{compilePrompts}}">Gerar prompts</button><button class="btn sm secondary" onClick="{{exportPrompts}}">Exportar lista</button></div>
@@ -219,7 +219,7 @@
                 <button class="btn sm secondary" onClick="{{c.redo}}">refazer narração</button>
               </div>
             </sc-for>
-            <div class="actions"><button class="btn secondary" onClick="{{narrate}}">Gerar narração</button><button class="btn primary" onClick="{{advance}}" disabled="{{locked}}">Seguir</button></div>
+            <div class="actions"><button class="btn secondary" onClick="{{narrate}}">Gerar narração</button><button class="btn secondary" onClick="{{renderReel}}">Renderizar reel</button><button class="btn primary" onClick="{{advance}}" disabled="{{locked}}">Seguir</button></div>
           </section>
         </sc-if>
 
@@ -729,7 +729,7 @@ class Component extends DCLogic {
       }),
       slidesN: slides.length, addSlide: function () { self.saveSlide(slides.length, ''); },
       approveScript: function () { if (!locked && peca) { var api = studioApi(); api.pecas.advance(peca.id).then(function (res) { self.after(res); }); } },
-      art: { done: (s.arteImages || []).filter(Boolean).length, total: slides.length, pct: slides.length ? Math.round((s.arteImages || []).filter(Boolean).length / slides.length * 100) : 0, cls: '', cost: '—', job: '—', note: 'Cada slide mostra o arquivo renderizado. Trocar a imagem liga o slot.', notReady: !slides.length },
+      art: { done: (s.arteImages || []).filter(Boolean).length, total: slides.length, pct: slides.length ? Math.round((s.arteImages || []).filter(Boolean).length / slides.length * 100) : 0, cls: '', cost: '—', job: '—', note: 'Cada slide mostra o arquivo renderizado. Trocar a imagem liga o slot.', notReady: !slides.length, send: kind === 'video' ? 'Seguir para o áudio' : 'Enviar para revisão' },
       frames: slides.map(function (item, i) {
         var img = (s.arteImages || [])[i] || '';
         var imported = item.slot && slots.some(function (sl) { return sl.codigo === item.slot && sl.ativo_id; });
@@ -874,7 +874,13 @@ class Component extends DCLogic {
       }),
       compilePrompts: function () { var api = studioApi(); if (!api || !api.prompts || !peca) return; api.prompts.compile(peca.id).then(function (res) { self.after(res); }); },
       exportPrompts: function () { var api = studioApi(); if (!api || !api.prompts || !peca) return; api.prompts.export(peca.id).then(function (res) { self.after(res); }); },
-      scenes: ((peca && peca.roteiro && peca.roteiro.cenas) || []).map(function (scene, index) {
+      scenes: (function () {
+        var roteiro = peca && peca.roteiro;
+        if (roteiro && roteiro.cenas && roteiro.cenas.length) return roteiro.cenas;
+        return ((roteiro && roteiro.slides) || []).filter(function (sl) { return ((sl.apoio || sl.titulo) || '').trim(); }).map(function (sl) {
+          return { texto_narrado: sl.apoio || sl.titulo, texto_tela: sl.titulo, preset: '' };
+        });
+      })().map(function (scene, index) {
         var words = (peca.roteiro && peca.roteiro.legendas) || [];
         var heard = (s.clips || [])[index] || '';
         return {
@@ -909,6 +915,13 @@ class Component extends DCLogic {
         var api = studioApi();
         if (!api || !api.audio || !peca) return;
         api.audio.narrate(peca.id).then(function (res) { self.after(res); });
+      },
+      renderReel: function () {
+        var api = studioApi();
+        if (!api || !api.render || !peca) return;
+        api.render.final(peca.id).then(function (res) {
+          if (!res || res.ok === false) self.setState({ error: (res && res.error) || 'não renderizou' });
+        });
       },
       canonText: ['Tom: ' + (kit.tone || '—')].concat(kit.canon || []).join('\n') || '—',
       canon: (kit.canon || []).map(function (t, i) { return { n: String(i + 1).padStart(2, '0'), t: t }; }),

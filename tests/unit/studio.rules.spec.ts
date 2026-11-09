@@ -113,6 +113,14 @@ describe('regras da peça', () => {
     expect(seguiu.peca.etapa).toBe('angulo');
   });
 
+  it('reel sem slot de imagem segue da arte para o áudio', () => {
+    const base = peca('arte', { formato_id: 'ig-reels-9x16', slots: [] });
+    expect(canAdvance(base)).toBe(true);
+    expect(advance(base).peca.etapa).toBe('audio');
+    const comSlot = peca('arte', { formato_id: 'ig-reels-9x16', slots: [{ id: 's', ativo_id: null }] });
+    expect(canAdvance(comSlot)).toBe(false);
+  });
+
   it('no áudio do vídeo, as três decisões seguem o trilho', () => {
     const base = peca('audio', { formato_id: 'ig-reels-9x16' });
     expect(applyGate(base, 'audio', 'aprovado', '').peca.etapa).toBe('revisao');

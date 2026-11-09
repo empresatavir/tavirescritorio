@@ -71,5 +71,8 @@ export async function synthesizeScenes(pecaId: string, store: StudioStore, onlyI
     });
     files.push(output);
   }
+  if (onlyIndex == null) {
+    store.updatePeca(pecaId, { roteiro: { ...(peca.roteiro ?? {}), cenas: scenes } });
+  }
   return { ok: true, files };
 }
