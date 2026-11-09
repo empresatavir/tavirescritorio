@@ -88,10 +88,30 @@ describe('ecossistema', () => {
     server.close();
   });
 
-  it('cria o canal e o projeto longo sem inventar campo de voz', async () => {
+  it('cria o canal, o projeto longo e a composição que a tela do Docuflow lista', async () => {
     const seen: string[] = [];
+    let polls = 0;
+    let putBody: { title?: string; scenes?: Array<{ narration: string; duration: number; visual_query: string }> } = {};
+    let importBody: { projectPath?: string; projectId?: string; title?: string } = {};
     const server = await listen((req, res) => {
       seen.push(`${req.method} ${req.url}`);
+      if (req.method === 'GET' && req.url === '/projects/o-arquivo') {
+        polls += 1;
+        res.end(JSON.stringify({ slug: 'o-arquivo', topic: 't', status: polls < 2 ? 'running:research' : 'stopped:research', scenes: [] }));
+        return;
+      }
+      if (req.method === 'PUT' && req.url === '/projects/o-arquivo') {
+        let raw = '';
+        req.on('data', (chunk) => { raw += chunk; });
+        req.on('end', () => { putBody = JSON.parse(raw); res.end(raw); });
+        return;
+      }
+      if (req.method === 'POST' && req.url === '/compositions/import-legacy') {
+        let raw = '';
+        req.on('data', (chunk) => { raw += chunk; });
+        req.on('end', () => { importBody = JSON.parse(raw); res.end('{}'); });
+        return;
+      }
       if (req.url === '/channels') { res.writeHead(409); res.end('{}'); return; }
       if (req.url === '/channels/mp/brand-kit') { res.writeHead(201); res.end('{}'); return; }
       if (req.url === '/projects') {
@@ -113,8 +133,12 @@ describe('ecossistema', () => {
     });
     const perfil = { id: 'p', nome: 'Multiverso Paranoico', iniciais: 'MP', brand_kit: KIT, redes: [{ id: 'r', perfil_id: 'p', rede: 'youtube', handle: '@multiverso', formatos: [], posts_por_semana: 1, publicacao: 'manual' }] } as Perfil;
     const peca = { id: 'p1', formato_id: 'yt-longo-16x9', titulo: 'O arquivo', roteiro: { cenas: [{ texto_narrado: 'A porta abre.' }] } } as Peca;
-    const sent = await sendToDocuflow(server.base, perfil, peca);
+    const sent = await sendToDocuflow(server.base, perfil, peca, { pollMs: 5, waitMs: 2000 });
     expect(sent).toEqual({ ok: true, slug: 'o-arquivo' });
+    expect(polls).toBe(2);
+    expect(putBody.title).toBe('O arquivo');
+    expect(putBody.scenes).toEqual([{ id: 1, narration: 'A porta abre.', visual_query: 'A porta abre.', on_screen_text: '', duration: 2 }]);
+    expect(importBody).toEqual({ projectPath: 'o-arquivo/project.json', projectId: 'o-arquivo', title: 'O arquivo' });
     expect(seen).toContain('POST /channels');
     const board = await editionBoard(server.base);
     expect(board.compositions).toHaveLength(1);

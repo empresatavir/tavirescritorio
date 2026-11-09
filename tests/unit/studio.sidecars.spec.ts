@@ -4,7 +4,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
-import { createSidecarManager, loadSidecars, parseListeningPid, type SidecarSpec } from '../../src/main/sidecars';
+import { createSidecarManager, describeCommand, loadSidecars, parseListeningPid, type SidecarSpec } from '../../src/main/sidecars';
 import { exportReelForDarkFlow } from '../../src/main/studio/darkflowExport';
 import { darkflowRequest } from '../../src/main/studio/darkflow';
 import { docuflowChannel } from '../../src/main/studio/docuflow';
@@ -35,6 +35,25 @@ describe('sidecars', () => {
     expect(systems[0].healthUrl).toBe('http://127.0.0.1:8765/api/health');
     expect(systems[1].healthUrl).toBe('http://127.0.0.1:5000/docs');
     expect(JSON.stringify(systems)).not.toContain('enable-meta-publish');
+  });
+
+  it('sobe a API e o Studio do Docuflow direto, sem o menu do iniciar.bat', () => {
+    const docuflow = loadSidecars(path.resolve('db/sidecars.example.json'))[1];
+    const linha = describeCommand(docuflow);
+    expect(linha).toContain('uvicorn docuflow.api:app');
+    expect(linha).toContain('--port 5000');
+    expect(linha).toContain('docuflow-studio/scripts/run-dev.mjs');
+    expect(linha).not.toContain('iniciar.bat');
+    expect(docuflow.conflito).toBeUndefined();
+  });
+
+  it('a trava da publicação da Meta também olha os argumentos', async () => {
+    let spawned = false;
+    const file = writeConfig([{ id: 'x', nome: 'X', pasta: os.tmpdir(), comando: 'x.bat', healthUrl: 'http://127.0.0.1:1/', portas: [], processos: [{ comando: 'python', args: ['main.py', '--enable-meta-publish'] }] }]);
+    const manager = createSidecarManager(file, { health: async () => false, portOwner: () => null, spawn: () => { spawned = true; return { pid: 1, kill: () => undefined }; } });
+    const res = await manager.start('x');
+    expect(res.ok).toBe(false);
+    expect(spawned).toBe(false);
   });
 
   it('reconhece quem escuta a porta', () => {

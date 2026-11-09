@@ -286,7 +286,7 @@ const api: TavirApi = {
     docuflow: {
       send: (pecaId) => ipcRenderer.invoke('studio:docuflow:send', pecaId),
       board: () => ipcRenderer.invoke('studio:docuflow:board'),
-      open: () => ipcRenderer.invoke('studio:docuflow:open'),
+      open: (slug?: string) => ipcRenderer.invoke('studio:docuflow:open', slug),
     },
   },
   onStudioEvent: (callback) => {

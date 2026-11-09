@@ -9,11 +9,22 @@ export interface SidecarConflict {
   motivo: string;
 }
 
+export interface SidecarProcess {
+  /** Executável no PATH (ex.: python, node) ou caminho relativo à pasta. Roda sem shell. */
+  comando: string;
+  args?: string[];
+}
+
 export interface SidecarSpec {
   id: string;
   nome: string;
   pasta: string;
   comando: string;
+  /**
+   * Processos iniciados direto, sem o script do projeto. Usado quando o script tem menu
+   * (o iniciar.bat do Docuflow escolhe sozinho uma opção que não sobe a API).
+   */
+  processos?: SidecarProcess[];
   healthUrl: string;
   portas: number[];
   conflito?: SidecarConflict;
@@ -100,7 +111,41 @@ async function defaultHealth(url: string): Promise<boolean> {
   }
 }
 
+function killTree(pid: number, child: ChildProcess): void {
+  if (pid <= 0) return;
+  try {
+    execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true });
+  } catch {
+    child.kill();
+  }
+}
+
+/** Linha legível do que o sistema roda, para a tela e para a trava do --enable-meta-publish. */
+export function describeCommand(spec: SidecarSpec): string {
+  if (spec.processos?.length) return spec.processos.map((p) => [p.comando, ...(p.args ?? [])].join(' ')).join(' + ');
+  return spec.comando;
+}
+
 function defaultSpawn(spec: SidecarSpec): { pid: number; kill: () => void } {
+  if (spec.processos?.length) {
+    const started = spec.processos.map((proc) => {
+      const child: ChildProcess = spawn(proc.comando, proc.args ?? [], {
+        cwd: spec.pasta,
+        detached: true,
+        shell: false,
+        windowsHide: true,
+        stdio: 'ignore',
+      });
+      child.on('error', () => undefined);
+      child.unref();
+      return { pid: child.pid ?? 0, child };
+    });
+    const first = started.find((item) => item.pid > 0);
+    return {
+      pid: first?.pid ?? 0,
+      kill: () => started.forEach((item) => killTree(item.pid, item.child)),
+    };
+  }
   const command = path.join(spec.pasta, spec.comando);
   const child: ChildProcess = spawn(command, [], {
     cwd: spec.pasta,
@@ -113,20 +158,12 @@ function defaultSpawn(spec: SidecarSpec): { pid: number; kill: () => void } {
   const pid = child.pid ?? 0;
   return {
     pid,
-    kill: () => {
-      if (pid > 0) {
-        try {
-          execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true });
-        } catch {
-          child.kill();
-        }
-      }
-    },
+    kill: () => killTree(pid, child),
   };
 }
 
 function assertNoPublishFlag(spec: SidecarSpec): void {
-  const text = `${spec.comando} ${spec.pasta}`;
+  const text = `${describeCommand(spec)} ${spec.pasta}`;
   if (/enable-meta-publish/i.test(text)) {
     throw new Error('O Escritório não liga --enable-meta-publish. Isso fica no DarkFlow.');
   }
@@ -165,7 +202,7 @@ export function createSidecarManager(file: string, deps: Partial<SidecarDeps> = 
           id: item.id,
           nome: item.nome,
           pasta: item.pasta,
-          comando: item.comando,
+          comando: describeCommand(item),
           healthUrl: item.healthUrl,
           portas: item.portas,
           saudavel,

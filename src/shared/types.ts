@@ -562,7 +562,7 @@ export interface TavirApi {
     docuflow: {
       send: (pecaId: string) => Promise<{ ok: boolean; error?: string; slug?: string }>;
       board: () => Promise<{ ok: boolean; error?: string; compositions: Array<{ projectId?: string; title?: string }>; jobs: Array<{ jobId?: string; status?: string }> }>;
-      open: () => Promise<{ ok: boolean }>;
+      open: (slug?: string) => Promise<{ ok: boolean }>;
     };
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;

@@ -229,9 +229,11 @@ export function registerStudioIpc(handle: Handle): void {
     }
   });
   handle('studio:docuflow:board', () => editionBoard('http://127.0.0.1:5000'));
-  handle('studio:docuflow:open', () => {
+  handle('studio:docuflow:open', (_e, slug?: string) => {
     const win = new BrowserWindow({ width: 1280, height: 800, webPreferences: { nodeIntegration: false, contextIsolation: true } });
-    void win.loadURL('http://127.0.0.1:3000');
+    // A raiz do Docuflow Studio é o editor avulso (mostra «Nenhum projeto»). Composição vai direto; sem ela, a lista.
+    const clean = typeof slug === 'string' && /^[\w.-]{1,120}$/.test(slug) ? slug : '';
+    void win.loadURL(clean ? `http://127.0.0.1:3000/studio/${encodeURIComponent(clean)}` : 'http://127.0.0.1:3000/projects');
     return { ok: true };
   });
   watchInbox(getStudioStore(), (pecaId, frame) => {
