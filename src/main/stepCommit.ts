@@ -12,14 +12,14 @@ export interface StepCommitResult {
   error?: string;
 }
 
-const git = (cwd: string, args: string[], input?: string) =>
-  execFileSync('git', args, { cwd, windowsHide: true, encoding: 'utf8', input, stdio: ['pipe', 'pipe', 'pipe'], timeout: 60000 });
+const git = (cwd: string, args: string[], input?: string, env?: Record<string, string>) =>
+  execFileSync('git', args, { cwd, windowsHide: true, encoding: 'utf8', input, stdio: ['pipe', 'pipe', 'pipe'], timeout: 60000, env: env ? { ...process.env, ...env } : process.env });
 
 /**
  * Commita só os arquivos que a execução mudou, com `--only`, para não levar junto
  * o que o Carlos tinha em andamento no índice. Ignorados pelo .gitignore ficam de fora.
  */
-export function commitStep(workspace: string, changes: RunChanges | undefined, message: string): StepCommitResult {
+export function commitStep(workspace: string, changes: RunChanges | undefined, message: string, identity?: Record<string, string>): StepCommitResult {
   if (!existsSync(join(workspace, '.git'))) return { ok: true, files: 0, skipped: 'pasta sem git' };
   if (!changes?.available) return { ok: true, files: 0, skipped: 'sem retrato do disco' };
   const touched = [...changes.added, ...changes.modified, ...changes.deleted].filter(Boolean);
@@ -36,7 +36,7 @@ export function commitStep(workspace: string, changes: RunChanges | undefined, m
     git(workspace, ['add', '-A', '--', ...paths]);
     const staged = git(workspace, ['diff', '--cached', '--name-only', '--', ...paths]).trim();
     if (!staged) return { ok: true, files: 0, skipped: 'nada novo para commitar' };
-    git(workspace, ['commit', '-q', '-m', message, '--only', '--', ...paths]);
+    git(workspace, ['commit', '-q', '-m', message, '--only', '--', ...paths], undefined, identity);
     const sha = git(workspace, ['rev-parse', '--short', 'HEAD']).trim();
     return { ok: true, sha, files: staged.split(/\r?\n/).length };
   } catch (err: any) {

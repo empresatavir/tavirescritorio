@@ -9,6 +9,8 @@ import { commitStep, type StepCommitResult } from './stepCommit';
 import { annotateRun, type RunChanges } from './runLedger';
 import { listQaRuns, qaSummary, runQa, type QaRun } from './qa/qaRunner';
 import { listSegRuns, runSeg, segSummary, setSegAccept, type SegRun } from './seg/segScanner';
+import * as cycleGit from './cycleBranch';
+import type { CycleBranch, CyclePublish } from './cycleBranch';
 
 function getDbPath(): string {
   return path.join(process.cwd(), 'backend', 'tavir.db');
@@ -1110,7 +1112,7 @@ export function projectEngineSpec(rootPath: string) {
 
 export type DecisionEntry = {
   at: string;
-  kind: 'esteira' | 'trilho' | 'seguranca';
+  kind: 'esteira' | 'trilho' | 'seguranca' | 'publicacao';
   stage: string;
   decision: 'aprovado' | 'reprovado';
   question?: string;
@@ -1150,8 +1152,28 @@ export function listProjectDecisions(idOrPath: string): any {
 }
 
 /** Commit por passo: só o que a execução mudou, com a etapa e a execução na mensagem. */
+/**
+ * Conta do Escritório que assina e publica pelo projeto: a escolhida no projeto
+ * (control.json git_account), senão a do perfil git dele (TAVIR ou Pessoal), senão a padrão.
+ */
+export function projectGitAccount(rootPath: string) {
+  const { resolveGitAccount } = require('./gitAccounts') as typeof import('./gitAccounts');
+  const ctrl = readControlJson(rootPath);
+  return resolveGitAccount({ accountId: String(ctrl?.git_account || '') || null, profile: projectGitProfile(rootPath) });
+}
+
+function projectCommitIdentity(rootPath: string): Record<string, string> | undefined {
+  try {
+    const { commitIdentityEnv } = require('./gitAccounts') as typeof import('./gitAccounts');
+    return commitIdentityEnv(projectGitAccount(rootPath));
+  } catch {
+    return undefined;
+  }
+}
+
 function commitRunStep(rootPath: string, title: string, runId: string | undefined, changes: RunChanges | undefined): StepCommitResult {
-  const res = commitStep(rootPath, changes, `tavir: ${title}${runId ? `\n\nExecução: .tavir/runs/${runId}` : ''}`);
+  // Sem conta cadastrada, vale o user.name/user.email local do projeto.
+  const res = commitStep(rootPath, changes, `tavir: ${title}${runId ? `\n\nExecução: .tavir/runs/${runId}` : ''}`, projectCommitIdentity(rootPath));
   if (runId) annotateRun(rootPath, runId, { commit: { sha: res.sha, files: res.files, skipped: res.skipped, error: res.error } });
   return res;
 }
@@ -1356,7 +1378,13 @@ export type AltTrackState = {
   runJobId: string;
   checkpoint?: AltTrackCheckpoint | null;
   items: AltTrackItem[];
-  cycles?: Array<{ closed_at: string; title: string; items: AltTrackItem[] }>;
+  /** Branch local do ciclo (tavir/ciclo-N-…), onde caem os commits por passo. */
+  branch?: CycleBranch | null;
+  /** Alteração solta impediu trocar de branch: o CEO decide (guardar ou seguir aqui). */
+  branchPending?: { dirty: string[]; error: string } | null;
+  /** PR aberto ou merge local feito pelo CEO. */
+  publish?: CyclePublish | null;
+  cycles?: Array<{ closed_at: string; title: string; items: AltTrackItem[]; branch?: CycleBranch | null; publish?: CyclePublish | null }>;
 };
 
 const EMPTY_NOTES: AltTrackNotes = { map: '', plan: '', fix: '', build: '' };
@@ -1572,6 +1600,34 @@ function normalizeNotes(raw: unknown): AltTrackNotes {
   };
 }
 
+function normalizeBranch(raw: unknown): CycleBranch | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const b = raw as Record<string, unknown>;
+  if (!b.name || !b.base) return null;
+  return {
+    name: String(b.name),
+    base: String(b.base),
+    created_at: String(b.created_at || ''),
+    ...(b.here ? { here: true } : {}),
+    ...(b.stash ? { stash: String(b.stash) } : {}),
+  };
+}
+
+function normalizePublish(raw: unknown): CyclePublish | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const p = raw as Record<string, unknown>;
+  if (p.kind !== 'pr' && p.kind !== 'merge') return null;
+  return {
+    kind: p.kind,
+    at: String(p.at || ''),
+    ...(p.url ? { url: String(p.url) } : {}),
+    ...(p.number ? { number: Number(p.number) } : {}),
+    ...(p.sha ? { sha: String(p.sha) } : {}),
+    ...(p.account ? { account: String(p.account) } : {}),
+    ...(p.repo ? { repo: String(p.repo) } : {}),
+  };
+}
+
 function normalizeAltTrack(raw: unknown, alterationsOpen: boolean): AltTrackState {
   const base = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
   const notes = normalizeNotes(base.notes);
@@ -1596,6 +1652,12 @@ function normalizeAltTrack(raw: unknown, alterationsOpen: boolean): AltTrackStat
     runJobId: String(base.runJobId || ''),
     checkpoint: normalizeCheckpoint(base.checkpoint),
     items,
+    branch: normalizeBranch(base.branch),
+    branchPending:
+      base.branchPending && typeof base.branchPending === 'object' && Array.isArray((base.branchPending as any).dirty)
+        ? { dirty: (base.branchPending as any).dirty.map((x: unknown) => String(x)).slice(0, 50), error: String((base.branchPending as any).error || '') }
+        : null,
+    publish: normalizePublish(base.publish),
     cycles: Array.isArray(base.cycles)
       ? base.cycles
           .slice(-30)
@@ -1605,6 +1667,8 @@ function normalizeAltTrack(raw: unknown, alterationsOpen: boolean): AltTrackStat
               closed_at: String(row.closed_at || ''),
               title: String(row.title || 'Manutenção'),
               items: normalizeItems(row.items, EMPTY_NOTES),
+              branch: normalizeBranch(row.branch),
+              publish: normalizePublish(row.publish),
             };
           })
       : [],
@@ -1965,7 +2029,18 @@ export function startNewAltTrackCycle(idOrPath: string): any {
     closed_at: new Date().toISOString(),
     title: track.title || 'Manutenção',
     items: track.items,
+    branch: track.branch || null,
+    publish: track.publish || null,
   };
+  // Ciclo publicado: o próximo sai da branch de origem. Sem publicar, empilha sobre o atual.
+  if (track.publish) {
+    try {
+      cycleGit.returnToBase(ctrl.rootPath, track.branch);
+    } catch {}
+  }
+  track.branch = null;
+  track.branchPending = null;
+  track.publish = null;
   const fresh = defaultTrackItems(EMPTY_NOTES);
   track.items = fresh;
   track.notes = notesFromItems(fresh);
@@ -2029,6 +2104,248 @@ export function approveAltTrackGate(idOrPath: string, decision: 'aprovado' | 're
   return { ...getProjectAlterationsControl(idOrPath), decision: entry };
 }
 
+// ------------------------------------------------------------------ branch e publicação do ciclo
+
+/** Assunto do ciclo para o nome da branch e o título do PR: título próprio ou o primeiro gap mapeado. */
+function cycleSubject(track: AltTrackState): string {
+  if (track.title && !/^Trilho de altera/i.test(track.title)) return track.title;
+  const map = String(track.items.find((i) => i.kind === 'map')?.note || track.notes.map || '');
+  const line = map
+    .split(/\r?\n/)
+    .map((l) => l.replace(/^[\s>*_#`\-\d.)]+/, '').trim().replace(/^(gaps?|lacunas?)\s*[:\-–]\s*/i, ''))
+    .find((l) => l.length > 3 && !/^\d{4}-\d{2}-\d{2}/.test(l) && !/·/.test(l));
+  return (line || 'ajuste').slice(0, 80);
+}
+
+function ensureTrackBranch(
+  rootPath: string,
+  prev: any,
+  track: AltTrackState,
+  resolve?: 'stash' | 'here',
+): { ok: boolean; error?: string } {
+  const res = cycleGit.ensureCycleBranch(rootPath, track.branch, {
+    cycleNo: (track.cycles?.length || 0) + 1,
+    title: cycleSubject(track),
+    resolve,
+  });
+  if (!res.ok) {
+    track.branchPending = res.dirty?.length ? { dirty: res.dirty, error: res.error } : null;
+    track.runError = res.error;
+    track.updated_at = new Date().toISOString();
+    writeControlJson(rootPath, { ...prev, alterations_open: true, alt_track: track, updated_at: track.updated_at });
+    return { ok: false, error: res.error };
+  }
+  const changed = JSON.stringify(res.branch) !== JSON.stringify(track.branch || null) || !!track.branchPending;
+  track.branch = res.branch;
+  track.branchPending = null;
+  // Juntou na principal e voltou a mexer: a publicação anterior não cobre o que vem agora.
+  if (track.publish?.kind === 'merge') track.publish = null;
+  if (res.created && res.branch) track.runLog = [...(track.runLog || []), `Branch do ciclo: ${res.branch.name} (saiu de ${res.branch.base})`];
+  if (res.branch?.stash && changed) track.runLog = [...(track.runLog || []), `Alterações soltas guardadas no stash ${res.branch.stash}`];
+  if (changed) {
+    track.updated_at = new Date().toISOString();
+    writeControlJson(rootPath, { ...prev, alterations_open: true, alt_track: track, updated_at: track.updated_at });
+  }
+  return { ok: true };
+}
+
+/** Resposta do CEO quando há alteração solta: guardar no stash e abrir a branch, ou seguir na branch atual. */
+export function resolveAltTrackBranch(idOrPath: string, choice: 'stash' | 'here'): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) return { ...ctrl, ok: false, error: 'Trilho fechado.' };
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  const gate = ensureTrackBranch(ctrl.rootPath, prev, track, choice === 'here' ? 'here' : 'stash');
+  if (!gate.ok) return { ...getProjectAlterationsControl(idOrPath), ok: false, error: gate.error };
+  track.runError = '';
+  writeControlJson(ctrl.rootPath, { ...prev, alterations_open: true, alt_track: track, updated_at: new Date().toISOString() });
+  logDecision(ctrl.rootPath, {
+    kind: 'trilho',
+    stage: 'Branch do ciclo',
+    decision: 'aprovado',
+    note:
+      choice === 'here'
+        ? `Seguir na branch atual (${track.branch?.name}) com as alterações soltas.`
+        : `Alterações soltas guardadas no stash; ciclo em ${track.branch?.name}.`,
+  });
+  return getProjectAlterationsControl(idOrPath);
+}
+
+function projectGitProfile(rootPath: string): string {
+  try {
+    const iso = JSON.parse(fs.readFileSync(path.join(rootPath, '.tavir', 'isolation.json'), 'utf8'));
+    return String(iso?.git_identity?.profile || '');
+  } catch {
+    return '';
+  }
+}
+
+/** O que a tela precisa para o botão de publicar: modo, conta, commits e o que falta. */
+export function getAltTrackPublishInfo(idOrPath: string): any {
+  const { listGitAccounts, resolveGitAccount } = require('./gitAccounts') as typeof import('./gitAccounts');
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  const track = ctrl.alt_track;
+  const root = ctrl.rootPath;
+  const prev = readControlJson(root);
+  const isGit = cycleGit.isGitRepo(root);
+  const repo = isGit ? cycleGit.githubRemote(root) : null;
+  const otherRemote = isGit && !repo && cycleGit.hasAnyRemote(root);
+  const branch = track.branch || null;
+  const commits = branch ? cycleGit.cycleCommits(root, branch) : [];
+  const accounts = listGitAccounts();
+  const account = resolveGitAccount({ accountId: String(prev?.git_account || '') || null, profile: projectGitProfile(root) });
+  const passed = track.runStatus === 'done' && track.items[track.items.length - 1]?.kind === 'build';
+  const mode: 'pr' | 'merge' | 'none' = !isGit || !branch || branch.here || otherRemote ? 'none' : repo ? 'pr' : 'merge';
+  let reason = '';
+  if (!isGit) reason = 'O projeto não tem git.';
+  else if (!branch) reason = 'O ciclo ainda não mudou código (a branch nasce no primeiro item de ajuste).';
+  else if (branch.here) reason = `Este ciclo rodou direto em ${branch.name}, sem branch própria.`;
+  else if (otherRemote) reason = 'O remoto do projeto não é GitHub. Publique pelo seu git.';
+  else if (!passed) reason = 'Libera quando "Validar & build" passar no QA e na segurança.';
+  else if (mode === 'merge' && track.publish?.kind === 'merge') reason = `Já juntado em ${branch.base}.`;
+  else if (!commits.length) reason = `Nenhum commit novo em ${branch.name}.`;
+  else if (mode === 'pr' && !accounts.length) reason = 'Cadastre sua conta do GitHub em Configurações › Contas e cofre.';
+  return {
+    ok: true,
+    mode,
+    canPublish: !reason,
+    reason,
+    branch,
+    branchPending: track.branchPending || null,
+    publish: track.publish || null,
+    repo: repo ? `${repo.owner}/${repo.repo}` : null,
+    account,
+    accounts,
+    commits,
+    current: isGit ? cycleGit.currentBranch(root) : '',
+  };
+}
+
+function buildCycleBody(root: string, track: AltTrackState, commits: cycleGit.CycleCommit[]): string {
+  const cut = (t: string, n: number) => (t.length > n ? t.slice(0, n).trimEnd() + '\n…' : t);
+  const fence = '```';
+  const map = String(track.items.find((i) => i.kind === 'map')?.note || '').trim();
+  const items = track.items.filter((i) => i.kind !== 'map');
+  const qa = listQaRuns(root).slice(-1)[0];
+  const seg = listSegRuns(root).slice(-1)[0];
+  const since = track.branch?.created_at || '';
+  let decisions: DecisionEntry[] = [];
+  try {
+    decisions = fs
+      .readFileSync(path.join(root, '.tavir', 'decisoes.jsonl'), 'utf8')
+      .split(/\r?\n/)
+      .filter(Boolean)
+      .map((l) => {
+        try {
+          return JSON.parse(l);
+        } catch {
+          return null;
+        }
+      })
+      .filter((d: any) => d && (!since || String(d.at) >= since));
+  } catch {}
+  const stat = track.branch ? cycleGit.cycleDiffStat(root, track.branch) : '';
+  const parts = [
+    '## O que mudou',
+    map ? cut(map, 3000) : '_Sem mapeamento registrado._',
+    '',
+    '## Trilhos',
+    ...items.map((i) => `- ${i.label} · ${i.owner}`),
+    '',
+    `## Commits (${commits.length})`,
+    ...commits.map((c) => `- ${c.sha} ${c.subject}`),
+    ...(stat ? ['', fence, cut(stat, 2500), fence] : []),
+    '',
+    '## QA',
+    qa ? `${fence}\n${cut(qaSummary(qa), 2500)}\n${fence}` : '_QA não rodou neste ciclo._',
+    '',
+    '## Segurança',
+    seg ? `${fence}\n${cut(segSummary(seg), 2500)}\n${fence}` : '_Varredura não rodou neste ciclo._',
+    '',
+    '## Decisões do CEO',
+    ...(decisions.length
+      ? decisions.map(
+          (d) =>
+            `- ${String(d.at).slice(0, 16).replace('T', ' ')} · ${d.stage} · **${d.decision}**${d.note ? ` · ${String(d.note).replace(/\s+/g, ' ').slice(0, 200)}` : ''}`,
+        )
+      : ['_Nenhuma decisão registrada neste ciclo._']),
+    '',
+    '---',
+    '_Aberto pela Fábrica do TAVIR Escritório. Os relatórios completos de QA e segurança ficam no projeto, em qa/evidencias e qa/seguranca._',
+  ];
+  return parts.join('\n').slice(0, 60000);
+}
+
+/** Clique do CEO: abre o PR (com remoto no GitHub) ou junta na branch principal (sem remoto). */
+export async function publishAltTrackCycle(idOrPath: string, opts: { accountId?: string } = {}): Promise<any> {
+  const { getGitAccountToken, resolveGitAccount } = require('./gitAccounts') as typeof import('./gitAccounts');
+  const info = getAltTrackPublishInfo(idOrPath);
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  const root = ctrl.rootPath;
+  const fail = (error: string) => ({ ...getAltTrackPublishInfo(idOrPath), ok: false, error });
+  if (liveAgents.has(`${root}:track`)) return fail('Há um agente rodando no trilho. Espere terminar.');
+  if (!info.canPublish) return fail(info.reason);
+  const prev = readControlJson(root);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  const branch = track.branch as CycleBranch;
+  const subject = cycleSubject(track);
+  let publish: CyclePublish;
+  if (info.mode === 'pr') {
+    const account = resolveGitAccount({ accountId: opts.accountId || String(prev?.git_account || '') || null, profile: projectGitProfile(root) });
+    if (!account) return fail('Cadastre sua conta do GitHub em Configurações › Contas e cofre.');
+    const token = getGitAccountToken(account.id);
+    if (!token) return fail(`Não consegui abrir o token da conta ${account.login} no cofre desta máquina. Cadastre de novo.`);
+    const [owner, repoName] = String(info.repo).split('/');
+    const res = await cycleGit.pushAndOpenPr({
+      root,
+      branch,
+      repo: { owner, repo: repoName },
+      token,
+      title: `tavir: ${subject}`,
+      body: buildCycleBody(root, track, info.commits),
+    });
+    if (!res.ok) return fail(res.error || 'Não consegui abrir o PR.');
+    publish = { kind: 'pr', at: new Date().toISOString(), url: res.url, number: res.number, account: account.login, repo: info.repo };
+    if (opts.accountId) prev.git_account = opts.accountId;
+  } else {
+    const list = info.commits.map((c: cycleGit.CycleCommit) => `- ${c.sha} ${c.subject}`).join('\n');
+    const res = cycleGit.mergeCycleLocal(root, branch, `tavir: ciclo ${(track.cycles?.length || 0) + 1} · ${subject}\n\n${list}`, projectCommitIdentity(root));
+    if (!res.ok) return fail(res.error || 'Não consegui juntar na branch principal.');
+    publish = { kind: 'merge', at: new Date().toISOString(), sha: res.sha };
+  }
+  track.publish = publish;
+  track.runLog = [
+    ...(track.runLog || []),
+    publish.kind === 'pr' ? `PR aberto: ${publish.url} (conta ${publish.account})` : `Ciclo juntado em ${branch.base} · ${publish.sha}`,
+  ];
+  track.updated_at = new Date().toISOString();
+  writeControlJson(root, { ...prev, alterations_open: true, alt_track: track, updated_at: track.updated_at });
+  try {
+    writeTrackMarkdown(root, track);
+  } catch {}
+  logDecision(root, {
+    kind: 'publicacao',
+    stage: publish.kind === 'pr' ? 'Abrir PR' : 'Juntar na principal',
+    decision: 'aprovado',
+    note:
+      publish.kind === 'pr'
+        ? `${publish.url} · ${branch.name} → ${branch.base} · conta ${publish.account}`
+        : `${branch.name} → ${branch.base} · ${publish.sha}`,
+  });
+  return { ...getAltTrackPublishInfo(idOrPath), ok: true, published: publish };
+}
+
+/** Conta do GitHub escolhida para publicar este projeto (vazio volta ao perfil do projeto). */
+export function setProjectGitAccount(idOrPath: string, accountId: string): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  const prev = readControlJson(ctrl.rootPath);
+  const next: Record<string, unknown> = { ...prev, updated_at: new Date().toISOString() };
+  if (accountId) next.git_account = String(accountId);
+  else delete next.git_account;
+  writeControlJson(ctrl.rootPath, next);
+  return getAltTrackPublishInfo(idOrPath);
+}
+
 /** O agente só pede decisão quando a resposta começa com o marcador (aceita negrito/título antes). */
 export const APPROVAL_RE = /^[\s>*_#`]*AGUARDANDO APROVA[ÇC][ÃA]O\s*:/i;
 
@@ -2079,6 +2396,11 @@ export async function executeAltTrackStep(
 
   const focus = track.items[track.step] || track.items[track.items.length - 1];
   const asChange = focus.kind === 'work' || focus.kind === 'build';
+  // Mudança de código só roda na branch do ciclo. Alteração solta no projeto: para e pergunta.
+  if (asChange) {
+    const gate = ensureTrackBranch(ctrl.rootPath, prev, track);
+    if (!gate.ok) return { ...getProjectAlterationsControl(idOrPath), ok: false, error: gate.error, branchPending: true };
+  }
   const mapItem = track.items.find((item) => item.kind === 'map');
   const mapText = String(mapItem?.note || track.notes.map || '').trim();
   const earlier = track.items

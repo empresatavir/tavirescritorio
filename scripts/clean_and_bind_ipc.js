@@ -788,6 +788,248 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     }
   }
 
+  // Contas e cofre: contas do GitHub (TAVIR e Pessoal) com token cifrado no cofre desta máquina.
+  // A tela só recebe login, rótulo e prévia mascarada; o token fica no processo main (src/main/gitAccounts.ts).
+  if (!cfgHtml.includes('id="tavir-contas"')) {
+    cfgHtml = cfgHtml.replace("['motores', 'Motores de IA', 4], ", "['motores', 'Motores de IA', 4], ['contas', 'Contas e cofre'], ");
+    const cardTpl = (list) => `<sc-for list="{{${list}}}" as="c" hint-placeholder-count="2">
+            <article class="cfg-card {{c.cls}}">
+              <header class="cfg-card-h"><span class="cfg-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.ico}}"></path></svg></span><b class="grow">{{c.title}}</b><span class="cfg-dot {{c.cls}}" role="img" aria-label="{{c.badge}}" title="{{c.badge}}"></span></header>
+              <div class="cfg-card-sub">{{c.sub}}</div>
+              <sc-if value="{{c.connected}}" hint-placeholder-val="{{false}}">
+                <div class="cfg-card-who"><b>{{c.who}}</b><sc-if value="{{c.isDef}}" hint-placeholder-val="{{false}}"><span class="badge action">padrão</span></sc-if><sc-if value="{{c.noPush}}" hint-placeholder-val="{{false}}"><span class="badge warn">sem escopo repo</span></sc-if></div>
+                <dl class="cfg-kv"><sc-for list="{{c.kv}}" as="k" hint-placeholder-count="3"><dt>{{k.k}}</dt><dd class="mono">{{k.v}}</dd></sc-for></dl>
+              </sc-if>
+              <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}">
+                <input class="input" type="password" autocomplete="off" spellcheck="false" placeholder="{{c.ph}}" value="{{c.token}}" onChange="{{c.onToken}}" aria-label="Token {{c.title}}">
+              </sc-if>
+              <sc-if value="{{c.hasMsg}}" hint-placeholder-val="{{false}}"><div class="cfg-card-msg" style="color: {{c.msgColor}}">{{c.msg}}</div></sc-if>
+              <footer class="cfg-card-f">
+                <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}"><button class="btn sm ghost" onClick="{{c.openToken}}">Gerar token</button><div class="grow"></div><sc-if value="{{c.editing}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{c.cancel}}">Cancelar</button></sc-if><button class="btn sm primary" onClick="{{c.save}}" disabled="{{c.busy}}">{{c.saveLbl}}</button></sc-if>
+                <sc-if value="{{c.showActions}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{c.test}}" disabled="{{c.busy}}">{{c.testLbl}}</button><button class="btn sm secondary" onClick="{{c.edit}}">Trocar token</button><sc-if value="{{c.canDef}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{c.setDef}}">Tornar padrão</button></sc-if><div class="grow"></div><button class="btn sm ghost" onClick="{{c.remove}}">Remover</button></sc-if>
+              </footer>
+            </article>
+          </sc-for>`;
+    const contasBlock = `<sc-if value="{{v.contas}}" hint-placeholder-val="{{false}}">
+        <div id="tavir-contas" class="cfg-head"><div class="grow"><h2 class="cfg-h">Contas e cofre</h2><p class="cfg-lead">Credenciais do escritório: quem assina os commits, abre PR e faz deploy. Os segredos de cada projeto ficam no cofre do próprio projeto, na aba Acessos da Fábrica.</p></div><span class="badge flow">{{credCount}}</span></div>
+        <div class="cfg-sec"><div class="eyebrow">GitHub · quem assina e publica</div><p>Os commits e o PR de um projeto saem com a conta do perfil git dele (TAVIR ou Pessoal). Sem par, vale a padrão.</p></div>
+        <div class="cfg-cards two">${cardTpl('ghCards')}</div>
+        <div class="cfg-sec"><div class="eyebrow">Deploy e dados</div><p>Ficam guardadas e conferidas, prontas para quando a Fábrica publicar os projetos.</p></div>
+        <div class="cfg-cards">${cardTpl('provCards')}</div>
+        <div class="card" style="padding: 12px 14px; display: flex; gap: 10px; font-size: 13px; background: var(--surface-0)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3"></path></svg><span class="sec">Cada token é conferido no provedor antes de entrar e fica cifrado (AES-256-GCM) no cofre desta máquina. Só o app usa, por variável de ambiente; nunca vai para tela, log, chat ou linha de comando.</span></div>
+      </sc-if>
+
+      `;
+    cfgHtml = cfgHtml.replace('<sc-if value="{{v.aparencia}}"', contasBlock + '<sc-if value="{{v.aparencia}}"');
+    cfgHtml = cfgHtml.replace(
+      '    return {\n      v: v,',
+      `    const tvAcc = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+    const accApi = tvAcc && tvAcc.accounts;
+    const credApi = tvAcc && tvAcc.creds;
+    if (tvAcc && !s.accLoaded && !self._accLoading) {
+      self._accLoading = true;
+      Promise.all([accApi ? accApi.list() : null, credApi ? credApi.list() : null]).then(function(r) {
+        self._accLoading = false;
+        self.setState({ accLoaded: true, accList: (r[0] && r[0].accounts) || [], credList: (r[1] && r[1].credentials) || [] });
+      }).catch(function() { self._accLoading = false; self.setState({ accLoaded: true }); });
+    }
+    const cs = s.cs || {};
+    const setCard = function(key, patch) { const m = Object.assign({}, self.state.cs || {}); m[key] = Object.assign({}, m[key] || {}, patch); self.setState({ cs: m }); };
+    const done = function(key, res, okMsg, extra) {
+      const patch = { busy: false, msg: '', err: false };
+      if (res && res.ok === false) { patch.msg = res.error || 'Não deu certo.'; patch.err = true; }
+      else { patch.msg = okMsg || ''; patch.token = ''; patch.edit = false; }
+      const top = Object.assign({}, extra || {});
+      if (res && Array.isArray(res.accounts)) top.accList = res.accounts;
+      if (res && Array.isArray(res.credentials)) top.credList = res.credentials;
+      const m = Object.assign({}, self.state.cs || {}); m[key] = Object.assign({}, m[key] || {}, patch); top.cs = m;
+      self.setState(top);
+    };
+    const fail = function(key) { return function(e) { setCard(key, { busy: false, msg: String((e && e.message) || e), err: true }); }; };
+    const day = function(iso) { const t = String(iso || ''); return t ? t.slice(8, 10) + '/' + t.slice(5, 7) + '/' + t.slice(0, 4) : ''; };
+    const baseCard = function(key, connected, extra) {
+      const st = cs[key] || {};
+      const editing = !!st.edit;
+      return Object.assign({
+        cls: connected ? 'on' : '',
+        connected: connected,
+        editing: connected && editing,
+        showForm: !connected || editing,
+        showActions: connected && !editing,
+        token: st.token || '',
+        onToken: function(e) { setCard(key, { token: e.target.value }); },
+        busy: !!st.busy,
+        saveLbl: st.busy ? 'Conferindo…' : connected ? 'Trocar' : 'Conectar',
+        testLbl: st.busy ? 'Conferindo…' : 'Testar',
+        hasMsg: !!st.msg,
+        msg: st.msg || '',
+        msgColor: st.err ? 'var(--danger, #e5484d)' : 'var(--text-secondary)',
+        edit: function() { setCard(key, { edit: true, msg: '' }); },
+        cancel: function() { setCard(key, { edit: false, token: '', msg: '' }); },
+        badge: connected ? 'conectada' : 'sem token',
+        badgeCls: connected ? 'flow' : '',
+      }, extra);
+    };
+    const accList = s.accList || [];
+    const GH_ICO = 'M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9';
+    const ghCards = [['TAVIR', 'TAVIR (empresa)', 'Projetos com perfil git da TAVIR'], ['Pessoal', 'Pessoal', 'Projetos com perfil git pessoal']].map(function(L) {
+      const key = 'gh-' + L[0];
+      const a = accList.filter(function(x) { return x.label === L[0]; })[0] || null;
+      return baseCard(key, !!a, {
+        title: L[1], sub: L[2], ico: GH_ICO, ph: 'ghp_… ou github_pat_…',
+        who: a ? (a.name && a.name !== a.login ? a.name + ' · @' + a.login : '@' + a.login) : '',
+        isDef: !!(a && a.is_default), canDef: !!(a && !a.is_default), noPush: !!(a && !a.canPush),
+        kv: a ? [
+          { k: 'Assina commits como', v: a.commitName + ' <' + a.commitEmail + '>' },
+          { k: 'Escopos', v: a.scopes && a.scopes.length ? a.scopes.join(', ') : 'token fine-grained' },
+          { k: 'Token', v: a.preview + ' · conferido em ' + day(a.updated_at) },
+        ] : [],
+        openToken: function() { if (accApi) accApi.openTokenPage(); },
+        save: function() {
+          const token = String((cs[key] || {}).token || '').trim();
+          if (!accApi) { setCard(key, { msg: 'Disponível só no app desktop.', err: true }); return; }
+          if (!token) { setCard(key, { msg: 'Cole o token do GitHub.', err: true }); return; }
+          setCard(key, { busy: true, msg: 'Conferindo o token no GitHub…', err: false });
+          accApi.add({ label: L[0], token: token }).then(function(r) { done(key, r, r && r.account ? '@' + r.account.login + ' conectada.' : ''); }).catch(fail(key));
+        },
+        test: function() { if (!accApi || !a) return; setCard(key, { busy: true, msg: '', err: false }); accApi.test(a.id).then(function(r) { done(key, r, 'Token válido.'); }).catch(fail(key)); },
+        setDef: function() { if (!accApi || !a) return; accApi.setDefault(a.id).then(function(r) { done(key, r, '@' + a.login + ' é a conta padrão.'); }); },
+        remove: function() { if (!accApi || !a) return; if (typeof window !== 'undefined' && window.confirm && !window.confirm('Remover @' + a.login + ' (' + L[1] + ') do cofre?')) return; accApi.remove(a.id).then(function(r) { done(key, r, 'Conta removida do cofre.'); }); },
+      });
+    });
+    const PROV_ICO = { vercel: 'M12 4l9 16H3z', supabase: 'M13 3L4 14h8l-1 7 9-11h-8z', netlify: 'M12 2l10 10-10 10L2 12z' };
+    const PROV_PH = { vercel: 'Token da Vercel', supabase: 'sbp_…', netlify: 'Token pessoal da Netlify' };
+    const credList = s.credList && s.credList.length ? s.credList : [
+      { provider: 'vercel', name: 'Vercel', hint: 'Deploy de LPs, ofertas e apps web.', connected: false },
+      { provider: 'supabase', name: 'Supabase', hint: 'Banco, autenticação e funções dos projetos.', connected: false },
+      { provider: 'netlify', name: 'Netlify', hint: 'Deploy de sites estáticos.', connected: false },
+    ];
+    const provCards = credList.map(function(c) {
+      const key = 'cr-' + c.provider;
+      return baseCard(key, !!c.connected, {
+        title: c.name, sub: c.hint, ico: PROV_ICO[c.provider] || PROV_ICO.vercel, ph: PROV_PH[c.provider] || 'Token',
+        who: c.connected ? (c.account && c.account !== c.login ? c.account + ' · ' + c.login : c.login) : '',
+        isDef: false, canDef: false, noPush: false,
+        kv: c.connected ? [{ k: 'Conta', v: c.detail || '—' }, { k: 'Token', v: c.preview + ' · conferido em ' + day(c.updated_at) }] : [],
+        openToken: function() { if (credApi) credApi.openTokenPage(c.provider); },
+        save: function() {
+          const token = String((cs[key] || {}).token || '').trim();
+          if (!credApi) { setCard(key, { msg: 'Disponível só no app desktop.', err: true }); return; }
+          if (!token) { setCard(key, { msg: 'Cole o token.', err: true }); return; }
+          setCard(key, { busy: true, msg: 'Conferindo o token na ' + c.name + '…', err: false });
+          credApi.save(c.provider, token).then(function(r) { done(key, r, c.name + ' conectada.'); }).catch(fail(key));
+        },
+        test: function() { if (!credApi) return; setCard(key, { busy: true, msg: '', err: false }); credApi.test(c.provider).then(function(r) { done(key, r, 'Token válido.'); }).catch(fail(key)); },
+        setDef: function() {},
+        remove: function() { if (!credApi) return; if (typeof window !== 'undefined' && window.confirm && !window.confirm('Remover o token da ' + c.name + ' do cofre?')) return; credApi.remove(c.provider).then(function(r) { done(key, r, 'Token removido do cofre.'); }); },
+      });
+    });
+    const connectedN = ghCards.filter(function(c) { return c.connected; }).length + provCards.filter(function(c) { return c.connected; }).length;
+    return {
+      ghCards: ghCards,
+      provCards: provCards,
+      credCount: connectedN + ' de ' + (ghCards.length + provCards.length) + ' conectadas',
+      v: v,`
+    );
+  }
+
+  // Layout: menu agrupado com ícones, cabeçalho único por seção, listas em moldura e textos curtos.
+  if (!cfgHtml.includes('class="cfg-wrap"')) {
+    const cfgCss = `<style>body{margin:0}
+.cfg-wrap{display:grid;grid-template-columns:232px minmax(0,1fr);gap:28px;align-items:start;max-width:1180px}
+.cfg-nav{position:sticky;top:16px;display:flex;flex-direction:column;gap:2px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--surface-0)}
+.cfg-grp{font-family:var(--font-mono,'IBM Plex Mono',monospace);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-secondary);opacity:.8;padding:12px 10px 6px}
+.cfg-grp:first-child{padding-top:4px}
+.cfg-tab{display:flex;align-items:center;gap:10px;width:100%;min-height:38px;padding:8px 10px;border:0;border-radius:9px;background:transparent;color:var(--text-secondary);font:inherit;font-size:13.5px;text-align:left;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+.cfg-tab:hover{background:var(--surface-2,rgba(127,127,127,.08));color:var(--text-primary)}
+.cfg-tab.on{background:var(--flow-subtle);color:var(--text-primary);font-weight:600}
+.cfg-tab svg{flex:none;opacity:.75}
+.cfg-tab.on svg{opacity:1;stroke:var(--flow)}
+.cfg-tab .cfg-l{flex:1;overflow:hidden;text-overflow:ellipsis}
+.cfg-n{flex:none;min-width:22px;height:20px;padding:0 7px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-mono,'IBM Plex Mono',monospace);font-size:11px;font-weight:500;background:var(--surface-2,rgba(127,127,127,.12));color:var(--text-secondary)}
+.cfg-tab.on .cfg-n{background:var(--flow);color:#0B1220}
+.cfg-body{min-width:0;padding:28px 30px 30px;display:flex;flex-direction:column;gap:20px;animation:fade 200ms var(--ease) both}
+.cfg-head{display:flex;align-items:flex-start;gap:16px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.cfg-head .badge{margin-top:4px;flex:none}
+.cfg-h{font-size:20px;font-weight:600;margin:0;line-height:1.25}
+.cfg-lead{font-size:13px;margin:6px 0 0;color:var(--text-secondary);max-width:62ch;line-height:1.5}
+.cfg-list{border:1px solid var(--line);border-radius:12px;padding:0 16px;background:var(--surface-0)}
+.cfg-list .setrow:last-child{border-bottom:0}
+.cfg-body .rows.card{border-radius:12px}
+.cfg-body .actions{flex-wrap:wrap;gap:8px}
+.cfg-body .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.cfg-sec{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.cfg-sec p{margin:0;font-size:12.5px;color:var(--text-secondary);line-height:1.5}
+.cfg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.cfg-cards.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cfg-card{display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surface-0);min-width:0}
+.cfg-card.on{border-color:color-mix(in oklab,var(--flow) 45%,var(--line))}
+.cfg-card-h{display:flex;align-items:center;gap:10px;min-width:0}
+.cfg-card-h b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cfg-card-h b{font-size:14.5px}
+.cfg-card-ico{flex:none;width:34px;height:34px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:var(--surface-2,rgba(127,127,127,.12));color:var(--text-secondary)}
+.cfg-card.on .cfg-card-ico{background:var(--flow-subtle);color:var(--flow)}
+.cfg-card-sub{font-size:12.5px;color:var(--text-secondary);margin-top:-4px;line-height:1.45;min-height:2.9em}
+.cfg-dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--line-strong,rgba(127,127,127,.5))}
+.cfg-dot.on{background:var(--flow);box-shadow:0 0 0 3px var(--flow-subtle)}
+.cfg-card-who{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13.5px}
+.cfg-kv{display:flex;flex-direction:column;gap:2px;margin:0;font-size:12px}
+.cfg-kv dt{color:var(--text-secondary);font-size:11px;margin-top:6px}
+.cfg-kv dt:first-child{margin-top:0}
+.cfg-kv dd{margin:0;overflow-wrap:anywhere;line-height:1.45}
+.cfg-card .input{height:38px}
+.cfg-card-msg{font-size:12px;line-height:1.4}
+.cfg-card-f{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:auto}
+@media (max-width:1100px){.cfg-cards.two{grid-template-columns:1fr}}
+@media (max-width:980px){.cfg-wrap{grid-template-columns:1fr}.cfg-nav{position:static;flex-direction:row;flex-wrap:wrap}.cfg-grp{display:none}.cfg-tab{width:auto}}
+</style>`;
+    cfgHtml = cfgHtml.replace('<style>body{margin:0}</style>', cfgCss);
+    cfgHtml = cfgHtml.replace(
+      /<p>Perfil, o que a Sala mostra[^<]*<\/p>/,
+      '<p>Seu perfil, o que a Sala mostra, módulos, motores de IA, contas do GitHub e a própria máquina.</p>'
+    );
+    cfgHtml = cfgHtml.replace('<div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start">', '<div class="cfg-wrap">');
+    cfgHtml = cfgHtml.replace(
+      /<nav style="flex: 0 1 220px;[\s\S]*?<\/nav>/,
+      '<nav class="cfg-nav" aria-label="Seções"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="8"><sc-if value="{{t.hasGrp}}" hint-placeholder-val="{{false}}"><div class="cfg-grp">{{t.grp}}</div></sc-if><button class="cfg-tab {{t.on}}" onClick="{{t.pick}}" aria-current="{{t.cur}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.ico}}"></path></svg><span class="cfg-l">{{t.label}}</span><sc-if value="{{t.hasN}}" hint-placeholder-val="{{false}}"><span class="cfg-n">{{t.n}}</span></sc-if></button></sc-for></nav>'
+    );
+    cfgHtml = cfgHtml.replace(/<section class="card" style="flex: 999 1 560px;[^"]*">/, '<section class="card cfg-body">');
+    // Cabeçalhos de seção num formato só
+    cfgHtml = cfgHtml.split('<h2 style="font-size: 20px; font-weight: 600">').join('<h2 class="cfg-h">');
+    cfgHtml = cfgHtml.split('<p class="muted" style="font-size: 13px; margin-top: 4px">').join('<p class="cfg-lead">');
+    cfgHtml = cfgHtml.replace(/<div><h2 class="cfg-h">([^<]*)<\/h2><p class="cfg-lead">([^<]*)<\/p><\/div>/g, '<div class="cfg-head"><div class="grow"><h2 class="cfg-h">$1</h2><p class="cfg-lead">$2</p></div></div>');
+    cfgHtml = cfgHtml.split('<div style="display: flex; align-items: flex-end"><div class="grow"><h2 class="cfg-h">').join('<div class="cfg-head"><div class="grow"><h2 class="cfg-h">');
+    cfgHtml = cfgHtml.replace('<div id="tavir-contas" style="display: flex; align-items: flex-end">', '<div id="tavir-contas" class="cfg-head">');
+    // Textos mais curtos
+    cfgHtml = cfgHtml.replace(/<p class="cfg-lead">Opções pertinentes a cada módulo[^<]*<\/p>/, '<p class="cfg-lead">Automação de gates, SLA, motor padrão e isolamento de cada módulo.</p>');
+    cfgHtml = cfgHtml.replace(/<p class="cfg-lead">Detecção automática de SDK[^<]*<\/p>/, '<p class="cfg-lead">Os motores rodam pelo CLI instalado nesta máquina. A chave de API é opcional, só como reserva.</p>');
+    cfgHtml = cfgHtml.replace(/Como no Concierge: escolha o modelo e a profundidade padrão\. Na Fábrica só aparecem os motores ligados acima\./, 'Modelo e profundidade do motor padrão no chat, na Fábrica e nos jobs. Só os motores ligados aparecem na Fábrica.');
+    // Listas de interruptores na mesma moldura das outras listas
+    cfgHtml = cfgHtml.replace('<div><sc-for list="{{blocks}}"', '<div class="cfg-list"><sc-for list="{{blocks}}"');
+    cfgHtml = cfgHtml.replace('<div><sc-for list="{{scopes}}"', '<div class="cfg-list"><sc-for list="{{scopes}}"');
+    // Ações do Sistema como botões de verdade
+    cfgHtml = cfgHtml.replace('<button class="btn ghost" onClick="{{goDoctor}}">', '<button class="btn secondary" onClick="{{goDoctor}}">');
+    cfgHtml = cfgHtml.replace('<button class="btn ghost" onClick="{{exportLedger}}">', '<button class="btn secondary" onClick="{{exportLedger}}">');
+    // Ordem e grupos do menu: [id, rótulo, contador, grupo, ícone]
+    cfgHtml = cfgHtml.replace(
+      /const TABS = \[[^\n]*\];/,
+      "const TABS = [" +
+        "['perfil', 'Perfil', 0, 'Você', 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0'], " +
+        "['aparencia', 'Aparência', 0, 'Você', 'M12 3a9 9 0 1 0 0 18zM12 3a9 9 0 0 1 0 18'], " +
+        "['visao', 'Sala de Operação', 0, 'Escritório', 'M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z'], " +
+        "['projetos', 'Módulos', 5, 'Escritório', 'M12 2l9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5'], " +
+        "['memorias', 'Memórias', 0, 'Escritório', 'M4 6c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3'], " +
+        "['motores', 'Motores de IA', 4, 'IA e acesso', 'M6 6h12v12H6zM9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3'], " +
+        "['contas', 'Contas e cofre', 0, 'IA e acesso', 'M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3'], " +
+        "['sistema', 'Sistema', 0, 'Máquina', 'M4 5h16v10H4zM8 19h8M12 15v4']" +
+      "];"
+    );
+    cfgHtml = cfgHtml.replace(
+      /tabs: TABS\.map\(\(t\) => \(\{[^\n]*\}\)\),/,
+      "tabs: TABS.map((t, i) => { const n = t[0] === 'contas' ? ((s.accList || []).length + (s.credList || []).filter(function (c) { return c.connected; }).length) : (t[2] || 0); return { label: t[1], hasN: !!n, n: n || '', grp: t[3], hasGrp: i === 0 || TABS[i - 1][3] !== t[3], ico: t[4], on: s.tab === t[0] ? 'on' : '', cur: s.tab === t[0] ? 'page' : 'false', pick: () => self.setState({ tab: t[0] }) }; }),"
+    );
+  }
+
   manifest[cfgUuid].data = zlib.gzipSync(Buffer.from(cfgHtml, 'utf8')).toString('base64');
   console.log('Configurações (Módulos + Motores SDK local + Antigravity) atualizadas!');
 }

@@ -788,6 +788,124 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
+  handle('projects:altTrackPublishInfo', (_e, idOrPath: string) => {
+    try {
+      const { getAltTrackPublishInfo } = require('./project-fs');
+      return getAltTrackPublishInfo(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  // Publicar é sempre clique do CEO: nunca chamado pelo modo automático do trilho.
+  handle('projects:publishAltTrack', async (_e, idOrPath: string, accountId?: string) => {
+    try {
+      const { publishAltTrackCycle } = require('./project-fs');
+      return await publishAltTrackCycle(idOrPath, { accountId: accountId ? String(accountId) : undefined });
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:openAltTrackPr', async (_e, idOrPath: string) => {
+    try {
+      const { getAltTrackPublishInfo } = require('./project-fs');
+      const url = String(getAltTrackPublishInfo(idOrPath)?.publish?.url || '');
+      if (!/^https:\/\/github\.com\/[^\s]+\/pull\/\d+$/.test(url)) return { ok: false, error: 'Este ciclo não tem PR aberto.' };
+      await shell.openExternal(url);
+      return { ok: true, url };
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:resolveAltTrackBranch', (_e, idOrPath: string, choice: string) => {
+    try {
+      const { resolveAltTrackBranch } = require('./project-fs');
+      return resolveAltTrackBranch(idOrPath, choice === 'here' ? 'here' : 'stash');
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('projects:setGitAccount', (_e, idOrPath: string, accountId: string) => {
+    try {
+      const { setProjectGitAccount } = require('./project-fs');
+      return setProjectGitAccount(idOrPath, String(accountId || ''));
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  // Contas do GitHub no cofre: o token entra aqui e nunca volta para a tela.
+  handle('accounts:list', async () => {
+    const { listGitAccounts } = await import('./gitAccounts');
+    return { ok: true, accounts: listGitAccounts() };
+  });
+
+  handle('accounts:add', async (_e, payload: { label?: string; token?: string }) => {
+    const { addGitAccount } = await import('./gitAccounts');
+    return addGitAccount({ label: payload?.label, token: payload?.token });
+  });
+
+  handle('accounts:remove', async (_e, id: string) => {
+    const { removeGitAccount } = await import('./gitAccounts');
+    return removeGitAccount(String(id || ''));
+  });
+
+  handle('accounts:setDefault', async (_e, id: string) => {
+    const { setDefaultGitAccount } = await import('./gitAccounts');
+    return setDefaultGitAccount(String(id || ''));
+  });
+
+  handle('accounts:test', async (_e, id: string) => {
+    const { testGitAccount } = await import('./gitAccounts');
+    return testGitAccount(String(id || ''));
+  });
+
+  // Credenciais de deploy e dados (Vercel, Supabase, Netlify): mesmo contrato das contas do GitHub.
+  handle('creds:list', async () => {
+    const { listCredentials } = await import('./credentials');
+    return { ok: true, credentials: listCredentials() };
+  });
+
+  handle('creds:save', async (_e, provider: string, token: string) => {
+    const { saveCredential } = await import('./credentials');
+    return saveCredential(String(provider || ''), String(token || ''));
+  });
+
+  handle('creds:remove', async (_e, provider: string) => {
+    const { removeCredential } = await import('./credentials');
+    return removeCredential(String(provider || ''));
+  });
+
+  handle('creds:test', async (_e, provider: string) => {
+    const { testCredential } = await import('./credentials');
+    return testCredential(String(provider || ''));
+  });
+
+  handle('creds:openTokenPage', async (_e, provider: string) => {
+    const { CREDENTIAL_PROVIDERS, isProvider } = await import('./credentials');
+    if (!isProvider(provider)) return { ok: false, error: 'Provedor desconhecido.' };
+    const url = CREDENTIAL_PROVIDERS[provider].tokenUrl;
+    try {
+      await shell.openExternal(url);
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, error: String(err), url };
+    }
+  });
+
+  handle('accounts:openTokenPage', async () => {
+    const { TOKEN_PAGE_URL } = await import('./gitAccounts');
+    try {
+      await shell.openExternal(TOKEN_PAGE_URL);
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, error: String(err), url: TOKEN_PAGE_URL };
+    }
+  });
+
   handle('projects:saveAltTrackNote', (_e, idOrPath: string, index: number, text: string) => {
     try {
       const { saveProjectAltTrackNote } = require('./project-fs');

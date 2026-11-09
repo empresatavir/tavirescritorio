@@ -120,6 +120,11 @@ const api: TavirApi = {
     advanceAltTrack: (idOrPath: string, fromStep?: number) => ipcRenderer.invoke('projects:advanceAltTrack', idOrPath, fromStep),
     closeAltTrackItem: (idOrPath: string, fromStep?: number) => ipcRenderer.invoke('projects:closeAltTrackItem', idOrPath, fromStep),
     startAltTrackCycle: (idOrPath: string) => ipcRenderer.invoke('projects:startAltTrackCycle', idOrPath),
+    altTrackPublishInfo: (idOrPath: string) => ipcRenderer.invoke('projects:altTrackPublishInfo', idOrPath),
+    publishAltTrack: (idOrPath: string, accountId?: string) => ipcRenderer.invoke('projects:publishAltTrack', idOrPath, accountId),
+    resolveAltTrackBranch: (idOrPath: string, choice: 'stash' | 'here') => ipcRenderer.invoke('projects:resolveAltTrackBranch', idOrPath, choice),
+    setGitAccount: (idOrPath: string, accountId: string) => ipcRenderer.invoke('projects:setGitAccount', idOrPath, accountId),
+    openAltTrackPr: (idOrPath: string) => ipcRenderer.invoke('projects:openAltTrackPr', idOrPath),
     saveAltTrackNote: (idOrPath: string, index: number, text: string) =>
       ipcRenderer.invoke('projects:saveAltTrackNote', idOrPath, index, text),
     setAltTrackStep: (idOrPath: string, step: number) => ipcRenderer.invoke('projects:setAltTrackStep', idOrPath, step),
@@ -161,6 +166,21 @@ const api: TavirApi = {
   },
   iris: {
     stop: (projectKey: string) => ipcRenderer.invoke('projects:stopIris', projectKey),
+  },
+  accounts: {
+    list: () => ipcRenderer.invoke('accounts:list'),
+    add: (payload: { label: string; token: string }) => ipcRenderer.invoke('accounts:add', payload),
+    remove: (id: string) => ipcRenderer.invoke('accounts:remove', id),
+    setDefault: (id: string) => ipcRenderer.invoke('accounts:setDefault', id),
+    test: (id: string) => ipcRenderer.invoke('accounts:test', id),
+    openTokenPage: () => ipcRenderer.invoke('accounts:openTokenPage'),
+  },
+  creds: {
+    list: () => ipcRenderer.invoke('creds:list'),
+    save: (provider: string, token: string) => ipcRenderer.invoke('creds:save', provider, token),
+    remove: (provider: string) => ipcRenderer.invoke('creds:remove', provider),
+    test: (provider: string) => ipcRenderer.invoke('creds:test', provider),
+    openTokenPage: (provider: string) => ipcRenderer.invoke('creds:openTokenPage', provider),
   },
   seg: {
     run: (idOrPath: string) => ipcRenderer.invoke('seg:run', idOrPath),
