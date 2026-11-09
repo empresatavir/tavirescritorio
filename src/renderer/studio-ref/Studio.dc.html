@@ -421,6 +421,9 @@
           <label class="field"><span>Formatos, separados por vírgula</span><input class="input" value="{{form.formatos}}" onChange="{{onFormatos}}"></label>
           <label class="field"><span>Posts por semana</span><input class="input" value="{{form.posts}}" onChange="{{onPosts}}"></label>
           <label class="field"><span>Publicação (manual ou darkflow)</span><input class="input" value="{{form.publicacao}}" onChange="{{onPublicacao}}"></label>
+          <label class="field"><span>Segunda rede</span><input class="input" value="{{form.rede2}}" onChange="{{onRede2}}"></label>
+          <label class="field"><span>Segundo @</span><input class="input" value="{{form.handle2}}" onChange="{{onHandle2}}"></label>
+          <label class="field"><span>Formatos da segunda rede</span><input class="input" value="{{form.formatos2}}" onChange="{{onFormatos2}}"></label>
           <label class="field"><span>Paleta tinta</span><input class="input" value="{{form.ink}}" onChange="{{onInk}}"></label>
           <label class="field"><span>Paleta destaque</span><input class="input" value="{{form.accent}}" onChange="{{onAccent}}"></label>
           <label class="field"><span>Fonte do título</span><input class="input" value="{{form.fonteTitulo}}" onChange="{{onFonteTitulo}}"></label>
@@ -476,7 +479,7 @@ const STAGE_IDS = ['pauta', 'angulo', 'roteiro', 'arte', 'audio', 'revisao', 'pa
 const STAGE_LABEL = { pauta: 'Pauta', angulo: 'Ângulo', roteiro: 'Roteiro', arte: 'Arte', audio: 'Áudio', revisao: 'Revisão', pacote: 'Pacote', publicado: 'Publicado' };
 const GATES = { angulo: 1, revisao: 1, pacote: 1 };
 const GOALS = ['alcance', 'autoridade', 'conversa'];
-const EMPTY_FORM = { nome: '', iniciais: '', cor: '#1BC5BD', rede: 'instagram', handle: '', formatos: 'ig-carrossel-4x5', posts: '3', publicacao: 'manual', ink: '#0B1220', accent: '#B7F34A', fonteTitulo: 'Instrument Sans', fonteCorpo: 'Instrument Sans', tom: '', canon: '', imageStyle: '', negatives: '', characters: '', serieNome: '', serieSigla: '', formato: 'ig-carrossel-4x5', titulo: '', tema: '', fonte: '', objetivo: '' };
+const EMPTY_FORM = { nome: '', iniciais: '', cor: '#1BC5BD', rede: 'instagram', handle: '', formatos: 'ig-carrossel-4x5', posts: '3', publicacao: 'manual', rede2: '', handle2: '', formatos2: '', ink: '#0B1220', accent: '#B7F34A', fonteTitulo: 'Instrument Sans', fonteCorpo: 'Instrument Sans', tom: '', canon: '', imageStyle: '', negatives: '', characters: '', serieNome: '', serieSigla: '', formato: 'ig-carrossel-4x5', titulo: '', tema: '', fonte: '', objetivo: '' };
 
 function studioApi() {
   var w = typeof window !== 'undefined' ? window : null;
@@ -629,7 +632,7 @@ class Component extends DCLogic {
       modalOpen: !!s.modal, modalPerfil: s.modal === 'perfil', modalProducao: s.modal === 'producao', modalCanon: s.modal === 'canon',
       modalTitle: s.modal === 'perfil' ? 'Novo perfil' : s.modal === 'producao' ? 'Nova produção' : 'Canon do canal',
       form: s.form, formatosDoPerfil: formatosTxt,
-      onNome: field('nome'), onIniciais: field('iniciais'), onCor: field('cor'), onRede: field('rede'), onHandle: field('handle'), onFormatos: field('formatos'), onPosts: field('posts'), onPublicacao: field('publicacao'), onInk: field('ink'), onAccent: field('accent'), onFonteTitulo: field('fonteTitulo'), onFonteCorpo: field('fonteCorpo'), onTom: field('tom'), onCanon: field('canon'), onImageStyle: field('imageStyle'), onNegatives: field('negatives'), onCharacters: field('characters'), onSerieNome: field('serieNome'), onSerieSigla: field('serieSigla'), onFormato: field('formato'), onTitulo: field('titulo'), onTemaForm: field('tema'), onFonteForm: field('fonte'), onObjetivo: field('objetivo'),
+      onNome: field('nome'), onIniciais: field('iniciais'), onCor: field('cor'), onRede: field('rede'), onHandle: field('handle'), onFormatos: field('formatos'), onPosts: field('posts'), onPublicacao: field('publicacao'), onRede2: field('rede2'), onHandle2: field('handle2'), onFormatos2: field('formatos2'), onInk: field('ink'), onAccent: field('accent'), onFonteTitulo: field('fonteTitulo'), onFonteCorpo: field('fonteCorpo'), onTom: field('tom'), onCanon: field('canon'), onImageStyle: field('imageStyle'), onNegatives: field('negatives'), onCharacters: field('characters'), onSerieNome: field('serieNome'), onSerieSigla: field('serieSigla'), onFormato: field('formato'), onTitulo: field('titulo'), onTemaForm: field('tema'), onFonteForm: field('fonte'), onObjetivo: field('objetivo'),
       profiles: (s.perfis || []).map(function (p) {
         var r = p.redes && p.redes[0];
         var n = (s.pecas || []).filter(function (x) { return x.perfil_id === p.id && GATES[x.etapa]; }).length;
@@ -1020,15 +1023,28 @@ class Component extends DCLogic {
       return;
     }
     if (this.state.modal === 'perfil') {
+      var redesOk = ['instagram', 'youtube', 'tiktok', 'linkedin'];
       var rede = String(f.rede || '').trim().toLowerCase();
-      if (['instagram', 'youtube', 'tiktok', 'linkedin'].indexOf(rede) < 0) { this.setState({ error: 'rede inválida' }); return; }
-      api.perfis.save({ nome: f.nome, iniciais: (f.iniciais || f.nome || 'ST').slice(0, 4), cor_avatar: f.cor || '#1BC5BD', brand_kit: kitFrom(f) }).then(function (res) {
+      if (redesOk.indexOf(rede) < 0) { this.setState({ error: 'rede inválida' }); return; }
+      var same = (self.state.perfis || []).filter(function (p) { return p.nome === String(f.nome || '').trim(); })[0];
+      var payload = { nome: f.nome, iniciais: (f.iniciais || f.nome || 'ST').slice(0, 4), cor_avatar: f.cor || '#1BC5BD', brand_kit: kitFrom(f) };
+      if (same) payload.id = same.id;
+      var salvarRede = function (perfilId, nomeRede, handle, formatosTxt, posts, pub) {
+        var formatos = String(formatosTxt || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+        return api.redes.save(perfilId, { rede: nomeRede, handle: handle || '', formatos: formatos, posts_semana: Number(posts) || 0, publicacao: pub === 'darkflow' ? 'darkflow' : 'manual', ativo: true });
+      };
+      api.perfis.save(payload).then(function (res) {
         if (!res || res.ok === false) { self.after(res); return; }
-        var formatos = String(f.formatos || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
-        api.redes.save(res.perfil.id, { rede: rede, handle: f.handle || '', formatos: formatos, posts_semana: Number(f.posts) || 0, publicacao: f.publicacao === 'darkflow' ? 'darkflow' : 'manual', ativo: true }).then(function (redeRes) {
+        salvarRede(res.perfil.id, rede, f.handle, f.formatos, f.posts, f.publicacao).then(function (redeRes) {
           if (!redeRes || redeRes.ok === false) { self.after(redeRes); return; }
-          self.setState({ perfilId: res.perfil.id });
-          self.after(res);
+          var rede2 = String(f.rede2 || '').trim().toLowerCase();
+          if (!rede2) { self.setState({ perfilId: res.perfil.id }); self.after(res); return; }
+          if (redesOk.indexOf(rede2) < 0) { self.setState({ error: 'segunda rede inválida' }); return; }
+          salvarRede(res.perfil.id, rede2, f.handle2, f.formatos2, f.posts, f.publicacao).then(function (rede2Res) {
+            if (!rede2Res || rede2Res.ok === false) { self.after(rede2Res); return; }
+            self.setState({ perfilId: res.perfil.id });
+            self.after(rede2Res);
+          });
         });
       });
       return;
