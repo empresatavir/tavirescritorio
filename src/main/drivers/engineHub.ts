@@ -27,7 +27,7 @@ const DEFAULT_SETTINGS: EngineSettings = {
 };
 
 function settingsPath(): string {
-  const dir = join(process.cwd(), 'db');
+  const dir = join(process.env.TAVIR_DATA_ROOT || process.cwd(), 'db');
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   return join(dir, 'engine_settings.json');
 }

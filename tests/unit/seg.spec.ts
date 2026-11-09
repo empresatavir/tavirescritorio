@@ -98,7 +98,7 @@ describe('varredura', () => {
     expect(second.findings.find((f) => f.fp === tracker.fp)?.st).toBe('aceita');
     expect(second.blocking).toBe(1);
     expect(listSegRuns(ws).map((r) => r.id)).toEqual([first.id, second.id]);
-  }, 60000);
+  }, 240000); // a varredura roda as ferramentas reais; cada uma tem até 180 s no segScanner
 
   it('acha o segredo que só ficou no histórico do Git', async () => {
     const ws = projeto({ 'old.js': `const t = "${fake('ghp_', 36)}";\n` });
@@ -109,5 +109,5 @@ describe('varredura', () => {
     expect(hist).toHaveLength(1);
     expect(hist[0].where).toMatch(/^commit [0-9a-f]{7} · old\.js$/);
     expect(hist[0].ev).not.toContain(fake('ghp_', 36));
-  }, 60000);
+  }, 240000); // a varredura roda as ferramentas reais; cada uma tem até 180 s no segScanner
 });
