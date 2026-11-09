@@ -52,6 +52,7 @@ export async function runMotionConformance(opts: {
   source?: string;
   motors?: MotorId[];
   onLog?: (line: string) => void;
+  onProgress?: (results: MotionMotorReport[]) => void;
 } ): Promise<MotionMotorReport[]> {
   const log = opts.onLog || (() => {});
   const motors = opts.motors?.length ? opts.motors : MOTOR_IDS;
@@ -72,6 +73,7 @@ export async function runMotionConformance(opts: {
   });
   store.saveMotionKit({ perfil_id: perfil.id, nome: 'Kit conformidade', tokens: MOTION_TOKEN_PADRAO, presets: {} });
   const out: MotionMotorReport[] = [];
+  const progress = () => opts.onProgress?.(out);
   try {
     for (const motor of motors) {
       const auth = await motorAuthStatus(motor);
@@ -79,12 +81,14 @@ export async function runMotionConformance(opts: {
         const report = blocked(motor, `CLI do ${MOTOR_LABEL[motor]} não encontrado.`);
         out.push(report);
         log(`⛔ ${report.label}: ${report.blocker}`);
+        progress();
         continue;
       }
       if (!auth.loggedIn) {
         const report = blocked(motor, `${MOTOR_LABEL[motor]} sem login. ${auth.detail}`);
         out.push(report);
         log(`⛔ ${report.label}: ${report.blocker}`);
+        progress();
         continue;
       }
       const report: MotionMotorReport = { motor, label: MOTOR_LABEL[motor], ok: false, blocker: '', scenarios: [] };
@@ -117,6 +121,7 @@ export async function runMotionConformance(opts: {
             detail: ok ? 'checagens passaram; aguardando o gate do CEO' : (failed ? `${failed.id}: ${failed.detalhe}` : job.status),
           });
           log(`${ok ? '✓' : '✗'} ${report.label} · ${item.preset}`);
+          progress();
         } catch (err) {
           const detail = err instanceof Error ? err.message : String(err);
           report.scenarios.push({
@@ -129,6 +134,7 @@ export async function runMotionConformance(opts: {
             detail,
           });
           log(`✗ ${report.label} · ${item.preset} — ${detail}`);
+          progress();
         }
       }
       report.ok = report.scenarios.length === PEDIDOS.length && report.scenarios.every((item) => item.ok);

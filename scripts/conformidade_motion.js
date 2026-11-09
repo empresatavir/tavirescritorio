@@ -27,6 +27,9 @@ function note(line) {
     home,
     source: installed.dir,
     onLog: note,
+    onProgress: (partial) => {
+      fs.writeFileSync(path.join(root, 'relatorios', 'motores', 'motion-partial.json'), JSON.stringify(partial, null, 2), 'utf8');
+    },
   });
   const dir = path.join(root, 'relatorios', 'motores');
   fs.mkdirSync(dir, { recursive: true });
