@@ -3,6 +3,8 @@ import { decideMotionGate, latestMotionView, startMotionJob, type MotionDecision
 import { downloadRemotionBrowser, updateMotionBase } from './motionHome';
 import { runPreflight } from './preflight';
 import { cancelRender, startRender } from './render';
+import { assignSlotImage, buildPacote } from './pacote';
+import { reviewChecklist } from './rules';
 import { readPreview } from './previewMedia';
 import { getStudioStore } from './store';
 import { suggestForPiece, type SuggestAlvo } from './suggest';
@@ -93,6 +95,30 @@ export function registerStudioIpc(handle: Handle): void {
   handle('studio:render:final', (_e, id: string) => startRender(id, 'final'));
   handle('studio:render:cancel', (_e, id: string) => cancelRender(id));
   handle('studio:preview:get', (_e, pecaId: string, frame?: number, formatId?: string) => readPreview(pecaId, frame ?? 0, formatId ?? ''));
+  handle('studio:revisao:get', (_e, pecaId: string) => {
+    const store = getStudioStore();
+    const peca = store.getPeca(pecaId);
+    if (!peca) return { ok: false, error: 'peça não encontrada', items: [] };
+    const perfil = store.getPerfil(peca.perfil_id);
+    return {
+      ok: true,
+      items: reviewChecklist({
+        roteiro: peca.roteiro,
+        formatoId: peca.formato_id,
+        canon: perfil?.brand_kit.canon ?? [],
+        fonte: peca.pauta?.fonte ?? '',
+        slots: store.listSlots(pecaId),
+      }),
+    };
+  });
+  handle('studio:pacote:build', (_e, pecaId: string) => buildPacote(pecaId));
+  handle('studio:pacote:open', async (_e, pecaId: string) => {
+    const { shell } = await import('electron');
+    const dir = (await import('./paths')).ensureStudioTree().pecaDirs(pecaId).pacote;
+    const error = await shell.openPath(dir);
+    return { ok: !error, error: error || undefined };
+  });
+  handle('studio:arte:assign', (_e, pecaId: string, index: number, source: string) => assignSlotImage(pecaId, index, source));
   handle('studio:motion:updateBase', () => updateMotionBase());
   handle('studio:motion:downloadBrowser', (_e, confirm?: boolean) => downloadRemotionBrowser(confirm === true));
   handle('studio:motion:ask', async (_e, input: { perfilId: string; preset: string; pedido: string }) => {

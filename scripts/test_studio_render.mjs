@@ -98,6 +98,33 @@ function render(dir, job) {
   fs.copyFileSync(stillJob.output, path.join(report, 'exemplo.png'));
   fs.copyFileSync(reelJob.output, path.join(report, 'exemplo.mp4'));
   console.log('exemplos em', report);
+
+  const carouselStore = openStudioStore(home);
+  const carousel = carouselStore.createPeca({
+    perfil_id: perfil.id,
+    rede: 'instagram',
+    formato_id: 'ig-carrossel-4x5',
+    titulo: 'O arquivo',
+  });
+  carouselStore.updatePeca(carousel.id, {
+    roteiro: {
+      slides: [
+        { tag: 'capa', titulo: 'O arquivo', apoio: 'três slides', layout: 'capa' },
+        { tag: 'texto', titulo: 'O meio', apoio: 'o que o caso mostra', layout: 'texto' },
+        { tag: 'fonte', titulo: 'Fonte', apoio: 'jornal de 1974', layout: 'fonte' },
+      ],
+    },
+  });
+  const hydrated = carouselStore.getPeca(carousel.id);
+  carouselStore.close();
+  const f5 = path.resolve('relatorios/studio/F5');
+  fs.mkdirSync(f5, { recursive: true });
+  for (let frame = 0; frame < 3; frame += 1) {
+    const output = path.join(f5, `${String(frame + 1).padStart(2, '0')}.png`);
+    const job = buildRenderJob({ peca: hydrated, perfil, tipo: 'still', output, frame });
+    render(installed.dir, job);
+  }
+  console.log('carrossel em', f5);
 })().catch((err) => {
   console.error(err);
   process.exit(1);

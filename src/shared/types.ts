@@ -511,6 +511,16 @@ export interface TavirApi {
     preview: {
       get: (pecaId: string, frame?: number, formatId?: string) => Promise<PreviewView>;
     };
+    revisao: {
+      get: (pecaId: string) => Promise<{ ok: boolean; error?: string; items: Array<{ nome: string; ok: boolean; detalhe: string }> }>;
+    };
+    pacote: {
+      build: (pecaId: string) => Promise<{ ok: boolean; dir?: string; error?: string }>;
+      open: (pecaId: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    arte: {
+      assign: (pecaId: string, index: number, source: string) => Promise<{ ok: boolean; error?: string }>;
+    };
     motion: {
       updateBase: () => Promise<{ ok: boolean; error?: string }>;
       downloadBrowser: (confirm: boolean) => Promise<{ ok: boolean; error?: string; log: string }>;

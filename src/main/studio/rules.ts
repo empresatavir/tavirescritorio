@@ -10,6 +10,8 @@ import {
   type SlotTipo,
   type StudioFormat,
 } from '../../shared/studio';
+import { previewAlerts } from '../../shared/studioPreview';
+import { needsSourceSlide, slidesFromRoteiro } from './slides';
 
 export interface RuleResult {
   ok: boolean;
@@ -74,12 +76,31 @@ export function precondition(peca: Peca): { ok: boolean; motivo: string } {
       return { ok: true, motivo: '' };
     }
     case 'arte': {
+      if (format.kind !== 'video') {
+        const slides = peca.roteiro?.slides?.length ?? 0;
+        const slots = peca.slots ?? [];
+        if (!slides && slots.length === 0) return { ok: false, motivo: 'roteiro sem slides' };
+        if (slots.some((s) => !s.ativo_id)) return { ok: false, motivo: 'há slot sem ativo' };
+        return { ok: true, motivo: '' };
+      }
       const slots = peca.slots;
       if (!slots || slots.length === 0) return { ok: false, motivo: 'nenhum slot na peça' };
       if (slots.some((s) => !s.ativo_id)) return { ok: false, motivo: 'há slot sem ativo' };
       return { ok: true, motivo: '' };
     }
     case 'revisao': {
+      if (format.kind !== 'video') {
+        const render = peca.render_final;
+        if (render?.checks?.length && render.checks.every((item) => item.ok === true)) return { ok: true, motivo: '' };
+        const items = reviewChecklist({
+          roteiro: peca.roteiro,
+          formatoId: peca.formato_id,
+          slots: peca.slots ?? [],
+        });
+        const bad = items.filter((item) => !item.ok);
+        if (bad.length) return { ok: false, motivo: bad.map((item) => item.detalhe).join('; ') };
+        return { ok: true, motivo: '' };
+      }
       const render = peca.render_final;
       if (!render) return { ok: false, motivo: 'render final ausente' };
       const checks = render.checks;
@@ -163,6 +184,49 @@ export function slotCode(serieSigla: string, numero: number, indice: number, tip
   }
   const letter = tipo === 'video' ? 'C' : 'S';
   return `${sigla}-${String(numero).padStart(4, '0')}-${letter}${String(indice).padStart(2, '0')}`;
+}
+
+export function reviewChecklist(input: {
+  roteiro: Roteiro | null;
+  formatoId: string;
+  canon?: string[];
+  fonte?: string;
+  slots?: Array<{ codigo?: string; ativo_id: string | null }>;
+}): Array<{ nome: string; ok: boolean; detalhe: string }> {
+  const format = formatById(input.formatoId);
+  if (!format) return [{ nome: 'formato', ok: false, detalhe: 'formato desconhecido' }];
+  const slides = slidesFromRoteiro(input.roteiro, input.canon ?? [], input.fonte ?? '');
+  const texts = validateTexts({ ...(input.roteiro ?? {}), slides }, format);
+  const items = [{
+    nome: 'limites de texto',
+    ok: texts.ok,
+    detalhe: texts.ok ? 'dentro dos limites' : texts.erros.join('; '),
+  }];
+  const unsafe = slides.filter((slide, index) => previewAlerts({
+    format, title: slide.titulo, slideIndex: index, slideCount: slides.length,
+  }).some((alert) => alert.id === 'safe'));
+  items.push({
+    nome: 'zona segura',
+    ok: unsafe.length === 0,
+    detalhe: unsafe.length ? `texto fora da zona no slide ${slides.indexOf(unsafe[0]) + 1}` : 'texto dentro da zona',
+  });
+  const byCode = new Map((input.slots ?? []).map((slot) => [slot.codigo, slot]));
+  const missing = slides.filter((slide) => slide.slot && !byCode.get(slide.slot)?.ativo_id);
+  items.push({
+    nome: 'slots',
+    ok: missing.length === 0,
+    detalhe: missing.length ? `sem ativo: ${missing.map((slide) => slide.slot).join(', ')}` : 'slots completos',
+  });
+  if (needsSourceSlide(input.canon ?? [])) {
+    const last = slides[slides.length - 1];
+    const cited = !!last && last.layout === 'fonte' && !!last.apoio;
+    items.push({
+      nome: 'fonte citada',
+      ok: cited,
+      detalhe: cited ? 'último slide cita a fonte' : 'o canon exige fonte no último slide',
+    });
+  }
+  return items;
 }
 
 export function validateTexts(roteiro: Roteiro | null, formato: StudioFormat): { ok: boolean; erros: string[] } {

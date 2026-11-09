@@ -39,6 +39,8 @@ export const slideSchema = z.object({
   tokens: tokensSchema,
   zone: zoneSchema,
   debugSafeZone: z.boolean(),
+  layout: z.string(),
+  fontFamily: z.string(),
 });
 
 export const reelSchema = z.object({
@@ -80,6 +82,8 @@ const slideDefaults: SlideProps = {
   tokens: TOKEN_PADRAO,
   zone: { top: 0, bottom: 0, left: 60, right: 60 },
   debugSafeZone: false,
+  layout: 'capa',
+  fontFamily: 'Instrument Sans',
 };
 
 const reelDefaults: ReelProps = {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AbsoluteFill } from 'remotion';
-import { textOutsideSafeZone, titleBox, type TextBox } from '../../../src/shared/studioPreview';
+import { textOutsideSafeZone, titleBox, type TextBox } from './safeMath';
 
 export interface SafeZone {
   top: number;

@@ -236,6 +236,16 @@ const api: TavirApi = {
     preview: {
       get: (pecaId: string, frame?: number, formatId?: string) => ipcRenderer.invoke('studio:preview:get', pecaId, frame, formatId),
     },
+    revisao: {
+      get: (pecaId: string) => ipcRenderer.invoke('studio:revisao:get', pecaId),
+    },
+    pacote: {
+      build: (pecaId: string) => ipcRenderer.invoke('studio:pacote:build', pecaId),
+      open: (pecaId: string) => ipcRenderer.invoke('studio:pacote:open', pecaId),
+    },
+    arte: {
+      assign: (pecaId: string, index: number, source: string) => ipcRenderer.invoke('studio:arte:assign', pecaId, index, source),
+    },
     motion: {
       updateBase: () => ipcRenderer.invoke('studio:motion:updateBase'),
       downloadBrowser: (confirm: boolean) => ipcRenderer.invoke('studio:motion:downloadBrowser', confirm),

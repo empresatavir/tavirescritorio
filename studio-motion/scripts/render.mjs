@@ -54,7 +54,7 @@ try {
       composition,
       serveUrl,
       output: job.output,
-      frame: job.frame ?? 0,
+      frame: 0,
       inputProps: props,
     });
   } else {

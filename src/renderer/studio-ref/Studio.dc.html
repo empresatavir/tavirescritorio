@@ -157,13 +157,14 @@
               <sc-for list="{{frames}}" as="f" hint-placeholder-count="7">
                 <div style="display: flex; flex-direction: column; gap: 6px">
                   <div class="{{f.cls}}" style="position: relative; aspect-ratio: {{f.ar}}; border-radius: 10px; overflow: hidden; background-color: {{f.bg}}; border: 1px solid {{f.bd}}; display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; animation: {{f.anim}}">
-                    <sc-if value="{{f.ready}}" hint-placeholder-val="{{true}}">
+                    <sc-if value="{{f.hasImg}}" hint-placeholder-val="{{false}}"><img src="{{f.src}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover"></sc-if>
+                    <sc-if value="{{f.ready}}" hint-placeholder-val="{{false}}">
                       <svg viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{f.decor}}" fill="none" stroke="#1BC5BD" stroke-width="1.6" stroke-linecap="round" opacity=".7"></path></svg>
                       <b style="position: relative; font-size: 11px; line-height: 1.2; color: #F4F6F2">{{f.t}}</b>
                     </sc-if>
                     <sc-if value="{{f.waiting}}" hint-placeholder-val="{{false}}"><span class="mono" style="position: relative; font-size: 10px; color: rgba(244,246,242,.6)">{{f.wait}}</span></sc-if>
                   </div>
-                  <div style="display: flex; align-items: center"><span class="num muted" style="font-size: 10.5px">{{f.n}}</span><div class="grow"></div><sc-if value="{{f.ready}}" hint-placeholder-val="{{true}}"><button class="link" style="font-size: 11px" onClick="{{f.redo}}">refazer</button></sc-if></div>
+                  <div style="display: flex; align-items: center; gap: 6px"><span class="num muted" style="font-size: 10.5px">{{f.n}}</span><div class="grow"></div><button class="link" style="font-size: 11px" onClick="{{f.redo}}">refazer render</button><label class="link" style="font-size: 11px">trocar<input type="file" accept="image/*" onChange="{{f.onFile}}" style="display: none"></label></div>
                 </div>
               </sc-for>
             </div>
@@ -195,6 +196,7 @@
               </div>
             </div>
             <div class="bubble ag" style="max-width: 100%"><div class="eyebrow" style="font-size: 10px; margin-bottom: 4px">Rita Revisora</div>{{rev.comment}}</div>
+            <label class="field"><span>Comentário</span><textarea class="input" rows="2" value="{{ajusteNota}}" onChange="{{onAjuste}}"></textarea></label>
             <div class="actions"><button class="btn primary" onClick="{{approveReview}}" disabled="{{rev.blocked}}">Aprovar revisão</button><button class="btn ghost" onClick="{{ajuste}}">Pedir outro ajuste</button></div>
           </section>
         </sc-if>
@@ -208,7 +210,7 @@
               <label class="field"><span>Hashtags · {{tagCount}} / 5</span><input class="input" value="{{tagText}}" onChange="{{onTags}}" aria-label="Hashtags"></label>
               <label class="field"><span>Quando publicar</span><input class="input" value="{{when}}" onChange="{{onWhen}}" aria-label="Quando publicar"></label>
             </div>
-            <sc-if value="{{notConfirming}}" hint-placeholder-val="{{true}}"><div class="actions"><button class="btn primary" onClick="{{askPublish}}">Enviar para publicação</button><span class="muted" style="font-size: 12px">Publicar passa por um gate seu.</span></div></sc-if>
+            <sc-if value="{{notConfirming}}" hint-placeholder-val="{{true}}"><div class="actions"><button class="btn secondary" onClick="{{buildPack}}">Montar pacote</button><button class="btn secondary" onClick="{{openPack}}">Abrir pasta</button><button class="btn primary" onClick="{{askPublish}}">Enviar para publicação</button><span class="muted" style="font-size: 12px">Publicar passa por um gate seu.</span></div></sc-if>
             <sc-if value="{{confirming}}" hint-placeholder-val="{{false}}">
               <div class="ink" style="padding: 20px 22px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; animation: slideup 220ms var(--ease) both">
                 <span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(183,243,74,.14); color: #B7F34A; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4"></path></svg></span>
@@ -462,6 +464,8 @@ class Component extends DCLogic {
       var pecaId = self.state.pecaId && mine.some(function (p) { return p.id === self.state.pecaId; }) ? self.state.pecaId : (mine[0] ? mine[0].id : '');
       self.setState({ perfis: perfis, pecas: pecas, series: all[2] || [], perfilId: perfilId, pecaId: pecaId, error: '' });
       self.loadPreview(self.state.previewIndex || 0, pecaId);
+      self.loadReview(pecaId);
+      self.loadArte(pecaId, pecas);
       if (perfilId && api.motion && api.motion.latest) api.motion.latest(perfilId).then(function (view) {
         self.setState({ motionJob: view && view.job ? view.job : null, motionStill: view && view.still ? view.still : '' });
       }).catch(function () {});
@@ -537,7 +541,7 @@ class Component extends DCLogic {
     function field(key) { return function (e) { var form = Object.assign({}, s.form); form[key] = e.target.value; self.setState({ form: form }); }; }
     var formatosPerfil = (perfil && perfil.redes ? perfil.redes : []).reduce(function (acc, r) { return acc.concat(r.formatos || []); }, []);
     var formatosTxt = FORMATS.filter(function (f) { return !s.form.rede || f[1] === s.form.rede; }).map(function (f) { return f[0]; }).join(', ');
-    var checks = peca && peca.render_final && peca.render_final.checks ? peca.render_final.checks : [];
+    var checks = (s.review && s.review.length) ? s.review : (peca && peca.render_final && peca.render_final.checks ? peca.render_final.checks : []);
     var revOk = checks.length > 0 && checks.every(function (c) { return c.ok === true; });
     var slots = peca && peca.slots ? peca.slots : [];
     var done = slots.filter(function (sl) { return sl.ativo_id; }).length;
@@ -630,10 +634,22 @@ class Component extends DCLogic {
       }),
       slidesN: slides.length, addSlide: function () { self.saveSlide(slides.length, ''); },
       approveScript: function () { if (!locked && peca) { var api = studioApi(); api.pecas.advance(peca.id).then(function (res) { self.after(res); }); } },
-      art: { done: done, total: total, pct: total ? Math.round(done / total * 100) : 0, cls: '', cost: '—', job: '—', note: slots.length ? 'Cada frame precisa de um ativo.' : 'Nenhum slot ainda.', notReady: done < total || total === 0 },
-      frames: (slots.length ? slots : slides).map(function (item, i) {
-        var ready = !!(item.ativo_id);
-        return { n: String(i + 1).padStart(2, '0'), t: item.titulo || item.codigo || '—', ready: ready, waiting: !ready, wait: 'sem ativo', cls: '', ar: '4 / 5', bg: '#0B1220', bd: 'var(--line)', anim: 'none', decor: '', redo: function () {} };
+      art: { done: (s.arteImages || []).filter(Boolean).length, total: slides.length, pct: slides.length ? Math.round((s.arteImages || []).filter(Boolean).length / slides.length * 100) : 0, cls: '', cost: '—', job: '—', note: 'Cada slide mostra o arquivo renderizado. Trocar a imagem liga o slot.', notReady: !slides.length },
+      frames: slides.map(function (item, i) {
+        var img = (s.arteImages || [])[i] || '';
+        var imported = item.slot && slots.some(function (sl) { return sl.codigo === item.slot && sl.ativo_id; });
+        return {
+          n: String(i + 1).padStart(2, '0'), t: item.titulo || '—', ready: false, waiting: !img, hasImg: !!img, src: img,
+          wait: imported ? 'ativo importado' : (item.slot ? 'sem ativo' : 'sem render'),
+          cls: '', ar: '4 / 5', bg: '#0B1220', bd: 'var(--line)', anim: 'none', decor: '',
+          redo: function () { var api = studioApi(); if (api && api.render && peca) api.render.still(peca.id, i); },
+          onFile: function (e) {
+            var file = e.target.files && e.target.files[0];
+            var api = studioApi();
+            if (!file || !file.path || !api || !api.arte || !peca) return;
+            api.arte.assign(peca.id, i, file.path).then(function (res) { self.after(res); });
+          },
+        };
       }),
       toReview: function () { if (!locked && peca) { var api = studioApi(); api.pecas.advance(peca.id).then(function (res) { self.after(res); }); } },
       rev: { cls: revOk ? 'flow' : '', label: checks.length ? (revOk ? 'tudo certo' : 'ajuste') : '—', blocked: !revOk, comment: checks.length ? '—' : 'Sem checagem registrada.', items: (checks.length ? checks : [{ ok: false, nome: '—', detalhe: 'Sem checagem registrada.' }]).map(function (c) { return { t: c.nome || '—', m: c.detalhe || '—', fixable: false, bg: c.ok ? 'var(--flow-subtle)' : 'var(--warning-subtle)', fg: c.ok ? 'var(--flow)' : 'var(--warning)', icon: c.ok ? 'M5 12.5l4.5 4.5L19 7' : 'M12 7v6M12 17h.01' }; }) },
@@ -648,7 +664,10 @@ class Component extends DCLogic {
       when: peca && peca.agendado_para ? peca.agendado_para : '',
       onWhen: function (e) { self.patch({ agendado_para: e.target.value }); },
       notConfirming: !s.confirm, confirming: s.confirm,
-      askPublish: function () { self.setState({ confirm: true }); },
+      ajusteNota: s.ajusteNota || '',
+      onAjuste: function (e) { self.setState({ ajusteNota: e.target.value }); },
+      buildPack: function () { var api = studioApi(); if (!api || !api.pacote || !peca) return; api.pacote.build(peca.id).then(function (res) { self.after(res); }); },
+      openPack: function () { var api = studioApi(); if (!api || !api.pacote || !peca) return; api.pacote.open(peca.id); },
       cancelPublish: function () { self.setState({ confirm: false }); },
       doPublish: function () { if (!locked) self.gate('aprovado'); },
       slotLabel: (peca && peca.agendado_para) || '—',
@@ -745,6 +764,28 @@ class Component extends DCLogic {
     var next = ((this.state.previewIndex || 0) + delta + count) % count;
     this.setState({ previewIndex: next });
     this.loadPreview(next);
+  }
+  loadReview(pecaId) {
+    var api = studioApi();
+    var self = this;
+    if (!api || !api.revisao || !pecaId) return;
+    api.revisao.get(pecaId).then(function (res) {
+      self.setState({ review: res && res.items ? res.items : [] });
+    }).catch(function () {});
+  }
+  loadArte(pecaId, pecas) {
+    var api = studioApi();
+    var self = this;
+    if (!api || !api.preview || !pecaId) return;
+    var list = pecas || this.state.pecas || [];
+    var peca = list.filter(function (item) { return item.id === pecaId; })[0];
+    var n = peca && peca.roteiro && peca.roteiro.slides ? peca.roteiro.slides.length : 0;
+    if (!n) { this.setState({ arteImages: [] }); return; }
+    var jobs = [];
+    for (var i = 0; i < n; i += 1) jobs.push(api.preview.get(pecaId, i, ''));
+    Promise.all(jobs).then(function (views) {
+      self.setState({ arteImages: (views || []).map(function (view) { return view && view.image ? view.image : ''; }) });
+    }).catch(function () {});
   }
   saveAngle() {
     var peca = (this.state.pecas || []).filter(function (p) { return p.id === this.state.pecaId; }, this)[0];
