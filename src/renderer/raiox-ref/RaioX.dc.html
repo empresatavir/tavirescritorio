@@ -76,10 +76,12 @@
       <p>{{caseObjective}}</p>
     </div>
     <div class="actions">
+      <button class="btn secondary" onClick="{{runAnalyse}}">Rodar análise</button>
       <button class="btn secondary" onClick="{{openEvidence}}">Registrar evidência</button>
       <button class="btn primary" onClick="{{openFolder}}">Abrir pasta</button>
     </div>
   </div>
+  <sc-if value="{{hasAnalysis}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 13px; margin: 0">{{analysisLine}}</p></sc-if>
 
   <div class="stepper">
     <sc-for list="{{stages}}" as="st" hint-placeholder-count="6">
@@ -154,6 +156,30 @@
       <sc-if value="{{noPriority}}" hint-placeholder-val="{{true}}">
         <p class="muted">A prioridade ainda não foi escolhida.</p>
       </sc-if>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <button class="btn secondary" onClick="{{openDebrief}}">Devolutiva</button>
+        <button class="btn secondary" onClick="{{writeDocs}}">Gerar documentos</button>
+        <button class="btn secondary" onClick="{{renderDocs}}">Gerar PDF</button>
+      </div>
+      <sc-for list="{{hypotheses}}" as="h" hint-placeholder-count="0"><p class="sec">{{h.text}}</p></sc-for>
+      <sc-for list="{{docs}}" as="d" hint-placeholder-count="0">
+        <div class="card" style="padding: 12px 14px">
+          <b>{{d.title}}</b>
+          <p class="muted" style="font-size: 12px">hash {{d.short}}</p>
+          <sc-for list="{{d.problems}}" as="p" hint-placeholder-count="0"><p style="color: var(--danger); font-size: 12px">{{p}}</p></sc-for>
+          <div style="display: flex; gap: 8px">
+            <button class="btn secondary" onClick="{{d.openMd}}">Abrir</button>
+            <button class="btn secondary" onClick="{{d.openPdf}}">Abrir PDF</button>
+          </div>
+        </div>
+      </sc-for>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <button class="btn secondary" onClick="{{rewriteDocs}}">Gerar de novo</button>
+        <button class="btn primary" disabled="{{approveOff}}" onClick="{{approveDocs}}">Aprovar documentos</button>
+        <button class="btn secondary" onClick="{{exportPdfs}}">Exportar PDFs</button>
+        <button class="btn secondary" onClick="{{openDelivery}}">Registrar entrega</button>
+        <button class="btn secondary" onClick="{{closeCase}}">Encerrar caso</button>
+      </div>
     </section>
   </sc-if>
 
@@ -161,8 +187,7 @@
     <div class="card" style="padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; border-style: dashed">
       <b>Concorrentes</b>
       <sc-for list="{{rivals}}" as="r" hint-placeholder-count="1"><p class="sec" style="font-size: 13px">{{r.src}} — {{r.what}}</p></sc-for>
-      <button class="btn secondary" disabled="{{scanOff}}" title="Disponível quando a análise assistida estiver ligada">Pedir varredura</button>
-      <p class="muted" style="font-size: 12px">Disponível quando a análise assistida estiver ligada.</p>
+      <button class="btn secondary" onClick="{{scanRivals}}">Pedir varredura</button>
     </div>
   </sc-if>
 </div>
@@ -225,6 +250,38 @@
   </div></div>
 </sc-if>
 
+<sc-if value="{{modalDeb}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal lg" role="dialog" aria-modal="true" aria-label="Devolutiva" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Devolutiva</h2></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <div class="field"><span>Decisão</span><div class="segs"><sc-for list="{{debDecisions}}" as="x" hint-placeholder-count="2"><button class="seg {{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div>
+      <label class="field"><span>Motivo *</span><textarea class="input" value="{{debForm.reason}}" onChange="{{onDebReason}}"></textarea></label>
+      <sc-if value="{{showOffer}}" hint-placeholder-val="{{true}}">
+        <p class="muted" style="font-size: 13px">Oferta do gap: {{debForm.offerId}}</p>
+        <div class="field"><span>Profundidade</span><div class="segs"><sc-for list="{{depthChoices}}" as="x" hint-placeholder-count="4"><button class="seg {{x.on}}" title="{{x.title}}" disabled="{{x.disabled}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div>
+        <label class="field"><span>Plano 30 *</span><textarea class="input" value="{{debForm.plan30}}" onChange="{{onPlan30}}"></textarea></label>
+        <button class="btn secondary" onClick="{{fillPlaybook}}">Preencher com o playbook</button>
+        <label class="field"><span>Plano 60</span><textarea class="input" value="{{debForm.plan60}}" onChange="{{onPlan60}}"></textarea></label>
+        <label class="field"><span>Plano 90</span><textarea class="input" value="{{debForm.plan90}}" onChange="{{onPlan90}}"></textarea></label>
+      </sc-if>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{submitDebrief}}">Gravar devolutiva</button></div>
+  </div></div>
+</sc-if>
+
+<sc-if value="{{modalDel}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Registrar entrega" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Registrar entrega</h2></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <label class="field"><span>Para quem *</span><input class="input" value="{{debForm.to}}" onChange="{{onDeliveryTo}}"></label>
+      <label class="field"><span>Nota</span><input class="input" value="{{debForm.note}}" onChange="{{onDeliveryNote}}"></label>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{submitDelivery}}">Registrar</button></div>
+  </div></div>
+</sc-if>
+
 <sc-if value="{{modalRm}}" hint-placeholder-val="{{false}}">
   <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Remover evidência" onClick="{{modalStop}}">
     <div class="mhead"><div class="grow"><h2>Remover evidência</h2><p>A evidência sai deste diagnóstico.</p></div></div>
@@ -270,6 +327,9 @@ function blankEv() {
 function blankPri() {
   return { stage: 'encontrar', gapId: '', bottleneck: '', rationale: '', confidence: 'media', discarded: '' };
 }
+function blankDeb() {
+  return { decision: 'proposta_emitida', reason: '', offerId: '', depth: 'guiado', plan30: '', plan60: '', plan90: '', guided: '', playbookStatus: 'rascunho' };
+}
 function tavirApi() {
   return (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
 }
@@ -277,7 +337,7 @@ function tavirApi() {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { cases: [], catalog: [], gaps: [], filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), error: '', syncError: '', removeId: null };
+    this.state = { cases: [], catalog: [], gaps: [], filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), debForm: blankDeb(), error: '', syncError: '', analysis: '', removeId: null };
   }
   componentDidMount() {
     const self = this;
@@ -314,9 +374,17 @@ class Component extends DCLogic {
     };
     if (typeof window !== 'undefined') window.addEventListener('keydown', this._onKey);
     this.reload();
+    const progressApi = tavirApi();
+    if (progressApi && progressApi.raiox && progressApi.raiox.onProgress) {
+      this._offProgress = progressApi.raiox.onProgress(function (progress) {
+        if (!self._alive || progress.id !== self.state.caseId) return;
+        self.setState({ analysis: progress.running ? (progress.activity || progress.speech || 'Rodando análise') : '' });
+      });
+    }
   }
   componentWillUnmount() {
     this._alive = false;
+    if (this._offProgress) this._offProgress();
     if (typeof window !== 'undefined' && this._onKey) window.removeEventListener('keydown', this._onKey);
   }
   renderVals() {
@@ -444,6 +512,28 @@ class Component extends DCLogic {
         const api = tavirApi();
         if (api && api.raiox && current) api.raiox.openFolder(current.id);
       },
+      hasAnalysis: !!s.analysis,
+      analysisLine: s.analysis || '',
+      runAnalyse: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.analyse) return;
+        self.setState({ analysis: 'Rodando análise' });
+        api.raiox.analyse(current.id, []).then(function (res) {
+          self.setState({ analysis: '' });
+          if (!res || !res.ok) return fail(res);
+          if (self.reload) self.reload();
+        }).catch(function () { self.setState({ analysis: '' }); fail(); });
+      },
+      scanRivals: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.analyse) return;
+        self.setState({ analysis: 'Varrendo concorrentes' });
+        api.raiox.analyse(current.id, ['concorrentes']).then(function (res) {
+          self.setState({ analysis: '' });
+          if (!res || !res.ok) return fail(res);
+          if (self.reload) self.reload();
+        }).catch(function () { self.setState({ analysis: '' }); fail(); });
+      },
       stages: STATUS.map(function (id, index) {
         return { n: '0' + (index + 1), label: STATUS_LABEL[id], cls: (index < statusAt ? 'done' : index === statusAt ? 'now' : '') + (noteAt === index ? ' sel' : ''), pick: function () { self.setState({ stageNote: index }); } };
       }),
@@ -479,11 +569,67 @@ class Component extends DCLogic {
       priorityWhy: priority ? priority.bottleneck : '',
       priorityMeta: priority ? (priority.rationale + (priority.discarded ? ' · Descartado: ' + priority.discarded : '')) : '',
       openPriority: function () { self.setState({ modal: 'priority', error: '', priForm: blankPri() }); },
+      hypotheses: ((current && current.hypotheses) || []).map(function (item) { return { text: item.text }; }),
+      docs: ((current && current.debrief && current.debrief.documents) || []).map(function (doc) {
+        return {
+          title: doc.kind === 'relatorio' ? 'Relatório' : 'Plano',
+          short: (doc.sha256 || '').slice(0, 12),
+          problems: doc.lint || [],
+          openMd: function () { const api = tavirApi(); if (api && current) api.raiox.openDocument(current.id, doc.md); },
+          openPdf: function () { const api = tavirApi(); if (api && current && doc.pdf) api.raiox.openDocument(current.id, doc.pdf); },
+        };
+      }),
+      approveOff: !current || !current.debrief || !current.debrief.documents || current.debrief.documents.some(function (doc) { return (doc.lint || []).length; }),
+      openDebrief: function () {
+        const api = tavirApi();
+        const gapId = current && current.priority ? current.priority.gapId : '';
+        const offer = gapLabel(gapId);
+        const form = blankDeb();
+        const gap = gaps.filter(function (item) { return item.id === gapId; })[0];
+        if (gap) form.offerId = gap.offerId;
+        if (!api || !api.raiox.playbook || !gapId) { self.setState({ modal: 'debrief', error: '', debForm: form }); return; }
+        api.raiox.playbook(gapId).then(function (res) {
+          if (res && res.ok && res.playbook) {
+            form.guided = (res.playbook.guided || []).join('\n');
+            form.playbookStatus = res.playbook.status || 'rascunho';
+          }
+          self.setState({ modal: 'debrief', error: '', debForm: form });
+        }).catch(function () { self.setState({ modal: 'debrief', error: '', debForm: form }); });
+      },
+      writeDocs: function () {
+        const api = tavirApi();
+        if (!api || !current) return;
+        api.raiox.writeDocuments(current.id).then(refreshOpen).catch(function () { fail(); });
+      },
+      rewriteDocs: function () {
+        const api = tavirApi();
+        if (!api || !current) return;
+        api.raiox.writeDocuments(current.id).then(refreshOpen).catch(function () { fail(); });
+      },
+      renderDocs: function () {
+        const api = tavirApi();
+        if (!api || !current || !current.debrief || !current.debrief.documents || !current.debrief.documents.length) return;
+        api.raiox.renderPdfs(current.id, current.debrief.documents[0].version).then(refreshOpen).catch(function () { fail(); });
+      },
+      approveDocs: function () {
+        const api = tavirApi();
+        if (!api || !current || !current.debrief || !current.debrief.documents) return;
+        if (current.debrief.documents.some(function (doc) { return (doc.lint || []).length; })) return;
+        const hashes = current.debrief.documents.map(function (doc) { return doc.sha256; });
+        const shown = current.debrief.documents.map(function (doc) { return (doc.kind === 'relatorio' ? 'Relatório ' : 'Plano ') + (doc.sha256 || '').slice(0, 12); }).join('\n');
+        if (typeof window !== 'undefined' && window.confirm && !window.confirm('Aprovar estes documentos?\n' + shown)) return;
+        api.raiox.approveDocuments(current.id, hashes).then(refreshOpen).catch(function () { fail(); });
+      },
+      exportPdfs: function () { const api = tavirApi(); if (api && current) api.raiox.exportPdfs(current.id).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); },
+      openDelivery: function () { self.setState({ modal: 'delivery', error: '', debForm: Object.assign({}, blankDeb(), { reason: '' }) }); },
+      closeCase: function () { const api = tavirApi(); if (api && current) api.raiox.close(current.id).then(refreshOpen).catch(function () { fail(); }); },
       rivals: rivals.map(function (item) { return { src: item.source, what: item.claim }; }),
-      scanOff: true,
+      scanOff: false,
       modalNew: s.modal === 'new',
       modalEv: s.modal === 'evidence',
       modalPri: s.modal === 'priority',
+      modalDeb: s.modal === 'debrief',
+      modalDel: s.modal === 'delivery',
       modalRm: s.modal === 'remove',
       modalBg: function (event) { if (event && event.target !== event.currentTarget) return; self.setState({ modal: null, error: '', removeId: null }); },
       modalStop: function (event) { if (event && event.stopPropagation) event.stopPropagation(); },
@@ -566,6 +712,37 @@ class Component extends DCLogic {
         const form = s.priForm;
         if (!api || !current) return;
         api.raiox.setPriority(current.id, { stage: form.stage, gapId: form.gapId, bottleneck: form.bottleneck, rationale: form.rationale, confidence: form.confidence, discarded: form.discarded }).then(refreshOpen).catch(function () { fail(); });
+      },
+      debForm: s.debForm || blankDeb(),
+      debDecisions: [
+        { label: 'Proposta emitida', on: (s.debForm || blankDeb()).decision === 'proposta_emitida' ? 'on' : '', pick: function () { self.setState({ debForm: Object.assign({}, s.debForm, { decision: 'proposta_emitida' }) }); } },
+        { label: 'Não emitir', on: (s.debForm || blankDeb()).decision === 'nao_emitir' ? 'on' : '', pick: function () { self.setState({ debForm: Object.assign({}, s.debForm, { decision: 'nao_emitir' }) }); } }
+      ],
+      showOffer: (s.debForm || blankDeb()).decision !== 'nao_emitir',
+      depthChoices: ['guiado', 'piloto', 'junto', 'para_voce'].map(function (id) {
+        const locked = (id === 'junto' || id === 'para_voce') && (s.debForm || blankDeb()).playbookStatus !== 'validado';
+        return { label: id === 'guiado' ? 'Guiado' : id === 'piloto' ? 'Piloto' : id === 'junto' ? 'Junto' : 'Para você', on: (s.debForm || blankDeb()).depth === id ? 'on' : '', disabled: locked, title: locked ? 'Playbook em rascunho' : '', pick: function () { if (!locked) self.setState({ debForm: Object.assign({}, s.debForm, { depth: id }) }); } };
+      }),
+      fillPlaybook: function () { self.setState({ debForm: Object.assign({}, s.debForm, { plan30: (s.debForm && s.debForm.guided) || '' }) }); },
+      onDebReason: function (event) { self.setState({ debForm: Object.assign({}, s.debForm, { reason: event.target.value }) }); },
+      onPlan30: function (event) { self.setState({ debForm: Object.assign({}, s.debForm, { plan30: event.target.value }) }); },
+      onPlan60: function (event) { self.setState({ debForm: Object.assign({}, s.debForm, { plan60: event.target.value }) }); },
+      onPlan90: function (event) { self.setState({ debForm: Object.assign({}, s.debForm, { plan90: event.target.value }) }); },
+      onDeliveryTo: function (event) { self.setState({ debForm: Object.assign({}, s.debForm, { to: event.target.value }) }); },
+      onDeliveryNote: function (event) { self.setState({ debForm: Object.assign({}, s.debForm, { note: event.target.value }) }); },
+      submitDebrief: function () {
+        const api = tavirApi();
+        const form = s.debForm || blankDeb();
+        if (!api || !current) return;
+        const input = { decision: form.decision, reason: form.reason };
+        if (form.decision === 'proposta_emitida') { input.offerId = form.offerId; input.depth = form.depth; input.plan30 = form.plan30; input.plan60 = form.plan60; input.plan90 = form.plan90; }
+        api.raiox.setDebrief(current.id, input).then(refreshOpen).catch(function () { fail(); });
+      },
+      submitDelivery: function () {
+        const api = tavirApi();
+        const form = s.debForm || {};
+        if (!api || !current) return;
+        api.raiox.recordDelivery(current.id, { channel: 'manual', to: form.to || '', note: form.note || '' }).then(refreshOpen).catch(function () { fail(); });
       },
       confirmRemove: function () {
         const api = tavirApi();

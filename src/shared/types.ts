@@ -621,6 +621,17 @@ export interface TavirApi {
     setDebrief: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     openFolder: (id: string) => Promise<{ ok: boolean; error?: string }>;
     sync: () => Promise<{ ok: true; created: number; updated: number } | { ok: false; error: string }>;
+    analyse: (id: string, fronts: string[]) => Promise<{ ok: true; created: number } | { ok: false; error: string }>;
+    stopAnalyse: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    runs: (id: string) => Promise<{ ok: true; live: { running: boolean; speech: string; activity: string }; runs: unknown[] } | { ok: false; error: string }>;
+    writeDocuments: (id: string) => Promise<{ ok: true; version: number; problems: string[] } | { ok: false; error: string }>;
+    renderPdfs: (id: string, version: number) => Promise<{ ok: true } | { ok: false; error: string }>;
+    openDocument: (id: string, relative: string) => Promise<{ ok: boolean; error?: string }>;
+    approveDocuments: (id: string, hashes: string[]) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    exportPdfs: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    recordDelivery: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    close: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => () => void;
     playbooks: () => Promise<
       | { ok: true; playbooks: Array<{ id: string; title: string; stage: string; wave: number; status: string; version: string; problems: string[] }> }
       | { ok: false; error: string }

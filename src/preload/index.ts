@@ -305,6 +305,21 @@ const api: TavirApi = {
     setDebrief: (id: string, input: unknown) => ipcRenderer.invoke('raiox:setDebrief', id, input),
     openFolder: (id: string) => ipcRenderer.invoke('raiox:openFolder', id),
     sync: () => ipcRenderer.invoke('raiox:sync'),
+    analyse: (id: string, fronts: string[]) => ipcRenderer.invoke('raiox:analyse', id, fronts),
+    stopAnalyse: (id: string) => ipcRenderer.invoke('raiox:stopAnalyse', id),
+    runs: (id: string) => ipcRenderer.invoke('raiox:runs', id),
+    writeDocuments: (id: string) => ipcRenderer.invoke('raiox:writeDocuments', id),
+    renderPdfs: (id: string, version: number) => ipcRenderer.invoke('raiox:renderPdfs', id, version),
+    openDocument: (id: string, relative: string) => ipcRenderer.invoke('raiox:openDocument', id, relative),
+    approveDocuments: (id: string, hashes: string[]) => ipcRenderer.invoke('raiox:approveDocuments', id, hashes),
+    exportPdfs: (id: string) => ipcRenderer.invoke('raiox:exportPdfs', id),
+    recordDelivery: (id: string, input: unknown) => ipcRenderer.invoke('raiox:recordDelivery', id, input),
+    close: (id: string) => ipcRenderer.invoke('raiox:close', id),
+    onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => {
+      const handler = (_e: Electron.IpcRendererEvent, progress: { id: string; speech: string; activity: string; running: boolean }) => callback(progress);
+      ipcRenderer.on('raiox:progress', handler);
+      return () => ipcRenderer.removeListener('raiox:progress', handler);
+    },
     playbooks: () => ipcRenderer.invoke('raiox:playbooks'),
     playbook: (id: string) => ipcRenderer.invoke('raiox:playbook', id),
   },

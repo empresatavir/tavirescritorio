@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto';
-import { dialog, shell } from 'electron';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { dialog, shell, BrowserWindow } from 'electron';
 import {
   RAIOX_CATALOG,
   RAIOX_CICLO,
@@ -12,10 +14,13 @@ import {
   RaioxError,
   addEvidence,
   caseIdFromUuid,
+  approveDocuments,
+  closeCase,
   createCase,
   present,
   removeEvidence,
   reviewEvidence,
+  recordDelivery,
   setDebrief,
   setPriority,
   updateFrontier,
@@ -25,6 +30,9 @@ import {
   type RaioxPriorityInput,
 } from './raioxRules';
 import { syncCases } from './raioxBridge';
+import { analyse, analysisLive, stopAnalyse } from './raioxAnalyse';
+import { documentPath, renderPdfs, writeDocuments } from './raioxDocs';
+import { listRuns } from '../runLedger';
 import { listCases, raioxRoot, readCase, storeFile, writeCase, caseDir } from './raioxStore';
 import { playbookStatusFor, lintPlaybook, loadPlaybooks, requirePlaybook } from './playbooks';
 
@@ -177,6 +185,102 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:sync', async () => {
     try {
       return await syncCases({ root: raioxRoot() });
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:analyse', async (_e, id: string, fronts: string[]) => {
+    try {
+      return await analyse(raioxRoot(), id, Array.isArray(fronts) ? fronts : [], {
+        onProgress: (progress) => {
+          for (const win of BrowserWindow.getAllWindows()) win.webContents.send('raiox:progress', progress);
+        },
+      });
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:stopAnalyse', (_e, id: string) => {
+    try {
+      stopAnalyse(id);
+      return { ok: true };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:runs', (_e, id: string) => {
+    try {
+      const dir = caseDir(raioxRoot(), id);
+      return { ok: true, live: analysisLive(id), runs: listRuns(dir).filter((item) => item.kind === 'raiox') };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:writeDocuments', async (_e, id: string) => {
+    try {
+      return await writeDocuments(raioxRoot(), id);
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:renderPdfs', async (_e, id: string, version: number) => {
+    try {
+      return await renderPdfs(raioxRoot(), id, version);
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:openDocument', async (_e, id: string, relative: string) => {
+    try {
+      const message = await shell.openPath(documentPath(raioxRoot(), id, relative));
+      return message ? { ok: false, error: message } : { ok: true };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:approveDocuments', (_e, id: string, hashes: string[]) => {
+    try {
+      return mutate(id, (c) => approveDocuments(c, hashes, new Date().toISOString()));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:exportPdfs', async (_e, id: string) => {
+    try {
+      const picked = await dialog.showOpenDialog({ properties: ['openDirectory'] });
+      if (picked.canceled || !picked.filePaths[0]) return { ok: false, error: 'Nenhuma pasta selecionada.' };
+      const current = readCase(raioxRoot(), id);
+      const pdfs = (current.debrief?.documents || []).map((doc) => doc.pdf).filter((item): item is string => !!item);
+      if (!pdfs.length) return { ok: false, error: 'Gere os PDFs antes de exportar.' };
+      for (const relative of pdfs) {
+        const src = documentPath(raioxRoot(), id, relative);
+        fs.copyFileSync(src, path.join(picked.filePaths[0], path.basename(src)));
+      }
+      return { ok: true };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:recordDelivery', (_e, id: string, input: { channel: string; to: string; note?: string }) => {
+    try {
+      return mutate(id, (c) => recordDelivery(c, input, new Date().toISOString()));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:close', (_e, id: string) => {
+    try {
+      return mutate(id, (c) => closeCase(c, new Date().toISOString()));
     } catch (err) {
       return fail(err);
     }
