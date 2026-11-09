@@ -15,6 +15,7 @@ import type {
   PerfilRedeInput,
   PieceStage,
   PreflightItem,
+  Prompt,
   Serie,
   StudioEvent,
   SerieInput,
@@ -520,6 +521,18 @@ export interface TavirApi {
     };
     arte: {
       assign: (pecaId: string, index: number, source: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    prompts: {
+      compile: (pecaId: string) => Promise<{ ok: boolean; error?: string; count?: number }>;
+      list: (pecaId: string) => Promise<Array<Prompt & { codigo: string }>>;
+      nota: (promptId: string, nota: 'funcionou' | 'nao' | null) => Promise<{ ok: boolean; error?: string }>;
+      export: (pecaId: string) => Promise<{ ok: boolean; arquivo?: string; error?: string }>;
+      search: (perfilId: string, query: string) => Promise<Prompt[]>;
+      polish: (promptId: string) => Promise<{ ok: boolean; error?: string; custo: string }>;
+    };
+    inbox: {
+      scan: () => Promise<{ ligados: Array<{ arquivo: string; pecaId: string; slotId: string; versao: number; venceu: boolean }>; semDono: Array<{ arquivo: string; motivo: string }> }>;
+      assign: (fileName: string, slotId: string) => Promise<{ ok: boolean; error?: string }>;
     };
     motion: {
       updateBase: () => Promise<{ ok: boolean; error?: string }>;

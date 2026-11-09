@@ -817,6 +817,58 @@ export class StudioStore {
       criado_em: row.criado_em,
     };
   }
+
+  listSlotsByCode(codigo: string): Slot[] {
+    return (this.db.prepare('SELECT * FROM slots WHERE codigo = ?').all(codigo) as unknown as Slot[]).map((row) => ({
+      ...row,
+      tipo: row.tipo as SlotTipo,
+    }));
+  }
+
+  listPrompts(slotId: string): Prompt[] {
+    const rows = this.db.prepare('SELECT * FROM prompts WHERE slot_id = ? ORDER BY versao').all(slotId) as Array<{
+      id: string; slot_id: string; alvo: PromptAlvo; versao: number; camadas_json: string; texto: string; nota: string | null; criado_em: string;
+    }>;
+    return rows.map((row) => this.promptFrom(row));
+  }
+
+  listPiecePrompts(pecaId: string): Prompt[] {
+    const rows = this.db.prepare(
+      `SELECT p.* FROM prompts p JOIN slots s ON s.id = p.slot_id WHERE s.peca_id = ? ORDER BY s.codigo, p.versao`,
+    ).all(pecaId) as Array<{
+      id: string; slot_id: string; alvo: PromptAlvo; versao: number; camadas_json: string; texto: string; nota: string | null; criado_em: string;
+    }>;
+    return rows.map((row) => this.promptFrom(row));
+  }
+
+  searchPrompts(perfilId: string, query: string): Prompt[] {
+    const q = `%${query.trim()}%`;
+    const rows = this.db.prepare(
+      `SELECT p.* FROM prompts p
+       JOIN slots s ON s.id = p.slot_id
+       JOIN pecas c ON c.id = s.peca_id
+       WHERE c.perfil_id = ? AND p.nota = 'funcionou' AND (? = '%%' OR p.texto LIKE ?)
+       ORDER BY p.criado_em DESC`,
+    ).all(perfilId, q, q) as Array<{
+      id: string; slot_id: string; alvo: PromptAlvo; versao: number; camadas_json: string; texto: string; nota: string | null; criado_em: string;
+    }>;
+    return rows.map((row) => this.promptFrom(row));
+  }
+
+  private promptFrom(row: {
+    id: string; slot_id: string; alvo: PromptAlvo; versao: number; camadas_json: string; texto: string; nota: string | null; criado_em: string;
+  }): Prompt {
+    return {
+      id: row.id,
+      slot_id: row.slot_id,
+      alvo: row.alvo,
+      versao: row.versao,
+      camadas: parseJson(row.camadas_json, {}),
+      texto: row.texto,
+      nota: (row.nota as PromptNota) ?? null,
+      criado_em: row.criado_em,
+    };
+  }
 }
 
 let singleton: StudioStore | null = null;

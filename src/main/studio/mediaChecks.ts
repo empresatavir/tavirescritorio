@@ -8,7 +8,7 @@ function even(value: number): number {
   return rounded % 2 === 0 ? rounded : rounded - 1;
 }
 
-function probe(file: string): { width: number; height: number; fps: number; duration: number } | null {
+export function probe(file: string): { width: number; height: number; fps: number; duration: number } | null {
   try {
     const raw = execFileSync('ffprobe', [
       '-v', 'error',

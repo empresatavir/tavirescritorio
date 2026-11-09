@@ -6,6 +6,9 @@ import { cancelRender, startRender } from './render';
 import { assignSlotImage, buildPacote } from './pacote';
 import { reviewChecklist } from './rules';
 import { readPreview } from './previewMedia';
+import { assignInboxFile, scanInbox, watchInbox } from './inbox';
+import { compilePiecePrompts, exportShotList } from './shotList';
+import { polishPrompt } from './promptPolish';
 import { getStudioStore } from './store';
 import { suggestForPiece, type SuggestAlvo } from './suggest';
 
@@ -119,6 +122,26 @@ export function registerStudioIpc(handle: Handle): void {
     return { ok: !error, error: error || undefined };
   });
   handle('studio:arte:assign', (_e, pecaId: string, index: number, source: string) => assignSlotImage(pecaId, index, source));
+  handle('studio:prompts:compile', (_e, pecaId: string) => compilePiecePrompts(pecaId, getStudioStore()));
+  handle('studio:prompts:list', (_e, pecaId: string) => {
+    const store = getStudioStore();
+    const codes = new Map(store.listSlots(pecaId).map((slot) => [slot.id, slot.codigo]));
+    return store.listPiecePrompts(pecaId).map((prompt) => ({ ...prompt, codigo: codes.get(prompt.slot_id) || prompt.slot_id }));
+  });
+  handle('studio:prompts:nota', (_e, promptId: string, nota: 'funcionou' | 'nao' | null) => {
+    const store = getStudioStore();
+    const prompt = store.getPrompt(promptId);
+    if (!prompt) return { ok: false, error: 'prompt não encontrado' };
+    store.savePrompt({ ...prompt, nota });
+    return { ok: true };
+  });
+  handle('studio:prompts:export', (_e, pecaId: string) => exportShotList(pecaId, getStudioStore()));
+  handle('studio:prompts:search', (_e, perfilId: string, query: string) => getStudioStore().searchPrompts(perfilId, query || ''));
+  handle('studio:prompts:polish', async (_e, promptId: string) => polishPrompt(promptId));
+  handle('studio:inbox:scan', () => scanInbox(getStudioStore(), undefined, (pecaId, frame) => {
+    startRender(pecaId, 'still', frame).catch(() => undefined);
+  }));
+  handle('studio:inbox:assign', (_e, fileName: string, slotId: string) => assignInboxFile(fileName, slotId, getStudioStore()));
   handle('studio:motion:updateBase', () => updateMotionBase());
   handle('studio:motion:downloadBrowser', (_e, confirm?: boolean) => downloadRemotionBrowser(confirm === true));
   handle('studio:motion:ask', async (_e, input: { perfilId: string; preset: string; pedido: string }) => {
@@ -137,4 +160,7 @@ export function registerStudioIpc(handle: Handle): void {
   });
   handle('studio:motion:latest', (_e, perfilId: string) => latestMotionView(perfilId));
   handle('studio:preflight', () => runPreflight());
+  watchInbox(getStudioStore(), (pecaId, frame) => {
+    startRender(pecaId, 'still', frame).catch(() => undefined);
+  });
 }

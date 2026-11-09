@@ -170,6 +170,26 @@
             </div>
             <div class="actions" style="padding: 14px 18px; border-top: 1px solid var(--line)"><span class="muted" style="font-size: 12px">{{art.note}}</span><div class="grow"></div><button class="btn primary" onClick="{{toReview}}" disabled="{{art.notReady}}">Enviar para revisão</button></div>
           </section>
+          <section class="card">
+            <div class="card-h"><h3>Prompts do Flow</h3><div class="grow"></div><button class="btn sm secondary" onClick="{{compilePrompts}}">Gerar prompts</button><button class="btn sm secondary" onClick="{{exportPrompts}}">Exportar lista</button></div>
+            <div class="rows">
+              <sc-for list="{{prompts}}" as="p" hint-placeholder-count="0">
+                <div class="row" style="cursor: default; align-items: flex-start">
+                  <div class="grow">
+                    <div class="t">{{p.codigo}} · v{{p.versao}} · {{p.nota}}</div>
+                    <div class="m" style="white-space: pre-wrap">{{p.texto}}</div>
+                  </div>
+                  <button class="link" onClick="{{p.copy}}">copiar</button>
+                  <button class="link" onClick="{{p.ok}}">funcionou</button>
+                  <button class="link" onClick="{{p.bad}}">não funcionou</button>
+                  <button class="link" onClick="{{p.polish}}">lapidar</button>
+                </div>
+              </sc-for>
+              <sc-for list="{{orphans}}" as="o" hint-placeholder-count="0">
+                <div class="row" style="cursor: default"><span class="grow">{{o.arquivo}} · {{o.motivo}}</span><button class="btn sm secondary" onClick="{{o.assign}}">atribuir a slot</button></div>
+              </sc-for>
+            </div>
+          </section>
         </sc-if>
 
         <sc-if value="{{sv.audio}}" hint-placeholder-val="{{false}}">
@@ -327,6 +347,14 @@
         <div style="display: flex; align-items: center"><span class="eyebrow">Mesa do Oráculo · instruções do squad</span><div class="grow"></div><button class="btn sm secondary" onClick="{{editInstr}}">Editar instruções</button></div>
         <div class="ink" style="padding: 16px; border-radius: 12px"><pre class="mono" style="margin: 0; white-space: pre-wrap; font-size: 12.5px; line-height: 1.7">{{canonText}}</pre></div>
         <p class="muted" style="font-size: 12px">O canon do canal prevalece sobre qualquer pedido avulso. Mudanças valem a partir da próxima pauta.</p>
+        <div class="ink" style="padding: 16px; border-radius: 12px">
+          <div class="eyebrow" style="font-size: 10px">Bíblia visual</div>
+          <p style="margin: 8px 0 0">{{bibleStyle}}</p>
+          <p class="muted" style="margin: 8px 0 0">{{bibleNegatives}}</p>
+          <sc-for list="{{biblePeople}}" as="p" hint-placeholder-count="0"><p style="margin: 8px 0 0"><b>{{p.name}}</b> {{p.description}}</p></sc-for>
+        </div>
+        <label class="field"><span>Buscar prompts que funcionaram</span><input class="input" value="{{promptQuery}}" onChange="{{onPromptQuery}}"></label>
+        <sc-for list="{{library}}" as="p" hint-placeholder-count="0"><div class="row" style="cursor: default"><span class="grow" style="font-size: 12px">{{p.texto}}</span><button class="link" onClick="{{p.copy}}">copiar</button></div></sc-for>
       </section>
       <section class="card" style="flex: 1 1 320px">
         <div class="card-h"><h3>Canon do canal</h3><div class="grow"></div><span class="eyebrow">{{canonN}}</span></div>
@@ -375,6 +403,9 @@
           <label class="field"><span>Fonte do título</span><input class="input" value="{{form.fonteTitulo}}" onChange="{{onFonteTitulo}}"></label>
           <label class="field"><span>Fonte do texto</span><input class="input" value="{{form.fonteCorpo}}" onChange="{{onFonteCorpo}}"></label>
           <label class="field"><span>Tom</span><input class="input" value="{{form.tom}}" onChange="{{onTom}}"></label>
+          <label class="field"><span>Estilo de imagem</span><textarea class="input" rows="2" value="{{form.imageStyle}}" onChange="{{onImageStyle}}"></textarea></label>
+          <label class="field"><span>Negativos, um por linha</span><textarea class="input" rows="3" value="{{form.negatives}}" onChange="{{onNegatives}}"></textarea></label>
+          <label class="field"><span>Personagens: nome | descrição | imagens</span><textarea class="input" rows="4" value="{{form.characters}}" onChange="{{onCharacters}}"></textarea></label>
           <label class="field"><span>Canon, uma regra por linha</span><textarea class="input" rows="4" value="{{form.canon}}" onChange="{{onCanon}}"></textarea></label>
         </sc-if>
         <sc-if value="{{modalProducao}}" hint-placeholder-val="{{false}}">
@@ -390,6 +421,9 @@
         </sc-if>
         <sc-if value="{{modalCanon}}" hint-placeholder-val="{{false}}">
           <label class="field"><span>Tom</span><input class="input" value="{{form.tom}}" onChange="{{onTom}}"></label>
+          <label class="field"><span>Estilo de imagem</span><textarea class="input" rows="2" value="{{form.imageStyle}}" onChange="{{onImageStyle}}"></textarea></label>
+          <label class="field"><span>Negativos, um por linha</span><textarea class="input" rows="3" value="{{form.negatives}}" onChange="{{onNegatives}}"></textarea></label>
+          <label class="field"><span>Personagens: nome | descrição | imagens</span><textarea class="input" rows="4" value="{{form.characters}}" onChange="{{onCharacters}}"></textarea></label>
           <label class="field"><span>Canon, uma regra por linha</span><textarea class="input" rows="6" value="{{form.canon}}" onChange="{{onCanon}}"></textarea></label>
         </sc-if>
         <p class="muted">{{error}}</p>
@@ -419,7 +453,7 @@ const STAGE_IDS = ['pauta', 'angulo', 'roteiro', 'arte', 'audio', 'revisao', 'pa
 const STAGE_LABEL = { pauta: 'Pauta', angulo: 'Ângulo', roteiro: 'Roteiro', arte: 'Arte', audio: 'Áudio', revisao: 'Revisão', pacote: 'Pacote', publicado: 'Publicado' };
 const GATES = { angulo: 1, revisao: 1, pacote: 1 };
 const GOALS = ['alcance', 'autoridade', 'conversa'];
-const EMPTY_FORM = { nome: '', iniciais: '', cor: '#1BC5BD', rede: 'instagram', handle: '', formatos: 'ig-carrossel-4x5', posts: '3', publicacao: 'manual', ink: '#0B1220', accent: '#B7F34A', fonteTitulo: 'Instrument Sans', fonteCorpo: 'Instrument Sans', tom: '', canon: '', serieNome: '', serieSigla: '', formato: 'ig-carrossel-4x5', titulo: '', tema: '', fonte: '', objetivo: '' };
+const EMPTY_FORM = { nome: '', iniciais: '', cor: '#1BC5BD', rede: 'instagram', handle: '', formatos: 'ig-carrossel-4x5', posts: '3', publicacao: 'manual', ink: '#0B1220', accent: '#B7F34A', fonteTitulo: 'Instrument Sans', fonteCorpo: 'Instrument Sans', tom: '', canon: '', imageStyle: '', negatives: '', characters: '', serieNome: '', serieSigla: '', formato: 'ig-carrossel-4x5', titulo: '', tema: '', fonte: '', objetivo: '' };
 
 function studioApi() {
   var w = typeof window !== 'undefined' ? window : null;
@@ -430,18 +464,25 @@ function fmtOf(id) { for (var i = 0; i < FORMATS.length; i++) if (FORMATS[i][0] 
 function stagesFor(kind) { return kind === 'video' ? STAGE_IDS.slice() : STAGE_IDS.filter(function (s) { return s !== 'audio'; }); }
 function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function lines(text) { return String(text || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean); }
+function charactersFrom(text) {
+  return lines(text).map(function (line, i) {
+    var parts = line.split('|');
+    var images = String(parts[2] || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    return { id: 'c' + i, name: String(parts[0] || '').trim(), description: String(parts[1] || '').trim(), refImages: images };
+  }).filter(function (c) { return c.name && c.description; });
+}
 function kitFrom(form) {
   return {
     palette: { ink: form.ink || '#0B1220', surface: '#F4F6F2', text: '#0B1220', accent: form.accent || '#B7F34A', accent2: '#1BC5BD' },
     fonts: { title: form.fonteTitulo || 'Instrument Sans', body: form.fonteCorpo || 'Instrument Sans' },
-    imageStyle: '', negatives: [], characters: [], tone: form.tom || '', canon: lines(form.canon)
+    imageStyle: form.imageStyle || '', negatives: lines(form.negatives), characters: charactersFrom(form.characters), tone: form.tom || '', canon: lines(form.canon)
   };
 }
 
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '', motionJob: null, motionStill: '', preview: null, previewIndex: 0, previewFormatId: '', showSafe: false, showGrid: false, realSize: false };
+    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '', motionJob: null, motionStill: '', preview: null, previewIndex: 0, previewFormatId: '', showSafe: false, showGrid: false, realSize: false, prompts: [], orphans: [], promptQuery: '', library: [] };
     var self = this;
     this._pautaTimer = null;
     this._stillTimer = null;
@@ -466,6 +507,8 @@ class Component extends DCLogic {
       self.loadPreview(self.state.previewIndex || 0, pecaId);
       self.loadReview(pecaId);
       self.loadArte(pecaId, pecas);
+      self.loadPrompts(pecaId);
+      if (api.inbox) api.inbox.scan().then(function (scan) { self.setState({ orphans: scan && scan.semDono ? scan.semDono : [] }); }).catch(function () {});
       if (perfilId && api.motion && api.motion.latest) api.motion.latest(perfilId).then(function (view) {
         self.setState({ motionJob: view && view.job ? view.job : null, motionStill: view && view.still ? view.still : '' });
       }).catch(function () {});
@@ -555,7 +598,7 @@ class Component extends DCLogic {
       modalOpen: !!s.modal, modalPerfil: s.modal === 'perfil', modalProducao: s.modal === 'producao', modalCanon: s.modal === 'canon',
       modalTitle: s.modal === 'perfil' ? 'Novo perfil' : s.modal === 'producao' ? 'Nova produção' : 'Canon do canal',
       form: s.form, formatosDoPerfil: formatosTxt,
-      onNome: field('nome'), onIniciais: field('iniciais'), onCor: field('cor'), onRede: field('rede'), onHandle: field('handle'), onFormatos: field('formatos'), onPosts: field('posts'), onPublicacao: field('publicacao'), onInk: field('ink'), onAccent: field('accent'), onFonteTitulo: field('fonteTitulo'), onFonteCorpo: field('fonteCorpo'), onTom: field('tom'), onCanon: field('canon'), onSerieNome: field('serieNome'), onSerieSigla: field('serieSigla'), onFormato: field('formato'), onTitulo: field('titulo'), onTemaForm: field('tema'), onFonteForm: field('fonte'), onObjetivo: field('objetivo'),
+      onNome: field('nome'), onIniciais: field('iniciais'), onCor: field('cor'), onRede: field('rede'), onHandle: field('handle'), onFormatos: field('formatos'), onPosts: field('posts'), onPublicacao: field('publicacao'), onInk: field('ink'), onAccent: field('accent'), onFonteTitulo: field('fonteTitulo'), onFonteCorpo: field('fonteCorpo'), onTom: field('tom'), onCanon: field('canon'), onImageStyle: field('imageStyle'), onNegatives: field('negatives'), onCharacters: field('characters'), onSerieNome: field('serieNome'), onSerieSigla: field('serieSigla'), onFormato: field('formato'), onTitulo: field('titulo'), onTemaForm: field('tema'), onFonteForm: field('fonte'), onObjetivo: field('objetivo'),
       profiles: (s.perfis || []).map(function (p) {
         var r = p.redes && p.redes[0];
         var n = (s.pecas || []).filter(function (x) { return x.perfil_id === p.id && GATES[x.etapa]; }).length;
@@ -712,7 +755,43 @@ class Component extends DCLogic {
       dragStart: function (e) { self._dragX = e.clientX; },
       dragEnd: function (e) { if (self._dragX == null) return; var dx = e.clientX - self._dragX; self._dragX = null; if (dx > 40) self.stepPreview(-1); else if (dx < -40) self.stepPreview(1); },
       week: week, weekLabel: ymd(monday) + ' a ' + ymd(sunday),
-      editInstr: function () { self.setState({ modal: 'canon', form: Object.assign({}, s.form, { tom: kit.tone || '', canon: (kit.canon || []).join('\n') }) }); },
+      editInstr: function () {
+        var people = (kit.characters || []).map(function (c) { return [c.name, c.description, (c.refImages || []).join(', ')].join(' | '); }).join('\n');
+        self.setState({ modal: 'canon', form: Object.assign({}, s.form, { tom: kit.tone || '', canon: (kit.canon || []).join('\n'), imageStyle: kit.imageStyle || '', negatives: (kit.negatives || []).join('\n'), characters: people }) });
+      },
+      bibleStyle: kit.imageStyle || '—',
+      bibleNegatives: (kit.negatives || []).join(' · ') || '—',
+      biblePeople: kit.characters || [],
+      promptQuery: s.promptQuery || '',
+      onPromptQuery: function (e) {
+        var q = e.target.value;
+        self.setState({ promptQuery: q });
+        var api = studioApi();
+        if (!api || !api.prompts || !perfil) return;
+        api.prompts.search(perfil.id, q).then(function (rows) {
+          self.setState({ library: (rows || []).map(function (row) { return { texto: row.texto, copy: function () { if (navigator.clipboard) navigator.clipboard.writeText(row.texto); } }; }) });
+        }).catch(function () {});
+      },
+      library: (s.library || []).map(function (row) { return row; }),
+      prompts: (s.prompts || []).filter(function (row) { return !peca || row.pecaId === peca.id || !row.pecaId; }).map(function (row) {
+        return {
+          codigo: row.codigo, versao: row.versao, nota: row.nota || 'sem nota', texto: row.texto,
+          copy: function () { if (navigator.clipboard) navigator.clipboard.writeText(row.texto); },
+          ok: function () { var api = studioApi(); if (api && api.prompts) api.prompts.nota(row.id, 'funcionou').then(function () { self.loadPrompts(); }); },
+          bad: function () { var api = studioApi(); if (api && api.prompts) api.prompts.nota(row.id, 'nao').then(function () { self.loadPrompts(); }); },
+          polish: function () { var api = studioApi(); if (api && api.prompts) api.prompts.polish(row.id).then(function (res) { self.after(res); }); },
+        };
+      }),
+      orphans: (s.orphans || []).map(function (row) {
+        return { arquivo: row.arquivo, motivo: row.motivo, assign: function () {
+          var api = studioApi();
+          var slot = slots[0];
+          if (!api || !api.inbox || !slot) return;
+          api.inbox.assign(row.arquivo, slot.id).then(function (res) { self.after(res); });
+        } };
+      }),
+      compilePrompts: function () { var api = studioApi(); if (!api || !api.prompts || !peca) return; api.prompts.compile(peca.id).then(function (res) { self.after(res); }); },
+      exportPrompts: function () { var api = studioApi(); if (!api || !api.prompts || !peca) return; api.prompts.export(peca.id).then(function (res) { self.after(res); }); },
       canonText: ['Tom: ' + (kit.tone || '—')].concat(kit.canon || []).join('\n') || '—',
       canon: (kit.canon || []).map(function (t, i) { return { n: String(i + 1).padStart(2, '0'), t: t }; }),
       canonN: String((kit.canon || []).length) + ' regras'
@@ -787,6 +866,16 @@ class Component extends DCLogic {
       self.setState({ arteImages: (views || []).map(function (view) { return view && view.image ? view.image : ''; }) });
     }).catch(function () {});
   }
+  loadPrompts(pecaId) {
+    var api = studioApi();
+    var self = this;
+    if (!api || !api.prompts || !pecaId) { this.setState({ prompts: [] }); return; }
+    api.prompts.list(pecaId).then(function (rows) {
+      self.setState({ prompts: (rows || []).map(function (row) {
+        return { id: row.id, pecaId: pecaId, codigo: row.codigo || row.slot_id, versao: row.versao, nota: row.nota, texto: row.texto };
+      }) });
+    }).catch(function () {});
+  }
   saveAngle() {
     var peca = (this.state.pecas || []).filter(function (p) { return p.id === this.state.pecaId; }, this)[0];
     var d = this.state.draft;
@@ -812,7 +901,7 @@ class Component extends DCLogic {
     if (this.state.modal === 'canon') {
       var perfil = (this.state.perfis || []).filter(function (p) { return p.id === self.state.perfilId; })[0];
       if (!perfil) return;
-      var brand = Object.assign({}, perfil.brand_kit, { tone: f.tom, canon: lines(f.canon) });
+      var brand = Object.assign({}, perfil.brand_kit, kitFrom(f), { palette: perfil.brand_kit.palette, fonts: perfil.brand_kit.fonts });
       api.perfis.save({ id: perfil.id, nome: perfil.nome, iniciais: perfil.iniciais, cor_avatar: perfil.cor_avatar, brand_kit: brand }).then(function (res) { self.after(res); });
       return;
     }

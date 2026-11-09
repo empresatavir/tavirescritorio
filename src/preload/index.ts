@@ -246,6 +246,18 @@ const api: TavirApi = {
     arte: {
       assign: (pecaId: string, index: number, source: string) => ipcRenderer.invoke('studio:arte:assign', pecaId, index, source),
     },
+    prompts: {
+      compile: (pecaId: string) => ipcRenderer.invoke('studio:prompts:compile', pecaId),
+      list: (pecaId: string) => ipcRenderer.invoke('studio:prompts:list', pecaId),
+      nota: (promptId: string, nota: 'funcionou' | 'nao' | null) => ipcRenderer.invoke('studio:prompts:nota', promptId, nota),
+      export: (pecaId: string) => ipcRenderer.invoke('studio:prompts:export', pecaId),
+      search: (perfilId: string, query: string) => ipcRenderer.invoke('studio:prompts:search', perfilId, query),
+      polish: (promptId: string) => ipcRenderer.invoke('studio:prompts:polish', promptId),
+    },
+    inbox: {
+      scan: () => ipcRenderer.invoke('studio:inbox:scan'),
+      assign: (fileName: string, slotId: string) => ipcRenderer.invoke('studio:inbox:assign', fileName, slotId),
+    },
     motion: {
       updateBase: () => ipcRenderer.invoke('studio:motion:updateBase'),
       downloadBrowser: (confirm: boolean) => ipcRenderer.invoke('studio:motion:downloadBrowser', confirm),
