@@ -22,7 +22,7 @@
       <h1 style="margin-top: 8px">Raio-X</h1>
       <p>Leitura de presença, atendimento e oferta antes de vender. Nenhuma proposta sai sem caso aberto e evidência classificada.</p>
     </div>
-    <div class="actions"><button class="btn primary {{spotCases}}" onClick="{{newCase}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Novo caso</button></div>
+    <div class="actions"><button class="btn primary" onClick="{{newCase}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Novo caso</button></div>
   </div>
 
   <div class="g3">
@@ -40,13 +40,17 @@
     <span class="muted" style="font-size: 12px">Maps entra na varredura só se for loja física.</span>
   </div>
 
-  <div class="g2 {{spotCases}}" style="border-radius: 16px">
-    <sc-for list="{{cases}}" as="c" hint-placeholder-count="4">
-      <button class="card click" onClick="{{c.open}}" style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
-        <div style="display: flex; gap: 8px; align-items: center"><span class="eyebrow">{{c.stage}} · {{c.orig}}</span><div class="grow"></div><span class="badge {{c.cls}}">{{c.state}}</span></div>
+  <sc-if value="{{emptyList}}" hint-placeholder-val="{{false}}">
+    <div class="card" style="padding: 32px; border-style: dashed; text-align: center">Nenhum caso ainda. Abra o primeiro em Novo caso.</div>
+  </sc-if>
+
+  <div class="g2" style="border-radius: 16px">
+    <sc-for list="{{cases}}" as="c" hint-placeholder-count="2">
+      <button class="card click" onClick="{{c.open}}" style="padding: 20px; display: flex; flex-direction: column; gap: 14px; text-align: left">
+        <div style="display: flex; gap: 8px; align-items: center"><span class="eyebrow">{{c.stage}} · {{c.orig}}</span><div class="grow"></div><sc-if value="{{c.hasRemote}}" hint-placeholder-val="{{false}}"><span class="badge">{{c.remote}}</span></sc-if><span class="badge">{{c.state}}</span></div>
         <div style="display: flex; gap: 16px; align-items: center">
           <div class="grow"><h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.02em">{{c.name}}</h2><p class="sec" style="font-size: 13px; margin-top: 4px">{{c.desc}}</p></div>
-          <div style="text-align: right"><div class="num" style="font-size: 26px; color: {{c.scoreColor}}">{{c.score}}</div><div class="muted" style="font-size: 11px">nota / 100</div></div>
+          <div style="text-align: right"><div class="num" style="font-size: 26px; color: var(--flow)">{{c.score}}</div><div class="muted" style="font-size: 11px">evidências</div></div>
         </div>
         <div style="display: flex; gap: 3px"><sc-for list="{{c.segs}}" as="g" hint-placeholder-count="6"><i style="flex: 1; height: 4px; border-radius: 2px; background: {{g.bg}}"></i></sc-for></div>
         <div style="display: flex; gap: 8px; align-items: center; font-size: 12px" class="muted"><span>{{c.seg}}</span><span>·</span><span>confiança {{c.conf}}</span><div class="grow"></div><span style="color: var(--flow); font-weight: 600">{{c.next}} →</span></div>
@@ -61,14 +65,13 @@
   <button class="link" onClick="{{back}}" style="align-self: flex-start">← Todos os casos</button>
   <div class="phead" style="margin-top: -8px">
     <div class="grow">
-      <div class="eyebrow">Caso · origem amigo · negócio local · diagnóstico</div>
-      <h1 style="margin-top: 8px">Loja da Rua</h1>
-      <p>Loja física de roupas no centro. O dono quer vender mais pelo Instagram e responder o WhatsApp mais rápido.</p>
+      <div class="eyebrow">{{caseEyebrow}}</div>
+      <h1 style="margin-top: 8px">{{caseName}}</h1>
+      <p>{{caseObjective}}</p>
     </div>
     <div class="actions">
-      <button class="btn secondary" onClick="{{openEvidence}}">Abrir evidência</button>
-      <button class="btn secondary" onClick="{{goProposal}}">Gerar proposta</button>
-      <button class="btn primary" onClick="{{openOffer}}">Registrar oferta</button>
+      <button class="btn secondary" onClick="{{openEvidence}}">Registrar evidência</button>
+      <button class="btn primary" onClick="{{openFolder}}">Abrir pasta</button>
     </div>
   </div>
 
@@ -81,23 +84,22 @@
 
   <div style="display: flex; gap: 16px; flex-wrap: wrap">
     <section class="ink" style="flex: 2 1 480px; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px">
-      <div style="display: flex; align-items: center"><span class="eyebrow">Nota por etapa da jornada</span><div class="grow"></div><span class="mono" style="font-size: 11px; color: var(--on-ink-muted)">rodada 1 · 0 a 100</span></div>
+      <div style="display: flex; align-items: center"><span class="eyebrow">Cobertura por etapa</span><div class="grow"></div><span class="mono" style="font-size: 11px; color: var(--on-ink-muted)">evidências utilizáveis aprovadas</span></div>
       <div style="display: flex; flex-direction: column; gap: 12px">
-        <sc-for list="{{jscore}}" as="j" hint-placeholder-count="5">
+        <sc-for list="{{coverage}}" as="j" hint-placeholder-count="5">
           <div style="display: grid; grid-template-columns: 90px minmax(0, 1fr) 40px; gap: 12px; align-items: center">
             <span style="font-size: 13px">{{j.k}}</span>
-            <div class="track" style="height: 10px"><div style="height: 100%; border-radius: 999px; width: {{j.v}}%; background: {{j.color}}; transform-origin: left; animation: growx 700ms var(--ease) both; animation-delay: {{j.delay}}ms"></div></div>
-            <span class="num" style="text-align: right; color: {{j.color}}">{{j.v}}</span>
+            <div class="track" style="height: 10px"><div style="height: 100%; border-radius: 999px; width: {{j.w}}; background: var(--flow)"></div></div>
+            <span class="num" style="text-align: right">{{j.v}}</span>
           </div>
         </sc-for>
       </div>
-      <p style="font-size: 13px; color: var(--on-ink-muted)">O cliente é encontrado, mas perde gente em Vender: não há link de compra nem catálogo no Instagram. Medir está no zero.</p>
     </section>
     <section class="card" style="flex: 1 1 280px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px">
-      <span class="eyebrow">Confiança da rodada</span>
+      <span class="eyebrow">Confiança</span>
       <div style="display: flex; align-items: center; gap: 16px">
-        <div style="width: 84px; height: 84px; border-radius: 50%; background: conic-gradient(var(--flow) 0 56%, var(--line) 0); display: grid; place-items: center; flex: none"><div style="width: 66px; height: 66px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center"><span class="num" style="font-size: 18px">56%</span></div></div>
-        <div><b>Média</b><p class="muted" style="font-size: 12px; margin-top: 2px">4 de 9 evidências observadas diretamente.</p></div>
+        <div style="width: 84px; height: 84px; border-radius: 50%; background: {{ring}}; display: grid; place-items: center; flex: none"><div style="width: 66px; height: 66px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center"><span class="num" style="font-size: 18px">{{ratioLabel}}</span></div></div>
+        <div><b>{{confidenceLevel}}</b><p class="muted" style="font-size: 12px; margin-top: 2px">{{confidenceText}}</p></div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px">
         <sc-for list="{{classes}}" as="c" hint-placeholder-count="4"><div style="display: flex; align-items: center; gap: 10px; font-size: 13px"><i style="width: 10px; height: 10px; border-radius: 3px; background: {{c.color}}"></i><span class="grow">{{c.k}}</span><span class="num">{{c.n}}</span></div></sc-for>
@@ -105,104 +107,440 @@
     </section>
   </div>
 
-  <div class="tabs {{spotEv}}" style="border-radius: 10px"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}<span class="n">{{t.n}}</span></button></sc-for></div>
+  <div class="tabs" style="border-radius: 10px"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}<span class="n">{{t.n}}</span></button></sc-for></div>
 
   <sc-if value="{{tEv}}" hint-placeholder-val="{{true}}">
-    <div class="segs"><sc-for list="{{evFilters}}" as="f" hint-placeholder-count="5"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}</button></sc-for></div>
+    <div class="segs"><sc-for list="{{evFilters}}" as="f" hint-placeholder-count="6"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}</button></sc-for></div>
     <div class="card" style="overflow-x: auto">
       <table class="tbl">
-        <thead><tr><th>Fonte</th><th>O que vimos</th><th>Classe</th><th>Etapa</th></tr></thead>
+        <thead><tr><th>Fonte</th><th>O que vimos</th><th>Classe</th><th>Etapa</th><th>Gaps</th><th>Revisão</th><th></th></tr></thead>
         <tbody>
-          <sc-for list="{{ev}}" as="e" hint-placeholder-count="6">
-            <tr><td><b>{{e.src}}</b></td><td class="sec">{{e.what}}</td><td><span class="badge {{e.cls}}">{{e.cl}}</span></td><td class="muted">{{e.stage}}</td></tr>
+          <sc-for list="{{ev}}" as="e" hint-placeholder-count="3">
+            <tr>
+              <td><b>{{e.src}}</b></td>
+              <td class="sec">{{e.what}}</td>
+              <td><span class="badge {{e.cls}}">{{e.cl}}</span></td>
+              <td class="muted">{{e.stage}}</td>
+              <td class="muted">{{e.gaps}}</td>
+              <td>
+                <span class="muted">{{e.review}}</span>
+                <sc-if value="{{e.pending}}" hint-placeholder-val="{{false}}">
+                  <button class="btn secondary" onClick="{{e.approve}}">Aprovar</button>
+                  <button class="btn secondary" onClick="{{e.reject}}">Rejeitar</button>
+                </sc-if>
+              </td>
+              <td><button class="btn secondary" onClick="{{e.remove}}">Remover</button></td>
+            </tr>
           </sc-for>
         </tbody>
       </table>
     </div>
   </sc-if>
+
   <sc-if value="{{tDev}}" hint-placeholder-val="{{false}}">
     <section class="card pad" style="display: flex; flex-direction: column; gap: 14px; max-width: 760px">
-      <div style="display: flex; align-items: center"><span class="eyebrow">Rascunho da devolutiva · Dora Descoberta</span><div class="grow"></div><span class="badge warn">aguarda Prioridade</span></div>
-      <h3 style="font-size: 18px; font-weight: 600">Três achados, uma recomendação</h3>
-      <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14px">
-        <li>Quem acha a loja no Google não vê horário. Parte das visitas chega com a porta fechada.</li>
-        <li>O Instagram mostra produto, mas não tem link de compra nem catálogo.</li>
-        <li>O WhatsApp responde em cerca de 3 horas, segundo o dono. Ainda não medimos.</li>
-      </ol>
-      <p class="sec" style="font-size: 14px"><b style="color: var(--text-primary)">Recomendação.</b> Começar por presença local: Google completo, catálogo no Instagram e WhatsApp com resposta inicial automática. Medir 30 dias antes de qualquer página de vendas.</p>
-      <div class="actions"><button class="btn secondary" onClick="{{sendDev}}">Enviar devolutiva</button><span class="muted" style="font-size: 12px">O envio vira checkpoint em Decisões.</span></div>
+      <div style="display: flex; align-items: center"><span class="eyebrow">Prioridade</span><div class="grow"></div><button class="btn primary" onClick="{{openPriority}}">Escolher prioridade</button></div>
+      <sc-if value="{{hasPriority}}" hint-placeholder-val="{{false}}">
+        <h3 style="font-size: 18px; font-weight: 600">{{priorityTitle}}</h3>
+        <p class="sec">{{priorityWhy}}</p>
+        <p class="muted" style="font-size: 13px">{{priorityMeta}}</p>
+      </sc-if>
+      <sc-if value="{{noPriority}}" hint-placeholder-val="{{true}}">
+        <p class="muted">A prioridade ainda não foi escolhida.</p>
+      </sc-if>
     </section>
   </sc-if>
+
   <sc-if value="{{tCon}}" hint-placeholder-val="{{false}}">
     <div class="card" style="padding: 32px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; border-style: dashed">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M10.5 4a6.5 6.5 0 1 0 0 13a6.5 6.5 0 1 0 0-13M20 20l-4.8-4.8"></path></svg>
-      <b>Concorrentes ainda não varridos</b>
-      <p class="muted" style="max-width: 420px; font-size: 13px">A varredura lê até 5 lojas do mesmo segmento num raio de 2 km: Google, Instagram e preço de vitrine.</p>
-      <button class="btn secondary" onClick="{{scan}}">Pedir varredura</button>
+      <b>Concorrentes</b>
+      <sc-for list="{{rivals}}" as="r" hint-placeholder-count="1"><p class="sec" style="font-size: 13px">{{r.src}} — {{r.what}}</p></sc-for>
+      <button class="btn secondary" disabled="{{scanOff}}" title="Disponível quando a análise assistida estiver ligada">Pedir varredura</button>
+      <p class="muted" style="font-size: 12px">Disponível quando a análise assistida estiver ligada.</p>
     </div>
   </sc-if>
 </div>
 </sc-if>
 
+<sc-if value="{{modalNew}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal lg" role="dialog" aria-modal="true" aria-label="Novo caso" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Novo caso</h2><p>A fronteira do diagnóstico. O caso abre na pasta privada.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <label class="field"><span>Empresa *</span><input class="input" value="{{form.company}}" onChange="{{onCompany}}"></label>
+      <label class="field"><span>Contato</span><input class="input" value="{{form.contact}}" onChange="{{onContact}}"></label>
+      <div class="field"><span>Origem</span><div class="segs"><sc-for list="{{origins}}" as="o" hint-placeholder-count="4"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+      <label class="field"><span>Segmento</span><input class="input" value="{{form.segment}}" onChange="{{onSegment}}"></label>
+      <label class="field"><span>Link público</span><input class="input" value="{{form.publicLink}}" onChange="{{onLink}}"></label>
+      <div class="field"><span>Modo</span><div style="display: flex; flex-direction: column; gap: 8px"><sc-for list="{{modeChoices}}" as="m" hint-placeholder-count="3"><button class="choice {{m.on}}" onClick="{{m.pick}}"><span class="rd"></span><div class="grow"><b>{{m.t}}</b><small>{{m.x}}</small></div></button></sc-for></div></div>
+      <div class="field"><span>Loja física</span><button class="seg {{storeOn}}" onClick="{{toggleStore}}">{{storeLabel}}</button></div>
+      <sc-if value="{{showDeep}}" hint-placeholder-val="{{false}}"><div class="field"><span>Deep scan</span><button class="seg {{deepOn}}" onClick="{{toggleDeep}}">{{deepLabel}}</button></div></sc-if>
+      <label class="field"><span>Objetivo *</span><textarea class="input" value="{{form.objective}}" onChange="{{onObjective}}"></textarea></label>
+      <label class="field"><span>Decisão que precisa permitir *</span><textarea class="input" value="{{form.decisionNeeded}}" onChange="{{onDecision}}"></textarea></label>
+      <label class="field"><span>Fronteira</span><textarea class="input" value="{{form.frontier}}" onChange="{{onFrontier}}"></textarea></label>
+      <label class="field"><span>Consentimento</span><select class="input" value="{{form.consentKind}}" onChange="{{onConsent}}"><option value="">Sem registro</option><option value="termo_assinado">Termo assinado</option><option value="verbal_registrado">Verbal registrado</option><option value="interno">Interno TAVIR</option></select></label>
+      <label class="field"><span>Nota do consentimento</span><input class="input" value="{{form.consentNote}}" onChange="{{onConsentNote}}"></label>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{submitCase}}">Abrir caso</button></div>
+  </div></div>
+</sc-if>
+
+<sc-if value="{{modalEv}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal lg" role="dialog" aria-modal="true" aria-label="Registrar evidência" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Registrar evidência</h2></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <div class="field"><span>Etapa</span><div class="segs"><sc-for list="{{evStages}}" as="x" hint-placeholder-count="5"><button class="seg {{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div>
+      <label class="field"><span>Fonte *</span><input class="input" value="{{evForm.source}}" onChange="{{onEvSource}}"></label>
+      <label class="field"><span>O que mostra *</span><textarea class="input" value="{{evForm.claim}}" onChange="{{onEvClaim}}"></textarea></label>
+      <div class="field"><span>Classe</span><div class="segs"><sc-for list="{{evClasses}}" as="x" hint-placeholder-count="4"><button class="seg {{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div>
+      <sc-if value="{{showFront}}" hint-placeholder-val="{{false}}"><div class="field"><span>Frente</span><div class="segs"><sc-for list="{{fronts}}" as="x" hint-placeholder-count="6"><button class="seg {{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div></sc-if>
+      <div class="field"><span>Gaps</span><div class="segs"><sc-for list="{{evGaps}}" as="x" hint-placeholder-count="4"><button class="seg {{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div>
+      <label class="field"><span>Nota</span><input class="input" value="{{evForm.note}}" onChange="{{onEvNote}}"></label>
+      <div class="field"><span>Anexo</span><button class="btn secondary" onClick="{{pickEvidenceFile}}">Anexar arquivo</button><p class="muted" style="font-size: 12px">{{evFile}}</p></div>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{submitEvidence}}">Registrar evidência</button></div>
+  </div></div>
+</sc-if>
+
+<sc-if value="{{modalPri}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Escolher prioridade" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Escolher prioridade</h2></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <div class="field"><span>Etapa</span><div class="segs"><sc-for list="{{priStages}}" as="x" hint-placeholder-count="5"><button class="seg {{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div>
+      <div class="field"><span>Gap</span><div style="display: flex; flex-direction: column; gap: 8px"><sc-for list="{{priGaps}}" as="x" hint-placeholder-count="3"><button class="choice {{x.on}}" onClick="{{x.pick}}"><span class="rd"></span><div class="grow"><b>{{x.label}}</b></div></button></sc-for></div></div>
+      <label class="field"><span>Gargalo *</span><textarea class="input" value="{{priForm.bottleneck}}" onChange="{{onBottle}}"></textarea></label>
+      <label class="field"><span>Por que vem primeiro *</span><textarea class="input" value="{{priForm.rationale}}" onChange="{{onWhy}}"></textarea></label>
+      <div class="field"><span>Confiança</span><div class="segs"><sc-for list="{{confChoices}}" as="x" hint-placeholder-count="3"><button class="seg {{x.on}}" onClick="{{x.pick}}">{{x.label}}</button></sc-for></div></div>
+      <label class="field"><span>O que descartamos</span><input class="input" value="{{priForm.discarded}}" onChange="{{onDiscarded}}"></label>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{submitPriority}}">Gravar prioridade</button></div>
+  </div></div>
+</sc-if>
+
+<sc-if value="{{modalRm}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Remover evidência" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Remover evidência</h2><p>A evidência sai deste diagnóstico.</p></div></div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn danger" onClick="{{confirmRemove}}">Remover</button></div>
+  </div></div>
+</sc-if>
+
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"spot":{"editor":null},"$preview":{"width":1176,"height":1100}}'>
-const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
-const CASES = [
-  { id: 'loja', name: 'Loja da Rua', desc: 'Loja física de roupas no centro. Instagram ativo, sem catálogo.', stage: 'Coleta', st: 1, orig: 'amigo', seg: 'Negócio local', score: 31, conf: 'média', state: 'aberto', cls: 'flow', next: 'Continuar coleta', status: 'open' },
-  { id: 'atelie', name: 'Ateliê Norte', desc: 'Moda autoral vendida só online. Quer oferta de catálogo.', stage: 'Devolutiva', st: 4, orig: 'formulário', seg: 'Loja online', score: 52, conf: 'alta', state: 'devolutiva', cls: 'warn', next: 'Revisar devolutiva', status: 'dev' },
-  { id: 'clinica', name: 'Clínica Sorriso Vivo', desc: 'Odontologia de bairro. Agenda pelo WhatsApp, sem confirmação.', stage: 'Jornada', st: 2, orig: 'indicação', seg: 'Clínica', score: 44, conf: 'média', state: 'aberto', cls: 'flow', next: 'Mapear jornada', status: 'open' },
-  { id: 'padaria', name: 'Padaria Dois Irmãos', desc: 'Encomendas por telefone. Virou proposta de presença local.', stage: 'Fechado', st: 5, orig: 'rua', seg: 'Negócio local', score: 70, conf: 'alta', state: 'fechado', cls: '', next: 'Ver proposta', status: 'closed' }
+<script type="text/x-dc" data-dc-script>
+const STATUS = ['fronteira', 'coleta', 'jornada', 'prioridade', 'devolutiva', 'fechado'];
+const STATUS_LABEL = { fronteira: 'Fronteira', coleta: 'Coleta', jornada: 'Jornada', prioridade: 'Prioridade', devolutiva: 'Devolutiva', fechado: 'Fechado' };
+const STAGES = ['encontrar', 'conversar', 'atender', 'vender', 'medir'];
+const STAGE_LABEL = { encontrar: 'Encontrar', conversar: 'Conversar', atender: 'Atender', vender: 'Vender', medir: 'Medir' };
+const STATUS_NOTE = {
+  fronteira: 'Empresa, objetivo e a decisão que o diagnóstico precisa permitir.',
+  coleta: 'Há evidência registrada. A jornada ainda cabe numa etapa.',
+  jornada: 'Há evidência utilizável em mais de uma etapa.',
+  prioridade: 'O gargalo escolhido aponta um gap da taxonomia.',
+  devolutiva: 'A devolutiva registra propor ou não emitir.',
+  fechado: 'O caso está encerrado.'
+};
+const REMOTE_LABEL = { draft: 'Rascunho', form_1_sent: 'Convite enviado', form_1_received: 'Formulário 1 recebido', form_2_sent: 'Formulário 2 enviado', form_2_received: 'Formulário recebido', awaiting_approval: 'Aguardando autorizar análise', analysing: 'Em análise', review: 'Documentos em revisão', ready: 'Pronto para entregar', sent: 'Entregue', closed: 'Encerrado' };
+const ORIGIN_LABEL = { amigo: 'Amigo', rua: 'Rua', formulario: 'Formulário', indicacao: 'Indicação' };
+const MODE_DAYS = { estudo_rapido: '1 dia', diagnostico: '3 dias', completo: '7 dias' };
+const CLASS_META = { observado: ['Observado', 'flow', 'var(--flow)'], informado: ['Informado', '', 'var(--text-muted)'], inferido: ['Inferido', 'warn', 'var(--warning)'], indisponivel: ['Indisponível', 'danger', 'var(--danger)'] };
+const CONF_LABEL = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
+const FRONTS = [
+  { id: 'site', label: 'Site próprio' },
+  { id: 'instagram', label: 'Instagram' },
+  { id: 'google', label: 'Google' },
+  { id: 'maps', label: 'Google Maps' },
+  { id: 'opinioes', label: 'Opinião de cliente' },
+  { id: 'concorrentes', label: 'Concorrentes e diferenciais' }
 ];
-const STAGES = [
-  ['Fronteira', 'Origem, segmento e modo definidos. Caso aceito por Dora.'],
-  ['Coleta', 'Site, Instagram, Google e opinião de cliente. 7 de 9 fontes lidas.'],
-  ['Jornada', 'Notas por etapa: encontrar, conversar, atender, vender e medir.'],
-  ['Prioridade', 'O que resolver primeiro, com custo e esforço estimados.'],
-  ['Devolutiva', 'Documento curto para o cliente, com achados e recomendação.'],
-  ['Fechado', 'Virou proposta, ficou para depois ou foi descartado.']
-];
-const EV = [
-  ['Instagram @lojadarua', '42 posts. Último há 19 dias. Sem link na bio.', 'obs', 'Conversar'],
-  ['Google Perfil', 'Sem horário cadastrado. 11 avaliações, nota 4,1.', 'obs', 'Encontrar'],
-  ['Vitrine e preço', 'Fotografados na visita. Faixa de R$ 79 a R$ 189.', 'obs', 'Vender'],
-  ['Opinião de cliente', '3 clientes ouvidos na porta. Gostam do atendimento.', 'obs', 'Atender'],
-  ['Site próprio', 'Informado pelo dono. Não abriu no teste de hoje.', 'inf', 'Encontrar'],
-  ['WhatsApp', 'Responde em cerca de 3 h, segundo o dono.', 'inf', 'Atender'],
-  ['Ticket médio', 'Estimado em R$ 120 pelo mix de vitrine.', 'inr', 'Vender'],
-  ['Recompra', 'Clientes voltam na troca de estação.', 'inr', 'Medir'],
-  ['Concorrentes', 'Ainda não varridos.', 'ind', 'Encontrar']
-];
-const CL = { obs: ['Observado', 'flow', 'var(--flow)'], inf: ['Informado', '', 'var(--text-muted)'], inr: ['Inferido', 'warn', 'var(--warning)'], ind: ['Indisponível', 'danger', 'var(--danger)'] };
+
+function blankCase() {
+  return { company: '', contact: '', origin: 'amigo', segment: '', publicLink: '', mode: 'diagnostico', physicalStore: false, deepScan: false, objective: '', decisionNeeded: '', frontier: '', consentKind: '', consentNote: '' };
+}
+function blankEv() {
+  return { stage: 'encontrar', source: '', claim: '', classification: 'observado', front: '', gapIds: [], note: '', artifact: null };
+}
+function blankPri() {
+  return { stage: 'encontrar', gapId: '', bottleneck: '', rationale: '', confidence: 'media', discarded: '' };
+}
+function tavirApi() {
+  return (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+}
+
 class Component extends DCLogic {
-  constructor(props) { super(props); this.state = { caseId: null, filter: 'all', stage: 1, tab: 0, ev: 'all' }; }
+  constructor(props) {
+    super(props);
+    this.state = { cases: [], catalog: [], gaps: [], filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), error: '', removeId: null };
+  }
+  componentDidMount() {
+    const self = this;
+    this._alive = true;
+    this.reload = function () {
+      const api = tavirApi();
+      if (!api || !api.raiox) return;
+      api.raiox.list().then(function (res) {
+        if (!self._alive) return;
+        if (res && res.ok) self.setState({ cases: res.cases || [] });
+      }).catch(function () {});
+      api.raiox.catalog().then(function (res) {
+        if (!self._alive) return;
+        if (res && res.ok) self.setState({ catalog: res.catalog || [], gaps: res.gaps || [] });
+      }).catch(function () {});
+      if (self.state.caseId) {
+        api.raiox.get(self.state.caseId).then(function (res) {
+          if (!self._alive || !res || !res.ok) return;
+          self.setState({ openCase: res.case });
+        }).catch(function () {});
+      }
+    };
+    this.openId = function (id) {
+      self.setState({ caseId: id, tab: 0, evFilter: 'all', stageNote: null, modal: null, error: '' });
+      const api = tavirApi();
+      if (!api || !api.raiox) return;
+      api.raiox.get(id).then(function (res) {
+        if (!self._alive || !res || !res.ok) return;
+        self.setState({ openCase: res.case, caseId: id });
+      }).catch(function () {});
+    };
+    this._onKey = function (event) {
+      if (event.key === 'Escape' && self.state.modal) self.setState({ modal: null, error: '', removeId: null });
+    };
+    if (typeof window !== 'undefined') window.addEventListener('keydown', this._onKey);
+    this.reload();
+  }
+  componentWillUnmount() {
+    this._alive = false;
+    if (typeof window !== 'undefined' && this._onKey) window.removeEventListener('keydown', this._onKey);
+  }
   renderVals() {
-    const app = this.props.app || NOOP;
-    const spot = this.props.spot || '';
-    const s = this.state, self = this;
-    const caseOpen = s.caseId || (spot === 'evidence' ? 'loja' : null);
-    const segOf = (st) => [0, 1, 2, 3, 4, 5].map((i) => ({ bg: i < st ? 'var(--flow)' : i === st ? 'var(--warning)' : 'var(--line)' }));
-    const fdef = { all: () => true, open: (c) => c.status === 'open', dev: (c) => c.status === 'dev', closed: (c) => c.status === 'closed' };
-    const evList = EV.filter((e) => s.ev === 'all' || e[2] === s.ev);
+    const s = this.state;
+    const self = this;
+    const cases = s.cases || [];
+    const catalog = s.catalog || [];
+    const gaps = s.gaps || [];
+    const current = s.openCase;
+    const setForm = function (patch) { const next = Object.assign({}, s.form, patch); self.setState({ form: next }); };
+    const setEv = function (patch) { self.setState({ evForm: Object.assign({}, s.evForm, patch) }); };
+    const setPri = function (patch) { self.setState({ priForm: Object.assign({}, s.priForm, patch) }); };
+    const modes = catalog.filter(function (item) { return item.kind === 'modo'; }).slice().sort(function (a, b) { return a.cashRank - b.cashRank; });
+    const openStatuses = { fronteira: 1, coleta: 1, jornada: 1, prioridade: 1 };
+    const hasLegacy = cases.some(function (item) { return item.legacy; });
+    const fdef = {
+      all: function () { return true; },
+      open: function (item) { return !!openStatuses[item.status]; },
+      dev: function (item) { return item.status === 'devolutiva'; },
+      closed: function (item) { return item.status === 'fechado'; },
+      legacy: function (item) { return !!item.legacy; }
+    };
+    const filterDefs = [['all', 'Todos'], ['open', 'Abertos'], ['dev', 'Devolutiva'], ['closed', 'Fechados']];
+    if (hasLegacy) filterDefs.push(['legacy', 'Legado']);
+    const shown = cases.filter(fdef[s.filter] || fdef.all);
+    const segOf = function (status) {
+      const at = STATUS.indexOf(status);
+      return STATUS.map(function (_name, index) {
+        return { bg: index < at ? 'var(--flow)' : index === at ? 'var(--warning)' : 'var(--line)' };
+      });
+    };
+    const modeName = function (id) {
+      const item = catalog.find(function (entry) { return entry.id === id; });
+      return item ? item.name : id;
+    };
+    const gapLabel = function (id) {
+      const gap = gaps.find(function (item) { return item.id === id; });
+      return gap ? gap.label : id;
+    };
+    const applyMode = function (mode) {
+      const item = catalog.find(function (entry) { return entry.id === mode; });
+      const defaults = (item && item.defaults) || {};
+      const next = Object.assign({}, s.form, { mode: mode });
+      if (!String(next.objective || '').trim() && defaults.objective) next.objective = defaults.objective;
+      if (!String(next.decisionNeeded || '').trim() && defaults.decisionNeeded) next.decisionNeeded = defaults.decisionNeeded;
+      if (!String(next.frontier || '').trim() && defaults.frontier) next.frontier = defaults.frontier;
+      if (mode !== 'completo') next.deepScan = false;
+      self.setState({ form: next });
+    };
+    const fail = function (res) { self.setState({ error: (res && res.error) || 'Não foi possível concluir. Nada foi gravado.' }); };
+    const refreshOpen = function (res) {
+      if (!res || !res.ok) return fail(res);
+      self.setState({ openCase: res.case, modal: null, error: '', removeId: null });
+      if (self.reload) self.reload();
+    };
+    const coverage = (current && current.coverage) || [];
+    const maxUsable = coverage.reduce(function (max, item) { return Math.max(max, item.usable || 0); }, 0);
+    const evidence = (current && current.evidence) || [];
+    const evShown = evidence.filter(function (item) {
+      if (s.evFilter === 'all') return true;
+      if (s.evFilter === 'pendente') return item.review === 'pendente';
+      return item.classification === s.evFilter;
+    });
+    const statusAt = current ? STATUS.indexOf(current.status) : 0;
+    const noteAt = s.stageNote == null ? statusAt : s.stageNote;
+    const confidence = (current && current.confidence) || { observed: 0, usable: 0, ratio: 0 };
+    const rivals = evidence.filter(function (item) { return item.front === 'concorrentes'; });
+    const priority = current && current.priority;
     return {
-      listView: !caseOpen, caseView: !!caseOpen,
-      spotCases: spot === 'cases' ? 'spot' : '', spotEv: spot === 'evidence' ? 'spot' : '',
-      newCase: () => app.modal('raiox-new'),
-      modes: [['01', 'Estudo rápido', '1 dia', 'Presença e primeira impressão. Bom para triagem.'], ['02', 'Diagnóstico', '3 dias', 'Jornada completa com evidências classificadas.'], ['03', 'Completo', '7 dias', 'Diagnóstico, concorrentes e oferta com preço.']].map((m) => ({ n: m[0], t: m[1], d: m[2], x: m[3] })),
-      filters: [['all', 'Todos'], ['open', 'Abertos'], ['dev', 'Devolutiva'], ['closed', 'Fechados']].map((f) => ({ label: f[1], n: CASES.filter(fdef[f[0]]).length, on: s.filter === f[0] ? 'on' : '', pick: () => self.setState({ filter: f[0] }) })),
-      cases: CASES.filter(fdef[s.filter]).map((c) => ({ name: c.name, desc: c.desc, stage: c.stage, orig: c.orig, seg: c.seg, score: c.score, conf: c.conf, state: c.state, cls: c.cls, next: c.next, segs: segOf(c.st), scoreColor: c.score < 40 ? 'var(--warning)' : 'var(--flow)', open: () => c.id === 'padaria' ? app.go('propostas') : self.setState({ caseId: 'loja', tab: 0 }) })),
-      back: () => self.setState({ caseId: null }),
-      openEvidence: () => app.modal('evidence'), openOffer: () => app.modal('raiox-offer'), goProposal: () => app.go('propostas'),
-      stages: STAGES.map((x, i) => ({ n: '0' + (i + 1), label: x[0], cls: (i < 1 ? 'done' : i === 1 ? 'now' : '') + (s.stage === i ? ' sel' : ''), pick: () => self.setState({ stage: i }) })),
-      stageCur: { label: STAGES[s.stage][0], note: STAGES[s.stage][1] },
-      jscore: [['Encontrar', 42], ['Conversar', 30], ['Atender', 55], ['Vender', 20], ['Medir', 8]].map((j, i) => ({ k: j[0], v: j[1], delay: i * 80, color: j[1] < 35 ? 'oklch(.80 .155 78)' : '#1BC5BD' })),
-      classes: Object.keys(CL).map((k) => ({ k: CL[k][0], color: CL[k][2], n: EV.filter((e) => e[2] === k).length })),
-      tabs: [['Evidências', EV.length], ['Devolutiva', 1], ['Concorrentes', 0]].map((t, i) => ({ label: t[0], n: t[1], on: s.tab === i ? 'on' : '', pick: () => self.setState({ tab: i }) })),
+      listView: !s.caseId,
+      caseView: !!s.caseId,
+      emptyList: shown.length === 0,
+      newCase: function () { self.setState({ modal: 'new', error: '', form: blankCase() }); },
+      modes: modes.map(function (item, index) { return { n: String(index + 1).padStart(2, '0'), t: item.name, d: MODE_DAYS[item.id] || '', x: item.promise }; }),
+      filters: filterDefs.map(function (item) { return { label: item[1], n: cases.filter(fdef[item[0]]).length, on: s.filter === item[0] ? 'on' : '', pick: function () { self.setState({ filter: item[0] }); } }; }),
+      cases: shown.map(function (item) {
+        const usable = (item.coverage || []).reduce(function (sum, row) { return sum + (row.usable || 0); }, 0);
+        return {
+          name: item.company,
+          desc: item.objective,
+          stage: STATUS_LABEL[item.status] || item.status,
+          orig: ORIGIN_LABEL[item.origin] || item.origin,
+          state: STATUS_LABEL[item.status] || item.status,
+          hasRemote: !!(item.remote && item.remote.status),
+          remote: item.remote ? (REMOTE_LABEL[item.remote.status] || item.remote.status) : '',
+          score: usable,
+          seg: item.segment || modeName(item.mode),
+          conf: (item.evidence || []).length ? (item.confidence ? item.confidence.ratio + '%' : 'a definir') : 'a definir',
+          next: item.next || '',
+          segs: segOf(item.status),
+          open: function () { self.openId(item.id); }
+        };
+      }),
+      back: function () { self.setState({ caseId: null, openCase: null }); if (self.reload) self.reload(); },
+      caseEyebrow: current ? ('Caso ' + current.id + ' · ' + (ORIGIN_LABEL[current.origin] || current.origin) + ' · ' + (current.segment || 'sem segmento') + ' · ' + modeName(current.mode)) : 'Caso',
+      caseName: current ? current.company : '…',
+      caseObjective: current ? current.objective : '',
+      openEvidence: function () { self.setState({ modal: 'evidence', error: '', evForm: blankEv() }); },
+      openFolder: function () {
+        const api = tavirApi();
+        if (api && api.raiox && current) api.raiox.openFolder(current.id);
+      },
+      stages: STATUS.map(function (id, index) {
+        return { n: '0' + (index + 1), label: STATUS_LABEL[id], cls: (index < statusAt ? 'done' : index === statusAt ? 'now' : '') + (noteAt === index ? ' sel' : ''), pick: function () { self.setState({ stageNote: index }); } };
+      }),
+      stageCur: { label: STATUS_LABEL[STATUS[noteAt]] || '', note: STATUS_NOTE[STATUS[noteAt]] || '' },
+      coverage: coverage.map(function (item) { return { k: item.label, v: item.usable, w: (maxUsable ? Math.round((item.usable / maxUsable) * 100) : 0) + '%' }; }),
+      ring: 'conic-gradient(var(--flow) 0 ' + confidence.ratio + '%, var(--line) 0)',
+      ratioLabel: confidence.ratio + '%',
+      confidenceLevel: priority && CONF_LABEL[priority.confidence] ? CONF_LABEL[priority.confidence] : 'a definir',
+      confidenceText: confidence.observed + ' de ' + confidence.usable + ' evidências observadas diretamente',
+      classes: (current && current.classes ? current.classes : Object.keys(CLASS_META).map(function (key) { return { cls: key, label: CLASS_META[key][0], n: 0 }; })).map(function (item) {
+        return { k: item.label, n: item.n, color: (CLASS_META[item.cls] || CLASS_META.observado)[2] };
+      }),
+      tabs: [['Evidências', evidence.length], ['Devolutiva', priority ? 1 : 0], ['Concorrentes', rivals.length]].map(function (item, index) {
+        return { label: item[0], n: item[1], on: s.tab === index ? 'on' : '', pick: function () { self.setState({ tab: index }); } };
+      }),
       tEv: s.tab === 0, tDev: s.tab === 1, tCon: s.tab === 2,
-      evFilters: [['all', 'Todas']].concat(Object.keys(CL).map((k) => [k, CL[k][0]])).map((f) => ({ label: f[1], on: s.ev === f[0] ? 'on' : '', pick: () => self.setState({ ev: f[0] }) })),
-      ev: evList.map((e) => ({ src: e[0], what: e[1], cl: CL[e[2]][0], cls: CL[e[2]][1], stage: e[3] })),
-      sendDev: () => app.toast('Devolutiva em checkpoint', 'Vai para Decisões antes de sair para o cliente.'),
-      scan: () => app.toast('Varredura pedida', 'Dora lê os concorrentes na próxima rodada.')
+      evFilters: [['all', 'Todas'], ['observado', 'Observado'], ['informado', 'Informado'], ['inferido', 'Inferido'], ['indisponivel', 'Indisponível'], ['pendente', 'Pendentes']].map(function (item) {
+        return { label: item[1], on: s.evFilter === item[0] ? 'on' : '', pick: function () { self.setState({ evFilter: item[0] }); } };
+      }),
+      ev: evShown.map(function (item) {
+        const meta = CLASS_META[item.classification] || CLASS_META.observado;
+        return {
+          src: item.source, what: item.claim, cl: meta[0], cls: meta[1], stage: STAGE_LABEL[item.stage] || item.stage,
+          gaps: (item.gapIds || []).map(gapLabel).join(', '), review: item.review, pending: item.review === 'pendente',
+          approve: function () { const api = tavirApi(); if (api && current) api.raiox.reviewEvidence(current.id, item.id, 'aprovada').then(refreshOpen).catch(function () { fail(); }); },
+          reject: function () { const api = tavirApi(); if (api && current) api.raiox.reviewEvidence(current.id, item.id, 'rejeitada').then(refreshOpen).catch(function () { fail(); }); },
+          remove: function () { self.setState({ modal: 'remove', removeId: item.id, error: '' }); }
+        };
+      }),
+      hasPriority: !!priority,
+      noPriority: !priority,
+      priorityTitle: priority ? (STAGE_LABEL[priority.stage] + ' · ' + gapLabel(priority.gapId)) : '',
+      priorityWhy: priority ? priority.bottleneck : '',
+      priorityMeta: priority ? (priority.rationale + (priority.discarded ? ' · Descartado: ' + priority.discarded : '')) : '',
+      openPriority: function () { self.setState({ modal: 'priority', error: '', priForm: blankPri() }); },
+      rivals: rivals.map(function (item) { return { src: item.source, what: item.claim }; }),
+      scanOff: true,
+      modalNew: s.modal === 'new',
+      modalEv: s.modal === 'evidence',
+      modalPri: s.modal === 'priority',
+      modalRm: s.modal === 'remove',
+      modalBg: function (event) { if (event && event.target !== event.currentTarget) return; self.setState({ modal: null, error: '', removeId: null }); },
+      modalStop: function (event) { if (event && event.stopPropagation) event.stopPropagation(); },
+      closeModal: function () { self.setState({ modal: null, error: '', removeId: null }); },
+      hasError: !!s.error,
+      error: s.error,
+      form: s.form,
+      onCompany: function (event) { setForm({ company: event.target.value }); },
+      onContact: function (event) { setForm({ contact: event.target.value }); },
+      onSegment: function (event) { setForm({ segment: event.target.value }); },
+      onLink: function (event) { setForm({ publicLink: event.target.value }); },
+      onObjective: function (event) { setForm({ objective: event.target.value }); },
+      onDecision: function (event) { setForm({ decisionNeeded: event.target.value }); },
+      onFrontier: function (event) { setForm({ frontier: event.target.value }); },
+      onConsent: function (event) { setForm({ consentKind: event.target.value }); },
+      onConsentNote: function (event) { setForm({ consentNote: event.target.value }); },
+      origins: ['amigo', 'rua', 'formulario', 'indicacao'].map(function (id) { return { label: ORIGIN_LABEL[id], on: s.form.origin === id ? 'on' : '', pick: function () { setForm({ origin: id }); } }; }),
+      modeChoices: modes.map(function (item) { return { t: item.name, x: item.promise, on: s.form.mode === item.id ? 'on' : '', pick: function () { applyMode(item.id); } }; }),
+      storeOn: s.form.physicalStore ? 'on' : '',
+      storeLabel: s.form.physicalStore ? 'Sim' : 'Não',
+      toggleStore: function () { setForm({ physicalStore: !s.form.physicalStore }); },
+      showDeep: s.form.mode === 'completo',
+      deepOn: s.form.deepScan ? 'on' : '',
+      deepLabel: s.form.deepScan ? 'Ligado' : 'Desligado',
+      toggleDeep: function () { setForm({ deepScan: !s.form.deepScan }); },
+      submitCase: function () {
+        const api = tavirApi();
+        const form = s.form;
+        if (!api || !api.raiox) return fail({ error: 'Não foi possível concluir. Nada foi gravado.' });
+        const input = { company: form.company, contact: form.contact, origin: form.origin, segment: form.segment, publicLink: form.publicLink, mode: form.mode, physicalStore: !!form.physicalStore, deepScan: form.mode === 'completo' && !!form.deepScan, objective: form.objective, decisionNeeded: form.decisionNeeded, frontier: form.frontier };
+        if (form.consentKind) input.consent = { kind: form.consentKind, at: new Date().toISOString(), note: form.consentNote || '' };
+        api.raiox.create(input).then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          self.setState({ modal: null, error: '', form: blankCase() });
+          if (self.reload) self.reload();
+          self.openId(res.case.id);
+        }).catch(function () { fail(); });
+      },
+      evForm: s.evForm,
+      evStages: STAGES.map(function (id) { return { label: STAGE_LABEL[id], on: s.evForm.stage === id ? 'on' : '', pick: function () { setEv({ stage: id, gapIds: [] }); } }; }),
+      evClasses: Object.keys(CLASS_META).map(function (id) { return { label: CLASS_META[id][0], on: s.evForm.classification === id ? 'on' : '', pick: function () { setEv({ classification: id }); } }; }),
+      showFront: !!(current && current.deepScan),
+      fronts: FRONTS.filter(function (item) { return item.id !== 'maps' || (current && current.physicalStore); }).map(function (item) { return { label: item.label, on: s.evForm.front === item.id ? 'on' : '', pick: function () { setEv({ front: item.id }); } }; }),
+      evGaps: gaps.filter(function (item) { return item.stage === s.evForm.stage; }).map(function (item) {
+        const on = (s.evForm.gapIds || []).indexOf(item.id) >= 0;
+        return { label: item.label, on: on ? 'on' : '', pick: function () {
+          const ids = (s.evForm.gapIds || []).slice();
+          const at = ids.indexOf(item.id);
+          if (at >= 0) ids.splice(at, 1); else ids.push(item.id);
+          setEv({ gapIds: ids });
+        } };
+      }),
+      onEvSource: function (event) { setEv({ source: event.target.value }); },
+      onEvClaim: function (event) { setEv({ claim: event.target.value }); },
+      onEvNote: function (event) { setEv({ note: event.target.value }); },
+      evFile: s.evForm.artifact ? s.evForm.artifact.file : 'Nenhum arquivo anexado.',
+      pickEvidenceFile: function () {
+        const api = tavirApi();
+        if (!api || !current) return;
+        api.raiox.pickFile(current.id, 'evidencias').then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          setEv({ artifact: res.artifact });
+        }).catch(function () { fail(); });
+      },
+      submitEvidence: function () {
+        const api = tavirApi();
+        const form = s.evForm;
+        if (!api || !current) return;
+        api.raiox.addEvidence(current.id, { stage: form.stage, source: form.source, claim: form.claim, classification: form.classification, front: form.front || undefined, gapIds: form.gapIds || [], note: form.note, artifact: form.artifact || undefined }).then(refreshOpen).catch(function () { fail(); });
+      },
+      priForm: s.priForm,
+      priStages: STAGES.map(function (id) { return { label: STAGE_LABEL[id], on: s.priForm.stage === id ? 'on' : '', pick: function () { setPri({ stage: id, gapId: '' }); } }; }),
+      priGaps: gaps.filter(function (item) { return item.stage === s.priForm.stage; }).map(function (item) { return { label: item.label, on: s.priForm.gapId === item.id ? 'on' : '', pick: function () { setPri({ gapId: item.id }); } }; }),
+      confChoices: ['alta', 'media', 'baixa'].map(function (id) { return { label: CONF_LABEL[id], on: s.priForm.confidence === id ? 'on' : '', pick: function () { setPri({ confidence: id }); } }; }),
+      onBottle: function (event) { setPri({ bottleneck: event.target.value }); },
+      onWhy: function (event) { setPri({ rationale: event.target.value }); },
+      onDiscarded: function (event) { setPri({ discarded: event.target.value }); },
+      submitPriority: function () {
+        const api = tavirApi();
+        const form = s.priForm;
+        if (!api || !current) return;
+        api.raiox.setPriority(current.id, { stage: form.stage, gapId: form.gapId, bottleneck: form.bottleneck, rationale: form.rationale, confidence: form.confidence, discarded: form.discarded }).then(refreshOpen).catch(function () { fail(); });
+      },
+      confirmRemove: function () {
+        const api = tavirApi();
+        if (!api || !current || !s.removeId) return;
+        api.raiox.removeEvidence(current.id, s.removeId).then(refreshOpen).catch(function () { fail(); });
+      }
     };
   }
 }
