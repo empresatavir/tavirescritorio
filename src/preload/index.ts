@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import type { StudioEvent } from '../shared/studio';
 import type { TavirApi, RunEvent, EngineSettings, TaskItem } from '../shared/types';
 
 let cachedVaultIndexer: any = null;
@@ -226,6 +227,21 @@ const api: TavirApi = {
       save: (input) => ipcRenderer.invoke('studio:series:save', input),
     },
     preflight: () => ipcRenderer.invoke('studio:preflight'),
+    render: {
+      still: (id: string, frame?: number) => ipcRenderer.invoke('studio:render:still', id, frame),
+      proxy: (id: string) => ipcRenderer.invoke('studio:render:proxy', id),
+      final: (id: string) => ipcRenderer.invoke('studio:render:final', id),
+      cancel: (id: string) => ipcRenderer.invoke('studio:render:cancel', id),
+    },
+    motion: {
+      updateBase: () => ipcRenderer.invoke('studio:motion:updateBase'),
+      downloadBrowser: (confirm: boolean) => ipcRenderer.invoke('studio:motion:downloadBrowser', confirm),
+    },
+  },
+  onStudioEvent: (callback) => {
+    const handler = (_e: Electron.IpcRendererEvent, event: StudioEvent) => callback(event);
+    ipcRenderer.on('studio:event', handler);
+    return () => ipcRenderer.removeListener('studio:event', handler);
   },
   onEvent: (callback: (event: RunEvent) => void) => {
     const handler = (_e: Electron.IpcRendererEvent, event: RunEvent) => callback(event);

@@ -15,6 +15,7 @@ import type {
   PieceStage,
   PreflightItem,
   Serie,
+  StudioEvent,
   SerieInput,
 } from './studio';
 
@@ -499,8 +500,19 @@ export interface TavirApi {
       save: (input: SerieInput) => Promise<{ ok: boolean; serie?: Serie; error?: string }>;
     };
     preflight: () => Promise<PreflightItem[]>;
+    render: {
+      still: (id: string, frame?: number) => Promise<{ ok: boolean; renderId?: string; error?: string }>;
+      proxy: (id: string) => Promise<{ ok: boolean; renderId?: string; error?: string }>;
+      final: (id: string) => Promise<{ ok: boolean; renderId?: string; error?: string }>;
+      cancel: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    motion: {
+      updateBase: () => Promise<{ ok: boolean; error?: string }>;
+      downloadBrowser: (confirm: boolean) => Promise<{ ok: boolean; error?: string; log: string }>;
+    };
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
+  onStudioEvent: (callback: (event: StudioEvent) => void) => () => void;
 }
 
 declare global {

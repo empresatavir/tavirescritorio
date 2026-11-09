@@ -154,6 +154,15 @@ export interface Roteiro {
   hashtags?: string[];
 }
 
+export interface StudioEvent {
+  kind: 'render';
+  renderId: string;
+  type: 'progress' | 'done' | 'error' | 'cancelled';
+  pct?: number;
+  path?: string;
+  message?: string;
+}
+
 export interface PreflightItem {
   item: string;
   ok: boolean;
