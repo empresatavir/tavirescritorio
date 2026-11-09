@@ -295,7 +295,24 @@
 
   <!-- ================= APRENDIZADOS ================= -->
   <sc-if value="{{v.learn}}" hint-placeholder-val="{{false}}">
-    <section class="card pad"><h3>Aprendizados</h3><p class="muted">—</p></section>
+    <section class="card pad">
+      <h3>Kit de motion</h3>
+      <p>{{motionStatus}}</p>
+      <p class="muted">{{motionDetail}}</p>
+      <sc-if value="{{hasMotionStill}}" hint-placeholder-val="{{false}}">
+        <div style="position: relative; width: 180px; margin-top: 12px">
+          <img src="{{motionStill}}" alt="Quadro do meio" style="width: 180px; display: block" />
+          <div style="position: absolute; inset: 18px 12px 36px 8px; border: 1px dashed #B7F34A; pointer-events: none"></div>
+        </div>
+      </sc-if>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px">
+        <button class="btn secondary" onClick="{{askMotion}}">Pedir título de entrada</button>
+        <button class="btn secondary" onClick="{{retryMotion}}">Tentar de novo com o erro</button>
+        <button class="btn primary" onClick="{{approveMotion}}">Aprovar kit</button>
+        <button class="btn secondary" onClick="{{adjustMotion}}">Pedir ajuste</button>
+        <button class="btn secondary" onClick="{{rejectMotion}}">Recusar</button>
+      </div>
+    </section>
   </sc-if>
 
   <sc-if value="{{modalOpen}}" hint-placeholder-val="{{false}}">
@@ -382,7 +399,7 @@ function kitFrom(form) {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '' };
+    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM), needsChrome: false, chromeNote: '', motionJob: null, motionStill: '' };
     var self = this;
     this._pautaTimer = null;
     setTimeout(function () { self.reload(); }, 0);
@@ -398,6 +415,9 @@ class Component extends DCLogic {
       var mine = pecas.filter(function (p) { return p.perfil_id === perfilId; });
       var pecaId = self.state.pecaId && mine.some(function (p) { return p.id === self.state.pecaId; }) ? self.state.pecaId : (mine[0] ? mine[0].id : '');
       self.setState({ perfis: perfis, pecas: pecas, series: all[2] || [], perfilId: perfilId, pecaId: pecaId, error: '' });
+      if (perfilId && api.motion && api.motion.latest) api.motion.latest(perfilId).then(function (view) {
+        self.setState({ motionJob: view && view.job ? view.job : null, motionStill: view && view.still ? view.still : '' });
+      }).catch(function () {});
       if (api.preflight) api.preflight().then(function (items) {
         var chrome = (items || []).filter(function (item) { return item.item === 'chrome-headless'; })[0];
         self.setState({ needsChrome: !!(chrome && !chrome.ok), chromeNote: chrome && !chrome.ok ? (chrome.detalhe + ' ' + chrome.comoResolver) : '' });
@@ -507,6 +527,36 @@ class Component extends DCLogic {
       past: locked, pastInfo: { t: STAGE_LABEL[viewed] || '', d: 'Etapa já cumprida. Só leitura.' }, backToCurrent: function () { self.setState({ view: null }); }, curStageLabel: STAGE_LABEL[cur] || cur,
       sv: sv, locked: locked, custo: s.custo, error: s.error || '', loadingAngles: s.loading,
       needsChrome: !!s.needsChrome, chromeNote: s.chromeNote || '',
+      motionStatus: s.motionJob ? (s.motionJob.preset + ' · ' + s.motionJob.status) : 'Nenhum kit pedido',
+      motionDetail: (function () {
+        var items = s.motionJob && s.motionJob.checks && s.motionJob.checks.items ? s.motionJob.checks.items : [];
+        if (!items.length) return 'O motor escreve o preset. Aprovar só neste botão, depois que as checagens passarem.';
+        return items.map(function (item) { return item.id + (item.ok ? ' ok' : ' falhou'); }).join(' · ');
+      })(),
+      hasMotionStill: !!s.motionStill, motionStill: s.motionStill || '',
+      askMotion: function () {
+        if (!perfil || !studioApi() || !studioApi().motion.ask) return;
+        self.setState({ loading: true, error: '' });
+        studioApi().motion.ask({ perfilId: perfil.id, preset: 'titulo-entrada', pedido: 'título entra com mola de baixo para cima, palavra-chave em accent, 3 s, 1080×1920' }).then(function (res) { self.after(res); });
+      },
+      retryMotion: function () {
+        if (!perfil || !s.motionJob) return;
+        var failed = (s.motionJob.checks && s.motionJob.checks.items ? s.motionJob.checks.items : []).filter(function (item) { return !item.ok; }).map(function (item) { return item.id + ': ' + item.detalhe; }).join('\n');
+        self.setState({ loading: true });
+        studioApi().motion.ask({ perfilId: perfil.id, preset: s.motionJob.preset, pedido: s.motionJob.pedido + '\nTentar de novo com o erro:\n' + failed }).then(function (res) { self.after(res); });
+      },
+      approveMotion: function () {
+        if (!s.motionJob) return;
+        studioApi().motion.gate(s.motionJob.id, 'aprovado', '').then(function (res) { self.after(res); });
+      },
+      adjustMotion: function () {
+        if (!s.motionJob) return;
+        studioApi().motion.gate(s.motionJob.id, 'ajuste', s.ajusteNota || '').then(function (res) { self.after(res); });
+      },
+      rejectMotion: function () {
+        if (!s.motionJob) return;
+        studioApi().motion.gate(s.motionJob.id, 'recusado', '').then(function (res) { self.after(res); });
+      },
       downloadChrome: function () { var studio = studioApi(); if (studio && studio.motion) studio.motion.downloadBrowser(true).then(function (res) { self.after(res); }); },
       updateMotion: function () { var studio = studioApi(); if (studio && studio.motion) studio.motion.updateBase().then(function (res) { self.after(res); }); },
       pauta: { tema: pauta.tema || '', fonte: pauta.fonte || '' },

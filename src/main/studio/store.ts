@@ -740,6 +740,63 @@ export class StudioStore {
     return this.getMotionJob(id)!;
   }
 
+  getMotionKit(id: string): MotionKitRecord | null {
+    const row = this.db.prepare('SELECT * FROM motion_kits WHERE id = ?').get(id) as {
+      id: string; perfil_id: string; nome: string; versao: number; status: 'rascunho' | 'aprovado'; tokens_json: string; presets_json: string; criado_em: string;
+    } | undefined;
+    if (!row) return null;
+    return {
+      id: row.id,
+      perfil_id: row.perfil_id,
+      nome: row.nome,
+      versao: row.versao,
+      status: row.status,
+      tokens: parseJson(row.tokens_json, {} as MotionKitRecord['tokens']),
+      presets: parseJson(row.presets_json, {}),
+      criado_em: row.criado_em,
+    };
+  }
+
+  listMotionJobs(perfilId: string): MotionJob[] {
+    const rows = this.db.prepare(
+      `SELECT j.* FROM motion_jobs j JOIN motion_kits k ON k.id = j.kit_id WHERE k.perfil_id = ? ORDER BY j.criado_em DESC`,
+    ).all(perfilId) as Array<{
+      id: string; kit_id: string; preset: string; motor: string; modelo: string | null; pedido: string; workspace: string;
+      status: MotionJobStatus; checks_json: string | null; run_id: string | null; criado_em: string;
+    }>;
+    return rows.map((row) => ({
+      id: row.id,
+      kit_id: row.kit_id,
+      preset: row.preset,
+      motor: row.motor,
+      modelo: row.modelo,
+      pedido: row.pedido,
+      workspace: row.workspace,
+      status: row.status,
+      checks: row.checks_json ? parseJson(row.checks_json, null) : null,
+      run_id: row.run_id,
+      criado_em: row.criado_em,
+    }));
+  }
+
+  /** Único caminho que grava status aprovado. Só o gate do CEO chama. */
+  applyMotionGate(jobId: string, decisao: 'aprovado' | 'recusado'): MotionJob {
+    const job = this.getMotionJob(jobId);
+    if (!job) throw new StudioError('job não encontrado');
+    if (decisao === 'aprovado' && job.status !== 'aguardando_gate') {
+      throw new StudioError('o gate só aprova um job que passou nas checagens');
+    }
+    const stamp = now();
+    this.db.prepare('UPDATE motion_jobs SET status = ? WHERE id = ?').run(decisao, jobId);
+    if (decisao === 'aprovado') {
+      const kit = this.getMotionKit(job.kit_id);
+      if (!kit) throw new StudioError('kit não encontrado');
+      const presets = { ...kit.presets, [job.preset]: { component: job.preset, approvedAt: stamp } };
+      this.db.prepare('UPDATE motion_kits SET status = ?, presets_json = ? WHERE id = ?').run('aprovado', JSON.stringify(presets), kit.id);
+    }
+    return this.getMotionJob(jobId)!;
+  }
+
   getMotionJob(id: string): MotionJob | null {
     const row = this.db.prepare('SELECT * FROM motion_jobs WHERE id = ?').get(id) as {
       id: string; kit_id: string; preset: string; motor: string; modelo: string | null; pedido: string; workspace: string;

@@ -4,6 +4,7 @@
 
 import type {
   GateDecision,
+  MotionJob,
   Peca,
   PecaCreateInput,
   PecaFiltro,
@@ -509,6 +510,9 @@ export interface TavirApi {
     motion: {
       updateBase: () => Promise<{ ok: boolean; error?: string }>;
       downloadBrowser: (confirm: boolean) => Promise<{ ok: boolean; error?: string; log: string }>;
+      ask: (input: { perfilId: string; preset: string; pedido: string }) => Promise<{ ok: boolean; job?: MotionJob; error?: string }>;
+      gate: (jobId: string, decisao: 'aprovado' | 'ajuste' | 'recusado', comentario?: string) => Promise<{ ok: boolean; job?: MotionJob; error?: string }>;
+      latest: (perfilId: string) => Promise<{ job: MotionJob | null; still: string }>;
     };
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;

@@ -236,6 +236,9 @@ const api: TavirApi = {
     motion: {
       updateBase: () => ipcRenderer.invoke('studio:motion:updateBase'),
       downloadBrowser: (confirm: boolean) => ipcRenderer.invoke('studio:motion:downloadBrowser', confirm),
+      ask: (input) => ipcRenderer.invoke('studio:motion:ask', input),
+      gate: (jobId, decisao, comentario) => ipcRenderer.invoke('studio:motion:gate', jobId, decisao, comentario),
+      latest: (perfilId) => ipcRenderer.invoke('studio:motion:latest', perfilId),
     },
   },
   onStudioEvent: (callback) => {

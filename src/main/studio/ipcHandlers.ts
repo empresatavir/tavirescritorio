@@ -1,4 +1,5 @@
 import type { GateDecision, PecaCreateInput, PecaFiltro, PecaUpdate, PerfilInput, PerfilRedeInput, PieceStage, SerieInput } from '../../shared/studio';
+import { decideMotionGate, latestMotionView, startMotionJob, type MotionDecision } from './motionAuthor';
 import { downloadRemotionBrowser, updateMotionBase } from './motionHome';
 import { runPreflight } from './preflight';
 import { cancelRender, startRender } from './render';
@@ -92,5 +93,20 @@ export function registerStudioIpc(handle: Handle): void {
   handle('studio:render:cancel', (_e, id: string) => cancelRender(id));
   handle('studio:motion:updateBase', () => updateMotionBase());
   handle('studio:motion:downloadBrowser', (_e, confirm?: boolean) => downloadRemotionBrowser(confirm === true));
+  handle('studio:motion:ask', async (_e, input: { perfilId: string; preset: string; pedido: string }) => {
+    try {
+      return { ok: true, job: await startMotionJob(input) };
+    } catch (err) {
+      return { ok: false, error: message(err) };
+    }
+  });
+  handle('studio:motion:gate', async (_e, jobId: string, decisao: MotionDecision, comentario?: string) => {
+    try {
+      return { ok: true, job: await decideMotionGate(jobId, decisao, comentario ?? '') };
+    } catch (err) {
+      return { ok: false, error: message(err) };
+    }
+  });
+  handle('studio:motion:latest', (_e, perfilId: string) => latestMotionView(perfilId));
   handle('studio:preflight', () => runPreflight());
 }
