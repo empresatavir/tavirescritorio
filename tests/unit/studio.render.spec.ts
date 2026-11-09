@@ -16,7 +16,7 @@ function peca(formato: string): Peca {
     pauta: { tema: 'carta' },
     angulos: [],
     angulo_escolhido: null,
-    roteiro: { slides: [{ titulo: 'Capa', apoio: '1953' }] },
+    roteiro: { slides: [{ titulo: 'Capa', apoio: '1953' }], legendas: [{ text: 'porta', startMs: 0, endMs: 400 }] },
     legenda: null,
     hashtags: [],
     agendado_para: null,
@@ -57,6 +57,7 @@ describe('studio render job', () => {
     expect(proxy.props.width).toBe(540);
     expect(proxy.props.height).toBe(960);
     expect(proxy.props.durationInFrames).toBe(90);
+    expect(proxy.props.words).toEqual([{ text: 'porta', startMs: 0, endMs: 400 }]);
     expect(proxy.frame).toBeUndefined();
   });
 

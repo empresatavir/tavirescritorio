@@ -10,6 +10,11 @@ export interface CaptionWord {
   endMs: number;
 }
 
+export function activeWord(words: CaptionWord[], timeMs: number): CaptionWord | null {
+  if (!Number.isFinite(timeMs)) return null;
+  return words.find((word) => timeMs >= word.startMs && timeMs < word.endMs) ?? null;
+}
+
 export function captionsFromWhisper(words: WhisperWord[]): CaptionWord[] {
   return words
     .filter((word) => word.word?.trim() && Number.isFinite(word.start) && Number.isFinite(word.end) && word.end >= word.start)

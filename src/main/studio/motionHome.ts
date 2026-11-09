@@ -89,6 +89,7 @@ export async function updateMotionBase(home?: string): Promise<{ ok: boolean; er
     return { ok: created.ok, error: created.error };
   }
   copyTree(path.join(source, 'src', 'base'), path.join(dir, 'src', 'base'));
+  fs.copyFileSync(path.join(source, 'src', 'Root.tsx'), path.join(dir, 'src', 'Root.tsx'));
   copyTree(path.join(source, 'scripts'), path.join(dir, 'scripts'));
   return { ok: true };
 }

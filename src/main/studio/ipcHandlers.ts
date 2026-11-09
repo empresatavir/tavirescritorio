@@ -14,6 +14,7 @@ import { ensureStudioTree } from './paths';
 import { compilePiecePrompts, exportShotList } from './shotList';
 import { synthesizeScenes } from './audio';
 import { polishPrompt } from './promptPolish';
+import { installWhisper } from './whisper';
 import { getStudioStore } from './store';
 import { suggestForPiece, type SuggestAlvo } from './suggest';
 import { createSidecarManager, loadSidecars, sidecarConfigPath } from '../sidecars';
@@ -159,6 +160,7 @@ export function registerStudioIpc(handle: Handle): void {
     const mime = file.endsWith('.wav') ? 'audio/wav' : 'audio/mpeg';
     return { ok: true, src: `data:${mime};base64,${bytes.toString('base64')}` };
   });
+  handle('studio:audio:whisper', (_e, confirm: boolean) => installWhisper(confirm === true));
   handle('studio:audio:word', (_e, pecaId: string, index: number, text: string) => {
     const store = getStudioStore();
     const peca = store.getPeca(pecaId);

@@ -44,6 +44,7 @@ export function buildRenderJob(input: {
   durationInFrames?: number;
   narrations?: Array<{ src: string; from: number; durationFrames: number }>;
   music?: string;
+  words?: Array<{ text: string; startMs: number; endMs: number }>;
 }): RenderJob {
   const format = formatById(input.peca.formato_id);
   if (!format) throw new Error('formato desconhecido');
@@ -87,6 +88,7 @@ export function buildRenderJob(input: {
       narrations: input.narrations ?? [],
       narration: '',
       music: input.music ?? '',
+      words: input.words ?? input.peca.roteiro?.legendas ?? [],
     },
   };
 }

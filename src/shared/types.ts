@@ -538,6 +538,7 @@ export interface TavirApi {
       narrate: (pecaId: string, index?: number) => Promise<{ ok: boolean; error?: string; files?: string[] }>;
       clip: (pecaId: string, index: number) => Promise<{ ok: boolean; error?: string; src?: string }>;
       word: (pecaId: string, index: number, text: string) => Promise<{ ok: boolean; error?: string }>;
+      whisper: (confirm: boolean) => Promise<{ ok: boolean; error?: string }>;
     };
     motion: {
       updateBase: () => Promise<{ ok: boolean; error?: string }>;

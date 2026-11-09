@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { BrowserWindow } from 'electron';
 import { formatById, type RenderTipo, type StudioEvent } from '../../shared/studio';
 import { checkMedia } from './mediaChecks';
-import { ensureMotionHome, motionDir, repoMotionDir } from './motionHome';
+import { ensureMotionHome, motionDir, repoMotionDir, updateMotionBase } from './motionHome';
 import { findRemotionBrowser } from './preflight';
 import { ensureStudioTree } from './paths';
 import { buildRenderJob, parseProgressLine } from './renderJob';
@@ -49,6 +49,8 @@ export async function startRender(pecaId: string, tipo: RenderTipo, frame = 0, e
   const planned = format?.kind === 'video' && tipo !== 'still' && !extras?.scenes ? planReel(store, peca) : null;
   const installed = await ensureMotionHome();
   if (!installed.ok) return { ok: false, error: installed.error };
+  const refreshed = await updateMotionBase();
+  if (!refreshed.ok) return { ok: false, error: refreshed.error };
   const dirs = ensureStudioTree().pecaDirs(pecaId);
   fs.mkdirSync(dirs.render, { recursive: true });
   const output = path.join(dirs.render, tipo === 'still' ? `still-f${frame}-${Date.now()}.png` : `${tipo}-${Date.now()}.mp4`);
@@ -64,6 +66,7 @@ export async function startRender(pecaId: string, tipo: RenderTipo, frame = 0, e
     durationInFrames: planned?.durationInFrames,
     narrations: planned?.narrations,
     music: planned?.music,
+    words: peca.roteiro?.legendas ?? [],
   });
   const jobPath = path.join(dirs.render, `${path.basename(output, path.extname(output))}.json`);
   fs.writeFileSync(jobPath, JSON.stringify(job));

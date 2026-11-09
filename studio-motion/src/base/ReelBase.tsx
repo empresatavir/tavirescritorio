@@ -28,6 +28,7 @@ export type ReelProps = {
   narration: string;
   narrations: ReelNarration[];
   music: string;
+  words: Array<{ text: string; startMs: number; endMs: number }>;
   handle: string;
   tokens: MotionTokens;
   zone: SafeZone;
@@ -55,6 +56,8 @@ export const ReelBase: React.FC<ReelProps> = (props) => {
             easing: ease,
           })
           : 1;
+        const timeMs = (frame / Math.max(1, props.fps)) * 1000;
+        const spoken = (props.words || []).find((word) => timeMs >= word.startMs && timeMs < word.endMs);
         const opacity = interpolate(local, [0, tokens.enterFrames], [0, 1], {
           extrapolateLeft: 'clamp',
           extrapolateRight: 'clamp',
@@ -71,6 +74,9 @@ export const ReelBase: React.FC<ReelProps> = (props) => {
             </AbsoluteFill>
             <SafeArea zone={props.zone} debugSafeZone={props.debugSafeZone} frame={{ width: props.width, height: props.height, title: scene.caption }}>
               <AbsoluteFill style={{ justifyContent: 'flex-end', opacity }}>
+                {spoken ? (
+                  <div style={{ color: props.accent, fontFamily: 'Instrument Sans, sans-serif', fontSize: 64, fontWeight: 700 }}>{spoken.text}</div>
+                ) : null}
                 <div style={{ color: scene.preset === 'encerramento-cta' ? props.accent : props.titleColor, fontFamily: 'Instrument Sans, sans-serif', fontSize: 42 }}>
                   {scene.caption}
                 </div>

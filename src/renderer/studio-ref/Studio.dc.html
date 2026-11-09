@@ -206,7 +206,7 @@
         <sc-if value="{{sv.audio}}" hint-placeholder-val="{{false}}">
           <section class="card pad" style="display: flex; flex-direction: column; gap: 12px">
             <span class="eyebrow">Áudio</span>
-            <p class="muted">A duração de cada cena sai da narração. A voz é a do brand kit, ou Francisca se ele não tiver voz.</p>
+            <p class="muted">A duração de cada cena sai da narração. A voz é a do brand kit, ou Francisca se ele não tiver voz. A legenda palavra por palavra só baixa o whisper.cpp se você clicar.</p>
             <sc-for list="{{scenes}}" as="c" hint-placeholder-count="0">
               <div class="row" style="cursor: default; align-items: flex-start">
                 <div class="grow">
@@ -219,7 +219,7 @@
                 <button class="btn sm secondary" onClick="{{c.redo}}">refazer narração</button>
               </div>
             </sc-for>
-            <div class="actions"><button class="btn secondary" onClick="{{narrate}}">Gerar narração</button><button class="btn secondary" onClick="{{renderReel}}">Renderizar reel</button><button class="btn primary" onClick="{{advance}}" disabled="{{locked}}">Seguir</button></div>
+            <div class="actions"><button class="btn secondary" onClick="{{downloadWhisper}}">Baixar whisper.cpp</button><button class="btn secondary" onClick="{{narrate}}">Gerar narração</button><button class="btn secondary" onClick="{{renderReel}}">Renderizar reel</button><button class="btn primary" onClick="{{advance}}" disabled="{{locked}}">Seguir</button></div>
           </section>
         </sc-if>
 
@@ -705,6 +705,7 @@ class Component extends DCLogic {
         studioApi().motion.gate(s.motionJob.id, 'recusado', '').then(function (res) { self.after(res); });
       },
       downloadChrome: function () { var studio = studioApi(); if (studio && studio.motion) studio.motion.downloadBrowser(true).then(function (res) { self.after(res); }); },
+      downloadWhisper: function () { var studio = studioApi(); if (studio && studio.audio) studio.audio.whisper(true).then(function (res) { self.after(res); }); },
       updateMotion: function () { var studio = studioApi(); if (studio && studio.motion) studio.motion.updateBase().then(function (res) { self.after(res); }); },
       pauta: { tema: pauta.tema || '', fonte: pauta.fonte || '' },
       onTema: function (e) { self.savePauta('tema', e.target.value); },

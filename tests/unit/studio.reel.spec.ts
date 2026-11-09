@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { captionsFromWhisper, toSrt } from '../../src/main/studio/captions';
+import { captionsFromWhisper, activeWord, toSrt } from '../../src/main/studio/captions';
+import { installWhisper } from '../../src/main/studio/whisper';
 import { scenesFromRoteiro } from '../../src/main/studio/cenas';
 import { loudnessChecks, parseLoudnorm, visualHookOk } from '../../src/main/studio/loudnorm';
 import { ttsCommand, voiceOf } from '../../src/main/studio/audio';
@@ -43,6 +44,8 @@ describe('reel', () => {
     expect(words[0]).toEqual({ text: 'a', startMs: 100, endMs: 400 });
     expect(toSrt(words)).toContain('00:00:00,100 --> 00:00:00,400');
     expect(toSrt(words)).toContain('porta');
+    expect(activeWord(words, 200)?.text).toBe('a');
+    expect(activeWord(words, 900)).toBeNull();
   });
 
   it('lê o loudnorm e cobra −14 LUFS e pico até −1', () => {
@@ -71,5 +74,11 @@ describe('reel', () => {
     fs.writeFileSync(path.join(dir, 'solta.mp3'), 'x');
     expect(licensedTracks(dir).map((file) => path.basename(file))).toEqual(['tema.mp3']);
     fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('não baixa o whisper.cpp sem confirmação', async () => {
+    const result = await installWhisper(false);
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('confirmação');
   });
 });
