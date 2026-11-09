@@ -13,6 +13,12 @@ import { ensureStudioTree, studioHome } from './paths';
 import { getStudioStore, openStudioStore, StudioError, type StudioStore } from './store';
 
 const MOTORS = new Set<MotorId>(['cursor', 'claude', 'codex', 'antigravity']);
+const MOTION_MODEL: Record<MotorId, string> = {
+  cursor: 'auto-smart',
+  claude: 'claude-sonnet-5-5',
+  codex: 'codex-default',
+  antigravity: 'gemini-4-argon',
+};
 
 export type MotionDecision = 'aprovado' | 'ajuste' | 'recusado';
 
@@ -137,7 +143,7 @@ export async function startMotionJob(ask: MotionAsk): Promise<MotionJob> {
   if (!perfil) throw new StudioError('perfil não encontrado');
   if (!ask.pedido?.trim()) throw new StudioError('pedido vazio');
   let motor = ask.motor || 'cursor';
-  let model = 'auto-smart';
+  let model = MOTION_MODEL[motor];
   let effort = 'medium';
   if (!ask.motor) {
     try {
@@ -147,6 +153,7 @@ export async function startMotionJob(ask: MotionAsk): Promise<MotionJob> {
       effort = call.effort.id;
     } catch {
       motor = 'cursor';
+      model = MOTION_MODEL.cursor;
     }
   }
   const kits = store.listMotionKits(perfil.id);
