@@ -92,3 +92,19 @@ frontend/test-results/
 visual/*_test.png
 db/git_accounts.json
 db/credentials.json
+
+# Raio-X
+raiox/web/.env
+raiox/web/.env.local
+raiox/web/.env.*.local
+raiox/web/.vercel/
+raiox/web/supabase/.temp/
+raiox/web/node_modules/
+analise-instagram/perfis/*
+!analise-instagram/perfis/.gitkeep
+analise-instagram/config/*.env
+analise-web/projetos/*
+!analise-web/projetos/.gitkeep
+tools/scrapling-lab/data/
+tools/scrapling-lab/.venv/
+**/raiox-cases/
