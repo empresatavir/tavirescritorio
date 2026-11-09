@@ -31,7 +31,7 @@ A página [License FAQ](https://www.remotion.dev/docs/license/faq) diz que a lic
 | Item | Estado |
 | --- | --- |
 | Três perfis cadastrados na tela | ✅ na janela isolada: Multiverso Paranoico (Instagram e YouTube), TAVIR Oficial (Instagram) e TAVIR B2B (LinkedIn). O chip do Multiverso mostra `instagram, youtube · @multiverso` (`07-redes.png`). |
-| Carrossel do Multiverso com imagens do Flow na pasta | parcial: prompts `MP-0001-S01` e `MP-0001-S02`, stills 1080×1350, e a tela mostra 2 de 2 frames. A revisão não abre porque os slots estão sem ativo. |
+| Carrossel do Multiverso com imagens do Flow na pasta | parcial: o Flow recusou 4:5 e o Carlos gerou em 9:16. Os arquivos ainda não estão em `entrada-flow`. Os prompts `MP-0001-S01` e `MP-0001-S02` passaram para v2 e pedem 3:4, a opção mais próxima; o slide final continua 4:5. A revisão não abre porque os slots estão sem ativo. |
 | Reel 1080×1920 com narração e −14 LUFS | parcial: na janela, a peça «A porta do arquivo» chegou ao pacote. Duas cenas, narração edge-tts, MP4 1080×1920, 30 fps, 2,00 s. O pacote mede −14,02 LUFS e pico −2,62 dBTP. O quadro do arquivo mostra «A porta abre.» (`reel-frame.png`). ❌ assistido no celular; ❌ whisper.cpp. O fundo é o quadro do motion, sem imagem do Flow. |
 | Prévia igual ao arquivo | ✅ o telefone do carrossel mostra o still 1080×1350 (`08-previa.png`). O telefone do reel carrega o MP4 1080×1920 (`11-reel-previa.png`). A comparação com o celular ficou nos valores iniciais. |
 | Preset novo aprovado na tela | ✅ um kit, no perfil de conformidade, não nos três perfis reais |
