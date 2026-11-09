@@ -6,7 +6,9 @@
       "pasta": "C:/Users/carlo/Downloads/Projetos a Estudar/DarkFlow",
       "comando": "Iniciar-DarkFlow.bat",
       "healthUrl": "http://127.0.0.1:8765/api/health",
-      "portas": [8765]
+      "portas": [
+        8765
+      ]
     },
     {
       "id": "docuflow",
@@ -14,12 +16,33 @@
       "pasta": "C:/Users/carlo/Downloads/Projetos a Estudar/AgenciaIA/projetos_tavir/docuflow",
       "comando": "iniciar.bat",
       "healthUrl": "http://127.0.0.1:5000/docs",
-      "portas": [5000, 3000],
-      "conflito": {
-        "com": "darkflow",
-        "porta": 8765,
-        "motivo": "A API do DarkFlow e o TTS local do Docuflow usam a porta 8765. Os dois não sobem juntos."
-      }
+      "portas": [
+        5000,
+        3000
+      ],
+      "processos": [
+        {
+          "comando": "python",
+          "args": [
+            "-m",
+            "uvicorn",
+            "docuflow.api:app",
+            "--app-dir",
+            ".",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "5000"
+          ]
+        },
+        {
+          "comando": "node",
+          "args": [
+            "docuflow-studio/scripts/run-dev.mjs"
+          ]
+        }
+      ],
+      "nota": "Sobe só a API (5000) e o Studio web (3000), sem o TTS local: assim não disputa a porta 8765 com o DarkFlow. O iniciar.bat tem menu e a opção padrão não sobe a API."
     }
   ]
 }

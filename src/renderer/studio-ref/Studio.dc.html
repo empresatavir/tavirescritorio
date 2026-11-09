@@ -488,6 +488,7 @@ function studioApi() {
 }
 function fmtOf(id) { for (var i = 0; i < FORMATS.length; i++) if (FORMATS[i][0] === id) return FORMATS[i]; return FORMATS[0]; }
 function stagesFor(kind) { return kind === 'video' ? STAGE_IDS.slice() : STAGE_IDS.filter(function (s) { return s !== 'audio'; }); }
+function parseTags(text) { return String(text || '').split(/[\s,]+/).map(function (t) { t = t.trim(); return t && t.charAt(0) !== '#' ? '#' + t : t; }).filter(function (t) { return t && t !== '#'; }).slice(0, 5); }
 function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function lines(text) { return String(text || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean); }
 function charactersFrom(text) {
@@ -562,8 +563,56 @@ class Component extends DCLogic {
     var api = studioApi();
     var id = this.state.pecaId;
     var self = this;
-    if (!api || !id) return;
-    api.pecas.update(id, campos).then(function (res) { self.after(res); });
+    if (!api || !id) return Promise.resolve();
+    return api.pecas.update(id, campos).then(function (res) { self.after(res); });
+  }
+  // Campo digitado fica no rascunho local e só vai ao banco 600 ms depois da última tecla.
+  // Gravar a cada tecla fazia a resposta atrasada sobrescrever o que estava sendo digitado.
+  draftField(key, value) {
+    var self = this;
+    var same = this.state.fieldDraftPeca === this.state.pecaId;
+    if (!same) this.flushDrafts();
+    var drafts = Object.assign({}, same ? (this.state.fieldDraft || {}) : {}); drafts[key] = value;
+    this.setState({ fieldDraft: drafts, fieldDraftPeca: this.state.pecaId });
+    this._draftTimers = this._draftTimers || {};
+    clearTimeout(this._draftTimers[key]);
+    this._draftTimers[key] = setTimeout(function () { self.flushDrafts(); }, 600);
+  }
+  draftValue(key, fallback) {
+    var drafts = this.state.fieldDraftPeca === this.state.pecaId ? (this.state.fieldDraft || {}) : {};
+    return Object.prototype.hasOwnProperty.call(drafts, key) ? drafts[key] : fallback;
+  }
+  flushDrafts() {
+    var self = this;
+    Object.keys(this._draftTimers || {}).forEach(function (k) { clearTimeout(self._draftTimers[k]); });
+    this._draftTimers = {};
+    var drafts = this.state.fieldDraft || {};
+    var draftPeca = this.state.fieldDraftPeca;
+    var peca = (this.state.pecas || []).filter(function (p) { return p.id === draftPeca; })[0];
+    if (!peca || !Object.keys(drafts).length) return Promise.resolve();
+    var campos = {};
+    if (Object.prototype.hasOwnProperty.call(drafts, 'legenda')) campos.legenda = drafts.legenda;
+    if (Object.prototype.hasOwnProperty.call(drafts, 'tags')) campos.hashtags = parseTags(drafts.tags);
+    if (Object.prototype.hasOwnProperty.call(drafts, 'when')) campos.agendado_para = drafts.when;
+    var slideKeys = Object.keys(drafts).filter(function (k) { return k.indexOf('slide:') === 0; });
+    if (slideKeys.length) {
+      var slides = ((peca.roteiro && peca.roteiro.slides) || []).slice();
+      slideKeys.forEach(function (k) {
+        var i = Number(k.slice(6));
+        while (slides.length <= i) slides.push({ titulo: '', apoio: '' });
+        slides[i] = Object.assign({}, slides[i], { titulo: drafts[k] });
+      });
+      campos.roteiro = Object.assign({}, peca.roteiro || {}, { slides: slides });
+    }
+    if (!Object.keys(campos).length) return Promise.resolve();
+    var api = studioApi();
+    if (!api) return Promise.resolve();
+    return api.pecas.update(peca.id, campos).then(function (res) {
+      if (!res || res.ok === false) { self.setState({ error: (res && res.error) || 'não foi possível salvar' }); return; }
+      // O rascunho fica até trocar de peça: assim a tela nunca volta para um valor antigo enquanto recarrega.
+      if (slideKeys.length) self.scheduleStill();
+      self.reload();
+    });
   }
   gate(decisao) {
     var api = studioApi();
@@ -726,11 +775,12 @@ class Component extends DCLogic {
       ajuste: function () { if (!locked) self.gate('ajuste'); },
       script: slides.map(function (sl, i) {
         var lim = i === 0 ? 60 : 140;
-        var len = (sl.titulo || '').length;
-        return { n: String(i + 1).padStart(2, '0'), t: sl.titulo || '', s: sl.apoio || '', len: len, lim: lim, cc: len > lim ? 'var(--warning)' : 'var(--text-muted)', onInput: function (e) { self.saveSlide(i, e.target.value); } };
+        var t = self.draftValue('slide:' + i, sl.titulo || '');
+        var len = t.length;
+        return { n: String(i + 1).padStart(2, '0'), t: t, s: sl.apoio || '', len: len, lim: lim, cc: len > lim ? 'var(--warning)' : 'var(--text-muted)', onInput: function (e) { self.draftField('slide:' + i, e.target.value); } };
       }),
       slidesN: slides.length, addSlide: function () { self.saveSlide(slides.length, ''); },
-      approveScript: function () { if (!locked && peca) { var api = studioApi(); api.pecas.advance(peca.id).then(function (res) { self.after(res); }); } },
+      approveScript: function () { if (!locked && peca) { var api = studioApi(); self.flushDrafts().then(function () { return api.pecas.advance(peca.id); }).then(function (res) { self.after(res); }); } },
       art: { done: (s.arteImages || []).filter(Boolean).length, total: slides.length, pct: slides.length ? Math.round((s.arteImages || []).filter(Boolean).length / slides.length * 100) : 0, cls: '', cost: '—', job: '—', note: 'Cada slide mostra o arquivo renderizado. Trocar a imagem liga o slot.', notReady: !slides.length, send: kind === 'video' ? 'Seguir para o áudio' : 'Enviar para revisão' },
       frames: slides.map(function (item, i) {
         var img = (s.arteImages || [])[i] || '';
@@ -752,18 +802,18 @@ class Component extends DCLogic {
       rev: { cls: revOk ? 'flow' : '', label: checks.length ? (revOk ? 'tudo certo' : 'ajuste') : '—', blocked: !revOk, comment: checks.length ? '—' : 'Sem checagem registrada.', items: (checks.length ? checks : [{ ok: false, nome: '—', detalhe: 'Sem checagem registrada.' }]).map(function (c) { return { t: c.nome || '—', m: c.detalhe || '—', fixable: false, bg: c.ok ? 'var(--flow-subtle)' : 'var(--warning-subtle)', fg: c.ok ? 'var(--flow)' : 'var(--warning)', icon: c.ok ? 'M5 12.5l4.5 4.5L19 7' : 'M12 7v6M12 17h.01' }; }) },
       fixReview: function () {},
       approveReview: function () { if (!locked) self.gate('aprovado'); },
-      caption: (peca && peca.legenda) || '',
-      onCaption: function (e) { self.patch({ legenda: e.target.value }); },
-      capLen: ((peca && peca.legenda) || '').length,
-      tagText: ((peca && peca.hashtags) || []).join(' '),
-      tagCount: ((peca && peca.hashtags) || []).length,
-      onTags: function (e) { var tags = e.target.value.split(/[\s,]+/).map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 5); self.patch({ hashtags: tags }); },
-      when: peca && peca.agendado_para ? peca.agendado_para : '',
-      onWhen: function (e) { self.patch({ agendado_para: e.target.value }); },
+      caption: self.draftValue('legenda', (peca && peca.legenda) || ''),
+      onCaption: function (e) { self.draftField('legenda', e.target.value); },
+      capLen: self.draftValue('legenda', (peca && peca.legenda) || '').length,
+      tagText: self.draftValue('tags', ((peca && peca.hashtags) || []).join(' ')),
+      tagCount: parseTags(self.draftValue('tags', ((peca && peca.hashtags) || []).join(' '))).length,
+      onTags: function (e) { self.draftField('tags', e.target.value); },
+      when: self.draftValue('when', peca && peca.agendado_para ? peca.agendado_para : ''),
+      onWhen: function (e) { self.draftField('when', e.target.value); },
       notConfirming: !s.confirm, confirming: s.confirm,
       ajusteNota: s.ajusteNota || '',
       onAjuste: function (e) { self.setState({ ajusteNota: e.target.value }); },
-      buildPack: function () { var api = studioApi(); if (!api || !api.pacote || !peca) return; api.pacote.build(peca.id).then(function (res) { self.after(res); }); },
+      buildPack: function () { var api = studioApi(); if (!api || !api.pacote || !peca) return; self.flushDrafts().then(function () { return api.pacote.build(peca.id); }).then(function (res) { self.after(res); }); },
       openPack: function () { var api = studioApi(); if (!api || !api.pacote || !peca) return; api.pacote.open(peca.id); },
       cancelPublish: function () { self.setState({ confirm: false }); },
       askPublish: function () {
@@ -794,7 +844,8 @@ class Component extends DCLogic {
       sendEdition: function () {
         var api = studioApi();
         if (!api || !api.docuflow || !peca) return;
-        api.docuflow.send(peca.id).then(function (res) { self.after(res); });
+        self.setState({ loading: true, error: '' });
+        api.docuflow.send(peca.id).then(function (res) { self.after(res); if (res && res.ok && res.slug && api.docuflow.open) api.docuflow.open(res.slug); });
       },
       isLong: !!(peca && peca.formato_id === 'yt-longo-16x9'),
       slotLabel: (peca && peca.agendado_para) || '—',

@@ -12,6 +12,7 @@ import {
 } from '../../shared/studio';
 import { previewAlerts } from '../../shared/studioPreview';
 import { needsSourceSlide, slidesFromRoteiro } from './slides';
+import { scenesFromRoteiro } from './cenas';
 
 export interface RuleResult {
   ok: boolean;
@@ -77,8 +78,19 @@ export function precondition(peca: Peca): { ok: boolean; motivo: string } {
     }
     case 'arte': {
       const slots = peca.slots ?? [];
-      if (format.kind === 'video' && slots.length === 0) return { ok: true, motivo: '' };
-      if (format.kind !== 'video') {
+      if (format.kind === 'video') {
+        // Cada cena precisa de imagem ou vídeo próprio; sem isso o reel sai com fundo vazio.
+        const scenes = scenesFromRoteiro(peca.roteiro);
+        if (!scenes.length) return { ok: false, motivo: 'roteiro sem cenas' };
+        const byCode = new Map(slots.map((s) => [s.codigo, s]));
+        const missing = scenes
+          .map((scene, i) => ({ i, slot: scene.slot ? byCode.get(scene.slot) : undefined }))
+          .filter((item) => !item.slot?.ativo_id)
+          .map((item) => item.i + 1);
+        if (missing.length) return { ok: false, motivo: `cena ${missing.join(', ')} sem imagem do Flow` };
+        return { ok: true, motivo: '' };
+      }
+      {
         const slides = peca.roteiro?.slides?.length ?? 0;
         if (!slides && slots.length === 0) return { ok: false, motivo: 'roteiro sem slides' };
       }

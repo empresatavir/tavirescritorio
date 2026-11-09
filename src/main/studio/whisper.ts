@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { formatById } from '../../shared/studio';
-import { placeCaptions, type CaptionWord } from './captions';
+import { mergeTokens, placeCaptions, type CaptionWord } from './captions';
 import { motionDir } from './motionHome';
 import { planReel } from './reel';
 import type { StudioStore } from './store';
@@ -93,7 +93,7 @@ export async function transcribePeca(pecaId: string, store: StudioStore): Promis
         printOutput: false,
       });
       const captions = mod.toCaptions({ whisperCppOutput: output }).captions;
-      words.push(...placeCaptions(captions, (clip.from / fps) * 1000));
+      words.push(...placeCaptions(mergeTokens(captions), (clip.from / fps) * 1000));
     } finally {
       fs.rmSync(wav, { force: true });
     }

@@ -16,11 +16,16 @@ export interface DatabaseState {
   }>;
 }
 
-const dbSqlitePath = join(process.cwd(), 'backend', 'tavir.db');
+/** Raiz dos dados locais. Os testes apontam `TAVIR_DATA_ROOT` para uma pasta temporária e nunca tocam os dados reais. */
+export function dataRoot(): string {
+  return process.env.TAVIR_DATA_ROOT || process.cwd();
+}
+
 let sqliteDb: DatabaseSync | null = null;
 
 function getSqlite(): DatabaseSync | null {
   if (sqliteDb) return sqliteDb;
+  const dbSqlitePath = join(dataRoot(), 'backend', 'tavir.db');
   if (existsSync(dbSqlitePath)) {
     try {
       sqliteDb = new DatabaseSync(dbSqlitePath);
@@ -33,7 +38,7 @@ function getSqlite(): DatabaseSync | null {
 }
 
 function caminhoStoreJson(): string {
-  const dir = join(process.cwd(), 'db');
+  const dir = join(dataRoot(), 'db');
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   return join(dir, 'tavir_store.json');
 }

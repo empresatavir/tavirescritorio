@@ -57,7 +57,7 @@ export type GateDecision = typeof GATE_DECISIONS[number];
 
 export interface SafeZone { id: string; top: number; bottom: number; left: number; right: number; note: string; }
 export const SAFE_ZONES: SafeZone[] = [
-  { id: 'ig-feed',    top: 0,   bottom: 0,   left: 60, right: 60,  note: 'Margem de respiro; o feed não cobre a arte.' },
+  { id: 'ig-feed',    top: 60,  bottom: 60,  left: 60, right: 60,  note: 'Margem de respiro; o feed não cobre a arte.' },
   { id: 'ig-reels',   top: 220, bottom: 420, left: 60, right: 140, note: 'Topo: cabeçalho. Base: legenda e áudio. Direita: curtir/comentar.' },
   { id: 'ig-stories', top: 250, bottom: 340, left: 60, right: 60,  note: 'Topo: barra de progresso e perfil. Base: responder.' },
   { id: 'yt-shorts',  top: 200, bottom: 480, left: 60, right: 160, note: 'Base maior por causa do título e inscrever-se.' },
