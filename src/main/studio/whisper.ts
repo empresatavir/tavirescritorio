@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -10,6 +11,12 @@ import type { StudioStore } from './store';
 export const WHISPER_VERSION = '1.5.5';
 export const WHISPER_MODEL = 'small';
 
+/** O `tsc` em CommonJS transforma `import()` em `require()`, e `require` não abre URL de arquivo. */
+function loadEsm(file: string): Promise<Record<string, unknown>> {
+  const importer = new Function('specifier', 'return import(specifier)') as (specifier: string) => Promise<Record<string, unknown>>;
+  return importer(pathToFileURL(file).href);
+}
+
 function whisperDir(home?: string): string {
   return path.join(motionDir(home), 'whisper.cpp');
 }
@@ -20,6 +27,17 @@ export function whisperInstalled(home?: string): boolean {
   return fs.existsSync(exe) && fs.existsSync(path.join(dir, `ggml-${WHISPER_MODEL}.bin`));
 }
 
+/** O whisper.cpp só lê WAVE 16 kHz, 16 bit, mono. */
+export function whisperWavArgs(source: string, dest: string): string[] {
+  return ['-y', '-i', source, '-ar', '16000', '-ac', '1', '-c:a', 'pcm_s16le', dest];
+}
+
+function toWhisperWav(source: string): string {
+  const dest = path.join(path.dirname(source), `${path.parse(source).name}-16k.wav`);
+  execFileSync('ffmpeg', whisperWavArgs(source, dest), { windowsHide: true, stdio: 'pipe', timeout: 30000 });
+  return dest;
+}
+
 export async function installWhisper(confirm: boolean, home?: string): Promise<{ ok: boolean; error?: string }> {
   if (confirm !== true) {
     return { ok: false, error: 'O download do whisper.cpp precisa da sua confirmação.' };
@@ -28,7 +46,7 @@ export async function installWhisper(confirm: boolean, home?: string): Promise<{
   const pkg = path.join(motion, 'node_modules', '@remotion', 'install-whisper-cpp', 'dist', 'index.js');
   if (!fs.existsSync(pkg)) return { ok: false, error: 'o pacote do whisper.cpp não está na base de motion' };
   const dir = whisperDir(home);
-  const mod = await import(pathToFileURL(pkg).href) as {
+  const mod = await loadEsm(pkg) as {
     installWhisperCpp: (input: { version: string; to: string; printOutput: boolean }) => Promise<unknown>;
     downloadWhisperModel: (input: { model: string; folder: string; printOutput: boolean }) => Promise<unknown>;
   };
@@ -47,7 +65,7 @@ export async function transcribePeca(pecaId: string, store: StudioStore): Promis
   const clips = plan.narrations.filter((item) => item.src && fs.existsSync(item.src));
   if (!clips.length) return { ok: false, error: 'não há narração para transcrever' };
   const pkg = path.join(motionDir(store.tree.home), 'node_modules', '@remotion', 'install-whisper-cpp', 'dist', 'index.js');
-  const mod = await import(pathToFileURL(pkg).href) as {
+  const mod = await loadEsm(pkg) as {
     transcribe: (input: {
       inputPath: string;
       whisperPath: string;
@@ -63,17 +81,22 @@ export async function transcribePeca(pecaId: string, store: StudioStore): Promis
   const fps = formatById(peca.formato_id)?.fps ?? 30;
   const words: CaptionWord[] = [];
   for (const clip of clips) {
-    const output = await mod.transcribe({
-      inputPath: clip.src,
-      whisperPath: dir,
-      whisperCppVersion: WHISPER_VERSION,
-      model: WHISPER_MODEL,
-      tokenLevelTimestamps: true,
-      language: 'Portuguese',
-      printOutput: false,
-    });
-    const captions = mod.toCaptions({ whisperCppOutput: output }).captions;
-    words.push(...placeCaptions(captions, (clip.from / fps) * 1000));
+    const wav = toWhisperWav(clip.src);
+    try {
+      const output = await mod.transcribe({
+        inputPath: wav,
+        whisperPath: dir,
+        whisperCppVersion: WHISPER_VERSION,
+        model: WHISPER_MODEL,
+        tokenLevelTimestamps: true,
+        language: 'pt',
+        printOutput: false,
+      });
+      const captions = mod.toCaptions({ whisperCppOutput: output }).captions;
+      words.push(...placeCaptions(captions, (clip.from / fps) * 1000));
+    } finally {
+      fs.rmSync(wav, { force: true });
+    }
   }
   store.updatePeca(pecaId, { roteiro: { ...(peca.roteiro ?? {}), legendas: words } });
   return { ok: true, count: words.length };

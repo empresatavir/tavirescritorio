@@ -1,6 +1,6 @@
 # F9 — checkpoint parcial
 
-A F9 não fecha. Falta a jornada dos 7 itens, a resposta de D1 e a frase «GOAL STUDIO aceito».
+O Carlos respondeu em 9 de novembro de 2026. A D1 está fechada: a TAVIR entra na licença gratuita do Remotion. Ele escreveu «GOAL STUDIO aceito». O whisper.cpp 1.5.5 e o modelo `small` foram instalados em `motion/whisper.cpp`. A narração da peça «A porta do arquivo» virou 9 palavras. O pacote foi refeito: 1080×1920, 30 fps, 2,00 s, −14,0 LUFS, pico −2,6 dBTP.
 
 ## Comandos em 9 de novembro de 2026
 
@@ -24,7 +24,7 @@ O Social mostra o scorecard do DarkFlow como «—» (`19-social.png`). Seguidor
 
 ## D1
 
-A página [License FAQ](https://www.remotion.dev/docs/license/faq) diz que a licença gratuita vale para uma pessoa, para uma organização de até 3 pessoas e para certas entidades sem fins lucrativos. Fora isso, a Company License é paga. Não decidi em qual caso a TAVIR entra. Sem essa resposta, o GOAL não fecha.
+A página [License FAQ](https://www.remotion.dev/docs/license/faq) diz que a licença gratuita vale para uma pessoa, para uma organização de até 3 pessoas e para certas entidades sem fins lucrativos. O Carlos respondeu que a TAVIR entra na licença gratuita.
 
 ## O que os 7 itens ainda não têm
 
@@ -32,7 +32,7 @@ A página [License FAQ](https://www.remotion.dev/docs/license/faq) diz que a lic
 | --- | --- |
 | Três perfis cadastrados na tela | ✅ na janela isolada: Multiverso Paranoico (Instagram e YouTube), TAVIR Oficial (Instagram) e TAVIR B2B (LinkedIn). O chip do Multiverso mostra `instagram, youtube · @multiverso` (`07-redes.png`). |
 | Carrossel do Multiverso com imagens do Flow na pasta | parcial: o Carlos aprovou a revisão. O pacote tem `01.png`, `02.png` e `capa.png` em 1080×1350, feitos das fotos 9:16 (`24-pacote.png`). `legenda.txt` e `hashtags.txt` estão vazios. A publicação de carrossel fica fora deste GOAL. São 2 imagens; a saída da F6 pede 3. |
-| Reel 1080×1920 com narração e −14 LUFS | parcial: na janela, a peça «A porta do arquivo» chegou ao pacote. Duas cenas, narração edge-tts, MP4 1080×1920, 30 fps, 2,00 s. O pacote mede −14,02 LUFS e pico −2,62 dBTP. O quadro do arquivo mostra «A porta abre.» (`reel-frame.png`). ❌ assistido no celular; ❌ whisper.cpp. O fundo é o quadro do motion, sem imagem do Flow. |
+| Reel 1080×1920 com narração e −14 LUFS | ✅ o Carlos assistiu no celular: tela vermelha e o áudio «a porta abre / o arquivo fica». O vermelho é o `vazio.png` de 1×1, porque as cenas não têm imagem do Flow. Depois do sim, o whisper.cpp gerou 9 palavras e o pacote foi refeito: 1080×1920, 30 fps, 2,00 s, −14,0 LUFS, pico −2,6 dBTP, gancho 48,62. |
 | Prévia igual ao arquivo | ✅ o telefone do carrossel mostra o still 1080×1350 (`08-previa.png`). O telefone do reel carrega o MP4 1080×1920 (`11-reel-previa.png`). A comparação com o celular ficou nos valores iniciais. |
 | Preset novo aprovado na tela | ✅ um kit, no perfil de conformidade, não nos três perfis reais |
 | Reel na agenda do DarkFlow | ✅ clique em «Aprovar publicação» na peça «A porta do arquivo». A tela Flow lista essa agenda como `agendado`, junto com o `final.mp4` 1080×1920 na biblioteca (`18-flow.png`). A sessão segue em simulação. |

@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { captionsFromWhisper, activeWord, placeCaptions, toSrt } from '../../src/main/studio/captions';
-import { installWhisper, transcribePeca } from '../../src/main/studio/whisper';
+import { installWhisper, transcribePeca, whisperWavArgs } from '../../src/main/studio/whisper';
 import { openStudioStore } from '../../src/main/studio/store';
 import { scenesFromRoteiro } from '../../src/main/studio/cenas';
 import { loudnessChecks, parseLoudnorm, visualHookOk } from '../../src/main/studio/loudnorm';
@@ -76,6 +76,12 @@ describe('reel', () => {
     fs.writeFileSync(path.join(dir, 'solta.mp3'), 'x');
     expect(licensedTracks(dir).map((file) => path.basename(file))).toEqual(['tema.mp3']);
     fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('converte a narração para o WAVE de 16 kHz que o whisper.cpp lê', () => {
+    expect(whisperWavArgs('narracao-01.mp3', 'narracao-01-16k.wav')).toEqual([
+      '-y', '-i', 'narracao-01.mp3', '-ar', '16000', '-ac', '1', '-c:a', 'pcm_s16le', 'narracao-01-16k.wav',
+    ]);
   });
 
   it('não baixa o whisper.cpp sem confirmação', async () => {
