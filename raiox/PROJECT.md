@@ -1,5 +1,11 @@
 # PROJECT — Raio X de Prospecção
 
+## Mudança de casa (2026-11)
+Este projeto foi trazido do AgenciaIA para o Escritório TAVIR (tavirescritorio).
+Caminhos antigos citados no histórico abaixo valem para o AgenciaIA. Mapa novo em
+`docs/planning/PLANO_RAIOX.md`. Operação passa a ser feita no Escritório (Electron);
+o bot do Telegram e o tools/office.py deixam de operar o Raio-X após o corte (GOAL F9).
+
 > Atualizado em 2026-08-31 · Status: release publicado / primeiro case institucional completo gerado
 >
 > Responsável: Dora Descoberta + Comercial · Local: `empresas/tavir/projetos/custom/raio-x-de-prospeccao`

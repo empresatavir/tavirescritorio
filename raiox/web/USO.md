@@ -75,7 +75,7 @@ de correção ou exclusão têm prioridade e devem ser executados também nas c�
 ## Troubleshooting
 
 - **Deploy Git não encontra `package.json`:** no projeto Vercel `agenciaia`, confirme que o Root
-  Directory é `empresas/tavir/projetos/custom/raio-x-de-prospeccao/04-execucao/raiox-web` e refaça
+  Directory é `raiox/web` e refaça
   o deployment. Não mova nem duplique o app para a raiz do repositório.
 - **Link inválido:** gere novo convite; não alongue expiração nem revele a causa ao visitante.
 - **Convite recusado:** o case já existe. Corrija remetente, destinatário ou configuração e reconcilie

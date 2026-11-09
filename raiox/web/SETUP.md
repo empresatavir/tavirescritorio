@@ -20,7 +20,7 @@
    as funções fazem autenticação própria pelo segredo interno ou do webhook.
 5. Mantenha o Database Webhook de `raiox_events` apontando para `notify-dora`.
 6. Na Vercel, mantenha o Root Directory do projeto Git em
-   `empresas/tavir/projetos/custom/raio-x-de-prospeccao/04-execucao/raiox-web` e configure
+   `raiox/web` e configure
    `.env.example`; segredos ficam apenas no ambiente server-side. O cron
    `/api/cron/supabase-health` usa `CRON_SECRET` com pelo menos 32 caracteres. Se o Root Directory
    voltar para `.`, a build Git falhará procurando `/vercel/path0/package.json`. O

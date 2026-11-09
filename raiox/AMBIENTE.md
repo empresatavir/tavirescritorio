@@ -9,13 +9,13 @@
 - **Projeto:** Raio-X de Prospecção
 - **Empresa:** TAVIR (casa)
 - **Responsável pelo acesso:** Carlos (CEO)
-- **Contexto canônico:** `empresas/tavir/projetos/custom/raio-x-de-prospeccao/PROJECT.md`
+- **Contexto canônico:** `raiox/PROJECT.md`
 
 ## Repositório
 
 - **URL:** `https://github.com/empresatavir/agenciaia`
 - **Branch de produção:** `main`
-- **Diretório:** `empresas/tavir/projetos/custom/raio-x-de-prospeccao/04-execucao/raiox-web`
+- **Diretório:** `raiox/web`
 
 ## Vercel — verificado em 2026-08-23
 
@@ -27,7 +27,7 @@
 - **Domínio público canônico:** `https://raiox.tavir.com.br`
 - **Alias técnico:** `https://agenciaia-one.vercel.app`
 - **Último deployment verificado:** `dpl_CNDSAT1qzS6sjZYyenmauW3AKQ14` (`Ready`)
-- **Root Directory:** `empresas/tavir/projetos/custom/raio-x-de-prospeccao/04-execucao/raiox-web`.
+- **Root Directory:** `raiox/web`.
   O projeto está conectado ao repositório GitHub `empresatavir/agenciaia`; builds Git devem partir
   dessa subpasta do monorepo.
 - **Vínculo local:** `.vercel/project.json` presente e apontando para os IDs acima.

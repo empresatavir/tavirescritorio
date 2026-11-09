@@ -665,7 +665,7 @@ amigos, prospects ou clientes reais até a conclusão formal de G-PR1/LGPD.
 
 - Causa confirmada: o clone Git iniciava o build com Root Directory `.`; o npm procurava
   `/vercel/path0/package.json`, mas o aplicativo está no monorepo em
-  `empresas/tavir/projetos/custom/raio-x-de-prospeccao/04-execucao/raiox-web`.
+  `raiox/web`.
 - A Root Directory do mesmo projeto foi corrigida para o diretório real do aplicativo. Não houve
   troca de projeto, domínio, banco ou fronteira de confiança.
 - O novo deployment ficou `Ready` segundo a evidência do executor; seus logs localizaram o
