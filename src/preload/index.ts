@@ -14,6 +14,7 @@ function getLocalVaultIndexer() {
 const api: TavirApi = {
   app: {
     getVersion: () => ipcRenderer.invoke('app:getVersion'),
+    buildInfo: () => ipcRenderer.invoke('app:buildInfo'),
     minimize: () => ipcRenderer.invoke('app:minimize'),
     maximize: () => ipcRenderer.invoke('app:maximize'),
     close: () => ipcRenderer.invoke('app:close'),

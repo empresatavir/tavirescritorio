@@ -31,6 +31,7 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
 
   // App
   handle('app:getVersion', () => app.getVersion());
+  handle('app:buildInfo', () => require('./buildInfo').readBuildInfo(app.getVersion()));
   handle('app:minimize', () => mainWin?.minimize());
   handle('app:maximize', () => {
     if (!mainWin) return;

@@ -145,6 +145,26 @@ export interface AltTrackState {
   publish?: CyclePublishInfo | null;
 }
 
+/** Ficha do build em uso, gravada por scripts/versioning.js. */
+export interface BuildInfo {
+  version: string;
+  commit: string;
+  commitFull: string;
+  commitDate: string;
+  commitSubject: string;
+  branch: string;
+  tag: string | null;
+  lastTag: string | null;
+  commitsSinceTag: number | null;
+  dirty: boolean;
+  dirtyFiles: string[];
+  builtAt: string;
+  /** false quando o build não gravou a ficha (rodando sem npm run build). */
+  known: boolean;
+  /** Texto curto para o rodapé, ex.: "v2.1.0 · 6cdce97". */
+  label: string;
+}
+
 export interface CycleBranchInfo {
   name: string;
   base: string;
@@ -286,6 +306,8 @@ export interface MotorKeySaveResult {
 export interface TavirApi {
   app: {
     getVersion: () => Promise<string>;
+    /** Versão, commit, branch e data do build em uso (dist/build-info.json). */
+    buildInfo: () => Promise<BuildInfo>;
     minimize: () => Promise<void>;
     maximize: () => Promise<void>;
     close: () => Promise<void>;

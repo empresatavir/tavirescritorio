@@ -1081,6 +1081,65 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     );
   }
 
+  // Versão em uso no topo de Sistema: versão, commit, branch e data do build (dist/build-info.json).
+  if (!cfgHtml.includes('class="cfg-ver"')) {
+    const verCard = `<div class="cfg-ver">
+          <div class="cfg-ver-main"><div class="eyebrow">Versão em uso</div><div class="cfg-ver-n">{{ver.version}}</div><div class="cfg-ver-sub">{{ver.sub}}</div></div>
+          <dl class="cfg-ver-kv"><sc-for list="{{ver.kv}}" as="k" hint-placeholder-count="4"><div><dt>{{k.k}}</dt><dd class="mono">{{k.v}}</dd></div></sc-for></dl>
+          <div class="cfg-ver-act"><sc-if value="{{ver.dirty}}" hint-placeholder-val="{{false}}"><span class="badge warn" title="{{ver.dirtyTip}}">alterações locais</span></sc-if><sc-if value="{{ver.released}}" hint-placeholder-val="{{false}}"><span class="badge flow">versão publicada</span></sc-if><div class="grow"></div><button class="btn sm secondary" onClick="{{ver.copy}}">{{ver.copyLbl}}</button></div>
+        </div>
+        `;
+    cfgHtml = cfgHtml.replace(
+      'Portas oficiais, caminhos e serviços do escritório.</p></div></div>\n        ',
+      'Versão em uso, portas, caminhos e serviços do escritório.</p></div></div>\n        ' + verCard
+    );
+    cfgHtml = cfgHtml.replace(
+      '    const cs = s.cs || {};',
+      `    const tvVer = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+    if (tvVer && tvVer.app && tvVer.app.buildInfo && !s.build && !self._buildLoading) {
+      self._buildLoading = true;
+      tvVer.app.buildInfo().then(function(b) { self.setState({ build: b || null }); }).catch(function() {});
+    }
+    const b = s.build || null;
+    const when = function(iso) { const t = String(iso || ''); return t ? new Date(t).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—'; };
+    const verText = b ? ['TAVIR Escritório v' + b.version, 'commit ' + (b.commitFull || b.commit || '—'), 'branch ' + (b.branch || '—'), 'build ' + (b.builtAt || '—'), b.tag ? 'tag ' + b.tag : 'sem tag', b.dirty ? 'alterações locais: ' + b.dirtyFiles.join(', ') : 'sem alterações locais'].join('\\n') : '';
+    const ver = b ? {
+      version: 'v' + b.version,
+      sub: !b.known ? 'Build sem ficha de versão. Rode npm run build para gravar o commit e a data.' : b.tag ? 'Build da versão publicada ' + b.tag + '.' : b.lastTag ? b.commitsSinceTag + ' commit(s) depois de ' + b.lastTag + ', ainda sem versão nova.' : 'Nenhuma versão publicada ainda. A primeira sai com npm run release.',
+      kv: [
+        { k: 'Commit', v: b.commit ? b.commit + ' · ' + b.commitSubject : '—' },
+        { k: 'Branch', v: b.branch || '—' },
+        { k: 'Build', v: when(b.builtAt) },
+        { k: 'Commit feito em', v: when(b.commitDate) },
+      ],
+      dirty: !!b.dirty,
+      dirtyTip: b.dirty ? 'Build feito com arquivos sem commit: ' + b.dirtyFiles.join(', ') : '',
+      released: !!b.tag,
+      copyLbl: s.verCopied ? 'Copiado' : 'Copiar dados da versão',
+      copy: function() {
+        const done = function() { self.setState({ verCopied: true }); setTimeout(function() { self.setState({ verCopied: false }); }, 1800); };
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(verText).then(done).catch(function() {}); return; }
+        } catch (e) {}
+        try { const ta = document.createElement('textarea'); ta.value = verText; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done(); } catch (e) {}
+      },
+    } : { version: '…', sub: 'Lendo a ficha do build…', kv: [], dirty: false, dirtyTip: '', released: false, copyLbl: 'Copiar dados da versão', copy: function() {} };
+    const cs = s.cs || {};`
+    );
+    cfgHtml = cfgHtml.replace('      ghCards: ghCards,', '      ver: ver,\n      ghCards: ghCards,');
+    cfgHtml = cfgHtml.replace(
+      '.cfg-sec{',
+      `.cfg-ver{display:grid;grid-template-columns:minmax(180px,auto) 1fr;gap:16px 24px;padding:18px 20px;border:1px solid color-mix(in oklab,var(--flow) 40%,var(--line));border-radius:14px;background:var(--surface-0)}
+.cfg-ver-n{font-family:var(--font-mono,'IBM Plex Mono',monospace);font-size:28px;font-weight:600;letter-spacing:-.01em;margin-top:6px;color:var(--text-primary)}
+.cfg-ver-sub{font-size:12.5px;color:var(--text-secondary);margin-top:6px;max-width:34ch;line-height:1.45}
+.cfg-ver-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px;margin:0;align-content:start}
+.cfg-ver-kv dt{font-size:11px;color:var(--text-secondary)}
+.cfg-ver-kv dd{margin:3px 0 0;font-size:12.5px;overflow-wrap:anywhere;line-height:1.45}
+.cfg-ver-act{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--line)}
+.cfg-sec{`
+    );
+  }
+
   manifest[cfgUuid].data = zlib.gzipSync(Buffer.from(cfgHtml, 'utf8')).toString('base64');
   console.log('Configurações (Módulos + Motores SDK local + Antigravity) atualizadas!');
 }
@@ -2085,6 +2144,41 @@ const newMotorDone = `if (id === 'motor') {
 if (templateHtml.includes(origMotorDone)) {
   templateHtml = templateHtml.replace(origMotorDone, newMotorDone);
   console.log('submitForm do motor conectado ao cofre (engines:saveKey)!');
+}
+
+// Rodapé: a linha "office.py · SQLite" era do backend antigo. Passa a mostrar a versão do build
+// (dist/build-info.json via tavir.app.buildInfo); o título traz commit, branch e data.
+const oldHealth = '<div class="health" style="margin-top: 4px"><i class="live-dot"></i>office.py · SQLite</div>';
+if (templateHtml.includes(oldHealth)) {
+  templateHtml = templateHtml.replace(
+    oldHealth,
+    '<div class="health" data-tv-build="" style="margin-top: 4px" title="Versão do Escritório"><i class="live-dot"></i><span data-tv-build-label="">TAVIR Escritório</span></div>'
+  );
+  const buildScript = `<script>
+(function () {
+  var info = null, queued = false;
+  function apply() {
+    queued = false;
+    if (!info) return;
+    var tip = 'TAVIR Escritório v' + info.version + (info.commit ? ' · commit ' + info.commit : '') + (info.branch ? ' · ' + info.branch : '') +
+      (info.builtAt ? ' · build ' + new Date(info.builtAt).toLocaleString('pt-BR') : '') + (info.dirty ? ' · com alterações locais' : '') + ' · detalhes em Configurações › Sistema';
+    document.querySelectorAll('[data-tv-build-label]').forEach(function (el) { if (el.textContent !== info.label) el.textContent = info.label; });
+    document.querySelectorAll('[data-tv-build]').forEach(function (el) { if (el.title !== tip) el.title = tip; });
+  }
+  function schedule() { if (!queued) { queued = true; requestAnimationFrame(apply); } }
+  function load(tries) {
+    var tv = window.tavir;
+    if (!tv || !tv.app || !tv.app.buildInfo) { if (tries < 40) setTimeout(function () { load(tries + 1); }, 250); return; }
+    tv.app.buildInfo().then(function (i) {
+      info = i; schedule();
+      new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
+    }).catch(function () {});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { load(0); }); else load(0);
+})();
+</script>`;
+  templateHtml = templateHtml.replace(/<\/body>(?![\s\S]*<\/body>)/, buildScript + '\n</body>');
+  console.log('Rodapé com a versão do build!');
 }
 
 // ==========================================
