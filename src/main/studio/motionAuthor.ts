@@ -117,9 +117,16 @@ export function registerKitInRoot(rootFile: string, kitId: string, preset: strin
   fs.writeFileSync(rootFile, next);
 }
 
+function ensureMotionGitignore(dir: string): void {
+  const file = path.join(dir, '.gitignore');
+  if (fs.existsSync(file)) return;
+  fs.writeFileSync(file, 'node_modules\nout\n');
+}
+
 async function commitMotion(dir: string, message: string): Promise<void> {
   const git = (args: string[]) => run('git', ['-c', 'user.name=TAVIR Studio', '-c', 'user.email=studio@tavir.local', ...args], dir);
   if (!fs.existsSync(path.join(dir, '.git'))) await run('git', ['init'], dir);
+  ensureMotionGitignore(dir);
   await git(['add', '-A']);
   const commit = await git(['commit', '-m', message]);
   if (commit.code !== 0 && !/nothing to commit/i.test(commit.output)) {

@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
@@ -71,10 +72,13 @@ describe('job de motion', () => {
     expect(job.status).toBe('aguardando_gate');
     expect(fs.readFileSync(path.join(job.workspace, 'src', 'Root.tsx'), 'utf8')).toContain('id="titulo-entrada"');
     expect(fs.readFileSync(path.join(source, 'src', 'Root.tsx'), 'utf8')).not.toContain('id="titulo-entrada"');
+    fs.writeFileSync(path.join(source, 'node_modules', 'skip.txt'), 'não versionar');
     const approved = await decideMotionGate(job.id, 'aprovado', '', home, store, source);
     expect(approved.status).toBe('aprovado');
     expect(fs.existsSync(path.join(source, 'src', 'kits', job.kit_id, 'TituloEntrada.tsx'))).toBe(true);
     expect(fs.readFileSync(path.join(source, 'src', 'Root.tsx'), 'utf8')).toContain('id="titulo-entrada"');
+    const tracked = execFileSync('git', ['ls-files'], { cwd: source, encoding: 'utf8' });
+    expect(tracked).not.toContain('node_modules');
     const kit = store.getMotionKit(job.kit_id);
     expect(kit?.status).toBe('aprovado');
     expect(kit?.presets['titulo-entrada']?.approvedAt).toBeTruthy();

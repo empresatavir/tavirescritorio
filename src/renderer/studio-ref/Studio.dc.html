@@ -507,7 +507,7 @@ class Component extends DCLogic {
       profiles: (s.perfis || []).map(function (p) {
         var r = p.redes && p.redes[0];
         var n = (s.pecas || []).filter(function (x) { return x.perfil_id === p.id && GATES[x.etapa]; }).length;
-        return { name: p.nome, ini: p.iniciais, net: r ? r.rede : '—', size: r && r.handle ? r.handle : '—', ck: n ? n + ' gate' : '', hasCk: n > 0, bd: p.id === s.perfilId ? 'var(--flow)' : 'var(--line)', bg: 'var(--surface-2)', avbg: p.cor_avatar || '#1BC5BD', avfg: '#0B1220', pick: function () { self.setState({ perfilId: p.id, pecaId: '', view: null, pautaDraft: null }); } };
+        return { name: p.nome, ini: p.iniciais, net: r ? r.rede : '—', size: r && r.handle ? r.handle : '—', ck: n ? n + ' gate' : '', hasCk: n > 0, bd: p.id === s.perfilId ? 'var(--flow)' : 'var(--line)', bg: 'var(--surface-2)', avbg: p.cor_avatar || '#1BC5BD', avfg: '#0B1220', pick: function () { self.setState({ perfilId: p.id, pecaId: '', view: null, pautaDraft: null, error: '', motionJob: null, motionStill: '' }); var api = studioApi(); if (api && api.motion && api.motion.latest) api.motion.latest(p.id).then(function (view) { if (self.state.perfilId !== p.id) return; self.setState({ motionJob: view && view.job ? view.job : null, motionStill: view && view.still ? view.still : '' }); }).catch(function () {}); } };
       }),
       kpis: [
         { k: 'Peças no mês', v: String(mine.filter(function (p) { return (p.criado_em || '').slice(0, 7) === month; }).length) },

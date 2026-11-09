@@ -41,6 +41,8 @@ function run(command: string, args: string[], cwd: string): Promise<{ code: numb
 async function initialCommit(dir: string): Promise<string> {
   const git = async (args: string[]) => run('git', ['-c', 'user.name=TAVIR Studio', '-c', 'user.email=studio@tavir.local', ...args], dir);
   await run('git', ['init'], dir);
+  const ignore = path.join(dir, '.gitignore');
+  if (!fs.existsSync(ignore)) fs.writeFileSync(ignore, 'node_modules\nout\n');
   await git(['add', '-A']);
   const commit = await git(['commit', '-m', 'base de motion']);
   return commit.output;
