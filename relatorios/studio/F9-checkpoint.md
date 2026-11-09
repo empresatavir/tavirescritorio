@@ -12,7 +12,11 @@ Não rodei `npm test` inteiro. Três testes de `tests/backend.spec.ts` já falha
 
 `npm run build` em 9 de novembro de 2026 saiu com código 0. O HTML empacotado ficou em 691,9 KB, com Studio, Social, Flow e Edição injetados. O build avisou alterações locais, que já existiam fora do Studio.
 
-`npm run test:studio:render`, `npm run test:studio:reel` e `npm run test:motores:motion` não foram repetidos neste passo. As provas anteriores continuam em `relatorios/studio/F2`, `F7` e `relatorios/motores/motion-2026-11-09T07-25-20.md`.
+`npm run test:studio:render` em 9 de novembro de 2026 saiu com código 0. O still ficou 1080×1350 e o clipe de prova 1080×1920, 30 fps, 3,00 s.
+
+`npm run test:studio:reel` saiu com código 0. Narração das duas cenas, MP4 1080×1920, 30 fps, 2,00 s, pacote −14,0 LUFS, pico −2,6 dBTP, gancho com diferença 48,71.
+
+`npm run test:motores:motion` não foi repetido. A prova anterior continua em `relatorios/motores/motion-2026-11-09T07-25-20.md`.
 
 ## D1
 
@@ -28,4 +32,4 @@ A página [License FAQ](https://www.remotion.dev/docs/license/faq) diz que a lic
 | Prévia igual ao arquivo | ✅ o telefone do carrossel mostra o still 1080×1350 (`08-previa.png`). O telefone do reel carrega o MP4 1080×1920 (`11-reel-previa.png`). A comparação com o celular ficou nos valores iniciais. |
 | Preset novo aprovado na tela | ✅ um kit, no perfil de conformidade, não nos três perfis reais |
 | Reel na agenda do DarkFlow | ✅ clique em «Aprovar publicação» na peça «A porta do arquivo» (`15-publicado.png`). Agenda `eea09b49-a0fd-4829-919a-dee2debe5857`, 2 dez 2026 às 10:00, status `agendado`, `editorial_attested` true. A sessão segue em simulação, sem publicação real. As métricas na tela ficam «—». |
-| Roteiro longo no Docuflow | ✅ projeto `o-arquivo-de-1974-1794222367` parado em `research`; a tela do Studio web não lista esse projeto |
+| Roteiro longo no Docuflow | ✅ projeto `o-arquivo-de-1974-1794222367` parado em `research`. O botão da peça agora também pede `stop=research` e não foi clicado de novo. A tela do Studio web não lista esse projeto. |
