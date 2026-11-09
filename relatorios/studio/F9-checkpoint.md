@@ -20,6 +20,8 @@ Não rodei `npm test` inteiro. Três testes de `tests/backend.spec.ts` já falha
 
 Em Configurações › Sistema, a seção Sistemas ligados mostra DarkFlow e Docuflow, os dois «no ar» (`17-sistemas.png`). Os botões iniciar e parar não foram usados.
 
+O Social mostra o scorecard do DarkFlow como «—» (`19-social.png`). Seguidores, tendência, engajamento e melhor horário também ficam «—».
+
 ## D1
 
 A página [License FAQ](https://www.remotion.dev/docs/license/faq) diz que a licença gratuita vale para uma pessoa, para uma organização de até 3 pessoas e para certas entidades sem fins lucrativos. Fora isso, a Company License é paga. Não decidi em qual caso a TAVIR entra. Sem essa resposta, o GOAL não fecha.
