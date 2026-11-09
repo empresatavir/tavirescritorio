@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { formatById, type RoteiroSlide } from '../../shared/studio';
 import { ensureStudioTree } from './paths';
-import { compilePrompt } from './promptCompiler';
+import { compilePrompt, flowAspect } from './promptCompiler';
 import { slotCode } from './rules';
 import { slidesFromRoteiro } from './slides';
 import type { StudioStore } from './store';
@@ -90,7 +90,8 @@ export function exportShotList(pecaId: string, store: StudioStore, home?: string
     const latest = store.listPrompts(slot.id).slice().sort((a, b) => b.versao - a.versao)[0];
     if (!latest) continue;
     const ext = slot.tipo === 'video' ? 'mp4' : 'png';
-    blocks.push(`## ${slot.codigo}`, '', `- proporção: ${aspect}`, `- arquivo: ${slot.codigo}.${ext}`, '', latest.texto, '');
+    const asked = flowAspect(aspect);
+    blocks.push(`## ${slot.codigo}`, '', `- proporção no Flow: ${asked}`, `- slide final: ${aspect}`, `- arquivo: ${slot.codigo}.${ext}`, '', latest.texto, '');
   }
   if (blocks.length <= 2) return { ok: false, error: 'não há prompt para exportar' };
   const dir = ensureStudioTree(home).pecaDirs(pecaId).root;

@@ -53,6 +53,30 @@ const COLOR_WORDS: Record<string, string> = {
 
 const TEXT_REQUEST = /\b(with the words|text saying|letters saying|caption that reads|write the|add text|include text|watermark|logo of|com o texto|escreva|letras dizendo)\b/i;
 const NO_TEXT = 'no text, no letters, no watermark, no logos';
+const FLOW_RATIOS = [
+  { label: '9:16', value: 9 / 16 },
+  { label: '3:4', value: 3 / 4 },
+  { label: '1:1', value: 1 },
+  { label: '4:3', value: 4 / 3 },
+  { label: '16:9', value: 16 / 9 },
+];
+
+/** O Google Flow não gera 4:5. O prompt pede a opção mais próxima; o slide final continua na proporção da peça. */
+export function flowAspect(aspect: string): string {
+  const [width, height] = aspect.split(':').map(Number);
+  if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return aspect;
+  const value = width / height;
+  let best = FLOW_RATIOS[0];
+  let gap = Number.POSITIVE_INFINITY;
+  for (const item of FLOW_RATIOS) {
+    const next = Math.abs(Math.log(value / item.value));
+    if (next < gap) {
+      gap = next;
+      best = item;
+    }
+  }
+  return best.label;
+}
 
 function colorWord(hex: string): string {
   return COLOR_WORDS[hex.toUpperCase()] || COLOR_WORDS[hex] || `the color ${hex}`;
@@ -98,6 +122,7 @@ export function compilePrompt(input: CompileInput): CompiledPrompt {
     ? (VIDEO_CAMERAS.find((item) => item === input.camera) || 'slow dolly in')
     : (input.camera?.trim() || '50mm lens, moderate depth of field');
   const negatives = (input.brand.negatives || []).map((item) => item.trim()).filter(Boolean);
+  const asked = flowAspect(input.aspect);
   const camadas: PromptLayers = {
     subject,
     action,
@@ -107,7 +132,7 @@ export function compilePrompt(input: CompileInput): CompiledPrompt {
     light: input.light?.trim() || 'Soft side light, daytime',
     style: input.brand.imageStyle?.trim() || 'Photographic, consistent with the brand',
     palette: `Palette of ${colorWord(input.brand.palette.ink)}, ${colorWord(input.brand.palette.text)}, ${colorWord(input.brand.palette.accent)} and ${colorWord(input.brand.palette.accent2)}`,
-    format: video ? `${input.aspect} frame, 8 seconds` : `${input.aspect} frame`,
+    format: video ? `${asked} frame, 8 seconds` : `${asked} frame`,
     sound: video ? 'Ambient room tone, no dialogue, no music' : '',
     restrictions: [NO_TEXT, ...negatives].join('. '),
   };
@@ -116,7 +141,9 @@ export function compilePrompt(input: CompileInput): CompiledPrompt {
   const resumo = [
     character ? `Personagem ${character.name}, com a descrição da bíblia copiada sem mudar.` : 'Sem personagem fixo.',
     video ? 'Vídeo: gerar a imagem primeiro, aprovar, depois animar a partir dela (quadro inicial). Usar só 2–4 s do resultado na edição.' : 'Imagem estática para o slot.',
-    `Proporção ${input.aspect}.`,
+    asked === input.aspect
+      ? `Proporção ${input.aspect}.`
+      : `Proporção final ${input.aspect}. O Flow não gera essa medida; pedir ${asked}. O slide corta para ${input.aspect}.`,
   ].join(' ');
   return { texto, resumo, camadas, avisos: check.avisos };
 }

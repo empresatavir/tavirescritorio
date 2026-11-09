@@ -49,7 +49,9 @@ describe('prompts do Flow', () => {
     expect(video.texto).toContain('slow dolly in');
     expect(video.texto).toContain('8 seconds');
     expect(video.texto).toContain('no dialogue, no music');
-    expect(video.resumo).toContain('gerar a imagem primeiro');
+    expect(withCharacter.camadas.format).toBe('3:4 frame');
+    expect(withCharacter.resumo).toContain('pedir 3:4');
+    expect(video.camadas.format).toContain('9:16 frame');
     expect(withCharacter.camadas.restrictions).toContain('no text, no letters, no watermark, no logos');
     expect(withCharacter.camadas.restrictions).toContain('no modern cars');
   });
