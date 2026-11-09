@@ -794,10 +794,10 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     cfgHtml = cfgHtml.replace("['motores', 'Motores de IA', 4], ", "['motores', 'Motores de IA', 4], ['contas', 'Contas e cofre'], ");
     const cardTpl = (list) => `<sc-for list="{{${list}}}" as="c" hint-placeholder-count="2">
             <article class="cfg-card {{c.cls}}">
-              <header class="cfg-card-h"><span class="cfg-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.ico}}"></path></svg></span><b class="grow">{{c.title}}</b><span class="cfg-dot {{c.cls}}" role="img" aria-label="{{c.badge}}" title="{{c.badge}}"></span></header>
+              <header class="cfg-card-h"><span class="cfg-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.ico}}"></path></svg></span><b class="grow">{{c.title}}</b><details class="cfg-help"><summary class="cfg-ibtn" title="Como gerar o token" aria-label="Como gerar o token de {{c.title}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 16v-4M12 8h.01"></path></svg></summary><div class="cfg-pop" role="dialog" aria-label="Como gerar o token de {{c.title}}"><b>Como gerar o token</b><ol><sc-for list="{{c.steps}}" as="st" hint-placeholder-count="4"><li>{{st.t}}</li></sc-for></ol><button class="btn sm secondary" onClick="{{c.openToken}}">{{c.openLbl}} ↗</button></div></details><button class="cfg-ibtn" onClick="{{c.openToken}}" title="{{c.openLbl}}" aria-label="{{c.openLbl}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></button><span class="cfg-dot {{c.cls}}" role="img" aria-label="{{c.badge}}" title="{{c.badge}}"></span></header>
               <div class="cfg-card-sub">{{c.sub}}</div>
               <sc-if value="{{c.connected}}" hint-placeholder-val="{{false}}">
-                <div class="cfg-card-who"><b>{{c.who}}</b><sc-if value="{{c.isDef}}" hint-placeholder-val="{{false}}"><span class="badge action">padrão</span></sc-if><sc-if value="{{c.noPush}}" hint-placeholder-val="{{false}}"><span class="badge warn">sem escopo repo</span></sc-if></div>
+                <div class="cfg-card-who"><b>{{c.who}}</b><sc-if value="{{c.isDef}}" hint-placeholder-val="{{false}}"><span class="badge action">padrão</span></sc-if><sc-if value="{{c.canDef}}" hint-placeholder-val="{{false}}"><button class="cfg-link" onClick="{{c.setDef}}">tornar padrão</button></sc-if><sc-if value="{{c.noPush}}" hint-placeholder-val="{{false}}"><span class="badge warn">sem escopo repo</span></sc-if></div>
                 <dl class="cfg-kv"><sc-for list="{{c.kv}}" as="k" hint-placeholder-count="3"><dt>{{k.k}}</dt><dd class="mono">{{k.v}}</dd></sc-for></dl>
               </sc-if>
               <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}">
@@ -805,8 +805,8 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
               </sc-if>
               <sc-if value="{{c.hasMsg}}" hint-placeholder-val="{{false}}"><div class="cfg-card-msg" style="color: {{c.msgColor}}">{{c.msg}}</div></sc-if>
               <footer class="cfg-card-f">
-                <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}"><button class="btn sm ghost" onClick="{{c.openToken}}">Gerar token</button><div class="grow"></div><sc-if value="{{c.editing}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{c.cancel}}">Cancelar</button></sc-if><button class="btn sm primary" onClick="{{c.save}}" disabled="{{c.busy}}">{{c.saveLbl}}</button></sc-if>
-                <sc-if value="{{c.showActions}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{c.test}}" disabled="{{c.busy}}">{{c.testLbl}}</button><button class="btn sm secondary" onClick="{{c.edit}}">Trocar token</button><sc-if value="{{c.canDef}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{c.setDef}}">Tornar padrão</button></sc-if><div class="grow"></div><button class="btn sm ghost" onClick="{{c.remove}}">Remover</button></sc-if>
+                <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}"><div class="grow"></div><sc-if value="{{c.editing}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{c.cancel}}">Cancelar</button></sc-if><button class="btn sm primary" onClick="{{c.save}}" disabled="{{c.busy}}">{{c.saveLbl}}</button></sc-if>
+                <sc-if value="{{c.showActions}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{c.test}}" disabled="{{c.busy}}">{{c.testLbl}}</button><button class="btn sm secondary" onClick="{{c.edit}}">Trocar token</button><div class="grow"></div><button class="btn sm ghost" onClick="{{c.remove}}">Remover</button></sc-if>
               </footer>
             </article>
           </sc-for>`;
@@ -832,6 +832,12 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
         self._accLoading = false;
         self.setState({ accLoaded: true, accList: (r[0] && r[0].accounts) || [], credList: (r[1] && r[1].credentials) || [] });
       }).catch(function() { self._accLoading = false; self.setState({ accLoaded: true }); });
+    }
+    if (typeof document !== 'undefined' && !window.__cfgHelpOn) {
+      window.__cfgHelpOn = true;
+      const closeAll = function(except) { document.querySelectorAll('details.cfg-help[open]').forEach(function(d) { if (d !== except) d.removeAttribute('open'); }); };
+      document.addEventListener('click', function(e) { const own = e.target && e.target.closest ? e.target.closest('details.cfg-help') : null; closeAll(own); });
+      document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAll(null); });
     }
     const cs = s.cs || {};
     const setCard = function(key, patch) { const m = Object.assign({}, self.state.cs || {}); m[key] = Object.assign({}, m[key] || {}, patch); self.setState({ cs: m }); };
@@ -866,21 +872,31 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
         msgColor: st.err ? 'var(--danger, #e5484d)' : 'var(--text-secondary)',
         edit: function() { setCard(key, { edit: true, msg: '' }); },
         cancel: function() { setCard(key, { edit: false, token: '', msg: '' }); },
+        stepsOpen: !connected,
         badge: connected ? 'conectada' : 'sem token',
         badgeCls: connected ? 'flow' : '',
       }, extra);
     };
     const accList = s.accList || [];
     const GH_ICO = 'M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9a9 9 0 0 1-9 9';
-    const ghCards = [['TAVIR', 'TAVIR (empresa)', 'Projetos com perfil git da TAVIR'], ['Pessoal', 'Pessoal', 'Projetos com perfil git pessoal']].map(function(L) {
+    const ghSteps = function(quem) {
+      return [
+        'Entre no GitHub com ' + quem + '. Se outra conta estiver aberta, saia dela ou use uma janela anônima.',
+        'Clique em "Abrir GitHub": a página do token já vem com o nome e os escopos repo, workflow e read:org marcados.',
+        'Em Expiration, escolha 90 dias e clique em Generate token, no fim da página.',
+        'Copie o token (começa com ghp_). O GitHub mostra uma vez só.',
+        'Cole no campo abaixo e clique em Conectar. Se a organização usar SSO, autorize o token em Configure SSO.',
+      ].map(function(t) { return { t: t }; });
+    };
+    const ghCards = [['TAVIR', 'TAVIR (empresa)', 'Projetos com perfil git da TAVIR', 'a conta da TAVIR'], ['Pessoal', 'Pessoal', 'Projetos com perfil git pessoal', 'a sua conta pessoal']].map(function(L) {
       const key = 'gh-' + L[0];
       const a = accList.filter(function(x) { return x.label === L[0]; })[0] || null;
       return baseCard(key, !!a, {
-        title: L[1], sub: L[2], ico: GH_ICO, ph: 'ghp_… ou github_pat_…',
+        title: L[1], sub: L[2], ico: GH_ICO, ph: 'ghp_… ou github_pat_…', openLbl: 'Abrir GitHub', steps: ghSteps(L[3]),
         who: a ? (a.name && a.name !== a.login ? a.name + ' · @' + a.login : '@' + a.login) : '',
         isDef: !!(a && a.is_default), canDef: !!(a && !a.is_default), noPush: !!(a && !a.canPush),
         kv: a ? [
-          { k: 'Assina commits como', v: a.commitName + ' <' + a.commitEmail + '>' },
+          { k: 'Assina commits como', v: a.commitEmail ? a.commitName + ' <' + a.commitEmail + '>' : 'reabra esta tela ou clique em Testar para completar' },
           { k: 'Escopos', v: a.scopes && a.scopes.length ? a.scopes.join(', ') : 'token fine-grained' },
           { k: 'Token', v: a.preview + ' · conferido em ' + day(a.updated_at) },
         ] : [],
@@ -899,6 +915,26 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     });
     const PROV_ICO = { vercel: 'M12 4l9 16H3z', supabase: 'M13 3L4 14h8l-1 7 9-11h-8z', netlify: 'M12 2l10 10-10 10L2 12z' };
     const PROV_PH = { vercel: 'Token da Vercel', supabase: 'sbp_…', netlify: 'Token pessoal da Netlify' };
+    const PROV_STEPS = {
+      vercel: [
+        'Clique em "Abrir Vercel" e entre na conta.',
+        'Em Create Token, dê o nome TAVIR Escritório e escolha o escopo: sua conta ou o time da TAVIR.',
+        'Escolha a validade (90 dias, por exemplo) e clique em Create.',
+        'Copie o token, cole no campo abaixo e clique em Conectar.',
+      ],
+      supabase: [
+        'Clique em "Abrir Supabase" e entre na conta.',
+        'Clique em Generate new token e dê o nome TAVIR Escritório.',
+        'Copie o token (começa com sbp_). Ele aparece uma vez só.',
+        'Cole no campo abaixo e clique em Conectar.',
+      ],
+      netlify: [
+        'Clique em "Abrir Netlify" e entre na conta.',
+        'Em Personal access tokens, clique em New access token e dê o nome TAVIR Escritório.',
+        'Escolha a validade e clique em Generate token.',
+        'Copie o token, cole no campo abaixo e clique em Conectar.',
+      ],
+    };
     const credList = s.credList && s.credList.length ? s.credList : [
       { provider: 'vercel', name: 'Vercel', hint: 'Deploy de LPs, ofertas e apps web.', connected: false },
       { provider: 'supabase', name: 'Supabase', hint: 'Banco, autenticação e funções dos projetos.', connected: false },
@@ -908,6 +944,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
       const key = 'cr-' + c.provider;
       return baseCard(key, !!c.connected, {
         title: c.name, sub: c.hint, ico: PROV_ICO[c.provider] || PROV_ICO.vercel, ph: PROV_PH[c.provider] || 'Token',
+        openLbl: 'Abrir ' + c.name, steps: (PROV_STEPS[c.provider] || []).map(function(t) { return { t: t }; }),
         who: c.connected ? (c.account && c.account !== c.login ? c.account + ' · ' + c.login : c.login) : '',
         isDef: false, canDef: false, noPush: false,
         kv: c.connected ? [{ k: 'Conta', v: c.detail || '—' }, { k: 'Token', v: c.preview + ' · conferido em ' + day(c.updated_at) }] : [],
@@ -980,6 +1017,20 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
 .cfg-card .input{height:38px}
 .cfg-card-msg{font-size:12px;line-height:1.4}
 .cfg-card-f{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:auto}
+.cfg-card{position:relative}
+.cfg-card-h{gap:4px}
+.cfg-card-h .cfg-card-ico{margin-right:6px}
+.cfg-card-h .cfg-dot{margin-left:4px}
+.cfg-ibtn{flex:none;width:26px;height:26px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--text-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;list-style:none;transition:background .15s,color .15s,border-color .15s}
+.cfg-ibtn::-webkit-details-marker{display:none}
+.cfg-ibtn:hover,.cfg-help[open] .cfg-ibtn{background:var(--surface-2,rgba(127,127,127,.12));color:var(--text-primary);border-color:var(--line)}
+.cfg-ibtn:focus-visible{outline:2px solid var(--flow);outline-offset:2px}
+.cfg-help{position:static}
+.cfg-pop{position:absolute;z-index:20;left:12px;right:12px;top:58px;padding:14px 16px;border-radius:12px;border:1px solid var(--line-strong,var(--line));background:var(--surface-1,var(--surface-0));box-shadow:0 12px 32px rgba(0,0,0,.28);font-size:12.5px;animation:fade 150ms var(--ease) both}
+.cfg-pop::before{content:'';position:absolute;top:-6px;right:60px;width:10px;height:10px;transform:rotate(45deg);background:inherit;border-left:1px solid var(--line-strong,var(--line));border-top:1px solid var(--line-strong,var(--line))}
+.cfg-pop b{display:block;font-size:13px;margin-bottom:8px}
+.cfg-pop ol{margin:0 0 12px;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--text-secondary);line-height:1.45}
+.cfg-link{border:0;background:transparent;padding:0 2px;font:inherit;font-size:12px;color:var(--flow);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 @media (max-width:1100px){.cfg-cards.two{grid-template-columns:1fr}}
 @media (max-width:980px){.cfg-wrap{grid-template-columns:1fr}.cfg-nav{position:static;flex-direction:row;flex-wrap:wrap}.cfg-grp{display:none}.cfg-tab{width:auto}}
 </style>`;
@@ -1027,6 +1078,65 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     cfgHtml = cfgHtml.replace(
       /tabs: TABS\.map\(\(t\) => \(\{[^\n]*\}\)\),/,
       "tabs: TABS.map((t, i) => { const n = t[0] === 'contas' ? ((s.accList || []).length + (s.credList || []).filter(function (c) { return c.connected; }).length) : (t[2] || 0); return { label: t[1], hasN: !!n, n: n || '', grp: t[3], hasGrp: i === 0 || TABS[i - 1][3] !== t[3], ico: t[4], on: s.tab === t[0] ? 'on' : '', cur: s.tab === t[0] ? 'page' : 'false', pick: () => self.setState({ tab: t[0] }) }; }),"
+    );
+  }
+
+  // Versão em uso no topo de Sistema: versão, commit, branch e data do build (dist/build-info.json).
+  if (!cfgHtml.includes('class="cfg-ver"')) {
+    const verCard = `<div class="cfg-ver">
+          <div class="cfg-ver-main"><div class="eyebrow">Versão em uso</div><div class="cfg-ver-n">{{ver.version}}</div><div class="cfg-ver-sub">{{ver.sub}}</div></div>
+          <dl class="cfg-ver-kv"><sc-for list="{{ver.kv}}" as="k" hint-placeholder-count="4"><div><dt>{{k.k}}</dt><dd class="mono">{{k.v}}</dd></div></sc-for></dl>
+          <div class="cfg-ver-act"><sc-if value="{{ver.dirty}}" hint-placeholder-val="{{false}}"><span class="badge warn" title="{{ver.dirtyTip}}">alterações locais</span></sc-if><sc-if value="{{ver.released}}" hint-placeholder-val="{{false}}"><span class="badge flow">versão publicada</span></sc-if><div class="grow"></div><button class="btn sm secondary" onClick="{{ver.copy}}">{{ver.copyLbl}}</button></div>
+        </div>
+        `;
+    cfgHtml = cfgHtml.replace(
+      'Portas oficiais, caminhos e serviços do escritório.</p></div></div>\n        ',
+      'Versão em uso, portas, caminhos e serviços do escritório.</p></div></div>\n        ' + verCard
+    );
+    cfgHtml = cfgHtml.replace(
+      '    const cs = s.cs || {};',
+      `    const tvVer = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+    if (tvVer && tvVer.app && tvVer.app.buildInfo && !s.build && !self._buildLoading) {
+      self._buildLoading = true;
+      tvVer.app.buildInfo().then(function(b) { self.setState({ build: b || null }); }).catch(function() {});
+    }
+    const b = s.build || null;
+    const when = function(iso) { const t = String(iso || ''); return t ? new Date(t).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—'; };
+    const verText = b ? ['TAVIR Escritório v' + b.version, 'commit ' + (b.commitFull || b.commit || '—'), 'branch ' + (b.branch || '—'), 'build ' + (b.builtAt || '—'), b.tag ? 'tag ' + b.tag : 'sem tag', b.dirty ? 'alterações locais: ' + b.dirtyFiles.join(', ') : 'sem alterações locais'].join('\\n') : '';
+    const ver = b ? {
+      version: 'v' + b.version,
+      sub: !b.known ? 'Build sem ficha de versão. Rode npm run build para gravar o commit e a data.' : b.tag ? 'Build da versão publicada ' + b.tag + '.' : b.lastTag ? b.commitsSinceTag + ' commit(s) depois de ' + b.lastTag + ', ainda sem versão nova.' : 'Nenhuma versão publicada ainda. A primeira sai com npm run release.',
+      kv: [
+        { k: 'Commit', v: b.commit ? b.commit + ' · ' + b.commitSubject : '—' },
+        { k: 'Branch', v: b.branch || '—' },
+        { k: 'Build', v: when(b.builtAt) },
+        { k: 'Commit feito em', v: when(b.commitDate) },
+      ],
+      dirty: !!b.dirty,
+      dirtyTip: b.dirty ? 'Build feito com arquivos sem commit: ' + b.dirtyFiles.join(', ') : '',
+      released: !!b.tag,
+      copyLbl: s.verCopied ? 'Copiado' : 'Copiar dados da versão',
+      copy: function() {
+        const done = function() { self.setState({ verCopied: true }); setTimeout(function() { self.setState({ verCopied: false }); }, 1800); };
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(verText).then(done).catch(function() {}); return; }
+        } catch (e) {}
+        try { const ta = document.createElement('textarea'); ta.value = verText; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done(); } catch (e) {}
+      },
+    } : { version: '…', sub: 'Lendo a ficha do build…', kv: [], dirty: false, dirtyTip: '', released: false, copyLbl: 'Copiar dados da versão', copy: function() {} };
+    const cs = s.cs || {};`
+    );
+    cfgHtml = cfgHtml.replace('      ghCards: ghCards,', '      ver: ver,\n      ghCards: ghCards,');
+    cfgHtml = cfgHtml.replace(
+      '.cfg-sec{',
+      `.cfg-ver{display:grid;grid-template-columns:minmax(180px,auto) 1fr;gap:16px 24px;padding:18px 20px;border:1px solid color-mix(in oklab,var(--flow) 40%,var(--line));border-radius:14px;background:var(--surface-0)}
+.cfg-ver-n{font-family:var(--font-mono,'IBM Plex Mono',monospace);font-size:28px;font-weight:600;letter-spacing:-.01em;margin-top:6px;color:var(--text-primary)}
+.cfg-ver-sub{font-size:12.5px;color:var(--text-secondary);margin-top:6px;max-width:34ch;line-height:1.45}
+.cfg-ver-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 18px;margin:0;align-content:start}
+.cfg-ver-kv dt{font-size:11px;color:var(--text-secondary)}
+.cfg-ver-kv dd{margin:3px 0 0;font-size:12.5px;overflow-wrap:anywhere;line-height:1.45}
+.cfg-ver-act{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--line)}
+.cfg-sec{`
     );
   }
 
@@ -2034,6 +2144,41 @@ const newMotorDone = `if (id === 'motor') {
 if (templateHtml.includes(origMotorDone)) {
   templateHtml = templateHtml.replace(origMotorDone, newMotorDone);
   console.log('submitForm do motor conectado ao cofre (engines:saveKey)!');
+}
+
+// Rodapé: a linha "office.py · SQLite" era do backend antigo. Passa a mostrar a versão do build
+// (dist/build-info.json via tavir.app.buildInfo); o título traz commit, branch e data.
+const oldHealth = '<div class="health" style="margin-top: 4px"><i class="live-dot"></i>office.py · SQLite</div>';
+if (templateHtml.includes(oldHealth)) {
+  templateHtml = templateHtml.replace(
+    oldHealth,
+    '<div class="health" data-tv-build="" style="margin-top: 4px" title="Versão do Escritório"><i class="live-dot"></i><span data-tv-build-label="">TAVIR Escritório</span></div>'
+  );
+  const buildScript = `<script>
+(function () {
+  var info = null, queued = false;
+  function apply() {
+    queued = false;
+    if (!info) return;
+    var tip = 'TAVIR Escritório v' + info.version + (info.commit ? ' · commit ' + info.commit : '') + (info.branch ? ' · ' + info.branch : '') +
+      (info.builtAt ? ' · build ' + new Date(info.builtAt).toLocaleString('pt-BR') : '') + (info.dirty ? ' · com alterações locais' : '') + ' · detalhes em Configurações › Sistema';
+    document.querySelectorAll('[data-tv-build-label]').forEach(function (el) { if (el.textContent !== info.label) el.textContent = info.label; });
+    document.querySelectorAll('[data-tv-build]').forEach(function (el) { if (el.title !== tip) el.title = tip; });
+  }
+  function schedule() { if (!queued) { queued = true; requestAnimationFrame(apply); } }
+  function load(tries) {
+    var tv = window.tavir;
+    if (!tv || !tv.app || !tv.app.buildInfo) { if (tries < 40) setTimeout(function () { load(tries + 1); }, 250); return; }
+    tv.app.buildInfo().then(function (i) {
+      info = i; schedule();
+      new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
+    }).catch(function () {});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { load(0); }); else load(0);
+})();
+</script>`;
+  templateHtml = templateHtml.replace(/<\/body>(?![\s\S]*<\/body>)/, buildScript + '\n</body>');
+  console.log('Rodapé com a versão do build!');
 }
 
 // ==========================================

@@ -14,7 +14,7 @@ import { maskToken } from './gitAccounts';
 export type CredentialProvider = 'vercel' | 'supabase' | 'netlify';
 
 export const CREDENTIAL_PROVIDERS: Record<CredentialProvider, { name: string; tokenUrl: string; hint: string }> = {
-  vercel: { name: 'Vercel', tokenUrl: 'https://vercel.com/account/tokens', hint: 'Deploy de LPs, ofertas e apps web.' },
+  vercel: { name: 'Vercel', tokenUrl: 'https://vercel.com/account/settings/tokens', hint: 'Deploy de LPs, ofertas e apps web.' },
   supabase: { name: 'Supabase', tokenUrl: 'https://supabase.com/dashboard/account/tokens', hint: 'Banco, autenticação e funções dos projetos.' },
   netlify: { name: 'Netlify', tokenUrl: 'https://app.netlify.com/user/applications#personal-access-tokens', hint: 'Deploy de sites estáticos.' },
 };

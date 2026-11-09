@@ -9,6 +9,7 @@ Este arquivo é lido automaticamente pelo Claude (Claude Code, Claude Desktop, e
 - **Testes Backend:** `cd backend && python -m pytest tests/ -v` (8/8 testes)
 - **Compilação Frontend:** `cd frontend && npm run build` (0 erros)
 - **Limpeza de SVGs:** `python scripts/clean_svgs.py`
+- **Versão:** `npm run release -- patch|minor|major` numa branch (sobe `package.json` e `CHANGELOG.md`), PR, e depois do merge `npm run release:tag` na master. O build grava `dist/build-info.json`, que o app mostra no rodapé e em Configurações › Sistema. Detalhes em `docs/modules/versionamento.md`.
 
 ## Conhecimento Operacional e Lições Aprendidas
 
