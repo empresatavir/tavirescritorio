@@ -702,6 +702,15 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
         }).catch(function() {});
       }
     }
+    if (tavir && tavir.studio && tavir.studio.sidecars) {
+      const loadSide = function() {
+        tavir.studio.sidecars.list().then(function(rows) {
+          self.setState({ sidecars: Array.isArray(rows) ? rows : [] });
+        }).catch(function() {});
+      };
+      self.loadSidecars = loadSide;
+      loadSide();
+    }
   }
   renderVals() {`
   );
@@ -1137,6 +1146,26 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
 .cfg-ver-kv dd{margin:3px 0 0;font-size:12.5px;overflow-wrap:anywhere;line-height:1.45}
 .cfg-ver-act{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--line)}
 .cfg-sec{`
+    );
+  }
+
+  const sistemaHead = '<div class="cfg-head"><div class="grow"><h2 class="cfg-h">Sistema</h2><p class="cfg-lead">Versão em uso, portas, caminhos e serviços do escritório.</p></div></div>';
+  if (cfgHtml.includes(sistemaHead) && !cfgHtml.includes('Sistemas ligados')) {
+    cfgHtml = cfgHtml.replace(
+      sistemaHead,
+      `${sistemaHead}
+        <div class="cfg-head"><div class="grow"><h2 class="cfg-h">Sistemas ligados</h2><p class="cfg-lead">DarkFlow e Docuflow sobem pelos scripts deles. O Escritório não publica.</p></div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <sc-for list="{{sidecars}}" as="side" hint-placeholder-count="2"><div class="card" style="padding: 14px; background: var(--surface-0); display: flex; gap: 12px; align-items: center"><div class="grow"><div style="font-weight: 600">{{side.nome}}</div><div class="mono" style="margin-top: 4px; font-size: 12px">{{side.pasta}}</div><div class="muted" style="margin-top: 4px; font-size: 12px">{{side.estado}}</div></div><button class="btn secondary" onClick="{{side.start}}">iniciar</button><button class="btn ghost" onClick="{{side.stop}}">parar</button></div></sc-for>
+        </div>`
+    );
+  }
+  const sysLine = "sys: [['API', '127.0.0.1:9001'], ['Frontend (Vite)', '127.0.0.1:9002'], ['Banco', '~/tavir/escritorio.db'], ['Workspaces', '~/tavir/workspaces/']].map((x) => ({ k: x[0], v: x[1] })),";
+  if (cfgHtml.includes(sysLine) && !cfgHtml.includes('sidecars:')) {
+    cfgHtml = cfgHtml.replace(
+      sysLine,
+      `${sysLine}
+      sidecars: (s.sidecars || []).map((side) => ({ nome: side.nome, pasta: side.pasta, estado: side.saudavel ? 'no ar' : (side.dono || 'parado'), start: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.start(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não subiu'); if (self.loadSidecars) self.loadSidecars(); }); }, stop: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.stop(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não parou'); if (self.loadSidecars) self.loadSidecars(); }); } })),`
     );
   }
 

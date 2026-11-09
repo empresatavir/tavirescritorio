@@ -46,3 +46,5 @@ O calendário do DarkFlow mostra `final.mp4`, «Reel de duas cenas», 01 de dez.
 
 Os dois repositórios externos continuam sujos como já estavam. Nenhum arquivo de código deles foi editado. A F8 não fecha por causa disso.
 
+A seção «Sistemas ligados» também está em Configurações, aba Sistema. O build gravou o bloco em `dist/renderer/index.html`. Ainda não cliquei nela no app empacotado.
+
