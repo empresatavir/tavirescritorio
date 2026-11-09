@@ -76,6 +76,7 @@ export async function startRender(pecaId: string, tipo: RenderTipo, frame = 0, e
   const child = spawn(process.execPath, [script, '--job', jobPath], {
     cwd: motionDir(),
     windowsHide: true,
+    env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
   });
   running.set(row.id, child);
   let buffer = '';
