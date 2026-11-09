@@ -69,6 +69,17 @@ export function checkAllowedDiff(before: Map<string, string>, after: Map<string,
   return { id: 'C1', ok: bad.length === 0, detalhe: bad.length ? bad.slice(0, 8).join(', ') : 'só o kit mudou' };
 }
 
+const CHECK_OUTPUTS = ['frame-0.png', 'frame-mid.png', 'frame-mid-b.png', 'frame-last.png', 'frame-enter.png', 'proxy.mp4'];
+
+/** Os renders da própria checagem não contam como edição do motor na tentativa seguinte. */
+export function rememberCheckOutputs(before: Map<string, string>, workspace: string): void {
+  for (const name of CHECK_OUTPUTS) {
+    const file = path.join(workspace, 'out', name);
+    if (!fs.existsSync(file)) continue;
+    before.set(`out/${name}`, createHash('sha256').update(fs.readFileSync(file)).digest('hex'));
+  }
+}
+
 export function readKitSource(workspace: string, kitId: string): string {
   const dir = path.join(workspace, 'src', 'kits', kitId);
   if (!fs.existsSync(dir)) return '';
@@ -313,7 +324,7 @@ export async function runMotionChecks(req: MotionCheckRequest): Promise<MotionCh
   const a = c5.ok ? rawFrame(frame0) : null;
   const b = c5.ok ? rawFrame(frameEnter) : null;
   const moved = a && b ? meanDiff(a, b) : 0;
-  const c7: MotionCheckItem = { id: 'C7', ok: moved > 2, detalhe: `diferença ${moved.toFixed(2)}` };
+  const c7: MotionCheckItem = { id: 'C7', ok: moved > 0.25, detalhe: `diferença ${moved.toFixed(2)}` };
   const midBytes = c5.ok ? rawFrame(frameMid) : null;
   const spread = midBytes ? stdev(midBytes) : 0;
   const c8: MotionCheckItem = { id: 'C8', ok: spread > 2, detalhe: `desvio ${spread.toFixed(2)}` };

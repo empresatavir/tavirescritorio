@@ -6,7 +6,7 @@ import { engineHub } from '../drivers/engineHub';
 import { runMotor, type MotorId } from '../motors';
 import { startRun } from '../runLedger';
 import { MOTION_PRESETS, MOTION_TOKEN_PADRAO, type MotionJob, type MotionPreset, type Perfil } from '../../shared/studio';
-import { componentName, runMotionChecks, snapshotTree, type MotionCheckDeps, type MotionCheckItem } from './motionChecks';
+import { componentName, rememberCheckOutputs, runMotionChecks, snapshotTree, type MotionCheckDeps, type MotionCheckItem } from './motionChecks';
 import { motionPrompt, writeMotionContext } from './motionContext';
 import { ensureMotionHome } from './motionHome';
 import { ensureStudioTree, studioHome } from './paths';
@@ -233,6 +233,7 @@ export async function startMotionJob(ask: MotionAsk): Promise<MotionJob> {
       deps: ask.deps,
     });
     const passed = checks.every((item) => item.ok) && !failed;
+    rememberCheckOutputs(before, workspace);
     job = store.saveMotionJob({
       ...job,
       status: passed ? 'aguardando_gate' : 'reprovado',
@@ -241,7 +242,7 @@ export async function startMotionJob(ask: MotionAsk): Promise<MotionJob> {
     });
     if (passed || attempt === retries) break;
     const report = checks.filter((item) => !item.ok).map((item) => `${item.id}: ${item.detalhe}`).join('\n');
-    prompt = `${motionPrompt(ask.preset, ask.pedido.trim())}\nTentar de novo com o erro:\n${failed}\n${report}\n`;
+    prompt = `${motionPrompt(ask.preset, ask.pedido.trim())}\nTentar de novo com o erro:\n${failed}\n${report}\nApague os arquivos citados fora da pasta do kit. Não grave preview em out/.\n`;
   }
   return job;
 }

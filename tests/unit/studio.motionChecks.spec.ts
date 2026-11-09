@@ -8,6 +8,7 @@ import {
   checkDeterminism,
   checkRegistration,
   snapshotTree,
+  rememberCheckOutputs,
 } from '../../src/main/studio/motionChecks';
 
 const dirs: string[] = [];
@@ -68,5 +69,13 @@ describe('checagens de motion', () => {
     const c1 = checkAllowedDiff(before, snapshotTree(dir), 'kit');
     expect(c1.ok).toBe(false);
     expect(c1.detalhe).toContain('package.json');
+    fs.mkdirSync(path.join(dir, 'out'), { recursive: true });
+    fs.writeFileSync(path.join(dir, 'out', 'proxy.mp4'), 'render da checagem');
+    fs.writeFileSync(path.join(dir, 'out', 'job-still.json'), 'preview do motor');
+    rememberCheckOutputs(before, dir);
+    const again = checkAllowedDiff(before, snapshotTree(dir), 'kit');
+    expect(again.ok).toBe(false);
+    expect(again.detalhe).toContain('out/job-still.json');
+    expect(again.detalhe).not.toContain('proxy.mp4');
   });
 });
