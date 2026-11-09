@@ -13,7 +13,7 @@
 <style>body{margin:0}</style>
 </helmet>
 <div class="tv" style="min-height: 100%">
-<div class="page" style="max-width: 1520px">
+<div class="page" data-tavir-page="Studio.dc.html" style="max-width: 1520px">
 
   <div class="phead">
     <div class="grow">
@@ -88,13 +88,13 @@
         <sc-if value="{{sv.s0}}" hint-placeholder-val="{{false}}">
           <section class="card pad" style="display: flex; flex-direction: column; gap: 14px; animation: slideup 260ms var(--ease) both">
             <div style="display: flex; align-items: center"><span class="eyebrow">Pauta · Oráculo Diretor</span><div class="grow"></div><span class="badge">rascunho</span></div>
-            <label class="field"><span>Tema</span><input class="input" value="{{pauta.tema}}" readonly></label>
-            <div class="g2" style="gap: 12px"><label class="field"><span>Fonte principal</span><input class="input" value="{{pauta.fonte}}" readonly></label><div class="field"><span>Objetivo do post</span><div class="segs"><sc-for list="{{goalsSeg}}" as="o" hint-placeholder-count="3"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div></div>
+            <label class="field"><span>Tema</span><input class="input" value="{{pauta.tema}}" onChange="{{onTema}}"></label>
+            <div class="g2" style="gap: 12px"><label class="field"><span>Fonte principal</span><input class="input" value="{{pauta.fonte}}" onChange="{{onFonte}}"></label><div class="field"><span>Objetivo do post</span><div class="segs"><sc-for list="{{goalsSeg}}" as="o" hint-placeholder-count="3"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div></div>
             <sc-if value="{{loadingAngles}}" hint-placeholder-val="{{false}}">
               <div class="g3" style="gap: 10px"><div class="shimmer" style="height: 96px; border-radius: 12px"></div><div class="shimmer" style="height: 96px; border-radius: 12px"></div><div class="shimmer" style="height: 96px; border-radius: 12px"></div></div>
               <p class="muted" style="font-size: 13px">O Oráculo está lendo o canon e os últimos 20 posts…</p>
             </sc-if>
-            <div class="actions"><button class="btn primary" onClick="{{askAngles}}" disabled="{{loadingAngles}}">Pedir ângulos ao Oráculo</button><span class="muted" style="font-size: 12px">Custo estimado US$ 0,08</span></div>
+            <div class="actions"><button class="btn primary" onClick="{{askAngles}}" disabled="{{loadingAngles}}">Pedir ângulos ao motor</button><button class="btn secondary" onClick="{{advance}}">Seguir para o ângulo</button><span class="muted" style="font-size: 12px">Custo {{custo}}</span></div>
           </section>
         </sc-if>
 
@@ -105,14 +105,21 @@
             <div class="g3" style="gap: 12px">
               <sc-for list="{{angles}}" as="a" hint-placeholder-count="3">
                 <button class="lift" onClick="{{a.pick}}" style="text-align: left; color: inherit; padding: 18px; border-radius: 14px; border: 1.5px solid {{a.bd}}; background: var(--surface-2); box-shadow: {{a.sh}}; display: flex; flex-direction: column; gap: 10px; width: 100%">
-                  <div style="display: flex; align-items: center; gap: 8px"><span class="eyebrow">Ângulo {{a.id}}</span><div class="grow"></div><sc-if value="{{a.best}}" hint-placeholder-val="{{false}}"><span class="badge flow">maior retenção</span></sc-if></div>
+                  <div style="display: flex; align-items: center; gap: 8px"><span class="eyebrow">Ângulo {{a.id}}</span><div class="grow"></div><span class="muted" style="font-size: 11px">{{a.origem}}</span></div>
                   <h3 style="font-size: 17px; font-weight: 600; letter-spacing: -.01em">{{a.title}}</h3>
                   <p class="sec" style="font-size: 13px; line-height: 1.5">{{a.hook}}</p>
-                  <div style="display: flex; flex-direction: column; gap: 6px; margin-top: auto"><div style="display: flex; font-size: 12px" class="muted"><span>Retenção prevista aos 3 s</span><div class="grow"></div><span class="num" style="color: var(--text-primary)">{{a.ret}}%</span></div><div class="track"><div class="fill" style="width: {{a.ret}}%"></div></div></div>
+                  <p class="muted" style="font-size: 12px">{{a.promessa}}</p>
+                  <p class="muted" style="font-size: 12px">{{a.prova}}</p>
                 </button>
               </sc-for>
             </div>
-            <div class="actions"><button class="btn primary" onClick="{{approveAngle}}">Aprovar ângulo {{selAngle}}</button><button class="btn secondary" onClick="{{ajuste}}">Ajuste fino</button><button class="btn ghost" onClick="{{newAngle}}">Novo ângulo</button></div>
+            <div class="card pad" style="display: flex; flex-direction: column; gap: 8px">
+              <span class="eyebrow">Até 3 ângulos</span>
+              <input class="input" value="{{draft.gancho}}" onChange="{{onGancho}}" placeholder="Gancho" aria-label="Gancho">
+              <input class="input" value="{{draft.promessa}}" onChange="{{onPromessa}}" placeholder="Promessa" aria-label="Promessa">
+              <input class="input" value="{{draft.prova}}" onChange="{{onProva}}" placeholder="Prova" aria-label="Prova">
+            </div>
+            <div class="actions"><button class="btn primary" onClick="{{approveAngle}}" disabled="{{locked}}">Aprovar ângulo {{selAngle}}</button><button class="btn secondary" onClick="{{ajuste}}" disabled="{{locked}}">Ajuste fino</button><button class="btn ghost" onClick="{{saveAngle}}" disabled="{{locked}}">Guardar ângulo</button></div>
           </section>
         </sc-if>
 
@@ -125,19 +132,19 @@
                 <div class="row" style="cursor: default; align-items: flex-start; gap: 14px">
                   <span class="num" style="font-size: 12px; color: var(--flow); padding-top: 11px; width: 22px">{{r.n}}</span>
                   <div class="grow" style="display: flex; flex-direction: column; gap: 4px"><input class="input" style="height: 38px; font-weight: 600" value="{{r.t}}" onChange="{{r.onInput}}" aria-label="Título do slide {{r.n}}"><span class="muted" style="font-size: 12px">{{r.s}}</span></div>
-                  <span class="num" style="font-size: 11px; padding-top: 12px; color: {{r.cc}}">{{r.len}}/40</span>
+                  <span class="num" style="font-size: 11px; padding-top: 12px; color: {{r.cc}}">{{r.len}}/{{r.lim}}</span>
                 </div>
               </sc-for>
             </div>
-            <div class="actions" style="padding: 14px 18px; border-top: 1px solid var(--line)"><span class="muted" style="font-size: 12px">Edite direto aqui. A prévia ao lado acompanha.</span><div class="grow"></div><button class="btn primary" onClick="{{approveScript}}">Aprovar roteiro e gerar arte</button></div>
+            <div class="actions" style="padding: 14px 18px; border-top: 1px solid var(--line)"><button class="btn sm secondary" onClick="{{addSlide}}">Adicionar slide</button><button class="btn secondary" onClick="{{askScript}}" disabled="{{loadingAngles}}">Pedir roteiro ao motor</button><div class="grow"></div><button class="btn primary" onClick="{{approveScript}}" disabled="{{locked}}">Aprovar roteiro e gerar arte</button></div>
           </section>
         </sc-if>
 
         <!-- 3 ARTE -->
         <sc-if value="{{sv.s3}}" hint-placeholder-val="{{false}}">
           <section class="card" style="animation: slideup 260ms var(--ease) both">
-            <div class="card-h"><span class="av busy" style="width: 26px; height: 26px; font-size: 9px">AA</span><h3>Arte · Adriano Arte</h3><span class="mono muted" style="font-size: 11px">job-011 · dall-e-3</span><div class="grow"></div><span class="num" style="font-size: 13px">{{art.done}} de {{art.total}} frames</span></div>
-            <div style="padding: 14px 18px 0; display: flex; align-items: center; gap: 10px"><div class="track"><div class="fill {{art.cls}}" style="width: {{art.pct}}%"></div></div><span class="num muted" style="font-size: 11px">US$ {{art.cost}}</span></div>
+            <div class="card-h"><span class="av busy" style="width: 26px; height: 26px; font-size: 9px">AA</span><h3>Arte · Adriano Arte</h3><span class="mono muted" style="font-size: 11px">{{art.job}}</span><div class="grow"></div><span class="num" style="font-size: 13px">{{art.done}} de {{art.total}} frames</span></div>
+            <div style="padding: 14px 18px 0; display: flex; align-items: center; gap: 10px"><div class="track"><div class="fill {{art.cls}}" style="width: {{art.pct}}%"></div></div><span class="num muted" style="font-size: 11px">{{art.cost}}</span></div>
             <div style="padding: 16px 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px">
               <sc-for list="{{frames}}" as="f" hint-placeholder-count="7">
                 <div style="display: flex; flex-direction: column; gap: 6px">
@@ -153,6 +160,14 @@
               </sc-for>
             </div>
             <div class="actions" style="padding: 14px 18px; border-top: 1px solid var(--line)"><span class="muted" style="font-size: 12px">{{art.note}}</span><div class="grow"></div><button class="btn primary" onClick="{{toReview}}" disabled="{{art.notReady}}">Enviar para revisão</button></div>
+          </section>
+        </sc-if>
+
+        <sc-if value="{{sv.audio}}" hint-placeholder-val="{{false}}">
+          <section class="card pad" style="display: flex; flex-direction: column; gap: 12px">
+            <span class="eyebrow">Áudio</span>
+            <p class="muted">Esta etapa existe só em vídeo. A narração entra numa fase seguinte.</p>
+            <div class="actions"><button class="btn primary" onClick="{{advance}}" disabled="{{locked}}">Seguir</button></div>
           </section>
         </sc-if>
 
@@ -182,8 +197,8 @@
             <div class="card pad" style="display: flex; flex-direction: column; gap: 14px">
               <div style="display: flex; align-items: center"><span class="eyebrow">Pacote · Paulo Publicador</span><div class="grow"></div><span class="num muted" style="font-size: 12px">{{capLen}} / 2.200</span></div>
               <label class="field"><span>Legenda</span><textarea class="input" rows="4" value="{{caption}}" onChange="{{onCaption}}"></textarea></label>
-              <div class="field"><span>Hashtags</span><div class="segs"><sc-for list="{{tags}}" as="t" hint-placeholder-count="5"><button class="seg {{t.on}}" onClick="{{t.pick}}" style="height: 28px; font-size: 12px">{{t.t}}</button></sc-for></div></div>
-              <div class="field"><span>Quando publicar</span><div style="display: flex; flex-direction: column; gap: 8px"><sc-for list="{{slots}}" as="o" hint-placeholder-count="3"><button class="choice {{o.on}}" onClick="{{o.pick}}"><span class="rd"></span><span class="grow"><b style="display: block; font-size: 14px">{{o.t}}</b><small>{{o.s}}</small></span><sc-if value="{{o.best}}" hint-placeholder-val="{{false}}"><span class="badge flow">recomendado</span></sc-if></button></sc-for></div></div>
+              <label class="field"><span>Hashtags · {{tagCount}} / 5</span><input class="input" value="{{tagText}}" onChange="{{onTags}}" aria-label="Hashtags"></label>
+              <label class="field"><span>Quando publicar</span><input class="input" value="{{when}}" onChange="{{onWhen}}" aria-label="Quando publicar"></label>
             </div>
             <sc-if value="{{notConfirming}}" hint-placeholder-val="{{true}}"><div class="actions"><button class="btn primary" onClick="{{askPublish}}">Enviar para publicação</button><span class="muted" style="font-size: 12px">Publicar passa por um gate seu.</span></div></sc-if>
             <sc-if value="{{confirming}}" hint-placeholder-val="{{false}}">
@@ -208,7 +223,7 @@
             <div class="g4">
               <sc-for list="{{metrics}}" as="m" hint-placeholder-count="4"><div class="metric"><span class="eyebrow">{{m.k}}</span><strong>{{m.v}}</strong><small>{{m.n}}</small></div></sc-for>
             </div>
-            <div class="card" style="padding: 14px 16px; display: flex; gap: 12px; align-items: center"><span class="eyebrow">Lição registrada</span><span class="sec grow" style="font-size: 13px">Hook visual antes da narração manteve a retenção acima da média do perfil.</span><button class="btn sm secondary" onClick="{{newProd}}">Nova produção</button></div>
+            <div class="card" style="padding: 14px 16px; display: flex; gap: 12px; align-items: center"><span class="sec grow" style="font-size: 13px">—</span><button class="btn sm secondary" onClick="{{newProd}}">Nova produção</button></div>
           </section>
         </sc-if>
       </section>
@@ -243,7 +258,7 @@
   <!-- ================= CALENDÁRIO ================= -->
   <sc-if value="{{v.cal}}" hint-placeholder-val="{{false}}">
     <section class="card">
-      <div class="card-h"><h3>Semana de publicação</h3><span class="eyebrow">27/10 a 02/11</span><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>publicado</span><span><i style="background: var(--warning)"></i>em produção</span><span><i style="background: var(--line-strong)"></i>agendado ou pauta</span></div></div>
+      <div class="card-h"><h3>Semana de publicação</h3><span class="eyebrow">{{weekLabel}}</span><div class="grow"></div><div class="legend"><span><i style="background: var(--flow)"></i>publicado</span><span><i style="background: var(--warning)"></i>em produção</span><span><i style="background: var(--line-strong)"></i>agendado ou pauta</span></div></div>
       <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; padding: 16px 18px">
         <sc-for list="{{week}}" as="d" hint-placeholder-count="7">
           <div style="display: flex; flex-direction: column; gap: 8px; min-height: 200px; padding: 10px; border-radius: 12px; background: {{d.bg}}; border: 1px solid {{d.bd}}">
@@ -260,14 +275,11 @@
     <div style="display: flex; gap: 16px; flex-wrap: wrap">
       <section class="card pad" style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 14px">
         <div style="display: flex; align-items: center"><span class="eyebrow">Mesa do Oráculo · instruções do squad</span><div class="grow"></div><button class="btn sm secondary" onClick="{{editInstr}}">Editar instruções</button></div>
-        <div class="ink" style="padding: 16px; border-radius: 12px"><pre class="mono" style="margin: 0; white-space: pre-wrap; font-size: 12.5px; line-height: 1.7">Squad ig-studio. Não publicar sem checkpoint.
-Tom: investigativo, sem sensacionalismo.
-Toda afirmação histórica cita fonte no último slide.
-Hook visual antes da narração.</pre></div>
+        <div class="ink" style="padding: 16px; border-radius: 12px"><pre class="mono" style="margin: 0; white-space: pre-wrap; font-size: 12.5px; line-height: 1.7">{{canonText}}</pre></div>
         <p class="muted" style="font-size: 12px">O canon do canal prevalece sobre qualquer pedido avulso. Mudanças valem a partir da próxima pauta.</p>
       </section>
       <section class="card" style="flex: 1 1 320px">
-        <div class="card-h"><h3>Canon do canal</h3><div class="grow"></div><span class="eyebrow">6 regras</span></div>
+        <div class="card-h"><h3>Canon do canal</h3><div class="grow"></div><span class="eyebrow">{{canonN}}</span></div>
         <div class="rows"><sc-for list="{{canon}}" as="c" hint-placeholder-count="6"><div class="row" style="cursor: default"><span class="num muted" style="font-size: 11px">{{c.n}}</span><span class="grow" style="font-size: 13px">{{c.t}}</span></div></sc-for></div>
       </section>
     </div>
@@ -275,185 +287,353 @@ Hook visual antes da narração.</pre></div>
 
   <!-- ================= APRENDIZADOS ================= -->
   <sc-if value="{{v.learn}}" hint-placeholder-val="{{false}}">
-    <div style="display: flex; gap: 16px; flex-wrap: wrap">
-      <section class="card" style="flex: 2 1 520px">
-        <div class="card-h"><h3>Retenção do reel anterior</h3><span class="eyebrow">ep. 13 · % que continua assistindo</span></div>
-        <div style="padding: 18px">
-          <svg viewBox="0 0 600 220" width="100%" height="220" role="img" aria-label="Curva de retenção: cai de 100% para 58% nos 3 primeiros segundos e termina em 31% aos 45 segundos">
-            <line x1="40" y1="20" x2="40" y2="190" stroke="var(--line)"></line>
-            <line x1="40" y1="190" x2="590" y2="190" stroke="var(--line)"></line>
-            <line x1="40" y1="105" x2="590" y2="105" stroke="var(--line)" stroke-dasharray="3 5"></line>
-            <text x="32" y="24" text-anchor="end" font-size="11" fill="var(--text-muted)" font-family="IBM Plex Mono">100</text>
-            <text x="32" y="109" text-anchor="end" font-size="11" fill="var(--text-muted)" font-family="IBM Plex Mono">50</text>
-            <text x="32" y="194" text-anchor="end" font-size="11" fill="var(--text-muted)" font-family="IBM Plex Mono">0</text>
-            <text x="40" y="210" font-size="11" fill="var(--text-muted)" font-family="IBM Plex Mono">0 s</text>
-            <text x="590" y="210" text-anchor="end" font-size="11" fill="var(--text-muted)" font-family="IBM Plex Mono">45 s</text>
-            <rect x="40" y="20" width="37" height="170" fill="oklch(.80 .155 78 / .12)"></rect>
-            <path class="draw" d="M40 20 L52 52 L64 78 L77 91 L120 98 L180 104 L240 112 L300 121 L360 128 L420 136 L480 142 L540 148 L590 137" fill="none" stroke="var(--flow)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            <circle cx="77" cy="91" r="5" fill="var(--warning)"></circle>
-            <text x="86" y="84" font-size="12" fill="var(--text-primary)" font-family="Instrument Sans">58% aos 3 s — narração começa antes da imagem</text>
-          </svg>
-          <p class="muted" style="font-size: 12px">Fonte: Instagram Insights importado em 26/10. Média do perfil aos 3 s: 64%.</p>
-        </div>
-      </section>
-      <section class="card" style="flex: 1 1 300px">
-        <div class="card-h"><h3>Metas do trimestre</h3></div>
-        <div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 16px">
-          <sc-for list="{{goals}}" as="g" hint-placeholder-count="3"><div style="display: flex; flex-direction: column; gap: 6px"><div style="display: flex; font-size: 13px"><span class="grow">{{g.t}}</span><span class="num muted">{{g.cur}} / {{g.goal}}</span></div><div class="track"><div class="fill {{g.cls}}" style="width: {{g.pct}}%"></div></div></div></sc-for>
-        </div>
-        <div class="rows" style="border-top: 1px solid var(--line)"><sc-for list="{{lessons}}" as="l" hint-placeholder-count="3"><div class="row" style="cursor: default; align-items: flex-start"><span class="num muted" style="font-size: 11px; width: 40px">{{l.d}}</span><span class="grow" style="font-size: 13px">{{l.t}}</span></div></sc-for></div>
-      </section>
+    <section class="card pad"><h3>Aprendizados</h3><p class="muted">—</p></section>
+  </sc-if>
+
+  <sc-if value="{{modalOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: fixed; inset: 0; background: rgba(7,13,24,.55); display: flex; align-items: center; justify-content: center; z-index: 30; padding: 24px">
+      <div class="card pad" style="width: min(560px, 100%); display: flex; flex-direction: column; gap: 10px; max-height: 90vh; overflow: auto">
+        <h3>{{modalTitle}}</h3>
+        <sc-if value="{{modalPerfil}}" hint-placeholder-val="{{false}}">
+          <label class="field"><span>Nome</span><input class="input" value="{{form.nome}}" onChange="{{onNome}}"></label>
+          <label class="field"><span>Iniciais</span><input class="input" value="{{form.iniciais}}" onChange="{{onIniciais}}"></label>
+          <label class="field"><span>Cor</span><input class="input" value="{{form.cor}}" onChange="{{onCor}}"></label>
+          <label class="field"><span>Rede</span><input class="input" value="{{form.rede}}" onChange="{{onRede}}"></label>
+          <label class="field"><span>@</span><input class="input" value="{{form.handle}}" onChange="{{onHandle}}"></label>
+          <label class="field"><span>Formatos, separados por vírgula</span><input class="input" value="{{form.formatos}}" onChange="{{onFormatos}}"></label>
+          <label class="field"><span>Posts por semana</span><input class="input" value="{{form.posts}}" onChange="{{onPosts}}"></label>
+          <label class="field"><span>Publicação (manual ou darkflow)</span><input class="input" value="{{form.publicacao}}" onChange="{{onPublicacao}}"></label>
+          <label class="field"><span>Paleta tinta</span><input class="input" value="{{form.ink}}" onChange="{{onInk}}"></label>
+          <label class="field"><span>Paleta destaque</span><input class="input" value="{{form.accent}}" onChange="{{onAccent}}"></label>
+          <label class="field"><span>Fonte do título</span><input class="input" value="{{form.fonteTitulo}}" onChange="{{onFonteTitulo}}"></label>
+          <label class="field"><span>Fonte do texto</span><input class="input" value="{{form.fonteCorpo}}" onChange="{{onFonteCorpo}}"></label>
+          <label class="field"><span>Tom</span><input class="input" value="{{form.tom}}" onChange="{{onTom}}"></label>
+          <label class="field"><span>Canon, uma regra por linha</span><textarea class="input" rows="4" value="{{form.canon}}" onChange="{{onCanon}}"></textarea></label>
+        </sc-if>
+        <sc-if value="{{modalProducao}}" hint-placeholder-val="{{false}}">
+          <label class="field"><span>Série</span><input class="input" value="{{form.serieNome}}" onChange="{{onSerieNome}}"></label>
+          <label class="field"><span>Sigla da série</span><input class="input" value="{{form.serieSigla}}" onChange="{{onSerieSigla}}"></label>
+          <label class="field"><span>Rede</span><input class="input" value="{{form.rede}}" onChange="{{onRede}}"></label>
+          <label class="field"><span>Formato</span><input class="input" value="{{form.formato}}" onChange="{{onFormato}}"></label>
+          <p class="muted" style="font-size: 12px">{{formatosDoPerfil}}</p>
+          <label class="field"><span>Título</span><input class="input" value="{{form.titulo}}" onChange="{{onTitulo}}"></label>
+          <label class="field"><span>Tema</span><input class="input" value="{{form.tema}}" onChange="{{onTemaForm}}"></label>
+          <label class="field"><span>Fonte principal</span><input class="input" value="{{form.fonte}}" onChange="{{onFonteForm}}"></label>
+          <label class="field"><span>Objetivo</span><input class="input" value="{{form.objetivo}}" onChange="{{onObjetivo}}"></label>
+        </sc-if>
+        <sc-if value="{{modalCanon}}" hint-placeholder-val="{{false}}">
+          <label class="field"><span>Tom</span><input class="input" value="{{form.tom}}" onChange="{{onTom}}"></label>
+          <label class="field"><span>Canon, uma regra por linha</span><textarea class="input" rows="6" value="{{form.canon}}" onChange="{{onCanon}}"></textarea></label>
+        </sc-if>
+        <p class="muted">{{error}}</p>
+        <div class="actions"><button class="btn ghost" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{saveModal}}">Salvar</button></div>
+      </div>
     </div>
   </sc-if>
+  <p class="muted" style="font-size: 13px">{{error}}</p>
 </div>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"spot":{"editor":null},"$preview":{"width":1176,"height":1700}}'>
-const NOOP = { go: function () {}, modal: function () {}, toast: function () {} };
-const STAGES = ['Pauta', 'Ângulo', 'Roteiro', 'Arte', 'Revisão', 'Pacote', 'Publicado'];
-const PROFILES = [
-  { id: 'mp', name: 'Multiverso Paranoico', ini: 'MP', handle: 'multiversoparanoico', net: 'Instagram', size: '128 mil', ck: 2, kpi: [['Seguidores', '128 mil'], ['Alcance 7 dias', '212 mil'], ['Peças ativas', '5'], ['Tempo médio', '18 min']] },
-  { id: 'il', name: 'IA Livros', ini: 'IL', handle: 'ialivros', net: 'YouTube', size: '41 mil', ck: 0, kpi: [['Inscritos', '41 mil'], ['Views 7 dias', '38 mil'], ['Peças ativas', '2'], ['Tempo médio', '2 h 10']] },
-  { id: 'ct', name: 'Canal Tavir', ini: 'CT', handle: 'tavir', net: 'LinkedIn', size: '3,2 mil', ck: 1, kpi: [['Seguidores', '3,2 mil'], ['Impressões 7 dias', '9,4 mil'], ['Peças ativas', '1'], ['Tempo médio', '35 min']] }
+const FORMATS = [
+  ['ig-carrossel-4x5', 'instagram', 'Carrossel 4:5', 'carousel'],
+  ['ig-post-4x5', 'instagram', 'Post 4:5', 'still'],
+  ['ig-post-1x1', 'instagram', 'Post 1:1', 'still'],
+  ['ig-reels-9x16', 'instagram', 'Reel 9:16', 'video'],
+  ['ig-stories-9x16', 'instagram', 'Stories 9:16', 'video'],
+  ['yt-shorts-9x16', 'youtube', 'Shorts 9:16', 'video'],
+  ['yt-longo-16x9', 'youtube', 'Vídeo 16:9', 'video'],
+  ['yt-thumb-16x9', 'youtube', 'Miniatura', 'still'],
+  ['tt-video-9x16', 'tiktok', 'TikTok 9:16', 'video'],
+  ['li-post-4x5', 'linkedin', 'Post 4:5', 'still'],
+  ['li-documento-4x5', 'linkedin', 'Documento 4:5', 'carousel']
 ];
-const EP = {
-  e14: { tema: 'O mapa oficial de 1953 que apagou uma cidade', fonte: 'Arquivo Público do Estado · carta 1953', slides: [['O mapa que mente', 'Episódio 14'], ['Todo mapa escolhe', 'o que mostrar e o que esconder'], ['1953', 'uma cidade some da carta oficial'], ['Quem pediu?', 'três versões, três respostas'], ['O que sobrou', 'ruínas que ninguém mapeou'], ['Por que importa', 'mapa é poder'], ['Fontes', 'arquivo público e 2 livros citados']], caption: 'Episódio 14 — o mapa que mente. Todo mapa escolhe o que mostrar. Este escolheu esconder uma cidade inteira. Fontes no último slide.' },
-  e13: { tema: 'A biblioteca que ninguém abre', fonte: 'Relatório municipal de 1988', slides: [['A biblioteca fechada', 'Episódio 13'], ['37 anos', 'sem um leitor'], ['A chave', 'está com quem?'], ['O acervo', '4 mil volumes catalogados'], ['O que diz a lei', 'e o que ninguém cumpre'], ['Fontes', 'relatório e 3 entrevistas']], caption: 'Episódio 13 — a biblioteca que ninguém abre. 37 anos fechada, 4 mil livros dentro. Fontes no último slide.' },
-  e15: { tema: 'O rio que mudou de nome três vezes', fonte: 'Cartas náuticas 1890–1970', slides: [['O rio sem nome', 'Episódio 15'], ['1890', 'o primeiro registro'], ['1934', 'o segundo nome'], ['1971', 'o nome de hoje'], ['Fontes', 'cartas náuticas do acervo']], caption: 'Episódio 15 — o rio que mudou de nome três vezes.' },
-  e12: { tema: 'Bastidores do episódio 12', fonte: 'Fotos da produção', slides: [['Bastidores', 'ep. 12'], ['O arquivo', 'onde tudo começou'], ['A visita', 'o que não coube no post'], ['Obrigado', 'pela audiência']], caption: 'Bastidores do episódio 12.' }
-};
-const PIECES = [
-  { id: 'p14c', ep: 'e14', title: 'Ep. 14 · carrossel', fmt: 'Carrossel 4:5', ratio: 'car', owner: 'Adriano Arte', ini: 'AA', due: 'Qui 30 · 19h', stage: 3, frames: 3 },
-  { id: 'p13r', ep: 'e13', title: 'Ep. 13 · reel', fmt: 'Reel 9:16', ratio: 'reel', owner: 'Rita Revisora', ini: 'RV', due: 'Qua 29 · 19h', stage: 4, frames: 6 },
-  { id: 'p14r', ep: 'e14', title: 'Ep. 14 · reel', fmt: 'Reel 9:16', ratio: 'reel', owner: 'Rafael Roteiro', ini: 'RR', due: 'Sex 31 · 19h', stage: 2, frames: 0 },
-  { id: 'p15c', ep: 'e15', title: 'Ep. 15 · carrossel', fmt: 'Carrossel 4:5', ratio: 'car', owner: 'Oráculo Diretor', ini: 'OD', due: 'Dom 02 · 19h', stage: 0, frames: 0 },
-  { id: 'p12s', ep: 'e12', title: 'Ep. 12 · stories', fmt: 'Stories 9:16', ratio: 'reel', owner: 'Paulo Publicador', ini: 'PU', due: 'Ter 28 · 12h', stage: 6, frames: 4 }
-];
-const ANG = [
-  { id: 'A', title: 'A cidade apagada', hook: 'Abre com o mapa e o espaço vazio onde a cidade deveria estar. A pergunta vem depois da imagem.', ret: 62, best: true },
-  { id: 'B', title: 'Quem desenhou a fronteira', hook: 'Abre com o cartógrafo e a assinatura dele. Mais narrativo, gancho mais lento.', ret: 54 },
-  { id: 'C', title: 'Três mapas, uma mentira', hook: 'Comparação lado a lado das três cartas. Forte em salvamento, fraco nos 3 s.', ret: 49 }
-];
-const DECOR = ['M8 20 C 40 30, 55 55, 60 62 M8 62 L60 62 M8 104 C 40 94, 55 70, 60 62 M60 62 L92 62', 'M50 40 a22 22 0 1 0 0.01 0 M50 52 a10 10 0 1 0 0.01 0 M50 62 L92 62', 'M10 100 L50 30 L90 100 M30 100 L50 66 L70 100'];
-const TAGS = ['#historia', '#mapas', '#cartografia', '#arquivo', '#multiverso'];
-const SLOTS = [['Qui 30 · 19h', 'Melhor horário do perfil · 19h às 20h', true], ['Hoje · 21h', 'Alcance menor, comentários mais longos', false], ['Sáb 01 · 12h', 'Fim de semana, salvamentos altos', false]];
-function fmt(n) { return Math.round(n).toLocaleString('pt-BR'); }
+const STAGE_IDS = ['pauta', 'angulo', 'roteiro', 'arte', 'audio', 'revisao', 'pacote', 'publicado'];
+const STAGE_LABEL = { pauta: 'Pauta', angulo: 'Ângulo', roteiro: 'Roteiro', arte: 'Arte', audio: 'Áudio', revisao: 'Revisão', pacote: 'Pacote', publicado: 'Publicado' };
+const GATES = { angulo: 1, revisao: 1, pacote: 1 };
+const GOALS = ['alcance', 'autoridade', 'conversa'];
+const EMPTY_FORM = { nome: '', iniciais: '', cor: '#1BC5BD', rede: 'instagram', handle: '', formatos: 'ig-carrossel-4x5', posts: '3', publicacao: 'manual', ink: '#0B1220', accent: '#B7F34A', fonteTitulo: 'Instrument Sans', fonteCorpo: 'Instrument Sans', tom: '', canon: '', serieNome: '', serieSigla: '', formato: 'ig-carrossel-4x5', titulo: '', tema: '', fonte: '', objetivo: '' };
+
+function studioApi() {
+  var w = typeof window !== 'undefined' ? window : null;
+  var t = w && w.tavir ? w.tavir : (w && w.parent && w.parent.tavir ? w.parent.tavir : null);
+  return t && t.studio ? t.studio : null;
+}
+function fmtOf(id) { for (var i = 0; i < FORMATS.length; i++) if (FORMATS[i][0] === id) return FORMATS[i]; return FORMATS[0]; }
+function stagesFor(kind) { return kind === 'video' ? STAGE_IDS.slice() : STAGE_IDS.filter(function (s) { return s !== 'audio'; }); }
+function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function lines(text) { return String(text || '').split('\n').map(function (s) { return s.trim(); }).filter(Boolean); }
+function kitFrom(form) {
+  return {
+    palette: { ink: form.ink || '#0B1220', surface: '#F4F6F2', text: '#0B1220', accent: form.accent || '#B7F34A', accent2: '#1BC5BD' },
+    fonts: { title: form.fonteTitulo || 'Instrument Sans', body: form.fonteCorpo || 'Instrument Sans' },
+    imageStyle: '', negatives: [], characters: [], tone: form.tom || '', canon: lines(form.canon)
+  };
+}
+
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    const stage = {}, frames = {};
-    PIECES.forEach((p) => { stage[p.id] = p.stage; frames[p.id] = p.frames; });
-    this.state = { p: 'mp', tab: 'prod', piece: 'p14c', view: null, stage: stage, frames: frames, angle: {}, script: {}, fixed: {}, caption: {}, tags: { '#historia': true, '#mapas': true, '#arquivo': true }, slot: 0, confirm: false, loadingAngles: false, goal: 'Salvamentos', slide: 0, live: { p12s: { reach: 18400, likes: 1210, saves: 640, comments: 38, t: 99, when: 'ter 28 · 12h' } } };
+    this.state = { perfis: [], pecas: [], series: [], perfilId: '', pecaId: '', tab: 'prod', view: null, selId: '', draft: { gancho: '', promessa: '', prova: '' }, pautaDraft: null, ajusteNota: '', confirm: false, loading: false, custo: '—', error: '', modal: '', form: Object.assign({}, EMPTY_FORM) };
+    var self = this;
+    this._pautaTimer = null;
+    setTimeout(function () { self.reload(); }, 0);
   }
-  componentDidMount() { this.iv = setInterval(() => this.tick(), 1000); }
-  componentWillUnmount() { clearInterval(this.iv); clearTimeout(this.lt); }
-  tick() {
-    const s = this.state;
-    const frames = Object.assign({}, s.frames);
-    let changed = false;
-    PIECES.forEach((p) => { const n = EP[p.ep].slides.length; if (s.stage[p.id] === 3 && frames[p.id] < n) { frames[p.id] += 1; changed = true; } });
-    const live = Object.assign({}, s.live);
-    Object.keys(live).forEach((k) => { const L = live[k]; if (L.t < 14) { live[k] = { reach: L.reach + 300 + Math.random() * 900, likes: L.likes + 20 + Math.random() * 60, saves: L.saves + 8 + Math.random() * 30, comments: L.comments + Math.random() * 3, t: L.t + 1, when: L.when }; changed = true; } });
-    if (changed) this.setState({ frames: frames, live: live });
+  reload() {
+    var api = studioApi();
+    var self = this;
+    if (!api) { this.setState({ error: 'Studio indisponível neste modo.', perfis: [], pecas: [] }); return; }
+    Promise.all([api.perfis.list(), api.pecas.list(), api.series.list()]).then(function (all) {
+      var perfis = all[0] || [];
+      var pecas = all[1] || [];
+      var perfilId = self.state.perfilId && perfis.some(function (p) { return p.id === self.state.perfilId; }) ? self.state.perfilId : (perfis[0] ? perfis[0].id : '');
+      var mine = pecas.filter(function (p) { return p.perfil_id === perfilId; });
+      var pecaId = self.state.pecaId && mine.some(function (p) { return p.id === self.state.pecaId; }) ? self.state.pecaId : (mine[0] ? mine[0].id : '');
+      self.setState({ perfis: perfis, pecas: pecas, series: all[2] || [], perfilId: perfilId, pecaId: pecaId, error: '' });
+    }).catch(function (err) { self.setState({ error: err && err.message ? err.message : String(err) }); });
+  }
+  after(res) {
+    var self = this;
+    if (!res || res.ok === false) { this.setState({ error: (res && res.error) || 'não foi possível', loading: false }); return; }
+    this.setState({ error: '', loading: false, modal: '', confirm: false, custo: res.custo || this.state.custo, pecaId: res.peca ? res.peca.id : this.state.pecaId, view: null });
+    this.reload();
+  }
+  patch(campos) {
+    var api = studioApi();
+    var id = this.state.pecaId;
+    var self = this;
+    if (!api || !id) return;
+    api.pecas.update(id, campos).then(function (res) { self.after(res); });
+  }
+  gate(decisao) {
+    var api = studioApi();
+    var peca = (this.state.pecas || []).filter(function (p) { return p.id === this.state.pecaId; }, this)[0];
+    var self = this;
+    if (!api || !peca || !GATES[peca.etapa]) { this.setState({ error: 'esta etapa não tem gate' }); return; }
+    var run = function () { api.pecas.gate(peca.id, peca.etapa, decisao, self.state.ajusteNota || '').then(function (res) { self.after(res); }); };
+    if (decisao === 'aprovado' && peca.etapa === 'angulo') {
+      var chosen = this.state.selId || (peca.angulos[0] && peca.angulos[0].id);
+      if (!chosen) { this.setState({ error: 'guarde um ângulo antes de aprovar' }); return; }
+      api.pecas.update(peca.id, { angulo_escolhido: chosen }).then(function (res) {
+        if (!res || res.ok === false) { self.after(res); return; }
+        run();
+      });
+      return;
+    }
+    run();
   }
   renderVals() {
-    const app = this.props.app || NOOP;
-    const s = this.state, self = this;
-    const P = PROFILES.find((x) => x.id === s.p);
-    const pc = PIECES.find((x) => x.id === s.piece);
-    const E = EP[pc.ep];
-    const curStage = s.stage[pc.id];
-    const view = s.view == null ? curStage : s.view;
-    const n = E.slides.length;
-    const fr = s.frames[pc.id];
-    const setStage = (st, extra) => { const stage = Object.assign({}, s.stage); stage[pc.id] = st; self.setState(Object.assign({ stage: stage, view: null, confirm: false }, extra || {})); };
-    const titleOf = (i) => { const k = pc.id + ':' + i; return s.script[k] != null ? s.script[k] : E.slides[i][0]; };
-    const selAngle = s.angle[pc.id] || 'A';
-    const fixed = !!s.fixed[pc.id];
-    const caption = s.caption[pc.id] != null ? s.caption[pc.id] : E.caption;
-    const L = s.live[pc.id];
-    const slide = Math.min(s.slide, n - 1);
-    const reel = pc.ratio === 'reel';
-
-    // prévia
-    const artReady = (i) => curStage > 3 || (curStage === 3 && i < fr);
-    let ph;
-    if (curStage < 2) ph = { empty: true, art: false, draft: false, hasText: false, bg: '#0f1729', cls: '' };
-    else if (artReady(slide)) ph = { empty: false, art: true, draft: false, hasText: true, bg: slide % 2 ? '#0f1729' : '#121c30', cls: '', fg: '#F4F6F2' };
-    else if (curStage === 3 && slide === fr) ph = { empty: false, art: false, draft: false, hasText: false, bg: '#121c30', cls: 'shimmer' };
-    else ph = { empty: false, art: false, draft: true, hasText: true, bg: '#0f1729', cls: '', fg: 'rgba(244,246,242,.6)' };
-    ph = Object.assign(ph, { h: reel ? 420 : 345, t: titleOf(slide), s: E.slides[slide][1], decor: DECOR[slide % 3], pos: (slide + 1) + '/' + n });
-
-    const pastInfo = view < curStage ? { t: STAGES[view] + ' concluída', d: [ 'Pauta aprovada pelo Oráculo e por você.', 'Ângulo ' + selAngle + ' aprovado por Carlos no checkpoint.', 'Roteiro de ' + n + ' slides aprovado.', n + ' frames gerados pelo Adriano Arte.', 'Revisão aprovada pela Rita e por você.', 'Pacote aprovado no gate de publicação.', '' ][view] } : { t: '', d: '' };
-    const sv = {}; for (let i = 0; i < 7; i++) sv['s' + i] = view === i && view === curStage;
-
-    const revItems = [['Fonte no último slide', 'slide ' + n + ' cita arquivo e livros', true], ['Máximo de 7 slides', n + ' slides', true], ['Tom investigativo, sem sensacionalismo', 'nenhum termo da lista proibida', true], ['Legenda até 2.200 caracteres', caption.length + ' caracteres', true], [fixed ? 'Data do slide 3 com fonte' : 'Slide 3 cita uma data sem fonte', fixed ? 'fonte adicionada no rodapé do slide' : 'a Rita sugere citar a carta oficial no rodapé', fixed]];
-    const revOk = revItems.every((x) => x[2]);
-    const goodTags = TAGS.filter((t) => s.tags[t]);
-
+    var self = this;
+    var s = this.state;
+    var perfil = (s.perfis || []).filter(function (p) { return p.id === s.perfilId; })[0] || null;
+    var mine = (s.pecas || []).filter(function (p) { return !perfil || p.perfil_id === perfil.id; });
+    var peca = mine.filter(function (p) { return p.id === s.pecaId; })[0] || null;
+    var kind = peca ? fmtOf(peca.formato_id)[3] : 'carousel';
+    var stages = stagesFor(kind);
+    var cur = peca ? peca.etapa : 'pauta';
+    var curIndex = Math.max(0, stages.indexOf(cur));
+    var viewed = s.view && stages.indexOf(s.view) >= 0 && stages.indexOf(s.view) <= curIndex ? s.view : cur;
+    var viewIndex = Math.max(0, stages.indexOf(viewed));
+    var locked = viewIndex < curIndex;
+    var rede = perfil && perfil.redes && perfil.redes[0] ? perfil.redes[0] : null;
+    var kit = perfil && perfil.brand_kit ? perfil.brand_kit : { canon: [], tone: '' };
+    var pauta = s.pautaDraft && peca ? s.pautaDraft : (peca && peca.pauta ? peca.pauta : { tema: '', fonte: '', objetivo: '' });
+    var roteiro = peca && peca.roteiro ? peca.roteiro : { slides: [] };
+    var slides = roteiro.slides || [];
+    var month = ymd(new Date()).slice(0, 7);
+    var gatesN = mine.filter(function (p) { return GATES[p.etapa] && p.status === 'ativa'; }).length;
+    var monday = new Date();
+    monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+    var weekNames = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    var week = weekNames.map(function (w, i) {
+      var d = new Date(monday); d.setDate(monday.getDate() + i);
+      var key = ymd(d);
+      var items = mine.filter(function (p) { return (p.agendado_para || '').slice(0, 10) === key; }).map(function (p) {
+        return { h: (p.agendado_para || '').slice(11, 16) || '—', t: p.titulo, s: STAGE_LABEL[p.etapa] || p.etapa, bg: 'transparent', fg: 'var(--text-secondary)', bd: 'var(--line-strong)', pick: function () { self.setState({ tab: 'prod', pecaId: p.id, view: null }); } };
+      });
+      return { w: w, n: String(d.getDate()), color: 'var(--text-muted)', bg: 'var(--surface-0)', bd: 'var(--line)', items: items };
+    });
+    var sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+    function field(key) { return function (e) { var form = Object.assign({}, s.form); form[key] = e.target.value; self.setState({ form: form }); }; }
+    var formatosPerfil = (perfil && perfil.redes ? perfil.redes : []).reduce(function (acc, r) { return acc.concat(r.formatos || []); }, []);
+    var formatosTxt = FORMATS.filter(function (f) { return !s.form.rede || f[1] === s.form.rede; }).map(function (f) { return f[0]; }).join(', ');
+    var checks = peca && peca.render_final && peca.render_final.checks ? peca.render_final.checks : [];
+    var revOk = checks.length > 0 && checks.every(function (c) { return c.ok === true; });
+    var slots = peca && peca.slots ? peca.slots : [];
+    var done = slots.filter(function (sl) { return sl.ativo_id; }).length;
+    var total = slots.length || slides.length;
+    var sv = { s0: viewed === 'pauta', s1: viewed === 'angulo', s2: viewed === 'roteiro', s3: viewed === 'arte', audio: viewed === 'audio', s4: viewed === 'revisao', s5: viewed === 'pacote', s6: viewed === 'publicado' };
     return {
-      newProfile: () => app.modal('profile'), newProd: () => app.modal('production'),
-      profiles: PROFILES.map((x) => ({ name: x.name, ini: x.ini, net: x.net, size: x.size, hasCk: x.ck > 0, ck: x.ck, bd: x.id === s.p ? 'var(--flow)' : 'var(--line)', bg: x.id === s.p ? 'var(--flow-subtle)' : 'transparent', avbg: x.id === s.p ? 'var(--flow)' : 'var(--surface-3)', avfg: x.id === s.p ? 'var(--surface-1)' : 'var(--text-secondary)', pick: () => self.setState({ p: x.id }) })),
-      kpis: P.kpi.map((k) => ({ k: k[0], v: k[1] })),
-      tabs: [['prod', 'Produção', PIECES.filter((x) => [1, 4, 5].indexOf(s.stage[x.id]) >= 0).length], ['cal', 'Calendário'], ['canon', 'Canon & Oráculo'], ['learn', 'Aprendizados & Metas']].map((t) => ({ label: t[1], hasN: !!t[2], n: t[2] ? t[2] + ' com você' : '', on: s.tab === t[0] ? 'on' : '', pick: () => self.setState({ tab: t[0] }) })),
-      v: { prod: s.tab === 'prod', cal: s.tab === 'cal', canon: s.tab === 'canon', learn: s.tab === 'learn' },
-      piecesN: PIECES.length,
-      queue: PIECES.map((q) => { const st = s.stage[q.id]; return { title: q.title, fmt: q.fmt, due: q.due, stage: STAGES[st], ck: [1, 4, 5].indexOf(st) >= 0, bd: q.id === pc.id ? 'var(--flow)' : 'var(--line)', sh: q.id === pc.id ? '0 0 0 3px var(--flow-subtle)' : 'none', dots: STAGES.map((_, i) => ({ bg: i < st || st === 6 ? 'var(--flow)' : i === st ? 'var(--warning)' : 'var(--line)' })), pick: () => self.setState({ piece: q.id, view: null, slide: 0, confirm: false }) }; }),
-      pc: { title: pc.title, name: E.slides[0][0], fmt: pc.fmt, owner: pc.owner, ini: pc.ini, due: pc.due },
-      steps: STAGES.map((l, i) => ({ n: '0' + (i + 1), label: l, cls: (i < curStage || curStage === 6 ? 'done' : i === curStage ? 'now' : '') + (i === view ? ' sel' : ''), pick: () => { if (i <= curStage) self.setState({ view: i }); else app.toast('Etapa ainda não liberada', 'Conclua ' + STAGES[curStage] + ' primeiro.'); } })),
-      past: view < curStage, pastInfo: pastInfo, curStageLabel: STAGES[curStage], backToCurrent: () => self.setState({ view: null }),
-      sv: sv,
-      // pauta
-      pauta: { tema: E.tema, fonte: E.fonte },
-      goalsSeg: ['Alcance', 'Salvamentos', 'Seguidores'].map((g) => ({ label: g, on: s.goal === g ? 'on' : '', pick: () => self.setState({ goal: g }) })),
-      loadingAngles: s.loadingAngles,
-      askAngles: () => { self.setState({ loadingAngles: true }); clearTimeout(self.lt); self.lt = setTimeout(() => { const stage = Object.assign({}, self.state.stage); stage[pc.id] = 1; self.setState({ loadingAngles: false, stage: stage, view: null }); app.toast('3 ângulos prontos', 'O Oráculo espera a sua escolha.'); }, 1600); },
-      // ângulo
-      angles: ANG.map((a) => ({ id: a.id, title: a.title, hook: a.hook, ret: a.ret, best: !!a.best, bd: selAngle === a.id ? 'var(--flow)' : 'var(--line)', sh: selAngle === a.id ? '0 0 0 3px var(--flow-subtle)' : 'none', pick: () => { const an = Object.assign({}, s.angle); an[pc.id] = a.id; self.setState({ angle: an }); } })),
-      selAngle: selAngle,
-      approveAngle: () => { setStage(2); app.toast('Ângulo ' + selAngle + ' aprovado', 'Rafael começa o roteiro.'); },
-      ajuste: () => app.modal('ajuste'), newAngle: () => app.modal('angulo'), editInstr: () => app.modal('instructions'),
-      // roteiro
-      slidesN: n,
-      script: E.slides.map((x, i) => { const t = titleOf(i); return { n: '0' + (i + 1), t: t, s: x[1], len: t.length, cc: t.length > 40 ? 'var(--danger)' : 'var(--text-muted)', onInput: (e) => { const sc = Object.assign({}, s.script); sc[pc.id + ':' + i] = e.target.value; self.setState({ script: sc, slide: i }); } }; }),
-      approveScript: () => { const frames = Object.assign({}, s.frames); frames[pc.id] = 0; setStage(3, { frames: frames, slide: 0 }); app.toast('Roteiro aprovado', 'Adriano começou os frames.'); },
-      // arte
-      art: { done: Math.min(fr, n), total: n, pct: Math.round(Math.min(fr, n) / n * 100), cls: fr < n ? 'run' : '', cost: (0.18 * Math.min(fr, n)).toFixed(2).replace('.', ','), notReady: fr < n, note: fr < n ? 'Gerando o frame ' + (fr + 1) + ' de ' + n + '. A prévia ao lado mostra cada frame que fica pronto.' : 'Todos os frames prontos. Confira na prévia antes de mandar para a Rita.' },
-      frames: E.slides.map((x, i) => { const ready = i < fr || curStage > 3; const gen = !ready && i === fr; return { n: '0' + (i + 1), t: titleOf(i), ready: ready, waiting: !ready, wait: gen ? 'gerando…' : 'na fila', cls: gen ? 'shimmer' : '', ar: reel ? '9 / 16' : '4 / 5', bg: ready ? (i % 2 ? '#0f1729' : '#121c30') : '#0B1220', bd: ready ? 'transparent' : 'var(--line)', decor: DECOR[i % 3], anim: ready ? 'fade 400ms var(--ease) both' : 'none', redo: () => { const frames = Object.assign({}, s.frames); frames[pc.id] = i; self.setState({ frames: frames, slide: i }); app.toast('Refazendo o frame ' + (i + 1), 'Os frames seguintes são gerados de novo.'); } }; }),
-      toReview: () => { setStage(4); app.toast('Em revisão', 'Rita confere contra o canon.'); },
-      // revisão
-      rev: { items: revItems.map((x) => ({ t: x[0], m: x[1], fixable: !x[2], bg: x[2] ? 'var(--flow-subtle)' : 'var(--warning-subtle)', fg: x[2] ? 'var(--flow)' : 'var(--warning)', icon: x[2] ? 'M5 12.5l4.5 4.5L19 7' : 'M12 7v6M12 17h.01' })), cls: revOk ? 'flow' : 'warn', label: revOk ? 'tudo certo' : '1 ajuste', blocked: !revOk, comment: revOk ? 'Corrigido. Pode aprovar: o post segue o canon do canal.' : 'Tudo segue o canon, menos o slide 3: a data precisa de fonte. Já deixei a correção pronta.' },
-      fixReview: () => { const f = Object.assign({}, s.fixed); f[pc.id] = true; self.setState({ fixed: f, slide: 2 }); },
-      approveReview: () => { setStage(5); app.toast('Revisão aprovada', 'O pacote está pronto para você.'); },
-      // pacote
-      caption: caption, capLen: caption.length, onCaption: (e) => { const c = Object.assign({}, s.caption); c[pc.id] = e.target.value; self.setState({ caption: c }); },
-      tags: TAGS.map((t) => ({ t: t, on: s.tags[t] ? 'on' : '', pick: () => { const tg = Object.assign({}, s.tags); tg[t] = !tg[t]; self.setState({ tags: tg }); } })),
-      slots: SLOTS.map((o, i) => ({ t: o[0], s: o[1], best: o[2], on: s.slot === i ? 'on' : '', pick: () => self.setState({ slot: i }) })),
-      slotLabel: SLOTS[s.slot][0], profName: P.name,
-      confirming: s.confirm, notConfirming: !s.confirm,
-      askPublish: () => self.setState({ confirm: true }), cancelPublish: () => self.setState({ confirm: false }),
-      doPublish: () => { const live = Object.assign({}, s.live); live[pc.id] = { reach: 0, likes: 0, saves: 0, comments: 0, t: 0, when: 'agora' }; setStage(6, { live: live }); app.toast('Publicado', pc.title + ' está no ar. As métricas chegam ao vivo.'); if (app.log) app.log('Carlos', 'aprovou a publicação de ' + pc.title, '#B7F34A'); },
-      // publicado
-      pubWhen: L ? L.when : '', isLive: !!L && L.t < 14,
-      pubNote: L && L.t < 14 ? 'Primeiros minutos. Os números abaixo atualizam sozinhos.' : 'Desempenho consolidado das primeiras horas.',
-      metrics: L ? [['Alcance', fmt(L.reach), 'contas únicas'], ['Curtidas', fmt(L.likes), 'na publicação'], ['Salvamentos', fmt(L.saves), 'meta do perfil: 900'], ['Comentários', fmt(L.comments), 'respondidos pela Íris']].map((m) => ({ k: m[0], v: m[1], n: m[2] })) : [],
-      // prévia
-      prof: { ini: P.ini, handle: P.handle }, phoneTag: pc.fmt,
-      prevBadge: STAGES[curStage].toLowerCase(), prevBadgeCls: curStage === 6 ? 'flow' : [1, 4, 5].indexOf(curStage) >= 0 ? 'warn' : '',
-      ph: ph, phDots: E.slides.map((_, i) => ({ bg: i === slide ? '#B7F34A' : 'rgba(244,246,242,.28)' })),
-      showCaption: curStage >= 5, caption2: caption,
-      prev: () => self.setState({ slide: (slide + n - 1) % n }), next: () => self.setState({ slide: (slide + 1) % n }),
-      // calendário
-      week: [['Seg', '27', [['12h', 'Carrossel ep. 12', 'publicado', 'pub', 'p12s']]], ['Ter', '28', [['12h', 'Stories ep. 12', 'publicado', 'pub', 'p12s']]], ['Qua', '29', [['19h', 'Reel ep. 13', STAGES[s.stage.p13r].toLowerCase(), s.stage.p13r === 6 ? 'pub' : 'prod', 'p13r']], true], ['Qui', '30', [['19h', 'Carrossel ep. 14', STAGES[s.stage.p14c].toLowerCase(), s.stage.p14c === 6 ? 'pub' : 'prod', 'p14c']]], ['Sex', '31', [['19h', 'Reel ep. 14', STAGES[s.stage.p14r].toLowerCase(), 'prod', 'p14r']]], ['Sáb', '01', []], ['Dom', '02', [['19h', 'Carrossel ep. 15', STAGES[s.stage.p15c].toLowerCase(), 'ag', 'p15c']]]].map((d) => {
-        const ST = { pub: ['var(--flow-subtle)', 'var(--flow-subtle-text)', 'var(--flow-subtle-line)'], ag: ['transparent', 'var(--text-secondary)', 'var(--line-strong)'], prod: ['var(--warning-subtle)', 'var(--warning)', 'transparent'] };
-        return { w: d[0], n: d[1], color: d[3] ? 'var(--flow)' : 'var(--text-muted)', bg: d[3] ? 'var(--flow-subtle)' : 'var(--surface-0)', bd: d[3] ? 'var(--flow-subtle-line)' : 'var(--line)', items: d[2].map((i) => ({ h: i[0], t: i[1], s: i[2], bg: ST[i[3]][0], fg: ST[i[3]][1], bd: ST[i[3]][2], pick: () => self.setState({ tab: 'prod', piece: i[4], view: null, slide: 0 }) })) };
+      newProfile: function () { self.setState({ modal: 'perfil', error: '', form: Object.assign({}, EMPTY_FORM) }); },
+      newProd: function () { self.setState({ modal: 'producao', error: '', form: Object.assign({}, EMPTY_FORM, { rede: rede ? rede.rede : 'instagram', formato: (rede && rede.formatos && rede.formatos[0]) || 'ig-carrossel-4x5' }) }); },
+      closeModal: function () { self.setState({ modal: '' }); },
+      saveModal: function () { self.saveModal(); },
+      modalOpen: !!s.modal, modalPerfil: s.modal === 'perfil', modalProducao: s.modal === 'producao', modalCanon: s.modal === 'canon',
+      modalTitle: s.modal === 'perfil' ? 'Novo perfil' : s.modal === 'producao' ? 'Nova produção' : 'Canon do canal',
+      form: s.form, formatosDoPerfil: formatosTxt,
+      onNome: field('nome'), onIniciais: field('iniciais'), onCor: field('cor'), onRede: field('rede'), onHandle: field('handle'), onFormatos: field('formatos'), onPosts: field('posts'), onPublicacao: field('publicacao'), onInk: field('ink'), onAccent: field('accent'), onFonteTitulo: field('fonteTitulo'), onFonteCorpo: field('fonteCorpo'), onTom: field('tom'), onCanon: field('canon'), onSerieNome: field('serieNome'), onSerieSigla: field('serieSigla'), onFormato: field('formato'), onTitulo: field('titulo'), onTemaForm: field('tema'), onFonteForm: field('fonte'), onObjetivo: field('objetivo'),
+      profiles: (s.perfis || []).map(function (p) {
+        var r = p.redes && p.redes[0];
+        var n = (s.pecas || []).filter(function (x) { return x.perfil_id === p.id && GATES[x.etapa]; }).length;
+        return { name: p.nome, ini: p.iniciais, net: r ? r.rede : '—', size: r && r.handle ? r.handle : '—', ck: n ? n + ' gate' : '', hasCk: n > 0, bd: p.id === s.perfilId ? 'var(--flow)' : 'var(--line)', bg: 'var(--surface-2)', avbg: p.cor_avatar || '#1BC5BD', avfg: '#0B1220', pick: function () { self.setState({ perfilId: p.id, pecaId: '', view: null, pautaDraft: null }); } };
       }),
-      canon: ['Tom investigativo, sem sensacionalismo', 'Fonte no último slide, sempre', 'Nunca afirmar conspiração como fato', 'Paleta do perfil: tinta, teal e papel', 'Máximo de 7 slides por carrossel', 'Rosto humano só com autorização'].map((t, i) => ({ n: '0' + (i + 1), t: t })),
-      goals: [['Retenção aos 3 s', 58, 70, '%'], ['Salvamentos por post', 640, 900, ''], ['Peças por semana', 4, 5, '']].map((g) => ({ t: g[0], cur: g[1] + g[3], goal: g[2] + g[3], pct: Math.round(g[1] / g[2] * 100), cls: g[1] / g[2] < 0.75 ? 'warn' : '' })),
-      lessons: [['26/10', 'Hook visual antes da narração. Já vale para o ep. 14.'], ['19/10', 'Carrossel com data no slide 1 salva 30% mais.'], ['12/10', 'Reel acima de 45 s perde metade da audiência.']].map((l) => ({ d: l[0], t: l[1] }))
+      kpis: [
+        { k: 'Peças no mês', v: String(mine.filter(function (p) { return (p.criado_em || '').slice(0, 7) === month; }).length) },
+        { k: 'Em produção', v: String(mine.filter(function (p) { return p.status === 'ativa' && p.etapa !== 'publicado'; }).length) },
+        { k: 'Agendadas', v: String(mine.filter(function (p) { return !!p.agendado_para; }).length) }
+      ],
+      tabs: [['prod', 'Produção', gatesN], ['cal', 'Calendário'], ['canon', 'Canon & Oráculo'], ['learn', 'Aprendizados']].map(function (t) { return { label: t[1], hasN: !!t[2], n: t[2] ? t[2] + ' com você' : '', on: s.tab === t[0] ? 'on' : '', pick: function () { self.setState({ tab: t[0] }); } }; }),
+      v: { prod: s.tab === 'prod', cal: s.tab === 'cal', canon: s.tab === 'canon', learn: s.tab === 'learn' },
+      piecesN: mine.length,
+      queue: mine.map(function (p) {
+        var st = stagesFor(fmtOf(p.formato_id)[3]);
+        var at = Math.max(0, st.indexOf(p.etapa));
+        return { fmt: fmtOf(p.formato_id)[2], title: p.titulo, stage: STAGE_LABEL[p.etapa] || p.etapa, due: p.agendado_para || '—', ck: !!GATES[p.etapa], bd: p.id === s.pecaId ? 'var(--flow)' : 'var(--line)', sh: 'none', pick: function () { self.setState({ pecaId: p.id, view: null, pautaDraft: null, selId: p.angulo_escolhido || '' }); }, dots: st.map(function (_, i) { return { bg: i <= at ? 'var(--flow)' : 'var(--line)' }; }) };
+      }),
+      pc: { ini: perfil ? perfil.iniciais : '—', fmt: peca ? fmtOf(peca.formato_id)[2] : '—', owner: perfil ? perfil.nome : '—', title: peca ? peca.titulo : 'Nenhuma peça', name: peca ? ('#' + peca.numero) : '—', due: peca && peca.agendado_para ? peca.agendado_para : '—' },
+      steps: stages.map(function (id, i) { return { n: String(i + 1).padStart(2, '0'), label: STAGE_LABEL[id], cls: i < curIndex ? 'done' : i === viewIndex ? 'on' : '', pick: function () { if (i <= curIndex) self.setState({ view: id }); } }; }),
+      past: locked, pastInfo: { t: STAGE_LABEL[viewed] || '', d: 'Etapa já cumprida. Só leitura.' }, backToCurrent: function () { self.setState({ view: null }); }, curStageLabel: STAGE_LABEL[cur] || cur,
+      sv: sv, locked: locked, custo: s.custo, error: s.error || '', loadingAngles: s.loading,
+      pauta: { tema: pauta.tema || '', fonte: pauta.fonte || '' },
+      onTema: function (e) { self.savePauta('tema', e.target.value); },
+      onFonte: function (e) { self.savePauta('fonte', e.target.value); },
+      goalsSeg: GOALS.map(function (g) { return { label: g, on: (pauta.objetivo || '') === g ? 'on' : '', pick: function () { self.savePauta('objetivo', g); } }; }),
+      askAngles: function () { self.suggest('angulos'); },
+      askScript: function () { self.suggest('roteiro'); },
+      advance: function () { if (locked || !peca) return; var api = studioApi(); if (!api) return; api.pecas.advance(peca.id).then(function (res) { self.after(res); }); },
+      angles: ((peca && peca.angulos) || []).map(function (a, i) { return { id: String(i + 1), title: a.gancho || '—', hook: a.promessa || '—', promessa: a.promessa || '—', prova: a.prova || '—', origem: a.origem || '—', pick: function () { self.setState({ selId: a.id }); } }; }),
+      selAngle: s.selId || ((peca && peca.angulo_escolhido) || '—'),
+      draft: s.draft,
+      onGancho: function (e) { self.setState({ draft: Object.assign({}, s.draft, { gancho: e.target.value }) }); },
+      onPromessa: function (e) { self.setState({ draft: Object.assign({}, s.draft, { promessa: e.target.value }) }); },
+      onProva: function (e) { self.setState({ draft: Object.assign({}, s.draft, { prova: e.target.value }) }); },
+      saveAngle: function () { self.saveAngle(); },
+      approveAngle: function () { if (!locked) self.gate('aprovado'); },
+      ajuste: function () { if (!locked) self.gate('ajuste'); },
+      script: slides.map(function (sl, i) {
+        var lim = i === 0 ? 60 : 140;
+        var len = (sl.titulo || '').length;
+        return { n: String(i + 1).padStart(2, '0'), t: sl.titulo || '', s: sl.apoio || '', len: len, lim: lim, cc: len > lim ? 'var(--warning)' : 'var(--text-muted)', onInput: function (e) { self.saveSlide(i, e.target.value); } };
+      }),
+      slidesN: slides.length, addSlide: function () { self.saveSlide(slides.length, ''); },
+      approveScript: function () { if (!locked && peca) { var api = studioApi(); api.pecas.advance(peca.id).then(function (res) { self.after(res); }); } },
+      art: { done: done, total: total, pct: total ? Math.round(done / total * 100) : 0, cls: '', cost: '—', job: '—', note: slots.length ? 'Cada frame precisa de um ativo.' : 'Nenhum slot ainda.', notReady: done < total || total === 0 },
+      frames: (slots.length ? slots : slides).map(function (item, i) {
+        var ready = !!(item.ativo_id);
+        return { n: String(i + 1).padStart(2, '0'), t: item.titulo || item.codigo || '—', ready: ready, waiting: !ready, wait: 'sem ativo', cls: '', ar: '4 / 5', bg: '#0B1220', bd: 'var(--line)', anim: 'none', decor: '', redo: function () {} };
+      }),
+      toReview: function () { if (!locked && peca) { var api = studioApi(); api.pecas.advance(peca.id).then(function (res) { self.after(res); }); } },
+      rev: { cls: revOk ? 'flow' : '', label: checks.length ? (revOk ? 'tudo certo' : 'ajuste') : '—', blocked: !revOk, comment: checks.length ? '—' : 'Sem checagem registrada.', items: (checks.length ? checks : [{ ok: false, nome: '—', detalhe: 'Sem checagem registrada.' }]).map(function (c) { return { t: c.nome || '—', m: c.detalhe || '—', fixable: false, bg: c.ok ? 'var(--flow-subtle)' : 'var(--warning-subtle)', fg: c.ok ? 'var(--flow)' : 'var(--warning)', icon: c.ok ? 'M5 12.5l4.5 4.5L19 7' : 'M12 7v6M12 17h.01' }; }) },
+      fixReview: function () {},
+      approveReview: function () { if (!locked) self.gate('aprovado'); },
+      caption: (peca && peca.legenda) || '',
+      onCaption: function (e) { self.patch({ legenda: e.target.value }); },
+      capLen: ((peca && peca.legenda) || '').length,
+      tagText: ((peca && peca.hashtags) || []).join(' '),
+      tagCount: ((peca && peca.hashtags) || []).length,
+      onTags: function (e) { var tags = e.target.value.split(/[\s,]+/).map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 5); self.patch({ hashtags: tags }); },
+      when: peca && peca.agendado_para ? peca.agendado_para : '',
+      onWhen: function (e) { self.patch({ agendado_para: e.target.value }); },
+      notConfirming: !s.confirm, confirming: s.confirm,
+      askPublish: function () { self.setState({ confirm: true }); },
+      cancelPublish: function () { self.setState({ confirm: false }); },
+      doPublish: function () { if (!locked) self.gate('aprovado'); },
+      slotLabel: (peca && peca.agendado_para) || '—',
+      profName: perfil ? perfil.nome : '—',
+      pubWhen: (peca && peca.atualizado_em) || '—', isLive: false, pubNote: '—',
+      metrics: [['Alcance', '—', ''], ['Curtidas', '—', ''], ['Salvamentos', '—', ''], ['Comentários', '—', '']].map(function (m) { return { k: m[0], v: m[1], n: m[2] }; }),
+      prof: { ini: perfil ? perfil.iniciais : '—', handle: rede && rede.handle ? rede.handle : '—' },
+      phoneTag: peca ? fmtOf(peca.formato_id)[2] : '—',
+      prevBadge: STAGE_LABEL[viewed] || '—', prevBadgeCls: GATES[viewed] ? 'warn' : '',
+      ph: { cls: '', h: 360, bg: '#0B1220', empty: !slides.length, art: false, decor: '', pos: slides.length ? '1 / ' + slides.length : '—' },
+      phDots: slides.map(function () { return { bg: 'rgba(244,246,242,.28)' }; }),
+      showCaption: viewed === 'pacote' || viewed === 'publicado',
+      caption2: (peca && peca.legenda) || '',
+      prev: function () {}, next: function () {},
+      week: week, weekLabel: ymd(monday) + ' a ' + ymd(sunday),
+      editInstr: function () { self.setState({ modal: 'canon', form: Object.assign({}, s.form, { tom: kit.tone || '', canon: (kit.canon || []).join('\n') }) }); },
+      canonText: ['Tom: ' + (kit.tone || '—')].concat(kit.canon || []).join('\n') || '—',
+      canon: (kit.canon || []).map(function (t, i) { return { n: String(i + 1).padStart(2, '0'), t: t }; }),
+      canonN: String((kit.canon || []).length) + ' regras'
     };
   }
+  savePauta(key, value) {
+    var self = this;
+    var peca = (this.state.pecas || []).filter(function (p) { return p.id === self.state.pecaId; })[0];
+    var base = this.state.pautaDraft || (peca && peca.pauta) || {};
+    var pauta = Object.assign({}, base); pauta[key] = value;
+    this.setState({ pautaDraft: pauta });
+    clearTimeout(this._pautaTimer);
+    this._pautaTimer = setTimeout(function () { self.patch({ pauta: pauta }); }, 400);
+  }
+  saveSlide(index, titulo) {
+    var peca = (this.state.pecas || []).filter(function (p) { return p.id === this.state.pecaId; }, this)[0];
+    if (!peca) return;
+    var slides = ((peca.roteiro && peca.roteiro.slides) || []).slice();
+    while (slides.length <= index) slides.push({ titulo: '', apoio: '' });
+    slides[index] = Object.assign({}, slides[index], { titulo: titulo });
+    this.patch({ roteiro: Object.assign({}, peca.roteiro || {}, { slides: slides }) });
+  }
+  saveAngle() {
+    var peca = (this.state.pecas || []).filter(function (p) { return p.id === this.state.pecaId; }, this)[0];
+    var d = this.state.draft;
+    if (!peca) return;
+    if ((peca.angulos || []).length >= 3) { this.setState({ error: 'já há 3 ângulos' }); return; }
+    if (!d.gancho && !d.promessa && !d.prova) return;
+    var list = (peca.angulos || []).concat([{ id: 'c' + Date.now().toString(36), gancho: d.gancho, promessa: d.promessa, prova: d.prova, origem: 'ceo' }]);
+    this.setState({ draft: { gancho: '', promessa: '', prova: '' }, selId: list[list.length - 1].id });
+    this.patch({ angulos: list });
+  }
+  suggest(alvo) {
+    var api = studioApi();
+    var self = this;
+    if (!api || !this.state.pecaId) return;
+    this.setState({ loading: true, error: '' });
+    api.pecas.suggest(this.state.pecaId, alvo).then(function (res) { self.after(res); });
+  }
+  saveModal() {
+    var api = studioApi();
+    var self = this;
+    var f = this.state.form;
+    if (!api) { this.setState({ error: 'Studio indisponível neste modo.' }); return; }
+    if (this.state.modal === 'canon') {
+      var perfil = (this.state.perfis || []).filter(function (p) { return p.id === self.state.perfilId; })[0];
+      if (!perfil) return;
+      var brand = Object.assign({}, perfil.brand_kit, { tone: f.tom, canon: lines(f.canon) });
+      api.perfis.save({ id: perfil.id, nome: perfil.nome, iniciais: perfil.iniciais, cor_avatar: perfil.cor_avatar, brand_kit: brand }).then(function (res) { self.after(res); });
+      return;
+    }
+    if (this.state.modal === 'perfil') {
+      var rede = String(f.rede || '').trim().toLowerCase();
+      if (['instagram', 'youtube', 'tiktok', 'linkedin'].indexOf(rede) < 0) { this.setState({ error: 'rede inválida' }); return; }
+      api.perfis.save({ nome: f.nome, iniciais: (f.iniciais || f.nome || 'ST').slice(0, 4), cor_avatar: f.cor || '#1BC5BD', brand_kit: kitFrom(f) }).then(function (res) {
+        if (!res || res.ok === false) { self.after(res); return; }
+        var formatos = String(f.formatos || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean);
+        api.redes.save(res.perfil.id, { rede: rede, handle: f.handle || '', formatos: formatos, posts_semana: Number(f.posts) || 0, publicacao: f.publicacao === 'darkflow' ? 'darkflow' : 'manual', ativo: true }).then(function (redeRes) {
+          if (!redeRes || redeRes.ok === false) { self.after(redeRes); return; }
+          self.setState({ perfilId: res.perfil.id });
+          self.after(res);
+        });
+      });
+      return;
+    }
+    if (this.state.modal === 'producao') {
+      if (!this.state.perfilId) { this.setState({ error: 'crie um perfil antes' }); return; }
+      var criar = function (serieId) {
+        api.pecas.create({ perfil_id: self.state.perfilId, serie_id: serieId, rede: String(f.rede || 'instagram').toLowerCase(), formato_id: f.formato, titulo: f.titulo || 'Sem título', pauta: { tema: f.tema, fonte: f.fonte, objetivo: f.objetivo } }).then(function (res) { self.after(res); });
+      };
+      if (String(f.serieNome || '').trim()) {
+        api.series.save({ perfil_id: this.state.perfilId, nome: f.serieNome, sigla: f.serieSigla }).then(function (res) {
+          if (!res || res.ok === false) { self.after(res); return; }
+          criar(res.serie.id);
+        });
+        return;
+      }
+      criar(null);
+    }
+  }
 }
+
 </script>
 </body>
 </html>
