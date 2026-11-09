@@ -2,6 +2,26 @@
  * Tipos compartilhados entre o processo principal (Node/Electron) e a interface (React).
  */
 
+import type {
+  GateDecision,
+  MotionJob,
+  Peca,
+  PecaCreateInput,
+  PecaFiltro,
+  PecaUpdate,
+  Perfil,
+  PerfilInput,
+  PerfilRede,
+  PerfilRedeInput,
+  PieceStage,
+  PreflightItem,
+  Prompt,
+  Serie,
+  StudioEvent,
+  SerieInput,
+} from './studio';
+import type { PreviewView } from './studioPreview';
+
 export type DomainId = 'op' | 'mod' | 'com' | 'soc' | 'kn' | 'est' | 'sys';
 
 export type EngineKind = 'anthropic' | 'claude' | 'cursor' | 'antigravity' | 'codex';
@@ -458,7 +478,95 @@ export interface TavirApi {
     read: (idOrPath: string, runId: string) => Promise<any>;
     openFolder: (idOrPath: string, runId?: string) => Promise<{ ok: boolean; error?: string }>;
   };
+  studio: {
+    perfis: {
+      list: () => Promise<Perfil[]>;
+      get: (id: string) => Promise<Perfil | null>;
+      save: (perfil: PerfilInput) => Promise<{ ok: boolean; perfil?: Perfil; error?: string }>;
+      remove: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    redes: {
+      save: (perfilId: string, rede: PerfilRedeInput) => Promise<{ ok: boolean; rede?: PerfilRede; error?: string }>;
+      remove: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    pecas: {
+      list: (filtro?: PecaFiltro) => Promise<Peca[]>;
+      get: (id: string) => Promise<Peca | null>;
+      create: (input: PecaCreateInput) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
+      update: (id: string, campos: PecaUpdate) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
+      gate: (id: string, etapa: PieceStage, decisao: GateDecision, comentario?: string) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
+      advance: (id: string) => Promise<{ ok: boolean; peca?: Peca; error?: string }>;
+      suggest: (id: string, alvo: 'angulos' | 'roteiro') => Promise<{ ok: boolean; peca?: Peca; error?: string; custo: string }>;
+    };
+    series: {
+      list: (perfilId?: string) => Promise<Serie[]>;
+      save: (input: SerieInput) => Promise<{ ok: boolean; serie?: Serie; error?: string }>;
+    };
+    preflight: () => Promise<PreflightItem[]>;
+    render: {
+      still: (id: string, frame?: number) => Promise<{ ok: boolean; renderId?: string; error?: string }>;
+      proxy: (id: string) => Promise<{ ok: boolean; renderId?: string; error?: string }>;
+      final: (id: string) => Promise<{ ok: boolean; renderId?: string; error?: string }>;
+      cancel: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    preview: {
+      get: (pecaId: string, frame?: number, formatId?: string) => Promise<PreviewView>;
+    };
+    revisao: {
+      get: (pecaId: string) => Promise<{ ok: boolean; error?: string; items: Array<{ nome: string; ok: boolean; detalhe: string }> }>;
+    };
+    pacote: {
+      build: (pecaId: string) => Promise<{ ok: boolean; dir?: string; error?: string }>;
+      open: (pecaId: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    arte: {
+      assign: (pecaId: string, index: number, source: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    prompts: {
+      compile: (pecaId: string) => Promise<{ ok: boolean; error?: string; count?: number }>;
+      list: (pecaId: string) => Promise<Array<Prompt & { codigo: string }>>;
+      nota: (promptId: string, nota: 'funcionou' | 'nao' | null) => Promise<{ ok: boolean; error?: string }>;
+      export: (pecaId: string) => Promise<{ ok: boolean; arquivo?: string; error?: string }>;
+      search: (perfilId: string, query: string) => Promise<Prompt[]>;
+      polish: (promptId: string) => Promise<{ ok: boolean; error?: string; custo: string }>;
+    };
+    inbox: {
+      scan: () => Promise<{ ligados: Array<{ arquivo: string; pecaId: string; slotId: string; versao: number; venceu: boolean }>; semDono: Array<{ arquivo: string; motivo: string }> }>;
+      assign: (fileName: string, slotId: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    audio: {
+      narrate: (pecaId: string, index?: number) => Promise<{ ok: boolean; error?: string; files?: string[] }>;
+      clip: (pecaId: string, index: number) => Promise<{ ok: boolean; error?: string; src?: string }>;
+      word: (pecaId: string, index: number, text: string) => Promise<{ ok: boolean; error?: string }>;
+      whisper: (confirm: boolean) => Promise<{ ok: boolean; error?: string }>;
+      captions: (pecaId: string) => Promise<{ ok: boolean; error?: string; count?: number }>;
+    };
+    motion: {
+      updateBase: () => Promise<{ ok: boolean; error?: string }>;
+      downloadBrowser: (confirm: boolean) => Promise<{ ok: boolean; error?: string; log: string }>;
+      ask: (input: { perfilId: string; preset: string; pedido: string }) => Promise<{ ok: boolean; job?: MotionJob; error?: string }>;
+      gate: (jobId: string, decisao: 'aprovado' | 'ajuste' | 'recusado', comentario?: string) => Promise<{ ok: boolean; job?: MotionJob; error?: string }>;
+      latest: (perfilId: string) => Promise<{ job: MotionJob | null; still: string }>;
+    };
+    sidecars: {
+      list: () => Promise<Array<{ id: string; nome: string; pasta: string; saudavel: boolean; nosso: boolean; dono: string; portas: number[] }>>;
+      start: (id: string) => Promise<{ ok: boolean; error?: string }>;
+      stop: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    };
+    darkflow: {
+      prepare: (pecaId: string) => Promise<{ ok: boolean; error?: string; scheduleId?: string }>;
+      activate: (pecaId: string) => Promise<{ ok: boolean; error?: string }>;
+      scorecard: () => Promise<Array<{ k: string; v: string }>>;
+      board: () => Promise<{ ok: boolean; error?: string; library: unknown[]; schedules: unknown[] }>;
+    };
+    docuflow: {
+      send: (pecaId: string) => Promise<{ ok: boolean; error?: string; slug?: string }>;
+      board: () => Promise<{ ok: boolean; error?: string; compositions: Array<{ projectId?: string; title?: string }>; jobs: Array<{ jobId?: string; status?: string }> }>;
+      open: () => Promise<{ ok: boolean }>;
+    };
+  };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
+  onStudioEvent: (callback: (event: StudioEvent) => void) => () => void;
 }
 
 declare global {

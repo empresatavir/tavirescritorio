@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Molduras F4</title>
+<style>
+  body { margin: 0; background: #121c30; color: #F4F6F2; font-family: "Segoe UI", sans-serif; display: flex; gap: 28px; padding: 28px; flex-wrap: wrap; }
+  .phone { width: 300px; padding: 12px; border-radius: 38px; background: #070d18; border: 1px solid rgba(244,246,242,.3); }
+  .screen { border-radius: 28px; overflow: hidden; background: #0B1220; }
+  .head, .icons, .cap { display: flex; align-items: center; gap: 8px; padding: 12px 14px; }
+  .icons { padding: 10px 14px 4px; }
+  .av { width: 26px; height: 26px; border-radius: 50%; background: #1BC5BD; color: #0B1220; display: grid; place-items: center; font-size: 9px; font-weight: 700; }
+  .media { position: relative; background: #0B1220 center/cover no-repeat; }
+  .safe-t, .safe-b, .safe-l, .safe-r { position: absolute; background: rgba(220,38,38,.35); pointer-events: none; }
+  .cap p { margin: 0; font-size: 11.5px; line-height: 1.45; color: #cbd3de; }
+  .grid { display: grid; grid-template-columns: repeat(3, 72px); gap: 6px; }
+  .cell { aspect-ratio: 3 / 4; overflow: hidden; border-radius: 8px; background: #0B1220 center/cover no-repeat; }
+  h2 { font-size: 13px; font-weight: 600; margin: 0 0 8px; }
+</style>
+</head>
+<body>
+<section id="feed">
+  <h2>Instagram 4:5</h2>
+  <div class="phone"><div class="screen">
+    <div class="head"><span class="av">MP</span><b style="font-size:12px">@multiverso</b></div>
+    <div class="media" style="aspect-ratio: 4 / 5; background-image: url('../F2/exemplo.png')"></div>
+    <div class="icons"><span>♡</span><span>💬</span><span style="margin-left:auto">▣</span></div>
+    <div class="cap"><p><b style="color:#F4F6F2">@multiverso</b> A capa entra com a palavra-chave em destaque e a legenda do feed para no limite, sem cortar a última palavra…mais</p></div>
+  </div></div>
+</section>
+<section id="reel">
+  <h2>Reel 9:16 com zona segura</h2>
+  <div class="phone"><div class="screen">
+    <div class="media" style="aspect-ratio: 9 / 16; background-image: url('../F2/exemplo.png')">
+      <div class="safe-t" style="left:0;right:0;top:0;height:11.46%"></div>
+      <div class="safe-b" style="left:0;right:0;bottom:0;height:21.88%"></div>
+      <div class="safe-l" style="left:0;top:11.46%;bottom:21.88%;width:5.56%"></div>
+      <div class="safe-r" style="right:0;top:11.46%;bottom:21.88%;width:12.96%"></div>
+      <div style="position:absolute;top:14px;left:14px;display:flex;gap:8px;align-items:center"><span class="av">MP</span><b style="font-size:12px">@multiverso</b></div>
+      <div style="position:absolute;right:10px;bottom:18%;display:flex;flex-direction:column;gap:10px">♡<br>💬<br>▣</div>
+      <p style="position:absolute;left:14px;right:48px;bottom:16px;margin:0;font-size:12px">Legenda do reel na base.</p>
+    </div>
+  </div></div>
+</section>
+<section id="thumb">
+  <h2>Miniatura YouTube</h2>
+  <div class="phone"><div class="screen" style="padding:10px;display:flex;flex-direction:column;gap:8px">
+    <div><div class="media" style="width:100%;aspect-ratio:16/9;border-radius:6px;background-image:url('../F2/exemplo.png')"></div><p style="margin:4px 0 0;font-size:11px">O caso que a capa não conta por inteiro</p><span style="font-size:10px;color:#aeb7c4">busca no celular</span></div>
+    <div><div class="media" style="width:46%;aspect-ratio:16/9;border-radius:6px;background-image:url('../F2/exemplo.png')"></div><p style="margin:4px 0 0;font-size:11px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">O caso que a capa não conta por inteiro</p><span style="font-size:10px;color:#aeb7c4">sugestão lateral</span></div>
+    <div><div class="media" style="width:88%;aspect-ratio:16/9;border-radius:6px;background-image:url('../F2/exemplo.png')"></div><p style="margin:4px 0 0;font-size:11px">O caso que a capa não conta por inteiro</p><span style="font-size:10px;color:#aeb7c4">tela inicial</span></div>
+  </div></div>
+</section>
+<section id="grid">
+  <h2>Grade do perfil 3:4</h2>
+  <div class="grid">
+    <div class="cell" style="background-image:url('../F2/exemplo.png')"></div>
+    <div class="cell" style="background-image:url('../F2/exemplo.png');filter:saturate(.7)"></div>
+    <div class="cell" style="background-image:url('../F2/exemplo.png');filter:brightness(.8)"></div>
+    <div class="cell" style="background-image:url('../F2/exemplo.png')"></div>
+    <div class="cell" style="background-image:url('../F2/exemplo.png');filter:hue-rotate(20deg)"></div>
+    <div class="cell" style="background-image:url('../F2/exemplo.png')"></div>
+    <div class="cell" style="background:#17223a"></div>
+    <div class="cell" style="background:#17223a"></div>
+    <div class="cell" style="background:#17223a"></div>
+  </div>
+</section>
+</body>
+</html>

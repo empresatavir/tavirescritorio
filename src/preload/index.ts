@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import type { StudioEvent } from '../shared/studio';
 import type { TavirApi, RunEvent, EngineSettings, TaskItem } from '../shared/types';
 
 let cachedVaultIndexer: any = null;
@@ -200,6 +201,98 @@ const api: TavirApi = {
     list: (idOrPath: string, limit?: number) => ipcRenderer.invoke('runs:list', idOrPath, limit),
     read: (idOrPath: string, runId: string) => ipcRenderer.invoke('runs:read', idOrPath, runId),
     openFolder: (idOrPath: string, runId?: string) => ipcRenderer.invoke('runs:openFolder', idOrPath, runId),
+  },
+  studio: {
+    perfis: {
+      list: () => ipcRenderer.invoke('studio:perfis:list'),
+      get: (id: string) => ipcRenderer.invoke('studio:perfis:get', id),
+      save: (perfil) => ipcRenderer.invoke('studio:perfis:save', perfil),
+      remove: (id: string) => ipcRenderer.invoke('studio:perfis:remove', id),
+    },
+    redes: {
+      save: (perfilId: string, rede) => ipcRenderer.invoke('studio:redes:save', perfilId, rede),
+      remove: (id: string) => ipcRenderer.invoke('studio:redes:remove', id),
+    },
+    pecas: {
+      list: (filtro) => ipcRenderer.invoke('studio:pecas:list', filtro),
+      get: (id: string) => ipcRenderer.invoke('studio:pecas:get', id),
+      create: (input) => ipcRenderer.invoke('studio:pecas:create', input),
+      update: (id: string, campos) => ipcRenderer.invoke('studio:pecas:update', id, campos),
+      gate: (id: string, etapa, decisao, comentario) => ipcRenderer.invoke('studio:pecas:gate', id, etapa, decisao, comentario),
+      advance: (id: string) => ipcRenderer.invoke('studio:pecas:advance', id),
+      suggest: (id: string, alvo: 'angulos' | 'roteiro') => ipcRenderer.invoke('studio:pecas:suggest', id, alvo),
+    },
+    series: {
+      list: (perfilId?: string) => ipcRenderer.invoke('studio:series:list', perfilId),
+      save: (input) => ipcRenderer.invoke('studio:series:save', input),
+    },
+    preflight: () => ipcRenderer.invoke('studio:preflight'),
+    render: {
+      still: (id: string, frame?: number) => ipcRenderer.invoke('studio:render:still', id, frame),
+      proxy: (id: string) => ipcRenderer.invoke('studio:render:proxy', id),
+      final: (id: string) => ipcRenderer.invoke('studio:render:final', id),
+      cancel: (id: string) => ipcRenderer.invoke('studio:render:cancel', id),
+    },
+    preview: {
+      get: (pecaId: string, frame?: number, formatId?: string) => ipcRenderer.invoke('studio:preview:get', pecaId, frame, formatId),
+    },
+    revisao: {
+      get: (pecaId: string) => ipcRenderer.invoke('studio:revisao:get', pecaId),
+    },
+    pacote: {
+      build: (pecaId: string) => ipcRenderer.invoke('studio:pacote:build', pecaId),
+      open: (pecaId: string) => ipcRenderer.invoke('studio:pacote:open', pecaId),
+    },
+    arte: {
+      assign: (pecaId: string, index: number, source: string) => ipcRenderer.invoke('studio:arte:assign', pecaId, index, source),
+    },
+    prompts: {
+      compile: (pecaId: string) => ipcRenderer.invoke('studio:prompts:compile', pecaId),
+      list: (pecaId: string) => ipcRenderer.invoke('studio:prompts:list', pecaId),
+      nota: (promptId: string, nota: 'funcionou' | 'nao' | null) => ipcRenderer.invoke('studio:prompts:nota', promptId, nota),
+      export: (pecaId: string) => ipcRenderer.invoke('studio:prompts:export', pecaId),
+      search: (perfilId: string, query: string) => ipcRenderer.invoke('studio:prompts:search', perfilId, query),
+      polish: (promptId: string) => ipcRenderer.invoke('studio:prompts:polish', promptId),
+    },
+    inbox: {
+      scan: () => ipcRenderer.invoke('studio:inbox:scan'),
+      assign: (fileName: string, slotId: string) => ipcRenderer.invoke('studio:inbox:assign', fileName, slotId),
+    },
+    audio: {
+      narrate: (pecaId: string, index?: number) => ipcRenderer.invoke('studio:audio:narrate', pecaId, index),
+      clip: (pecaId: string, index: number) => ipcRenderer.invoke('studio:audio:clip', pecaId, index),
+      word: (pecaId: string, index: number, text: string) => ipcRenderer.invoke('studio:audio:word', pecaId, index, text),
+      whisper: (confirm: boolean) => ipcRenderer.invoke('studio:audio:whisper', confirm),
+      captions: (pecaId: string) => ipcRenderer.invoke('studio:audio:captions', pecaId),
+    },
+    motion: {
+      updateBase: () => ipcRenderer.invoke('studio:motion:updateBase'),
+      downloadBrowser: (confirm: boolean) => ipcRenderer.invoke('studio:motion:downloadBrowser', confirm),
+      ask: (input) => ipcRenderer.invoke('studio:motion:ask', input),
+      gate: (jobId, decisao, comentario) => ipcRenderer.invoke('studio:motion:gate', jobId, decisao, comentario),
+      latest: (perfilId) => ipcRenderer.invoke('studio:motion:latest', perfilId),
+    },
+    sidecars: {
+      list: () => ipcRenderer.invoke('studio:sidecars:list'),
+      start: (id) => ipcRenderer.invoke('studio:sidecars:start', id),
+      stop: (id) => ipcRenderer.invoke('studio:sidecars:stop', id),
+    },
+    darkflow: {
+      prepare: (pecaId) => ipcRenderer.invoke('studio:darkflow:prepare', pecaId),
+      activate: (pecaId) => ipcRenderer.invoke('studio:darkflow:activate', pecaId),
+      scorecard: () => ipcRenderer.invoke('studio:darkflow:scorecard'),
+      board: () => ipcRenderer.invoke('studio:darkflow:board'),
+    },
+    docuflow: {
+      send: (pecaId) => ipcRenderer.invoke('studio:docuflow:send', pecaId),
+      board: () => ipcRenderer.invoke('studio:docuflow:board'),
+      open: () => ipcRenderer.invoke('studio:docuflow:open'),
+    },
+  },
+  onStudioEvent: (callback) => {
+    const handler = (_e: Electron.IpcRendererEvent, event: StudioEvent) => callback(event);
+    ipcRenderer.on('studio:event', handler);
+    return () => ipcRenderer.removeListener('studio:event', handler);
   },
   onEvent: (callback: (event: RunEvent) => void) => {
     const handler = (_e: Electron.IpcRendererEvent, event: RunEvent) => callback(event);

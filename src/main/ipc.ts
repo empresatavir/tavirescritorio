@@ -4,6 +4,7 @@ import { engineHub } from './drivers/engineHub';
 import { criarWorktree, removerWorktree } from './gitFlow';
 import { VaultIndexer } from './indexer';
 import type { EngineKind, TaskItem, EngineSettings, RunEvent, JobItem } from '../shared/types';
+import { registerStudioIpc } from './studio/ipcHandlers';
 
 /** Janela atual (dialogs). Atualizada a cada criarJanela. */
 let mainWin: BrowserWindow | null = null;
@@ -1112,5 +1113,7 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
       return [];
     }
   });
+
+  registerStudioIpc(handle);
 }
 

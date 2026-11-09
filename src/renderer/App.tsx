@@ -595,7 +595,12 @@ export default function App() {
             {screen === 'studio' && <StudioView onOpenModal={openModalWithName} onNavigate={setScreen} />}
             {screen === 'raiox' && <RaioXView onOpenModal={openModalWithName} onNavigate={setScreen} />}
             {screen === 'flow' && <ModulosView onOpenModal={openModalWithName} onNavigate={setScreen} />}
-            {screen === 'edicao' && <StudioView onOpenModal={openModalWithName} onNavigate={setScreen} />}
+            {screen === 'edicao' && (
+              <div className="page" style={{ padding: 24 }}>
+                <h1>Edição</h1>
+                <p>Modo dev — a tela real é a do app empacotado.</p>
+              </div>
+            )}
 
             {/* COMERCIAL */}
             {(screen === 'funil' || screen === 'propostas' || screen === 'financas' || screen === 'personas') && (

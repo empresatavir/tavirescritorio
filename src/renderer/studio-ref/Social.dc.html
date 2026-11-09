@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Social</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./tavir.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div class="tv" style="min-height: 100%">
+<div class="page" data-tavir-page="Social.dc.html">
+  <div class="phead">
+    <div class="grow"><div class="eyebrow">Social</div><h1 style="margin-top: 8px">{{title}}</h1><p>{{lead}}</p></div>
+  </div>
+  <div class="tabs"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.hasN}}" hint-placeholder-val="{{false}}"><span class="n">{{t.n}}</span></sc-if></button></sc-for></div>
+
+  <sc-if value="{{isSocial}}" hint-placeholder-val="{{true}}">
+    <div class="g4"><sc-for list="{{scorecard}}" as="m" hint-placeholder-count="1"><div class="metric"><span class="eyebrow">{{m.k}}</span><strong>{{m.v}}</strong></div></sc-for></div>
+    <div class="card" style="overflow-x: auto">
+      <div class="card-h"><h3>Perfis</h3><div class="grow"></div><span class="eyebrow">cadastro</span></div>
+      <table class="tbl"><thead><tr><th>Perfil</th><th>Rede</th><th>Seguidores</th><th>Tendência</th><th>Engajamento</th><th>Posts</th><th>Melhor horário</th></tr></thead>
+        <tbody><sc-for list="{{profiles}}" as="p" hint-placeholder-count="3"><tr onClick="{{p.go}}" style="cursor: pointer"><td><b>{{p.name}}</b></td><td class="sec">{{p.net}}</td><td class="num">{{p.f}}</td><td><svg width="96" height="26" viewBox="0 0 96 26" aria-hidden="true"><polyline points="{{p.spark}}" fill="none" stroke="var(--flow)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></td><td class="num">{{p.e}}</td><td class="num muted">{{p.posts}}</td><td class="num muted">{{p.best}}</td></tr></sc-for></tbody>
+      </table>
+    </div>
+    <div style="display: flex; gap: 16px; flex-wrap: wrap">
+      <section class="card" style="flex: 2 1 520px">
+        <div class="card-h"><h3>Próximos 7 dias</h3><div class="grow"></div><button class="link" onClick="{{goStudio}}">Studio →</button></div>
+        <div class="rows"><sc-for list="{{upcoming}}" as="u" hint-placeholder-count="5"><div class="row" style="cursor: default"><span class="num muted" style="font-size: 12px; width: 92px">{{u.d}}</span><div class="grow"><div class="t" style="font-size: 13px">{{u.t}}</div><div class="m">{{u.net}} · {{u.who}}</div></div><span class="badge {{u.cls}}">{{u.st}}</span></div></sc-for></div>
+      </section>
+      <section class="card" style="flex: 1 1 300px">
+        <div class="card-h"><h3>Plataformas</h3><div class="grow"></div><span class="eyebrow">{{platOk}} redes</span></div>
+        <div class="rows"><sc-for list="{{plats}}" as="p" hint-placeholder-count="5"><div class="row" style="cursor: default"><i style="width: 8px; height: 8px; border-radius: 50%; background: {{p.color}}"></i><div class="grow"><div class="t" style="font-size: 13px">{{p.n}}</div><div class="m">{{p.m}}</div></div><sc-if value="{{p.off}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{p.connect}}">Conectar</button></sc-if></div></sc-for></div>
+      </section>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{isComms}}" hint-placeholder-val="{{false}}">
+    <section class="card pad"><h3>Em breve</h3><p class="muted">A caixa de mensagens fica fora deste trabalho.</p></section>
+  </sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"app":{"editor":null},"view":{"editor":"enum","options":["social","comms"],"default":"social"},"spot":{"editor":null},"$preview":{"width":1176,"height":1000}}'>
+const STAGE_LABEL = { pauta: 'Pauta', angulo: 'Ângulo', roteiro: 'Roteiro', arte: 'Arte', audio: 'Áudio', revisao: 'Revisão', pacote: 'Pacote', publicado: 'Publicado' };
+function studioApi() {
+  var w = typeof window !== 'undefined' ? window : null;
+  var t = w && w.tavir ? w.tavir : (w && w.parent && w.parent.tavir ? w.parent.tavir : null);
+  return t && t.studio ? t.studio : null;
+}
+function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { v: 'social', perfis: [], pecas: [], scorecard: [{ k: 'scorecard', v: '—' }] };
+    var self = this;
+    setTimeout(function () { self.reload(); }, 0);
+  }
+  reload() {
+    var api = studioApi();
+    var self = this;
+    if (!api) return;
+    Promise.all([api.perfis.list(), api.pecas.list()]).then(function (all) {
+      self.setState({ perfis: all[0] || [], pecas: all[1] || [] });
+    }).catch(function () {});
+    if (api.darkflow) api.darkflow.scorecard().then(function (rows) { self.setState({ scorecard: rows && rows.length ? rows : [{ k: 'scorecard', v: '—' }] }); }).catch(function () { self.setState({ scorecard: [{ k: 'scorecard', v: '—' }] }); });
+  }
+  renderVals() {
+    var self = this;
+    var s = this.state;
+    var app = this.props.app;
+    var pv = this.props.view;
+    var view = app && (pv === 'social' || pv === 'comms') ? pv : s.v;
+    var rows = [];
+    (s.perfis || []).forEach(function (p) {
+      var redes = p.redes && p.redes.length ? p.redes : [null];
+      redes.forEach(function (r) {
+        var posts = (s.pecas || []).filter(function (x) { return x.perfil_id === p.id && (!r || x.rede === r.rede); }).length;
+        rows.push({ name: p.nome, net: r ? r.rede : '—', f: '—', spark: '0,13 96,13', e: '—', posts: String(posts), best: '—', go: function () { if (app && app.go) app.go('studio'); } });
+      });
+    });
+    var limit = new Date(); limit.setDate(limit.getDate() + 7);
+    var upcoming = (s.pecas || []).filter(function (p) {
+      if (!p.agendado_para) return false;
+      var d = new Date(p.agendado_para);
+      return !Number.isNaN(d.getTime()) && d <= limit;
+    }).map(function (p) {
+      var who = (s.perfis || []).filter(function (x) { return x.id === p.perfil_id; })[0];
+      return { d: p.agendado_para, t: p.titulo, net: p.rede, who: who ? who.nome : '—', st: STAGE_LABEL[p.etapa] || p.etapa, cls: p.etapa === 'publicado' ? 'flow' : '' };
+    });
+    var plats = [];
+    (s.perfis || []).forEach(function (p) { (p.redes || []).forEach(function (r) { plats.push({ n: r.rede, m: r.handle || '—', off: false, color: 'var(--flow)', connect: function () {} }); }); });
+    return {
+      title: view === 'comms' ? 'Comunicações' : 'Perfis e calendário',
+      lead: view === 'comms' ? 'Em breve.' : 'Perfis, redes e o que está agendado.',
+      isSocial: view === 'social', isComms: view === 'comms',
+      tabs: [
+        { label: 'Perfis e calendário', hasN: false, n: '', on: view === 'social' ? 'on' : '', pick: function () { if (app && app.go) app.go('social'); else self.setState({ v: 'social' }); } },
+        { label: 'Comunicações', hasN: false, n: '', on: view === 'comms' ? 'on' : '', pick: function () { if (app && app.go) app.go('comms'); else self.setState({ v: 'comms' }); } }
+      ],
+      goStudio: function () { if (app && app.go) app.go('studio'); },
+      scorecard: s.scorecard || [{ k: 'scorecard', v: '—' }],
+      profiles: rows, upcoming: upcoming, platOk: plats.length, plats: plats
+    };
+  }
+}
+
+</script>
+</body>
+</html>

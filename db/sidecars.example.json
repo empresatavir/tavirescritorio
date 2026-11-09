@@ -1,0 +1,25 @@
+{
+  "sistemas": [
+    {
+      "id": "darkflow",
+      "nome": "DarkFlow",
+      "pasta": "C:/Users/carlo/Downloads/Projetos a Estudar/DarkFlow",
+      "comando": "Iniciar-DarkFlow.bat",
+      "healthUrl": "http://127.0.0.1:8765/api/health",
+      "portas": [8765]
+    },
+    {
+      "id": "docuflow",
+      "nome": "Docuflow",
+      "pasta": "C:/Users/carlo/Downloads/Projetos a Estudar/AgenciaIA/projetos_tavir/docuflow",
+      "comando": "iniciar.bat",
+      "healthUrl": "http://127.0.0.1:5000/docs",
+      "portas": [5000, 3000],
+      "conflito": {
+        "com": "darkflow",
+        "porta": 8765,
+        "motivo": "A API do DarkFlow e o TTS local do Docuflow usam a porta 8765. Os dois não sobem juntos."
+      }
+    }
+  ]
+}

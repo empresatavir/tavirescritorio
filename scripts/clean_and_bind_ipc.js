@@ -702,6 +702,15 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
         }).catch(function() {});
       }
     }
+    if (tavir && tavir.studio && tavir.studio.sidecars) {
+      const loadSide = function() {
+        tavir.studio.sidecars.list().then(function(rows) {
+          self.setState({ sidecars: Array.isArray(rows) ? rows : [] });
+        }).catch(function() {});
+      };
+      self.loadSidecars = loadSide;
+      loadSide();
+    }
   }
   renderVals() {`
   );
@@ -1140,6 +1149,26 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     );
   }
 
+  const sistemaHead = '<div class="cfg-head"><div class="grow"><h2 class="cfg-h">Sistema</h2><p class="cfg-lead">Versão em uso, portas, caminhos e serviços do escritório.</p></div></div>';
+  if (cfgHtml.includes(sistemaHead) && !cfgHtml.includes('Sistemas ligados')) {
+    cfgHtml = cfgHtml.replace(
+      sistemaHead,
+      `${sistemaHead}
+        <div class="cfg-head"><div class="grow"><h2 class="cfg-h">Sistemas ligados</h2><p class="cfg-lead">DarkFlow e Docuflow sobem pelos scripts deles. O Escritório não publica.</p></div></div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <sc-for list="{{sidecars}}" as="side" hint-placeholder-count="2"><div class="card" style="padding: 14px; background: var(--surface-0); display: flex; gap: 12px; align-items: center"><div class="grow"><div style="font-weight: 600">{{side.nome}}</div><div class="mono" style="margin-top: 4px; font-size: 12px">{{side.pasta}}</div><div class="muted" style="margin-top: 4px; font-size: 12px">{{side.estado}}</div></div><button class="btn secondary" onClick="{{side.start}}">iniciar</button><button class="btn ghost" onClick="{{side.stop}}">parar</button></div></sc-for>
+        </div>`
+    );
+  }
+  const sysLine = "sys: [['API', '127.0.0.1:9001'], ['Frontend (Vite)', '127.0.0.1:9002'], ['Banco', '~/tavir/escritorio.db'], ['Workspaces', '~/tavir/workspaces/']].map((x) => ({ k: x[0], v: x[1] })),";
+  if (cfgHtml.includes(sysLine) && !cfgHtml.includes('sidecars: (s.sidecars')) {
+    cfgHtml = cfgHtml.replace(
+      sysLine,
+      `${sysLine}
+      sidecars: (s.sidecars || []).map((side) => ({ nome: side.nome, pasta: side.pasta, estado: side.saudavel ? 'no ar' : (side.dono || 'parado'), start: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.start(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não subiu'); if (self.loadSidecars) self.loadSidecars(); }); }, stop: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.stop(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não parou'); if (self.loadSidecars) self.loadSidecars(); }); } })),`
+    );
+  }
+
   manifest[cfgUuid].data = zlib.gzipSync(Buffer.from(cfgHtml, 'utf8')).toString('base64');
   console.log('Configurações (Módulos + Motores SDK local + Antigravity) atualizadas!');
 }
@@ -1285,6 +1314,27 @@ if (manifest[conUuid] && manifest[conUuid].compressed) {
   manifest[conUuid].data = zlib.gzipSync(Buffer.from(conHtml, 'utf8')).toString('base64');
   console.log('Conhecimento (Cérebro + Memória e Biblioteca + Indexação na Abertura) atualizado!');
 }
+
+// 1.3 Studio — páginas próprias no lugar da referência
+function injectStudioPage(uuid, relName, label) {
+  const file = path.resolve(__dirname, '../src/renderer/studio-ref', relName);
+  if (!fs.existsSync(file)) {
+    throw new Error(label + ': src/renderer/studio-ref/' + relName + ' não encontrado.');
+  }
+  if (!manifest[uuid]) {
+    throw new Error(label + ': uuid ' + uuid + ' ausente no manifest.');
+  }
+  let page = fs.readFileSync(file, 'utf8');
+  page = page.replace(/<script src="\.\/vendor\/react\.js"><\/script>\s*/g, '');
+  page = page.replace(/<script src="\.\/vendor\/react-dom\.js"><\/script>\s*/g, '');
+  manifest[uuid].data = zlib.gzipSync(Buffer.from(page, 'utf8')).toString('base64');
+  manifest[uuid].compressed = true;
+  console.log(label + ': ' + relName + ' injetado.');
+}
+injectStudioPage('16017d18-269b-4357-ad7b-a062bb3012c1', 'Studio.dc.html', 'Studio');
+injectStudioPage('4de11384-84d7-4565-aa6e-7c22c5e8ecbd', 'Social.dc.html', 'Social');
+injectStudioPage('1661c4ce-e992-453f-aac1-d7e20e73d1c5', 'Flow.dc.html', 'Flow');
+injectStudioPage('508d093f-1272-42dd-9a7b-df8fdbe3246d', 'Edicao.dc.html', 'Edição');
 
 // ==========================================
 // 2. LIMPAR PÁGINA RAIZ __bundler/template

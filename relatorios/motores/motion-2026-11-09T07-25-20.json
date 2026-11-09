@@ -1,0 +1,142 @@
+[
+  {
+    "motor": "cursor",
+    "label": "Cursor",
+    "ok": true,
+    "blocker": "",
+    "scenarios": [
+      {
+        "preset": "titulo-entrada",
+        "pedido": "título entra com mola de baixo para cima, palavra-chave em accent, 3 s, 1080×1920",
+        "ok": true,
+        "ms": 214353,
+        "attempts": 1,
+        "failedCheck": "",
+        "detail": "checagens passaram; aguardando o gate do CEO"
+      },
+      {
+        "preset": "legenda-palavra",
+        "pedido": "legenda palavra por palavra a partir de um array de palavras com tempo, destaque na palavra ativa",
+        "ok": true,
+        "ms": 240725,
+        "attempts": 1,
+        "failedCheck": "",
+        "detail": "checagens passaram; aguardando o gate do CEO"
+      },
+      {
+        "preset": "zoom-lento",
+        "pedido": "imagem de fundo com zoom de zoomFrom a zoomTo durante a cena, sem tremer",
+        "ok": true,
+        "ms": 227028,
+        "attempts": 1,
+        "failedCheck": "",
+        "detail": "checagens passaram; aguardando o gate do CEO"
+      }
+    ]
+  },
+  {
+    "motor": "claude",
+    "label": "Claude",
+    "ok": false,
+    "blocker": "Claude sem login. CLI encontrado · sem login",
+    "scenarios": [
+      {
+        "preset": "titulo-entrada",
+        "pedido": "título entra com mola de baixo para cima, palavra-chave em accent, 3 s, 1080×1920",
+        "ok": false,
+        "ms": 0,
+        "attempts": 0,
+        "failedCheck": "",
+        "detail": "Claude sem login. CLI encontrado · sem login"
+      },
+      {
+        "preset": "legenda-palavra",
+        "pedido": "legenda palavra por palavra a partir de um array de palavras com tempo, destaque na palavra ativa",
+        "ok": false,
+        "ms": 0,
+        "attempts": 0,
+        "failedCheck": "",
+        "detail": "Claude sem login. CLI encontrado · sem login"
+      },
+      {
+        "preset": "zoom-lento",
+        "pedido": "imagem de fundo com zoom de zoomFrom a zoomTo durante a cena, sem tremer",
+        "ok": false,
+        "ms": 0,
+        "attempts": 0,
+        "failedCheck": "",
+        "detail": "Claude sem login. CLI encontrado · sem login"
+      }
+    ]
+  },
+  {
+    "motor": "codex",
+    "label": "Codex",
+    "ok": false,
+    "blocker": "Codex sem login. CLI encontrado · sem login",
+    "scenarios": [
+      {
+        "preset": "titulo-entrada",
+        "pedido": "título entra com mola de baixo para cima, palavra-chave em accent, 3 s, 1080×1920",
+        "ok": false,
+        "ms": 0,
+        "attempts": 0,
+        "failedCheck": "",
+        "detail": "Codex sem login. CLI encontrado · sem login"
+      },
+      {
+        "preset": "legenda-palavra",
+        "pedido": "legenda palavra por palavra a partir de um array de palavras com tempo, destaque na palavra ativa",
+        "ok": false,
+        "ms": 0,
+        "attempts": 0,
+        "failedCheck": "",
+        "detail": "Codex sem login. CLI encontrado · sem login"
+      },
+      {
+        "preset": "zoom-lento",
+        "pedido": "imagem de fundo com zoom de zoomFrom a zoomTo durante a cena, sem tremer",
+        "ok": false,
+        "ms": 0,
+        "attempts": 0,
+        "failedCheck": "",
+        "detail": "Codex sem login. CLI encontrado · sem login"
+      }
+    ]
+  },
+  {
+    "motor": "antigravity",
+    "label": "Antigravity",
+    "ok": true,
+    "blocker": "",
+    "scenarios": [
+      {
+        "preset": "titulo-entrada",
+        "pedido": "título entra com mola de baixo para cima, palavra-chave em accent, 3 s, 1080×1920",
+        "ok": true,
+        "ms": 290762,
+        "attempts": 1,
+        "failedCheck": "",
+        "detail": "checagens passaram; aguardando o gate do CEO"
+      },
+      {
+        "preset": "legenda-palavra",
+        "pedido": "legenda palavra por palavra a partir de um array de palavras com tempo, destaque na palavra ativa",
+        "ok": true,
+        "ms": 261477,
+        "attempts": 1,
+        "failedCheck": "",
+        "detail": "checagens passaram; aguardando o gate do CEO"
+      },
+      {
+        "preset": "zoom-lento",
+        "pedido": "imagem de fundo com zoom de zoomFrom a zoomTo durante a cena, sem tremer",
+        "ok": true,
+        "ms": 307876,
+        "attempts": 1,
+        "failedCheck": "",
+        "detail": "checagens passaram; aguardando o gate do CEO"
+      }
+    ]
+  }
+]
