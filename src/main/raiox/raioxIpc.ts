@@ -16,19 +16,25 @@ import {
   caseIdFromUuid,
   approveDocuments,
   closeCase,
+  closeExecution,
   createCase,
+  linkFabrica,
   present,
   removeEvidence,
   reviewEvidence,
   recordDelivery,
+  recordMetric,
   setDebrief,
   setPriority,
+  startExecution,
   updateFrontier,
   type RaioxCaseInput,
   type RaioxDebriefInput,
   type RaioxEvidenceInput,
   type RaioxPriorityInput,
+  checkStep,
 } from './raioxRules';
+import { createOrAbsorbProjectRecord } from '../project-fs';
 import { syncCases } from './raioxBridge';
 import { analyse, analysisLive, collectLocalFor, stopAnalyse } from './raioxAnalyse';
 import { documentPath, renderPdfs, writeDocuments } from './raioxDocs';
@@ -374,6 +380,89 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:close', (_e, id: string) => {
     try {
       return mutate(id, (c) => closeCase(c, new Date().toISOString()));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:startExecution', (_e, id: string) => {
+    try {
+      const book = requirePlaybook(readCase(raioxRoot(), id).priority?.gapId || '');
+      return mutate(id, (c) => startExecution(c, { version: book.version, steps: book.steps.map((step) => ({ n: step.n })) }, new Date().toISOString()));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:recordMetric', (_e, id: string, metric: { key: string; label: string; value: number; unit: string; moment: 'd0' | 'd30'; source: string }) => {
+    try {
+      const now = new Date().toISOString();
+      return mutate(id, (c) => recordMetric(c, {
+        key: String(metric?.key || ''),
+        label: String(metric?.label || metric?.key || ''),
+        value: Number(metric?.value),
+        unit: String(metric?.unit || ''),
+        at: now,
+        moment: metric?.moment === 'd30' ? 'd30' : 'd0',
+        source: String(metric?.source || ''),
+      }));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:checkStep', (_e, id: string, step: number, proof: { kind: 'arquivo' | 'link' | 'nota'; value: string; sha256?: string }) => {
+    try {
+      const current = readCase(raioxRoot(), id);
+      const book = requirePlaybook(current.priority?.gapId || current.execution?.gapId || '');
+      const kind = proof?.kind === 'arquivo' || proof?.kind === 'link' ? proof.kind : 'nota';
+      let value = String(proof?.value || '');
+      let sha256 = proof?.sha256;
+      if (kind === 'arquivo' && value && !sha256) {
+        const stored = storeFile(raioxRoot(), id, 'execucao', value);
+        value = stored.file;
+        sha256 = stored.sha256;
+      }
+      return mutate(id, (c) => checkStep(c, Number(step), { kind, value, sha256 }, { version: book.version, steps: book.steps.map((item) => ({ n: item.n })) }, new Date().toISOString()));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:closeExecution', (_e, id: string) => {
+    try {
+      const current = readCase(raioxRoot(), id);
+      const book = requirePlaybook(current.execution?.gapId || current.priority?.gapId || '');
+      return mutate(id, (c) => closeExecution(c, { version: book.version, steps: book.steps.map((step) => ({ n: step.n })) }, new Date().toISOString()));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:openPlaybook', async (_e, id: string) => {
+    try {
+      const book = requirePlaybook(id);
+      const message = await shell.openPath(path.join(process.cwd(), 'raiox', 'playbooks', book.file));
+      return message ? { ok: false, error: message } : { ok: true };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:openFabrica', (_e, id: string) => {
+    try {
+      const current = readCase(raioxRoot(), id);
+      const offer = current.debrief?.offerId;
+      if (offer !== 'pagina_vendas' && offer !== 'criacao_oferta') throw new RaioxError('Esta oferta não abre projeto na Fábrica.');
+      const created = createOrAbsorbProjectRecord({
+        name: `Raio-X ${current.id}`,
+        company: current.company || 'TAVIR',
+        ownership: 'interno',
+        template_category: offer === 'criacao_oferta' ? 'oferta' : 'lp',
+        mode: 'zero',
+        baseline: false,
+      });
+      return mutate(id, (c) => linkFabrica(c, String(created?.id || ''), new Date().toISOString()));
     } catch (err) {
       return fail(err);
     }

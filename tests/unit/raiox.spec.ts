@@ -21,6 +21,7 @@ import {
   closeCase,
   closeExecution,
   createCase,
+  linkFabrica,
   recordDelivery,
   raioxView,
   recordMetric,
@@ -497,6 +498,15 @@ describe('regras do Raio-X', () => {
     expectError(() => closeExecution(current, playbook, LATER), 'Registre a medição de 30 dias de todas as métricas.');
     const measured = recordMetric(current, { key: 'resposta', label: 'Resposta', value: 2, unit: 'h', at: LATER, moment: 'd30', source: 'dono' });
     expect(closeExecution(measured, playbook, LATER).execution?.closedAt).toBe(LATER);
+  });
+
+  it('liga o projeto da fábrica só em página ou oferta', () => {
+    const running = startExecution(accepted(), playbook, NOW);
+    expectError(() => linkFabrica(running, 'proj-1', LATER), 'Esta oferta não abre projeto na Fábrica.');
+    const page = structuredClone(running);
+    if (page.debrief) page.debrief.offerId = 'pagina_vendas';
+    expect(linkFabrica(page, 'proj-1', LATER).execution?.fabricaProjectId).toBe('proj-1');
+    expectError(() => linkFabrica(linkFabrica(page, 'proj-1', LATER), 'proj-2', LATER), 'Este caso já tem projeto na Fábrica.');
   });
 
   it('grava e relê o caso na pasta temporária e recusa caminho fora dela', () => {

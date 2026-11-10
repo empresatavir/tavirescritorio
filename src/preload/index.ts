@@ -332,6 +332,12 @@ const api: TavirApi = {
     },
     playbooks: () => ipcRenderer.invoke('raiox:playbooks'),
     playbook: (id: string) => ipcRenderer.invoke('raiox:playbook', id),
+    startExecution: (id: string) => ipcRenderer.invoke('raiox:startExecution', id),
+    recordMetric: (id: string, metric: unknown) => ipcRenderer.invoke('raiox:recordMetric', id, metric),
+    checkStep: (id: string, step: number, proof: unknown) => ipcRenderer.invoke('raiox:checkStep', id, step, proof),
+    closeExecution: (id: string) => ipcRenderer.invoke('raiox:closeExecution', id),
+    openPlaybook: (id: string) => ipcRenderer.invoke('raiox:openPlaybook', id),
+    openFabrica: (id: string) => ipcRenderer.invoke('raiox:openFabrica', id),
   },
   onStudioEvent: (callback) => {
     const handler = (_e: Electron.IpcRendererEvent, event: StudioEvent) => callback(event);

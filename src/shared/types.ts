@@ -647,6 +647,12 @@ export interface TavirApi {
       | { ok: false; error: string }
     >;
     playbook: (id: string) => Promise<{ ok: true; playbook: unknown } | { ok: false; error: string }>;
+    startExecution: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    recordMetric: (id: string, metric: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    checkStep: (id: string, step: number, proof: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    closeExecution: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    openPlaybook: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    openFabrica: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
   onStudioEvent: (callback: (event: StudioEvent) => void) => () => void;

@@ -518,6 +518,18 @@ export function closeExecution(c: RaioxCase, playbook: RaioxPlaybookRef, now: st
   return finish(next, now);
 }
 
+export function linkFabrica(c: RaioxCase, projectId: string, now: string): RaioxCase {
+  const next = writable(c);
+  if (!next.execution) throw new RaioxError('Abra a execução primeiro.');
+  if (next.execution.fabricaProjectId) throw new RaioxError('Este caso já tem projeto na Fábrica.');
+  const offer = next.debrief?.offerId;
+  if (offer !== 'pagina_vendas' && offer !== 'criacao_oferta') throw new RaioxError('Esta oferta não abre projeto na Fábrica.');
+  const id = blank(projectId);
+  if (!id) throw new RaioxError('O projeto da Fábrica não foi criado.');
+  next.execution.fabricaProjectId = id;
+  return finish(next, now);
+}
+
 export function sync(c: RaioxCase): void {
   if (c.priority && !c.evidence.some((ev) => ev.stage === c.priority!.stage && usable(ev))) {
     c.priority = undefined;
