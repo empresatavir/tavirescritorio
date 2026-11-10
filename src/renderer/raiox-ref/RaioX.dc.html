@@ -53,6 +53,11 @@
 .rx-e summary .nm{font-weight:600;white-space:nowrap}.rx-e summary .sm{color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
 .rx-e pre{margin:0;padding:10px 12px;border-top:1px solid var(--line);font-size:11.5px;white-space:pre-wrap;word-break:break-word;max-height:360px;overflow:auto}
 .rx-raw{margin:0;white-space:pre-wrap;word-break:break-word;font-size:12px}
+.rx-exec{display:flex;flex-direction:column;gap:14px;max-width:880px}
+.rx-step{padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.rx-step small{color:var(--text-muted);font-size:12px}
+.rx-metric{display:grid;grid-template-columns:minmax(0,1.4fr) 120px 120px;gap:8px;align-items:center;font-size:13px}
+.rx-metric b{font-weight:600}
 </style>
 </helmet>
 <div class="tv" style="min-height: 100%">
@@ -274,6 +279,79 @@
       <sc-for list="{{rivals}}" as="r" hint-placeholder-count="1"><p class="sec" style="font-size: 13px">{{r.src}} — {{r.what}}</p></sc-for>
       <button class="btn secondary" onClick="{{scanRivals}}">Pedir varredura</button>
     </div>
+  </sc-if>
+
+  <sc-if value="{{tExec}}" hint-placeholder-val="{{false}}">
+    <section class="rx-exec">
+      <sc-if value="{{execClosed}}" hint-placeholder-val="{{false}}">
+        <p class="muted" style="margin: 0">Execução encerrada. Playbook {{execVersion}}.</p>
+      </sc-if>
+      <sc-if value="{{execOpen}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+          <button class="btn primary" onClick="{{startExec}}">Abrir execução</button>
+          <span class="muted" style="font-size: 13px">Guarda a versão {{execVersion}} do playbook.</span>
+        </div>
+      </sc-if>
+      <sc-if value="{{execLive}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
+          <b>Passo 0 · linha de base</b>
+          <sc-for list="{{execBase}}" as="m" hint-placeholder-count="1">
+            <div class="rx-metric"><span>{{m.label}} <small class="muted">({{m.unit}})</small></span><span>{{m.shown}}</span><span class="muted">{{m.source}}</span></div>
+          </sc-for>
+          <sc-if value="{{execNeedD0}}" hint-placeholder-val="{{false}}">
+            <p class="muted" style="margin: 0; font-size: 13px">{{execD0How}}</p>
+            <label class="field"><span>Valor de {{execD0Label}}</span><input class="input" value="{{execValue}}" onChange="{{onExecValue}}"></label>
+            <label class="field"><span>Fonte</span><input class="input" value="{{execSource}}" onChange="{{onExecSource}}"></label>
+            <button class="btn secondary" onClick="{{saveD0}}">Registrar linha de base</button>
+          </sc-if>
+        </div>
+        <sc-for list="{{execSteps}}" as="st" hint-placeholder-count="3">
+          <div class="card rx-step">
+            <b>Passo {{st.n}} — {{st.title}}</b>
+            <small>{{st.time}} · {{st.tool}}</small>
+            <p style="margin: 0; font-size: 13px">{{st.how}}</p>
+            <p class="muted" style="margin: 0; font-size: 12px">Prova esperada: {{st.proof}}</p>
+            <sc-if value="{{st.done}}" hint-placeholder-val="{{false}}"><span class="badge">provado</span></sc-if>
+            <sc-if value="{{st.canProve}}" hint-placeholder-val="{{false}}">
+              <div class="segs">
+                <button class="seg {{st.fileOn}}" onClick="{{st.pickFile}}">Arquivo</button>
+                <button class="seg {{st.linkOn}}" onClick="{{st.pickLink}}">Link</button>
+                <button class="seg {{st.noteOn}}" onClick="{{st.pickNote}}">Nota</button>
+              </div>
+              <sc-if value="{{st.needsText}}" hint-placeholder-val="{{false}}"><input class="input" value="{{execNote}}" onChange="{{onExecNote}}" placeholder="Link ou nota da prova"></sc-if>
+              <button class="btn secondary" onClick="{{st.prove}}">Provar</button>
+            </sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{execShowD30}}" hint-placeholder-val="{{false}}">
+          <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
+            <b>Medição d30 em {{execDue}}</b>
+            <sc-if value="{{execD30Locked}}" hint-placeholder-val="{{false}}">
+              <p class="muted" style="margin: 0; font-size: 13px">A medição abre nesta data.</p>
+              <button class="btn secondary" onClick="{{allowEarlyD30}}">Medir antes de 30 dias?</button>
+            </sc-if>
+            <sc-if value="{{execD30Open}}" hint-placeholder-val="{{false}}">
+              <p class="muted" style="margin: 0; font-size: 13px">{{execD30How}}</p>
+              <label class="field"><span>Valor de {{execD30Label}}</span><input class="input" value="{{execValue}}" onChange="{{onExecValue}}"></label>
+              <label class="field"><span>Fonte</span><input class="input" value="{{execSource}}" onChange="{{onExecSource}}"></label>
+              <button class="btn secondary" onClick="{{saveD30}}">Registrar medição de 30 dias</button>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{execCanClose}}" hint-placeholder-val="{{false}}"><button class="btn primary" onClick="{{closeExec}}">Encerrar execução</button></sc-if>
+      </sc-if>
+      <sc-if value="{{execTable}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px">
+          <b>Antes e depois</b>
+          <div class="rx-metric"><span class="muted">Métrica</span><span class="muted">d0</span><span class="muted">d30</span></div>
+          <sc-for list="{{execRows}}" as="row" hint-placeholder-count="1"><div class="rx-metric"><b>{{row.label}}</b><span>{{row.d0}}</span><span>{{row.d30}}</span></div></sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{execFactory}}" hint-placeholder-val="{{false}}">
+        <button class="btn secondary" onClick="{{openFactory}}">Abrir projeto na Fábrica</button>
+        <sc-if value="{{execHasFactory}}" hint-placeholder-val="{{false}}"><p class="muted" style="margin: 0; font-size: 13px">Projeto {{execFactoryId}} na Fábrica.</p></sc-if>
+      </sc-if>
+    </section>
   </sc-if>
 </div>
 </sc-if>
@@ -574,7 +652,7 @@ const EV_ICON = { speech: '💬', think: '💭', tool: '🔧', result: '↳', er
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { cases: [], catalog: [], gaps: [], filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), debForm: blankDeb(), editForm: editFrom({}), error: '', syncError: '', analysis: '', analysisBad: false, briefFrontier: null, briefLink: null, removeId: null, caseRuns: [], runLog: '', pendingFiles: [], live: null, runsAt: '', log: null, logRunId: null, logTab: 'events', logFollow: true, tail: [] };
+    this.state = { cases: [], catalog: [], gaps: [], filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), debForm: blankDeb(), editForm: editFrom({}), error: '', syncError: '', analysis: '', analysisBad: false, briefFrontier: null, briefLink: null, removeId: null, caseRuns: [], runLog: '', pendingFiles: [], live: null, runsAt: '', log: null, logRunId: null, logTab: 'events', logFollow: true, tail: [], execBook: null, execValue: '', execSource: '', execProof: 'nota', execNote: '', execEarly: false };
   }
   componentDidMount() {
     const self = this;
@@ -594,6 +672,13 @@ class Component extends DCLogic {
         api.raiox.get(self.state.caseId).then(function (res) {
           if (!self._alive || !res || !res.ok) return;
           self.setState({ openCase: res.case });
+          const gap = res.case && res.case.priority && res.case.priority.gapId;
+          if (gap && api.raiox.playbook) {
+            api.raiox.playbook(gap).then(function (book) {
+              if (!self._alive || !book || !book.ok) return;
+              self.setState({ execBook: book.playbook });
+            }).catch(function () {});
+          }
         }).catch(function () {});
       }
     };
@@ -768,6 +853,24 @@ class Component extends DCLogic {
     const confidence = (current && current.confidence) || { observed: 0, usable: 0, ratio: 0 };
     const rivals = evidence.filter(function (item) { return item.front === 'concorrentes'; });
     const priority = current && current.priority;
+    const exec = current && current.execution;
+    const book = s.execBook;
+    const canExec = !!(current && current.status === 'fechado' && current.debrief && current.debrief.decision === 'proposta_emitida');
+    const baselines = (book && book.baseline) || [];
+    const execMetrics = (exec && exec.metrics) || [];
+    const metricOf = function (key, moment) { return execMetrics.filter(function (item) { return item.key === key && item.moment === moment; }).pop() || null; };
+    const missingD0 = baselines.filter(function (item) { return !metricOf(item.key, 'd0'); });
+    const missingD30 = baselines.filter(function (item) { return metricOf(item.key, 'd0') && !metricOf(item.key, 'd30'); });
+    const proved = {};
+    ((exec && exec.steps) || []).forEach(function (item) { proved[item.step] = item; });
+    const bookSteps = (book && book.steps) || [];
+    let nextStep = null;
+    bookSteps.forEach(function (step) { if (nextStep == null && !proved[step.n]) nextStep = step.n; });
+    const lastDone = ((exec && exec.steps) || []).reduce(function (max, item) { return !max || item.doneAt > max ? item.doneAt : max; }, '');
+    const due = lastDone ? new Date(new Date(lastDone).getTime() + 30 * 86400000) : null;
+    const dueReached = !!(due && Date.now() >= due.getTime());
+    const allSteps = bookSteps.length > 0 && nextStep == null;
+    const offer = current && current.debrief && current.debrief.offerId;
     return {
       listView: !s.caseId,
       caseView: !!s.caseId,
@@ -1053,7 +1156,7 @@ class Component extends DCLogic {
           jornada: { hint: 'Revise as evidências pendentes. A jornada fecha quando houver evidência aprovada em mais de uma etapa.', act: toTab(0, { evFilter: 'pendente' }), actLabel: 'Revisar pendentes', alt: openEvNow, altLabel: 'Registrar evidência' },
           prioridade: { hint: 'Escolha o gargalo que vem primeiro. Ele sempre aponta um gap da taxonomia.', act: function () { self.setState({ tab: 1, modal: 'priority', error: '', priForm: blankPri() }); }, actLabel: 'Escolher prioridade' },
           devolutiva: { hint: 'Registre propor ou não emitir, gere os documentos e aprove por hash.', act: toTab(1), actLabel: 'Abrir devolutiva' },
-          fechado: { hint: 'Caso encerrado. O relatório continua disponível para leitura.', act: null, actLabel: '' }
+          fechado: { hint: canExec ? 'A proposta foi aceita. A execução segue o playbook, com linha de base e medição de 30 dias.' : 'Caso encerrado. O relatório continua disponível para leitura.', act: canExec ? function () { self.setState({ tab: 3 }); } : null, actLabel: canExec ? 'Abrir execução' : '' }
         };
         const m = map[id] || { hint: '', act: null };
         return { n: '0' + (noteAt + 1), label: STATUS_LABEL[id] || '', state: state, note: STATUS_NOTE[id] || '', hint: m.hint, hasAct: !!m.act, act: m.act ? go(m.act) : function () {}, actLabel: m.actLabel || '', hasAlt: !!m.alt, alt: m.alt ? go(m.alt) : function () {}, altLabel: m.altLabel || '' };
@@ -1066,10 +1169,10 @@ class Component extends DCLogic {
       classes: (current && current.classes ? current.classes : Object.keys(CLASS_META).map(function (key) { return { cls: key, label: CLASS_META[key][0], n: 0 }; })).map(function (item) {
         return { k: item.label, n: item.n, color: (CLASS_META[item.cls] || CLASS_META.observado)[2] };
       }),
-      tabs: [['Evidências', evidence.length], ['Devolutiva', priority ? 1 : 0], ['Concorrentes', rivals.length]].map(function (item, index) {
+      tabs: [['Evidências', evidence.length], ['Devolutiva', priority ? 1 : 0], ['Concorrentes', rivals.length]].concat(canExec ? [['Execução', exec && exec.closedAt ? 1 : 0]] : []).map(function (item, index) {
         return { label: item[0], n: item[1], on: s.tab === index ? 'on' : '', pick: function () { self.setState({ tab: index }); } };
       }),
-      tEv: s.tab === 0, tDev: s.tab === 1, tCon: s.tab === 2,
+      tEv: s.tab === 0, tDev: s.tab === 1, tCon: s.tab === 2, tExec: canExec && s.tab === 3,
       evFilters: [['all', 'Todas'], ['observado', 'Observado'], ['informado', 'Informado'], ['inferido', 'Inferido'], ['indisponivel', 'Indisponível'], ['pendente', 'Pendentes']].map(function (item) {
         const n = evidence.filter(function (ev) { return item[0] === 'all' ? true : item[0] === 'pendente' ? ev.review === 'pendente' : ev.classification === item[0]; }).length;
         return { label: item[1], n: n, on: s.evFilter === item[0] ? 'on' : '', pick: function () { self.setState({ evFilter: item[0] }); } };
@@ -1166,6 +1269,103 @@ class Component extends DCLogic {
       exportPdfs: function () { const api = tavirApi(); if (api && current) api.raiox.exportPdfs(current.id).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); },
       openDelivery: function () { self.setState({ modal: 'delivery', error: '', debForm: Object.assign({}, blankDeb(), { reason: '' }) }); },
       closeCase: function () { const api = tavirApi(); if (api && current) api.raiox.close(current.id).then(refreshOpen).catch(function () { fail(); }); },
+      execOpen: canExec && !exec,
+      execLive: canExec && !!exec && !exec.closedAt,
+      execClosed: canExec && !!(exec && exec.closedAt),
+      execVersion: (exec && exec.playbookVersion) || (book && book.version) || '',
+      execBase: baselines.map(function (item) {
+        const d0 = metricOf(item.key, 'd0');
+        return { label: item.key, unit: item.unit, shown: d0 ? String(d0.value) : '—', source: d0 ? d0.source : item.how };
+      }),
+      execNeedD0: !!(exec && !exec.closedAt && missingD0.length),
+      execD0Label: missingD0[0] ? missingD0[0].key : '',
+      execD0How: missingD0[0] ? missingD0[0].how : '',
+      execValue: s.execValue || '',
+      execSource: s.execSource || '',
+      execNote: s.execNote || '',
+      onExecValue: function (event) { self.setState({ execValue: event.target.value }); },
+      onExecSource: function (event) { self.setState({ execSource: event.target.value }); },
+      onExecNote: function (event) { self.setState({ execNote: event.target.value }); },
+      startExec: function () {
+        const api = tavirApi();
+        if (!api || !current) return;
+        api.raiox.startExecution(current.id).then(refreshOpen).catch(function () { fail(); });
+      },
+      saveD0: function () {
+        const api = tavirApi();
+        const metric = missingD0[0];
+        if (!api || !current || !metric) return;
+        api.raiox.recordMetric(current.id, { key: metric.key, label: metric.key, value: Number(String(s.execValue).replace(',', '.')), unit: metric.unit, moment: 'd0', source: s.execSource }).then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          self.setState({ execValue: '', execSource: '' });
+          refreshOpen(res);
+        }).catch(function () { fail(); });
+      },
+      execSteps: bookSteps.map(function (step) {
+        const done = !!proved[step.n];
+        const canProve = !!(exec && !exec.closedAt && missingD0.length === 0 && step.n === nextStep);
+        return {
+          n: step.n, title: step.title, time: step.time, tool: step.tool, how: step.how, proof: step.proof, done: done, canProve: canProve,
+          fileOn: s.execProof === 'arquivo' ? 'on' : '', linkOn: s.execProof === 'link' ? 'on' : '', noteOn: s.execProof === 'nota' ? 'on' : '',
+          needsText: s.execProof !== 'arquivo',
+          pickFile: function () { self.setState({ execProof: 'arquivo' }); },
+          pickLink: function () { self.setState({ execProof: 'link' }); },
+          pickNote: function () { self.setState({ execProof: 'nota' }); },
+          prove: function () {
+            const api = tavirApi();
+            if (!api || !current) return;
+            const send = function (proof) { api.raiox.checkStep(current.id, step.n, proof).then(function (res) { if (!res || !res.ok) return fail(res); self.setState({ execNote: '' }); refreshOpen(res); }).catch(function () { fail(); }); };
+            if (s.execProof === 'arquivo') {
+              api.raiox.pickFile(current.id, 'execucao').then(function (picked) {
+                if (!picked || !picked.ok) return fail(picked);
+                send({ kind: 'arquivo', value: picked.artifact.file, sha256: picked.artifact.sha256 });
+              }).catch(function () { fail(); });
+              return;
+            }
+            send({ kind: s.execProof === 'link' ? 'link' : 'nota', value: s.execNote || '' });
+          },
+        };
+      }),
+      execShowD30: !!(exec && !exec.closedAt && allSteps && missingD30.length),
+      execDue: due ? due.toLocaleDateString('pt-BR') : '',
+      execD30Locked: !!(exec && !exec.closedAt && allSteps && missingD30.length && !dueReached && !s.execEarly),
+      execD30Open: !!(exec && !exec.closedAt && allSteps && missingD30.length && (dueReached || s.execEarly)),
+      execD30Label: missingD30[0] ? missingD30[0].key : '',
+      execD30How: missingD30[0] ? missingD30[0].how : '',
+      allowEarlyD30: function () {
+        if (typeof window !== 'undefined' && window.confirm && !window.confirm('Medir antes de 30 dias?')) return;
+        self.setState({ execEarly: true });
+      },
+      saveD30: function () {
+        const api = tavirApi();
+        const metric = missingD30[0];
+        if (!api || !current || !metric) return;
+        api.raiox.recordMetric(current.id, { key: metric.key, label: metric.key, value: Number(String(s.execValue).replace(',', '.')), unit: metric.unit, moment: 'd30', source: s.execSource }).then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          self.setState({ execValue: '', execSource: '' });
+          refreshOpen(res);
+        }).catch(function () { fail(); });
+      },
+      execCanClose: !!(exec && !exec.closedAt && allSteps && missingD0.length === 0 && missingD30.length === 0),
+      closeExec: function () {
+        const api = tavirApi();
+        if (!api || !current) return;
+        api.raiox.closeExecution(current.id).then(refreshOpen).catch(function () { fail(); });
+      },
+      execTable: !!(exec && baselines.length && baselines.some(function (item) { return metricOf(item.key, 'd0') && metricOf(item.key, 'd30'); })),
+      execRows: baselines.map(function (item) {
+        const d0 = metricOf(item.key, 'd0');
+        const d30 = metricOf(item.key, 'd30');
+        return { label: item.key, d0: d0 ? String(d0.value) + ' ' + item.unit : '—', d30: d30 ? String(d30.value) + ' ' + item.unit : '—' };
+      }),
+      execFactory: !!(exec && (offer === 'pagina_vendas' || offer === 'criacao_oferta') && !exec.fabricaProjectId),
+      execHasFactory: !!(exec && exec.fabricaProjectId),
+      execFactoryId: exec && exec.fabricaProjectId ? exec.fabricaProjectId : '',
+      openFactory: function () {
+        const api = tavirApi();
+        if (!api || !current) return;
+        api.raiox.openFabrica(current.id).then(refreshOpen).catch(function () { fail(); });
+      },
       rivals: rivals.map(function (item) { return { src: item.source, what: item.claim }; }),
       scanOff: false,
       modalNew: s.modal === 'new',
