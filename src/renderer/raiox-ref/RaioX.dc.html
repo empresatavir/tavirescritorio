@@ -57,6 +57,7 @@
 .rx-step{padding:14px 16px;display:flex;flex-direction:column;gap:6px}
 .rx-step small{color:var(--text-muted);font-size:12px}
 .rx-metric{display:grid;grid-template-columns:minmax(0,1.4fr) 120px 120px;gap:8px;align-items:center;font-size:13px}
+.rx-books{display:grid;grid-template-columns:minmax(140px,1.4fr) repeat(6,minmax(64px,.5fr)) auto;gap:8px;align-items:center;font-size:13px}
 .rx-metric b{font-weight:600}
 </style>
 </helmet>
@@ -89,7 +90,13 @@
   </div>
 
   <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
-    <div class="segs"><sc-for list="{{filters}}" as="f" hint-placeholder-count="4"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+    <div class="segs">
+      <button class="seg {{casesOn}}" onClick="{{showCases}}">Casos</button>
+      <button class="seg {{booksOn}}" onClick="{{showBooks}}">Playbooks</button>
+    </div>
+    <sc-if value="{{casesTab}}" hint-placeholder-val="{{true}}">
+      <div class="segs"><sc-for list="{{filters}}" as="f" hint-placeholder-count="4"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+    </sc-if>
     <div class="grow"></div>
     <span class="muted" style="font-size: 12px">Maps entra na varredura só se for loja física.</span>
   </div>
@@ -98,6 +105,16 @@
     <div class="card" style="padding: 32px; border-style: dashed; text-align: center">Nenhum caso ainda. Abra o primeiro em Novo caso.</div>
   </sc-if>
 
+  <sc-if value="{{booksTab}}" hint-placeholder-val="{{false}}">
+    <div class="card" style="padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 8px">
+      <div class="rx-books" style="padding-top: 8px"><span class="muted">Gap</span><span class="muted">Onda</span><span class="muted">Status</span><span class="muted">Versão</span><span class="muted">Lint</span><span class="muted">Encerradas d0+d30</span><span class="muted">Casos</span><span></span></div>
+      <sc-for list="{{playRows}}" as="p" hint-placeholder-count="2">
+        <div class="rx-books"><b>{{p.title}}</b><span>{{p.wave}}</span><span>{{p.status}}</span><span>{{p.version}}</span><span>{{p.problems}}</span><span>{{p.closed}}</span><span>{{p.cases}}</span><button class="btn secondary" onClick="{{p.open}}">Abrir arquivo</button></div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{casesTab}}" hint-placeholder-val="{{true}}">
   <div class="g2" style="border-radius: 16px">
     <sc-for list="{{cases}}" as="c" hint-placeholder-count="2">
       <button class="card click" onClick="{{c.open}}" style="padding: 20px; display: flex; flex-direction: column; gap: 14px; text-align: left">
@@ -111,6 +128,7 @@
       </button>
     </sc-for>
   </div>
+  </sc-if>
 </div>
 </sc-if>
 
@@ -652,7 +670,7 @@ const EV_ICON = { speech: '💬', think: '💭', tool: '🔧', result: '↳', er
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { cases: [], catalog: [], gaps: [], filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), debForm: blankDeb(), editForm: editFrom({}), error: '', syncError: '', analysis: '', analysisBad: false, briefFrontier: null, briefLink: null, removeId: null, caseRuns: [], runLog: '', pendingFiles: [], live: null, runsAt: '', log: null, logRunId: null, logTab: 'events', logFollow: true, tail: [], execBook: null, execValue: '', execSource: '', execProof: 'nota', execNote: '', execEarly: false };
+    this.state = { cases: [], catalog: [], gaps: [], playbooks: [], listTab: 'casos', filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), debForm: blankDeb(), editForm: editFrom({}), error: '', syncError: '', analysis: '', analysisBad: false, briefFrontier: null, briefLink: null, removeId: null, caseRuns: [], runLog: '', pendingFiles: [], live: null, runsAt: '', log: null, logRunId: null, logTab: 'events', logFollow: true, tail: [], execBook: null, execValue: '', execSource: '', execProof: 'nota', execNote: '', execEarly: false };
   }
   componentDidMount() {
     const self = this;
@@ -664,6 +682,12 @@ class Component extends DCLogic {
         if (!self._alive) return;
         if (res && res.ok) self.setState({ cases: res.cases || [] });
       }).catch(function () {});
+      if (api.raiox.playbooks) {
+        api.raiox.playbooks().then(function (res) {
+          if (!self._alive || !res || !res.ok) return;
+          self.setState({ playbooks: res.playbooks || [] });
+        }).catch(function () {});
+      }
       api.raiox.catalog().then(function (res) {
         if (!self._alive) return;
         if (res && res.ok) self.setState({ catalog: res.catalog || [], gaps: res.gaps || [] });
@@ -874,7 +898,31 @@ class Component extends DCLogic {
     return {
       listView: !s.caseId,
       caseView: !!s.caseId,
-      emptyList: shown.length === 0,
+      casesTab: (s.listTab || 'casos') !== 'playbooks',
+      booksTab: s.listTab === 'playbooks',
+      casesOn: (s.listTab || 'casos') !== 'playbooks' ? 'on' : '',
+      booksOn: s.listTab === 'playbooks' ? 'on' : '',
+      showCases: function () { self.setState({ listTab: 'casos' }); },
+      showBooks: function () { self.setState({ listTab: 'playbooks' }); },
+      emptyList: (s.listTab || 'casos') !== 'playbooks' && shown.length === 0,
+      playRows: (s.playbooks || []).map(function (book) {
+        const related = (s.cases || []).filter(function (item) {
+          const gap = (item.execution && item.execution.gapId) || (item.priority && item.priority.gapId);
+          return gap === book.id;
+        });
+        const closed = related.filter(function (item) {
+          const run = item.execution;
+          if (!run || !run.closedAt) return false;
+          const has = function (moment) { return (run.metrics || []).some(function (metric) { return metric.moment === moment; }); };
+          return has('d0') && has('d30');
+        }).length;
+        return {
+          title: book.title, wave: book.wave, status: book.status, version: book.version,
+          problems: (book.problems && book.problems.length) ? book.problems.join('; ') : 'nenhum',
+          closed: closed, cases: related.length,
+          open: function () { const api = tavirApi(); if (api && api.raiox.openPlaybook) api.raiox.openPlaybook(book.id); },
+        };
+      }),
       newCase: function () { self.setState({ modal: 'new', error: '', form: blankCase() }); },
       hasSyncError: !!s.syncError,
       syncError: s.syncError || '',
