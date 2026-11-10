@@ -223,12 +223,16 @@ export function getCredentialToken(provider: CredentialProvider): string {
 }
 
 /** Provedores com vários campos. O token único de Vercel, Supabase e Netlify não usa isto. */
-export type BundleProvider = 'raiox_supabase' | 'resend';
+export type BundleProvider = 'raiox_supabase' | 'resend' | 'rapidapi_local';
 
 const BUNDLE_META: Record<BundleProvider, { name: string; hint: string }> = {
   raiox_supabase: {
     name: 'Raio-X Supabase',
     hint: 'URL e segredos da ponte de leitura. Cada segredo fica cifrado; a tela só mostra a prévia.',
+  },
+  rapidapi_local: {
+    name: 'RapidAPI · Local Business Data',
+    hint: 'Ficha do Google Maps, avaliações e concorrentes no Raio-X. Uma ou mais chaves separadas por vírgula; o app tenta a próxima quando uma não tem assinatura ou quota.',
   },
   resend: {
     name: 'Resend',
@@ -244,6 +248,9 @@ const BUNDLE_FIELDS: Record<BundleProvider, { key: string; label: string; secret
     { key: 'deliverySecret', label: 'Segredo de entrega', secret: true },
     { key: 'inviteSecret', label: 'Segredo de convite', secret: true },
     { key: 'officeSyncSecret', label: 'Segredo de sincronização', secret: true },
+  ],
+  rapidapi_local: [
+    { key: 'apiKeys', label: 'Chaves da RapidAPI', secret: true },
   ],
   resend: [
     { key: 'apiKey', label: 'Chave da API', secret: true },
@@ -284,7 +291,7 @@ export interface BundleResult {
 }
 
 export function isBundleProvider(p: unknown): p is BundleProvider {
-  return p === 'raiox_supabase' || p === 'resend';
+  return p === 'raiox_supabase' || p === 'resend' || p === 'rapidapi_local';
 }
 
 function readBundles(): Partial<Record<BundleProvider, StoredBundle>> {

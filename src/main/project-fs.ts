@@ -903,7 +903,10 @@ export function createOrAbsorbProjectRecord(params: any): any {
 
     try {
       const hadGit = fs.existsSync(path.join(wsPath, '.git'));
-      if (!hadGit && !isAbsorb) {
+      // Criação sempre ganha git. Absorção também, quando a pasta não é versionada por ninguém
+      // (sem git, ou dentro de um repositório que a ignora): sem isso, branch, PR e o portão de
+      // segurança acabariam usando o repositório de fora.
+      if (!hadGit && (!isAbsorb || cycleGit.needsOwnGit(wsPath))) {
         execFileSync('git', ['init'], { cwd: wsPath, windowsHide: true });
         execFileSync('git', ['config', '--local', 'user.name', gitUserName], { cwd: wsPath, windowsHide: true });
         execFileSync('git', ['config', '--local', 'user.email', gitUserEmail], { cwd: wsPath, windowsHide: true });
@@ -1196,7 +1199,7 @@ export function setQaListener(fn: QaListener | null): void {
 }
 
 /** Roda a suíte de QA do projeto. Um QA por projeto por vez. */
-export async function runProjectQa(idOrPath: string, opts: { label?: string; onProgress?: (line: string) => void } = {}): Promise<{ ok: boolean; run?: QaRun; error?: string }> {
+export async function runProjectQa(idOrPath: string, opts: { label?: string; onProgress?: (line: string) => void; registerKill?: (kill: () => void) => void } = {}): Promise<{ ok: boolean; run?: QaRun; error?: string }> {
   const rec = resolveProjectRecord(idOrPath);
   const rootPath = rec.local_path;
   if (!rootPath || !fs.existsSync(rootPath)) return { ok: false, error: 'Pasta do projeto não encontrada.' };
@@ -1220,6 +1223,7 @@ export async function runProjectQa(idOrPath: string, opts: { label?: string; onP
       },
       registerKill: (kill) => {
         live.kill = kill;
+        opts.registerKill?.(kill);
       },
     });
     emit(undefined, run);
@@ -2706,7 +2710,8 @@ export function getProjectChatHistory(idOrPath: string): any {
 
 export async function askProjectIris(params: any): Promise<any> {
   const idOrPath = String(params?.projectId || params?.projectPath || params?.projectName || 'projeto').trim();
-  const question = String(params?.question || params?.message || '').trim();
+  const attachInputs: import('./attachments').AttachmentInput[] = Array.isArray(params?.attachments) ? params.attachments : [];
+  const question = String(params?.question || params?.message || '').trim() || (attachInputs.length ? 'Veja os anexos.' : '');
   const eng = params?.engine
     ? resolveEngineSpec(params.engine, params.model, params.effort)
     : projectEngineSpec(resolveProjectRecord(idOrPath).local_path);
@@ -2752,6 +2757,12 @@ export async function askProjectIris(params: any): Promise<any> {
     } catch {}
   };
 
+  // Anexos (prints, zip, logs) ficam em .tavir/anexos/ do projeto; o agente recebe os caminhos.
+  const attachMod = require('./attachments') as typeof import('./attachments');
+  const attach = attachInputs.length ? attachMod.saveAttachments(rootPath, attachInputs) : { saved: [], errors: [] };
+  const attachLine = attachMod.attachmentsLine(attach.saved);
+  const questionWithFiles = attachLine ? `${question}\n${attachLine}` : question;
+
   const chatFile = path.join(rootPath, '.tavir', 'iris-chat.json');
   let history: any[] = [];
   try {
@@ -2774,6 +2785,8 @@ export async function askProjectIris(params: any): Promise<any> {
     .filter((m) => m.text.trim());
 
   const thoughts: string[] = [
+    ...(attach.saved.length ? [`[Anexos] ${attach.saved.length} arquivo(s) em ${path.posix.dirname(attach.saved[0].rel)}`] : []),
+    ...attach.errors.map((e) => `[Anexos] ${e}`),
     `[${eng.caption}] Modo conversação no workspace do projeto`,
     `[Workspace] ${info.name} · ${rootPath}`,
     `[Controle] ${control.finished ? (control.alterations_open ? 'Handoff · liberado' : 'Handoff · fechado') : 'Esteira ativa'}`,
@@ -2806,7 +2819,7 @@ export async function askProjectIris(params: any): Promise<any> {
     ].filter(Boolean);
     const agentRes = await converseWithIrisAgent({
       workspace: rootPath,
-      question,
+      question: question + attachMod.attachmentsPrompt(attach.saved, attach.errors),
       projectName: info.name || control.projectName,
       stageName,
       stageOwner,
@@ -2834,11 +2847,11 @@ export async function askProjectIris(params: any): Promise<any> {
     }
     if (agentRes.ok) absorbMemory(`(${eng.name} · chat) "${question.slice(0, 160)}" → ${reply.replace(/\s+/g, ' ').slice(0, 240)}`);
     if (forceChange) {
-      absorbChangeRequest(question);
+      absorbChangeRequest(questionWithFiles);
       thoughts.push('[Absorção] CHANGE_REQUESTS.md atualizado (pedido de alteração)');
     }
     if (agentOk && control.finished && control.alterations_open) {
-      const tracked = recordIrisOnAltTrack(idOrPath, question, reply);
+      const tracked = recordIrisOnAltTrack(idOrPath, questionWithFiles, reply);
       if (tracked) {
         thoughts.push(
           `[Trilho] Registro no foco ${ALT_TRACK_STEPS[tracked.step]?.label || 'Mapear gaps'}`,
@@ -2860,6 +2873,7 @@ export async function askProjectIris(params: any): Promise<any> {
     ts: nowHM(),
     thoughts: [],
     t: question,
+    ...(attach.saved.length ? { attachments: attach.saved.map((a) => ({ name: a.name, rel: a.rel, kind: a.kind, size: a.size })) } : {}),
   };
 
   const agentMsg = {
@@ -3187,6 +3201,9 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     `Instrução desta etapa:\n${instruction}\n\n` +
     (digest ? `O QUE AS ETAPAS ANTERIORES ENTREGARAM (use como base, não refaça):\n${digest}\n\n` : '') +
     (prior ? `CHECKPOINT — a etapa já tem este levantamento. Não recomece do zero. Continue ou revise a partir dele:\n${prior.slice(-5000)}\n\n` : '') +
+    (def.qa
+      ? 'Esta etapa é o QA desta aplicação, com a Talita. Leia o que o app faz e monte o plano de testes em qa/plano.md: o que precisa passar antes de entregar, quais comandos a pasta já tem e o que ainda falta. Se não houver node_modules, instale as dependências do gerenciador do projeto. Deixe os testes no lugar que esse gerenciador espera. Não declare a etapa concluída: o portão automático roda em seguida, instala o que ainda faltar e grava vídeo, prints e o relatório em qa/evidencias/.\n\n'
+      : '') +
     (def.gate
       ? 'Esta etapa é um gate. Não edite arquivos. Resuma o que foi entregue até aqui com caminhos de arquivo, aponte riscos e liste exatamente o que precisa da decisão do Carlos. A etapa só fecha quando ele aprovar.'
       : 'Pode alterar o workspace só no que a instrução pede. Ao terminar, liste os arquivos que criou ou alterou.');
@@ -3263,9 +3280,21 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
   writeEsteira(info.rootPath, fresh);
   let qa: QaRun | null = null;
   let qaError = '';
+  let pausedQa = false;
   if (qaGate) {
     liveAgents.set(key, { paused: false, speech: 'Portão de QA rodando', step: at, itemId: `esteira-${at}`, label: def.name });
-    const res = await runProjectQa(info.rootPath, { label: `Esteira · ${def.name}` });
+    const res = await runProjectQa(info.rootPath, {
+      label: `Esteira · ${def.name}`,
+      onProgress: (line) => {
+        const live = liveAgents.get(key);
+        if (live) live.speech = line;
+      },
+      registerKill: (kill) => {
+        const live = liveAgents.get(key);
+        if (live) live.kill = kill;
+      },
+    });
+    pausedQa = !!liveAgents.get(key)?.paused;
     liveAgents.delete(key);
     qa = res.run || null;
     qaError = res.error || '';
@@ -3277,7 +3306,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
       `### ${new Date().toISOString().slice(0, 16).replace('T', ' ')} · Portão de QA\n` +
       (qa ? qaSummary(qa) : `QA não rodou: ${qaError}`) +
       '\n';
-    row.status = passed ? 'done' : 'idle';
+    row.status = pausedQa ? 'paused' : passed ? 'done' : 'idle';
     if (qa) row.qa = (row.qa || []).concat(qa.id).slice(-30);
     writeEsteira(info.rootPath, after);
     fresh.stages[at] = row;
@@ -3310,11 +3339,12 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
   const last = at >= fresh.stages.length - 1;
   const qaOk = !qaGate || !!qa?.ok;
   const segOk = !segGate || !!seg?.ok;
-  const ok = Boolean(agentRes.ok) && !paused && qaOk && segOk;
+  const held = paused || pausedQa;
+  const ok = Boolean(agentRes.ok) && !held && qaOk && segOk;
   return {
     ...esteiraPayload(info.rootPath, fresh),
     ok,
-    paused,
+    paused: held,
     gate: def.gate,
     awaiting: ok && def.gate,
     commit,
@@ -3322,7 +3352,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     seg,
     continued: ok && !def.gate && !last && fresh.auto,
     reply: agentRes.text,
-    error: ok || paused
+    error: ok || held
       ? undefined
       : !qaOk
         ? qa ? `QA reprovou «${def.name}»: ${qa.empty ? 'nenhum teste rodou' : `${qa.fail} de ${qa.total} testes falharam`}.` : `QA não rodou: ${qaError}`

@@ -1524,7 +1524,7 @@ templateHtml = templateHtml.replace(
 );
 
 const origJcur = "const jcur = s.jobs.find((j) => j.id === s.jobId) || jlist[0] || s.jobs[0];";
-const safeJcur = "const jcur = s.jobs.find((j) => j.id === s.jobId) || jlist[0] || s.jobs[0] || { id: '', title: 'Nenhum job ativo', who: '—', ini: '—', status: 'completed', progress: 0, model: '—', motor: '—', effort: '—', task: '—', cost: 0, ceiling: 0, started: '—', tokens: '0' };";
+const safeJcur = "const jcur = s.jobs.find((j) => j.id === s.jobId) || (!s.jobId ? (jlist[0] || s.jobs[0]) : null) || { id: s.jobId || '', title: 'Nenhum job ativo', who: '—', ini: '—', status: 'completed', progress: 0, model: '—', motor: '—', effort: '—', task: '—', cost: 0, ceiling: 0, started: '—', tokens: '0' };";
 templateHtml = templateHtml.replace(origJcur, safeJcur);
 templateHtml = templateHtml.replace(
   "isFailed: jcur.status === 'failed',",
@@ -1554,6 +1554,17 @@ const origTdT = "const tdT = s.modal === 'taskdetail' ? (s.tasks.find((t) => t.i
 const safeTdT = "const tdT = (s.modal === 'taskdetail' ? (s.tasks.find((t) => t.id === (s.mdata && s.mdata.id)) || s.tasks[0]) : s.tasks[0]) || { seq: 0, title: 'Nenhuma tarefa', who: '—', sector: '—', prio: 'Normal', gate: false, job: null, status: 'to_plan' };";
 templateHtml = templateHtml.replace(origTdT, safeTdT);
 console.log('Fallbacks de segurança aplicados!');
+
+// 2.9b Desliga o simulador da maquete. O tick() original somava progresso e custo aleatórios e
+// cortava o log em 40 linhas a cada 1,8 s; o livro de execuções sobrescrevia a cada 4 s e a tela
+// oscilava. Progresso, custo e log vêm só do livro (loadOfficeRuns) e dos eventos do motor.
+{
+  const tickStart = templateHtml.indexOf('tick() {\n    this.setState((s) => {');
+  const tickEnd = tickStart === -1 ? -1 : templateHtml.indexOf('\n  say(t, m)', tickStart);
+  if (tickStart === -1 || tickEnd === -1) throw new Error('Execuções: tick() da maquete não encontrado; o simulador ficaria ligado.');
+  templateHtml = templateHtml.slice(0, tickStart) + 'tick() { /* simulador desligado: dados reais vêm do livro */ }\n' + templateHtml.slice(tickEnd);
+  console.log('Simulador de execuções desligado!');
+}
 
 // 2.10 Injeta sincronização IPC reativa + Indexação na Abertura (Estilo Concierge) no componentDidMount
 const oldMount = 'componentDidMount() { this.timer = setInterval(() => this.tick(), 1800); }';
@@ -1597,11 +1608,150 @@ const newMount = `componentDidMount() {
       }).catch(function(err) {
         console.error('[TAVIR IPC] Erro ao sincronizar:', err);
       });
+      self.openOfficeRun = function (job) {
+        if (!job) return;
+        self.setState({ jobId: job.id });
+        const api = window.tavir && window.tavir.runs;
+        if (!api || !job.workspace) return;
+        api.read(job.workspace, job.id).then(function (det) {
+          const lines = [];
+          function add(label, text) {
+            const body = text && text.text ? text.text : text;
+            if (!body) return;
+            String(body).split(/\\r?\\n/).slice(0, 2500).forEach(function (line) {
+              lines.push({ ts: '', lvl: label || 'log', cls: label === 'erro' ? 'err' : 'info', text: line });
+            });
+          }
+          if (!det || !det.ok) {
+            lines.push({ ts: '', lvl: 'erro', cls: 'err', text: (det && det.error) || 'Sem log desta execução.' });
+          } else {
+            const pause = det.meta && (det.meta.status === 'paused' || /pausado por carlos/i.test(String(det.meta.error || '')));
+            if (pause) add('pausa', det.meta.error || 'Pausado por Carlos. A retomada continua deste ponto.');
+            else if (det.meta && det.meta.error) add('erro', det.meta.error);
+            add('pedido', det.prompt);
+            add('passo', det.transcricao);
+            add('resposta', det.resposta);
+            add('stdout', det.stdout);
+            add('stderr', det.stderr);
+            if (!lines.length) lines.push({ ts: '', lvl: 'log', cls: 'info', text: 'O motor não devolveu transcrição nesta execução.' });
+          }
+          const logs = Object.assign({}, self.state.logs || {});
+          const prev = logs[job.id] || [];
+          const next = lines.slice(0, 2500);
+          logs[job.id] = job.status === 'running' && prev.length > next.length ? prev : next;
+          self.setState({ logs: logs });
+        }).catch(function () {});
+      };
+      self.followRun = function (mode) {
+        const jobs = self.state.jobs || [];
+        const job = jobs.filter(function (item) { return item.id === self.state.jobId; })[0];
+        const api = window.tavir;
+        if (!job || !api) return;
+        const note = String(self.state.jobFix || '').trim();
+        if (mode === 'correct' && !note) {
+          self.setState({ jobCorrect: true });
+          if (self.say) self.say('Correção', 'Escreva o que precisa mudar. A tentativa continua do checkpoint.');
+          return;
+        }
+        const done = function (res, okText) {
+          if (res && res.ok === false) { if (self.say) self.say('Execução', res.error || 'Não continuou.'); return; }
+          self.setState({ jobCorrect: false, jobFix: '' });
+          if (self.say) self.say('Checkpoint', okText);
+          if (self.loadOfficeRuns) self.loadOfficeRuns();
+        };
+        if (job.mod === 'Fábrica' && job.workspace && api.projects && api.projects.runAltTrack) {
+          const go = function () { return api.projects.runAltTrack(job.workspace); };
+          const chain = mode === 'correct' && api.projects.approveAltTrack
+            ? api.projects.approveAltTrack(job.workspace, 'reprovado', note).then(go)
+            : go();
+          chain.then(function (res) { done(res, mode === 'correct' ? 'Correção enviada. O trilho continua deste ponto.' : 'O trilho continua do checkpoint.'); }).catch(function (err) { if (self.say) self.say('Execução', String(err && err.message || err)); });
+          return;
+        }
+        if (job.mod === 'Raio-X' && job.place && api.raiox && api.raiox.analyse) {
+          api.raiox.analyse(job.place, [], mode === 'correct' ? note : '').then(function (res) {
+            done(res, mode === 'correct' ? 'Correção enviada. A análise continua deste ponto.' : 'A análise continua do checkpoint.');
+          }).catch(function (err) { if (self.say) self.say('Execução', String(err && err.message || err)); });
+          return;
+        }
+        if (!job.workspace || !api.runs || !api.runs.follow) { if (self.say) self.say('Execução', 'Não há checkpoint para continuar.'); return; }
+        api.runs.follow(job.workspace, job.id, mode, note).then(function (res) {
+          done(res, mode === 'correct' ? 'Correção enviada. A execução continua deste ponto.' : 'A execução continua do checkpoint.');
+        }).catch(function (err) { if (self.say) self.say('Execução', String(err && err.message || err)); });
+      };
+      self.loadOfficeRuns = function () {
+        const api = window.tavir && window.tavir.runs;
+        if (!api || !api.office) return;
+        api.office().then(function (res) {
+          if (!res || !res.ok || !Array.isArray(res.runs)) return;
+          self._meter = self._meter || {};
+          const jobs = res.runs.map(function (r) {
+            const pauseText = r.status === 'paused' || /pausado por carlos/i.test(String(r.error || ''));
+            const running = r.status === 'running';
+            const failed = r.status === 'failed' && !pauseText;
+            const paused = pauseText && r.status !== 'ok';
+            const secs = Math.round((r.durationMs || 0) / 1000);
+            let dur = 'sem tempo';
+            if (running && !r.durationMs) dur = 'em andamento';
+            else if (r.durationMs) {
+              if (secs < 60) dur = secs + ' s';
+              else if (secs < 3600) dur = Math.floor(secs / 60) + ' min ' + (secs % 60) + ' s';
+              else dur = Math.floor(secs / 3600) + ' h ' + Math.floor((secs % 3600) / 60) + ' min';
+            }
+            const freshCost = r.usage && r.usage.costUsd ? Number(r.usage.costUsd) : 0;
+            const old = (self.state.jobs || []).filter(function (item) { return item.id === r.id; })[0];
+            const cost = freshCost || (old && old.cost) || 0;
+            const freshTokens = r.usage ? ((r.usage.inputTokens || 0) + (r.usage.outputTokens || 0)) : 0;
+            const status = running ? 'running' : failed ? 'failed' : paused ? 'paused' : 'completed';
+            const startedMs = Date.parse(r.startedAt || '');
+            // Sem percentual inventado: concluída = 100%; as outras mostram tempo real do livro.
+            const progress = status === 'completed' ? 100 : 0;
+            const fmtMs = function (ms) {
+              const t = Math.max(0, Math.round(ms / 1000));
+              if (t < 60) return t + ' s';
+              if (t < 3600) return Math.floor(t / 60) + ' min ' + String(t % 60).padStart(2, '0') + ' s';
+              return Math.floor(t / 3600) + ' h ' + String(Math.floor((t % 3600) / 60)).padStart(2, '0') + ' min';
+            };
+            let progTxt = '100%';
+            if (status !== 'completed') {
+              const elapsed = running && Number.isFinite(startedMs) ? Date.now() - startedMs : (r.durationMs || 0);
+              progTxt = elapsed > 0 ? fmtMs(elapsed) : (running ? 'iniciando' : '—');
+            }
+            return {
+              id: r.id, title: r.label || r.id,
+              who: (r.module || 'Motor') + ' · ' + (r.place || r.owner || '') + ' · ' + dur,
+              ini: String(r.module || 'EX').slice(0, 2).toUpperCase(),
+              status: status,
+              progress: progress, progTxt: progTxt,
+              model: r.model || '—', motor: r.engine || '—', effort: r.mode || '—', task: r.stage || '—',
+              cost: cost, ceiling: 0,
+              started: String(r.startedAt || '').replace('T', ' ').slice(0, 19),
+              tokens: freshTokens ? String(freshTokens) : (old && old.tokens) || '—',
+              workspace: r.workspace, mod: r.module || '', place: r.place || '',
+              checkpointAt: r.checkpointAt || '', checkpointHint: r.checkpointHint || '',
+              error: paused ? '' : (r.error || ''), failText: paused ? '' : (r.error || '')
+            };
+          });
+          const cur = self.state.jobId;
+          if (cur && !jobs.some(function (j) { return j.id === cur; })) {
+            const heldJob = (self.state.jobs || []).filter(function (item) { return item.id === cur; })[0];
+            if (heldJob) jobs.unshift(heldJob);
+          }
+          const patch = { jobs: jobs };
+          if (!cur && jobs[0]) patch.jobId = jobs[0].id;
+          self.setState(patch);
+          const selected = jobs.find(function (j) { return j.id === (patch.jobId || cur); });
+          const known = self.state.logs && selected && self.state.logs[selected.id] && self.state.logs[selected.id].length;
+          if (selected && (!known || selected.status === 'running')) self.openOfficeRun(selected);
+        }).catch(function () {});
+      };
+      self.loadOfficeRuns();
+      if (!self._officeTimer) self._officeTimer = setInterval(function () { self.loadOfficeRuns(); }, 4000);
       window.tavir.onEvent(function(evt) {
         if (evt && evt.meta && evt.meta.track) {
           const list = (self.state.jobs || []).slice();
           let j = list.find(function(x) { return x.id === evt.runId; });
-          const st = evt.meta.status || (evt.type === 'error' ? 'failed' : evt.type === 'done' ? 'completed' : 'running');
+          const ended = !!evt.meta.ended;
+          const st = ended ? (evt.meta.status || (evt.type === 'error' ? 'failed' : 'completed')) : 'running';
           if (!j) {
             j = {
               id: evt.runId,
@@ -1609,7 +1759,7 @@ const newMount = `componentDidMount() {
               who: evt.meta.owner || 'Trilho',
               ini: String(evt.meta.owner || 'TR').slice(0, 2).toUpperCase(),
               status: st,
-              progress: evt.meta.progress || 12,
+              progress: st === 'completed' ? 100 : 0,
               model: evt.meta.model || 'auto',
               motor: evt.meta.motor || 'Cursor',
               effort: 'trilho',
@@ -1618,15 +1768,17 @@ const newMount = `componentDidMount() {
               ceiling: 0,
               started: 'agora',
               tokens: '0',
-              error: evt.type === 'error' ? evt.content : ''
+              error: ended && st === 'failed' ? evt.content : ''
             };
             list.unshift(j);
-          } else {
+          } else if (ended) {
             j.status = st;
-            j.progress = evt.meta.progress || j.progress;
+            if (st === 'completed') j.progress = 100;
             if (evt.meta.title) j.title = evt.meta.title;
-            if (evt.type === 'error') j.error = evt.content;
-            if (evt.type === 'done') j.error = '';
+            j.error = st === 'failed' ? evt.content : '';
+          } else if (j.status !== 'paused' && j.status !== 'failed' && j.status !== 'completed') {
+            j.status = 'running';
+            if (evt.meta.title) j.title = evt.meta.title;
           }
           const logs = Object.assign({}, self.state.logs || {});
           const d = new Date();
@@ -1644,14 +1796,6 @@ const newMount = `componentDidMount() {
           self.setState(patch);
           return;
         }
-        if (evt.type === 'tool_start' || evt.type === 'status' || evt.type === 'thought') {
-          const list = (self.state.jobs || []).slice();
-          const j = list.find(function(x) { return x.id === evt.runId; });
-          if (j) {
-            j.progress = Math.min(95, j.progress + 8);
-            self.setState({ jobs: list });
-          }
-        }
       });
     }
   }`;
@@ -1660,6 +1804,69 @@ if (templateHtml.includes(oldMount)) {
   templateHtml = templateHtml.replace(oldMount, newMount);
   console.log('componentDidMount atualizado com IPC reativo + Indexação na Abertura!');
 }
+
+templateHtml = templateHtml.replace('{{exec.total}} jobs', '{{exec.total}} execuções');
+templateHtml = templateHtml.replace('Nenhum job neste filtro.', 'Nenhuma execução de motor neste filtro.');
+templateHtml = templateHtml.replace('iniciado às {{job.started}}', '{{job.started}}');
+templateHtml = templateHtml.replace('<b style="font-size: 14px">Log ao vivo</b>', '<b style="font-size: 14px">Log do processo</b>');
+templateHtml = templateHtml.replace('<small>teto US$ {{job.ceiling}} · {{job.costPct}}% usado</small>', '<small>{{job.started}} · {{job.who}}</small>');
+templateHtml = templateHtml.replace('US$ {{j.costTxt}}<br>de {{j.ceiling}}', 'US$ {{j.costTxt}}');
+templateHtml = templateHtml.replace(
+  '<div class="grow"><b>O job parou antes do deploy.</b><p class="sec" style="margin-top: 4px; font-size: 13px">Variável obrigatória ausente: SUPABASE_URL. Nada foi publicado. O gate ap-02 espera sua decisão para registrar a variável e refazer.</p></div>',
+  '<div class="grow"><b>Esta execução falhou.</b><p class="sec" style="margin-top: 4px; font-size: 13px">{{job.failText}}</p></div>'
+);
+templateHtml = templateHtml.replace(
+  '<sc-if value="{{job.isFailed}}" hint-placeholder-val="{{false}}">\n        <div class="card" style="padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; border-color: var(--danger)">',
+  '<sc-if value="{{job.isRunning}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 16px 18px; border-color: var(--flow)"><b>Execução em andamento.</b><p class="sec" style="margin: 4px 0 0; font-size: 13px">{{job.title}} · {{job.who}}. O log abaixo é o processo real do motor.</p></div></sc-if>\n      <sc-if value="{{job.isFailed}}" hint-placeholder-val="{{false}}">\n        <div class="card" style="padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; border-color: var(--danger)">'
+);
+templateHtml = templateHtml.replace(
+  '<button class="btn secondary" sc-camel-on-click="{{jobRetry}}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.retry}}"></path></svg>Refazer</button><button class="btn primary" sc-camel-on-click="{{goGate}}">Abrir gate</button>',
+  '<button class="btn primary" sc-camel-on-click="{{jobRetry}}">Continuar</button><button class="btn secondary" sc-camel-on-click="{{jobCorrect}}">Corrigir</button>'
+);
+templateHtml = templateHtml.replace(
+  '<button class="btn primary" sc-camel-on-click="{{jobResume}}">Retomar</button>',
+  '<button class="btn primary" sc-camel-on-click="{{jobResume}}">Continuar</button>'
+);
+templateHtml = templateHtml.replace(
+  '<div class="metric"><span class="eyebrow">Progresso</span><strong>{{job.progress}}%</strong>',
+  '<sc-if value="{{job.canFollow}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px"><sc-if value="{{job.hasCheckpoint}}" hint-placeholder-val="{{false}}"><div><b>Checkpoint · {{job.checkpointAt}}</b><p class="sec" style="margin: 4px 0 0; font-size: 13px">{{job.checkpointHint}}</p><p class="sec" style="margin: 4px 0 0; font-size: 13px">Há um checkpoint desta etapa. A nova tentativa continua dali.</p></div></sc-if><div style="display: flex; gap: 8px; flex-wrap: wrap"><button class="btn primary" sc-camel-on-click="{{jobRetry}}">Continuar</button><button class="btn secondary" sc-camel-on-click="{{jobCorrect}}">Corrigir</button></div></div></sc-if><sc-if value="{{showCorrect}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px"><b>Correção</b><p class="sec" style="margin: 0; font-size: 13px">Escreva o que precisa mudar. A próxima tentativa continua do checkpoint.</p><textarea class="input" rows="4" value="{{jobFix}}" sc-camel-on-change="{{onJobFix}}"></textarea><button class="btn primary" sc-camel-on-click="{{jobSendFix}}">Enviar correção e continuar</button></div></sc-if><div class="metric"><span class="eyebrow">{{job.progLbl}}</span><strong>{{job.progTxt}}</strong>'
+);
+templateHtml = templateHtml.replace(
+  'log: s.logs[jcur.id] || [], logN: (s.logs[jcur.id] || []).length',
+  'log: s.logs[jcur.id] || [], logN: (s.logs[jcur.id] || []).length, hasCheckpoint: !!jcur.checkpointAt, checkpointAt: jcur.checkpointAt || \'\', checkpointHint: jcur.checkpointHint || \'Há um checkpoint desta etapa. A nova tentativa continua dali.\', canFollow: jcur.status === \'failed\' || jcur.status === \'paused\' || !!jcur.checkpointAt, progTxt: jcur.progTxt || (jcur.progress + \'%\'), progLbl: jcur.status === \'completed\' ? \'Progresso\' : \'Tempo decorrido\''
+);
+// Andamento: execução real não tem percentual confiável. Concluída mostra 100%; as demais mostram
+// o tempo decorrido (rodando) ou o tempo até parar (pausada/falha), vindo do livro.
+templateHtml = templateHtml.replace(
+  'list: jlist.map((j) => ({ id: j.id, title: j.title, who: j.who, progress: j.progress,',
+  "list: jlist.map((j) => ({ id: j.id, title: j.title, who: j.who, progress: j.progress, progTxt: j.progTxt || (j.progress + '%'),"
+);
+templateHtml = templateHtml.replace(
+  'jobs: running.map((j) => ({ title: j.title, who: j.who, ini: j.ini, model: j.model, progress: j.progress,',
+  "jobs: running.map((j) => ({ title: j.title, who: j.who, ini: j.ini, model: j.model, progress: j.progress, progTxt: j.progTxt || (j.progress + '%'),"
+);
+templateHtml = templateHtml.split('<span class="num muted" style="font-size: 11px; width: 32px; text-align: right">{{j.progress}}%</span>').join('<span class="num muted" style="font-size: 11px; min-width: 32px; text-align: right; white-space: nowrap">{{j.progTxt}}</span>');
+templateHtml = templateHtml.split('<span class="num" style="font-size: 12px; width: 36px; text-align: right">{{j.progress}}%</span>').join('<span class="num" style="font-size: 12px; min-width: 36px; text-align: right; white-space: nowrap">{{j.progTxt}}</span>');
+templateHtml = templateHtml.replace(
+  "jobPause: setJob('paused', 'Pausado pelo operador'), jobResume: setJob('running', 'Retomado pelo operador'), jobCancel: setJob('failed', 'Cancelado pelo operador · nada publicado'), jobRetry: setJob('running', 'Refeito a partir do último passo válido'),",
+  "jobPause: function () { const api = (typeof window !== 'undefined' && window.tavir) || null; if (jcur.mod === 'Fábrica' && jcur.workspace && api && api.projects && api.projects.pauseAltTrack) api.projects.pauseAltTrack(jcur.workspace); if (jcur.mod === 'Raio-X' && jcur.place && api && api.raiox && api.raiox.stopAnalyse) api.raiox.stopAnalyse(jcur.place); setJob('paused', 'Pausado. O checkpoint guarda este ponto.')(); }, jobResume: function () { if (self.followRun) self.followRun('continue'); else setJob('running', 'Retomado pelo operador')(); }, jobCancel: setJob('failed', 'Cancelado pelo operador · nada publicado'), jobRetry: function () { if (self.followRun) self.followRun('continue'); }, jobCorrect: function () { self.setState({ jobCorrect: true }); }, jobSendFix: function () { if (self.followRun) self.followRun('correct'); }, onJobFix: function (e) { self.setState({ jobFix: e.target.value }); }, jobFix: s.jobFix || '', showCorrect: !!s.jobCorrect,"
+);
+templateHtml = templateHtml.replace(
+  "const jlist = jf === 'all' ? s.jobs : s.jobs.filter((j) => j.status === jf);",
+  "const jlist = jf === 'all' ? s.jobs : s.jobs.filter((j) => j.status === jf || j.mod === jf);"
+);
+templateHtml = templateHtml.replace(
+  "const costPct = Math.min(100, Math.round(jcur.cost / jcur.ceiling * 100));",
+  "const costPct = jcur.ceiling ? Math.min(100, Math.round(jcur.cost / jcur.ceiling * 100)) : 0;"
+);
+templateHtml = templateHtml.replace(
+  "pick: () => self.setState({ jobId: j.id })",
+  "pick: () => self.openOfficeRun ? self.openOfficeRun(j) : self.setState({ jobId: j.id })"
+);
+templateHtml = templateHtml.replace(
+  "filters: [['all', 'Todos'], ['running', 'Rodando'], ['queued', 'Fila'], ['failed', 'Falha'], ['paused', 'Pausados'], ['completed', 'Concluídos']].map((f) => ({ label: f[1], n: f[0] === 'all' ? s.jobs.length : s.jobs.filter((j) => j.status === f[0]).length, on: jf === f[0] ? 'on' : '', pick: () => self.setState({ jobFilter: f[0] }) })),",
+  "filters: [['all', 'Todos'], ['running', 'Rodando'], ['failed', 'Falha'], ['completed', 'Concluídos'], ['Raio-X', 'Raio-X'], ['Studio', 'Studio'], ['Fábrica', 'Fábrica'], ['Flow', 'Flow'], ['Edição', 'Edição']].map((f) => ({ label: f[1], n: f[0] === 'all' ? s.jobs.length : s.jobs.filter((j) => j.status === f[0] || j.mod === f[0]).length, on: jf === f[0] ? 'on' : '', pick: () => self.setState({ jobFilter: f[0] }) })),"
+);
 
 // 2.10b Enriquecer modal 'evidence' para exibir conteúdo de Conhecimento / Memória Tier 1 / Livros / Skills
 const origEvidenceSpec = `      evidence: { title: 'Evidência', lead: 'Leitura do artefato, sem executar o job de novo.', size: 'lg', primary: 'Fechar', cancel: 'Copiar caminho', fields: [

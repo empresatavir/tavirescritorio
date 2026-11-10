@@ -5,10 +5,14 @@ import { RAIOX_FRONTS } from '../../shared/raiox';
 import { engineHub } from '../drivers/engineHub';
 import { findMotorBinary, runMotor, type MotorCall, type MotorId, type MotorResult } from '../motors';
 import { startRun, type RunHandle } from '../runLedger';
+import { writeCheckpoint } from '../officeRuns';
 import { buildContext, repoRoot } from './raioxContext';
 import { suggestionShape } from './raioxDocLint';
 import { RaioxError, addEvidence, addHypotheses } from './raioxRules';
 import { caseDir, readCase, writeCase } from './raioxStore';
+import { ensureLocal, saveTarget, wantsLocal, type LocalResult } from './localBusiness';
+import { getBundle } from '../credentials';
+import type { RaioxCase } from '../../shared/raiox';
 
 function officeMotor(id: string): MotorId {
   if (id === 'claude' || id === 'anthropic') return 'claude';
@@ -29,6 +33,19 @@ export interface AnalyseDeps {
   ledger?: { start: typeof startRun };
   onProgress?: (progress: { id: string; speech: string; activity: string; running: boolean }) => void;
   repo?: string;
+  note?: string;
+  /** Consulta da ficha do Google antes do motor. Nos testes, só roda se for injetada. */
+  local?: (c: RaioxCase) => Promise<LocalResult>;
+}
+
+export function rapidKeys(): string[] {
+  const bundle = getBundle('rapidapi_local');
+  return bundle ? bundle.apiKeys.split(/[,;\s]+/).map((k) => k.trim()).filter(Boolean) : [];
+}
+
+export function collectLocalFor(root: string, c: RaioxCase, force = false, mapsUrl = ''): Promise<LocalResult> {
+  if (mapsUrl.trim()) saveTarget(caseDir(root, c.id), mapsUrl);
+  return ensureLocal(root, c, { keys: rapidKeys, force });
 }
 
 function blank(value: string | undefined): boolean {
@@ -53,7 +70,7 @@ export function stopAnalyse(id: string): void {
   if (kill) kill();
 }
 
-export async function analyse(root: string, id: string, fronts: string[], deps: AnalyseDeps = {}): Promise<{ ok: true; created: number }> {
+export async function analyse(root: string, id: string, fronts: string[], deps: AnalyseDeps = {}): Promise<{ ok: true; created: number; paused?: boolean }> {
   if (fronts.some((front) => !RAIOX_FRONTS.some((item) => item.id === front))) {
     throw new RaioxError('Frente de varredura inválida.');
   }
@@ -67,7 +84,11 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
   const repo = deps.repo || repoRoot();
   const before = (deps.gitStatus ?? (() => porcelain(repo)))();
   buildContext(root, current, 'analise', { fronts, repo });
-  const prompt = fs.readFileSync(path.join(caseDir(root, id), '_contexto', 'prompt.md'), 'utf8');
+  const basePrompt = fs.readFileSync(path.join(caseDir(root, id), '_contexto', 'prompt.md'), 'utf8');
+  const note = (deps.note || '').trim();
+  const prompt = note
+    ? `${basePrompt}\n\nCORREÇÃO DO CARLOS. Continue do ponto em que parou e não refaça o que já está válido:\n${note}`
+    : basePrompt;
   const settings = engineHub.getSettings();
   const motor = officeMotor(settings.defaultEngine);
   const model = settings.defaultModel;
@@ -75,6 +96,12 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
   const workspace = caseDir(root, id);
   const binary = findMotorBinary(motor) || '';
   const now = (deps.now ?? (() => new Date().toISOString()))();
+  writeCheckpoint(workspace, {
+    at: now,
+    label: current.status,
+    reason: note || 'Análise em andamento.',
+    partial: '',
+  });
   let handle: RunHandle | null = null;
   const ledger = deps.ledger ?? { start: startRun };
   try {
@@ -84,6 +111,18 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     });
   } catch (err) {
     throw new RaioxError(err instanceof Error ? err.message : 'Não foi possível abrir o livro de execuções.');
+  }
+  const local = deps.local ?? (deps.run ? null : (c: RaioxCase) => collectLocalFor(root, c));
+  if (local && wantsLocal(current, fronts)) {
+    live.set(id, { running: true, speech: '', activity: 'Consultando a ficha do Google Maps' });
+    deps.onProgress?.({ id, speech: '', activity: 'Consultando a ficha do Google Maps', running: true });
+    try {
+      const got = await local(current);
+      handle.raw('stdout', `Ficha do Google Maps (Local Business Data): ${got.status} · ${got.message} · ${got.requests.total} consultas
+`);
+    } catch {
+      // A consulta é um reforço: se falhar, o motor segue com o que estiver público.
+    }
   }
   live.set(id, { running: true, speech: '', activity: 'Preparando a análise' });
   deps.onProgress?.({ id, speech: '', activity: 'Preparando a análise', running: true });
@@ -96,6 +135,7 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
         live.set(id, { running: true, speech: progress.speech, activity: progress.activity });
         deps.onProgress?.({ id, speech: progress.speech, activity: progress.activity, running: true });
       },
+      onRaw: (stream, text) => handle.raw(stream, text),
       registerKill: (kill) => kills.set(id, kill),
     });
   } catch (err) {
@@ -103,21 +143,31 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     await handle.finish({ ok: false, error: message, reply: '' });
     live.set(id, { running: false, speech: '', activity: '' });
     kills.delete(id);
+    writeCheckpoint(workspace, { at: now, label: current.status, reason: message.slice(0, 400), partial: '' });
     throw new RaioxError(message);
   }
   kills.delete(id);
+  if (!result.ok && result.error?.kind === 'paused') {
+    const message = 'Pausado por Carlos. A retomada continua deste ponto.';
+    await handle.finish({ ok: false, status: 'paused', error: message, reply: result.text || '', exitCode: result.exitCode });
+    live.set(id, { running: false, speech: '', activity: '' });
+    writeCheckpoint(workspace, { at: now, label: current.status, reason: message, partial: (result.text || '').slice(-2000) });
+    return { ok: true, created: 0, paused: true };
+  }
   const after = (deps.gitStatus ?? (() => porcelain(repo)))();
   const news = leaked(before, after);
   if (news.length) {
     const message = `A análise escreveu no repositório. Nada foi aceito.\n${news.join('\n')}`;
     await handle.finish({ ok: false, status: 'failed', error: message, reply: result.text || '', exitCode: result.exitCode });
     live.set(id, { running: false, speech: '', activity: '' });
+    writeCheckpoint(workspace, { at: now, label: current.status, reason: message.slice(0, 400), partial: '' });
     throw new RaioxError(message);
   }
   if (!result.ok) {
     const message = result.error?.message || 'A análise não terminou.';
     await handle.finish({ ok: false, error: message, reply: result.text || '', exitCode: result.exitCode });
     live.set(id, { running: false, speech: '', activity: '' });
+    writeCheckpoint(workspace, { at: now, label: current.status, reason: message.slice(0, 400), partial: '' });
     throw new RaioxError(message);
   }
   let parsed: ReturnType<typeof suggestionShape>;
@@ -129,12 +179,14 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     const message = `A análise não devolveu sugestões válidas: ${reason}`;
     await handle.finish({ ok: false, status: 'failed', error: message, reply: result.text || '', exitCode: result.exitCode });
     live.set(id, { running: false, speech: '', activity: '' });
+    writeCheckpoint(workspace, { at: now, label: current.status, reason: message.slice(0, 400), partial: '' });
     throw new RaioxError(message);
   }
   if (current.deepScan && parsed.evidencias.some((item) => !item.front)) {
     const message = 'A análise não devolveu sugestões válidas: frente obrigatória no deep scan';
     await handle.finish({ ok: false, status: 'failed', error: message, reply: result.text || '' });
     live.set(id, { running: false, speech: '', activity: '' });
+    writeCheckpoint(workspace, { at: now, label: current.status, reason: message.slice(0, 400), partial: '' });
     throw new RaioxError(message);
   }
   let next = current;
@@ -161,8 +213,10 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     const message = `A análise não devolveu sugestões válidas: ${err instanceof Error ? err.message : 'não foi possível gravar'}`;
     await handle.finish({ ok: false, status: 'failed', error: message, reply: result.text || '' });
     live.set(id, { running: false, speech: '', activity: '' });
+    writeCheckpoint(workspace, { at: now, label: current.status, reason: message.slice(0, 400), partial: '' });
     throw new RaioxError(message);
   }
+    writeCheckpoint(workspace, { at: now, label: current.status, reason: 'Análise concluída. Revise as evidências e siga para a próxima etapa.', partial: (result.text || '').slice(-2000) });
     writeCase(root, next);
     await handle.finish({ ok: true, reply: result.text || '', exitCode: result.exitCode });
     live.set(id, { running: false, speech: '', activity: '' });

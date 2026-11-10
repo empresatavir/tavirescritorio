@@ -64,6 +64,22 @@ export function isGitRepo(root: string): boolean {
   return existsSync(join(root, '.git')) && gitTry(root, ['rev-parse', '--is-inside-work-tree']) === 'true';
 }
 
+/**
+ * A pasta precisa de git próprio? Sim quando não tem .git e ninguém a versiona: fora de qualquer
+ * repositório, ou dentro de um repositório que a ignora (ex.: tavir-interno/ no Escritório).
+ * Pasta versionada por um repositório de fora (subpasta de monorepo do cliente) fica como está.
+ */
+export function needsOwnGit(root: string): boolean {
+  if (existsSync(join(root, '.git'))) return false;
+  if (gitTry(root, ['rev-parse', '--is-inside-work-tree']) !== 'true') return true;
+  try {
+    execFileSync('git', ['check-ignore', '-q', '.'], { cwd: root, stdio: 'pipe', windowsHide: true });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function currentBranch(root: string): string {
   return gitTry(root, ['rev-parse', '--abbrev-ref', 'HEAD']);
 }

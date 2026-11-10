@@ -62,10 +62,11 @@ export async function writeDocuments(root: string, id: string, deps: DocsDeps = 
   const result = await runner({
     motor, workspace, prompt, model: settings.defaultModel, effort: settings.defaultEffort,
     access: 'write', timeoutMs: TIMEOUT_MS,
+    onRaw: (stream, text) => handle.raw(stream, text),
   });
   if (!result.ok) {
     const message = result.error?.message || 'A redação não terminou.';
-    await handle.finish({ ok: false, error: message, reply: result.text || '' });
+    await handle.finish({ ok: false, status: result.error?.kind === 'paused' ? 'paused' : undefined, error: message, reply: result.text || '' });
     throw new RaioxError(message);
   }
   const folder = path.join(workspace, 'documentos', `v${version}`);

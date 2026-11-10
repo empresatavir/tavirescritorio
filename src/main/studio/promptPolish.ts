@@ -62,7 +62,7 @@ export async function polishPrompt(promptId: string): Promise<{ ok: boolean; err
     motor, workspace, prompt: pedido, model, effort, access: 'read', timeoutMs: 180000,
     onRaw: (stream, text) => run.raw(stream, text),
   });
-  const meta = await run.finish({ ok: result.ok, exitCode: result.exitCode, reply: result.text, error: result.error?.message });
+  const meta = await run.finish({ ok: result.ok, status: result.error?.kind === 'paused' ? 'paused' : undefined, exitCode: result.exitCode, reply: result.text, error: result.error?.kind === 'paused' ? 'Pausado por Carlos. A retomada continua deste ponto.' : result.error?.message });
   const custo = typeof meta.usage?.costUsd === 'number' ? `US$ ${meta.usage.costUsd}` : '—';
   if (!result.ok) return { ok: false, error: result.error?.message || 'motor não respondeu', custo };
   const applied = applyRewrite(camadas, result.text);

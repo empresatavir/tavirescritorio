@@ -30,10 +30,12 @@ import {
   type RaioxPriorityInput,
 } from './raioxRules';
 import { syncCases } from './raioxBridge';
-import { analyse, analysisLive, stopAnalyse } from './raioxAnalyse';
+import { analyse, analysisLive, collectLocalFor, stopAnalyse } from './raioxAnalyse';
 import { documentPath, renderPdfs, writeDocuments } from './raioxDocs';
-import { listRuns } from '../runLedger';
-import { listCases, raioxRoot, readCase, storeFile, writeCase, caseDir } from './raioxStore';
+import { listRuns, readRun } from '../runLedger';
+import { listCases, raioxRoot, readCase, storeFile, writeCase, caseDir, deleteCase } from './raioxStore';
+import { analysisReportHtml, documentHtml, openReader } from './raioxView';
+import { LocalBusinessError, readTarget, targetFromAnalysis } from './localBusiness';
 import { playbookStatusFor, lintPlaybook, loadPlaybooks, requirePlaybook } from './playbooks';
 
 type Handle = (channel: string, listener: (...args: any[]) => any) => void;
@@ -190,9 +192,10 @@ export function registerRaioxIpc(handle: Handle): void {
     }
   });
 
-  handle('raiox:analyse', async (_e, id: string, fronts: string[]) => {
+  handle('raiox:analyse', async (_e, id: string, fronts: string[], note?: string) => {
     try {
       return await analyse(raioxRoot(), id, Array.isArray(fronts) ? fronts : [], {
+        note: typeof note === 'string' ? note : '',
         onProgress: (progress) => {
           for (const win of BrowserWindow.getAllWindows()) win.webContents.send('raiox:progress', progress);
         },
@@ -220,6 +223,47 @@ export function registerRaioxIpc(handle: Handle): void {
     }
   });
 
+  handle('raiox:readRun', (_e, id: string, runId: string) => {
+    try {
+      return readRun(caseDir(raioxRoot(), id), String(runId || ''));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:remove', (_e, id: string) => {
+    try {
+      deleteCase(raioxRoot(), id);
+      return { ok: true };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:pickPath', async () => {
+    try {
+      const picked = await dialog.showOpenDialog({ properties: ['openFile'] });
+      if (picked.canceled || !picked.filePaths[0]) return { ok: false, error: 'Nenhum arquivo selecionado.' };
+      return { ok: true, path: picked.filePaths[0] };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:attach', (_e, id: string, src: string, field?: string) => {
+    try {
+      const artifact = storeFile(raioxRoot(), id, 'evidencias', String(src || ''));
+      return mutate(id, (c) => {
+        if (c.legacy) throw new RaioxError('Caso legado é somente leitura.');
+        const next = { ...c, anexos: [...(c.anexos || []), { ...artifact, field: field || '' }] };
+        next.updatedAt = new Date().toISOString();
+        return next;
+      });
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
   handle('raiox:writeDocuments', async (_e, id: string) => {
     try {
       return await writeDocuments(raioxRoot(), id);
@@ -240,6 +284,55 @@ export function registerRaioxIpc(handle: Handle): void {
     try {
       const message = await shell.openPath(documentPath(raioxRoot(), id, relative));
       return message ? { ok: false, error: message } : { ok: true };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:localTarget', (_e, id: string) => {
+    try {
+      const dir = caseDir(raioxRoot(), id);
+      const target = readTarget(dir) || targetFromAnalysis(dir);
+      return { ok: true, mapsUrl: target?.mapsUrl || '', origin: target?.origin || '' };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:collectLocal', async (_e, id: string, mapsUrl?: string) => {
+    try {
+      const root = raioxRoot();
+      const result = await collectLocalFor(root, readCase(root, id), true, typeof mapsUrl === 'string' ? mapsUrl : '');
+      return { ok: result.status === 'ok', status: result.status, message: result.message, requests: result.requests.total, place: result.place ? { name: result.place.name, address: result.place.address, rating: result.place.rating, reviews: result.place.reviews } : null, matchedBy: result.matchedBy || '', error: result.status === 'ok' ? undefined : result.message };
+    } catch (err) {
+      if (err instanceof LocalBusinessError) return { ok: false, error: err.message };
+      return fail(err);
+    }
+  });
+
+  handle('raiox:viewReport', async (_e, id: string) => {
+    try {
+      const root = raioxRoot();
+      const current = readCase(root, id);
+      return await openReader(root, id, 'relatorio-analise', `Raio-X · ${current.company}`, analysisReportHtml(current, caseDir(root, id)));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:viewDocument', async (_e, id: string, relative: string) => {
+    try {
+      const root = raioxRoot();
+      const current = readCase(root, id);
+      const full = documentPath(root, id, String(relative || ''));
+      if (!/\.md$/i.test(full)) {
+        const message = await shell.openPath(full);
+        return message ? { ok: false, error: message } : { ok: true };
+      }
+      const doc = (current.debrief?.documents || []).find((item) => item.md === relative);
+      const title = doc ? `${doc.kind === 'relatorio' ? 'Relatório de Raio X' : 'Plano de Crescimento'} · v${doc.version}` : path.basename(full);
+      const key = path.basename(full, '.md') + (doc ? `-v${doc.version}` : '');
+      return await openReader(root, id, key, title, documentHtml(current, title, fs.readFileSync(full, 'utf8')));
     } catch (err) {
       return fail(err);
     }

@@ -287,6 +287,8 @@ function makeGif(ffmpeg: string, video: string, out: string, start: number, dur:
 }
 
 export function gitHead(workspace: string): string {
+  // Sem .git na própria pasta, o git responderia com o commit de um repositório de fora.
+  if (!fs.existsSync(path.join(workspace, '.git'))) return 'sem git';
   try {
     return execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: workspace, stdio: 'pipe', windowsHide: true, encoding: 'utf8' }).trim();
   } catch {
@@ -338,7 +340,7 @@ export async function startTarget(
     const args = plan.manager === 'npm' ? [...t.args, '--', '--port', String(port)] : [...t.args, '--port', String(port)];
     label = `${t.framework} · ${plan.manager} run ${t.script}`;
     let serverOut = '';
-    const srv = spawnCmd(t.command, args, workspace, qaEnv({ PORT: String(port), HOST: '127.0.0.1' }));
+    const srv = spawnCmd(t.command, args, t.cwd || workspace, qaEnv({ PORT: String(port), HOST: '127.0.0.1' }));
     server = srv;
     track(srv);
     const grab = (b: Buffer) => {
@@ -384,19 +386,41 @@ export async function runQa(opts: QaRunOptions): Promise<QaRun> {
   const plan: QaPlan = planQa(workspace);
   const notes = plan.notes.slice();
   const suites: QaSuite[] = [];
-  const noDeps = notes.some((n) => n.startsWith('Dependências não instaladas'));
   say(`Plano de QA · ${plan.stack} · ${plan.checks.length} checagem(ns) · alvo ${plan.target.kind}`);
+
+  const installed = new Set<string>();
+  const mgr = plan.manager || 'npm';
+  const installCmd = process.platform === 'win32' ? `${mgr}.cmd` : mgr;
+  for (const check of plan.checks) {
+    if (stopped) break;
+    if (!check.blocked || !/node_modules/.test(check.blocked.msg)) continue;
+    const cwd = check.cwd || workspace;
+    if (!installed.has(cwd)) {
+      installed.add(cwd);
+      say(`Instalando dependências · ${mgr} install`);
+      const res = await runCommand(installCmd, ['install'], cwd, 10 * 60 * 1000, track);
+      const logRel = `logs/install-${installed.size}.log`;
+      fs.writeFileSync(path.join(dir, logRel), `$ ${installCmd} install\n\n${res.out}\n\n[código de saída ${res.code}${res.timedOut ? ' · tempo esgotado' : ''}]\n`, 'utf8');
+      if (res.code === 0 && fs.existsSync(path.join(cwd, 'node_modules'))) say('Dependências instaladas');
+      else notes.push(`A instalação em ${path.relative(workspace, cwd) || '.'} não terminou. O log está em qa/evidencias/${id}/${logRel}.`);
+    }
+    if (fs.existsSync(path.join(cwd, 'node_modules'))) check.blocked = undefined;
+  }
 
   // 1. Checagens do próprio projeto
   const checkTests: QaTestResult[] = [];
   const extraSuites: QaSuite[] = [];
-  if (noDeps && plan.checks.length) {
-    checkTests.push({ name: 'Dependências instaladas', st: 'fail', dur: 0, err: { msg: 'Pasta sem node_modules', exp: 'Dependências instaladas para rodar testes, tipos e build', rec: notes.find((n) => n.startsWith('Dependências')) || '', at: workspace, code: `${plan.manager} install` } });
-  } else {
+  {
     for (const check of plan.checks) {
       if (stopped) break;
+      // Sem ferramenta ou sem dependências: falha com o motivo e o comando que resolve, sem rodar.
+      if (check.blocked) {
+        checkTests.push({ name: check.name, st: 'fail', dur: 0, err: { msg: check.blocked.msg, exp: 'Ambiente pronto para rodar a checagem', rec: notes.find((n) => n.includes('Dependências não instaladas')) || '', at: check.cwd || workspace, code: check.blocked.code } });
+        say(`✗ ${check.name} · ${check.blocked.msg}`);
+        continue;
+      }
       say(`Rodando ${check.name}`);
-      const res = await runCommand(check.command, check.args, workspace, check.timeoutMs, track);
+      const res = await runCommand(check.command, check.args, check.cwd || workspace, check.timeoutMs, track);
       const logRel = `logs/${check.id}.log`;
       fs.writeFileSync(path.join(dir, logRel), `$ ${check.command} ${check.args.join(' ')}\n\n${res.out}\n\n[código de saída ${res.code}${res.timedOut ? ' · tempo esgotado' : ''} · ${Math.round(res.ms / 1000)} s]\n`, 'utf8');
       if (check.kind === 'playwright') {
@@ -426,7 +450,9 @@ export async function runQa(opts: QaRunOptions): Promise<QaRun> {
   let staticSrv: http.Server | null = null;
   let targetLbl = 'sem alvo web';
   const serverTests: QaTestResult[] = [];
-  if (!stopped && plan.target.kind !== 'none' && !(plan.target.kind === 'dev' && noDeps)) {
+  const devNoDeps = plan.target.kind === 'dev' && !fs.existsSync(path.join(plan.target.cwd || workspace, 'node_modules'));
+  if (devNoDeps) notes.push('O app web não subiu para a jornada: dependências não instaladas.');
+  if (!stopped && plan.target.kind !== 'none' && !devNoDeps) {
     const t0 = Date.now();
     if (plan.target.kind === 'dev') say(`Subindo o app (${plan.manager} run ${plan.target.script})`);
     const tg = await startTarget(workspace, plan, path.join(dir, 'logs', 'servidor.log'), track, () => stopped);

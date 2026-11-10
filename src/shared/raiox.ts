@@ -962,6 +962,7 @@ export const RAIOX_CATALOG: RaioxCatalogItem[] = [
 export const RAIOX_SELL_OFFERS = RAIOX_CATALOG.filter(i => i.kind === 'entrega').map(i => i.id);
 
 export interface RaioxArtifact { file: string; sha256: string; url?: string; collectedAt: string; }
+export interface RaioxAnexo extends RaioxArtifact { note?: string; field?: string; }
 export interface RaioxEvidence {
   id: string; stage: RaioxStage; source: string; claim: string; classification: RaioxClass;
   front?: string; note?: string; gapIds: string[]; artifact?: RaioxArtifact;
@@ -989,5 +990,6 @@ export interface RaioxCase {
   status: RaioxStatus; evidence: RaioxEvidence[]; hypotheses: RaioxHypothesis[];
   priority?: RaioxPriority; debrief?: RaioxDebrief; execution?: RaioxExecution; remote?: RaioxRemote;
   consent?: { kind: 'termo_assinado' | 'verbal_registrado' | 'interno' | 'formulario'; at: string; note: string };
+  anexos?: RaioxAnexo[];
   createdAt: string; updatedAt: string; closedAt?: string;
 }

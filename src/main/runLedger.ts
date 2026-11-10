@@ -696,13 +696,21 @@ export function readRun(workspace: string, id: string): any {
   if (!meta) return { ok: false, error: 'Execução não encontrada.' };
   const dir = path.join(runsRoot(workspace), id);
   const stdout = readText(path.join(dir, 'stdout.log'), 400 * 1024);
+  let transcricao = readText(path.join(dir, 'transcricao.md'), 400 * 1024).text;
+  // Enquanto roda, a transcrição ainda não foi gravada: monta do stdout que já chegou.
+  // O stdout.log já passou pelo redator ao ser escrito.
+  if (!transcricao && meta.status === 'running' && stdout.text) {
+    const firstBreak = stdout.cut ? stdout.text.indexOf('\n') : -1;
+    transcricao = buildTranscript(firstBreak >= 0 ? stdout.text.slice(firstBreak + 1) : stdout.text).markdown;
+  }
   return {
     ok: true,
     dir,
     meta,
+    live: meta.status === 'running',
     prompt: readText(path.join(dir, 'prompt.md'), 200 * 1024).text,
     resposta: readText(path.join(dir, 'resposta.md'), 200 * 1024).text,
-    transcricao: readText(path.join(dir, 'transcricao.md'), 400 * 1024).text,
+    transcricao,
     diff: readText(path.join(dir, 'diff.patch'), 600 * 1024),
     stdout,
     stderr: readText(path.join(dir, 'stderr.log'), 100 * 1024),

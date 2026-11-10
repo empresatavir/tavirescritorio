@@ -67,6 +67,12 @@ export function readCase(root: string, id: string): RaioxCase {
   return parsed;
 }
 
+export function deleteCase(root: string, id: string): void {
+  const dir = caseDir(root, id);
+  if (!fs.existsSync(path.join(dir, 'caso.json'))) throw new RaioxError('Diagnóstico não encontrado.');
+  fs.rmSync(dir, { recursive: true, force: true });
+}
+
 export function writeCase(root: string, c: RaioxCase): void {
   const dir = caseDir(root, c.id);
   fs.mkdirSync(dir, { recursive: true });

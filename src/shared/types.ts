@@ -255,7 +255,7 @@ export interface CredentialResult {
   credentials: CredentialView[];
 }
 
-export type BundleProvider = 'raiox_supabase' | 'resend';
+export type BundleProvider = 'raiox_supabase' | 'resend' | 'rapidapi_local';
 
 export interface BundleFieldView {
   key: string;
@@ -513,6 +513,8 @@ export interface TavirApi {
     open: (idOrPath: string, runId: string, rel?: string) => Promise<{ ok: boolean; error?: string; path?: string }>;
   };
   runs: {
+    office: () => Promise<any>;
+    follow: (workspace: string, runId: string, mode: string, note?: string) => Promise<any>;
     list: (idOrPath: string, limit?: number) => Promise<any>;
     read: (idOrPath: string, runId: string) => Promise<any>;
     openFolder: (idOrPath: string, runId?: string) => Promise<{ ok: boolean; error?: string }>;
@@ -621,12 +623,20 @@ export interface TavirApi {
     setDebrief: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     openFolder: (id: string) => Promise<{ ok: boolean; error?: string }>;
     sync: () => Promise<{ ok: true; created: number; updated: number } | { ok: false; error: string }>;
-    analyse: (id: string, fronts: string[]) => Promise<{ ok: true; created: number } | { ok: false; error: string }>;
+    analyse: (id: string, fronts: string[], note?: string) => Promise<{ ok: true; created: number } | { ok: false; error: string }>;
     stopAnalyse: (id: string) => Promise<{ ok: boolean; error?: string }>;
     runs: (id: string) => Promise<{ ok: true; live: { running: boolean; speech: string; activity: string }; runs: unknown[] } | { ok: false; error: string }>;
+    readRun: (id: string, runId: string) => Promise<any>;
+    remove: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    pickPath: () => Promise<{ ok: true; path: string } | { ok: false; error: string }>;
+    attach: (id: string, src: string, field?: string) => Promise<any>;
     writeDocuments: (id: string) => Promise<{ ok: true; version: number; problems: string[] } | { ok: false; error: string }>;
     renderPdfs: (id: string, version: number) => Promise<{ ok: true } | { ok: false; error: string }>;
     openDocument: (id: string, relative: string) => Promise<{ ok: boolean; error?: string }>;
+    viewDocument: (id: string, relative: string) => Promise<{ ok: boolean; error?: string }>;
+    viewReport: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    collectLocal: (id: string, mapsUrl?: string) => Promise<{ ok: boolean; status?: string; message?: string; requests?: number; place?: { name: string; address: string; rating: number | null; reviews: number | null } | null; matchedBy?: string; error?: string }>;
+    localTarget: (id: string) => Promise<{ ok: boolean; mapsUrl?: string; origin?: string; error?: string }>;
     approveDocuments: (id: string, hashes: string[]) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     exportPdfs: (id: string) => Promise<{ ok: boolean; error?: string }>;
     recordDelivery: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;

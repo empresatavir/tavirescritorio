@@ -10,7 +10,50 @@
 <x-dc>
 <helmet>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
-<style>body{margin:0}</style>
+<style>body{margin:0}
+.rx-live{padding:16px 18px;display:flex;flex-direction:column;gap:12px;border-left:4px solid var(--line-strong)}
+.rx-live.run{border-left-color:var(--flow)}.rx-live.ok{border-left-color:var(--flow)}.rx-live.warn{border-left-color:var(--warning)}.rx-live.bad{border-left-color:var(--danger)}
+.rx-live-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.rx-live-head small{display:block;font-size:12px;margin-top:2px}
+.rx-dot{width:10px;height:10px;border-radius:50%;background:var(--line-strong);flex:none}
+.rx-dot.run{background:var(--flow);animation:rxpulse 1.2s ease-in-out infinite}.rx-dot.ok{background:var(--flow)}.rx-dot.warn{background:var(--warning)}.rx-dot.bad{background:var(--danger)}
+@keyframes rxpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+.rx-tail{display:flex;flex-direction:column;gap:6px;background:var(--surface-2);border-radius:10px;padding:10px 12px;font-size:12.5px;max-height:150px;overflow:hidden}
+.rx-tail .t{display:flex;gap:8px;align-items:baseline;min-width:0}.rx-tail .t span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.rx-tail .t.think{color:var(--text-muted);font-style:italic}.rx-tail .t.tool{font-family:var(--font-mono);font-size:11.5px}.rx-tail .t.bad{color:var(--danger)}
+.rx-stage{padding:14px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.rx-stage .grow small{display:block;font-size:12px;color:var(--text-muted);margin-top:2px}
+.rx-runs{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.rx-run{display:grid;grid-template-columns:14px minmax(0,1.6fr) 110px 90px minmax(0,1fr) 92px;gap:12px;align-items:center;padding:10px 14px;background:transparent;border:0;border-top:1px solid var(--line);text-align:left;color:inherit;font:inherit;cursor:pointer}
+.rx-run:first-child{border-top:0}.rx-run:hover{background:var(--surface-2)}
+.rx-run b{font-size:13px}.rx-run small{display:block;font-size:11.5px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rx-run .c{font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rx-run .badge{justify-self:end}
+@media (max-width:900px){.rx-run{grid-template-columns:14px minmax(0,1fr) 92px}.rx-run .c{display:none}}
+.rx-evbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.rx-evs{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.rx-evc{padding:14px 16px;display:flex;flex-direction:column;gap:8px;border-left:4px solid var(--line-strong)}
+.rx-evc.pendente{border-left-color:var(--warning)}.rx-evc.aprovada{border-left-color:var(--flow)}.rx-evc.rejeitada{border-left-color:var(--danger);opacity:.72}
+.rx-evc .hd{display:flex;gap:8px;align-items:flex-start}.rx-evc .hd b{font-size:13.5px;line-height:1.35}
+.rx-evc p{margin:0;font-size:13px;line-height:1.5;color:var(--text-secondary)}
+.rx-evc .chips{display:flex;gap:6px;flex-wrap:wrap}.rx-evc .chip{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--text-secondary)}
+.rx-evc .url{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rx-evc .ft{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
+.modal.rx-xl{width:min(1180px,94vw);max-width:none;height:min(880px,90vh);display:flex;flex-direction:column}
+.rx-logtabs{display:flex;gap:6px;padding:0 20px;flex-wrap:wrap}
+.rx-logbody{flex:1;overflow:auto;padding:14px 20px 20px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.rx-e{font-size:13px;line-height:1.55;word-break:break-word}.rx-e .tx{white-space:pre-wrap}
+.rx-e.speech{padding:10px 12px;border-radius:10px;background:var(--surface-2)}
+.rx-e.think{padding:8px 12px;border-left:3px solid var(--line-strong);color:var(--text-muted);font-style:italic}
+.rx-e.end{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);padding:6px 0}
+.rx-e details{border:1px solid var(--line);border-radius:10px;background:transparent}
+.rx-e details.bad{border-color:var(--danger)}
+.rx-e summary{cursor:pointer;padding:8px 12px;font-family:var(--font-mono);font-size:12px;display:flex;gap:8px;align-items:center;list-style:none}
+.rx-e summary::-webkit-details-marker{display:none}
+.rx-e summary .nm{font-weight:600;white-space:nowrap}.rx-e summary .sm{color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
+.rx-e pre{margin:0;padding:10px 12px;border-top:1px solid var(--line);font-size:11.5px;white-space:pre-wrap;word-break:break-word;max-height:360px;overflow:auto}
+.rx-raw{margin:0;white-space:pre-wrap;word-break:break-word;font-size:12px}
+</style>
 </helmet>
 <div class="tv" style="min-height: 100%">
 
@@ -78,17 +121,56 @@
     <div class="actions">
       <button class="btn secondary" onClick="{{runAnalyse}}">Rodar análise</button>
       <button class="btn secondary" onClick="{{openEvidence}}">Registrar evidência</button>
+      <button class="btn secondary" onClick="{{openEdit}}">Editar caso</button>
+      <button class="btn ghost" onClick="{{removeCase}}">Excluir</button>
       <button class="btn primary" onClick="{{openFolder}}">Abrir pasta</button>
     </div>
   </div>
-  <sc-if value="{{hasAnalysis}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 13px; margin: 0">{{analysisLine}}</p></sc-if>
+  <section class="card rx-live {{live.cls}}">
+    <div class="rx-live-head">
+      <span class="rx-dot {{live.cls}}"></span>
+      <div class="grow" style="min-width: 220px"><b>{{live.title}}</b><small class="muted">{{live.sub}}</small></div>
+      <sc-if value="{{live.canStop}}" hint-placeholder-val="{{false}}"><button class="btn ghost" onClick="{{stopRun}}">Parar</button></sc-if>
+      <sc-if value="{{live.hasRun}}" hint-placeholder-val="{{true}}"><button class="btn secondary" onClick="{{live.openLog}}">{{live.logLabel}}</button></sc-if>
+      <button class="btn secondary" onClick="{{collectLocal}}" title="Ficha do Google Maps, avaliações e concorrentes pela API">Dados do Google</button>
+      <button class="btn secondary" onClick="{{viewReport}}">Ver relatório</button>
+    </div>
+    <sc-if value="{{live.hasTail}}" hint-placeholder-val="{{false}}">
+      <div class="rx-tail"><sc-for list="{{live.tail}}" as="t" hint-placeholder-count="3"><div class="t {{t.cls}}"><span>{{t.ic}}</span><span>{{t.text}}</span></div></sc-for></div>
+    </sc-if>
+  </section>
+  <sc-if value="{{needsBrief}}" hint-placeholder-val="{{false}}">
+    <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
+      <b>A análise ainda não tem o que ler</b>
+      <p class="muted" style="font-size: 13px; margin: 0">Escreva o limite desta rodada e um link que qualquer pessoa abre. Sem os dois, Rodar análise para na hora.</p>
+      <label class="field"><span>O que esta rodada olha</span><small>O que entra agora e o que fica para outra conversa.</small><textarea class="input" value="{{briefFrontier}}" onChange="{{onBriefFrontier}}"></textarea></label>
+      <label class="field"><span>Link público</span><small>Site, Instagram ou ficha do Google.</small><input class="input" value="{{briefLink}}" onChange="{{onBriefLink}}"></label>
+      <button class="btn secondary" onClick="{{saveBrief}}">Guardar</button>
+    </div>
+  </sc-if>
 
   <div class="stepper">
     <sc-for list="{{stages}}" as="st" hint-placeholder-count="6">
       <button class="stp {{st.cls}}" onClick="{{st.pick}}"><span class="n">{{st.n}}</span><b>{{st.label}}</b><div class="bar"></div></button>
     </sc-for>
   </div>
-  <div class="card" style="padding: 12px 16px; font-size: 13px; display: flex; gap: 10px; align-items: center"><span class="eyebrow">{{stageCur.label}}</span><span class="sec">{{stageCur.note}}</span></div>
+  <div class="card rx-stage">
+    <div class="grow" style="min-width: 240px"><span class="eyebrow">{{stageCur.n}} · {{stageCur.label}} · {{stageCur.state}}</span><b style="display: block; margin-top: 6px; font-size: 14px">{{stageCur.note}}</b><small>{{stageCur.hint}}</small></div>
+    <sc-if value="{{stageCur.hasAlt}}" hint-placeholder-val="{{false}}"><button class="btn secondary" onClick="{{stageCur.alt}}">{{stageCur.altLabel}}</button></sc-if>
+    <sc-if value="{{stageCur.hasAct}}" hint-placeholder-val="{{true}}"><button class="btn primary" onClick="{{stageCur.act}}">{{stageCur.actLabel}}</button></sc-if>
+  </div>
+  <section class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
+    <div style="display: flex; gap: 8px; align-items: center"><b>Execuções deste caso</b><span class="muted" style="font-size: 12px">{{runsStamp}}</span><div class="grow"></div><button class="btn secondary" onClick="{{reloadRuns}}">Atualizar</button></div>
+    <p class="muted" style="font-size: 12px; margin: 0">Cada análise e cada redação, com tempo, motor e o log completo. Clique numa linha para ver o pensamento, as ferramentas usadas e a resposta.</p>
+    <sc-if value="{{hasRuns}}" hint-placeholder-val="{{false}}">
+      <div class="rx-runs">
+        <sc-for list="{{caseRuns}}" as="r" hint-placeholder-count="0">
+          <button class="rx-run" onClick="{{r.open}}" title="Abrir o log desta execução"><span class="rx-dot {{r.dot}}"></span><div style="min-width: 0"><b>{{r.label}}</b><small>{{r.meta}}</small></div><span class="c">{{r.when}}</span><span class="c">{{r.dur}}</span><span class="c">{{r.engine}}</span><span class="badge {{r.cls}}">{{r.st}}</span></button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{noRuns}}" hint-placeholder-val="{{true}}"><p class="muted" style="font-size: 13px; margin: 0">Nenhuma execução neste caso ainda.</p></sc-if>
+  </section>
 
   <div style="display: flex; gap: 16px; flex-wrap: wrap">
     <section class="ink" style="flex: 2 1 480px; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px">
@@ -118,30 +200,31 @@
   <div class="tabs" style="border-radius: 10px"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}<span class="n">{{t.n}}</span></button></sc-for></div>
 
   <sc-if value="{{tEv}}" hint-placeholder-val="{{true}}">
-    <div class="segs"><sc-for list="{{evFilters}}" as="f" hint-placeholder-count="6"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}</button></sc-for></div>
-    <div class="card" style="overflow-x: auto">
-      <table class="tbl">
-        <thead><tr><th>Fonte</th><th>O que vimos</th><th>Classe</th><th>Etapa</th><th>Gaps</th><th>Revisão</th><th></th></tr></thead>
-        <tbody>
-          <sc-for list="{{ev}}" as="e" hint-placeholder-count="3">
-            <tr>
-              <td><b>{{e.src}}</b></td>
-              <td class="sec">{{e.what}}</td>
-              <td><span class="badge {{e.cls}}">{{e.cl}}</span></td>
-              <td class="muted">{{e.stage}}</td>
-              <td class="muted">{{e.gaps}}</td>
-              <td>
-                <span class="muted">{{e.review}}</span>
-                <sc-if value="{{e.pending}}" hint-placeholder-val="{{false}}">
-                  <button class="btn secondary" onClick="{{e.approve}}">Aprovar</button>
-                  <button class="btn secondary" onClick="{{e.reject}}">Rejeitar</button>
-                </sc-if>
-              </td>
-              <td><button class="btn secondary" onClick="{{e.remove}}">Remover</button></td>
-            </tr>
-          </sc-for>
-        </tbody>
-      </table>
+    <div class="rx-evbar">
+      <div class="segs"><sc-for list="{{evFilters}}" as="f" hint-placeholder-count="6"><button class="seg {{f.on}}" onClick="{{f.pick}}">{{f.label}}<span class="muted" style="margin-left: 6px">{{f.n}}</span></button></sc-for></div>
+      <div class="grow"></div>
+      <span class="muted" style="font-size: 12px">{{evSummary}}</span>
+      <sc-if value="{{hasPendingEv}}" hint-placeholder-val="{{false}}"><button class="btn primary" onClick="{{approveAll}}">Aprovar as {{pendingCount}} pendentes</button></sc-if>
+    </div>
+    <p class="muted" style="font-size: 12px; margin: 0">Aprovada entra no diagnóstico e na confiança. Rejeitada fica guardada, mas não conta. Remover tira do caso de vez. Pode mudar a revisão depois.</p>
+    <sc-if value="{{noEv}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 13px">Nenhuma evidência neste filtro.</p></sc-if>
+    <div class="rx-evs">
+      <sc-for list="{{ev}}" as="e" hint-placeholder-count="3">
+        <div class="card rx-evc {{e.review}}">
+          <div class="hd"><b class="grow">{{e.src}}</b><span class="badge {{e.cls}}">{{e.cl}}</span><span class="badge {{e.rcls}}">{{e.rlabel}}</span></div>
+          <p>{{e.what}}</p>
+          <sc-if value="{{e.hasUrl}}" hint-placeholder-val="{{false}}"><span class="url" title="{{e.url}}">{{e.url}}</span></sc-if>
+          <sc-if value="{{e.hasNote}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 12px">Nota: {{e.note}}</p></sc-if>
+          <div class="chips"><span class="chip">{{e.stage}}</span><sc-if value="{{e.hasFront}}" hint-placeholder-val="{{false}}"><span class="chip">{{e.front}}</span></sc-if><sc-for list="{{e.gapList}}" as="g" hint-placeholder-count="1"><span class="chip">{{g.label}}</span></sc-for><span class="chip">{{e.author}}</span></div>
+          <div class="ft">
+            <sc-if value="{{e.pending}}" hint-placeholder-val="{{false}}"><button class="btn primary sm" onClick="{{e.approve}}">Aprovar</button><button class="btn secondary sm" onClick="{{e.reject}}">Rejeitar</button></sc-if>
+            <sc-if value="{{e.approved}}" hint-placeholder-val="{{false}}"><button class="btn secondary sm" onClick="{{e.reject}}">Mudar para rejeitada</button></sc-if>
+            <sc-if value="{{e.rejected}}" hint-placeholder-val="{{false}}"><button class="btn secondary sm" onClick="{{e.approve}}">Mudar para aprovada</button></sc-if>
+            <div class="grow"></div>
+            <button class="btn ghost sm" onClick="{{e.remove}}">Remover</button>
+          </div>
+        </div>
+      </sc-for>
     </div>
   </sc-if>
 
@@ -160,6 +243,7 @@
         <button class="btn secondary" onClick="{{openDebrief}}">Devolutiva</button>
         <button class="btn secondary" onClick="{{writeDocs}}">Gerar documentos</button>
         <button class="btn secondary" onClick="{{renderDocs}}">Gerar PDF</button>
+        <button class="btn secondary" onClick="{{viewReport}}">Relatório da análise</button>
       </div>
       <sc-for list="{{hypotheses}}" as="h" hint-placeholder-count="0"><p class="sec">{{h.text}}</p></sc-for>
       <sc-for list="{{docs}}" as="d" hint-placeholder-count="0">
@@ -168,7 +252,8 @@
           <p class="muted" style="font-size: 12px">hash {{d.short}}</p>
           <sc-for list="{{d.problems}}" as="p" hint-placeholder-count="0"><p style="color: var(--danger); font-size: 12px">{{p}}</p></sc-for>
           <div style="display: flex; gap: 8px">
-            <button class="btn secondary" onClick="{{d.openMd}}">Abrir</button>
+            <button class="btn primary" onClick="{{d.viewMd}}">Ler no app</button>
+            <button class="btn secondary" onClick="{{d.openMd}}">Abrir .md</button>
             <button class="btn secondary" onClick="{{d.openPdf}}">Abrir PDF</button>
           </div>
         </div>
@@ -195,22 +280,23 @@
 
 <sc-if value="{{modalNew}}" hint-placeholder-val="{{false}}">
   <div class="back" onClick="{{modalBg}}"><div class="modal lg" role="dialog" aria-modal="true" aria-label="Novo caso" onClick="{{modalStop}}">
-    <div class="mhead"><div class="grow"><h2>Novo caso</h2><p>A fronteira do diagnóstico. O caso abre na pasta privada.</p></div></div>
+    <div class="mhead"><div class="grow"><h2>Novo caso</h2><p>Diga o que a empresa quer, que decisão precisa sair daqui, e o que esta rodada vai olhar. O caso fica na pasta privada deste computador.</p></div></div>
     <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
       <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
-      <label class="field"><span>Empresa *</span><input class="input" value="{{form.company}}" onChange="{{onCompany}}"></label>
-      <label class="field"><span>Contato</span><input class="input" value="{{form.contact}}" onChange="{{onContact}}"></label>
-      <div class="field"><span>Origem</span><div class="segs"><sc-for list="{{origins}}" as="o" hint-placeholder-count="4"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
-      <label class="field"><span>Segmento</span><input class="input" value="{{form.segment}}" onChange="{{onSegment}}"></label>
-      <label class="field"><span>Link público</span><input class="input" value="{{form.publicLink}}" onChange="{{onLink}}"></label>
+      <label class="field"><span>Empresa *</span><small>Nome como o dono apresenta o negócio.</small><input class="input" value="{{form.company}}" onChange="{{onCompany}}"></label>
+      <label class="field"><span>Contato</span><small>Quem responde por esse negócio. Pode ficar vazio.</small><input class="input" value="{{form.contact}}" onChange="{{onContact}}"></label>
+      <div class="field"><span>Como chegou até a TAVIR</span><small>Amigo, rua, formulário ou indicação.</small><div class="segs"><sc-for list="{{origins}}" as="o" hint-placeholder-count="4"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div>
+      <label class="field"><span>Ramo</span><small>O tipo de negócio. Ex.: padaria, clínica, loja de roupa.</small><input class="input" value="{{form.segment}}" onChange="{{onSegment}}"></label>
+      <label class="field"><span>Link público</span><small>Um endereço que qualquer pessoa abre: site, Instagram ou ficha do Google. A análise precisa dele.</small><input class="input" placeholder="https://" value="{{form.publicLink}}" onChange="{{onLink}}"></label>
       <div class="field"><span>Modo</span><div style="display: flex; flex-direction: column; gap: 8px"><sc-for list="{{modeChoices}}" as="m" hint-placeholder-count="3"><button class="choice {{m.on}}" onClick="{{m.pick}}"><span class="rd"></span><div class="grow"><b>{{m.t}}</b><small>{{m.x}}</small></div></button></sc-for></div></div>
       <div class="field"><span>Loja física</span><button class="seg {{storeOn}}" onClick="{{toggleStore}}">{{storeLabel}}</button></div>
       <sc-if value="{{showDeep}}" hint-placeholder-val="{{false}}"><div class="field"><span>Deep scan</span><button class="seg {{deepOn}}" onClick="{{toggleDeep}}">{{deepLabel}}</button></div></sc-if>
-      <label class="field"><span>Objetivo *</span><textarea class="input" value="{{form.objective}}" onChange="{{onObjective}}"></textarea></label>
-      <label class="field"><span>Decisão que precisa permitir *</span><textarea class="input" value="{{form.decisionNeeded}}" onChange="{{onDecision}}"></textarea></label>
-      <label class="field"><span>Fronteira</span><textarea class="input" value="{{form.frontier}}" onChange="{{onFrontier}}"></textarea></label>
-      <label class="field"><span>Consentimento</span><select class="input" value="{{form.consentKind}}" onChange="{{onConsent}}"><option value="">Sem registro</option><option value="termo_assinado">Termo assinado</option><option value="verbal_registrado">Verbal registrado</option><option value="interno">Interno TAVIR</option></select></label>
-      <label class="field"><span>Nota do consentimento</span><input class="input" value="{{form.consentNote}}" onChange="{{onConsentNote}}"></label>
+      <div class="field"><span>O que a empresa quer conseguir *</span><small>Escolha uma base. Outros abre o texto livre.</small><div class="segs"><sc-for list="{{wantChoices}}" as="o" hint-placeholder-count="4"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><sc-if value="{{wantOther}}" hint-placeholder-val="{{false}}"><small>Exemplo: mais gente entrando na loja e pedindo orçamento neste mês.</small><textarea class="input" value="{{form.objective}}" onChange="{{onObjective}}"></textarea><button class="btn secondary" onClick="{{attachWant}}">Anexar arquivo</button></sc-if></div>
+      <div class="field"><span>Que decisão este diagnóstico tem de destravar *</span><small>Escolha uma base. Outros abre o texto livre.</small><div class="segs"><sc-for list="{{decisionChoices}}" as="o" hint-placeholder-count="4"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><sc-if value="{{decisionOther}}" hint-placeholder-val="{{false}}"><small>Exemplo: cuidar primeiro do Instagram ou do Google.</small><textarea class="input" value="{{form.decisionNeeded}}" onChange="{{onDecision}}"></textarea><button class="btn secondary" onClick="{{attachDecision}}">Anexar arquivo</button></sc-if></div>
+      <div class="field"><span>O que esta rodada olha — e o que fica de fora</span><small>Escolha uma base. Outros abre o texto livre.</small><div class="segs"><sc-for list="{{frontierChoices}}" as="o" hint-placeholder-count="4"><button class="seg {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div><sc-if value="{{frontierOther}}" hint-placeholder-val="{{false}}"><small>Exemplo: só o Instagram e o Google da loja. Site e anúncio pago ficam para outra conversa.</small><textarea class="input" value="{{form.frontier}}" onChange="{{onFrontier}}"></textarea><button class="btn secondary" onClick="{{attachFrontier}}">Anexar arquivo</button></sc-if></div>
+      <sc-if value="{{hasPending}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 12px">Anexos desta abertura: {{pendingLabel}}</p></sc-if>
+      <label class="field"><span>A empresa autorizou esta leitura?</span><small>Caso da própria TAVIR: escolha Interno TAVIR.</small><select class="input" value="{{form.consentKind}}" onChange="{{onConsent}}"><option value="">Ainda sem registro</option><option value="termo_assinado">Termo assinado</option><option value="verbal_registrado">Combinado em conversa, e anotado</option><option value="interno">Interno TAVIR</option></select></label>
+      <label class="field"><span>Onde essa autorização ficou registrada</span><small>Opcional. Ex.: caso interno da TAVIR, combinado hoje.</small><input class="input" value="{{form.consentNote}}" onChange="{{onConsentNote}}"></label>
     </div>
     <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{submitCase}}">Abrir caso</button></div>
   </div></div>
@@ -282,6 +368,64 @@
   </div></div>
 </sc-if>
 
+<sc-if value="{{modalEdit}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal lg" role="dialog" aria-modal="true" aria-label="Editar caso" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Editar caso</h2><p>{{editLead}}</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <label class="field"><span>Empresa</span><input class="input" value="{{editForm.company}}" onChange="{{onEditCompany}}"></label>
+      <label class="field"><span>Contato</span><input class="input" value="{{editForm.contact}}" onChange="{{onEditContact}}"></label>
+      <label class="field"><span>Ramo</span><input class="input" value="{{editForm.segment}}" onChange="{{onEditSegment}}"></label>
+      <label class="field"><span>Link público</span><input class="input" value="{{editForm.publicLink}}" onChange="{{onEditLink}}"></label>
+      <label class="field"><span>O que a empresa quer conseguir</span><textarea class="input" value="{{editForm.objective}}" onChange="{{onEditObjective}}"></textarea><button class="btn secondary" onClick="{{attachEditWant}}">Anexar arquivo</button></label>
+      <label class="field"><span>Decisão que este diagnóstico destrava</span><textarea class="input" value="{{editForm.decisionNeeded}}" onChange="{{onEditDecision}}"></textarea><button class="btn secondary" onClick="{{attachEditDecision}}">Anexar arquivo</button></label>
+      <label class="field"><span>O que esta rodada olha</span><textarea class="input" value="{{editForm.frontier}}" onChange="{{onEditFrontier}}"></textarea><button class="btn secondary" onClick="{{attachEditFrontier}}">Anexar arquivo</button></label>
+      <label class="field"><span>Autorização</span><select class="input" value="{{editForm.consentKind}}" onChange="{{onEditConsent}}"><option value="">Ainda sem registro</option><option value="termo_assinado">Termo assinado</option><option value="verbal_registrado">Combinado em conversa, e anotado</option><option value="interno">Interno TAVIR</option></select></label>
+      <label class="field"><span>Onde a autorização ficou</span><input class="input" value="{{editForm.consentNote}}" onChange="{{onEditConsentNote}}"></label>
+      <sc-for list="{{anexos}}" as="a" hint-placeholder-count="0"><p class="muted" style="font-size: 12px">{{a.label}}</p></sc-for>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <button class="btn secondary" onClick="{{openEvidence}}">Registrar evidência</button>
+        <button class="btn secondary" onClick="{{openPriority}}">Escolher prioridade</button>
+        <button class="btn secondary" onClick="{{openDebrief}}">Devolutiva</button>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn ghost" onClick="{{removeCase}}">Excluir caso</button><div class="grow"></div><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{saveEdit}}">Guardar</button></div>
+  </div></div>
+</sc-if>
+
+<sc-if value="{{modalLog}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal rx-xl" role="dialog" aria-modal="true" aria-label="Log da execução" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><div style="display: flex; gap: 10px; align-items: center"><span class="rx-dot {{log.dot}}"></span><h2>{{log.title}}</h2><span class="badge {{log.cls}}">{{log.st}}</span></div><p>{{log.sub}}</p></div>
+      <sc-if value="{{log.running}}" hint-placeholder-val="{{false}}"><button class="btn secondary sm" onClick="{{log.toggleFollow}}">{{log.followLabel}}</button></sc-if>
+      <button class="btn ghost" onClick="{{closeModal}}">Fechar</button></div>
+    <sc-if value="{{log.hasError}}" hint-placeholder-val="{{false}}"><p style="color: {{log.errColor}}; font-size: 13px; margin: 0; padding: 0 20px 10px">{{log.error}}</p></sc-if>
+    <div class="rx-logtabs"><sc-for list="{{log.tabs}}" as="t" hint-placeholder-count="4"><button class="seg {{t.on}}" onClick="{{t.pick}}">{{t.label}}<span class="muted" style="margin-left: 6px">{{t.n}}</span></button></sc-for></div>
+    <div class="rx-logbody" data-rx-log="1">
+      <sc-if value="{{log.tabEvents}}" hint-placeholder-val="{{true}}">
+        <sc-if value="{{log.noEvents}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 13px">{{log.emptyText}}</p></sc-if>
+        <sc-for list="{{log.events}}" as="x" hint-placeholder-count="0">
+          <div class="rx-e {{x.cls}}">
+            <sc-if value="{{x.isText}}" hint-placeholder-val="{{true}}"><div class="tx">{{x.text}}</div></sc-if>
+            <sc-if value="{{x.isTool}}" hint-placeholder-val="{{false}}"><details class="{{x.bad}}"><summary><span>{{x.ic}}</span><span class="nm">{{x.name}}</span><span class="sm">{{x.summary}}</span></summary><pre>{{x.input}}</pre><sc-if value="{{x.hasResult}}" hint-placeholder-val="{{false}}"><pre>{{x.result}}</pre></sc-if></details></sc-if>
+          </div>
+        </sc-for>
+      </sc-if>
+      <sc-if value="{{log.tabText}}" hint-placeholder-val="{{false}}"><pre class="mono rx-raw">{{log.text}}</pre></sc-if>
+    </div>
+  </div></div>
+</sc-if>
+
+<sc-if value="{{modalLocal}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Dados do Google" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Dados do Google</h2><p>Ficha do Google Maps, nota, avaliações recentes e concorrentes próximos, pela API. A chave fica no cofre; o resultado vai para a pasta do caso.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <label class="field"><span>Link da ficha no Google Maps</span><small>{{localHint}}</small><input class="input" placeholder="https://www.google.com/maps/place/..." value="{{localUrl}}" onChange="{{onLocalUrl}}"></label>
+      <sc-if value="{{hasLocalMsg}}" hint-placeholder-val="{{false}}"><p style="font-size: 13px; margin: 0; color: {{localColor}}">{{localMsg}}</p></sc-if>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{viewReport}}">Ver relatório</button><div class="grow"></div><button class="btn secondary" onClick="{{closeModal}}">Fechar</button><button class="btn primary" disabled="{{localOff}}" onClick="{{runLocal}}">{{localBtn}}</button></div>
+  </div></div>
+</sc-if>
+
 <sc-if value="{{modalRm}}" hint-placeholder-val="{{false}}">
   <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Remover evidência" onClick="{{modalStop}}">
     <div class="mhead"><div class="grow"><h2>Remover evidência</h2><p>A evidência sai deste diagnóstico.</p></div></div>
@@ -297,7 +441,7 @@ const STATUS_LABEL = { fronteira: 'Fronteira', coleta: 'Coleta', jornada: 'Jorna
 const STAGES = ['encontrar', 'conversar', 'atender', 'vender', 'medir'];
 const STAGE_LABEL = { encontrar: 'Encontrar', conversar: 'Conversar', atender: 'Atender', vender: 'Vender', medir: 'Medir' };
 const STATUS_NOTE = {
-  fronteira: 'Empresa, objetivo e a decisão que o diagnóstico precisa permitir.',
+  fronteira: 'Empresa, o que ela quer conseguir, e a decisão que esta leitura tem de destravar.',
   coleta: 'Há evidência registrada. A jornada ainda cabe numa etapa.',
   jornada: 'Há evidência utilizável em mais de uma etapa.',
   prioridade: 'O gargalo escolhido aponta um gap da taxonomia.',
@@ -318,8 +462,14 @@ const FRONTS = [
   { id: 'concorrentes', label: 'Concorrentes e diferenciais' }
 ];
 
+const PRESET_WANT = [['vendas', 'Mais vendas', 'Aumentar o volume de vendas e o movimento do negócio.'], ['whatsapp', 'Mais pedidos no WhatsApp', 'Receber mais pedidos e orçamentos pelo WhatsApp.'], ['google', 'Aparecer no Google', 'Ser encontrado por quem procura esse serviço na cidade.'], ['outros', 'Outros', '']];
+const PRESET_DECISION = [['canal', 'Qual canal vem primeiro', 'Decidir se o primeiro investimento é Instagram, Google ou WhatsApp.'], ['oferta', 'Qual oferta vender agora', 'Escolher uma oferta para vender agora, ou não emitir proposta.'], ['parar', 'Seguir ou parar', 'Decidir se vale continuar este diagnóstico ou parar por aqui.'], ['outros', 'Outros', '']];
+const PRESET_FRONTIER = [['redes', 'Só redes e Google', 'Olhar Instagram e Google. Site e anúncio pago ficam de fora.'], ['loja', 'Loja e Google', 'Olhar a ficha do Google e o que o dono contar da loja. Anúncio pago fica de fora.'], ['site', 'Site e WhatsApp', 'Olhar o site e o WhatsApp. Redes ficam de fora nesta rodada.'], ['outros', 'Outros', '']];
 function blankCase() {
-  return { company: '', contact: '', origin: 'amigo', segment: '', publicLink: '', mode: 'diagnostico', physicalStore: false, deepScan: false, objective: '', decisionNeeded: '', frontier: '', consentKind: '', consentNote: '' };
+  return { company: '', contact: '', origin: 'amigo', segment: '', publicLink: '', mode: 'diagnostico', physicalStore: false, deepScan: false, objective: '', decisionNeeded: '', frontier: '', consentKind: '', consentNote: '', wantPick: '', decisionPick: '', frontierPick: '' };
+}
+function editFrom(item) {
+  return { company: item.company || '', contact: item.contact || '', segment: item.segment || '', publicLink: item.publicLink || '', objective: item.objective || '', decisionNeeded: item.decisionNeeded || '', frontier: item.frontier || '', consentKind: item.consent ? item.consent.kind : '', consentNote: item.consent ? (item.consent.note || '') : '' };
 }
 function blankEv() {
   return { stage: 'encontrar', source: '', claim: '', classification: 'observado', front: '', gapIds: [], note: '', artifact: null };
@@ -334,10 +484,97 @@ function tavirApi() {
   return (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
 }
 
+const MARK = /^(\*\*Agente:\*\*|💭|🔧|↳ resultado|⛔ resultado|■ )/;
+function parseTranscript(md) {
+  const lines = String(md || '').replace(/\r\n?/g, '\n').split('\n');
+  const out = [];
+  let i = 0;
+  const block = function () {
+    while (i < lines.length && !lines[i].trim()) i++;
+    if (i < lines.length && lines[i].trim() === '```') {
+      i++;
+      const body = [];
+      while (i < lines.length && lines[i].trim() !== '```') body.push(lines[i++]);
+      i++;
+      return body.join('\n');
+    }
+    return '';
+  };
+  const until = function (first) {
+    const body = [first];
+    i++;
+    while (i < lines.length && !MARK.test(lines[i])) body.push(lines[i++]);
+    return body.join('\n').trim();
+  };
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.indexOf('**Agente:**') === 0) { out.push({ k: 'speech', text: until(line.slice(11).trim()) }); continue; }
+    if (/^💭/.test(line)) { out.push({ k: 'think', text: until(line.replace(/^💭\s*/, '')).replace(/^_/, '').replace(/_$/, '').trim() }); continue; }
+    if (/^🔧/.test(line)) {
+      const name = line.replace(/^🔧\s*/, '').replace(/^\*\*/, '').replace(/\*\*\s*$/, '');
+      i++;
+      out.push({ k: 'tool', name: name, input: block(), result: '', failed: false, done: false });
+      continue;
+    }
+    if (/^(↳|⛔) resultado/.test(line)) {
+      const failed = line.charAt(0) === '⛔';
+      i++;
+      const text = block();
+      let open = null;
+      for (let j = out.length - 1; j >= 0; j--) { if (out[j].k !== 'tool') break; if (!out[j].done) open = out[j]; }
+      if (open) { open.result = text; open.failed = failed; open.done = true; }
+      else out.push({ k: failed ? 'error' : 'result', text: text });
+      continue;
+    }
+    if (line.indexOf('■ ') === 0) { out.push({ k: 'end', text: line.slice(2).trim() }); i++; continue; }
+    if (line.trim()) out.push({ k: 'speech', text: until(line.trim()) });
+    else i++;
+  }
+  return out;
+}
+function oneLine(text, max) {
+  const t = String(text || '').replace(/\s+/g, ' ').trim();
+  return t.length > max ? t.slice(0, max - 1) + '…' : t;
+}
+function toolSummary(input) {
+  const raw = String(input || '');
+  try {
+    const obj = JSON.parse(raw);
+    if (obj && typeof obj === 'object') {
+      const pick = obj.url || obj.command || obj.path || obj.file_path || obj.globPattern || obj.pattern || obj.query || obj.toolName || obj.description || obj.prompt || obj.targetDirectory;
+      if (pick) return oneLine(pick, 140);
+    }
+  } catch (e) {}
+  return oneLine(raw, 140);
+}
+function fmtDur(ms) {
+  const t = Math.max(0, Math.round((ms || 0) / 1000));
+  if (t < 60) return t + ' s';
+  if (t < 3600) return Math.floor(t / 60) + ' min ' + String(t % 60).padStart(2, '0') + ' s';
+  return Math.floor(t / 3600) + ' h ' + String(Math.floor((t % 3600) / 60)).padStart(2, '0') + ' min';
+}
+function fmtWhen(iso) {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  const p = function (n) { return String(n).padStart(2, '0'); };
+  return p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function runState(run) {
+  const err = String((run && run.error) || '');
+  if (run.status === 'paused' || /pausad[oa] por carlos/i.test(err)) return { key: 'paused', st: 'Pausada', cls: 'warn', dot: 'warn' };
+  if (run.status === 'running') return { key: 'running', st: 'Rodando', cls: 'flow', dot: 'run' };
+  if (run.status === 'ok') return { key: 'ok', st: 'Concluída', cls: 'flow', dot: 'ok' };
+  return { key: 'failed', st: 'Falhou', cls: 'danger', dot: 'bad' };
+}
+function engineName(id) {
+  return { cursor: 'Cursor', claude: 'Claude', anthropic: 'Claude', codex: 'Codex', antigravity: 'Antigravity' }[id] || id || '';
+}
+const EV_ICON = { speech: '💬', think: '💭', tool: '🔧', result: '↳', error: '⛔', end: '■' };
+
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { cases: [], catalog: [], gaps: [], filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), debForm: blankDeb(), error: '', syncError: '', analysis: '', removeId: null };
+    this.state = { cases: [], catalog: [], gaps: [], filter: 'all', caseId: null, openCase: null, stageNote: null, tab: 0, evFilter: 'all', modal: null, form: blankCase(), evForm: blankEv(), priForm: blankPri(), debForm: blankDeb(), editForm: editFrom({}), error: '', syncError: '', analysis: '', analysisBad: false, briefFrontier: null, briefLink: null, removeId: null, caseRuns: [], runLog: '', pendingFiles: [], live: null, runsAt: '', log: null, logRunId: null, logTab: 'events', logFollow: true, tail: [] };
   }
   componentDidMount() {
     const self = this;
@@ -360,14 +597,70 @@ class Component extends DCLogic {
         }).catch(function () {});
       }
     };
+    this.pullRuns = function (id) {
+      const api = tavirApi();
+      if (!api || !api.raiox || !api.raiox.runs || !id) return;
+      api.raiox.runs(id).then(function (res) {
+        if (!self._alive || !res || !res.ok || self.state.caseId !== id) return;
+        const runs = res.runs || [];
+        const d = new Date();
+        const stamp = 'atualizado às ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
+        self.setState({ caseRuns: runs, live: res.live || null, runsAt: stamp });
+        const running = runs.filter(function (r) { return r.status === 'running'; })[0];
+        if (running) self.pullTail(id, running.id);
+        else if ((self.state.tail || []).length) self.setState({ tail: [] });
+      }).catch(function () { if (self._alive) self.setState({ runsAt: 'não foi possível atualizar' }); });
+    };
+    this.pullTail = function (id, runId) {
+      const api = tavirApi();
+      if (!api || !api.raiox || !api.raiox.readRun) return;
+      api.raiox.readRun(id, runId).then(function (det) {
+        if (!self._alive || !det || !det.ok || self.state.caseId !== id) return;
+        const events = parseTranscript(det.transcricao || '');
+        self.setState({ tail: events.slice(-4) });
+        if (self.state.modal === 'log' && self.state.logRunId === runId) self.applyLog(det);
+      }).catch(function () {});
+    };
+    this.applyLog = function (det) {
+      const box = typeof document !== 'undefined' ? document.querySelector('[data-rx-log]') : null;
+      const nearEnd = !box || box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+      self.setState({ log: det });
+      if (self.state.logFollow && nearEnd && self.state.logTab === 'events') {
+        setTimeout(function () { const el = document.querySelector('[data-rx-log]'); if (el) el.scrollTop = el.scrollHeight; }, 30);
+      }
+    };
+    this.openLog = function (runId) {
+      const api = tavirApi();
+      const id = self.state.caseId;
+      if (!api || !api.raiox || !api.raiox.readRun || !id) return;
+      self.setState({ modal: 'log', logRunId: runId, log: null, logTab: 'events', logFollow: true });
+      api.raiox.readRun(id, runId).then(function (det) {
+        if (!self._alive || self.state.logRunId !== runId) return;
+        if (!det || !det.ok) { self.setState({ log: { ok: false, error: (det && det.error) || 'Sem log.' } }); return; }
+        self.applyLog(det);
+      }).catch(function () { self.setState({ log: { ok: false, error: 'Não foi possível ler o log.' } }); });
+    };
+    this._poll = setInterval(function () {
+      if (!self._alive || !self.state.caseId) return;
+      const live = self.state.live && self.state.live.running;
+      const anyRunning = (self.state.caseRuns || []).some(function (r) { return r.status === 'running'; });
+      if (live || anyRunning) self.pullRuns(self.state.caseId);
+      else if (self.state.modal === 'log' && self.state.log && self.state.log.live && self.state.logRunId) {
+        const api = tavirApi();
+        const id = self.state.caseId;
+        const runId = self.state.logRunId;
+        if (api && api.raiox && api.raiox.readRun) api.raiox.readRun(id, runId).then(function (det) { if (self._alive && det && det.ok && self.state.logRunId === runId) self.applyLog(det); }).catch(function () {});
+      }
+    }, 3000);
     this.openId = function (id) {
-      self.setState({ caseId: id, tab: 0, evFilter: 'all', stageNote: null, modal: null, error: '' });
+      self.setState({ caseId: id, tab: 0, evFilter: 'all', stageNote: null, modal: null, error: '', analysis: '', analysisBad: false, briefFrontier: null, briefLink: null, caseRuns: [], runLog: '', live: null, runsAt: '', tail: [], log: null, logRunId: null });
       const api = tavirApi();
       if (!api || !api.raiox) return;
       api.raiox.get(id).then(function (res) {
         if (!self._alive || !res || !res.ok) return;
         self.setState({ openCase: res.case, caseId: id });
       }).catch(function () {});
+      self.pullRuns(id);
     };
     this._onKey = function (event) {
       if (event.key === 'Escape' && self.state.modal) self.setState({ modal: null, error: '', removeId: null });
@@ -378,13 +671,17 @@ class Component extends DCLogic {
     if (progressApi && progressApi.raiox && progressApi.raiox.onProgress) {
       this._offProgress = progressApi.raiox.onProgress(function (progress) {
         if (!self._alive || progress.id !== self.state.caseId) return;
-        self.setState({ analysis: progress.running ? (progress.activity || progress.speech || 'Rodando análise') : '' });
+        if (!progress.running) { self.setState({ live: { running: false, speech: '', activity: '' } }); if (self.pullRuns) self.pullRuns(progress.id); if (self.reload) self.reload(); return; }
+        const wasRunning = self.state.live && self.state.live.running;
+        self.setState({ live: { running: true, speech: progress.speech || '', activity: progress.activity || '' } });
+        if (!wasRunning && self.pullRuns) self.pullRuns(progress.id);
       });
     }
   }
   componentWillUnmount() {
     this._alive = false;
     if (this._offProgress) this._offProgress();
+    if (this._poll) clearInterval(this._poll);
     if (typeof window !== 'undefined' && this._onKey) window.removeEventListener('keydown', this._onKey);
   }
   renderVals() {
@@ -395,6 +692,24 @@ class Component extends DCLogic {
     const gaps = s.gaps || [];
     const current = s.openCase;
     const setForm = function (patch) { const next = Object.assign({}, s.form, patch); self.setState({ form: next }); };
+    const setEdit = function (patch) { self.setState({ editForm: Object.assign({}, s.editForm || {}, patch) }); };
+    const queueFile = function (field) {
+      const api = tavirApi();
+      if (!api || !api.raiox || !api.raiox.pickPath) return;
+      api.raiox.pickPath().then(function (res) {
+        if (!res || !res.ok) return;
+        const name = String(res.path || '').split(/[\\/]/).pop();
+        self.setState({ pendingFiles: (self.state.pendingFiles || []).concat([{ field: field + ': ' + name, path: res.path }]) });
+      }).catch(function () {});
+    };
+    const attachNow = function (field) {
+      const api = tavirApi();
+      if (!api || !current || !api.raiox.pickPath || !api.raiox.attach) return;
+      api.raiox.pickPath().then(function (res) {
+        if (!res || !res.ok) return;
+        api.raiox.attach(current.id, res.path, field).then(refreshOpen).catch(function () { fail(); });
+      }).catch(function () { fail(); });
+    };
     const setEv = function (patch) { self.setState({ evForm: Object.assign({}, s.evForm, patch) }); };
     const setPri = function (patch) { self.setState({ priForm: Object.assign({}, s.priForm, patch) }); };
     const modes = catalog.filter(function (item) { return item.kind === 'modo'; }).slice().sort(function (a, b) { return a.cashRank - b.cashRank; });
@@ -512,32 +827,237 @@ class Component extends DCLogic {
         const api = tavirApi();
         if (api && api.raiox && current) api.raiox.openFolder(current.id);
       },
+      openEdit: function () { if (!current) return; self.setState({ modal: 'edit', error: '', editForm: editFrom(current) }); },
+      removeCase: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.remove) return;
+        if (typeof window !== 'undefined' && !window.confirm('Excluir este caso e os arquivos dele neste computador?')) return;
+        api.raiox.remove(current.id).then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          self.setState({ caseId: null, openCase: null, modal: null });
+          if (self.reload) self.reload();
+        }).catch(function () { fail(); });
+      },
+      reloadRuns: function () { if (current && self.pullRuns) self.pullRuns(current.id); },
+      caseRuns: (s.caseRuns || []).map(function (run) {
+        const stt = runState(run);
+        const started = new Date(run.startedAt).getTime();
+        const dur = stt.key === 'running' ? fmtDur(Date.now() - started) : (run.durationMs ? fmtDur(run.durationMs) : '—');
+        const bits = [];
+        if (run.toolCalls) bits.push(run.toolCalls + ' ferramentas' + (run.toolErrors ? ' · ' + run.toolErrors + ' com erro' : ''));
+        if (stt.key === 'failed' && run.error) bits.push(oneLine(run.error, 160));
+        if (stt.key === 'paused') bits.push('A retomada continua deste ponto.');
+        if (stt.key === 'running') bits.push('Clique para acompanhar ao vivo');
+        return {
+          label: run.label || 'Execução',
+          meta: bits.join(' · ') || (stt.key === 'ok' ? 'Sem erros registrados' : ''),
+          when: fmtWhen(run.startedAt),
+          dur: dur,
+          engine: engineName(run.engine) + (run.model ? ' · ' + run.model : ''),
+          st: stt.st, cls: stt.cls, dot: stt.dot,
+          open: function () { self.openLog(run.id); }
+        };
+      }),
+      hasRuns: !!(s.caseRuns || []).length,
+      noRuns: !(s.caseRuns || []).length,
+      runsStamp: s.runsAt || '',
+      stopRun: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.stopAnalyse) return;
+        if (typeof window !== 'undefined' && window.confirm && !window.confirm('Parar a análise agora? O ponto fica guardado para retomar.')) return;
+        api.raiox.stopAnalyse(current.id).then(function () { self.pullRuns(current.id); }).catch(function () {});
+      },
+      collectLocal: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.collectLocal) return;
+        self.setState({ modal: 'local', localUrl: '', localOrigin: '', localMsg: '', localBad: false, localBusy: false });
+        if (api.raiox.localTarget) api.raiox.localTarget(current.id).then(function (res) {
+          if (res && res.ok && self.state.modal === 'local') self.setState({ localUrl: res.mapsUrl || '', localOrigin: res.origin || '' });
+        }).catch(function () {});
+      },
+      modalLocal: s.modal === 'local',
+      localUrl: s.localUrl || '',
+      onLocalUrl: function (event) { self.setState({ localUrl: event.target.value }); },
+      localHint: s.localOrigin === 'analise' ? 'Link achado numa análise anterior. Confira se é a ficha da loja antes de consultar.' : s.localOrigin === 'carlos' ? 'Link guardado por você neste caso.' : 'Sem link, a busca usa só o nome e pode achar uma loja de mesmo nome em outra cidade.',
+      hasLocalMsg: !!s.localMsg,
+      localMsg: s.localMsg || '',
+      localColor: s.localBad ? 'var(--danger)' : 'var(--text-secondary)',
+      localBtn: s.localBusy ? 'Consultando…' : 'Consultar',
+      localOff: !!s.localBusy,
+      runLocal: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.collectLocal || s.localBusy) return;
+        self.setState({ localBusy: true, localMsg: 'Consultando a ficha, as avaliações e os concorrentes. Gasta até 4 consultas.', localBad: false });
+        api.raiox.collectLocal(current.id, String(s.localUrl || '').trim()).then(function (res) {
+          if (!self._alive) return;
+          if (!res) { self.setState({ localBusy: false, localMsg: 'Não foi possível consultar.', localBad: true }); return; }
+          if (res.status === 'ok' && res.place) {
+            const p = res.place;
+            const line = p.name + ' · ' + (p.address || 'sem endereço') + ' · nota ' + (p.rating != null ? p.rating : '—') + ' (' + (p.reviews != null ? p.reviews : 0) + ' avaliações) · ' + res.requests + ' consultas.';
+            self.setState({ localBusy: false, localBad: false, localMsg: (res.matchedBy === 'nome' ? 'Achada só pelo nome, confira o endereço: ' : 'Ficha atualizada: ') + line + ' Ver relatório mostra tudo; a próxima análise usa.' });
+            return;
+          }
+          self.setState({ localBusy: false, localBad: true, localMsg: res.error || res.message || 'Não foi possível consultar.' });
+        }).catch(function () { self.setState({ localBusy: false, localMsg: 'Não foi possível consultar.', localBad: true }); });
+      },
+      viewReport: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.viewReport) { self.setState({ analysis: 'O relatório não está disponível neste app. Feche e abra de novo.', analysisBad: true }); return; }
+        api.raiox.viewReport(current.id).then(function (res) { if (!res || !res.ok) self.setState({ analysis: (res && res.error) || 'Não foi possível abrir o relatório.', analysisBad: true }); }).catch(function () { self.setState({ analysis: 'Não foi possível abrir o relatório.', analysisBad: true }); });
+      },
+      live: (function () {
+        const runs = s.caseRuns || [];
+        const runningRun = runs.filter(function (r) { return r.status === 'running'; })[0];
+        const isLive = !!((s.live && s.live.running) || runningRun);
+        const last = runningRun || runs[0];
+        const pending = evidence.filter(function (item) { return item.review === 'pendente'; }).length;
+        const tail = (s.tail || []).map(function (ev) {
+          const text = ev.k === 'tool' ? (ev.name + '  ' + toolSummary(ev.input)) : oneLine(ev.text, 220);
+          return { ic: EV_ICON[ev.k] || '·', text: text, cls: ev.k === 'tool' ? (ev.failed ? 'tool bad' : 'tool') : ev.k === 'error' ? 'bad' : ev.k };
+        });
+        const base = { hasRun: !!last, openLog: function () { if (last) self.openLog(last.id); }, logLabel: isLive ? 'Ver pensamento ao vivo' : 'Ver pensamento', tail: tail, hasTail: isLive && tail.length > 0, canStop: isLive };
+        if (isLive) {
+          const activity = (s.live && (s.live.activity || s.live.speech)) || 'Rodando análise';
+          const elapsed = runningRun ? fmtDur(Date.now() - new Date(runningRun.startedAt).getTime()) : '';
+          return Object.assign(base, { cls: 'run', title: oneLine(activity, 140), sub: ['Análise rodando', elapsed, runningRun ? engineName(runningRun.engine) : ''].filter(Boolean).join(' · ') });
+        }
+        if (s.analysis && s.analysisBad) return Object.assign(base, { cls: 'bad', title: s.analysis, sub: last ? 'Última execução: ' + runState(last).st.toLowerCase() + ' em ' + fmtWhen(last.startedAt) : '' });
+        if (s.analysis) return Object.assign(base, { cls: '', title: s.analysis, sub: last ? last.label + ' · ' + fmtWhen(last.startedAt) : '' });
+        if (!last) return Object.assign(base, { cls: '', title: s.analysis || 'Nenhuma análise rodou neste caso ainda.', sub: 'Rodar análise abre o navegador nas fontes públicas do caso e sugere evidências para você revisar.' });
+        const stt = runState(last);
+        const when = fmtWhen(last.startedAt) + (last.durationMs ? ' · ' + fmtDur(last.durationMs) : '');
+        if (stt.key === 'ok') return Object.assign(base, { cls: 'ok', title: pending ? ('Análise concluída. ' + pending + (pending === 1 ? ' evidência espera' : ' evidências esperam') + ' a sua revisão.') : 'Análise concluída. Nenhuma evidência pendente.', sub: last.label + ' · ' + when });
+        if (stt.key === 'paused') return Object.assign(base, { cls: 'warn', title: 'Análise pausada por você. Rodar análise retoma deste ponto.', sub: last.label + ' · ' + when });
+        return Object.assign(base, { cls: 'bad', title: 'A última execução falhou: ' + oneLine(last.error || 'sem detalhe', 180), sub: last.label + ' · ' + when + ' · abra o pensamento para ver onde parou' });
+      })(),
+      modalLog: s.modal === 'log',
+      log: (function () {
+        const det = s.log;
+        const meta = (det && det.meta) || {};
+        const run = (s.caseRuns || []).filter(function (r) { return r.id === s.logRunId; })[0] || meta;
+        const stt = runState({ status: meta.status || run.status, error: meta.error || run.error });
+        const events = det && det.ok !== false ? parseTranscript(det.transcricao || '') : [];
+        const tools = events.filter(function (ev) { return ev.k === 'tool'; }).length;
+        const raw = [det && det.stdout && det.stdout.text ? 'STDOUT\n' + det.stdout.text : '', det && det.stderr && det.stderr.text ? 'STDERR\n' + det.stderr.text : ''].filter(Boolean).join('\n\n');
+        const tabsDef = [['events', 'Pensamento e ferramentas', events.length], ['prompt', 'Pedido', ''], ['reply', 'Resposta', ''], ['raw', 'Saída bruta', '']];
+        const textOf = { prompt: (det && det.prompt) || 'Sem pedido gravado.', reply: (det && det.resposta) || (stt.key === 'running' ? 'A resposta aparece quando a execução terminar.' : 'O motor não devolveu resposta final.'), raw: raw || 'Sem saída bruta.' };
+        const started = meta.startedAt || run.startedAt;
+        const dur = stt.key === 'running' ? fmtDur(Date.now() - new Date(started).getTime()) : (meta.durationMs ? fmtDur(meta.durationMs) : '');
+        const errText = det && det.ok === false ? det.error : (meta.error || '');
+        return {
+          title: run.label || meta.label || 'Execução',
+          st: det ? stt.st : 'Carregando', cls: stt.cls, dot: det ? stt.dot : '',
+          running: stt.key === 'running',
+          sub: [fmtWhen(started), dur, engineName(meta.engine || run.engine) + (meta.model ? ' · ' + meta.model : ''), tools ? tools + ' ferramentas' : ''].filter(Boolean).join(' · '),
+          hasError: !!errText, error: errText, errColor: stt.key === 'paused' ? 'var(--warning)' : 'var(--danger)',
+          followLabel: s.logFollow ? 'Seguindo ao vivo' : 'Seguir ao vivo',
+          toggleFollow: function () { self.setState({ logFollow: !self.state.logFollow }); },
+          tabs: tabsDef.map(function (t) { return { label: t[1], n: t[2], on: s.logTab === t[0] ? 'on' : '', pick: function () { self.setState({ logTab: t[0] }); } }; }),
+          tabEvents: s.logTab === 'events',
+          tabText: s.logTab !== 'events',
+          text: textOf[s.logTab] || '',
+          noEvents: !events.length,
+          emptyText: !det ? 'Carregando o log…' : stt.key === 'running' ? 'O motor ainda não mandou nada. A tela atualiza a cada 3 segundos.' : 'O motor não devolveu transcrição nesta execução. Veja a saída bruta.',
+          events: events.map(function (ev) {
+            const isTool = ev.k === 'tool';
+            return {
+              cls: ev.k, isTool: isTool, isText: !isTool, ic: EV_ICON[ev.k] || '·',
+              text: ev.k === 'error' ? '⛔ ' + ev.text : ev.k === 'end' ? '■ ' + ev.text : ev.text,
+              name: ev.name || '', summary: isTool ? toolSummary(ev.input) + (ev.done ? '' : '  · rodando…') : '',
+              input: ev.input || '(sem entrada)', result: ev.result || '', hasResult: !!ev.done, bad: ev.failed ? 'bad' : ''
+            };
+          })
+        };
+      })(),
+      anexos: ((current && current.anexos) || []).map(function (item) { return { label: (item.field ? item.field + ' · ' : '') + (item.file || 'arquivo') }; }),
       hasAnalysis: !!s.analysis,
       analysisLine: s.analysis || '',
+      analysisColor: s.analysisBad ? 'var(--danger)' : 'var(--text-secondary)',
+      needsBrief: !!(current && (!String(current.frontier || '').trim() || !String(current.publicLink || '').trim())),
+      briefFrontier: s.briefFrontier != null ? s.briefFrontier : ((current && current.frontier) || ''),
+      briefLink: s.briefLink != null ? s.briefLink : ((current && current.publicLink) || ''),
+      onBriefFrontier: function (event) { self.setState({ briefFrontier: event.target.value }); },
+      onBriefLink: function (event) { self.setState({ briefLink: event.target.value }); },
+      saveBrief: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.updateFrontier) {
+          self.setState({ analysis: 'Não foi possível guardar. Feche o app e abra de novo.', analysisBad: true });
+          return;
+        }
+        api.raiox.updateFrontier(current.id, {
+          frontier: s.briefFrontier != null ? s.briefFrontier : (current.frontier || ''),
+          publicLink: s.briefLink != null ? s.briefLink : (current.publicLink || ''),
+        }).then(function (res) {
+          if (!res || !res.ok) {
+            self.setState({ analysis: (res && res.error) || 'Não foi possível guardar.', analysisBad: true });
+            return;
+          }
+          self.setState({ openCase: res.case, briefFrontier: null, briefLink: null, analysis: 'Guardado. Agora pode rodar a análise.', analysisBad: false });
+          if (self.reload) self.reload();
+        }).catch(function () { self.setState({ analysis: 'Não foi possível guardar.', analysisBad: true }); });
+      },
       runAnalyse: function () {
         const api = tavirApi();
-        if (!api || !current || !api.raiox.analyse) return;
-        self.setState({ analysis: 'Rodando análise' });
+        if (!api || !current || !api.raiox || !api.raiox.analyse) {
+          self.setState({ analysis: 'A análise não está disponível neste app. Feche e abra de novo.', analysisBad: true });
+          return;
+        }
+        if (!String(current.frontier || '').trim() || !String(current.publicLink || '').trim()) {
+          self.setState({ analysis: 'A análise não começou. Preencha o limite desta rodada e o link público no cartão acima e clique em Guardar.', analysisBad: true });
+          return;
+        }
+        self.setState({ analysis: '', analysisBad: false, live: { running: true, speech: '', activity: 'Preparando a análise' } });
+        setTimeout(function () { if (self.pullRuns) self.pullRuns(current.id); }, 1500);
         api.raiox.analyse(current.id, []).then(function (res) {
-          self.setState({ analysis: '' });
-          if (!res || !res.ok) return fail(res);
+          if (res && res.paused) {
+            self.setState({ analysis: '', analysisBad: false });
+            if (self.pullRuns) self.pullRuns(current.id);
+            return;
+          }
+          if (!res || !res.ok) {
+            self.setState({ analysis: (res && res.error) || 'Não foi possível concluir. Nada foi gravado.', analysisBad: true });
+            return;
+          }
+          self.setState({ analysis: '', analysisBad: false, tab: 0, evFilter: 'pendente' });
           if (self.reload) self.reload();
-        }).catch(function () { self.setState({ analysis: '' }); fail(); });
+          if (self.pullRuns) self.pullRuns(current.id);
+        }).catch(function () { self.setState({ analysis: 'Não foi possível concluir. Nada foi gravado.', analysisBad: true }); });
       },
       scanRivals: function () {
         const api = tavirApi();
         if (!api || !current || !api.raiox.analyse) return;
-        self.setState({ analysis: 'Varrendo concorrentes' });
+        self.setState({ analysis: 'Varrendo concorrentes. Pode levar alguns minutos.', analysisBad: false });
         api.raiox.analyse(current.id, ['concorrentes']).then(function (res) {
-          self.setState({ analysis: '' });
-          if (!res || !res.ok) return fail(res);
+          if (!res || !res.ok) {
+            self.setState({ analysis: (res && res.error) || 'Não foi possível concluir. Nada foi gravado.', analysisBad: true });
+            return;
+          }
+          self.setState({ analysis: 'Varredura concluída.', analysisBad: false });
           if (self.reload) self.reload();
-        }).catch(function () { self.setState({ analysis: '' }); fail(); });
+        }).catch(function () { self.setState({ analysis: 'Não foi possível concluir. Nada foi gravado.', analysisBad: true }); });
       },
       stages: STATUS.map(function (id, index) {
-        return { n: '0' + (index + 1), label: STATUS_LABEL[id], cls: (index < statusAt ? 'done' : index === statusAt ? 'now' : '') + (noteAt === index ? ' sel' : ''), pick: function () { self.setState({ stageNote: index }); } };
+        return { n: '0' + (index + 1), label: STATUS_LABEL[id], cls: (index < statusAt ? 'done' : index === statusAt ? 'now' : '') + (noteAt === index ? ' sel' : ''), pick: function () { self.setState({ stageNote: noteAt === index && s.stageNote != null ? null : index }); } };
       }),
-      stageCur: { label: STATUS_LABEL[STATUS[noteAt]] || '', note: STATUS_NOTE[STATUS[noteAt]] || '' },
+      stageCur: (function () {
+        const id = STATUS[noteAt];
+        const state = noteAt < statusAt ? 'concluída' : noteAt === statusAt ? 'etapa atual' : 'ainda não chegou';
+        const go = function (fn) { return function () { fn(); }; };
+        const openEditNow = function () { if (current) self.setState({ modal: 'edit', error: '', editForm: editFrom(current) }); };
+        const openEvNow = function () { self.setState({ modal: 'evidence', error: '', evForm: blankEv() }); };
+        const runNow = function () { const vals = self.renderVals(); if (vals.runAnalyse) vals.runAnalyse(); };
+        const toTab = function (tab, extra) { return function () { self.setState(Object.assign({ tab: tab }, extra || {})); }; };
+        const map = {
+          fronteira: { hint: 'Confira empresa, link público e o que esta rodada olha. Sem isso a análise não começa.', act: openEditNow, actLabel: 'Editar fronteira' },
+          coleta: { hint: 'Rode a análise para levantar evidências ou registre o que você viu. Depois revise as pendentes.', act: runNow, actLabel: 'Rodar análise', alt: openEvNow, altLabel: 'Registrar evidência' },
+          jornada: { hint: 'Revise as evidências pendentes. A jornada fecha quando houver evidência aprovada em mais de uma etapa.', act: toTab(0, { evFilter: 'pendente' }), actLabel: 'Revisar pendentes', alt: openEvNow, altLabel: 'Registrar evidência' },
+          prioridade: { hint: 'Escolha o gargalo que vem primeiro. Ele sempre aponta um gap da taxonomia.', act: function () { self.setState({ tab: 1, modal: 'priority', error: '', priForm: blankPri() }); }, actLabel: 'Escolher prioridade' },
+          devolutiva: { hint: 'Registre propor ou não emitir, gere os documentos e aprove por hash.', act: toTab(1), actLabel: 'Abrir devolutiva' },
+          fechado: { hint: 'Caso encerrado. O relatório continua disponível para leitura.', act: null, actLabel: '' }
+        };
+        const m = map[id] || { hint: '', act: null };
+        return { n: '0' + (noteAt + 1), label: STATUS_LABEL[id] || '', state: state, note: STATUS_NOTE[id] || '', hint: m.hint, hasAct: !!m.act, act: m.act ? go(m.act) : function () {}, actLabel: m.actLabel || '', hasAlt: !!m.alt, alt: m.alt ? go(m.alt) : function () {}, altLabel: m.altLabel || '' };
+      })(),
       coverage: coverage.map(function (item) { return { k: item.label, v: item.usable, w: (maxUsable ? Math.round((item.usable / maxUsable) * 100) : 0) + '%' }; }),
       ring: 'conic-gradient(var(--flow) 0 ' + confidence.ratio + '%, var(--line) 0)',
       ratioLabel: confidence.ratio + '%',
@@ -551,13 +1071,35 @@ class Component extends DCLogic {
       }),
       tEv: s.tab === 0, tDev: s.tab === 1, tCon: s.tab === 2,
       evFilters: [['all', 'Todas'], ['observado', 'Observado'], ['informado', 'Informado'], ['inferido', 'Inferido'], ['indisponivel', 'Indisponível'], ['pendente', 'Pendentes']].map(function (item) {
-        return { label: item[1], on: s.evFilter === item[0] ? 'on' : '', pick: function () { self.setState({ evFilter: item[0] }); } };
+        const n = evidence.filter(function (ev) { return item[0] === 'all' ? true : item[0] === 'pendente' ? ev.review === 'pendente' : ev.classification === item[0]; }).length;
+        return { label: item[1], n: n, on: s.evFilter === item[0] ? 'on' : '', pick: function () { self.setState({ evFilter: item[0] }); } };
       }),
-      ev: evShown.map(function (item) {
+      evSummary: evidence.filter(function (ev) { return ev.review === 'aprovada'; }).length + ' aprovadas · ' + evidence.filter(function (ev) { return ev.review === 'rejeitada'; }).length + ' rejeitadas',
+      pendingCount: evidence.filter(function (ev) { return ev.review === 'pendente'; }).length,
+      hasPendingEv: evidence.some(function (ev) { return ev.review === 'pendente'; }),
+      noEv: !evShown.length,
+      approveAll: function () {
+        const api = tavirApi();
+        if (!api || !current) return;
+        const ids = evidence.filter(function (ev) { return ev.review === 'pendente'; }).map(function (ev) { return ev.id; });
+        if (!ids.length) return;
+        if (typeof window !== 'undefined' && window.confirm && !window.confirm('Aprovar as ' + ids.length + ' evidências pendentes? Confira antes: cada uma entra no diagnóstico.')) return;
+        ids.reduce(function (p, evId) { return p.then(function (res) { if (res && res.ok === false) return res; return api.raiox.reviewEvidence(current.id, evId, 'aprovada'); }); }, Promise.resolve(null)).then(refreshOpen).catch(function () { fail(); });
+      },
+      ev: evShown.slice().sort(function (a, b) { const o = { pendente: 0, aprovada: 1, rejeitada: 2 }; return (o[a.review] || 0) - (o[b.review] || 0); }).map(function (item) {
         const meta = CLASS_META[item.classification] || CLASS_META.observado;
+        const front = FRONTS.filter(function (f) { return f.id === item.front; })[0];
+        const url = item.artifact && item.artifact.url ? String(item.artifact.url) : '';
         return {
           src: item.source, what: item.claim, cl: meta[0], cls: meta[1], stage: STAGE_LABEL[item.stage] || item.stage,
-          gaps: (item.gapIds || []).map(gapLabel).join(', '), review: item.review, pending: item.review === 'pendente',
+          gaps: (item.gapIds || []).map(gapLabel).join(', '), gapList: (item.gapIds || []).map(function (g) { return { label: gapLabel(g) }; }),
+          hasFront: !!item.front, front: front ? front.label : (item.front || ''),
+          hasUrl: !!url, url: url, hasNote: !!item.note, note: item.note || '',
+          author: item.author === 'dora' ? 'sugerida pela análise' : 'registrada por você',
+          rlabel: item.review === 'pendente' ? 'Pendente' : item.review === 'aprovada' ? 'Aprovada' : 'Rejeitada',
+          rcls: item.review === 'pendente' ? 'warn' : item.review === 'aprovada' ? 'flow' : 'danger',
+          approved: item.review === 'aprovada', rejected: item.review === 'rejeitada',
+          review: item.review, pending: item.review === 'pendente',
           approve: function () { const api = tavirApi(); if (api && current) api.raiox.reviewEvidence(current.id, item.id, 'aprovada').then(refreshOpen).catch(function () { fail(); }); },
           reject: function () { const api = tavirApi(); if (api && current) api.raiox.reviewEvidence(current.id, item.id, 'rejeitada').then(refreshOpen).catch(function () { fail(); }); },
           remove: function () { self.setState({ modal: 'remove', removeId: item.id, error: '' }); }
@@ -576,6 +1118,7 @@ class Component extends DCLogic {
           short: (doc.sha256 || '').slice(0, 12),
           problems: doc.lint || [],
           openMd: function () { const api = tavirApi(); if (api && current) api.raiox.openDocument(current.id, doc.md); },
+          viewMd: function () { const api = tavirApi(); if (api && current && api.raiox.viewDocument) api.raiox.viewDocument(current.id, doc.md).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); },
           openPdf: function () { const api = tavirApi(); if (api && current && doc.pdf) api.raiox.openDocument(current.id, doc.pdf); },
         };
       }),
@@ -626,6 +1169,7 @@ class Component extends DCLogic {
       rivals: rivals.map(function (item) { return { src: item.source, what: item.claim }; }),
       scanOff: false,
       modalNew: s.modal === 'new',
+      modalEdit: s.modal === 'edit',
       modalEv: s.modal === 'evidence',
       modalPri: s.modal === 'priority',
       modalDeb: s.modal === 'debrief',
@@ -646,6 +1190,39 @@ class Component extends DCLogic {
       onFrontier: function (event) { setForm({ frontier: event.target.value }); },
       onConsent: function (event) { setForm({ consentKind: event.target.value }); },
       onConsentNote: function (event) { setForm({ consentNote: event.target.value }); },
+      wantChoices: PRESET_WANT.map(function (item) { return { label: item[1], on: s.form.wantPick === item[0] ? 'on' : '', pick: function () { setForm({ wantPick: item[0], objective: item[0] === 'outros' ? '' : item[2] }); } }; }),
+      decisionChoices: PRESET_DECISION.map(function (item) { return { label: item[1], on: s.form.decisionPick === item[0] ? 'on' : '', pick: function () { setForm({ decisionPick: item[0], decisionNeeded: item[0] === 'outros' ? '' : item[2] }); } }; }),
+      frontierChoices: PRESET_FRONTIER.map(function (item) { return { label: item[1], on: s.form.frontierPick === item[0] ? 'on' : '', pick: function () { setForm({ frontierPick: item[0], frontier: item[0] === 'outros' ? '' : item[2] }); } }; }),
+      wantOther: s.form.wantPick === 'outros',
+      decisionOther: s.form.decisionPick === 'outros',
+      frontierOther: s.form.frontierPick === 'outros',
+      hasPending: !!(s.pendingFiles && s.pendingFiles.length),
+      pendingLabel: (s.pendingFiles || []).map(function (item) { return item.field; }).join(', '),
+      attachWant: function () { queueFile('o que a empresa quer'); },
+      attachDecision: function () { queueFile('decisão'); },
+      attachFrontier: function () { queueFile('o que esta rodada olha'); },
+      editForm: s.editForm || editFrom({}),
+      editLead: 'Corrija o que ficou errado. Um anexo entra junto do caso e pode ir no contexto da análise.',
+      onEditCompany: function (event) { setEdit({ company: event.target.value }); },
+      onEditContact: function (event) { setEdit({ contact: event.target.value }); },
+      onEditSegment: function (event) { setEdit({ segment: event.target.value }); },
+      onEditLink: function (event) { setEdit({ publicLink: event.target.value }); },
+      onEditObjective: function (event) { setEdit({ objective: event.target.value }); },
+      onEditDecision: function (event) { setEdit({ decisionNeeded: event.target.value }); },
+      onEditFrontier: function (event) { setEdit({ frontier: event.target.value }); },
+      onEditConsent: function (event) { setEdit({ consentKind: event.target.value }); },
+      onEditConsentNote: function (event) { setEdit({ consentNote: event.target.value }); },
+      attachEditWant: function () { attachNow('o que a empresa quer'); },
+      attachEditDecision: function () { attachNow('decisão'); },
+      attachEditFrontier: function () { attachNow('o que esta rodada olha'); },
+      saveEdit: function () {
+        const api = tavirApi();
+        const form = s.editForm || {};
+        if (!api || !current || !api.raiox.updateFrontier) return fail({ error: 'Não foi possível guardar.' });
+        const patch = { company: form.company, contact: form.contact, segment: form.segment, publicLink: form.publicLink, objective: form.objective, decisionNeeded: form.decisionNeeded, frontier: form.frontier };
+        if (form.consentKind) patch.consent = { kind: form.consentKind, at: new Date().toISOString(), note: form.consentNote || '' };
+        api.raiox.updateFrontier(current.id, patch).then(refreshOpen).catch(function () { fail(); });
+      },
       origins: ['amigo', 'rua', 'formulario', 'indicacao'].map(function (id) { return { label: ORIGIN_LABEL[id], on: s.form.origin === id ? 'on' : '', pick: function () { setForm({ origin: id }); } }; }),
       modeChoices: modes.map(function (item) { return { t: item.name, x: item.promise, on: s.form.mode === item.id ? 'on' : '', pick: function () { applyMode(item.id); } }; }),
       storeOn: s.form.physicalStore ? 'on' : '',
@@ -663,9 +1240,16 @@ class Component extends DCLogic {
         if (form.consentKind) input.consent = { kind: form.consentKind, at: new Date().toISOString(), note: form.consentNote || '' };
         api.raiox.create(input).then(function (res) {
           if (!res || !res.ok) return fail(res);
-          self.setState({ modal: null, error: '', form: blankCase() });
-          if (self.reload) self.reload();
-          self.openId(res.case.id);
+          const files = s.pendingFiles || [];
+          const created = res.case.id;
+          const chain = files.reduce(function (p, file) {
+            return p.then(function () { return api.raiox.attach(created, file.path, file.field); });
+          }, Promise.resolve());
+          chain.then(function () {
+            self.setState({ modal: null, error: '', form: blankCase(), pendingFiles: [] });
+            if (self.reload) self.reload();
+            self.openId(created);
+          }).catch(function () { fail(); });
         }).catch(function () { fail(); });
       },
       evForm: s.evForm,

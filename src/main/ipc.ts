@@ -6,6 +6,7 @@ import { VaultIndexer } from './indexer';
 import type { EngineKind, TaskItem, EngineSettings, RunEvent, JobItem } from '../shared/types';
 import { registerStudioIpc } from './studio/ipcHandlers';
 import { registerRaioxIpc } from './raiox/raioxIpc';
+import { followOfficeRun, listOfficeRuns } from './officeRuns';
 
 /** Janela atual (dialogs). Atualizada a cada criarJanela. */
 let mainWin: BrowserWindow | null = null;
@@ -486,6 +487,22 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     const { resolveProjectRecord } = require('./project-fs');
     return resolveProjectRecord(String(idOrPath || '')).local_path;
   };
+
+  handle('runs:office', () => {
+    try {
+      return { ok: true, runs: listOfficeRuns() };
+    } catch (err) {
+      return { ok: false, error: String(err), runs: [] };
+    }
+  });
+
+  handle('runs:follow', async (_e, workspace: string, runId: string, mode: string, note?: string) => {
+    try {
+      return await followOfficeRun(String(workspace || ''), String(runId || ''), mode === 'correct' ? 'correct' : 'continue', String(note || ''));
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
 
   handle('runs:list', (_e, idOrPath: string, limit?: number) => {
     try {
@@ -990,21 +1007,21 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
             timestamp: stamp(),
             type: level === 'error' ? 'error' : 'thought',
             content: text,
-            meta: { track: true, status: level === 'error' ? 'failed' : 'running', progress: level === 'error' ? 100 : 60, title: jobTitle },
+            meta: { track: true, title: jobTitle },
           });
         },
         onEnd(info: { ok: boolean; status: string; text: string }) {
           const status = info.status === 'failed' ? 'failed' : info.status === 'waiting' || info.status === 'paused' ? 'paused' : 'completed';
           if (jobId) {
             atualizarJobTrilho(jobId, status, info.ok ? '' : info.text);
-            registrarEventoJob(jobId, 'fim', info.text, info.ok ? 'info' : 'error');
+            registrarEventoJob(jobId, 'fim', info.text, info.ok || info.status === 'paused' ? 'info' : 'error');
           }
           send({
             runId: jobId || 'trilho-local',
             timestamp: stamp(),
             type: info.ok ? 'done' : info.status === 'paused' ? 'thought' : 'error',
             content: info.text,
-            meta: { track: true, status, progress: 100, title: jobTitle },
+            meta: { track: true, ended: true, status, title: jobTitle },
           });
         },
       }, step);

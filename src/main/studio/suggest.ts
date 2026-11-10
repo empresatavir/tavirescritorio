@@ -157,9 +157,10 @@ export async function suggestForPiece(pecaId: string, alvo: SuggestAlvo): Promis
     });
     const meta = await run.finish({
       ok: result.ok,
+      status: result.error?.kind === 'paused' ? 'paused' : undefined,
       exitCode: result.exitCode,
       reply: result.text,
-      error: result.error?.message,
+      error: result.error?.kind === 'paused' ? 'Pausado por Carlos. A retomada continua deste ponto.' : result.error?.message,
     });
     const custo = custoDe(meta.usage?.costUsd);
     if (!result.ok) return { ok: false, error: result.error?.message || 'motor não respondeu', custo };
