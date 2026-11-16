@@ -435,6 +435,14 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
           </button>
         </sc-for></div>
       </section>
+      <sc-if value="{{rt.show}}" hint-placeholder-val="{{false}}">
+      <section class="card">
+        <div class="card-h"><h3>Serviços do projeto</h3><span class="badge flow">{{rt.n}}</span><div class="grow"></div><span class="muted" style="font-size: 11.5px">lido {{rt.lido}}</span></div>
+        <div style="padding: 0 16px 10px; font-size: 12.5px" class="sec">{{rt.stack}}</div>
+        <sc-if value="{{rt.empty}}" hint-placeholder-val="{{false}}"><p class="muted" style="padding: 0 16px 14px; font-size: 13px">Nenhum serviço externo encontrado nos arquivos.</p></sc-if>
+        <div style="display: flex; flex-direction: column; min-width: 0"><sc-for list="{{rt.servs}}" as="r" hint-placeholder-count="3"><div style="padding: 10px 16px; border-top: 1px solid var(--line); min-width: 0; display: flex; flex-direction: column; gap: 3px"><div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><b style="font-size: 13px; color: var(--text-primary)">{{r.nome}}</b><span class="badge {{r.cls}}" style="height: 18px">{{r.grau}}</span><span class="muted" style="font-size: 11px">{{r.assunto}}</span></div><button type="button" class="link mono" onClick="{{r.open}}" style="font-size: 11px; text-align: left; overflow-wrap: anywhere">{{r.prova}}</button><span class="muted" style="font-size: 11px">prova: {{r.tipos}}</span></div></sc-for></div>
+      </section>
+      </sc-if>
       <section class="card">
         <div class="card-h"><h3>Inventário</h3></div>
         <div style="display: flex; flex-direction: column; min-width: 0"><sc-for list="{{inv}}" as="f" hint-placeholder-count="4"><div style="padding: 12px 16px; border-top: 1px solid var(--line); min-width: 0"><div class="eyebrow" style="font-size: 9.5px">{{f.k}}</div><div style="margin-top: 6px; font-size: 13px; line-height: 1.45; font-weight: 550; white-space: pre-wrap; overflow-wrap: anywhere">{{f.v}}</div></div></sc-for></div>
@@ -2689,6 +2697,31 @@ class Component extends DCLogic {
       setTimeout(function () { if (self._loadQa) self._loadQa(); if (self._loadSeg) self._loadSeg(); }, 0);
     }
     if (typeof window !== 'undefined') window.__tavirQaDone = function (k) { if (k === P.id && self._loadQa) self._loadQa(); if (self.reloadIpcProjects) self.reloadIpcProjects(); };
+    // ================= RETRATO DA ABSORÇÃO (.tavir/retrato.json) =================
+    self._rtReq = self._rtReq || {};
+    self._loadRetrato = () => {
+      if (!lgApi || !lgApi.projects || !lgApi.projects.retrato || !P.local_path) return;
+      const pidR = P.id;
+      lgApi.projects.retrato(lgTarget).then(function (res) {
+        const m = Object.assign({}, self.state.rtById || {}); m[pidR] = res && res.ok ? res : null; self.setState({ rtById: m });
+      }).catch(function () {});
+    };
+    if (P.local_path && !self._rtReq[P.id]) { self._rtReq[P.id] = true; setTimeout(function () { self._loadRetrato(); }, 0); }
+    const RTV = (s.rtById || {})[P.id] || null;
+    const RTR = (RTV && RTV.retrato) || null;
+    const RT_ASS = { deploy: 'Onde publica', banco: 'Banco', auth: 'Login', pagamento: 'Pagamento', mensagens: 'Mensagens', arquivos: 'Arquivos', medicao: 'Medição', ia: 'IA' };
+    const rtProva = (a) => { const p = (a.provas || []).find(function (x) { return x.tipo === 'codigo'; }) || (a.provas || [])[0]; return p ? (p.arquivo + (p.linha ? ':' + p.linha : '')) : ''; };
+    const rtTipos = (a) => Array.from(new Set((a.provas || []).map(function (x) { return { config: 'configuração', dep: 'dependência', env: 'variável', codigo: 'código' }[x.tipo] || x.tipo; }))).join(' + ');
+    const rt = {
+      show: !!(RTR && RTR.servicos),
+      n: RTR && RTR.servicos ? RTR.servicos.length : 0,
+      empty: !!(RTR && RTR.servicos && !RTR.servicos.length),
+      lido: RTR ? String(RTR.lido_em || '').slice(0, 16).replace('T', ' ') : '',
+      stack: RTR ? (RTR.stack || []).join(', ') || 'stack não identificada' : '',
+      servs: RTR && RTR.servicos ? RTR.servicos.slice().sort(function (a, b) { return (a.grau === 'confirmado' ? 0 : 1) - (b.grau === 'confirmado' ? 0 : 1); }).map(function (a) {
+        return { nome: a.nome, assunto: RT_ASS[a.assunto] || a.assunto, grau: a.grau === 'confirmado' ? 'confirmado' : 'a confirmar', cls: a.grau === 'confirmado' ? 'flow' : 'warn', prova: rtProva(a), tipos: rtTipos(a), open: function () { if (window.TavirReader && window.TavirReader.openFile) window.TavirReader.openFile(rtProva(a).replace(/:[0-9]+$/, '')); } };
+      }) : [],
+    };
     self._loadRuns = (keepSel) => {
       if (!lgApi || !lgApi.runs) { self.setState({ lgErr: 'O livro de execuções só existe no app desktop.' }); return; }
       self.setState({ lgBusy: true });
@@ -3159,7 +3192,7 @@ class Component extends DCLogic {
           }
         };
       })(),
-      pends: P.pends, noPends: P.pendN === 0,
+      pends: P.pends, noPends: P.pendN === 0, rt: rt,
       timeline: P.acts.slice(0, 6).map((e, i) => ({ t: e[0], x: e[1], w: e[2], c: i === 0 ? 'var(--flow)' : 'var(--line-strong)' })),
       vsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], now: k === 'run' || k === 'gate' || k === 'paused', st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: k === 'run' || k === 'gate' || k === 'paused' ? 'var(--surface-3)' : 'transparent', pick: stepPick(i) }; }),
       gsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; const isCur = i === P.done && P.status !== 'done'; const isSel = Number(s.stage) === i; const blockP = P.pends[0]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], skill: x[2], st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: isSel ? 'var(--surface-3)' : (isCur ? 'var(--surface-3)' : 'transparent'), when: ddmm(P.base, startOf(i)) + (x[3] > 1 ? ' → ' + ddmm(P.base, startOf(i) + x[3] - 1) : ''),

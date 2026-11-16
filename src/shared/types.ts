@@ -442,6 +442,8 @@ export interface TavirApi {
     pickFolder: () => Promise<{ canceled: boolean; path: string | null }>;
     absorb: (params: CreateFactoryProjectParams) => Promise<FactoryProjectItem>;
     survey: (idOrPath: string) => Promise<any>;
+    /** Retrato da absorção (.tavir/retrato.json), estado do fluxo e RETRATO.md. */
+    retrato: (idOrPath: string) => Promise<{ ok: boolean; retrato?: any; estado?: any; retratoMd?: string; error?: string }>;
     inspectFolder: (idOrPath: string) => Promise<any>;
     openInExplorer: (idOrPath: string) => Promise<{ ok: boolean; path?: string }>;
     readFile: (filePath: string) => Promise<{ ok: boolean; content?: string; size?: number }>;

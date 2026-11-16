@@ -461,6 +461,18 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
+  // Absorção completa (retrato, leitura, gate). Lógica em src/main/absorcao/.
+  handle('projects:retrato', (_e, idOrPath: string) => {
+    try {
+      const { resolveProjectRecord } = require('./project-fs');
+      const { visaoDaAbsorcao } = require('./absorcao/fluxo');
+      const rec = resolveProjectRecord(idOrPath);
+      return { ok: true, ...visaoDaAbsorcao(rec.local_path) };
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
   handle('projects:pickFolder', async () => {
     const opts: Electron.OpenDialogOptions = {
       title: 'Selecionar pasta do projeto existente (Product Lab · Absorção Isolada)',

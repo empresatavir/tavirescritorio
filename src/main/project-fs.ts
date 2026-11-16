@@ -472,10 +472,8 @@ export function deleteProjectWithOptions(
   return { ok: true, deletedFiles: deletedFromDisk, path: targetPath };
 }
 
-const SURVEY_SKIP_DIRS = new Set([
-  'node_modules', '.git', 'dist', 'build', '.next', 'out', 'coverage', '__pycache__',
-  '.venv', 'venv', '.dart_tool', '.gradle', 'ephemeral', '.idea', '.pytest_cache', 'Pods',
-]);
+export { SURVEY_SKIP_DIRS } from '../shared/absorcao';
+import { SURVEY_SKIP_DIRS } from '../shared/absorcao';
 
 const SURVEY_LANG: Record<string, string> = {
   ts: 'TypeScript', tsx: 'TypeScript', js: 'JavaScript', jsx: 'JavaScript', mjs: 'JavaScript',
@@ -596,6 +594,23 @@ export function surveyWorkspace(wsPath: string): any {
   };
   walk(root, '', 0);
 
+  // Camada 1 da absorção: leitura inteira, sem corte, com provas. O resumo antigo passa a sair dela.
+  let lev: import('./absorcao/detectores').Levantamento | null = null;
+  try {
+    const { detectar } = require('./absorcao/detectores') as typeof import('./absorcao/detectores');
+    lev = detectar(root);
+    fileCount = lev.arquivos;
+    dirCount = lev.pastas;
+    truncated = false;
+    for (const s of lev.servicos.filter((x) => x.assunto === 'deploy')) deploy.push(`${s.nome} (\`${s.provas[0]?.arquivo || ''}\`)`);
+    for (const k of lev.env) if (!envKeys.includes(k)) envKeys.push(k);
+    for (const st of lev.stack) stacks.add(st);
+    const ret = require('./absorcao/retrato') as typeof import('./absorcao/retrato');
+    ret.gravarRetrato(root, ret.montarRetrato(path.basename(root), lev, ret.lerRetrato(root)));
+  } catch (err) {
+    console.error('[TAVIR ProjectFS] Detectores da absorção falharam:', err);
+  }
+
   let about = '';
   const readme = ['README.md', 'readme.md', 'README.txt'].map((n) => path.join(root, n)).find((p) => fs.existsSync(p));
   if (readme) {
@@ -638,6 +653,7 @@ export function surveyWorkspace(wsPath: string): any {
     dirty,
     hasGit,
     deploy: deployLine,
+    servicos: lev ? lev.servicos.map((a) => ({ servico: a.servico, nome: a.nome, assunto: a.assunto, grau: a.grau, prova: a.provas[0] ? `${a.provas[0].arquivo}${a.provas[0].linha ? `:${a.provas[0].linha}` : ''}` : '' })) : [],
     envKeys,
     files: fileCount,
     dirs: dirCount,

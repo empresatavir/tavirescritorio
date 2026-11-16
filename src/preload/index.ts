@@ -117,6 +117,7 @@ const api: TavirApi = {
     pickFolder: () => ipcRenderer.invoke('projects:pickFolder'),
     absorb: (params) => ipcRenderer.invoke('projects:absorb', params),
     survey: (idOrPath: string) => ipcRenderer.invoke('projects:survey', idOrPath),
+    retrato: (idOrPath: string) => ipcRenderer.invoke('projects:retrato', idOrPath),
     inspectFolder: (idOrPath: string) => ipcRenderer.invoke('projects:inspectFolder', idOrPath),
     openInExplorer: (idOrPath: string) => ipcRenderer.invoke('projects:openInExplorer', idOrPath),
     readFile: (filePath: string) => ipcRenderer.invoke('projects:readFile', filePath),
