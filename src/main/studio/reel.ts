@@ -10,7 +10,8 @@ import { probe } from './mediaChecks';
 import { ensureStudioTree } from './paths';
 import type { StudioStore } from './store';
 
-const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
+// Fundo de reserva: um pixel na cor Tinta Profunda (#0B1220). O antigo era vermelho meio transparente.
+const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGPgFlIAAABpAD4z6GE4AAAAAElFTkSuQmCC', 'base64');
 
 export function framesForScene(minSeconds: number, narrationSeconds: number, fps: number): number {
   const seconds = Math.max(minSeconds > 0 ? minSeconds : 1, narrationSeconds > 0 ? narrationSeconds : 0);
@@ -52,7 +53,7 @@ export function planReel(store: StudioStore, peca: Peca): ReelPlan {
   const scenes = scenesFromRoteiro(peca.roteiro);
   const tree = ensureStudioTree(store.tree.home);
   const ativos = tree.pecaDirs(peca.id).ativos;
-  const placeholder = path.join(ativos, 'vazio.png');
+  const placeholder = path.join(ativos, 'vazio-tinta.png');
   if (!fs.existsSync(placeholder)) {
     fs.mkdirSync(ativos, { recursive: true });
     fs.writeFileSync(placeholder, PNG);

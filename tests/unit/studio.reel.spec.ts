@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { captionsFromWhisper, activeWord, placeCaptions, toSrt } from '../../src/main/studio/captions';
+import { captionsFromWhisper, activeWord, mergeTokens, placeCaptions, toSrt } from '../../src/main/studio/captions';
 import { installWhisper, transcribePeca, whisperWavArgs } from '../../src/main/studio/whisper';
 import { openStudioStore } from '../../src/main/studio/store';
 import { scenesFromRoteiro } from '../../src/main/studio/cenas';
@@ -98,5 +98,24 @@ describe('reel', () => {
     expect(result.error).toContain('não está instalado');
     local.close();
     fs.rmSync(home, { recursive: true, force: true });
+  });
+});
+
+describe('legenda palavra por palavra', () => {
+  it('junta os pedaços de palavra do whisper.cpp', () => {
+    const tokens = [
+      { text: ' a', startMs: 0, endMs: 100 },
+      { text: ' porta', startMs: 100, endMs: 400 },
+      { text: ' abre', startMs: 400, endMs: 700 },
+      { text: ',', startMs: 700, endMs: 720 },
+      { text: ' o', startMs: 800, endMs: 900 },
+      { text: ' arqu', startMs: 900, endMs: 1100 },
+      { text: 'ivo', startMs: 1100, endMs: 1300 },
+      { text: ' fica', startMs: 1300, endMs: 1600 },
+      { text: '.', startMs: 1600, endMs: 1620 },
+    ];
+    const words = placeCaptions(mergeTokens(tokens), 0);
+    expect(words.map((w) => w.text)).toEqual(['a', 'porta', 'abre,', 'o', 'arquivo', 'fica.']);
+    expect(words[4]).toEqual({ text: 'arquivo', startMs: 900, endMs: 1300 });
   });
 });

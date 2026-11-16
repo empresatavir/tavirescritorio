@@ -34,9 +34,10 @@ export const Slide: React.FC<SlideProps> = (props) => {
         <Img src={mediaSrc(props.background)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       ) : null}
       <SafeArea zone={props.zone} debugSafeZone={props.debugSafeZone} frame={{ width: props.width, height: props.height, title: props.title }}>
-        <AbsoluteFill style={{ justifyContent: 'flex-end', fontFamily: `${props.fontFamily || 'Instrument Sans'}, sans-serif` }}>
+        {/* Fluxo normal dentro do SafeArea: AbsoluteFill ignoraria o padding da zona segura. */}
+        <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', fontFamily: `${props.fontFamily || 'Instrument Sans'}, sans-serif` }}>
           <SlideLayout layout={props.layout} title={props.title} support={props.support} titleColor={props.titleColor} accent={props.accent} handle={props.handle} page={props.page} pages={props.pages} />
-        </AbsoluteFill>
+        </div>
       </SafeArea>
     </AbsoluteFill>
   );

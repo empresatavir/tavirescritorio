@@ -70,13 +70,23 @@ function render(dir, job) {
   store.updatePeca(peca.id, {
     roteiro: {
       cenas: [
-        { texto_narrado: 'A porta abre.', texto_tela: 'A porta', duracao_min: 1 },
-        { texto_narrado: 'O arquivo fica.', texto_tela: 'O arquivo', duracao_min: 1 },
+        { texto_narrado: 'A porta abre.', texto_tela: 'A porta', duracao_min: 1, slot: 'MP-0001-C01' },
+        { texto_narrado: 'O arquivo fica.', texto_tela: 'O arquivo', duracao_min: 1, slot: 'MP-0001-C02' },
       ],
     },
     legenda: 'Duas cenas.',
     hashtags: ['#tavir'],
   });
+  // Cada cena com imagem própria 1080×1920 (no uso real vem do Flow). Sem isso o reel sai sem fundo.
+  const ativos = path.join(home, 'pecas', peca.id, 'ativos');
+  fs.mkdirSync(ativos, { recursive: true });
+  for (const [i, codigo] of ['MP-0001-C01', 'MP-0001-C02'].entries()) {
+    const file = path.join(ativos, `${codigo}.png`);
+    const made = spawnSync('ffmpeg', ['-y', '-v', 'error', '-f', 'lavfi', '-i', `testsrc2=size=1080x1920:rate=1`, '-frames:v', '1', '-vf', `hue=h=${i * 120}`, file], { windowsHide: true });
+    if (made.status !== 0) { console.error('ffmpeg não gerou a imagem de teste'); process.exit(1); }
+    const slot = store.saveSlot({ peca_id: peca.id, codigo, tipo: 'video', descricao: codigo });
+    store.saveAtivo({ peca_id: peca.id, slot_id: slot.id, tipo: 'imagem', origem: 'local', caminho: file, sha256: codigo });
+  }
   const edge = spawnSync('where.exe', ['edge-tts'], { encoding: 'utf8', windowsHide: true });
   if (edge.status !== 0) {
     console.log('TTS pulado: edge-tts não está no PATH.');

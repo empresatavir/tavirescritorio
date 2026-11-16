@@ -17,10 +17,12 @@ export function scenesFromRoteiro(roteiro: Roteiro | null | undefined): RoteiroC
   }));
   const raw = roteiro?.cenas?.length ? roteiro.cenas : fromSlides;
   const filled = raw.filter((scene) => scene.texto_narrado?.trim());
+  // As cenas são gravadas na narração. Imagem ligada depois fica só no slide: herda pela mesma posição.
+  const slideSlots = fromSlides.filter((scene) => scene.texto_narrado?.trim()).map((scene) => scene.slot);
   return filled.map((scene, index) => ({
     texto_narrado: scene.texto_narrado.trim(),
     texto_tela: scene.texto_tela?.trim() || undefined,
-    slot: scene.slot,
+    slot: scene.slot || slideSlots[index],
     preset: presetOf(scene.preset, index, filled.length),
     duracao_min: scene.duracao_min && scene.duracao_min > 0 ? scene.duracao_min : 1,
   }));

@@ -73,15 +73,16 @@ export const ReelBase: React.FC<ReelProps> = (props) => {
               )}
             </AbsoluteFill>
             <SafeArea zone={props.zone} debugSafeZone={props.debugSafeZone} frame={{ width: props.width, height: props.height, title: scene.caption }}>
-              <AbsoluteFill style={{ justifyContent: 'flex-end', opacity }}>
+              {/* Dentro do SafeArea o conteúdo é fluxo normal: AbsoluteFill ignoraria o padding da zona segura. */}
+              <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', opacity, textShadow: '0 2px 12px rgba(0,0,0,0.65)' }}>
                 {spoken ? (
-                  <div style={{ color: props.accent, fontFamily: 'Instrument Sans, sans-serif', fontSize: 64, fontWeight: 700 }}>{spoken.text}</div>
+                  <div style={{ color: props.accent, fontFamily: 'Instrument Sans, sans-serif', fontSize: 72, fontWeight: 700, lineHeight: 1.1 }}>{spoken.text}</div>
                 ) : null}
-                <div style={{ color: scene.preset === 'encerramento-cta' ? props.accent : props.titleColor, fontFamily: 'Instrument Sans, sans-serif', fontSize: 42 }}>
+                <div style={{ color: scene.preset === 'encerramento-cta' ? props.accent : props.titleColor, fontFamily: 'Instrument Sans, sans-serif', fontSize: 56, fontWeight: 600, lineHeight: 1.15 }}>
                   {scene.caption}
                 </div>
-                <div style={{ marginTop: 12, color: props.accent, fontSize: 22 }}>{props.handle}</div>
-              </AbsoluteFill>
+                <div style={{ marginTop: 12, color: props.accent, fontSize: 26 }}>{props.handle}</div>
+              </div>
             </SafeArea>
           </Sequence>
         );

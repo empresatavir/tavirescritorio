@@ -127,8 +127,15 @@ export async function readScorecard(base: string): Promise<ScoreLine[]> {
   }
 }
 
-export async function sendToDocuflow(base: string, perfil: Perfil, peca: Peca): Promise<{ ok: boolean; error?: string; slug?: string }> {
+export async function sendToDocuflow(
+  base: string,
+  perfil: Perfil,
+  peca: Peca,
+  opts: { waitMs?: number; pollMs?: number } = {},
+): Promise<{ ok: boolean; error?: string; slug?: string }> {
   if (peca.formato_id !== 'yt-longo-16x9') return { ok: false, error: 'só o vídeo 16:9 vai para a Edição' };
+  const scenes = docuflowScenes(peca);
+  if (!scenes.length) return { ok: false, error: 'o roteiro não tem cena com fala' };
   const mapped = docuflowChannel(perfil);
   const channel = await fetch(`${base.replace(/\/$/, '')}/channels`, {
     method: 'POST',
@@ -156,7 +163,68 @@ export async function sendToDocuflow(base: string, perfil: Perfil, peca: Peca): 
   });
   const payload = await created.json().catch(() => ({})) as { slug?: string; detail?: string };
   if (!created.ok) return { ok: false, error: payload.detail || `Docuflow recusou o projeto (${created.status})` };
-  return { ok: true, slug: payload.slug };
+  const slug = payload.slug;
+  if (!slug) return { ok: false, error: 'Docuflow não devolveu o projeto' };
+
+  // A tela do Docuflow lista composições, não projetos do pipeline. Então: esperar a pesquisa
+  // gravar o project.json, pôr as cenas do roteiro nele e importar como composição.
+  const root = base.replace(/\/$/, '');
+  const project = await waitDocuflowProject(root, slug, opts.waitMs ?? 120000, opts.pollMs ?? 1500);
+  if (!project) return { ok: false, error: 'a pesquisa do Docuflow não terminou a tempo; tente de novo', slug };
+  const updated = await fetch(`${root}/projects/${encodeURIComponent(slug)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...project, title: peca.titulo, scenes }),
+  });
+  if (!updated.ok) return { ok: false, error: `Docuflow recusou as cenas (${updated.status})`, slug };
+  const imported = await fetch(`${root}/compositions/import-legacy`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ projectPath: `${slug}/project.json`, projectId: slug, title: peca.titulo }),
+  });
+  if (!imported.ok) {
+    const detail = await imported.json().catch(() => ({})) as { message?: string; detail?: string; error?: { message?: string } };
+    return { ok: false, error: detail.error?.message || detail.message || detail.detail || `Docuflow não importou a composição (${imported.status})`, slug };
+  }
+  return { ok: true, slug };
+}
+
+/** Cenas do roteiro no formato do pipeline do Docuflow. A duração é estimada pela fala (~2,6 palavras/s). */
+export function docuflowScenes(peca: Peca): Array<{ id: number; narration: string; visual_query: string; on_screen_text: string; duration: number }> {
+  const raw = peca.roteiro?.cenas?.length
+    ? peca.roteiro.cenas.map((cena) => ({ fala: cena.texto_narrado, tela: cena.texto_tela ?? '' }))
+    : (peca.roteiro?.slides ?? []).map((slide) => ({ fala: slide.apoio || slide.titulo, tela: slide.titulo }));
+  return raw
+    .filter((item) => item.fala?.trim())
+    .map((item, index) => {
+      const fala = item.fala.trim();
+      const words = fala.split(/\s+/).filter(Boolean).length;
+      return {
+        id: index + 1,
+        narration: fala,
+        visual_query: (item.tela || fala).trim().slice(0, 120),
+        on_screen_text: (item.tela || '').trim(),
+        duration: Math.max(2, Math.round((words / 2.6) * 10) / 10),
+      };
+    });
+}
+
+async function waitDocuflowProject(root: string, slug: string, waitMs: number, pollMs: number): Promise<Record<string, unknown> | null> {
+  const until = Date.now() + waitMs;
+  for (;;) {
+    try {
+      const res = await fetch(`${root}/projects/${encodeURIComponent(slug)}`);
+      if (res.ok) {
+        const project = await res.json() as Record<string, unknown>;
+        const status = String(project.status ?? '');
+        if (/^(stopped|error|cancelled|done)/.test(status)) return project;
+      }
+    } catch {
+      /* Docuflow ocupado: tenta de novo */
+    }
+    if (Date.now() >= until) return null;
+    await new Promise((resolve) => setTimeout(resolve, pollMs));
+  }
 }
 
 export async function editionBoard(base: string): Promise<{ ok: boolean; error?: string; compositions: unknown[]; jobs: unknown[] }> {
