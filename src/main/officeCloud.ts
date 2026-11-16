@@ -7,7 +7,9 @@
  *   2. aplica no Kanban avulso do Escritório (mesmas funções da tela);
  *   3. publica o Kanban em `office_tasks` (ele é o único escritor dessa tabela);
  *   4. confirma o pedido.
- * Jobs, pendências e preferências continuam com o server.py do novo-app (status id 1).
+ * v4 (sem migração): os pedidos de job do APK (Instagram, Raio X, Editorial, Chamar agente) também
+ * são do Escritório. Viram tarefa no Kanban + execução real na fila (officeExec), e o Escritório publica
+ * `office_jobs`, `office_deliveries` e `office_pendings`. O server.py fica só com as preferências.
  * O Escritório bate ponto como status id 2.
  *
  * Só conexões de saída. A chave de serviço sai do cofre e fica neste processo.
@@ -20,8 +22,11 @@ export const DESK_KINDS = [
   'task.create', 'task.update', 'task.move', 'task.delete',
   // v3: fila de execução (officeExec)
   'task.run', 'task.plan', 'task.approve', 'task.revise', 'task.stop',
+  // v4: jobs do APK viram execuções reais
+  'job.create', 'job.pause', 'job.resume', 'job.cancel', 'pending.approve', 'pending.reject',
 ] as const;
 const EXEC_KINDS = new Set(['task.run', 'task.plan', 'task.approve', 'task.revise', 'task.stop']);
+const JOB_KINDS = new Set(['job.create', 'job.pause', 'job.resume', 'job.cancel']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Como a tela do Escritório devolve uma task (listTaskRecords / createTaskRecord). */
@@ -81,11 +86,33 @@ export interface DeskStore {
 
 export type ExecOutcome = { ok: true } | { ok: false; code: number; error: string };
 export interface DeskExec {
-  enqueue(taskId: string, mode: 'plan' | 'exec', agent: string, opts: { origin: string; id: string }): ExecOutcome;
+  enqueue(taskId: string, mode: 'plan' | 'exec', agent: string, opts: { origin: string; id: string; fields?: Record<string, string> }): ExecOutcome;
   approve(taskId: string): ExecOutcome;
   revise(taskId: string, note: string, origin: string, id: string): ExecOutcome;
-  stop(taskId: string): ExecOutcome;
+  stop(taskId: string, why?: 'cancel' | 'pause'): ExecOutcome;
   views(): Record<string, Record<string, unknown>>;
+  /** Linhas cruas da fila (para publicar os jobs). */
+  rows?(): RunRow[];
+  liveLog?(rowId: string): Array<{ at: string; m: string }>;
+  /** Modelo padrão do motor, só para mostrar. */
+  model?(): string;
+}
+
+/** O que os jobs precisam de uma linha da fila (officeExec.TaskRunRow). */
+export interface RunRow {
+  id: string;
+  task_id: string;
+  mode: string;
+  agent: string;
+  status: string;
+  attempt: number;
+  note: string;
+  created_at: string;
+  started_at: string | null;
+  finished_at: string | null;
+  result: string;
+  error: string;
+  fields?: string;
 }
 
 export interface DeskRemote {
@@ -140,6 +167,190 @@ export function toAppTask(t: DeskTask, run?: Record<string, unknown> | null): Ap
   };
 }
 
+// ---------------------------------------------------------------- jobs (v4)
+
+export const JOB_AGENT: Record<string, string> = { instagram: 'social', editorial: 'redator', raiox: 'raiox' };
+const JOB_SECTOR: Record<string, string> = { instagram: 'Marketing', editorial: 'Conteúdo', raiox: 'Comercial', agent: 'Operação' };
+export const ROLE_NAMES = ['Analista', 'Revisor', 'Redator', 'Pesquisador', 'Social'];
+
+function agentName(agent: string): string {
+  const m = /^agente:(.+)$/.exec(agent || '');
+  if (m) return m[1];
+  return ({ social: 'Social', redator: 'Redator', raiox: 'Pesquisador', paula: 'Paula PM', plano: 'Agente do plano' } as Record<string, string>)[agent] || 'Agente geral';
+}
+
+function kindOf(agent: string): string {
+  if (agent === 'social') return 'instagram';
+  if (agent === 'redator') return 'editorial';
+  if (agent === 'raiox') return 'raiox';
+  if (/^agente:/.test(agent || '')) return 'agent';
+  return 'tarefa';
+}
+
+function parseFields(raw?: string): Record<string, string> {
+  try {
+    const v = JSON.parse(raw || '{}');
+    const out: Record<string, string> = {};
+    if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) out[k] = String(x ?? '');
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+/** Título e descrição da tarefa que nasce de um pedido de job. Erro em `error` se faltou campo. */
+export function jobTask(kind: string, fields: Record<string, string>): { title: string; desc: string; sector: string; agent: string } | { error: string } {
+  const f = (k: string) => String(fields[k] ?? '').trim();
+  if (kind === 'instagram') {
+    const perfil = f('perfil').replace(/^@/, '');
+    if (!perfil) return { error: 'Informe o perfil do Instagram.' };
+    return { title: `Análise Instagram · @${perfil} · ${f('escopo') || 'Perfil completo'}`, desc: `Pedido pelo APK. Perfil @${perfil}, escopo ${f('escopo') || 'perfil completo'}.`, sector: JOB_SECTOR.instagram, agent: 'social' };
+  }
+  if (kind === 'editorial') {
+    if (!f('tema')) return { error: 'Informe o tema.' };
+    return { title: `Motor Editorial · ${f('formato') || 'Texto'} · ${f('tema')}`, desc: `Pedido pelo APK. ${f('formato') || 'Texto'} sobre: ${f('tema')}.`, sector: JOB_SECTOR.editorial, agent: 'redator' };
+  }
+  if (kind === 'raiox') {
+    const empresa = f('empresa');
+    if (!empresa) return { error: 'Informe a empresa e o site ou @ do Instagram.' };
+    if (!/https?:\/\/|@[A-Za-z0-9_.]{2,}|\b[a-z0-9-]+\.[a-z]{2,}/i.test(empresa)) {
+      return { error: 'Informe também o site ou o @ do Instagram da empresa (ex.: Padaria Sol · padariasol.com.br).' };
+    }
+    const depth = /complet/i.test(f('profundidade')) ? 'completo' : 'rápido';
+    return { title: `Raio X ${depth} · ${empresa}`, desc: `Pedido pelo APK. Abre um caso no Raio-X e roda a análise ${depth} só com fontes públicas.`, sector: JOB_SECTOR.raiox, agent: 'raiox' };
+  }
+  if (kind === 'agent') {
+    const instrucao = f('instrucao');
+    if (!instrucao) return { error: 'Escreva a instrução para o agente.' };
+    const nome = ROLE_NAMES.includes(f('agente')) ? f('agente') : 'Analista';
+    const title = instrucao.length > 70 ? `${instrucao.slice(0, 67)}…` : instrucao;
+    return { title: `${nome} · ${title}`, desc: `Pedido pelo APK ao ${nome}:\n${instrucao}`, sector: JOB_SECTOR.agent, agent: `agente:${nome}` };
+  }
+  return { error: `Tipo de job desconhecido: ${kind || '(vazio)'}` };
+}
+
+function hhmm(iso: string | null | undefined): string {
+  const d = iso ? new Date(iso) : null;
+  if (!d || isNaN(d.getTime())) return '';
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+function isToday(iso: string | null | undefined, now: Date): boolean {
+  const d = iso ? new Date(iso) : null;
+  return !!d && d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+}
+
+export function jobStatus(row: RunRow): 'run' | 'queue' | 'paused' | 'done' | 'cancel' {
+  if (row.status === 'queued') return 'queue';
+  if (row.status === 'running') return 'run';
+  if (row.status === 'canceled' && /^Pausado/.test(row.error || '')) return 'paused';
+  if (row.status === 'failed' || row.status === 'canceled') return 'cancel';
+  return 'done';
+}
+
+function finishLine(r: RunRow): string {
+  if (r.status === 'review') return 'Terminou · aguarda sua aprovação em Pendências';
+  if (r.status === 'approved') return 'Aprovado por Carlos';
+  if (r.status === 'done') return 'Terminou · você pediu ajuste';
+  if (r.status === 'failed') return `Falhou: ${(r.error || 'sem detalhe').slice(0, 300)}`;
+  if (r.status === 'canceled') return r.error || 'Cancelado';
+  return '';
+}
+
+/** Linhas da fila (execuções) → linhas de office_jobs e office_deliveries para o APK. */
+export function jobMirror(
+  tasks: DeskTask[],
+  rows: RunRow[],
+  liveLog: (rowId: string) => Array<{ at: string; m: string }> = () => [],
+  model = '',
+): { jobs: Record<string, unknown>[]; deliveries: Record<string, unknown>[] } {
+  const jobs: Record<string, unknown>[] = [];
+  const deliveries: Record<string, unknown>[] = [];
+  const queued = rows.filter((r) => r.status === 'queued').sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
+  for (const t of tasks) {
+    const execs = rows.filter((r) => r.task_id === t.id && r.mode === 'exec').sort((a, b) => (a.created_at < b.created_at ? -1 : a.created_at > b.created_at ? 1 : 0));
+    if (!execs.length) continue;
+    const last = execs[execs.length - 1];
+    const first = execs[0];
+    const kind = kindOf(last.agent);
+    const fields = parseFields(first.fields);
+    const log: Array<{ t: string; m: string }> = [];
+    for (const r of execs) {
+      log.push({ t: hhmm(r.created_at), m: r.attempt > 1 ? `Tentativa ${r.attempt} na fila${r.note ? ` · ${r.note.slice(0, 160)}` : ''}` : 'Na fila do Escritório' });
+      if (r.started_at) log.push({ t: hhmm(r.started_at), m: `Começou · ${agentName(r.agent)}` });
+      for (const l of liveLog(r.id)) log.push({ t: hhmm(l.at), m: l.m });
+      if (r.finished_at && finishLine(r)) log.push({ t: hhmm(r.finished_at), m: finishLine(r) });
+    }
+    const status = jobStatus(last);
+    const ref = UUID.test(t.id) ? t.id : null;
+    const qpos = last.status === 'queued' ? queued.findIndex((r) => r.id === last.id) + 1 : 0;
+    jobs.push({
+      id: `T-${t.seq}`,
+      n: Number(t.seq) || 0,
+      queue_seq: qpos || Number(t.seq) || 0,
+      title: t.title,
+      agent: agentName(last.agent),
+      model,
+      status,
+      pct: status === 'done' ? 100 : 0,
+      cost_cents: 0,
+      started_at: hhmm(first.started_at || first.created_at),
+      checkpoint: null,
+      log: log.slice(-40),
+      spend_flag: '',
+      kind,
+      fields,
+      client_ref: ref,
+      origin_command_id: ref,
+    });
+    const delivered = [...execs].reverse().find((r) => (r.status === 'review' || r.status === 'approved' || r.status === 'done') && String(r.result || '').trim());
+    if (delivered) {
+      const estado = delivered.status === 'review' ? 'aguarda sua aprovação' : delivered.status === 'approved' ? 'aprovado' : 'ajuste pedido';
+      deliveries.push({
+        slug: `entrega-T-${t.seq}`,
+        n: Number(t.seq) || 0,
+        job_id: `T-${t.seq}`,
+        kind,
+        title: t.title,
+        meta: `${agentName(delivered.agent)} · tentativa ${delivered.attempt} · ${estado}`,
+        url: `/reports/entrega-T-${t.seq}`,
+        body: delivered.result,
+        created_at: delivered.finished_at || delivered.created_at,
+      });
+    }
+  }
+  return { jobs, deliveries };
+}
+
+/** Job no formato que o APK lê como resposta (Job.fromJson). */
+export function toAppJob(row: Record<string, unknown>): Record<string, unknown> {
+  return {
+    id: row.id,
+    title: row.title,
+    agent: row.agent,
+    model: row.model,
+    status: row.status,
+    pct: row.pct,
+    cost: 0,
+    costCeiling: 5,
+    startedAt: row.started_at,
+    log: row.log,
+    checkpoint: row.checkpoint,
+    queueOrder: row.queue_seq,
+    kind: row.kind,
+    fields: row.fields,
+  };
+}
+
+function jobBody(store: DeskStore, taskId: string): Record<string, unknown> | null {
+  const ex = store.exec;
+  if (!ex || !ex.rows) return null;
+  const t = store.list().find((x) => x.id === taskId);
+  if (!t) return null;
+  const { jobs } = jobMirror([t], ex.rows(), ex.liveLog ? (id) => ex.liveLog!(id) : undefined, ex.model ? ex.model() : '');
+  return jobs.length ? toAppJob(jobs[0]) : null;
+}
+
 /** Acha a task pelo id do app (T-12), pelo id do Escritório ou pelo uuid do pedido que a criou. */
 export function resolveTask(tasks: DeskTask[], ref: string): DeskTask | null {
   const r = String(ref || '').trim();
@@ -185,6 +396,29 @@ function applyFresh(store: DeskStore, cmd: Command): Outcome {
     return { status: 'applied', code: 201, body: toAppTask(created), ref: `T-${created.seq}` };
   }
 
+  if (cmd.kind === 'job.create') {
+    if (!store.exec) return reject(503, 'A fila de execução não está ligada neste Escritório');
+    const kind = text(p.kind);
+    const raw = p.fields && typeof p.fields === 'object' ? (p.fields as Record<string, unknown>) : {};
+    const fields: Record<string, string> = {};
+    for (const [k, v] of Object.entries(raw)) fields[k] = String(v ?? '').trim();
+    let task = tasks.find((t) => t.id === cmd.id) || null;
+    if (!task) {
+      const spec = jobTask(kind, fields);
+      if ('error' in spec) return reject(400, spec.error);
+      task = store.create({ id: cmd.id, title: spec.title, desc: spec.desc, prio: 'Normal', sector: spec.sector, status: 'to_plan', who: agentName(spec.agent) });
+      const r = store.exec.enqueue(task.id, 'exec', spec.agent, { origin: 'apk', id: cmd.id, fields: { ...fields, kind } });
+      if (!r.ok) return reject(r.code, r.error);
+    }
+    const body = jobBody(store, task.id);
+    return { status: 'applied', code: 201, body, ref: `T-${task.seq}` };
+  }
+
+  if (cmd.kind === 'pending.approve' || cmd.kind === 'pending.reject') {
+    // Desde a v4 as pendências são os resultados de tarefa (tarefa:T-n), decididos por task.approve/revise.
+    return reject(410, 'Essa pendência não existe mais. Atualize a tela.');
+  }
+
   const alvo = resolveTask(tasks, String(cmd.target_ref || ''));
 
   if (cmd.kind === 'task.delete') {
@@ -192,6 +426,17 @@ function applyFresh(store: DeskStore, cmd: Command): Outcome {
     if (!alvo) return { status: 'applied', code: 204, body: null, ref: null };
     store.remove(alvo.id);
     return { status: 'applied', code: 204, body: null, ref: `T-${alvo.seq}` };
+  }
+
+  if (JOB_KINDS.has(cmd.kind)) {
+    if (!alvo) return reject(404, `Job ${cmd.target_ref} não existe no Escritório`);
+    if (!store.exec) return reject(503, 'A fila de execução não está ligada neste Escritório');
+    let r: ExecOutcome;
+    if (cmd.kind === 'job.pause') r = store.exec.stop(alvo.id, 'pause');
+    else if (cmd.kind === 'job.cancel') r = store.exec.stop(alvo.id, 'cancel');
+    else r = store.exec.revise(alvo.id, 'Continue de onde parou. Aproveite o que já está feito na pasta.', 'apk', cmd.id);
+    if (!r.ok) return reject(r.code, r.error);
+    return { status: 'applied', code: 200, body: jobBody(store, alvo.id), ref: `T-${alvo.seq}` };
   }
 
   if (!alvo) return reject(404, `Tarefa ${cmd.target_ref} não existe no Escritório`);
@@ -305,37 +550,64 @@ export class DeskWorker {
     return resumo;
   }
 
+  /** Tabelas que o Escritório publica: tarefas e, desde a v4, jobs, entregas e pendências. */
+  mirrorTables(): Array<{ table: string; key: string; rows: Record<string, unknown>[] }> {
+    const ex = this.store.exec;
+    const runs = ex ? ex.views() : {};
+    const tasks = this.store.list();
+    const out = [{ table: 'office_tasks', key: 'id', rows: tasks.map((t) => toAppTask(t, runs[t.id]) as unknown as Record<string, unknown>) }];
+    if (ex && ex.rows) {
+      const { jobs, deliveries } = jobMirror(tasks, ex.rows(), ex.liveLog ? (id) => ex.liveLog!(id) : undefined, ex.model ? ex.model() : '');
+      out.push({ table: 'office_jobs', key: 'id', rows: jobs });
+      out.push({ table: 'office_deliveries', key: 'slug', rows: deliveries });
+      // Pendências do office.py eram simuladas; as de verdade são os resultados de tarefa (o APK monta).
+      out.push({ table: 'office_pendings', key: 'id', rows: [] });
+    }
+    return out;
+  }
+
   async pushMirror(): Promise<{ upserts: number; deleted: number }> {
     const now = new Date().toISOString();
-    const runs = this.store.exec ? this.store.exec.views() : {};
-    const rows = this.store.list().map((t) => toAppTask(t, runs[t.id]));
-    const vivos = new Set(rows.map((r) => r.id));
-    const mudou: Record<string, unknown>[] = [];
-    const novos = new Map<string, string>();
-    for (const row of rows) {
-      const h = createHash('sha1').update(JSON.stringify(row)).digest('hex');
-      if (this.hashes.get(row.id) === h && this.fullPushDone) continue;
-      const v = (this.versions.get(row.id) || 0) + (this.hashes.get(row.id) === h ? 0 : 1);
-      this.versions.set(row.id, Math.max(v, 1));
-      novos.set(row.id, h);
-      mudou.push({ ...row, version: Math.max(v, 1), synced_at: now, deleted_at: null });
+    const total = { upserts: 0, deleted: 0 };
+    for (const { table, key, rows } of this.mirrorTables()) {
+      const hk = (k: string) => `${table}:${k}`;
+      const vivos = new Set(rows.map((r) => String(r[key])));
+      const mudou: Record<string, unknown>[] = [];
+      const novos = new Map<string, string>();
+      for (const row of rows) {
+        const k = String(row[key]);
+        const h = createHash('sha1').update(JSON.stringify(row)).digest('hex');
+        if (this.hashes.get(hk(k)) === h && this.fullPushDone) continue;
+        const v = (this.versions.get(hk(k)) || 0) + (this.hashes.get(hk(k)) === h ? 0 : 1);
+        this.versions.set(hk(k), Math.max(v, 1));
+        novos.set(hk(k), h);
+        mudou.push({ ...row, version: Math.max(v, 1), synced_at: now, deleted_at: null });
+      }
+      let removidos = [...this.hashes.keys()].filter((x) => x.startsWith(`${table}:`)).map((x) => x.slice(table.length + 1)).filter((k) => !vivos.has(k));
+      if (!this.fullPushDone) {
+        // Na partida, some da nuvem o que não está aqui (inclusive o que outro escritor deixou).
+        const naNuvem = (await this.remote.select(table, { select: key, deleted_at: 'is.null' })) || [];
+        removidos = [...new Set([...removidos, ...naNuvem.map((r: any) => String(r[key])).filter((k) => !vivos.has(k))])];
+      }
+      if (mudou.length) await this.remote.upsert(table, mudou, key);
+      if (removidos.length) await this.remote.markDeleted(table, key, removidos, now);
+      for (const [k, h] of novos) this.hashes.set(k, h);
+      for (const k of removidos) this.hashes.delete(hk(k));
+      total.upserts += mudou.length;
+      total.deleted += removidos.length;
     }
-    let removidos = [...this.hashes.keys()].filter((k) => !vivos.has(k));
-    if (!this.fullPushDone) {
-      // Na partida, some da nuvem o que não está no Kanban (inclusive o que outro escritor deixou).
-      const naNuvem = (await this.remote.select('office_tasks', { select: 'id', deleted_at: 'is.null' })) || [];
-      removidos = [...new Set([...removidos, ...naNuvem.map((r: any) => String(r.id)).filter((id) => !vivos.has(id))])];
-    }
-    if (mudou.length) await this.remote.upsert('office_tasks', mudou, 'id');
-    if (removidos.length) await this.remote.markDeleted('office_tasks', 'id', removidos, now);
-    for (const [k, h] of novos) this.hashes.set(k, h);
-    for (const k of removidos) this.hashes.delete(k);
     this.fullPushDone = true;
-    return { upserts: mudou.length, deleted: removidos.length };
+    return total;
   }
 
   async heartbeat(): Promise<void> {
     const tasks = this.store.list();
+    const ex = this.store.exec;
+    const rows = ex && ex.rows ? ex.rows() : [];
+    const today = new Date();
+    const model = ex && ex.model ? ex.model() : '';
+    const running = rows.filter((r) => r.status === 'running').length;
+    const queued = rows.filter((r) => r.status === 'queued').length;
     await this.remote.upsert(
       'office_status',
       [{
@@ -344,9 +616,18 @@ export class DeskWorker {
         online_since: this.onlineSince,
         last_seen_at: new Date().toISOString(),
         last_drain_at: this.lastDrainAt,
-        stats: { tasksOpen: tasks.filter((t) => t.status !== 'done').length },
-        services: [{ label: 'TAVIR Escritório · Kanban', meta: `${tasks.length} tarefa(s)`, status: 'ok' }],
-        agents: [],
+        stats: {
+          tasksOpen: tasks.filter((t) => t.status !== 'done').length,
+          spentToday: 0,
+          completedToday: rows.filter((r) => r.mode === 'exec' && ['review', 'approved', 'done'].includes(r.status) && isToday(r.finished_at, today)).length,
+          running,
+          queued,
+        },
+        services: [
+          { label: 'TAVIR Escritório · Kanban', meta: `${tasks.length} tarefa(s)`, status: 'ok' },
+          { label: 'Fila de execução', meta: running ? `executando · ${queued} na fila` : queued ? `${queued} na fila` : 'parada, sem pedidos', status: 'ok' },
+        ],
+        agents: ['Agente geral', 'Paula PM', 'Social', 'Redator', 'Pesquisador', 'Analista', 'Revisor'].map((name) => ({ name, model })),
         app_version: 'escritorio-1',
       }],
       'id',
@@ -442,8 +723,18 @@ export function realDeskStore(): DeskStore {
         enqueue: (taskId, mode, agent, opts) => q().enqueue(taskId, mode, agent, opts),
         approve: (taskId) => q().approve(taskId),
         revise: (taskId, note, origin, id) => q().revise(taskId, note, origin, id),
-        stop: (taskId) => q().stop(taskId),
+        stop: (taskId, why) => q().stop(taskId, why),
         views: () => q().views(),
+        rows: () => q().rows(),
+        liveLog: (rowId) => q().liveLog(rowId),
+        model: () => {
+          try {
+            const s = require('./drivers/engineHub').engineHub.getSettings();
+            return [s.defaultEngine, s.defaultModel].filter(Boolean).join(' · ');
+          } catch {
+            return '';
+          }
+        },
       } as DeskExec;
     })(),
   };

@@ -46,6 +46,8 @@ export interface SidecarDeps {
    */
   remember: { load: () => Record<string, number>; save: (map: Record<string, number>) => void };
   killPid: (pid: number) => void;
+  /** Linha de comando de um processo (para saber se o dono da porta é mesmo este sistema). */
+  commandLine: (pid: number) => string;
 }
 
 const RUN_FILE = path.join(os.tmpdir(), 'tavir-sidecars-run.json');
@@ -68,6 +70,35 @@ const defaultRemember: SidecarDeps['remember'] = {
 };
 function defaultKillPid(pid: number): void {
   if (pid > 0) execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true });
+}
+
+function defaultCommandLine(pid: number): string {
+  try {
+    return execFileSync(
+      'powershell',
+      ['-NoProfile', '-NonInteractive', '-Command', `(Get-CimInstance Win32_Process -Filter "ProcessId=${Number(pid)}").CommandLine`],
+      { encoding: 'utf8', windowsHide: true, timeout: 15000 },
+    ).trim();
+  } catch {
+    return '';
+  }
+}
+
+const norm = (text: string) => String(text || '').replace(/\\/g, '/').replace(/"/g, '').toLowerCase();
+
+/**
+ * O processo dono da porta é deste sistema? Vale a pasta do sistema na linha de comando
+ * ou o script/módulo que o Escritório usa para ligá-lo (ex.: backend/server.py, docuflow.api:app).
+ */
+export function belongsTo(spec: SidecarSpec, commandLine: string): boolean {
+  const cmd = norm(commandLine);
+  if (!cmd) return false;
+  if (spec.pasta && cmd.includes(norm(spec.pasta).replace(/\/+$/, ''))) return true;
+  const tokens = [
+    ...String(spec.comando || '').split(/\s+/),
+    ...(spec.processos ?? []).flatMap((item) => item.args ?? []),
+  ].filter((token) => token && !token.startsWith('-') && /[./:]/.test(token) && !/^\d+(\.\d+)*$/.test(token) && token !== '.');
+  return tokens.some((token) => cmd.includes(norm(token)));
 }
 
 export interface SidecarView {
@@ -213,6 +244,7 @@ export function createSidecarManager(file: string, deps: Partial<SidecarDeps> = 
   const spawnSpec = deps.spawn ?? defaultSpawn;
   const remember = deps.remember ?? defaultRemember;
   const killPid = deps.killPid ?? defaultKillPid;
+  const commandLine = deps.commandLine ?? defaultCommandLine;
   const systems = () => loadSidecars(file);
 
   /** Pid de uma sessão anterior do Escritório que ainda é o dono da porta do sistema. */
@@ -293,12 +325,30 @@ export function createSidecarManager(file: string, deps: Partial<SidecarDeps> = 
       }
       // Ligado pelo Escritório numa sessão anterior (o app foi fechado e aberto de novo).
       const spec = systems().find((item) => item.id === id);
-      const pid = spec ? earlierPid(spec) : null;
-      if (!pid) return { ok: false, error: 'esse sistema não foi iniciado pelo Escritório' };
-      try {
-        killPid(pid);
-      } catch (err) {
-        return { ok: false, error: `não consegui parar o pid ${pid}: ${err instanceof Error ? err.message : String(err)}` };
+      if (!spec) return { ok: false, error: 'sistema não encontrado' };
+      const pid = earlierPid(spec);
+      const alvos = new Set<number>(pid ? [pid] : []);
+      if (!pid) {
+        // Ligado por fora (terminal, outro app, sessão antiga): confere quem está na porta antes de parar.
+        for (const port of spec.portas) {
+          const owner = portOwner(port);
+          if (!owner) continue;
+          if (!belongsTo(spec, commandLine(owner.pid))) {
+            return { ok: false, error: `a porta ${port} está com ${owner.nome} (pid ${owner.pid}), que não é o ${spec.nome}. Não parei.` };
+          }
+          alvos.add(owner.pid);
+        }
+        if (!alvos.size) {
+          forget(id);
+          return { ok: true };
+        }
+      }
+      for (const alvo of alvos) {
+        try {
+          killPid(alvo);
+        } catch (err) {
+          return { ok: false, error: `não consegui parar o pid ${alvo}: ${err instanceof Error ? err.message : String(err)}` };
+        }
       }
       forget(id);
       return { ok: true };

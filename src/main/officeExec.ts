@@ -34,6 +34,8 @@ export interface TaskRunRow {
   run_id: string | null;
   result: string;
   error: string;
+  /** Campos do pedido do APK (job.create), em JSON. '{}' para tarefa comum. */
+  fields?: string;
 }
 
 /** O que a tela e o APK precisam saber da execução de uma tarefa. */
@@ -80,12 +82,65 @@ export interface RunnerResult {
   runId?: string;
 }
 
-export type Runner = (job: { row: TaskRunRow; task: ExecTask; prompt: string; owner: string; stage: string }, registerKill: (kill: () => void) => void) => Promise<RunnerResult>;
+export type Runner = (
+  job: { row: TaskRunRow; task: ExecTask; prompt: string; owner: string; stage: string },
+  registerKill: (kill: () => void) => void,
+  say?: (line: string) => void,
+) => Promise<RunnerResult>;
 
 export type ExecResult = { ok: true; run: TaskRunRow } | { ok: false; code: number; error: string };
 
-export const AGENT_LABEL: Record<string, string> = { geral: 'Agente geral', paula: 'Paula PM', plano: 'Agente do plano' };
+export const AGENT_LABEL: Record<string, string> = {
+  geral: 'Agente geral',
+  paula: 'Paula PM',
+  plano: 'Agente do plano',
+  social: 'Social',
+  redator: 'Redator',
+  raiox: 'Pesquisador · Raio-X',
+};
 const OPEN: TaskRunStatus[] = ['queued', 'running'];
+
+/** Agentes que o APK chama pelo "Chamar agente" (e o que cada um faz). */
+export const ROLE_BRIEF: Record<string, string> = {
+  Analista: 'Você analisa a situação ou os dados indicados e entrega um diagnóstico com números, causas prováveis e recomendações priorizadas.',
+  Revisor: 'Você revisa o material indicado (texto, documento ou código), aponta problemas concretos e propõe a versão corrigida.',
+  Redator: 'Você escreve o texto pedido, claro e pronto para usar, em português do Brasil.',
+  Pesquisador: 'Você pesquisa o assunto em fontes públicas, cita cada fonte com link e separa fato de opinião.',
+  Social: 'Você cuida de redes sociais: analisa perfis, propõe pautas, legendas e calendário.',
+};
+
+export function isAgent(agent: string): boolean {
+  if (agent in AGENT_LABEL) return true;
+  const m = /^agente:(.+)$/.exec(agent);
+  return !!m && m[1] in ROLE_BRIEF;
+}
+
+export function agentLabel(agent: string): string {
+  const m = /^agente:(.+)$/.exec(agent || '');
+  if (m) return m[1];
+  return AGENT_LABEL[agent] || 'Agente geral';
+}
+
+/** Tipo de entrega (kind do APK) pelo agente da execução. */
+export function kindOfAgent(agent: string): string {
+  if (agent === 'social') return 'instagram';
+  if (agent === 'redator') return 'editorial';
+  if (agent === 'raiox') return 'raiox';
+  if (/^agente:/.test(agent || '')) return 'agent';
+  return 'tarefa';
+}
+
+export function fieldsOf(row: Pick<TaskRunRow, 'fields'> | null | undefined): Record<string, string> {
+  try {
+    const v = JSON.parse(row?.fields || '{}');
+    if (!v || typeof v !== 'object') return {};
+    const out: Record<string, string> = {};
+    for (const [k, x] of Object.entries(v)) out[k] = String(x ?? '');
+    return out;
+  } catch {
+    return {};
+  }
+}
 
 // ---------------------------------------------------------------- visão
 
@@ -127,7 +182,31 @@ export function taskRunViews(rows: TaskRunRow[]): Record<string, TaskRunView> {
 
 // ---------------------------------------------------------------- prompt
 
-export function buildPrompt(opts: { mode: RunMode; agent: string; task: ExecTask; plan: string; note: string; previous: string; workspace: string }): string {
+function rolePrompt(agent: string, f: Record<string, string>): string {
+  if (agent === 'social') {
+    const perfil = (f.perfil || '').replace(/^@/, '');
+    return [
+      'Você é o agente Social do TAVIR Escritório.',
+      `Analise o perfil público do Instagram @${perfil} (https://www.instagram.com/${perfil}/). Escopo pedido: ${f.escopo || 'perfil completo'}.`,
+      'Use só o que é público (sem login). Se não conseguir abrir o perfil, diga isso e analise o que achar em buscas públicas.',
+      'Grave o relatório em analise-instagram.md com: posicionamento, frequência e formatos, o que engaja, pontos fracos e 5 recomendações práticas.',
+    ].join('\n');
+  }
+  if (agent === 'redator') {
+    return [
+      'Você é o Redator do Motor Editorial do TAVIR Escritório.',
+      `Escreva um ${f.formato || 'texto'} sobre: ${f.tema || '(tema na tarefa)'}.`,
+      'Grave o texto final em entrega.md, pronto para publicar (título, corpo e chamada). Não publique.',
+    ].join('\n');
+  }
+  const m = /^agente:(.+)$/.exec(agent || '');
+  if (m) {
+    return [`Você é o ${m[1]} do TAVIR Escritório. ${ROLE_BRIEF[m[1]] || ''}`, `Pedido do Carlos: ${f.instrucao || '(na tarefa)'}`].join('\n');
+  }
+  return '';
+}
+
+export function buildPrompt(opts: { mode: RunMode; agent: string; task: ExecTask; plan: string; note: string; previous: string; workspace: string; fields?: Record<string, string> }): string {
   const { mode, task } = opts;
   const head = [
     `Tarefa T-${task.seq}: ${task.title}`,
@@ -142,8 +221,10 @@ export function buildPrompt(opts: { mode: RunMode; agent: string; task: ExecTask
       '1. Objetivo (uma frase)\n2. Passos numerados\n3. Agente sugerido para executar\n4. Riscos ou dúvidas\n5. Critério de pronto',
     ].join('\n\n');
   }
+  const f = opts.fields || {};
+  const role = rolePrompt(opts.agent, f);
   return [
-    `Você é o ${AGENT_LABEL[opts.agent] || opts.agent} do TAVIR Escritório. Execute a tarefa abaixo.`,
+    role || `Você é o ${agentLabel(opts.agent)} do TAVIR Escritório. Execute a tarefa abaixo.`,
     head,
     opts.plan ? `Plano aprovado pela Paula (siga):\n${opts.plan.slice(0, 6000)}` : '',
     opts.note ? `Ajuste pedido pelo Carlos nesta tentativa:\n${opts.note}` : '',
@@ -159,6 +240,7 @@ export function buildPrompt(opts: { mode: RunMode; agent: string; task: ExecTask
 export class ExecQueue {
   private kills = new Map<string, () => void>();
   private busy = false;
+  private live = new Map<string, Array<{ at: string; m: string }>>();
 
   constructor(
     private store: ExecStore,
@@ -186,12 +268,21 @@ export class ExecQueue {
     return taskRunViews(this.store.all());
   }
 
+  rows(): TaskRunRow[] {
+    return this.store.all();
+  }
+
+  /** Linhas ao vivo de uma execução (o que o motor está fazendo agora). Só em memória. */
+  liveLog(rowId: string): Array<{ at: string; m: string }> {
+    return this.live.get(rowId) || [];
+  }
+
   /** Resultados esperando decisão, para a tela Decisões. */
   approvals(tasks: ExecTask[], now = Date.now()): Array<Record<string, unknown>> {
     return reviewApprovals(this.store.all(), tasks, now);
   }
 
-  enqueue(taskId: string, mode: RunMode, agent: string, opts: { origin?: string; note?: string; id?: string } = {}): ExecResult {
+  enqueue(taskId: string, mode: RunMode, agent: string, opts: { origin?: string; note?: string; id?: string; fields?: Record<string, string> } = {}): ExecResult {
     const task = this.tasks.get(taskId);
     if (!task) return { ok: false, code: 404, error: 'Tarefa não existe no Escritório.' };
     const rows = this.store.all();
@@ -202,7 +293,7 @@ export class ExecQueue {
     if (mode === 'exec' && who === 'plano') {
       if (!planOf(rows, taskId)) return { ok: false, code: 400, error: 'Ainda não há plano da Paula para esta tarefa.' };
     }
-    if (who !== 'geral' && who !== 'plano' && who !== 'paula') who = 'geral';
+    if (!isAgent(who)) who = 'geral';
     const attempt = rows.filter((r) => r.task_id === taskId && r.mode === mode).length + 1;
     const row: TaskRunRow = {
       id: opts.id || randomUUID(),
@@ -219,6 +310,7 @@ export class ExecQueue {
       run_id: null,
       result: '',
       error: '',
+      fields: JSON.stringify(opts.fields || {}),
     };
     this.store.insert(row);
     if (mode === 'exec' && task.status !== 'in_progress') this.tasks.setStatus(taskId, 'in_progress');
@@ -241,13 +333,23 @@ export class ExecQueue {
     const last = latestOf(this.store.all(), taskId, 'exec');
     if (!last || !['review', 'failed', 'canceled'].includes(last.status)) return { ok: false, code: 409, error: 'Não há execução terminada para ajustar.' };
     if (last.status === 'review') this.store.update(last.id, { status: 'done' });
-    return this.enqueue(taskId, 'exec', last.agent, { origin, note: text, id });
+    return this.enqueue(taskId, 'exec', last.agent, { origin, note: text, id, fields: fieldsOf(last) });
   }
 
-  stop(taskId: string): ExecResult {
+  /** Para a execução. 'pause' deixa retomar (Pedir ajuste/retomar cria nova tentativa). */
+  stop(taskId: string, why: 'cancel' | 'pause' = 'cancel'): ExecResult {
     const open = this.store.all().find((r) => r.task_id === taskId && OPEN.includes(r.status));
-    if (!open) return { ok: false, code: 409, error: 'Nada na fila ou executando para esta tarefa.' };
-    this.store.update(open.id, { status: 'canceled', finished_at: this.now(), error: 'Cancelado por Carlos.' });
+    if (!open) {
+      // Cancelar algo pausado: só troca o motivo (não há o que matar).
+      const last = latestOf(this.store.all(), taskId, 'exec');
+      if (why === 'cancel' && last && last.status === 'canceled' && /^Pausado/.test(last.error)) {
+        this.store.update(last.id, { error: 'Cancelado por Carlos.' });
+        this.onChange();
+        return { ok: true, run: { ...last, error: 'Cancelado por Carlos.' } };
+      }
+      return { ok: false, code: 409, error: 'Nada na fila ou executando para esta tarefa.' };
+    }
+    this.store.update(open.id, { status: 'canceled', finished_at: this.now(), error: why === 'pause' ? 'Pausado por Carlos.' : 'Cancelado por Carlos.' });
     const kill = this.kills.get(open.id);
     if (kill) kill();
     this.onChange();
@@ -281,12 +383,22 @@ export class ExecQueue {
         note: next.note,
         previous: next.note && previousExec ? previousExec.result : '',
         workspace: this.workspaceOf(task),
+        fields: fieldsOf(next),
       });
-      const owner = AGENT_LABEL[next.agent] || 'Agente geral';
+      const owner = agentLabel(next.agent);
       const stage = next.mode === 'plan' ? 'Plano da Paula' : next.note ? 'Ajuste' : 'Execução';
       let res: RunnerResult;
       try {
-        res = await this.runner({ row: next, task, prompt, owner, stage }, (kill) => this.kills.set(next.id, kill));
+        const lines: Array<{ at: string; m: string }> = [];
+        this.live.set(next.id, lines);
+        const say = (m: string) => {
+          const text = String(m || '').trim().slice(0, 200);
+          if (!text || (lines.length && lines[lines.length - 1].m === text)) return;
+          lines.push({ at: this.now(), m: text });
+          if (lines.length > 30) lines.splice(0, lines.length - 30);
+          this.onChange();
+        };
+        res = await this.runner({ row: next, task, prompt, owner, stage }, (kill) => this.kills.set(next.id, kill), say);
       } catch (err: any) {
         res = { ok: false, reply: '', error: String(err?.message || err) };
       } finally {
@@ -294,7 +406,7 @@ export class ExecQueue {
       }
       const now = this.store.all().find((r) => r.id === next.id);
       if (now && now.status === 'canceled') {
-        this.store.update(next.id, { run_id: res.runId || null, result: res.reply || '' });
+        this.store.update(next.id, { run_id: res.runId || null, result: res.reply || now.result || '' });
       } else if (res.ok) {
         const status: TaskRunStatus = next.mode === 'plan' ? 'done' : 'review';
         this.store.update(next.id, { status, finished_at: this.now(), run_id: res.runId || null, result: res.reply || '', error: '' });
@@ -350,7 +462,7 @@ export function reviewApprovals(rows: TaskRunRow[], tasks: ExecTask[], now = Dat
       group: 'review',
       kind: 'hardening',
       title: `Resultado da T-${t.seq} · ${t.title}`,
-      who: AGENT_LABEL[last.agent] || 'Agente geral',
+      who: agentLabel(last.agent),
       ini: 'AG',
       type: 'Resultado de tarefa',
       status: 'pending',
@@ -402,15 +514,23 @@ function sqliteStore(): ExecStore {
         status TEXT NOT NULL, attempt INTEGER NOT NULL, note TEXT NOT NULL DEFAULT '', origin TEXT NOT NULL DEFAULT '',
         created_at TEXT NOT NULL, started_at TEXT, finished_at TEXT, run_id TEXT,
         result TEXT NOT NULL DEFAULT '', error TEXT NOT NULL DEFAULT '')`);
+      try {
+        db.exec(`ALTER TABLE task_runs ADD COLUMN fields TEXT NOT NULL DEFAULT '{}'`);
+      } catch {
+        // já existe
+      }
       return fn(db);
     } finally {
       db.close();
     }
   };
-  const COLS = ['id', 'task_id', 'mode', 'agent', 'status', 'attempt', 'note', 'origin', 'created_at', 'started_at', 'finished_at', 'run_id', 'result', 'error'];
+  const COLS = ['id', 'task_id', 'mode', 'agent', 'status', 'attempt', 'note', 'origin', 'created_at', 'started_at', 'finished_at', 'run_id', 'result', 'error', 'fields'];
   return {
     all: () => withDb((db) => db.prepare('SELECT * FROM task_runs ORDER BY created_at').all() as TaskRunRow[]),
-    insert: (row) => withDb((db) => db.prepare(`INSERT INTO task_runs (${COLS.join(',')}) VALUES (${COLS.map(() => '?').join(',')})`).run(...COLS.map((c) => (row as any)[c]))),
+    insert: (row) =>
+      withDb((db) =>
+        db.prepare(`INSERT INTO task_runs (${COLS.join(',')}) VALUES (${COLS.map(() => '?').join(',')})`).run(...COLS.map((c) => (c === 'fields' ? row.fields || '{}' : (row as any)[c]))),
+      ),
     update: (id, patch) =>
       withDb((db) => {
         const keys = Object.keys(patch).filter((k) => COLS.includes(k) && k !== 'id');
@@ -428,7 +548,108 @@ function realTasks(): ExecTasks {
   };
 }
 
-const realRunner: Runner = async (job, registerKill) => {
+/** Campo "Empresa ou site" do APK: separa o nome do link público (site, @ do Instagram). */
+export function parseRaioxTarget(text: string): { company: string; link: string } {
+  const raw = String(text || '').trim();
+  let link = '';
+  let company = raw;
+  const url = /https?:\/\/\S+/i.exec(raw);
+  const handle = /(^|\s)@([A-Za-z0-9_.]{2,30})\b/.exec(raw);
+  const domain = /\b([a-z0-9-]+(?:\.[a-z0-9-]+)+\.?[a-z]{2,}(?:\/\S*)?)/i.exec(raw);
+  if (url) {
+    link = url[0];
+    company = raw.replace(url[0], '');
+  } else if (handle) {
+    link = `https://www.instagram.com/${handle[2]}/`;
+    company = raw.replace(`@${handle[2]}`, '') || handle[2];
+  } else if (domain && /\.[a-z]{2,}/i.test(domain[1])) {
+    link = `https://${domain[1]}`;
+    company = raw.replace(domain[1], '');
+  }
+  company = company.replace(/[·|,;\-–—]+\s*$/, '').replace(/^\s*[·|,;\-–—]+/, '').replace(/\s+/g, ' ').trim();
+  if (!company && link) company = link.replace(/^https?:\/\/(www\.)?/i, '').replace(/[/?#].*$/, '');
+  return { company, link };
+}
+
+export const RAIOX_FRONTS_BY_DEPTH: Record<string, string[]> = {
+  rapido: ['site', 'google'],
+  completo: ['site', 'instagram', 'google', 'opinioes', 'concorrentes'],
+};
+
+function depthOf(f: Record<string, string>): 'rapido' | 'completo' {
+  return /complet/i.test(f.profundidade || '') ? 'completo' : 'rapido';
+}
+
+/** uuid estável a partir do id da tarefa (o caso do Raio-X é o mesmo em todas as tentativas). */
+function uuidFor(taskId: string): string {
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(taskId)) return taskId.toLowerCase();
+  const h = require('node:crypto').createHash('sha1').update(String(taskId)).digest('hex');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
+}
+
+/** Raio X pedido pelo APK: abre (ou reabre) o caso no módulo Raio-X e roda a análise de verdade. */
+async function runRaiox(job: Parameters<Runner>[0], registerKill: (kill: () => void) => void, say: (line: string) => void): Promise<RunnerResult> {
+  const { createCase, caseIdFromUuid } = require('./raiox/raioxRules');
+  const { raioxRoot, readCase, writeCase, listCases } = require('./raiox/raioxStore');
+  const { analyse, stopAnalyse } = require('./raiox/raioxAnalyse');
+  const f = fieldsOf(job.row);
+  const depth = depthOf(f);
+  const fronts = RAIOX_FRONTS_BY_DEPTH[depth];
+  const { company, link } = parseRaioxTarget(f.empresa || job.task.title);
+  if (!link) return { ok: false, reply: '', error: 'Falta o site ou o @ do Instagram da empresa. Peça de novo informando, por exemplo: Padaria Sol · padariasol.com.br' };
+  const root = raioxRoot();
+  const uuid = uuidFor(job.task.id);
+  const caseId = caseIdFromUuid(uuid);
+  const exists = listCases(root).some((c: any) => c.id === caseId);
+  if (!exists) {
+    const created = createCase(
+      {
+        company,
+        objective: 'Entender a presença digital da empresa e onde ela perde clientes.',
+        decisionNeeded: 'Decidir se vale propor um diagnóstico e qual gap atacar primeiro.',
+        frontier: `Só fontes públicas (${fronts.join(', ')}), a partir de ${link}. Pedido pelo TAVIR Controle Mobile.`,
+        mode: depth === 'completo' ? 'completo' : 'estudo_rapido',
+        publicLink: link,
+        origin: 'indicacao',
+      },
+      new Date().toISOString(),
+      uuid,
+    );
+    writeCase(root, created);
+    say(`Caso ${caseId} aberto no Raio-X · ${company}`);
+  } else {
+    say(`Retomando o caso ${caseId} no Raio-X`);
+  }
+  let stopped = false;
+  registerKill(() => {
+    stopped = true;
+    stopAnalyse(caseId);
+  });
+  try {
+    const out = await analyse(root, caseId, fronts, {
+      note: job.row.note,
+      onProgress: (p: { activity?: string }) => p.activity && say(p.activity),
+    });
+    if (out.paused || stopped) return { ok: false, reply: '', stopped: true };
+    const c = readCase(root, caseId);
+    const ev = (c.evidence || []).filter((e: any) => e.author === 'dora');
+    const lines = ev.slice(-8).map((e: any) => `- ${e.claim}${e.source ? ` (${e.source})` : ''}`);
+    const reply = [
+      `## Raio X ${depth === 'completo' ? 'completo' : 'rápido'} · ${company}`,
+      `Caso **${caseId}** no módulo Raio-X do Escritório. Link analisado: ${link}`,
+      `Frentes: ${fronts.join(', ')}. A análise sugeriu **${out.created}** evidência(s) nova(s).`,
+      lines.length ? `\n### O que apareceu\n${lines.join('\n')}` : '',
+      '\nAs evidências chegam como sugestão: aceite ou recuse no Raio-X do Escritório antes de seguir para a jornada.',
+    ].filter(Boolean).join('\n');
+    return { ok: true, reply };
+  } catch (err: any) {
+    if (stopped) return { ok: false, reply: '', stopped: true };
+    return { ok: false, reply: '', error: String(err?.message || err) };
+  }
+}
+
+const realRunner: Runner = async (job, registerKill, say = () => {}) => {
+  if (job.row.agent === 'raiox' && job.row.mode === 'exec') return runRaiox(job, registerKill, say);
   const { startRun } = require('./runLedger');
   const { runMotor, findMotorBinary, normalizeMotorId } = require('./motors');
   const { engineHub } = require('./drivers/engineHub');
@@ -462,6 +683,7 @@ const realRunner: Runner = async (job, registerKill) => {
     effort: settings.defaultEffort,
     access,
     timeoutMs,
+    onProgress: (p: { activity?: string }) => p && p.activity && say(p.activity),
     onRaw: (stream: 'stdout' | 'stderr', text: string) => handle.raw(stream, text),
     registerKill: (kill: () => void) => registerKill(() => { stopped = true; kill(); }),
   });
@@ -473,8 +695,24 @@ const realRunner: Runner = async (job, registerKill) => {
     reply: result.text || '',
     exitCode: result.exitCode,
   });
-  return { ok: !!result.ok && !paused, reply: result.text || '', error: result.error?.message, stopped: paused, runId: handle.id };
+  const reply = withDeliverable(workspace, job.row.agent, result.text || '');
+  return { ok: !!result.ok && !paused, reply, error: result.error?.message, stopped: paused, runId: handle.id };
 };
+
+/** Arquivo que cada papel grava (o relatório leva o conteúdo, não só o resumo do agente). */
+export const DELIVERABLE: Record<string, string> = { social: 'analise-instagram.md', redator: 'entrega.md' };
+
+export function withDeliverable(workspace: string, agent: string, summary: string): string {
+  const name = DELIVERABLE[agent];
+  if (!name) return summary;
+  try {
+    const body = fs.readFileSync(path.join(workspace, name), 'utf8').trim();
+    if (!body) return summary;
+    return `${body.slice(0, 20000)}\n\n---\n\n${summary}`.trim();
+  } catch {
+    return summary;
+  }
+}
 
 let queue: ExecQueue | null = null;
 let timer: NodeJS.Timeout | null = null;

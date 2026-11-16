@@ -106,7 +106,7 @@ describe('sidecars', () => {
     const mortos: number[] = [];
     const remember = { load: () => ({ ...guardado }), save: (m: Record<string, number>) => { guardado = { ...m }; } };
     let dono: { pid: number; nome: string } | null = null;
-    const deps = { health: async () => false, portOwner: () => dono, killPid: (pid: number) => void mortos.push(pid), remember, spawn: () => ({ pid: 500, kill() {} }) };
+    const deps = { health: async () => false, portOwner: () => dono, killPid: (pid: number) => void mortos.push(pid), remember, spawn: () => ({ pid: 500, kill() {} }), commandLine: () => 'C:\\outro\\app.exe' };
     expect((await createSidecarManager(file, deps).start('cm')).ok).toBe(true);
     expect(guardado.cm).toBe(500);
     // Escritório fechado e aberto de novo: módulo novo, sem o filho em memória, mesmo arquivo de pids.
@@ -121,6 +121,29 @@ describe('sidecars', () => {
     expect(m.stop('cm').ok).toBe(true);
     expect(mortos).toEqual([500]);
     expect(guardado.cm).toBeUndefined();
+  });
+
+  it('para o sistema ligado por fora quando o dono da porta é ele; outro programa na porta não é tocado', () => {
+    const file = writeConfig([{
+      id: 'cm-fora', nome: 'Controle Mobile', pasta: 'C:/Projetos/novo-app', comando: 'python backend/server.py',
+      healthUrl: 'http://cm/health', portas: [9010], processos: [{ comando: 'python', args: ['-u', 'backend/server.py'] }],
+    }]);
+    const mortos: number[] = [];
+    let dono: { pid: number; nome: string } | null = { pid: 32108, nome: 'python.exe' };
+    let linha = 'python -u backend/server.py';
+    const remember = { load: () => ({}), save: () => {} };
+    const m = createSidecarManager(file, { portOwner: () => dono, killPid: (pid) => void mortos.push(pid), remember, commandLine: () => linha });
+    expect(m.stop('cm-fora').ok).toBe(true);
+    expect(mortos).toEqual([32108]);
+    linha = '"C:\\Projetos\\novo-app\\.venv\\Scripts\\python.exe" outro.py';
+    expect(m.stop('cm-fora').ok).toBe(true);
+    linha = 'C:\\Program Files\\Outro\\servidor.exe --port 9010';
+    const r = m.stop('cm-fora');
+    expect(r.ok).toBe(false);
+    expect(r.error).toContain('não é o Controle Mobile');
+    expect(mortos).toEqual([32108, 32108]);
+    dono = null;
+    expect(m.stop('cm-fora').ok).toBe(true);
   });
 
   it('não liga a publicação da Meta', async () => {

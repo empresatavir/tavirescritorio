@@ -118,7 +118,7 @@ describe('DeskWorker', () => {
     const w = new DeskWorker(store, n.remote, 'desk-test', () => {}, () => avisos++);
     const r = await w.drain();
     expect(r).toEqual({ claimed: 1, applied: 1, rejected: 0 });
-    expect(n.calls[0][1].p_kinds).toEqual(['task.create', 'task.update', 'task.move', 'task.delete', 'task.run', 'task.plan', 'task.approve', 'task.revise', 'task.stop']);
+    expect(n.calls[0][1].p_kinds).toEqual(['task.create', 'task.update', 'task.move', 'task.delete', 'task.run', 'task.plan', 'task.approve', 'task.revise', 'task.stop', 'job.create', 'job.pause', 'job.resume', 'job.cancel', 'pending.approve', 'pending.reject']);
     const ordem = n.calls.map((c) => c[0]);
     expect(ordem).toEqual(['claim_office_commands', 'complete_office_command']);
     expect(n.tabelas.office_tasks.get('T-1')).toMatchObject({ title: 'Do APK', col: 'todo', client_ref: UUID });
