@@ -543,9 +543,11 @@ export interface TavirApi {
     removeBundle: (provider: BundleProvider) => Promise<BundleResult>;
   };
   seg: {
-    run: (idOrPath: string) => Promise<{ ok: boolean; run?: any; error?: string }>;
-    list: (idOrPath: string) => Promise<{ ok: boolean; runs: any[]; running: boolean; lines: string[] }>;
+    /** Sem only: varredura completa (todos os itens). Com only: só aquele item, os demais herdados. */
+    run: (idOrPath: string, only?: string) => Promise<{ ok: boolean; run?: any; error?: string }>;
+    list: (idOrPath: string) => Promise<{ ok: boolean; runs: any[]; running: boolean; lines: string[]; items?: any[]; mode?: string; only?: string }>;
     stop: (idOrPath: string) => Promise<{ ok: boolean }>;
+    acceptItem: (idOrPath: string, fps: string[], note: string, title?: string) => Promise<{ ok: boolean; error?: string; n?: number }>;
     accept: (idOrPath: string, fp: string, accept: boolean, note?: string, title?: string) => Promise<{ ok: boolean; error?: string }>;
     open: (idOrPath: string, runId: string, rel?: string) => Promise<{ ok: boolean; error?: string; path?: string }>;
   };

@@ -123,6 +123,9 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
 .fb-fb h4{font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin:4px 0 -4px;font-weight:500}
 .fb-pre{margin:0;padding:10px 12px;border-radius:10px;background:#070d18;color:#E2E8F0;font-family:var(--font-mono);font-size:11.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word;border:1px solid rgba(244,246,242,.08)}
 .fb-pre.fix{border-left:3px solid var(--flow)}
+.seg-item{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;background:var(--surface-0)}
+.seg-item.bad{border-color:var(--danger);box-shadow:inset 3px 0 0 var(--danger)}
+.seg-item.live{border-color:var(--flow);box-shadow:inset 3px 0 0 var(--flow)}
 .fb-chk{display:flex;gap:10px;align-items:center;padding:8px 16px;border-bottom:1px solid var(--line);font-size:12.5px}
 .fb-wf{position:relative;background:#f4f6f2;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:3%;padding:0 4% 4%;flex:none}
 .fb-wf i{display:block;border-radius:4px;background:#cfd6df}
@@ -972,9 +975,50 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
       <div style="width: 68px; height: 68px; border-radius: 50%; background: conic-gradient({{sec.ring}} 0 {{sec.score}}%, var(--line) 0); display: grid; place-items: center; flex: none"><div style="width: 54px; height: 54px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; text-align: center"><span class="num" style="font-size: 14px; line-height: 1">{{sec.score}}<br><small style="font-size: 9px; color: var(--text-muted)">/100</small></span></div></div>
       <div class="grow" style="min-width: 240px"><div class="eyebrow" style="display: flex; gap: 6px; align-items: center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4"></path></svg>Segurança &amp; LGPD</div><b style="font-size: 17px; display: block; margin-top: 3px">{{sec.title}}</b><p class="sec" style="font-size: 12.5px; margin-top: 2px">{{sec.note}}</p></div>
       <div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{sec.sevs}}" as="v" hint-placeholder-count="5"><span class="fb-sev {{v.cls}}"><b>{{v.n}}</b>{{v.label}}</span></sc-for></div>
-      <button class="btn sm primary" onClick="{{sec.run}}" disabled="{{sec.running}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4"></path></svg>{{sec.runLbl}}</button>
+      <button class="btn sm primary" data-seg-completa onClick="{{sec.run}}" disabled="{{sec.running}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4"></path></svg>{{sec.runLbl}}</button><sc-if value="{{sec.canCancel}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{sec.cancel}}" data-seg-cancelar>Cancelar varredura</button></sc-if>
     </section>
     <sc-if value="{{sec.running}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 14px 18px; display: flex; gap: 12px; align-items: center"><i class="spin" style="width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i><span class="grow" style="font-size: 13px">{{sec.runTxt}}</span><div class="track" style="max-width: 220px; height: 6px"><div class="fill run" style="width: {{sec.prog}}%"></div></div></div></sc-if>
+    <sc-if value="{{sec.hasSum}}" hint-placeholder-val="{{false}}">
+      <section class="card" style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px" data-seg-resumo>
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap"><b style="font-size: 14px">{{sec.sumTitle}}</b></div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap"><sc-for list="{{sec.sumK}}" as="x" hint-placeholder-count="5"><div style="border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; min-width: 104px"><div class="num {{x.cls}}" style="font-size: 20px; line-height: 1.1">{{x.v}}</div><div class="muted" style="font-size: 11.5px">{{x.k}}</div></div></sc-for></div>
+        <p class="muted" style="font-size: 12px">{{sec.sumNote}}</p>
+      </section>
+    </sc-if>
+    <sc-if value="{{sec.hasItems}}" hint-placeholder-val="{{false}}">
+      <section class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 10px" data-seg-itens>
+        <div style="display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap"><h3 style="font-size: 15px; font-weight: 600">{{sec.itemsTitle}}</h3><span class="muted" style="font-size: 12px">{{sec.itemsNote}}</span></div>
+        <sc-for list="{{sec.items}}" as="it" hint-placeholder-count="7">
+          <div class="seg-item {{it.cls}}" data-seg-item="{{it.key}}">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap">
+              <span class="num muted" style="font-size: 11px; width: 18px; text-align: right; flex: none">{{it.n}}</span>
+              <span class="badge {{it.stCls}}" style="height: 20px; flex: none; min-width: 92px; justify-content: center"><sc-if value="{{it.running}}" hint-placeholder-val="{{false}}"><i class="spin" style="width: 9px; height: 9px; border-radius: 50%; border: 2px solid currentColor; border-top-color: transparent; background: transparent"></i></sc-if>{{it.st}}</span>
+              <div class="grow" style="min-width: 200px"><b style="font-size: 13.5px">{{it.name}}</b><div class="muted" style="font-size: 11.5px">{{it.what}}</div></div>
+              <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 160px"><span class="muted" style="font-size: 11px">{{it.when}}</span><sc-if value="{{it.inherited}}" hint-placeholder-val="{{false}}"><span class="mono muted" style="font-size: 10.5px">{{it.from}}</span></sc-if><sc-if value="{{it.cancelled}}" hint-placeholder-val="{{false}}"><span class="badge warn" style="height: 18px">não rodou nesta</span></sc-if></div>
+              <sc-if value="{{it.showRun}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{it.runOne}}" data-seg-rodar>{{it.runLbl}}</button></sc-if>
+              <sc-if value="{{it.hasDetail}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{it.toggle}}" aria-expanded="{{it.open}}" title="Detalhes"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{it.chev}}"></path></svg></button></sc-if>
+            </div>
+            <div style="padding-left: 28px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center"><span class="muted" style="font-size: 12px">{{it.note}}</span><sc-if value="{{it.hasCounts}}" hint-placeholder-val="{{false}}"><span class="mono" style="font-size: 11px; color: var(--text-secondary)">{{it.counts}}</span></sc-if></div>
+            <sc-if value="{{it.hasProblem}}" hint-placeholder-val="{{false}}"><sc-if value="{{it.canAct}}" hint-placeholder-val="{{false}}">
+              <div style="padding-left: 28px; display: flex; gap: 8px; flex-wrap: wrap">
+                <button class="btn sm secondary" onClick="{{it.fix}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 5 14h6l-1 7 8-11h-6z"></path></svg>Corrigir</button>
+                <button class="btn sm ghost" onClick="{{it.startAccept}}">Aceitar risco</button>
+                <button class="btn sm ghost" onClick="{{it.runOne}}" data-seg-rodar>Rodar novamente</button>
+              </div>
+            </sc-if></sc-if>
+            <sc-if value="{{it.accepting}}" hint-placeholder-val="{{false}}"><div style="padding-left: 28px; display: flex; flex-direction: column; gap: 8px"><label class="field"><span>Por que o risco dos {{it.accN}} achado(s) abertos deste item é aceito (fica no relatório e no livro de decisões)</span><textarea class="input" rows="3" value="{{it.accDraft}}" onChange="{{it.onAccDraft}}" placeholder="Ex.: valores de teste no histórico, sem acesso a produção"></textarea></label><div style="display: flex; gap: 8px"><button class="btn sm primary" onClick="{{it.confirmAccept}}">Confirmar aceite</button><button class="btn sm ghost" onClick="{{it.cancelAccept}}">Cancelar</button></div></div></sc-if>
+            <sc-if value="{{it.open}}" hint-placeholder-val="{{false}}">
+              <div style="padding-left: 28px; display: flex; flex-direction: column; gap: 6px">
+                <sc-if value="{{it.hasError}}" hint-placeholder-val="{{false}}"><pre class="fb-pre">{{it.error}}</pre></sc-if>
+                <sc-for list="{{it.finds}}" as="f" hint-placeholder-count="2"><div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 6px"><span class="badge {{f.sevCls}}" style="text-transform: capitalize">{{f.sev}}</span><span class="mono muted" style="font-size: 11px">{{f.id}}</span><span class="grow" style="min-width: 200px">{{f.title}}<span class="muted mono" style="font-size: 11px; display: block">{{f.where}}</span></span><span class="badge {{f.stCls}}"><i></i>{{f.st}}</span></div></sc-for>
+                <span class="muted" style="font-size: 11.5px">{{it.moreFinds}}</span>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </section>
+    </sc-if>
+    <sc-if value="{{sec.noItems}}" hint-placeholder-val="{{false}}"><section class="card" style="padding: 12px 18px"><span class="muted" style="font-size: 12.5px">Esta varredura é anterior à divisão por itens. Rode a varredura completa para ver o resultado item a item.</span></section></sc-if>
     <sc-if value="{{sec.has}}" hint-placeholder-val="{{true}}">
     <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap">
       <div style="flex: 2 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
@@ -2070,7 +2114,7 @@ class Component extends DCLogic {
           delete window.__tavirSegLive[k];
           if (window.__tavirSegDone) window.__tavirSegDone(k, evt.meta);
         } else {
-          window.__tavirSegLive[k] = { lines: cur.lines.concat(String(evt.content || '')).slice(-60) };
+          window.__tavirSegLive[k] = { lines: cur.lines.concat(String(evt.content || '')).slice(-60), items: evt.meta.items || cur.items || [], mode: evt.meta.mode || cur.mode, only: evt.meta.only || cur.only };
         }
         if (window.__tavirFabPing) window.__tavirFabPing();
       });
@@ -3219,6 +3263,119 @@ class Component extends DCLogic {
       store: SR && SR.real ? SR.run.dir : P.slug.replace(/\\/g, '/') + '/evidencias/seguranca/' + (SR ? SR.id : ''),
       planned: SEC_CHECKS.map((c) => ({ t: c[1], a: c[0] }))
     };
+    // ---- Itens da varredura: completa (todos, em sequência) ou isolada (um item; os demais herdados) ----
+    const SEG_ITEM_DEF = [['segredos', 'Regras TAVIR · segredos', 'Chaves, tokens e senhas no código e .env versionado'], ['codigo', 'Regras TAVIR · código', 'Padrões perigosos no código'], ['lgpd', 'Regras TAVIR · LGPD e configuração', 'CSP, rastreadores, consentimento e encarregado'], ['gitleaks', 'gitleaks', 'Segredos no código e no histórico (ferramenta externa)'], ['historico', 'Regras TAVIR · histórico do Git', 'Segredos que ficaram em commits antigos'], ['deps', 'Auditoria de dependências', 'npm/pnpm audit nas dependências do projeto'], ['pip', 'pip-audit', 'Dependências Python (requirements.txt)'], ['semgrep', 'semgrep', 'Análise estática (ferramenta externa)'], ['trivy', 'trivy', 'Dependências e configuração (ferramenta externa)']];
+    const segItemOfTool = (t) => { t = String(t || '').trim(); if (t === 'Regras TAVIR · segredos') return 'segredos'; if (t === 'Regras TAVIR · código') return 'codigo'; if (/^Regras TAVIR · (LGPD|configuração)/.test(t)) return 'lgpd'; if (t === 'gitleaks') return 'gitleaks'; if (/^Regras TAVIR · histórico/.test(t)) return 'historico'; if (t === 'pip-audit') return 'pip'; if (/ audit$/.test(t)) return 'deps'; if (t === 'semgrep' || t === 'trivy') return t; return null; };
+    const segItemsOf = (f) => String(f.tool || '').split(' + ').map(segItemOfTool).filter(Boolean);
+    const segRunNow = (only, itemName) => {
+      if (!qaApi || !qaApi.seg) { app.toast('Segurança', 'A varredura só roda no app desktop.'); return; }
+      if (segLive) { app.toast('Segurança', 'Já há uma varredura rodando neste projeto.'); return; }
+      if (window.__tavirSegLive) window.__tavirSegLive[P.id] = { lines: [only ? 'Preparando a varredura isolada de ' + itemName : 'Preparando a varredura completa de ' + P.name], items: [], mode: only ? 'isolada' : 'completa', only: only || null };
+      const sel = Object.assign({}, self.state.secSel || {}); delete sel[P.id];
+      self.setState({ trackPulse: Date.now(), secSel: sel });
+      qaApi.seg.run(qaTarget, only || undefined).then(function (res) {
+        if (window.__tavirSegLive) delete window.__tavirSegLive[P.id];
+        self._loadSeg();
+        if (!res || res.ok === false) { app.toast('Segurança', (res && res.error) || 'A varredura não rodou.'); return; }
+        const r = res.run;
+        if (r.cancelled) { app.toast('Varredura cancelada', 'Os itens que já rodaram ficaram gravados em ' + r.id + '.'); return; }
+        if (only) { const it = (r.items || []).find(function (x) { return x.key === only; }); app.toast(itemName, it ? (it.status === 'ok' ? 'Passou.' : it.status === 'problema' ? it.found + ' achado(s).' : it.status === 'erro' ? 'Erro ao executar: ' + (it.error || '') : 'Não se aplica: ' + (it.note || '')) : 'Concluído.'); return; }
+        app.toast(r.ok ? 'Segurança aprovada' : 'Segurança reprovada', r.ok ? 'Nota ' + r.score + '/100. Nenhum achado crítico ou alto aberto.' : r.blocking + ' achado(s) crítico(s) ou alto(s). Veja o resumo e os itens.');
+      }).catch(function (err) { if (window.__tavirSegLive) delete window.__tavirSegLive[P.id]; self._loadSeg(); app.toast('Segurança', String(err && err.message || err)); });
+    };
+    const segCancel = () => {
+      if (!qaApi || !qaApi.seg) return;
+      qaApi.seg.stop(qaTarget).then(function () { app.toast('Cancelando', 'O item em andamento é interrompido; os que já rodaram ficam gravados.'); });
+    };
+    const liveItems = segLive && segLive.items && segLive.items.length ? segLive.items : null;
+    const runItems = SR && SR.real && SR.run.items && SR.run.items.length ? SR.run.items : null;
+    const baseItems = liveItems || runItems;
+    const IST = {
+      pendente: ['pendente', '', 'Aguardando a vez'], rodando: ['em execução', 'warn', ''], erro: ['erro', 'danger', ''], nao_aplica: ['não se aplica', '', ''],
+      falhou: ['falhou', 'danger', ''], aceito: ['risco aceito', '', ''], corrigido: ['corrigido', 'flow', ''], passou: ['passou', 'flow', ''],
+    };
+    const runFinds = SR && SR.real ? SR.run.findings : [];
+    const segItemAcc = s.segItemAcc || {};
+    const segItemOpen = s.segItemOpen || {};
+    const secItemRows = baseItems ? baseItems.map(function (it, idx) {
+      const k = P.id + ':' + it.key;
+      const mine = liveItems ? [] : runFinds.filter(function (f) { return segItemsOf(f).indexOf(it.key) >= 0; });
+      const op = mine.filter(function (f) { return f.st === 'aberta'; });
+      const acc = mine.filter(function (f) { return f.st === 'aceita'; });
+      const fx = mine.filter(function (f) { return f.st === 'corrigida'; });
+      const st = it.status === 'rodando' || it.status === 'pendente' || it.status === 'erro' || it.status === 'nao_aplica' ? it.status : op.length ? 'falhou' : acc.length ? 'aceito' : fx.length ? 'corrigido' : it.status === 'problema' ? 'falhou' : 'passou';
+      const lbl = IST[st] || IST.passou;
+      const bad = st === 'falhou' || st === 'erro';
+      const inherited = !liveItems && SR && it.from && it.from !== SR.id;
+      const accepting = segItemAcc[k] != null;
+      const ex = segItemOpen[k] != null ? segItemOpen[k] : false;
+      const nameOf = it.name;
+      return {
+        key: it.key, n: idx + 1, name: it.name, what: it.what || '', st: lbl[0], stCls: lbl[1], bad: bad, ok: !bad,
+        cls: bad ? 'bad' : st === 'rodando' ? 'live' : '',
+        running: st === 'rodando', pending: st === 'pendente',
+        note: it.error ? it.error : it.note || lbl[2] || '',
+        when: it.at ? 'Última verificação ' + new Date(it.at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Ainda não verificado',
+        inherited: !!inherited, from: inherited ? 'resultado de ' + it.from : '', cancelled: !!it.cancelled,
+        counts: op.length || acc.length || fx.length ? [op.length ? op.length + ' aberto(s)' : '', acc.length ? acc.length + ' aceito(s)' : '', fx.length ? fx.length + ' corrigido(s)' : ''].filter(Boolean).join(' · ') : '',
+        hasCounts: op.length + acc.length + fx.length > 0,
+        hasDetail: !liveItems && (mine.length > 0 || !!it.error), open: ex, chev: ex ? 'M6 15l6-6 6 6' : 'M6 9l6 6 6-6',
+        toggle: function () { const o = Object.assign({}, self.state.segItemOpen); o[k] = !ex; self.setState({ segItemOpen: o }); },
+        finds: mine.slice().sort(function (a, b) { return (a.st === 'aberta' ? 0 : 1) - (b.st === 'aberta' ? 0 : 1) || SEV[a.sev][0] - SEV[b.sev][0]; }).slice(0, 40).map(function (f) { return { id: f.id, sev: f.sev, sevCls: SEV[f.sev][1], title: f.title, where: f.where, st: f.st === 'aceita' ? 'risco aceito' : f.st, stCls: f.st === 'corrigida' ? 'flow' : f.st === 'aceita' ? '' : 'danger', fix: f.fix }; }),
+        moreFinds: mine.length > 40 ? 'e mais ' + (mine.length - 40) + ' no relatório' : '',
+        hasError: !!it.error, error: it.error || '',
+        canAct: !liveItems && !segLive && !!(SR && SR.real), hasProblem: !liveItems && op.length > 0,
+        showRun: !liveItems && !segLive && !!(SR && SR.real) && !(op.length > 0),
+        runLbl: bad ? 'Rodar novamente' : 'Rodar varredura',
+        runOne: function () { segRunNow(it.key, nameOf); },
+        fix: function () {
+          const lines = op.slice(0, 15).map(function (f) { return '- ' + f.id + ' [' + f.sev + '] ' + f.title + ' · ' + f.where + (f.fix ? '\n  Como corrigir: ' + f.fix : ''); });
+          self._chOpenForm(null, { tipo: 'bug', prioridade: op.some(function (f) { return /crit|alta/i.test(String(f.sev)); }) ? 'alta' : 'media', titulo: 'Corrigir ' + nameOf + ': ' + op.length + ' achado(s) da varredura ' + SR.id, a: op.length + ' achado(s) aberto(s) no item «' + nameOf + '» da varredura de segurança ' + SR.id + '.', b: lines.join('\n') + (op.length > 15 ? '\n(e mais ' + (op.length - 15) + ' no relatório qa/seguranca/' + SR.id + '/index.html)' : ''), c: 'A varredura isolada de «' + nameOf + '» roda de novo e não aponta mais esses achados. Não mude o comportamento do produto além disso.' });
+        },
+        accepting: accepting, accDraft: segItemAcc[k] || '', accN: op.length,
+        startAccept: function () { const a = Object.assign({}, self.state.segItemAcc); a[k] = ''; self.setState({ segItemAcc: a }); },
+        onAccDraft: function (e) { const a = Object.assign({}, self.state.segItemAcc); a[k] = e.target.value; self.setState({ segItemAcc: a }); },
+        cancelAccept: function () { const a = Object.assign({}, self.state.segItemAcc); delete a[k]; self.setState({ segItemAcc: a }); },
+        confirmAccept: function () {
+          const note = String((self.state.segItemAcc || {})[k] || '').trim();
+          if (!note) { app.toast('Justificativa', 'Escreva por que o risco é aceito.'); return; }
+          if (!qaApi || !qaApi.seg || !qaApi.seg.acceptItem) { app.toast('Aceite', 'Só no app desktop.'); return; }
+          qaApi.seg.acceptItem(qaTarget, op.map(function (f) { return f.fp; }), note, nameOf + ' · ' + op.length + ' achado(s) · ' + SR.id).then(function (r) {
+            if (!r || r.ok === false) { app.toast('Aceite', (r && r.error) || 'Não gravou.'); return; }
+            const a = Object.assign({}, self.state.segItemAcc); delete a[k]; self.setState({ segItemAcc: a });
+            self._loadSeg(); app.toast('Risco aceito', r.n + ' achado(s) de ' + nameOf + ' saem do portão e ficam no relatório com a justificativa.');
+          });
+        },
+      };
+    }) : [];
+    const doneN = liveItems ? liveItems.filter(function (x) { return x.status !== 'pendente' && x.status !== 'rodando'; }).length : 0;
+    const curLive = liveItems ? liveItems.find(function (x) { return x.status === 'rodando'; }) : null;
+    const liveIdx = liveItems && curLive ? liveItems.indexOf(curLive) + 1 : doneN;
+    const isolada = segLive && segLive.mode === 'isolada';
+    const sumOf = (items, runId) => {
+      const ran = items.filter(function (x) { return x.from === runId && !x.cancelled; });
+      const rowsBy = {}; secItemRows.forEach(function (r) { rowsBy[r.key] = r; });
+      const pass = ran.filter(function (x) { const r = rowsBy[x.key]; return x.status !== 'erro' && x.status !== 'nao_aplica' && r && !r.bad; }).length;
+      const fail = ran.filter(function (x) { const r = rowsBy[x.key]; return x.status !== 'erro' && r && r.bad; }).length;
+      const err = ran.filter(function (x) { return x.status === 'erro'; }).length;
+      const na = ran.filter(function (x) { return x.status === 'nao_aplica'; }).length;
+      return { ran: ran.length, pass: pass, fail: fail, err: err, na: na, notRan: items.length - ran.length };
+    };
+    const sumR = runItems && !segLive && SR.run.mode !== 'isolada' ? sumOf(runItems, SR.id) : null;
+    const secItemsView = {
+      hasItems: secItemRows.length > 0, items: secItemRows, noItems: !secItemRows.length && !!(SR && SR.real) && !segLive,
+      itemsTitle: liveItems ? (isolada ? 'Varredura isolada em andamento' : 'Varredura completa em andamento · ' + doneN + ' de ' + liveItems.length) : 'Itens da varredura' + (SR ? ' · ' + SR.id : ''),
+      itemsNote: liveItems ? (curLive ? 'Verificando agora: ' + curLive.name : 'Gravando o resultado') : SR && SR.real && SR.run.mode === 'isolada' ? 'Varredura isolada: só o item marcado rodou; os demais mostram o resultado anterior.' : 'Cada item é uma verificação. Rode um item sozinho para conferir depois de corrigir ou para decidir.',
+      runLbl: segLive ? (isolada ? 'Varrendo item…' : 'Varrendo…') : 'Rodar varredura completa',
+      run: realSec ? function () { segRunNow(null); } : sec.run,
+      canCancel: !!segLive && realSec, cancel: segCancel,
+      runTxt: segLive ? (liveItems ? (isolada ? 'Varredura isolada · ' + (curLive ? curLive.name : 'gravando') : 'Item ' + Math.max(1, liveIdx) + ' de ' + liveItems.length + ' · ' + (curLive ? curLive.name : 'gravando o resultado')) : (segLive.lines[segLive.lines.length - 1] || 'Preparando…')) : sec.runTxt,
+      prog: segLive ? (liveItems ? Math.max(4, Math.round(doneN / liveItems.length * 100)) : sec.prog) : sec.prog,
+      hasSum: !!sumR, sumTitle: sumR ? (SR.run.cancelled ? 'Varredura completa cancelada · ' + SR.id : 'Resumo da varredura completa · ' + SR.id) : '',
+      sumK: sumR ? [['Verificados', sumR.ran, ''], ['Passaram', sumR.pass, 'flow'], ['Falharam', sumR.fail, sumR.fail ? 'danger' : ''], ['Erro na execução', sumR.err, sumR.err ? 'danger' : ''], ['Não se aplica', sumR.na, '']].concat(sumR.notRan ? [['Não rodaram', sumR.notRan, 'warn']] : []).map(function (x) { return { k: x[0], v: x[1], cls: x[2] }; }) : [],
+      sumNote: sumR ? (SR.run.cancelled ? 'Cancelada antes do fim: os itens que não rodaram mostram o resultado da varredura anterior.' : 'Nenhum item foi pulado. Itens com problema estão destacados abaixo, com as ações de corrigir, aceitar o risco ou rodar de novo.') : '',
+    };
+    Object.assign(sec, secItemsView);
 
     // ================= VISUALIZADOR DE EVIDÊNCIAS =================
     const REP0 = { k: [], env: [], suites: [] }, SREP0 = { k: [], tools: [], checks: [], finds: [] };
@@ -3290,7 +3447,7 @@ class Component extends DCLogic {
         const map = Object.assign({}, self.state.secRuns || {});
         map[P.id] = ((res && res.runs) || []).map(function (r) { return { real: true, id: r.id, when: r.when, preview: false, by: r.by, label: r.label, target: r.target, tools: r.tools.filter(function (t) { return t.ran; }).map(function (t) { return t.name; }), fids: r.findings.map(function (f) { return f.id; }), run: r }; });
         self.setState({ secRuns: map });
-        if (res && res.running && window.__tavirSegLive && !window.__tavirSegLive[P.id]) window.__tavirSegLive[P.id] = { lines: res.lines || [] };
+        if (res && res.running && window.__tavirSegLive && !window.__tavirSegLive[P.id]) window.__tavirSegLive[P.id] = { lines: res.lines || [], items: res.items || [], mode: res.mode, only: res.only };
       }).catch(function () {});
     };
     if (typeof window !== 'undefined') window.__tavirSegDone = function (k) { if (k === P.id && self._loadSeg) self._loadSeg(); };

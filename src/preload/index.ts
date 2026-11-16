@@ -222,8 +222,9 @@ const api: TavirApi = {
     removeBundle: (provider: string) => ipcRenderer.invoke('creds:removeBundle', provider),
   },
   seg: {
-    run: (idOrPath: string) => ipcRenderer.invoke('seg:run', idOrPath),
+    run: (idOrPath: string, only?: string) => ipcRenderer.invoke('seg:run', idOrPath, only),
     list: (idOrPath: string) => ipcRenderer.invoke('seg:list', idOrPath),
+    acceptItem: (idOrPath: string, fps: string[], note: string, title?: string) => ipcRenderer.invoke('seg:acceptItem', idOrPath, fps, note, title),
     stop: (idOrPath: string) => ipcRenderer.invoke('seg:stop', idOrPath),
     accept: (idOrPath: string, fp: string, accept: boolean, note?: string, title?: string) => ipcRenderer.invoke('seg:accept', idOrPath, fp, accept, note, title),
     open: (idOrPath: string, runId: string, rel?: string) => ipcRenderer.invoke('seg:open', idOrPath, runId, rel),

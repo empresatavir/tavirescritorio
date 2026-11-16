@@ -122,7 +122,11 @@ Como funciona:
 - **Git do próprio projeto** (`gitScope`): só conta como repositório quando o topo do git é a própria pasta. Projeto dentro de outro repositório (ex.: `tavir-interno/` no Escritório) é varrido como pasta comum: lista de arquivos pela pasta, gitleaks com `--no-git`, semgrep com `--no-git-ignore`, sem histórico e sem commit. Antes disso, o portão lia o histórico do Escritório e 0 arquivos do projeto.
 - **Não avaliado:** se nenhum arquivo foi lido, o portão segura sem nota ("Segurança não avaliada").
 - **Reprovação:** qualquer achado crítico ou alto aberto. A nota é 100 menos o peso dos abertos.
-- **Corrigido:** o que estava aberto e sumiu em relação à varredura anterior.
+- **Corrigido:** o que estava aberto e sumiu em relação à varredura anterior, desde que o item que o achou tenha rodado sem erro nesta varredura.
+- **Itens** (`SEG_ITEMS` em `segScanner.ts`): segredos, código, LGPD e configuração, gitleaks, histórico do Git, dependências, pip-audit, semgrep e trivy. Cada um termina como `ok`, `problema`, `erro` ou `nao_aplica`, com a hora da verificação. Item que quebra vira `erro` e a varredura segue. Os achados crus de cada item ficam em `itens.json` da varredura.
+- **Varredura completa** (botão do topo, trilho e esteira): passa por todos os itens em ordem, com progresso item a item na tela e botão de cancelar. Cancelada, grava o que já rodou; os itens que não rodaram mostram o resultado da anterior e não contam como corrigidos. No fim, a tela mostra o resumo (verificados, passaram, falharam, erro, não se aplica).
+- **Varredura isolada** (`seg.run(projeto, item)`, botão «Rodar varredura» ou «Rodar novamente» do item): roda só aquele item e grava uma varredura nova com os demais herdados da anterior. Não muda a lógica de nenhuma verificação.
+- **Ações do item com problema:** «Corrigir» abre um chamado com os achados abertos do item (o motor corrige pelo fluxo normal; quem fecha é o portão). «Aceitar risco» aceita todos os abertos do item com uma justificativa só (`seg.acceptItem`), decisão do Carlos que vai para o livro de decisões.
 - **Risco aceito:** o CEO aceita com justificativa pela aba Segurança. Fica em `.tavir/seguranca-aceites.json` e no livro de decisões (`kind: 'seguranca'`).
 - **Saída:** `<projeto>/qa/seguranca/SEC-AAAAMMDD-HHMMSS/`. Segredos aparecem sempre mascarados.
 
@@ -145,7 +149,7 @@ Sem as ferramentas externas a varredura roda do mesmo jeito; o relatório marca 
 ## IPC (preload `window.tavir`)
 
 - `qa.run / list / stop / open`
-- `seg.run / list / stop / accept / open`
+- `seg.run / list / stop / accept / acceptItem / open`
 - `projects.runEsteira / decideEsteira / decisions / setEngine / runAltTrack / approveAltTrack`
 - `projects.altTrackPublishInfo / publishAltTrack / resolveAltTrackBranch / setGitAccount / openAltTrackPr`
 - `accounts.list / add / remove / setDefault / test / openTokenPage`

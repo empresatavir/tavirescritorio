@@ -9,7 +9,7 @@ import { esteiraTemplate, LEGACY_STAGE_NAMES, type EsteiraCode, type EsteiraStag
 import { commitStep, type StepCommitResult } from './stepCommit';
 import { annotateRun, type RunChanges } from './runLedger';
 import { listQaRuns, qaSummary, runQa, type QaRun } from './qa/qaRunner';
-import { listSegRuns, runSeg, segSummary, setSegAccept, type SegRun } from './seg/segScanner';
+import { listSegRuns, runSeg, segSummary, setSegAccept, SEG_ITEMS, type SegItem, type SegItemKey, type SegRun } from './seg/segScanner';
 import * as cycleGit from './cycleBranch';
 import type { CycleBranch, CyclePublish } from './cycleBranch';
 import * as absDetectores from './absorcao/detectores';
@@ -1327,36 +1327,47 @@ export function listProjectQa(idOrPath: string): { ok: boolean; runs: QaRun[]; r
 
 // ------------------------------------------------------------------ portão de segurança
 
-type SegListener = (event: { projectKey: string; rootPath: string; line?: string; done?: SegRun; running: boolean }) => void;
+type SegListener = (event: { projectKey: string; rootPath: string; line?: string; done?: SegRun; running: boolean; items?: SegItem[]; mode?: 'completa' | 'isolada'; only?: string }) => void;
 let segListener: SegListener | null = null;
-const segLive = new Map<string, { kill?: () => void; label: string; lines: string[] }>();
+type SegLive = { kill?: () => void; label: string; lines: string[]; items: SegItem[]; mode: 'completa' | 'isolada'; only?: SegItemKey };
+const segLive = new Map<string, SegLive>();
 
 export function setSegListener(fn: SegListener | null): void {
   segListener = fn;
 }
 
 /** Varredura white box do projeto. Uma por projeto por vez. */
-export async function runProjectSeg(idOrPath: string, opts: { label?: string; onProgress?: (line: string) => void } = {}): Promise<{ ok: boolean; run?: SegRun; error?: string }> {
+export async function runProjectSeg(idOrPath: string, opts: { label?: string; only?: string; onProgress?: (line: string) => void } = {}): Promise<{ ok: boolean; run?: SegRun; error?: string }> {
   const rec = resolveProjectRecord(idOrPath);
   const rootPath = rec.local_path;
   if (!rootPath || !fs.existsSync(rootPath)) return { ok: false, error: 'Pasta do projeto não encontrada.' };
   if (segLive.has(rootPath)) return { ok: false, error: 'Já há uma varredura de segurança rodando neste projeto.' };
-  const live = { label: opts.label || 'Painel', lines: [] as string[] } as { kill?: () => void; label: string; lines: string[] };
+  const item = opts.only ? SEG_ITEMS.find((i) => i.key === opts.only) : undefined;
+  if (opts.only && !item) return { ok: false, error: 'Item de varredura desconhecido.' };
+  const mode: 'completa' | 'isolada' = item ? 'isolada' : 'completa';
+  const live: SegLive = { label: opts.label || 'Painel', lines: [], items: [], mode, only: item?.key };
   segLive.set(rootPath, live);
   const emit = (line?: string, done?: SegRun) => {
     try {
-      segListener?.({ projectKey: rec.id, rootPath, line, done, running: !done });
+      segListener?.({ projectKey: rec.id, rootPath, line, done, running: !done, items: live.items, mode, only: item?.key });
     } catch {}
   };
   try {
     const run = await runSeg({
       workspace: rootPath,
       projectName: rec.name,
-      label: opts.label,
+      label: item ? `${opts.label || 'Painel'} · isolada · ${item.name}` : opts.label,
+      only: item?.key,
       onProgress: (line) => {
         live.lines = live.lines.concat(line).slice(-80);
         opts.onProgress?.(line);
         emit(line);
+      },
+      onItem: (ev) => {
+        live.items = ev.items;
+        const cur = ev.items[ev.index];
+        if (cur && cur.status !== 'rodando') emit(`Item ${ev.index + 1} de ${ev.total} · ${cur.name}: ${cur.status}`);
+        else emit(`Item ${ev.index + 1} de ${ev.total} · ${cur ? cur.name : ''}`);
       },
       registerKill: (kill) => {
         live.kill = kill;
@@ -1381,10 +1392,25 @@ export function stopProjectSeg(idOrPath: string): { ok: boolean } {
   return { ok: !!live };
 }
 
-export function listProjectSeg(idOrPath: string): { ok: boolean; runs: SegRun[]; running: boolean; lines: string[] } {
+export function listProjectSeg(idOrPath: string): { ok: boolean; runs: SegRun[]; running: boolean; lines: string[]; items: SegItem[]; mode?: string; only?: string } {
   const rootPath = resolveProjectRecord(idOrPath).local_path;
   const live = segLive.get(rootPath);
-  return { ok: true, runs: rootPath ? listSegRuns(rootPath) : [], running: !!live, lines: live?.lines || [] };
+  return { ok: true, runs: rootPath ? listSegRuns(rootPath) : [], running: !!live, lines: live?.lines || [], items: live?.items || [], mode: live?.mode, only: live?.only };
+}
+
+/**
+ * Aceite de risco de um item inteiro: todos os achados abertos dele, com uma justificativa só.
+ * É decisão do Carlos pela tela; fica uma linha no livro de decisões com quantos e quais.
+ */
+export function acceptProjectSegItem(idOrPath: string, fps: string[], note = '', title = ''): { ok: boolean; error?: string; n?: number } {
+  const rootPath = resolveProjectRecord(idOrPath).local_path;
+  if (!rootPath || !fs.existsSync(rootPath)) return { ok: false, error: 'Pasta do projeto não encontrada.' };
+  const list = Array.from(new Set((fps || []).map(String))).filter((fp) => /^[0-9a-f]{16}$/.test(fp));
+  if (!list.length) return { ok: false, error: 'Nenhum achado aberto neste item.' };
+  if (!String(note).trim()) return { ok: false, error: 'Escreva por que o risco é aceito.' };
+  for (const fp of list) setSegAccept(rootPath, fp, { by: 'Carlos Henrique', note: String(note).trim().slice(0, 1000), title });
+  logDecision(rootPath, { kind: 'seguranca', stage: title || 'item da varredura', decision: 'aprovado', note: `Risco aceito em ${list.length} achado(s): ${String(note).trim()}` });
+  return { ok: true, n: list.length };
 }
 
 /** Aceite de risco pelo CEO (com justificativa) ou retirada do aceite. Fica no livro de decisões. */

@@ -808,12 +808,12 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   // ---------------- Portão de segurança ----------------
   {
     const { setSegListener } = require('./project-fs');
-    setSegListener((ev: { projectKey: string; rootPath: string; line?: string; done?: any; running: boolean }) => {
+    setSegListener((ev: { projectKey: string; rootPath: string; line?: string; done?: any; running: boolean; items?: any[]; mode?: string; only?: string }) => {
       const event = {
         runId: `seg-${ev.projectKey}`,
         type: ev.done ? 'done' : 'thought',
         content: ev.line || (ev.done ? (ev.done.ok ? 'Segurança aprovada' : 'Segurança reprovada') : ''),
-        meta: { seg: true, projectKey: ev.projectKey, rootPath: ev.rootPath, runSeg: ev.done ? ev.done.id : undefined, ok: ev.done ? ev.done.ok : undefined },
+        meta: { seg: true, projectKey: ev.projectKey, rootPath: ev.rootPath, runSeg: ev.done ? ev.done.id : undefined, ok: ev.done ? ev.done.ok : undefined, items: ev.items, mode: ev.mode, only: ev.only },
       };
       for (const w of BrowserWindow.getAllWindows()) {
         try {
@@ -823,10 +823,10 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     });
   }
 
-  handle('seg:run', async (_e, idOrPath: string) => {
+  handle('seg:run', async (_e, idOrPath: string, only?: string) => {
     try {
       const { runProjectSeg } = require('./project-fs');
-      return await runProjectSeg(idOrPath, { label: 'Painel' });
+      return await runProjectSeg(idOrPath, { label: 'Painel', only: only ? String(only) : undefined });
     } catch (err) {
       return { ok: false, error: String(err) };
     }
@@ -854,6 +854,15 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     try {
       const { acceptProjectSegFinding } = require('./project-fs');
       return acceptProjectSegFinding(idOrPath, fp, !!accept, note || '', title || '');
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('seg:acceptItem', (_e, idOrPath: string, fps: string[], note?: string, title?: string) => {
+    try {
+      const { acceptProjectSegItem } = require('./project-fs');
+      return acceptProjectSegItem(idOrPath, Array.isArray(fps) ? fps : [], note || '', title || '');
     } catch (err) {
       return { ok: false, error: String(err) };
     }
