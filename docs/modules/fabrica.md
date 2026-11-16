@@ -17,21 +17,63 @@ Tudo vive no app Electron (`src/`). O frontend SolidJS (`frontend/`) e o backend
 | `src/main/credentials.ts` | Tokens de Vercel, Supabase e Netlify no cofre da máquina. |
 | `src/main/qa/` | Portão de QA: plano, jornada no navegador, GIFs e relatório. |
 | `src/main/seg/` | Portão de segurança white box: regras, scanner e relatório. |
+| `src/main/absorcao/` | Absorção: entrada (link ou pasta), detectores sem motor, leitura em sete passos, retrato e gate (`fluxo.ts`). |
+| `src/shared/absorcao.ts` | Catálogo de serviços detectados, passos da leitura e tipo do retrato. |
+| `src/main/acessos.ts` · `src/shared/acessos.ts` | Cartões de acesso por projeto e guias «Onde conseguir». |
+| `src/main/chamados.ts` · `src/shared/chamados.ts` | Chamados: disco, tabela de transições, refinamento, execução pelo trilho e gate. |
 | `src/renderer/fabrica-ref/Fabrica.dc.html` | Painel (template sc-if/sc-for), empacotado por `scripts/clean_and_bind_ipc.js`. |
 
 ## Fluxos
 
-- **Criação e absorção:** `createOrAbsorbProjectRecord`. A absorção faz o levantamento da pasta, grava o projeto no SQLite (`backend/tavir.db`) e tira o **retrato inicial**: varredura de segurança e QA em segundo plano, com o rótulo "Retrato inicial" e os ids em `.tavir/control.json` (`baseline`). Passe `baseline: false` para não rodar (usado nos testes). A criação sempre faz `git init`; a absorção também, quando a pasta não é versionada por ninguém (sem git ou ignorada pelo repositório de fora, `needsOwnGit`). Subpasta versionada por um monorepo do cliente fica como está.
+- **Criação e absorção:** `createOrAbsorbProjectRecord`. A absorção grava o projeto no SQLite (`backend/tavir.db`) e segue o fluxo da seção «Absorção» abaixo. QA e segurança não rodam sozinhos na absorção: viram as pendências «Retrato inicial de QA» e «Retrato inicial de segurança» (a fazer), que o Carlos roda quando quiser. Nos testes passe `baseline: false`. A criação sempre faz `git init`; a absorção também, quando a pasta não é versionada por ninguém (sem git ou ignorada pelo repositório de fora, `needsOwnGit`). Subpasta versionada por um monorepo do cliente fica como está.
 - **Esteira:** `runEsteiraStage`. Uma etapa só roda com os gates anteriores aprovados. Gates ficam `awaiting` até `decideEsteiraGate`; decisões vão para `.tavir/decisoes.jsonl`. Etapas `qa` e `seg` só viram `done` se o portão passar.
 - **Trilho de alteração (manutenção):** `executeAltTrackStep`. O item "Validar & build" roda QA e segurança, e só fecha com os dois aprovados.
-- **Anexos na Íris e em Pedir alteração:**
-  - **Como anexar:** botão de clipe, Ctrl+V com print ou arrastar para a janela. A lista de pendentes é a mesma nos dois lugares e vai junto com a próxima mensagem.
+- **Anexos na Íris e no chamado:**
+  - **Como anexar:** botão de clipe, Ctrl+V com print ou arrastar para a janela. O chat e o formulário de chamado têm listas separadas (o formulário usa a chave `ch:<projeto>`); no chamado os arquivos vão para `.tavir/chamados/CH-0001/anexos/`.
   - **Onde fica:** `src/main/attachments.ts` grava em `.tavir/anexos/<carimbo>/` do projeto, fora do git (`excludeFromProjectGit`) e do git sombra.
   - **Zip:** extraído ao lado, com proteção contra caminho para fora da pasta e limite de 2000 arquivos e 200 MB.
-  - **O que o agente recebe:** os caminhos no pedido ("Anexos enviados pelo Carlos") e abre cada arquivo com a ferramenta de leitura. Os caminhos também entram em `CHANGE_REQUESTS.md` e no registro do trilho.
+  - **O que o agente recebe:** os caminhos no pedido ("Anexos enviados pelo Carlos") e abre cada arquivo com a ferramenta de leitura. No chamado, os caminhos entram na nota de «Mapear gaps» do ciclo. `CHANGE_REQUESTS.md` não recebe mais pedido novo (fica como histórico).
   - **Limites:** 10 arquivos, 25 MB cada e 60 MB por mensagem.
 - **Motor por projeto:** `.tavir/control.json` (`engine`). Os quatro motores (claude, codex, antigravity, cursor) passam pela mesma camada em `src/main/motors.ts`; `npm run test:motores` confere a paridade.
 - **Esteira gravada:** `.tavir/esteira.json` guarda os nomes das etapas (`names`). Se um molde ganhar etapa no meio, os registros são remapeados pelo nome. Moldes que mudaram antes disso ficam em `LEGACY_STAGE_NAMES`.
+
+## Absorção
+
+Entrada pelo botão «Absorver projeto» do painel, em quatro passos: Origem, Preparar, Leitura e Retrato.
+
+- **Origem e preparar** (`absorcao/entrada.ts`): link do GitHub (https ou ssh), clonado com a conta do cofre escolhida, ou pasta local, copiada sem `node_modules`, builds e caches. Projeto de cliente vai para `tavir-externo/`, interno para `tavir-interno/`; as duas pastas estão no `.gitignore` do Escritório. O remote fica sem token. `.tavir/`, `context/`, `memory/`, `qa/` e `.env.project` entram no `.git/info/exclude` do projeto (`garantirExclude`), nunca no git dele.
+- **Detectores sem motor** (`absorcao/detectores.ts`): manifestos, configs, nomes de variáveis de ambiente (nunca o valor) e uso no código. Cada serviço do catálogo (`SERVICOS`) sai como «confirmado» (duas provas de tipos diferentes) ou «indício». Resultado em `.tavir/retrato.json`.
+- **Leitura em sete passos** (`absorcao/leitura.ts`): Produto, Arquitetura, Dados, Design system, Ambiente, Integrações e Riscos, cada um pelo agente do squad Product Lab, em só leitura, gravando `context/<passo>.md`. A checagem de citação reprova documento com seção faltando, caminho inexistente ou menos de cinco citações válidas; rota de URL (`/account`), pacote com escopo (`@supabase/ssr`), extensão solta (`.woff`) e import de dependência do package.json (`next/font`) não contam como caminho; nome de arquivo sem pasta (`Button.tsx:56`) vale se o arquivo existir no projeto; nome com ponto e sem extensão (classe CSS) só conta se existir. Duas tentativas; na segunda falha o documento fica «incompleto», marcado. Integrações só passa um indício para confirmado com citação de código que existe. Riscos termina com blocos `CHAMADO:`, que viram chamados abertos; o pedido leva os chamados já na fila, para a releitura não abrir o mesmo problema com outras palavras.
+- **Retrato e gate** (`absorcao/fluxo.ts`): `context/RETRATO.md` resume stack, serviços, cobertura e passos. Aprovar é o gate do Carlos (`decidirRetrato`): encerra a esteira como coberta pela absorção, libera o trilho e grava em `decisoes.jsonl`. Reprovar exige nota, que vai para `context/correcoes.md` e prevalece nas leituras seguintes; o Carlos escolhe quais passos refazer. Estado em `.tavir/absorcao.json`; fechar a janela não interrompe e «Retomar» continua do passo em que estava.
+- **Retrato em uso:** a conversa com a Íris e os agentes do trilho recebem `resumoDoRetrato` num bloco «Retrato do projeto», com teto fixo (`RETRATO_MAX`). O retrato não entra no histórico.
+- **Atualizar retrato:** quando o `HEAD` passa do commit do retrato aprovado, a Visão geral mostra o aviso. A atualização roda os detectores de novo e refaz só os passos afetados pelos arquivos do `git diff --name-only` (`passosAfetados`); o gate aprovado continua valendo e os cartões de acesso ganham os serviços novos.
+
+## Acessos por projeto
+
+- Um cartão por serviço do retrato (confirmado ou indício), mais o do GitHub (`gerarCartoes`). Serviços que usam a credencial de outro (Supabase Auth → Supabase) caem no mesmo cartão; ferramentas locais (Prisma, Docker) não pedem.
+- Cada cartão tem «Onde conseguir» (passos e o endereço do catálogo, aberto no navegador pelo main), «Copiar pedido ao cliente», «Pedir ao cliente» e «Não se aplica». Serviço sem guia mostra um campo genérico.
+- O valor vai cifrado (`cofreCripto`) em `.tavir/credentials.json` do próprio projeto; a tela só recebe a prévia mascarada. `lerSegredoDoProjeto` só existe no main, e o segredo nunca entra em pedido a agente nem em log. Outro projeto não enxerga.
+- Vercel, Supabase, Netlify e GitHub são conferidos na API ao salvar; os outros ficam «preenchido, sem conferência».
+
+## Chamados
+
+Fila de defeitos, melhorias e dúvidas por projeto, em `.tavir/chamados/CH-0001/chamado.json` (anexos em `anexos/`). Chamado nunca é apagado.
+
+- **Abrir:** botão «Abrir chamado» no topo do projeto ou na aba Chamados. Formulário com tipo, prioridade, título e os três campos do tipo; aceita print colado (Ctrl+V), arrastar e «Anexar arquivo».
+- **Situações e quem move** (`podeMover` em `shared/chamados.ts`): aberto → em refinamento → pronto → em execução → aguardando validação → concluído, e recusado antes de executar. Agente só cria. «Aguardando validação» só pelo Escritório, depois dos portões de QA e segurança. Concluir é o gate do Carlos (`decidirChamado`, grava em `decisoes.jsonl`); reprovar exige nota e volta a pronto, e a nota vai no próximo «Mapear gaps».
+- **Refinar:** «Pedir refinamento à Íris» devolve um bloco `REFINAMENTO:` como sugestão. O Carlos aceita critério a critério e responde as perguntas; nada entra sem o clique dele.
+- **Executar:** com o chamado pronto, abre um ciclo do trilho (libera o trilho se preciso; recusa se outro ciclo estiver em andamento) com o chamado inteiro em «Mapear gaps», título `CH-0007 · título` e `alt_track.chamados`. Projeto absorvido sem retrato aprovado recusa. Projeto ainda em esteira manda à Íris como pedido de alteração e roda os portões no fim.
+- **Fechar o ciclo:** `aoFecharCicloDoTrilho` roda quando o item de validação termina com os portões aprovados, ou quando o Carlos fecha o último item à mão com as últimas rodadas de QA e segurança aprovadas. Sem portão aprovado o chamado fica em execução, com a linha no histórico.
+- **Dúvida:** «Perguntar à Íris» responde em só leitura; a resposta fica no chamado e o Carlos conclui.
+- **Íris e agentes:** a Íris termina a resposta com blocos `CHAMADO:` quando a conversa chega a um defeito ou melhoria (`parseChamados`). O texto gravado no histórico vai sem os blocos; as propostas aparecem como cartões com «Abrir chamado», «Editar antes» e «Descartar». «Procurar melhorias» (aba Chamados) é uma varredura: as propostas entram direto como chamados abertos. Os agentes do trilho podem abrir chamado do que acharem fora do escopo, sem parar o ciclo. Título repetido não cria outro: vira linha no histórico do existente.
+
+## Guarda do estado em `.tavir/`
+
+O agente roda com escrita no projeto inteiro, e `.tavir/` mora dentro dele. `src/main/tavirGuarda.ts` fecha esse caminho: toda rodada de motor (`converseWithIrisAgent`) abre a guarda antes e fecha depois. Ficam protegidos `control.json`, `esteira.json`, `retrato.json`, `decisoes.jsonl`, `absorcao.json`, `acessos.json`, `credentials.json` e os `.json` de cada chamado (anexos não).
+
+- O Escritório avisa cada gravação legítima com `escritaDoEscritorio(arquivo)`; o que ele grava durante a rodada fica.
+- Qualquer outra diferença é do agente: volta à versão esperada, o arquivo criado sai, o apagado volta. A versão do agente fica em `runs/<id>/barrados/` (a do cofre não, para não copiar segredo), o chamado mexido ganha linha do Escritório no histórico e o log da etapa mostra o aviso.
+- O pedido com escrita diz que `.tavir/` é do Escritório. Gravação nova de estado precisa chamar `escritaDoEscritorio`, senão a guarda desfaz.
 
 ## Branch por ciclo e publicação
 
@@ -108,10 +150,13 @@ Sem as ferramentas externas a varredura roda do mesmo jeito; o relatório marca 
 - `projects.altTrackPublishInfo / publishAltTrack / resolveAltTrackBranch / setGitAccount / openAltTrackPr`
 - `accounts.list / add / remove / setDefault / test / openTokenPage`
 - `creds.list / save / remove / test / openTokenPage`
+- `projects.retrato / absorbPrepare / absorbStart / absorbResume / absorbStop / absorbDecide / absorbPending / retratoAtualizar`
+- `projects.acessos / acessoSalvar / acessoSituacao / acessoRemover / acessoAbrirGuia`
+- `projects.chamados / chamado / chamadoCriar / chamadoEditar / chamadoMover / chamadoAnexar / chamadoAnexo / chamadosContagem / chamadoRefinar / chamadoSugestao / chamadoResponder / chamadoExecutar / chamadoDecidir / chamadoConcluirDuvida`
 
 O progresso ao vivo chega por `run:event`, com `meta.qa` ou `meta.seg`.
 
 ## Testes
 
-- `npm test`: unitários (`tests/unit`), incluindo moldes, commit por passo, plano e relatório de QA, regras e varredura de segurança, branch por ciclo e contas no cofre (`cicloBranch.spec.ts`).
+- `npm test`: unitários (`tests/unit`), incluindo moldes, commit por passo, plano e relatório de QA, regras e varredura de segurança, branch por ciclo e contas no cofre (`cicloBranch.spec.ts`), absorção (`absorcao*.spec.ts`, `retratoAtualizar.spec.ts`), acessos, chamados (`chamados*.spec.ts`) e isolamento entre projetos (`isolamentoProjeto.spec.ts`).
 - `npm run test:motores`: conformidade dos quatro motores.
