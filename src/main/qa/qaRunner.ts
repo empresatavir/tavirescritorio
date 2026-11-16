@@ -233,13 +233,17 @@ function serveStatic(dir: string, port: number): http.Server {
   return srv;
 }
 
+/** Tempo de cada tentativa da sonda «App no ar». */
+export const PROBE_TIMEOUT_MS = 15000;
+
 async function waitHttp(url: string, ms: number, alive: () => boolean): Promise<boolean> {
   const until = Date.now() + ms;
   while (Date.now() < until && alive()) {
     const ok = await new Promise<boolean>((resolve) => {
       const req = http.get(url, (res) => { res.resume(); resolve((res.statusCode || 500) < 500); });
       req.on('error', () => resolve(false));
-      req.setTimeout(4000, () => { req.destroy(); resolve(false); });
+      // Servidor de dev compila na primeira visita e pode passar de 4 s; o critério segue HTTP < 500.
+      req.setTimeout(PROBE_TIMEOUT_MS, () => { req.destroy(); resolve(false); });
     });
     if (ok) return true;
     await new Promise((r) => setTimeout(r, 1000));
