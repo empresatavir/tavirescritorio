@@ -21,9 +21,15 @@ Tudo vive no app Electron (`src/`). O frontend SolidJS (`frontend/`) e o backend
 
 ## Fluxos
 
-- **Criação e absorção:** `createOrAbsorbProjectRecord`. A absorção faz o levantamento da pasta, grava o projeto no SQLite (`backend/tavir.db`) e tira o **retrato inicial**: varredura de segurança e QA em segundo plano, com o rótulo "Retrato inicial" e os ids em `.tavir/control.json` (`baseline`). Passe `baseline: false` para não rodar (usado nos testes).
+- **Criação e absorção:** `createOrAbsorbProjectRecord`. A absorção faz o levantamento da pasta, grava o projeto no SQLite (`backend/tavir.db`) e tira o **retrato inicial**: varredura de segurança e QA em segundo plano, com o rótulo "Retrato inicial" e os ids em `.tavir/control.json` (`baseline`). Passe `baseline: false` para não rodar (usado nos testes). A criação sempre faz `git init`; a absorção também, quando a pasta não é versionada por ninguém (sem git ou ignorada pelo repositório de fora, `needsOwnGit`). Subpasta versionada por um monorepo do cliente fica como está.
 - **Esteira:** `runEsteiraStage`. Uma etapa só roda com os gates anteriores aprovados. Gates ficam `awaiting` até `decideEsteiraGate`; decisões vão para `.tavir/decisoes.jsonl`. Etapas `qa` e `seg` só viram `done` se o portão passar.
 - **Trilho de alteração (manutenção):** `executeAltTrackStep`. O item "Validar & build" roda QA e segurança, e só fecha com os dois aprovados.
+- **Anexos na Íris e em Pedir alteração:**
+  - **Como anexar:** botão de clipe, Ctrl+V com print ou arrastar para a janela. A lista de pendentes é a mesma nos dois lugares e vai junto com a próxima mensagem.
+  - **Onde fica:** `src/main/attachments.ts` grava em `.tavir/anexos/<carimbo>/` do projeto, fora do git (`excludeFromProjectGit`) e do git sombra.
+  - **Zip:** extraído ao lado, com proteção contra caminho para fora da pasta e limite de 2000 arquivos e 200 MB.
+  - **O que o agente recebe:** os caminhos no pedido ("Anexos enviados pelo Carlos") e abre cada arquivo com a ferramenta de leitura. Os caminhos também entram em `CHANGE_REQUESTS.md` e no registro do trilho.
+  - **Limites:** 10 arquivos, 25 MB cada e 60 MB por mensagem.
 - **Motor por projeto:** `.tavir/control.json` (`engine`). Os quatro motores (claude, codex, antigravity, cursor) passam pela mesma camada em `src/main/motors.ts`; `npm run test:motores` confere a paridade.
 - **Esteira gravada:** `.tavir/esteira.json` guarda os nomes das etapas (`names`). Se um molde ganhar etapa no meio, os registros são remapeados pelo nome. Moldes que mudaram antes disso ficam em `LEGACY_STAGE_NAMES`.
 
@@ -56,7 +62,9 @@ Como funciona:
 
 ## Portão de QA
 
-- **Plano** (`qaPlan.ts`): scripts do `package.json` (tipos, lint, testes, build), `playwright.config`, Flutter e Python. Alvo web: servidor de dev, pasta estática ou nenhum. Não instala dependências.
+- **Plano** (`qaPlan.ts`): scripts do `package.json` (tipos, lint, testes, build), `playwright.config`, Flutter (`flutter analyze --no-fatal-infos` e `flutter test`) e Python. Alvo web: servidor de dev, pasta estática ou nenhum. Não instala dependências.
+- **App em subpasta:** se a raiz não tem stack (ou só um `index.html` solto), o plano procura nas subpastas de primeiro nível (`aplicativo/`, `backend/`, `frontend/`…) e junta as checagens. Cada uma roda na própria pasta (`cwd`) e leva o nome da pasta no relatório. Pastas da Fábrica (`qa`, `docs`, `trilho`, `memory`…) ficam de fora.
+- **Checagem bloqueada:** ferramenta fora do PATH (Flutter, Python) ou pasta sem `node_modules` vira falha com o motivo e o comando que resolve, sem rodar. No Windows, o executável vem do `where` (o Flutter é `.bat`, não `.cmd`).
 - **Subida do app** (`startTarget` em `qaRunner.ts`): servidor de dev ou estático numa porta livre em `127.0.0.1`.
 - **Jornada** (`jornada.ts`): processo separado (`ELECTRON_RUN_AS_NODE`), Playwright com vídeo, trace e prints, em 1440 px e 390 px. Checa HTTP, erros de JavaScript e de console, links internos, acessibilidade básica e rolagem horizontal no celular.
 - **GIFs:** ffmpeg recorta cada falha. O alinhamento usa um quadro magenta de calibração (`markInVideo`).
@@ -69,6 +77,8 @@ Como funciona:
 - **Histórico do Git:** lido em fluxo com `git log -G` (400 commits, até 3 min).
 - **Dependências:** `npm audit` ou `pnpm audit` (precisa de lockfile) e `pip-audit`.
 - **Ferramentas externas, quando estão no PATH:** gitleaks, semgrep (`p/default`, `--metrics=off`) e trivy (vuln + misconfig). Achados de ferramentas diferentes na mesma linha viram um só.
+- **Git do próprio projeto** (`gitScope`): só conta como repositório quando o topo do git é a própria pasta. Projeto dentro de outro repositório (ex.: `tavir-interno/` no Escritório) é varrido como pasta comum: lista de arquivos pela pasta, gitleaks com `--no-git`, semgrep com `--no-git-ignore`, sem histórico e sem commit. Antes disso, o portão lia o histórico do Escritório e 0 arquivos do projeto.
+- **Não avaliado:** se nenhum arquivo foi lido, o portão segura sem nota ("Segurança não avaliada").
 - **Reprovação:** qualquer achado crítico ou alto aberto. A nota é 100 menos o peso dos abertos.
 - **Corrigido:** o que estava aberto e sumiu em relação à varredura anterior.
 - **Risco aceito:** o CEO aceita com justificativa pela aba Segurança. Fica em `.tavir/seguranca-aceites.json` e no livro de decisões (`kind: 'seguranca'`).

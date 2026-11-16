@@ -59,6 +59,10 @@
 .rx-metric{display:grid;grid-template-columns:minmax(0,1.4fr) 120px 120px;gap:8px;align-items:center;font-size:13px}
 .rx-books{display:grid;grid-template-columns:minmax(140px,1.4fr) repeat(6,minmax(64px,.5fr)) auto;gap:8px;align-items:center;font-size:13px}
 .rx-metric b{font-weight:600}
+.rx-pub{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.rx-pub p{margin:0;font-size:13px;line-height:1.5;color:var(--text-secondary)}
+.rx-pub ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.rx-pub li{font-size:13px;line-height:1.45;color:var(--text-secondary)}
 </style>
 </helmet>
 <div class="tv" style="min-height: 100%">
@@ -79,6 +83,18 @@
   <sc-if value="{{hasSyncError}}" hint-placeholder-val="{{false}}">
     <p style="color: var(--danger); font-size: 13px; margin: 0">{{syncError}}</p>
   </sc-if>
+
+  <section class="card rx-pub">
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="eyebrow">Site público</span><span class="badge">não sobe sozinho</span></div>
+    <p>O domínio é <b style="color: var(--text-primary)">raiox.tavir.com.br</b>. A Vercel lê a pasta <b style="color: var(--text-primary)">raiox/web</b>. Commit no computador não publica. Push da branch main também não: o deploy automático dessa branch está desligado. Push de outra branch só gera preview se o commit alterar algum arquivo dessa pasta.</p>
+    <p>Para o domínio público mudar, rode você mesmo <b style="color: var(--text-primary)">npx vercel --prod</b> dentro de raiox/web. Faça isso quando:</p>
+    <ul>
+      <li>mudar a página, o formulário, a API ou o vercel.json e o site no ar precisar dessa versão;</li>
+      <li>trocar uma variável de produção na Vercel e o site no ar precisar ler o valor novo;</li>
+      <li>um preview já estiver conferido e essa mesma versão precisar ir para raiox.tavir.com.br.</li>
+    </ul>
+    <p>Mudança só no Escritório — caso, playbook, análise, tela — não pede esse comando.</p>
+  </section>
 
   <div class="g3">
     <sc-for list="{{modes}}" as="m" hint-placeholder-count="3">

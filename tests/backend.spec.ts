@@ -1,6 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+
+// Antes de qualquer import do app: dados numa pasta temporária. Sem isto, o teste lia e
+// regravava db/tavir_store.json, db/engine_settings.json e as tarefas do backend/tavir.db reais.
+vi.hoisted(() => {
+  const nodeFs = require('node:fs') as typeof import('node:fs');
+  const nodeOs = require('node:os') as typeof import('node:os');
+  const nodePath = require('node:path') as typeof import('node:path');
+  process.env.TAVIR_DATA_ROOT = nodeFs.mkdtempSync(nodePath.join(nodeOs.tmpdir(), 'tavir-backend-'));
+});
 import { carregarDb, salvarDb } from '../src/main/db';
 import { cifrar, decifrar } from '../src/main/cofreCripto';
 import { engineHub } from '../src/main/drivers/engineHub';
@@ -17,39 +26,27 @@ describe('Suíte de Testes de Backend & Infraestrutura TAVIR', () => {
       expect(Array.isArray(db.jobs)).toBe(true);
       expect(Array.isArray(db.tasks)).toBe(true);
       expect(Array.isArray(db.approvals)).toBe(true);
-      expect(db.jobs.length).toBeGreaterThan(0);
-      expect(db.approvals.length).toBeGreaterThan(0);
+      // Sem SQLite não existe dado fictício: as listas começam vazias.
+      expect(db.jobs).toEqual([]);
+      expect(db.approvals).toEqual([]);
     });
 
-    it('deve persistir alterações no estado do banco de dados', () => {
+    it('nunca usa os dados reais do escritório', () => {
+      const root = process.env.TAVIR_DATA_ROOT || '';
+      expect(root).toContain('tavir-backend-');
+      salvarDb(carregarDb());
+      expect(fs.existsSync(path.join(root, 'db', 'tavir_store.json'))).toBe(true);
+    });
+
+    it('deve persistir a sessão no store JSON', () => {
       const db = carregarDb();
-      const testJobId = `job-test-${Date.now()}`;
-      db.jobs.unshift({
-        id: testJobId,
-        title: 'Job de Teste Unitário',
-        who: 'Edna E2E',
-        ini: 'EE',
-        status: 'running',
-        progress: 10,
-        model: 'claude-sonnet-4',
-        motor: 'Cursor',
-        effort: 'equilibrado',
-        task: '#99',
-        cost: 0.1,
-        ceiling: 5,
-        started: '15:00',
-        tokens: '10k'
-      });
+      db.session.theme = db.session.theme === 'light' ? 'dark' : 'light';
+      const esperado = db.session.theme;
       salvarDb(db);
 
+      // Jobs, tarefas e aprovações vêm só do SQLite (backend/tavir.db); o JSON guarda a sessão.
       const dbRecarregado = carregarDb();
-      const jobEncontrado = dbRecarregado.jobs.find((j) => j.id === testJobId);
-      expect(jobEncontrado).toBeDefined();
-      expect(jobEncontrado?.title).toBe('Job de Teste Unitário');
-
-      // Limpeza
-      dbRecarregado.jobs = dbRecarregado.jobs.filter((j) => j.id !== testJobId);
-      salvarDb(dbRecarregado);
+      expect(dbRecarregado.session.theme).toBe(esperado);
     });
   });
 
@@ -83,8 +80,9 @@ describe('Suíte de Testes de Backend & Infraestrutura TAVIR', () => {
       expect(settings.antigravityEnabled).toBe(true);
       expect(settings.codexEnabled).toBe(true);
 
+      // 'anthropic' é o nome antigo: o hub grava como 'claude'.
       engineHub.updateSettings({ defaultEngine: 'anthropic' });
-      expect(engineHub.getSettings().defaultEngine).toBe('anthropic');
+      expect(engineHub.getSettings().defaultEngine).toBe('claude');
 
       engineHub.updateSettings({ defaultEngine: 'cursor' });
       expect(engineHub.getSettings().defaultEngine).toBe('cursor');
