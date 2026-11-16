@@ -6,6 +6,7 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { escritaDoEscritorio } from '../tavirGuarda';
 import { PASSOS_LEITURA, type Retrato } from '../../shared/absorcao';
 import { detectar } from './detectores';
 import { calcularCobertura, escreverRetratoMd, gravarRetrato, lerRetrato, montarRetrato } from './retrato';
@@ -13,6 +14,7 @@ import { aplicarIntegracoes, citacoes, lerPasso, type Perguntar } from './leitur
 import * as pfs from '../project-fs';
 import { converseWithIrisAgent } from '../irisAgent';
 import { gerarCartoes } from '../acessos';
+import { chamadosDaAbsorcao, listarChamados } from '../chamados';
 
 export type EtapaFluxo = 'preparar' | 'detectores' | 'leitura' | 'retrato' | 'acessos' | 'gate';
 export const ETAPAS_FLUXO: EtapaFluxo[] = ['preparar', 'detectores', 'leitura', 'retrato', 'acessos', 'gate'];
@@ -82,6 +84,7 @@ export function gravarEstado(root: string, e: EstadoAbsorcao): void {
   e.log = e.log.slice(-200);
   fs.mkdirSync(path.join(root, '.tavir'), { recursive: true });
   fs.writeFileSync(absorcaoPath(root), JSON.stringify(e, null, 2), 'utf8');
+  escritaDoEscritorio(absorcaoPath(root));
 }
 
 /** Primeira etapa que ainda não fechou: de onde a absorção retoma. */
@@ -122,6 +125,17 @@ export interface EventoAbsorcao {
 }
 
 const vivos = new Map<string, { parado: boolean; kill?: () => void }>();
+
+/** Chamados ainda na fila (não concluídos nem recusados), como `CH-0001 · título`. */
+function chamadosNaFila(root: string): string[] {
+  try {
+    return listarChamados(root)
+      .filter((c) => c.situacao !== 'concluido' && c.situacao !== 'recusado')
+      .map((c) => `${c.id} · ${c.titulo}`);
+  } catch {
+    return [];
+  }
+}
 
 export function absorcaoRodando(root: string): boolean {
   return vivos.has(path.resolve(root));
@@ -234,6 +248,7 @@ export async function rodarAbsorcao(
         retrato: ret,
         perguntar,
         correcoes,
+        jaAbertos: passo.id === 'riscos' ? chamadosNaFila(root) : undefined,
         onLine: (l) => emit({ type: 'thought', content: l, passo: passo.id, etapa: 'leitura' }),
         registerKill: (k) => {
           live.kill = k;
@@ -244,6 +259,14 @@ export async function rodarAbsorcao(
       const passoRet = { id: passo.id, situacao: r.situacao, doc: passo.doc, ...(r.motivo ? { motivo: r.motivo } : {}), ...(r.runId ? { runId: r.runId } : {}) };
       ret.passos = ret.passos.map((x) => (x.id === passo.id ? passoRet : x));
       if (passo.id === 'integracoes') ret = aplicarIntegracoes(root, ret, r.texto);
+      if (passo.id === 'riscos') {
+        try {
+          // Problemas apontados viram chamados «aberto» (B1).
+          chamadosDaAbsorcao(root, r.texto, r.runId);
+        } catch (err) {
+          nota(`Chamados da leitura de riscos: ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
       gravarRetrato(root, ret);
       refazer.delete(passo.id);
       est.refazer = Array.from(refazer);

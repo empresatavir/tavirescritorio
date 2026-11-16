@@ -9,6 +9,7 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { escritaDoEscritorio } from './tavirGuarda';
 import { cifrar, decifrar, restringirAcesso } from './cofreCripto';
 import { maskToken, getGitAccountToken, listGitAccounts, fetchGithubUser } from './gitAccounts';
 import { fetchProviderUser } from './credentials';
@@ -66,6 +67,7 @@ function gravarArquivo(root: string, a: ArquivoAcessos): void {
   fs.mkdirSync(path.join(root, '.tavir'), { recursive: true });
   a.atualizado_em = now();
   fs.writeFileSync(acessosPath(root), JSON.stringify(a, null, 2), 'utf8');
+  escritaDoEscritorio(acessosPath(root));
 }
 
 type Cofre = { versao: 1; servicos: Record<string, Record<string, string>> };
@@ -82,6 +84,7 @@ function gravarCofre(root: string, c: Cofre): void {
   fs.mkdirSync(path.join(root, '.tavir'), { recursive: true });
   const f = credenciaisPath(root);
   fs.writeFileSync(f, JSON.stringify(c, null, 2), 'utf8');
+  escritaDoEscritorio(f);
   try { restringirAcesso(f); } catch {}
 }
 

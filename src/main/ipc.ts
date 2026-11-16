@@ -605,6 +605,76 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
+  // B1: chamados do projeto. A tela move sempre como 'ceo' (clique do Carlos); nunca como Escritório.
+  const chRoot = (idOrPath: string) => require('./project-fs').resolveProjectRecord(idOrPath).local_path as string;
+  const chErr = (err: unknown) => ({ ok: false, error: String(err instanceof Error ? err.message : err) });
+  handle('projects:chamados', (_e, idOrPath: string) => {
+    try {
+      const ch = require('./chamados');
+      const root = chRoot(idOrPath);
+      return { ok: true, chamados: ch.listarChamados(root), contagem: ch.contarChamados(root) };
+    } catch (err) { return { ...chErr(err), chamados: [] }; }
+  });
+  handle('projects:chamado', (_e, idOrPath: string, id: string) => {
+    try {
+      const c = require('./chamados').lerChamado(chRoot(idOrPath), String(id));
+      return c ? { ok: true, chamado: c } : { ok: false, error: 'Chamado não encontrado.' };
+    } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoCriar', (_e, idOrPath: string, dados: any) => {
+    try {
+      const d = dados || {};
+      // Pela tela só o Carlos cria; proposta da Íris aceita no cartão chega com origem 'conversa'.
+      const origem = d.origem === 'conversa' ? 'conversa' : 'formulario';
+      const autor = origem === 'conversa' ? { tipo: 'agente', nome: String(d.autorNome || 'Íris'), motor: d.motor, runId: d.runId, origem } : { tipo: 'ceo', nome: 'Carlos', origem };
+      const ch = require('./chamados');
+      const root = chRoot(idOrPath);
+      if (origem === 'conversa') {
+        const dup = ch.tituloDuplicado(root, String(d.titulo || ''));
+        if (dup) return { ok: true, repetido: true, chamado: ch.apontadoDeNovo(root, dup, String(d.autorNome || 'Íris')) };
+      }
+      const anexos = (Array.isArray(d.anexos) ? d.anexos : []).concat(ch.anexosDaConversa(root, Array.isArray(d.anexosRel) ? d.anexosRel : []));
+      return ch.criarChamado(root, { tipo: d.tipo, titulo: d.titulo, descricao: d.descricao, prioridade: d.prioridade, anexos, criterios: d.criterios, autor, evidenciaNaoConferida: d.evidenciaNaoConferida || undefined });
+    } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoEditar', (_e, idOrPath: string, id: string, ed: any) => {
+    try { return require('./chamados').editarChamado(chRoot(idOrPath), String(id), ed || {}); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoMover', (_e, idOrPath: string, id: string, para: string, nota?: string) => {
+    try {
+      if (para === 'aguardando_validacao' || para === 'concluido') return { ok: false, error: para === 'concluido' ? 'Concluir é pelo gate do chamado.' : 'Aguardando validação só pelo Escritório, depois dos portões.' };
+      return require('./chamados').moverChamado(chRoot(idOrPath), String(id), para, 'ceo', String(nota || ''));
+    } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoAnexar', (_e, idOrPath: string, id: string, itens: any[]) => {
+    try { return require('./chamados').anexarAoChamado(chRoot(idOrPath), String(id), Array.isArray(itens) ? itens : []); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoAnexo', (_e, idOrPath: string, id: string, name: string) => {
+    try { return require('./chamados').anexoComoDataUrl(chRoot(idOrPath), String(id), String(name)); } catch (err) { return chErr(err); }
+  });
+  // B3: refinar (sugestão), executar pelo trilho, gate e dúvida. Mover sempre como Carlos.
+  handle('projects:chamadoRefinar', async (_e, idOrPath: string, id: string) => {
+    try { return await require('./chamados').refinarChamado(chRoot(idOrPath), String(id)); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoSugestao', (_e, idOrPath: string, id: string) => {
+    try { return { ok: true, sugestao: require('./chamados').lerSugestao(chRoot(idOrPath), String(id)) }; } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoResponder', async (_e, idOrPath: string, id: string) => {
+    try { return await require('./chamados').responderDuvida(chRoot(idOrPath), String(id)); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoExecutar', (_e, idOrPath: string, id: string) => {
+    try { return require('./chamados').executarChamado(chRoot(idOrPath), String(id)); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoDecidir', (_e, idOrPath: string, id: string, decisao: string, nota?: string) => {
+    try { return require('./chamados').decidirChamado(chRoot(idOrPath), String(id), decisao === 'aprovado' ? 'aprovado' : 'reprovado', String(nota || '')); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoConcluirDuvida', (_e, idOrPath: string, id: string) => {
+    try { return require('./chamados').moverChamado(chRoot(idOrPath), String(id), 'concluido', 'ceo'); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadosContagem', (_e, idOrPath: string) => {
+    try { return { ok: true, contagem: require('./chamados').contarChamados(chRoot(idOrPath)) }; } catch (err) { return chErr(err); }
+  });
+
   handle('projects:pickFolder', async () => {
     const opts: Electron.OpenDialogOptions = {
       title: 'Selecionar pasta do projeto existente (Product Lab · Absorção Isolada)',

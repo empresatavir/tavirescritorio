@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { escritaDoEscritorio, resumoBarrados } from './tavirGuarda';
 import * as os from 'node:os';
 import * as crypto from 'node:crypto';
 import { execFile, execFileSync, spawn } from 'node:child_process';
@@ -15,6 +16,9 @@ import * as absDetectores from './absorcao/detectores';
 import * as absRetrato from './absorcao/retrato';
 import * as absFluxo from './absorcao/fluxo';
 import { PASTA_ESCOPO } from './absorcao/entrada';
+import * as chamadosMod from './chamados';
+import * as irisAgentMod from './irisAgent';
+import * as attachmentsMod from './attachments';
 
 function getDbPath(): string {
   // Testes apontam TAVIR_DATA_ROOT para uma pasta temporária (ver db.ts).
@@ -1163,6 +1167,7 @@ function logDecision(rootPath: string, entry: Omit<DecisionEntry, 'at' | 'by'>):
   try {
     fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
     fs.appendFileSync(path.join(rootPath, '.tavir', 'decisoes.jsonl'), JSON.stringify(full) + '\n', 'utf8');
+    escritaDoEscritorio(path.join(rootPath, '.tavir', 'decisoes.jsonl'));
   } catch {}
   return full;
 }
@@ -1457,7 +1462,9 @@ export type AltTrackState = {
   branchPending?: { dirty: string[]; error: string } | null;
   /** PR aberto ou merge local feito pelo CEO. */
   publish?: CyclePublish | null;
-  cycles?: Array<{ closed_at: string; title: string; items: AltTrackItem[]; branch?: CycleBranch | null; publish?: CyclePublish | null }>;
+  cycles?: Array<{ closed_at: string; title: string; items: AltTrackItem[]; branch?: CycleBranch | null; publish?: CyclePublish | null; chamados?: string[] }>;
+  /** Chamados que este ciclo executa (B3). Fecham para validação só depois dos portões. */
+  chamados?: string[];
 };
 
 const EMPTY_NOTES: AltTrackNotes = { map: '', plan: '', fix: '', build: '' };
@@ -1582,6 +1589,7 @@ function readControlJson(rootPath: string): Record<string, unknown> {
 function writeControlJson(rootPath: string, data: Record<string, unknown>): void {
   fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
   fs.writeFileSync(controlFilePath(rootPath), JSON.stringify(data, null, 2), 'utf8');
+  escritaDoEscritorio(controlFilePath(rootPath));
 }
 
 function checkpointFilePath(rootPath: string): string {
@@ -1742,9 +1750,11 @@ function normalizeAltTrack(raw: unknown, alterationsOpen: boolean): AltTrackStat
               items: normalizeItems(row.items, EMPTY_NOTES),
               branch: normalizeBranch(row.branch),
               publish: normalizePublish(row.publish),
+              ...(Array.isArray(row.chamados) ? { chamados: row.chamados.map((x) => String(x)).slice(0, 20) } : {}),
             };
           })
       : [],
+    chamados: Array.isArray(base.chamados) ? base.chamados.map((x) => String(x)).filter((x) => /^CH-\d+$/.test(x)).slice(0, 20) : [],
   };
 }
 
@@ -1880,7 +1890,7 @@ export function setProjectAlterationsOpen(idOrPath: string, open: boolean): any 
             notes: prevTrack.notes || { ...EMPTY_NOTES },
             active: true,
             step: prevTrack.step || 0,
-            title: 'Trilho de alteração',
+            title: prevTrack.chamados?.length ? prevTrack.title : 'Trilho de alteração',
             updated_at: new Date().toISOString(),
           }
         : {
@@ -1931,7 +1941,7 @@ export function setProjectAltTrackStep(idOrPath: string, step: number): any {
         notes: track.notes || { ...EMPTY_NOTES },
         active: true,
         step: nextStep,
-        title: 'Trilho de alteração',
+        title: track.chamados?.length ? track.title : 'Trilho de alteração',
         updated_at: new Date().toISOString(),
       },
     });
@@ -2087,6 +2097,27 @@ export function closeProjectAltTrackItem(idOrPath: string, fromStep?: number): a
   try {
     writeTrackMarkdown(ctrl.rootPath, track);
   } catch {}
+  // B3: chamados do ciclo vão para validação só se os portões mais recentes passaram.
+  if (last && track.chamados?.length) {
+    try {
+      const qa = listQaRuns(ctrl.rootPath, 1)[0];
+      const seg = listSegRuns(ctrl.rootPath, 1)[0];
+      chamadosMod.aoFecharCicloDoTrilho(ctrl.rootPath, track, { qa: !!qa?.ok, seg: !!seg?.ok });
+    } catch {}
+  }
+  return getProjectAlterationsControl(idOrPath);
+}
+
+/** B3: marca o ciclo atual como execução de chamados (título e ids sobrevivem às leituras). */
+export function setAltTrackChamados(idOrPath: string, title: string, ids: string[]): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) return { ...ctrl, ok: false, error: 'Trilho fechado.' };
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  track.title = String(title || track.title).slice(0, 200);
+  track.chamados = ids.filter((x) => /^CH-\d+$/.test(x)).slice(0, 20);
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, { ...prev, alterations_open: true, updated_at: track.updated_at, alt_track: track });
   return getProjectAlterationsControl(idOrPath);
 }
 
@@ -2104,7 +2135,10 @@ export function startNewAltTrackCycle(idOrPath: string): any {
     items: track.items,
     branch: track.branch || null,
     publish: track.publish || null,
+    ...(track.chamados?.length ? { chamados: track.chamados } : {}),
   };
+  track.chamados = [];
+  track.title = 'Trilho de alteração';
   // Ciclo publicado: o próximo sai da branch de origem. Sem publicar, empilha sobre o atual.
   if (track.publish) {
     try {
@@ -2597,7 +2631,19 @@ export async function executeAltTrackStep(
       if (live) live.kill = kill;
     },
   });
-  const reply = String(agentRes.text || '').trim() || 'O agente não devolveu texto neste item.';
+  let reply = String(agentRes.text || '').trim() || 'O agente não devolveu texto neste item.';
+  // B5: o que o agente achou fora do escopo vira chamado «aberto» (origem trilho), sem parar o ciclo.
+  if (agentRes.ok) {
+    try {
+      const pc = chamadosMod.parseChamados(reply, { root: ctrl.rootPath, max: 5 });
+      if (pc.propostas.length) {
+        const g = chamadosMod.gravarPropostas(ctrl.rootPath, pc.propostas, { nome: focus.owner, motor: eng.name, runId: agentRes.runId, origem: 'trilho' });
+        reply = (pc.texto || reply) + `
+
+_Chamados abertos fora do escopo: ${g.criados.map((c) => c.id).join(', ') || 'nenhum novo'}${g.repetidos.length ? ` (já existiam: ${g.repetidos.map((c) => c.id).join(', ')})` : ''}._`;
+      }
+    } catch {}
+  }
   try { writeProof(ctrl.rootPath, focus.label, pedido, reply); } catch {}
   if (agentRes.ok) pushLine(reply.slice(0, 240), 'info');
   else log.push(reply.slice(0, 240));
@@ -2637,6 +2683,7 @@ export async function executeAltTrackStep(
   const current = next.items[next.step] || focus;
   const exec = agentRes.runId ? ` · execução ${agentRes.runId}` : '';
   if (agentRes.runId) log.push(`Execução registrada em .tavir/runs/${agentRes.runId}`);
+  if (agentRes.barrados?.length) log.push(resumoBarrados(agentRes.barrados));
   if (agentRes.ok) current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · ${focus.owner}${exec}\n${reply}\n${commitNote ? `\n_${commitNote}_\n` : ''}`;
   if (qaNote) current.note = `${current.note.trim()}\n\n### ${stamp} · Portão de QA e segurança\n${qaNote}\n`;
   if (agentRes.ok && (focus.kind === 'plan' || focus.kind === 'map')) next.items = applyProposedTracks(next.items, reply);
@@ -2666,6 +2713,12 @@ export async function executeAltTrackStep(
     next.runStatus = 'done';
     next.checkpoint = null;
     clearCheckpointFile(ctrl.rootPath);
+    // B3: o ciclo fechou com os portões de QA e segurança aprovados neste item.
+    if (next.chamados?.length) {
+      try {
+        chamadosMod.aoFecharCicloDoTrilho(ctrl.rootPath, next, { qa: !!qa?.ok, seg: !!seg?.ok });
+      } catch {}
+    }
   } else if (!next.auto) {
     // Manual: o item fica entregue no foco e só avança no "Seguir para…" do Carlos.
     next.runStatus = 'idle';
@@ -2765,8 +2818,7 @@ export function chatRecent(history: any[]): Array<{ role: 'user' | 'assistant'; 
 }
 
 function chatContext(history: any[]): { turns: number; chars: number } {
-  const { historyBudget } = require('./irisAgent') as typeof import('./irisAgent');
-  return historyBudget(chatRecent(history));
+  return irisAgentMod.historyBudget(chatRecent(history));
 }
 
 /** «Nova conversa»: o histórico continua no disco e na tela, mas deixa de ir para o motor. */
@@ -2812,7 +2864,7 @@ export function getProjectChatHistory(idOrPath: string): any {
     model: welcomeEng.model,
     ts: nowHM(),
     thoughts: [`[Workspace] ${rootPath}`, `[Estrutura] ${info.dirCount} pastas e ${info.fileCount} arquivos (${info.stacks})`],
-    t: `Olá, Carlos! Sou a Íris do projeto "${info.name}". Posso ler o código e os documentos para responder, e fazer mudanças quando você enviar um «Pedir alteração». O motor fica no seletor do chat.`,
+    t: `Olá, Carlos! Sou a Íris do projeto "${info.name}". Posso ler o código e os documentos para responder. Quando a conversa chegar a um defeito ou melhoria, eu proponho um chamado e você abre pelo cartão. O motor fica no seletor do chat.`,
   };
 
   try {
@@ -2873,7 +2925,7 @@ export async function askProjectIris(params: any): Promise<any> {
   };
 
   // Anexos (prints, zip, logs) ficam em .tavir/anexos/ do projeto; o agente recebe os caminhos.
-  const attachMod = require('./attachments') as typeof import('./attachments');
+  const attachMod = attachmentsMod;
   const attach = attachInputs.length ? attachMod.saveAttachments(rootPath, attachInputs) : { saved: [], errors: [] };
   const attachLine = attachMod.attachmentsLine(attach.saved);
   const questionWithFiles = attachLine ? `${question}\n${attachLine}` : question;
@@ -2903,6 +2955,9 @@ export async function askProjectIris(params: any): Promise<any> {
   let reply = '';
   let runId = '';
   let agentOk = false;
+  let propostas: Array<chamadosMod.PropostaChamado & { duplicado?: string }> = [];
+  let propostaAvisos: string[] = [];
+  let chamadosVarredura: { criados: string[]; repetidos: string[] } | null = null;
   const wantsChange =
     forceChange ||
     /\b(alter|muda|ajuste|corrija|corri|implement|adicione|remova|refator)\w*/i.test(question);
@@ -2914,7 +2969,8 @@ export async function askProjectIris(params: any): Promise<any> {
       `Use **Liberar alterações** e envie o pedido de novo. Enquanto isso, posso responder perguntas sobre o projeto.`;
     thoughts.push('[Local] Pedido de alteração com o projeto fechado');
   } else {
-    const { converseWithIrisAgent } = require('./irisAgent') as typeof import('./irisAgent');
+    // `params.converse` só vem do processo main (testes); pela tela não passa função.
+    const converseWithIrisAgent: typeof irisAgentMod.converseWithIrisAgent = typeof params?.converse === 'function' ? params.converse : irisAgentMod.converseWithIrisAgent;
     const track = control.alt_track;
     const projectFacts = [
       info.stacks ? `Stack detectada: ${info.stacks}` : '',
@@ -2954,9 +3010,23 @@ export async function askProjectIris(params: any): Promise<any> {
       reply = 'Não consegui obter resposta do agente neste turno. Tente de novo em instantes.';
     }
     if (agentRes.ok) absorbMemory(`(${eng.name} · chat) "${question.slice(0, 160)}" → ${reply.replace(/\s+/g, ' ').slice(0, 240)}`);
-    if (forceChange) {
-      absorbChangeRequest(questionWithFiles);
-      thoughts.push('[Absorção] CHANGE_REQUESTS.md atualizado (pedido de alteração)');
+    // B4: blocos CHAMADO: saem do texto (o histórico enviado ao motor não cresce) e viram propostas.
+    if (agentOk) {
+      const pc = chamadosMod.parseChamados(reply, { root: rootPath, max: params?.varredura ? 8 : 5 });
+      if (pc.propostas.length || pc.avisos.length) {
+        reply = pc.texto || (pc.propostas.length ? 'Proposta de chamado abaixo.' : reply);
+        propostaAvisos = pc.avisos;
+        if (params?.varredura) {
+          const g = chamadosMod.gravarPropostas(rootPath, pc.propostas, { nome: 'Íris', motor: eng.name, runId, origem: 'varredura' });
+          chamadosVarredura = { criados: g.criados.map((c) => c.id), repetidos: g.repetidos.map((c) => c.id) };
+          thoughts.push(`[Chamados] varredura: ${g.criados.length} aberto(s), ${g.repetidos.length} já existia(m)`);
+        } else {
+          propostas = pc.propostas.map((p) => {
+            const dup = chamadosMod.tituloDuplicado(rootPath, p.titulo);
+            return dup ? { ...p, duplicado: dup.id } : p;
+          });
+        }
+      }
     }
     if (agentOk && control.finished && control.alterations_open) {
       const tracked = recordIrisOnAltTrack(idOrPath, questionWithFiles, reply);
@@ -2996,6 +3066,9 @@ export async function askProjectIris(params: any): Promise<any> {
     thoughts,
     t: reply,
     ...(runId ? { runId } : {}),
+    ...(propostas.length ? { propostas } : {}),
+    ...(propostaAvisos.length ? { propostaAvisos } : {}),
+    ...(chamadosVarredura ? { chamadosVarredura } : {}),
   };
 
   history.push(userMsg, agentMsg);
@@ -3136,6 +3209,7 @@ function writeEsteira(rootPath: string, desk: EsteiraDesk): void {
   desk.names = projectStages(rootPath).stages.map((d) => d.name);
   fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
   fs.writeFileSync(esteiraFile(rootPath), JSON.stringify(desk, null, 2), 'utf8');
+  escritaDoEscritorio(esteiraFile(rootPath));
   syncEsteiraProgress(rootPath, desk);
 }
 
@@ -3369,6 +3443,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     const facts = [
       changed == null ? '' : changed ? `${changed} arquivo(s) mudaram` : def.gate ? '' : 'Atenção: nenhum arquivo mudou nesta etapa',
       commit ? commitLine(commit) : '',
+      agentRes.barrados?.length ? resumoBarrados(agentRes.barrados) : '',
     ].filter(Boolean);
     current.note =
       (current.note ? current.note + '\n\n' : '') +

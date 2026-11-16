@@ -462,6 +462,21 @@ export interface TavirApi {
     acessoSituacao: (idOrPath: string, servico: string, situacao: 'pendente' | 'preenchido' | 'pedir_ao_cliente' | 'nao_se_aplica', nota?: string) => Promise<{ ok: boolean; error?: string; cartao?: any }>;
     acessoRemover: (idOrPath: string, servico: string) => Promise<{ ok: boolean; error?: string; cartao?: any }>;
     acessoAbrirGuia: (servico: string) => Promise<{ ok: boolean; error?: string; url?: string }>;
+    /** B1: chamados do projeto (.tavir/chamados). Mover pela tela é sempre o Carlos. */
+    chamados: (idOrPath: string) => Promise<{ ok: boolean; error?: string; chamados: any[]; contagem?: any }>;
+    chamado: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoCriar: (idOrPath: string, dados: { tipo?: string; titulo: string; descricao?: { a?: string; b?: string; c?: string }; prioridade?: string; anexos?: Array<{ name: string; type?: string; data: string }>; criterios?: string[]; origem?: 'formulario' | 'conversa'; autorNome?: string; motor?: string; runId?: string }) => Promise<{ ok: boolean; error?: string; chamado?: any; avisos?: string[] }>;
+    chamadoEditar: (idOrPath: string, id: string, ed: { tipo?: string; titulo?: string; descricao?: { a?: string; b?: string; c?: string }; prioridade?: string; criterios?: string[]; notas?: string; perguntas?: string[]; resposta?: string }) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoMover: (idOrPath: string, id: string, para: string, nota?: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoAnexar: (idOrPath: string, id: string, itens: Array<{ name: string; type?: string; data: string }>) => Promise<{ ok: boolean; error?: string; chamado?: any; avisos?: string[] }>;
+    chamadoRefinar: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; sugestao?: { criterios: string[]; perguntas: string[]; notas: string; texto: string; runId?: string; em: string } }>;
+    chamadoSugestao: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; sugestao?: any }>;
+    chamadoResponder: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoExecutar: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; chamado?: any; trilho?: boolean }>;
+    chamadoDecidir: (idOrPath: string, id: string, decisao: 'aprovado' | 'reprovado', nota?: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoConcluirDuvida: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoAnexo: (idOrPath: string, id: string, name: string) => Promise<{ ok: boolean; error?: string; dataUrl?: string }>;
+    chamadosContagem: (idOrPath: string) => Promise<{ ok: boolean; error?: string; contagem?: { total: number; abertos: number; aguardandoCarlos: number; porSituacao: Record<string, number> } }>;
     inspectFolder: (idOrPath: string) => Promise<any>;
     openInExplorer: (idOrPath: string) => Promise<{ ok: boolean; path?: string }>;
     readFile: (filePath: string) => Promise<{ ok: boolean; content?: string; size?: number }>;

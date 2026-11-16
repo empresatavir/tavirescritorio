@@ -117,7 +117,7 @@ export function FabricaConsolePane(props: {
               <span style={{ fontSize: "14px", fontWeight: "600" }}>{p.name}</span>
               <div className="grow" />
               <button type="button" className="btn sm ghost">
-                Pedir alteração
+                Abrir chamado
               </button>
               <button type="button" className="btn sm secondary">
                 <SvgPath d={ICN.chat} w={15} h={15} />

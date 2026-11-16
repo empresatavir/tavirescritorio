@@ -9,6 +9,7 @@ import { lerRetrato } from '../../src/main/absorcao/retrato';
 import { detectar } from '../../src/main/absorcao/detectores';
 import { gravarRetrato, montarRetrato } from '../../src/main/absorcao/retrato';
 import { gravarEstado, novoEstado } from '../../src/main/absorcao/fluxo';
+import { criarChamado } from '../../src/main/chamados';
 
 const SCHEMA = `CREATE TABLE projects (id VARCHAR(36) NOT NULL, slug VARCHAR(100) NOT NULL, name VARCHAR(200) NOT NULL, client VARCHAR(200), repo_url VARCHAR(500), local_path VARCHAR(500), deploy_target VARCHAR(200), status VARCHAR(20) NOT NULL, description TEXT, created_at DATETIME DEFAULT (CURRENT_TIMESTAMP) NOT NULL, updated_at DATETIME DEFAULT (CURRENT_TIMESTAMP) NOT NULL, company VARCHAR(200), template_code VARCHAR(50), stages_done INTEGER DEFAULT '0' NOT NULL, total_stages INTEGER DEFAULT '0' NOT NULL, stack VARCHAR(200), goal TEXT, audience TEXT, scope_items JSON, pendencies JSON, kanban_cards JSON, files JSON, keys JSON, event_log JSON, ai_settings JSON, control JSON, PRIMARY KEY (id), UNIQUE (slug))`;
 
@@ -120,6 +121,17 @@ describe('checagem de citação', () => {
 });
 
 describe('leitura em sete passos', () => {
+  it('Riscos recebe os chamados já na fila para não repetir com outras palavras', async () => {
+    const dir = projeto();
+    preparar(dir);
+    criarChamado(dir, { titulo: 'Webhook devolve 400 para evento desconhecido' });
+    const pedidos: Record<string, string> = {};
+    const base = motorFalso();
+    await rodarAbsorcao(dir, { perguntar: async (o) => { pedidos[o.passo.id] = o.pedido; return base(o); } });
+    expect(pedidos.riscos).toContain('## Chamados que já estão na fila');
+    expect(pedidos.riscos).toContain('CH-0001 · Webhook devolve 400 para evento desconhecido');
+    expect(pedidos.produto).not.toContain('Chamados que já estão na fila');
+  });
   it('repete uma vez; a segunda falha vira incompleto e o fluxo segue', async () => {
     const dir = projeto();
     preparar(dir);

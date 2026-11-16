@@ -145,13 +145,14 @@ export function extractZip(buf: Buffer, dest: string, limits = ATTACH_LIMITS): {
 
 export const ATTACH_DIR = path.join('.tavir', 'anexos');
 
-export function saveAttachments(root: string, items: AttachmentInput[], now = new Date()): { saved: SavedAttachment[]; errors: string[] } {
+/** `destRel` (opcional): pasta de destino relativa à raiz (anexos de chamado). Sem ela, `.tavir/anexos/<data>`. */
+export function saveAttachments(root: string, items: AttachmentInput[], now = new Date(), destRel?: string): { saved: SavedAttachment[]; errors: string[] } {
   const saved: SavedAttachment[] = [];
   const errors: string[] = [];
   const list = (Array.isArray(items) ? items : []).filter((x) => x && x.data);
   if (!list.length) return { saved, errors };
   if (list.length > ATTACH_LIMITS.maxItems) errors.push(`Só os ${ATTACH_LIMITS.maxItems} primeiros anexos foram guardados.`);
-  const dir = path.join(root, ATTACH_DIR, stamp(now));
+  const dir = destRel ? path.join(root, destRel) : path.join(root, ATTACH_DIR, stamp(now));
   fs.mkdirSync(dir, { recursive: true });
   let total = 0;
   for (const item of list.slice(0, ATTACH_LIMITS.maxItems)) {

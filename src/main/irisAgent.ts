@@ -6,6 +6,7 @@
  * Toda chamada fica no livro de execuções (.tavir/runs).
  */
 import { startRun, type RunChanges, type RunHandle, type RunKind } from './runLedger';
+import { abrirGuarda, fecharGuarda, resumoBarrados, type Barrado } from './tavirGuarda';
 import {
   MOTOR_LABEL,
   buildInvocation,
@@ -56,6 +57,8 @@ export interface IrisAgentResult {
   runId?: string;
   /** O que a execução mudou no disco (retrato do git sombra). */
   changes?: RunChanges;
+  /** Arquivos de estado do Escritório em .tavir/ que o agente mexeu e foram desfeitos. */
+  barrados?: Barrado[];
 }
 
 // ---------------------------------------------------------------- prompt
@@ -106,6 +109,7 @@ const WRITE_RULES = [
   'Este turno é um pedido de alteração: faça a mudança no workspace (você pode editar arquivos e rodar comandos locais, como build e testes).',
   'Antes de dizer que terminou, confira o resultado (o arquivo existe, o build ou o teste passou). Se algo falhou, diga o que falhou.',
   'Não faça deploy, push, commit nem publique nada fora desta pasta.',
+  'A pasta .tavir/ é do Escritório: não edite nada nela (etapa, trilho, chamados, decisões, retrato, acessos, credenciais). Só o Carlos e os portões de QA e segurança mudam esse estado; mudança feita ali pelo agente é desfeita e registrada.',
   'Na resposta final, diga em poucas linhas o que mudou (arquivos) e como verificou.',
 ];
 
@@ -145,7 +149,18 @@ export function buildPrompt(req: IrisAgentRequest, access: MotorAccess): string 
       ...rules.map((r) => `- ${r}`),
     );
     if (access === 'read') {
-      parts.push('- Se o Carlos pedir uma mudança, explique o que seria feito e diga que ele pode enviar como «Pedir alteração».');
+      parts.push(
+        '- Quando a conversa chegar a um pedido de mudança, defeito ou melhoria, explique em poucas linhas o que seria feito e termine com um bloco CHAMADO: preenchido com o que foi conversado (até cinco). O Carlos abre o chamado pelo cartão. Em pergunta simples, não escreva o bloco.',
+        '- Formato exato do bloco, uma chave por linha (tipo: bug, melhoria ou duvida; prioridade: urgente, alta, media ou baixa):',
+        '  CHAMADO:',
+        '  tipo: bug',
+        '  titulo: Frase curta',
+        '  prioridade: alta',
+        '  acontece: (bug) o que acontece / (melhoria) o que mudar',
+        '  esperado: (bug) o que era esperado / (melhoria) por quê',
+        '  reproduzir: (bug) como reproduzir / (melhoria) como saber que ficou pronto',
+        '  evidencia: caminho/arquivo.ext:linha',
+      );
     }
     if (req.finished && req.alterationsOpen) {
       parts.push(
@@ -174,6 +189,21 @@ export function buildPrompt(req: IrisAgentRequest, access: MotorAccess): string 
     '- Nunca afirme ter feito algo que não fez. Resultados de build e testes só valem se você os executou nesta sessão.',
   );
   if (req.retrato?.trim()) parts.push('', '## Retrato do projeto', clipEnd(req.retrato, RETRATO_MAX));
+  if (req.runKind === 'trilho') {
+    parts.push(
+      '',
+      '## Fora do escopo',
+      'Se encontrar um problema real fora do escopo deste ciclo, não corrija agora: termine a resposta com um bloco por problema (até cinco), neste formato exato, e siga o seu item.',
+      'CHAMADO:',
+      'tipo: bug',
+      'titulo: Frase curta',
+      'prioridade: media',
+      'acontece: O que acontece.',
+      'esperado: O que deveria acontecer.',
+      'reproduzir: Como ver.',
+      'evidencia: caminho/arquivo.ext:linha',
+    );
+  }
   const history = formatHistory(req.recent);
   if (history) parts.push('', '## Conversa recente', history);
   parts.push('', '## Pedido', req.question.trim());
@@ -190,6 +220,16 @@ export function tidyReply(text: string): string {
 }
 
 // ---------------------------------------------------------------- execução
+
+/** Se o motor estourar, a guarda fecha mesmo assim (e desfaz o que já tiver sido mexido). */
+async function runMotorGuardado(guarda: ReturnType<typeof abrirGuarda>, call: Parameters<typeof runMotor>[0]): ReturnType<typeof runMotor> {
+  try {
+    return await runMotor(call);
+  } catch (err) {
+    fecharGuarda(guarda);
+    throw err;
+  }
+}
 
 export async function converseWithIrisAgent(req: IrisAgentRequest): Promise<IrisAgentResult> {
   const motor = normalizeMotorId(req.engineId);
@@ -241,7 +281,9 @@ export async function converseWithIrisAgent(req: IrisAgentRequest): Promise<Iris
   // Trilha da resposta: o que o agente disse antes de cada ferramenta (») e cada ferramenta (→).
   const trail: string[] = [];
   let pendingSpeech = '';
-  const res = await runMotor({
+  // Estado do Escritório em .tavir/ não muda pela rodada do motor (ver tavirGuarda.ts).
+  const guarda = abrirGuarda(req.workspace);
+  const res = await runMotorGuardado(guarda, {
     motor,
     workspace: req.workspace,
     prompt,
@@ -299,6 +341,11 @@ export async function converseWithIrisAgent(req: IrisAgentRequest): Promise<Iris
     } catch (err) {
       thoughts.push(`[Execução] não fechou o registro: ${err instanceof Error ? err.message : String(err)}`);
     }
+  }
+  const barrados = fecharGuarda(guarda, { barradosDir: run ? `${run.dir}/barrados` : undefined, rodada: result.runId });
+  if (barrados.length) {
+    result.barrados = barrados;
+    thoughts.push(`[Guarda] ${resumoBarrados(barrados)}`);
   }
   return result;
 }

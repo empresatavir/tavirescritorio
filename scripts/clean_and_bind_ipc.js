@@ -457,6 +457,14 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
               self.setState({ rtById: rmap });
             }).catch(function() {});
           }
+          if (tavir.projects.chamadosContagem) {
+            tavir.projects.chamadosContagem(key).then(function(res) {
+              if (!res || !res.ok) return;
+              const cmap = Object.assign({}, self.state.chCount || {});
+              cmap[proj.id] = res.contagem;
+              self.setState({ chCount: cmap });
+            }).catch(function() {});
+          }
           if (tavir.projects.getEsteira) {
             tavir.projects.getEsteira(key).then(function(res) {
               if (!res || !res.esteira) return;
@@ -541,6 +549,7 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
         effort: engEffort,
         question: txt,
         asChangeRequest: !!opts.asChangeRequest,
+        varredura: !!opts.varredura,
         persona: 'Íris · Inteligência do Projeto'
       }).then(function(res) {
         const msg = res && res.replyMessage;
@@ -549,8 +558,14 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
         finish((msg && msg.t) || 'Pedido registrado na memória do projeto.', thoughts, {
           alt_track: res && res.alt_track,
           registered: registered,
-          context: res && res.context
+          context: res && res.context,
+          meta: msg ? { id: msg.id, runId: msg.runId || '', engine: msg.engine || engLabel, propostas: msg.propostas || [], propostaAvisos: msg.propostaAvisos || [], chamadosVarredura: msg.chamadosVarredura || null, anexosRel: (opts.anexosRel || []) } : null
         });
+        if (msg && msg.chamadosVarredura) {
+          const cv = msg.chamadosVarredura;
+          app.toast('Procurar melhorias', cv.criados.length ? cv.criados.length + (cv.criados.length === 1 ? ' chamado aberto pela Íris' : ' chamados abertos pela Íris') + (cv.repetidos.length ? ' · ' + cv.repetidos.length + ' já existia(m)' : '') + '.' : 'Nenhum chamado novo' + (cv.repetidos.length ? ' (' + cv.repetidos.length + ' já existia(m))' : '') + '.');
+        }
+        if (msg && (msg.chamadosVarredura || (msg.propostas || []).length) && self._loadChamados) self._loadChamados();
       }).catch(function(err) {
         finish('Não consegui falar com o motor agora (' + String(err && err.message || err) + ').', ['[Erro] askIris']);
       });

@@ -4,6 +4,7 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { escritaDoEscritorio } from '../tavirGuarda';
 import { ASSUNTO_ROTULO, PASSOS_LEITURA, type Achado, type Assunto, type Retrato } from '../../shared/absorcao';
 import type { Levantamento } from './detectores';
 
@@ -23,6 +24,7 @@ export function lerRetrato(root: string): Retrato | null {
 export function gravarRetrato(root: string, r: Retrato): void {
   fs.mkdirSync(path.join(root, '.tavir'), { recursive: true });
   fs.writeFileSync(retratoPath(root), JSON.stringify(r, null, 2), 'utf8');
+  escritaDoEscritorio(retratoPath(root));
 }
 
 /** Monta o retrato da camada 1. Mantém passos, cobertura e aprovação de um retrato anterior. */

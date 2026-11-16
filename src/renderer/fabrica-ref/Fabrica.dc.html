@@ -206,6 +206,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
     <div class="actions"><button class="btn secondary" onClick="{{openAbsorb}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h6l2 2h10v10H3zM12 12v5M9.5 14.5h5"></path></svg>Absorver pasta</button><button class="btn primary" onClick="{{newLine}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Novo projeto</button></div>
   </div>
   <sc-if value="{{hasRemoved}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 12px 16px; display: flex; gap: 12px; align-items: center; animation: fade 200ms var(--ease) both"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg><span class="grow" style="font-size: 13px">{{removedTxt}}</span><button class="btn sm secondary" onClick="{{undoRemove}}">Desfazer</button></div></sc-if>
+  <sc-if value="{{chTop.show}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 12px 16px; display: flex; gap: 10px; align-items: center; border-color: var(--warning)"><span class="badge warn"><i></i>Chamados</span><b style="font-size: 13.5px; color: var(--text-primary)">{{chTop.txt}}</b><span class="muted" style="font-size: 12.5px">{{chTop.d}}</span></div></sc-if>
   <div class="g4">
     <sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
       <button class="metric lift" onClick="{{k.pick}}" style="text-align: left; cursor: pointer">
@@ -241,7 +242,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
         <button class="row" onClick="{{l.open}}" style="padding: 16px 18px; gap: 18px; flex-wrap: wrap; animation: fade 200ms var(--ease) both">
           <span class="fb-ring" style="width: 50px; height: 50px; background: conic-gradient({{l.col}} 0 {{l.pct}}%, var(--line) 0)"><i style="width: 40px; height: 40px; font-size: 11px">{{l.pct}}%</i></span>
           <div style="flex: 0 0 240px; min-width: 0">
-            <div style="display: flex; gap: 6px; align-items: center"><span class="badge">{{l.code}}</span><span class="badge {{l.cls}}"><i></i>{{l.state}}</span></div>
+            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span class="badge">{{l.code}}</span><span class="badge {{l.cls}}"><i></i>{{l.state}}</span><sc-if value="{{l.hasAbs}}" hint-placeholder-val="{{false}}"><span class="badge {{l.absCls}}">{{l.absTxt}}</span></sc-if><sc-if value="{{l.hasCh}}" hint-placeholder-val="{{false}}"><span class="badge {{l.chCls}}">{{l.chTxt}}</span></sc-if></div>
             <div class="t" style="font-size: 15px; margin-top: 7px">{{l.name}}</div><div class="m">{{l.client}}</div><div class="mono" style="font-size: 10.5px; color: var(--text-muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{l.slug}}</div>
           </div>
           <div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 10px">
@@ -292,7 +293,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
     <span class="muted">/</span><span style="font-size: 14px; font-weight: 600">{{P.name}}</span>
     <div class="grow"></div>
     <sc-if value="{{P.showAltToggle}}" hint-placeholder-val="{{false}}"><button class="btn sm {{P.altBtnCls}}" onClick="{{toggleAlterations}}">{{P.altBtnLabel}}</button></sc-if>
-    <button class="btn sm ghost" onClick="{{askChange}}">Pedir alteração</button>
+    <button class="btn sm primary" onClick="{{chOpenNew}}">Abrir chamado</button>
     <button class="btn sm secondary" onClick="{{openChat}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14v11H9l-4 3z"></path></svg>Íris</button>
     <div style="position: relative">
       <button class="ibtn sm" onClick="{{toggleMenu}}" aria-label="Mais ações do projeto" aria-expanded="{{menuExp}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h.01M12 12h.01M19 12h.01"></path></svg></button>
@@ -500,12 +501,64 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
   </sc-if>
 
   <!-- TRILHO DE ALTERAÇÃO (pós-handoff) -->
+  <sc-if value="{{pt.chamados}}" hint-placeholder-val="{{false}}">
+  <div style="display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; animation: fade 200ms var(--ease) both">
+    <section class="card" style="flex: 1 1 460px; min-width: 0; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap"><div class="grow" style="min-width: 200px"><b style="font-size: 15px; color: var(--text-primary)">Chamados</b><div class="muted" style="font-size: 12.5px">{{chx.resumo}}</div></div><button class="btn sm secondary" onClick="{{chx.varrer}}" disabled="{{chx.varrendo}}">{{chx.varrerLbl}}</button><button class="btn sm primary" onClick="{{chOpenNew}}">Abrir chamado</button></div>
+      <div class="segs" style="flex-wrap: wrap"><sc-for list="{{chx.filters}}" as="f" hint-placeholder-count="5"><button class="seg {{f.on}}" onClick="{{f.pick}}" style="height: 28px; font-size: 12px">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center"><div class="segs"><sc-for list="{{chx.tipos}}" as="f" hint-placeholder-count="4"><button class="seg {{f.on}}" onClick="{{f.pick}}" style="height: 26px; font-size: 11.5px">{{f.label}}</button></sc-for></div><div class="segs"><sc-for list="{{chx.ords}}" as="f" hint-placeholder-count="3"><button class="seg {{f.on}}" onClick="{{f.pick}}" style="height: 26px; font-size: 11.5px">{{f.label}}</button></sc-for></div><input class="input" value="{{chx.q}}" onChange="{{chx.onQ}}" placeholder="Buscar no título e na descrição" style="height: 30px; font-size: 12.5px; flex: 1 1 180px" aria-label="Buscar chamados"></div>
+      <sc-if value="{{chx.vazio}}" hint-placeholder-val="{{false}}"><div style="padding: 18px 4px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start"><p class="muted" style="font-size: 13px; margin: 0">{{chx.vazioTxt}}</p><button class="btn sm secondary" onClick="{{chOpenNew}}">Abrir chamado</button></div></sc-if>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <sc-for list="{{chx.rows}}" as="r" hint-placeholder-count="3">
+          <button class="fb-run {{r.on}}" onClick="{{r.pick}}" data-chamado="{{r.id}}" style="text-align: left; border-left: 3px solid {{r.bar}}">
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="mono" style="font-size: 11.5px; color: var(--text-secondary)">{{r.id}}</span><span class="badge">{{r.tipo}}</span><b style="font-size: 13.5px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary)">{{r.titulo}}</b><span class="badge {{r.priCls}}">{{r.pri}}</span></div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 4px"><span class="badge {{r.sitCls}}"><i></i>{{r.sit}}</span><span class="muted" style="font-size: 11.5px">{{r.quem}} · {{r.idade}}</span><sc-if value="{{r.temAnexo}}" hint-placeholder-val="{{false}}"><span class="muted" style="font-size: 11.5px">· {{r.anexos}}</span></sc-if></div>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+    <sc-if value="{{chd.show}}" hint-placeholder-val="{{false}}">
+    <section class="card" aria-label="Detalhe do chamado" style="flex: 1 1 420px; min-width: 0; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; position: sticky; top: 12px">
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="mono" style="font-size: 12px; color: var(--text-secondary)">{{chd.id}}</span><span class="badge">{{chd.tipo}}</span><span class="badge {{chd.priCls}}">{{chd.pri}}</span><span class="badge {{chd.sitCls}}"><i></i>{{chd.sit}}</span><div class="grow"></div><button class="ibtn sm" onClick="{{chd.close}}" aria-label="Fechar detalhe">×</button></div>
+      <h3 style="font-size: 17px; font-weight: 600; color: var(--text-primary); margin: 0">{{chd.titulo}}</h3>
+      <div class="muted" style="font-size: 12px">{{chd.autor}}</div>
+      <sc-if value="{{chd.evRuim}}" hint-placeholder-val="{{false}}"><div style="font-size: 12px; color: var(--warning)">Evidência não conferida: {{chd.ev}}</div></sc-if>
+      <sc-for list="{{chd.campos}}" as="f" hint-placeholder-count="3"><div><div class="eyebrow" style="margin-bottom: 4px">{{f.rot}}</div><div class="tv-md"><sc-for list="{{f.blocks}}" as="b" hint-placeholder-count="1"><sc-if value="{{b.h}}" hint-placeholder-val="{{false}}"><div class="tv-md-h"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="tv-md-p"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></p></sc-if><sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div class="tv-md-li" style="padding-left: {{b.pad}}px"><b>{{b.mark}}</b><span><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></span></div></sc-if><sc-if value="{{b.quote}}" hint-placeholder-val="{{false}}"><div class="tv-md-q"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.code}}" hint-placeholder-val="{{false}}"><pre class="tv-md-code">{{b.text}}</pre></sc-if></sc-for></div></div></sc-for>
+      <sc-if value="{{chd.temAnexo}}" hint-placeholder-val="{{false}}"><div><div class="eyebrow" style="margin-bottom: 6px">Anexos</div><div style="display: flex; gap: 8px; flex-wrap: wrap"><sc-for list="{{chd.anexos}}" as="a" hint-placeholder-count="1"><button class="tv-att" onClick="{{a.open}}" title="{{a.name}}" style="cursor: pointer"><sc-if value="{{a.isImg}}" hint-placeholder-val="{{false}}"><img src="{{a.src}}" alt="{{a.name}}"></sc-if><span class="tv-att-n">{{a.name}}</span><small>{{a.size}}</small></button></sc-for></div></div></sc-if>
+      <sc-if value="{{chd.zoom.show}}" hint-placeholder-val="{{false}}"><div class="back" onClick="{{chd.zoom.close}}"><img src="{{chd.zoom.src}}" alt="{{chd.zoom.name}}" style="max-width: 92vw; max-height: 88vh; border-radius: 12px; box-shadow: var(--shadow-lg, 0 10px 40px rgba(0,0,0,.5))"></div></sc-if>
+      <div><div class="eyebrow" style="margin-bottom: 6px">Critérios de aceite</div>
+        <sc-if value="{{chd.semCrit}}" hint-placeholder-val="{{false}}"><div class="muted" style="font-size: 12.5px">Nenhum ainda. Para marcar como pronto é preciso ao menos um.</div></sc-if>
+        <sc-for list="{{chd.crit}}" as="c" hint-placeholder-count="1"><div style="display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--text-primary); padding: 2px 0"><span style="color: var(--flow)">✓</span><span class="grow">{{c.t}}</span><sc-if value="{{chd.editavel}}" hint-placeholder-val="{{false}}"><button class="link" onClick="{{c.rm}}" style="font-size: 11.5px">tirar</button></sc-if></div></sc-for>
+        <sc-if value="{{chd.editavel}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 6px; margin-top: 6px"><input class="input" value="{{chd.critDraft}}" onChange="{{chd.onCrit}}" placeholder="Ex.: total = subtotal menos desconto" style="height: 32px; font-size: 12.5px; flex: 1" aria-label="Novo critério de aceite"><button class="btn sm secondary" onClick="{{chd.addCrit}}">Acrescentar</button></div></sc-if>
+      </div>
+      <sc-if value="{{chd.sug.show}}" hint-placeholder-val="{{false}}">
+        <div style="border: 1px solid var(--flow-subtle-line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; background: var(--surface-0)">
+          <div class="eyebrow">Sugestão da Íris · nada entra sem o seu clique</div>
+          <sc-if value="{{chd.sug.temTexto}}" hint-placeholder-val="{{false}}"><div class="tv-md"><sc-for list="{{chd.sug.blocks}}" as="b" hint-placeholder-count="1"><sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="tv-md-p"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></p></sc-if><sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div class="tv-md-li" style="padding-left: {{b.pad}}px"><b>{{b.mark}}</b><span><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></span></div></sc-if><sc-if value="{{b.h}}" hint-placeholder-val="{{false}}"><div class="tv-md-h"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if></sc-for></div></sc-if>
+          <sc-for list="{{chd.sug.crit}}" as="c" hint-placeholder-count="2"><div style="display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; color: var(--text-primary)"><span class="grow">{{c.t}}</span><sc-if value="{{c.pode}}" hint-placeholder-val="{{true}}"><button class="btn sm secondary" onClick="{{c.aceitar}}" style="height: 26px; font-size: 11.5px">Aceitar critério</button></sc-if><sc-if value="{{c.ja}}" hint-placeholder-val="{{false}}"><span class="badge flow">aceito</span></sc-if></div></sc-for>
+          <sc-for list="{{chd.sug.perg}}" as="q" hint-placeholder-count="1"><label class="field"><span>{{q.t}}</span><div style="display: flex; gap: 6px"><input class="input" value="{{q.val}}" onChange="{{q.on}}" placeholder="Sua resposta" style="height: 30px; font-size: 12.5px; flex: 1"><button class="btn sm secondary" onClick="{{q.responder}}" style="height: 30px">Responder</button></div></label></sc-for>
+          <sc-if value="{{chd.sug.temNotas}}" hint-placeholder-val="{{false}}"><div style="font-size: 12.5px; color: var(--text-secondary)">Notas: {{chd.sug.notas}} <button class="link" onClick="{{chd.sug.aceitarNotas}}">Aceitar notas</button></div></sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{chd.temNotas}}" hint-placeholder-val="{{false}}"><div><div class="eyebrow" style="margin-bottom: 4px">Notas do refinamento</div><div style="font-size: 12.5px; color: var(--text-primary); white-space: pre-wrap">{{chd.notasTxt}}</div></div></sc-if>
+      <sc-if value="{{chd.temCiclo}}" hint-placeholder-val="{{false}}"><div style="font-size: 12.5px; color: var(--text-secondary)">{{chd.ciclo}} <button class="link" onClick="{{chd.verTrilho}}">Ver no trilho</button></div></sc-if>
+      <sc-if value="{{chd.temResposta}}" hint-placeholder-val="{{false}}"><div><div class="eyebrow" style="margin-bottom: 4px">Resposta</div><div class="tv-md"><sc-for list="{{chd.respBlocks}}" as="b" hint-placeholder-count="1"><sc-if value="{{b.h}}" hint-placeholder-val="{{false}}"><div class="tv-md-h"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="tv-md-p"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></p></sc-if><sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div class="tv-md-li" style="padding-left: {{b.pad}}px"><b>{{b.mark}}</b><span><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></span></div></sc-if><sc-if value="{{b.quote}}" hint-placeholder-val="{{false}}"><div class="tv-md-q"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.code}}" hint-placeholder-val="{{false}}"><pre class="tv-md-code">{{b.text}}</pre></sc-if></sc-for></div></div></sc-if>
+      <sc-if value="{{chd.pedeNota}}" hint-placeholder-val="{{false}}"><label class="field"><span>{{chd.notaLbl}}</span><textarea class="input" rows="3" value="{{chd.nota}}" onChange="{{chd.onNota}}" style="resize: vertical; border-radius: 12px; font-size: 12.5px"></textarea></label></sc-if>
+      <div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{chd.acoes}}" as="a" hint-placeholder-count="2"><button class="btn sm {{a.cls}}" onClick="{{a.go}}" disabled="{{a.off}}">{{a.label}}</button></sc-for></div>
+      <div><button class="link" onClick="{{chd.toggleHist}}" style="font-size: 12px">{{chd.histLbl}}</button>
+        <sc-if value="{{chd.histOpen}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 4px; margin-top: 6px"><sc-for list="{{chd.hist}}" as="h" hint-placeholder-count="2"><div style="font-size: 12px; color: var(--text-secondary)"><span class="mono" style="font-size: 11px">{{h.at}}</span> · <b style="color: var(--text-primary); font-weight: 600">{{h.quem}}</b> {{h.acao}}<sc-if value="{{h.temNota}}" hint-placeholder-val="{{false}}"> · «{{h.nota}}»</sc-if></div></sc-for></div></sc-if>
+      </div>
+    </section>
+    </sc-if>
+  </div>
+  </sc-if>
   <sc-if value="{{pt.trilho}}" hint-placeholder-val="{{false}}">
     <section class="card" style="animation: fade 200ms var(--ease) both; overflow: hidden">
       <div class="card-h" style="flex-wrap: wrap">
         <div class="grow" style="min-width: 220px">
           <div class="eyebrow">Pós-handoff · esteira original encerrada</div>
           <h3 style="margin-top: 4px">{{altTrack.title}}</h3>
+          <sc-if value="{{altTrack.chLink.show}}" hint-placeholder-val="{{false}}"><button class="link" onClick="{{altTrack.chLink.go}}" style="font-size: 12px">Abrir o chamado {{altTrack.chLink.id}}</button></sc-if>
         </div>
         <span class="badge {{altTrack.badgeCls}}"><i></i>{{altTrack.badge}}</span>
         <sc-if value="{{P.showAltToggle}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm {{altTrack.autoCls}}" onClick="{{altTrack.toggleAuto}}" disabled="{{altTrack.locked}}">{{altTrack.autoLbl}}</button></sc-if>
@@ -1188,7 +1241,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
           <div class="eyebrow" style="font-size: 9.5px; margin-bottom: 6px; color: {{m.wc}}">{{m.who}} · {{m.at}}</div>
           <sc-if value="{{m.hasThink}}" hint-placeholder-val="{{false}}"><div class="tv-trail"><button type="button" class="tv-trail-h" onClick="{{m.toggle}}" title="{{m.thinkTip}}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate({{m.rot}}deg)"><path d="M9 6l6 6-6 6"></path></svg><span>{{m.thinkLbl}}</span></button><sc-if value="{{m.open}}" hint-placeholder-val="{{false}}"><div class="tv-trail-b"><sc-for list="{{m.steps}}" as="x" hint-placeholder-count="2"><sc-if value="{{x.act}}" hint-placeholder-val="{{true}}"><div class="tv-st"><i></i><span>{{x.t}}</span></div></sc-if><sc-if value="{{x.say}}" hint-placeholder-val="{{false}}"><div class="tv-say">{{x.t}}</div></sc-if></sc-for><sc-for list="{{m.think}}" as="x" hint-placeholder-count="2"><div class="mono tv-meta">{{x.t}}</div></sc-for></div></sc-if></div></sc-if>
           <sc-if value="{{m.plain}}" hint-placeholder-val="{{true}}"><div style="white-space: pre-wrap; overflow-wrap: anywhere">{{m.t}}</div></sc-if>
-          <sc-if value="{{m.rich}}" hint-placeholder-val="{{false}}"><div class="tv-md"><sc-for list="{{m.blocks}}" as="b" hint-placeholder-count="2"><sc-if value="{{b.h}}" hint-placeholder-val="{{false}}"><div class="tv-md-h"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="tv-md-p"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></p></sc-if><sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div class="tv-md-li" style="padding-left: {{b.pad}}px"><b>{{b.mark}}</b><span><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></span></div></sc-if><sc-if value="{{b.quote}}" hint-placeholder-val="{{false}}"><div class="tv-md-q"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.code}}" hint-placeholder-val="{{false}}"><pre class="tv-md-code">{{b.text}}</pre></sc-if><sc-if value="{{b.hr}}" hint-placeholder-val="{{false}}"><hr class="tv-md-hr"></sc-if></sc-for></div></sc-if>
+          <sc-if value="{{m.rich}}" hint-placeholder-val="{{false}}"><div class="tv-md"><sc-for list="{{m.blocks}}" as="b" hint-placeholder-count="2"><sc-if value="{{b.h}}" hint-placeholder-val="{{false}}"><div class="tv-md-h"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="tv-md-p"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></p></sc-if><sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div class="tv-md-li" style="padding-left: {{b.pad}}px"><b>{{b.mark}}</b><span><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></span></div></sc-if><sc-if value="{{b.quote}}" hint-placeholder-val="{{false}}"><div class="tv-md-q"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.code}}" hint-placeholder-val="{{false}}"><pre class="tv-md-code">{{b.text}}</pre></sc-if><sc-if value="{{b.hr}}" hint-placeholder-val="{{false}}"><hr class="tv-md-hr"></sc-if></sc-for></div></sc-if><sc-if value="{{m.hasProps}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px"><sc-for list="{{m.props}}" as="pp" hint-placeholder-count="1"><div class="card" data-proposta="{{pp.key}}" style="padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; background: var(--surface-0); border-color: var(--flow-subtle-line)"><div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap"><span class="eyebrow">Proposta de chamado</span><span class="badge">{{pp.tipo}}</span><span class="badge {{pp.priCls}}">{{pp.pri}}</span><sc-if value="{{pp.temDup}}" hint-placeholder-val="{{false}}"><span class="badge warn">já existe {{pp.dup}}</span></sc-if></div><b style="font-size: 13.5px; color: var(--text-primary)">{{pp.titulo}}</b><sc-for list="{{pp.campos}}" as="f" hint-placeholder-count="2"><div style="font-size: 12.5px; color: var(--text-secondary)"><b style="font-weight: 600; color: var(--text-primary)">{{f.rot}}:</b> {{f.t}}</div></sc-for><sc-if value="{{pp.temEv}}" hint-placeholder-val="{{false}}"><div class="mono" style="font-size: 11.5px; color: {{pp.evCor}}">{{pp.ev}}</div></sc-if><sc-if value="{{pp.feito}}" hint-placeholder-val="{{false}}"><div style="font-size: 12px; color: var(--flow)">{{pp.feitoTxt}}</div></sc-if><sc-if value="{{pp.aberta}}" hint-placeholder-val="{{true}}"><div style="display: flex; gap: 6px; flex-wrap: wrap"><button class="btn sm primary" onClick="{{pp.abrir}}" disabled="{{pp.busy}}">{{pp.abrirLbl}}</button><button class="btn sm ghost" onClick="{{pp.editar}}">Editar antes</button><button class="btn sm ghost" onClick="{{pp.descartar}}">Descartar</button></div></sc-if></div></sc-for><sc-if value="{{m.hasAvisos}}" hint-placeholder-val="{{false}}"><div class="muted" style="font-size: 11.5px">{{m.avisos}}</div></sc-if></div></sc-if>
           <sc-if value="{{m.hasAtts}}" hint-placeholder-val="{{false}}"><div class="tv-att-row" style="margin-top: 8px"><sc-for list="{{m.atts}}" as="a" hint-placeholder-count="1"><span class="tv-att" title="{{a.name}}"><sc-if value="{{a.isImg}}" hint-placeholder-val="{{false}}"><img src="{{a.thumb}}" alt=""></sc-if><sc-if value="{{a.noImg}}" hint-placeholder-val="{{false}}"><i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg></i></sc-if><span class="tv-att-n">{{a.name}}</span></span></sc-for></div></sc-if>
         </div></sc-if>
       </sc-for>
@@ -1210,13 +1263,20 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
   </section>
 </sc-if>
 
-<!-- pedir alteração -->
-<sc-if value="{{chgOpen}}" hint-placeholder-val="{{false}}">
-  <div class="back" onClick="{{chgBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Pedir alteração" data-tv-attach="chg">
-    <div class="mhead"><span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg></span><div class="grow"><div class="eyebrow">Íris · agentes</div><h2>Pedir alteração</h2><p>O pedido vai ao chat com o motor ativo e é absorvido em memória. A esteira não recomeça.</p></div></div>
-    <div class="mbody"><label class="field"><span>O que mudar</span><textarea class="input" rows="5" value="{{chgDraft}}" onChange="{{onChgDraft}}" placeholder="Ex.: ajustar hero em 390 px e atualizar o runbook. Cole um print com Ctrl+V." style="resize: vertical; min-height: 120px; border-radius: 12px"></textarea></label>
-      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px"><div style="display: flex; align-items: center; gap: 10px"><button type="button" class="btn sm secondary" onClick="{{att.pick}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5 12.5 20a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7L10.2 17.7a1.7 1.7 0 0 1-2.4-2.4L15.5 7.6"></path></svg>Anexar print ou arquivo</button><span class="muted" style="font-size: 12px">Imagem, zip, PDF ou log. Também dá para colar ou arrastar aqui.</span></div><sc-if value="{{att.has}}" hint-placeholder-val="{{false}}"><div class="tv-att-row"><sc-for list="{{att.list}}" as="a" hint-placeholder-count="2"><span class="tv-att" title="{{a.title}}"><sc-if value="{{a.isImg}}" hint-placeholder-val="{{false}}"><img src="{{a.thumb}}" alt=""></sc-if><sc-if value="{{a.noImg}}" hint-placeholder-val="{{false}}"><i><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"></path><path d="M14 3v5h5"></path></svg></i></sc-if><span class="tv-att-n">{{a.name}}</span><small>{{a.size}}</small><button type="button" onClick="{{a.remove}}" aria-label="Tirar {{a.name}}">×</button></span></sc-for></div></sc-if></div></div>
-    <div class="mfoot"><button class="btn secondary" onClick="{{chgClose}}">Cancelar</button><button class="btn primary" onClick="{{chgSend}}">Mandar para o chat</button></div>
+<!-- abrir chamado -->
+<sc-if value="{{chf.open}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{chf.bg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Abrir chamado" data-tv-attach="chamado" style="width: min(680px, calc(100vw - 48px))">
+    <div class="mhead"><span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v14H4zM4 9h16M9 13h6"></path></svg></span><div class="grow"><div class="eyebrow">{{chf.eyebrow}}</div><h2>{{chf.title}}</h2><p>O chamado fica na fila do projeto. Nada é executado até você mandar.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; gap: 12px; flex-wrap: wrap"><div class="field"><span>Tipo</span><div class="segs"><sc-for list="{{chf.tipos}}" as="t" hint-placeholder-count="3"><button type="button" class="seg {{t.on}}" onClick="{{t.pick}}" style="height: 30px; font-size: 12.5px">{{t.label}}</button></sc-for></div></div><div class="field"><span>Prioridade</span><div class="segs"><sc-for list="{{chf.pris}}" as="t" hint-placeholder-count="4"><button type="button" class="seg {{t.on}}" onClick="{{t.pick}}" style="height: 30px; font-size: 12.5px">{{t.label}}</button></sc-for></div></div></div>
+      <label class="field"><span>Título</span><input class="input" value="{{chf.titulo}}" onChange="{{chf.onTitulo}}" placeholder="Frase curta do que precisa" style="height: 38px" aria-label="Título do chamado"></label>
+      <label class="field"><span>{{chf.rotA}}</span><textarea class="input" rows="3" value="{{chf.a}}" onChange="{{chf.onA}}" placeholder="Cole um print com Ctrl+V em qualquer campo." style="resize: vertical; border-radius: 12px"></textarea></label>
+      <label class="field"><span>{{chf.rotB}}</span><textarea class="input" rows="2" value="{{chf.b}}" onChange="{{chf.onB}}" style="resize: vertical; border-radius: 12px"></textarea></label>
+      <sc-if value="{{chf.temC}}" hint-placeholder-val="{{true}}"><label class="field"><span>{{chf.rotC}}</span><textarea class="input" rows="2" value="{{chf.c}}" onChange="{{chf.onC}}" style="resize: vertical; border-radius: 12px"></textarea></label></sc-if>
+      <sc-if value="{{chf.novo}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; gap: 8px"><div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><button type="button" class="btn sm secondary" onClick="{{chf.pick}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5 12.5 20a5 5 0 0 1-7-7l8.5-8.5a3.3 3.3 0 0 1 4.7 4.7L10.2 17.7a1.7 1.7 0 0 1-2.4-2.4L15.5 7.6"></path></svg>Anexar arquivo</button><span class="muted" style="font-size: 12px">Print, zip, PDF ou log. Também dá para colar (Ctrl+V) ou arrastar aqui.</span></div><sc-if value="{{chf.hasAtt}}" hint-placeholder-val="{{false}}"><div class="tv-att-row"><sc-for list="{{chf.att}}" as="a" hint-placeholder-count="1"><span class="tv-att" title="{{a.title}}"><sc-if value="{{a.isImg}}" hint-placeholder-val="{{false}}"><img src="{{a.thumb}}" alt=""></sc-if><span class="tv-att-n">{{a.name}}</span><small>{{a.size}}</small><button type="button" onClick="{{a.remove}}" aria-label="Tirar {{a.name}}">×</button></span></sc-for></div></sc-if></div></sc-if>
+      <sc-if value="{{chf.hasErr}}" hint-placeholder-val="{{false}}"><p style="font-size: 12.5px; color: var(--danger); margin: 0">{{chf.err}}</p></sc-if>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{chf.close}}">Cancelar</button><button class="btn primary" onClick="{{chf.save}}" disabled="{{chf.busy}}">{{chf.saveLbl}}</button></div>
   </div></div>
 </sc-if>
 
@@ -2355,7 +2415,7 @@ class Component extends DCLogic {
     // abas do projeto: no Meridian, o painel de etapa só aparece na aba Esteira; Guard usa a seção existente
     Object.keys(t).forEach((k) => { if (ptab !== 'esteira') t[k] = false; });
     if (ptab === 'qa' && isM) t.guard = true;
-    const pt = { geral: ptab === 'geral', esteiraM: ptab === 'esteira' && isM, esteiraG: ptab === 'esteira' && !isM, trilho: ptab === 'trilho' && projFinished, kanban: ptab === 'kanban', roadmap: ptab === 'roadmap', arquivos: ptab === 'arquivos', qa: ptab === 'qa', seg: ptab === 'seg', logs: ptab === 'logs', acessos: ptab === 'acessos' };
+    const pt = { geral: ptab === 'geral', esteiraM: ptab === 'esteira' && isM, esteiraG: ptab === 'esteira' && !isM, trilho: ptab === 'trilho' && projFinished, kanban: ptab === 'kanban', roadmap: ptab === 'roadmap', arquivos: ptab === 'arquivos', qa: ptab === 'qa', seg: ptab === 'seg', logs: ptab === 'logs', acessos: ptab === 'acessos', chamados: ptab === 'chamados' };
 
     // ================= MOTOR & EXECUÇÃO =================
     const motor = P.motor; const Eng = ENG[motor.engine]; const Mo = modelOf(motor);
@@ -2444,7 +2504,7 @@ class Component extends DCLogic {
           const rows = res.messages.slice(-40).map(function (m) {
             if (m.role === 'cut') return ['', '', 'cut', [], m.ts || ''];
             const me = m.role === 'me' || m.cls === 'me';
-            return [m.who || (me ? 'Carlos' : 'Íris'), String(m.t || m.text || ''), me ? 'me' : 'ag', m.thoughts || [], when(m), (m.attachments || []).map(function (a) { return { name: a.name }; })];
+            return [m.who || (me ? 'Carlos' : 'Íris'), String(m.t || m.text || ''), me ? 'me' : 'ag', m.thoughts || [], when(m), (m.attachments || []).map(function (a) { return { name: a.name, rel: a.rel }; }), me ? null : { id: m.id, runId: m.runId || '', engine: m.engine || '', propostas: m.propostas || [], propostaAvisos: m.propostaAvisos || [], chamadosVarredura: m.chamadosVarredura || null }];
           });
           const patch = { chatCtx: Object.assign({}, st.chatCtx || {}) };
           patch.chatCtx[pidLoad] = res.context || null;
@@ -2515,7 +2575,43 @@ class Component extends DCLogic {
       wideLbl: s.chatWide ? 'Reduzir a conversa' : 'Ampliar a conversa para leitura', wideIcon: s.chatWide ? 'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5' : 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',
       toggleWide: () => self.setState({ chatWide: !s.chatWide }),
       stepsOn: s.chatStepsAll ? 'on' : '', toggleSteps: () => self.setState({ chatStepsAll: !s.chatStepsAll, chatThink: {} }),
-      msgs: chat.map((m, i) => {
+      msgs: (function () {
+        const PROP_TIPO = { bug: 'Bug', melhoria: 'Melhoria', duvida: 'Dúvida' };
+        const PROP_PRI = { urgente: ['Urgente', 'danger'], alta: ['Alta', 'warn'], media: ['Média', ''], baixa: ['Baixa', ''] };
+        const PROP_ROT = { bug: ['O que acontece', 'O que era esperado', 'Como reproduzir'], melhoria: ['O que mudar', 'Por quê', 'Como saber que ficou pronto'], duvida: ['Pergunta', 'Contexto', ''] };
+        const feitos = s.propFeito || {};
+        // Anexos da mensagem do Carlos que originou a resposta (a anterior a ela).
+        const anexosAntes = function (i) { for (let j = i - 1; j >= 0; j--) { if (chat[j][2] === 'me') return (chat[j][5] || []).map(function (a) { return a.rel; }).filter(Boolean); } return []; };
+        const propsDe = function (m, i) {
+          const meta = m[6]; if (!meta || !(meta.propostas || []).length) return [];
+          return meta.propostas.map(function (p, n) {
+            const key = P.id + ':' + (meta.id || i) + ':' + n; const fe = feitos[key]; const rot = PROP_ROT[p.tipo] || PROP_ROT.bug; const pr = PROP_PRI[p.prioridade] || [p.prioridade, ''];
+            const busy = !!(s.busy || {})['prop:' + key];
+            const marcar = function (txt) { const f = Object.assign({}, self.state.propFeito || {}); f[key] = txt; self.setState({ propFeito: f }); };
+            const pre = { origem: 'conversa', autorNome: 'Íris', motor: meta.engine || '', runId: meta.runId || '', anexosRel: anexosAntes(i) };
+            return {
+              key: key, tipo: PROP_TIPO[p.tipo] || p.tipo, pri: pr[0], priCls: pr[1], titulo: p.titulo,
+              temDup: !!p.duplicado, dup: p.duplicado || '',
+              campos: [[rot[0], p.descricao && p.descricao.a], [rot[1], p.descricao && p.descricao.b], [rot[2], p.descricao && p.descricao.c]].filter(function (x) { return x[0] && String(x[1] || '').trim(); }).map(function (x) { return { rot: x[0], t: x[1] }; }),
+              temEv: !!p.evidencia, ev: p.evidencia ? (p.evidenciaNaoConferida ? 'Evidência não conferida: ' : 'Evidência: ') + p.evidencia : '', evCor: p.evidenciaNaoConferida ? 'var(--warning)' : 'var(--text-secondary)',
+              feito: !!fe, feitoTxt: fe || '', aberta: !fe, busy: busy, abrirLbl: busy ? 'Abrindo…' : p.duplicado ? 'Apontar de novo em ' + p.duplicado : 'Abrir chamado',
+              abrir: function () {
+                const t = lgApi; if (!t || !t.projects || !t.projects.chamadoCriar) return;
+                const bz = Object.assign({}, self.state.busy || {}); bz['prop:' + key] = true; self.setState({ busy: bz });
+                t.projects.chamadoCriar(lgTarget, Object.assign({ tipo: p.tipo, titulo: p.titulo, prioridade: p.prioridade, descricao: Object.assign({}, p.descricao, p.evidencia ? { c: ((p.descricao && p.descricao.c) ? p.descricao.c + '\n\n' : '') + 'Evidência: ' + p.evidencia } : {}), evidenciaNaoConferida: p.evidenciaNaoConferida ? p.evidencia : '' }, pre)).then(function (r) {
+                  const bz2 = Object.assign({}, self.state.busy || {}); delete bz2['prop:' + key]; self.setState({ busy: bz2 });
+                  if (!r || r.ok === false) { app.toast('Abrir chamado', (r && r.error) || 'Não gravou.'); return; }
+                  marcar(r.repetido ? 'Já existia: apontado de novo em ' + r.chamado.id + '.' : 'Aberto como ' + r.chamado.id + '.');
+                  app.toast(r.chamado.id, r.repetido ? 'O chamado já existia. A Íris apontou de novo.' : 'Chamado aberto pela Íris.');
+                  if (self._loadChamados) self._loadChamados();
+                }).catch(function (e) { const bz3 = Object.assign({}, self.state.busy || {}); delete bz3['prop:' + key]; self.setState({ busy: bz3 }); app.toast('Abrir chamado', String(e && e.message || e)); });
+              },
+              editar: function () { self._chOpenForm(null, { tipo: p.tipo, prioridade: p.prioridade, titulo: p.titulo, a: (p.descricao && p.descricao.a) || '', b: (p.descricao && p.descricao.b) || '', c: ((p.descricao && p.descricao.c) || '') + (p.evidencia ? '\n\nEvidência: ' + p.evidencia : ''), pre: pre, propKey: key }); },
+              descartar: function () { marcar('Descartada.'); },
+            };
+          });
+        };
+        return chat.map((m, i) => {
         const k = P.id + ':' + i; const me = m[2] === 'me'; const tr = chatTrail(m[3]);
         const op = Object.prototype.hasOwnProperty.call(s.chatThink, k) ? !!s.chatThink[k] : !!s.chatStepsAll;
         return {
@@ -2526,7 +2622,9 @@ class Component extends DCLogic {
           hasAtts: (m[5] || []).length > 0, atts: (m[5] || []).map((a) => ({ name: a.name, isImg: !!a.thumb, noImg: !a.thumb, thumb: a.thumb || '' })),
           hasThink: (m[3] || []).length > 0, open: op, rot: op ? 90 : 0, thinkLbl: tr.label, thinkTip: op ? 'Ocultar passos e pensamento' : 'Ver passos e pensamento',
           steps: tr.steps, think: tr.meta,
-          toggle: () => { const ct = Object.assign({}, s.chatThink); ct[k] = !op; self.setState({ chatThink: ct }); }
+          toggle: () => { const ct = Object.assign({}, s.chatThink); ct[k] = !op; self.setState({ chatThink: ct }); },
+          hasProps: !me && !!(m[6] && (m[6].propostas || []).length), props: propsDe(m, i),
+          hasAvisos: !me && !!(m[6] && (m[6].propostaAvisos || []).length), avisos: (m[6] && (m[6].propostaAvisos || []).join(' ')) || ''
         };
       });
       })()
@@ -2704,6 +2802,205 @@ class Component extends DCLogic {
     // API do app e alvo do projeto: declarados antes de chamados, acessos e logs, que usam os dois durante o render.
     const lgApi = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
     const lgTarget = P.local_path || P.path || P.slug || P.id;
+    // ================= CHAMADOS (B2) =================
+    self._chReq = self._chReq || {};
+    self._loadChamados = () => {
+      if (!lgApi || !lgApi.projects || !lgApi.projects.chamados || !P.local_path) return;
+      const pidC = P.id;
+      lgApi.projects.chamados(lgTarget).then(function (res) {
+        const m = Object.assign({}, self.state.chById || {}); m[pidC] = res && res.ok ? res : { chamados: [] };
+        const k = Object.assign({}, self.state.chCount || {}); if (res && res.contagem) k[pidC] = res.contagem;
+        self.setState({ chById: m, chCount: k });
+      }).catch(function () {});
+    };
+    if (P.local_path && !self._chReq[P.id]) { self._chReq[P.id] = true; setTimeout(function () { self._loadChamados(); }, 0); }
+    const CHV = (s.chById || {})[P.id] || null;
+    const chAll = (CHV && CHV.chamados) || [];
+    const CH_SIT = { aberto: ['Aberto', 'warn'], em_refinamento: ['Em refinamento', 'action'], pronto: ['Pronto', 'action'], em_execucao: ['Em execução', 'flow'], aguardando_validacao: ['Aguardando validação', 'warn'], concluido: ['Concluído', 'flow'], recusado: ['Recusado', ''] };
+    const CH_TIPO = { bug: 'Bug', melhoria: 'Melhoria', duvida: 'Dúvida' };
+    const CH_PRI = { urgente: [0, 'Urgente', 'danger'], alta: [1, 'Alta', 'warn'], media: [2, 'Média', ''], baixa: [3, 'Baixa', ''] };
+    const CH_ROT = { bug: ['O que acontece', 'O que era esperado', 'Como reproduzir'], melhoria: ['O que mudar', 'Por quê', 'Como saber que ficou pronto'], duvida: ['Pergunta', 'Contexto', ''] };
+    const chFechado = function (c) { return c.situacao === 'concluido' || c.situacao === 'recusado'; };
+    const chAguarda = function (c) { return c.situacao === 'aguardando_validacao' || (c.situacao === 'aberto' && c.autor && c.autor.tipo === 'agente'); };
+    const CH_FILT = { ativos: function (c) { return !chFechado(c); }, aberto: function (c) { return c.situacao === 'aberto'; }, em_refinamento: function (c) { return c.situacao === 'em_refinamento'; }, pronto: function (c) { return c.situacao === 'pronto'; }, em_execucao: function (c) { return c.situacao === 'em_execucao'; }, aguarda: chAguarda, fechados: chFechado };
+    const chF = s.chF || 'ativos', chT = s.chT || 'todos', chO = s.chO || 'pri', chQ = String(s.chQ || '').toLowerCase().trim();
+    const chIdade = function (iso) { const d = (Date.now() - new Date(iso).getTime()) / 60000; if (!(d >= 0)) return ''; if (d < 60) return 'há ' + Math.max(1, Math.round(d)) + ' min'; if (d < 1440) return 'há ' + Math.round(d / 60) + ' h'; return 'há ' + Math.round(d / 1440) + ' d'; };
+    const chQuem = function (c) { return c.autor && c.autor.tipo === 'agente' ? 'aberto pela ' + (c.autor.nome || 'Íris') + (c.autor.origem === 'absorcao' ? ' (absorção)' : c.autor.origem === 'varredura' ? ' (varredura)' : c.autor.origem === 'trilho' ? ' (trilho)' : '') : 'aberto por você'; };
+    const chShown = chAll.filter(CH_FILT[chF] || CH_FILT.ativos).filter(function (c) { return chT === 'todos' || c.tipo === chT; }).filter(function (c) { return !chQ || (c.titulo + ' ' + c.descricao.a + ' ' + c.descricao.b + ' ' + c.descricao.c + ' ' + c.id).toLowerCase().indexOf(chQ) >= 0; })
+      .sort(function (a, b) { if (chO === 'novo') return b.criado_em.localeCompare(a.criado_em); if (chO === 'velho') return a.criado_em.localeCompare(b.criado_em); const pa = (CH_PRI[a.prioridade] || [9])[0], pb = (CH_PRI[b.prioridade] || [9])[0]; return pa - pb || (chAguarda(b) ? 1 : 0) - (chAguarda(a) ? 1 : 0) || a.id.localeCompare(b.id); });
+    const chAtivosN = chAll.filter(function (c) { return !chFechado(c); }).length;
+    const chAguardaN = chAll.filter(chAguarda).length;
+    const chSetState = function (res, title, okMsg) { if (res && res.ok === false) { app.toast(title, res.error || 'Não deu certo.'); return false; } if (okMsg) app.toast(title, okMsg); if (self._loadChamados) self._loadChamados(); return true; };
+    const chx = {
+      resumo: chAll.length ? chAtivosN + (chAtivosN === 1 ? ' ativo' : ' ativos') + (chAguardaN ? ' · ' + chAguardaN + ' aguardando você' : '') + ' · ' + chAll.length + ' no total' : 'Defeitos, melhorias e dúvidas deste projeto.',
+      filters: [['ativos', 'Ativos'], ['aberto', 'Abertos'], ['em_refinamento', 'Em refinamento'], ['pronto', 'Prontos'], ['em_execucao', 'Em execução'], ['aguarda', 'Aguardando você'], ['fechados', 'Fechados']].map(function (f) { return { label: f[1], n: chAll.filter(CH_FILT[f[0]]).length, on: chF === f[0] ? 'on' : '', pick: function () { self.setState({ chF: f[0] }); } }; }),
+      tipos: [['todos', 'Todos os tipos'], ['bug', 'Bug'], ['melhoria', 'Melhoria'], ['duvida', 'Dúvida']].map(function (f) { return { label: f[1], on: chT === f[0] ? 'on' : '', pick: function () { self.setState({ chT: f[0] }); } }; }),
+      ords: [['pri', 'Prioridade'], ['novo', 'Mais recente'], ['velho', 'Mais antigo']].map(function (f) { return { label: f[1], on: chO === f[0] ? 'on' : '', pick: function () { self.setState({ chO: f[0] }); } }; }),
+      q: s.chQ || '', onQ: function (e) { self.setState({ chQ: e.target.value }); },
+      varrendo: !!s.typing, varrerLbl: s.typing ? 'A Íris está trabalhando…' : 'Procurar melhorias',
+      varrer: function () {
+        if (!self.sendIrisMessage) return;
+        const abertos = chAll.filter(function (c) { return !chFechado(c); }).map(function (c) { return '- ' + c.id + ' · ' + c.titulo; });
+        self.sendIrisMessage('Procure defeitos e melhorias neste projeto. Leia o código e os documentos e termine com até oito blocos CHAMADO:, um por problema real, cada um com evidência (arquivo:linha). Não repita o que já está na fila' + (abertos.length ? ':\n' + abertos.join('\n') : '.'), { varredura: true });
+        app.toast('Procurar melhorias', 'A Íris está lendo o projeto. Os chamados entram direto na fila.');
+      },
+      vazio: chShown.length === 0, vazioTxt: chAll.length ? 'Nenhum chamado neste filtro.' : 'Nenhum chamado ainda. Abra o primeiro quando achar um defeito ou quiser uma melhoria.',
+      rows: chShown.map(function (c) { const sit = CH_SIT[c.situacao] || ['?', '']; const pr = CH_PRI[c.prioridade] || [9, c.prioridade, '']; return { id: c.id, tipo: CH_TIPO[c.tipo] || c.tipo, titulo: c.titulo, pri: pr[1], priCls: pr[2], sit: sit[0], sitCls: sit[1], quem: chQuem(c), idade: chIdade(c.criado_em), temAnexo: (c.anexos || []).length > 0, anexos: (c.anexos || []).length + ((c.anexos || []).length === 1 ? ' anexo' : ' anexos'), on: s.chSel === c.id ? 'on' : '', bar: chAguarda(c) ? 'var(--warning)' : 'transparent', pick: function () { self.setState({ chSel: c.id, chNota: '', chCritDraft: '', chHist: false }); } }; }),
+    };
+    const chC = chAll.find(function (c) { return c.id === s.chSel; }) || null;
+    const chImgs = s.chImg || {};
+    if (chC) {
+      (chC.anexos || []).forEach(function (a) {
+        const key = P.id + ':' + chC.id + ':' + a.name;
+        if (a.kind === 'imagem' && chImgs[key] === undefined && lgApi && lgApi.projects && lgApi.projects.chamadoAnexo) {
+          chImgs[key] = null;
+          lgApi.projects.chamadoAnexo(lgTarget, chC.id, a.name).then(function (r) { const m = Object.assign({}, self.state.chImg || {}); m[key] = r && r.ok ? r.dataUrl : ''; self.setState({ chImg: m }); }).catch(function () {});
+        }
+      });
+    }
+    const chMover = function (para, nota, okMsg) { lgApi.projects.chamadoMover(lgTarget, chC.id, para, nota || '').then(function (r) { if (chSetState(r, chC.id, okMsg)) self.setState({ chNota: '' }); }); };
+    const chd = (function () {
+      if (!chC) return { show: false };
+      const sit = CH_SIT[chC.situacao] || ['?', '']; const pr = CH_PRI[chC.prioridade] || [9, chC.prioridade, '']; const rot = CH_ROT[chC.tipo] || CH_ROT.bug;
+      const editavel = !chFechado(chC) && chC.situacao !== 'em_execucao' && chC.situacao !== 'aguardando_validacao';
+      const crits = (chC.refinamento && chC.refinamento.criterios) || [];
+      const nota = s.chNota || '';
+      const setCrit = function (list) { lgApi.projects.chamadoEditar(lgTarget, chC.id, { criterios: list }).then(function (r) { chSetState(r, chC.id); }); };
+      const acoes = [];
+      const A = function (label, cls, go, off) { acoes.push({ label: label, cls: cls, go: go, off: !!off }); };
+      const st = chC.situacao;
+      if (st === 'aberto') A('Pôr em refinamento', 'secondary', function () { chMover('em_refinamento', '', 'Em refinamento.'); });
+      if ((st === 'aberto' || st === 'em_refinamento') && chC.tipo !== 'duvida') A('Marcar como pronto', 'primary', function () { chMover('pronto', '', 'Pronto para executar.'); }, !crits.length);
+      if (editavel) A('Editar', 'ghost', function () { self._chOpenForm(chC); });
+      if (st === 'aberto' || st === 'em_refinamento' || st === 'pronto') A('Recusar', 'ghost', function () { if (!String(self.state.chNota || '').trim()) { app.toast('Recusar', 'Escreva o motivo no campo acima.'); self.setState({ chPedeNota: 'recusar' }); return; } chMover('recusado', self.state.chNota, 'Chamado recusado.'); });
+      const hist = (chC.historico || []).slice().reverse().map(function (h) { return { at: new Date(h.at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }), quem: h.quem, acao: h.acao + (h.para ? ' → ' + ((CH_SIT[h.para] || [h.para])[0]) : ''), temNota: !!h.nota, nota: h.nota || '' }; });
+      const zoomK = s.chZoom || '';
+      return {
+        show: true, id: chC.id, tipo: CH_TIPO[chC.tipo] || chC.tipo, pri: pr[1], priCls: pr[2], sit: sit[0], sitCls: sit[1], titulo: chC.titulo,
+        autor: chQuem(chC) + ' · ' + chIdade(chC.criado_em) + (chC.autor && chC.autor.motor ? ' · motor ' + chC.autor.motor : ''),
+        evRuim: !!chC.evidenciaNaoConferida, ev: chC.evidenciaNaoConferida || '',
+        close: function () { self.setState({ chSel: null }); },
+        campos: [[rot[0], chC.descricao.a], [rot[1], chC.descricao.b], [rot[2], chC.descricao.c]].filter(function (x) { return x[0] && String(x[1] || '').trim(); }).map(function (x) { return { rot: x[0], blocks: chatBlocks(x[1]) }; }),
+        temAnexo: (chC.anexos || []).length > 0,
+        anexos: (chC.anexos || []).map(function (a) { const key = P.id + ':' + chC.id + ':' + a.name; const src = chImgs[key] || ''; return { name: a.name, size: a.size >= 1048576 ? (a.size / 1048576).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(a.size / 1024)) + ' KB', isImg: !!src, src: src, open: function () { if (src) self.setState({ chZoom: key }); else if (window.TavirReader && window.TavirReader.openFile) window.TavirReader.openFile(a.rel); } }; }),
+        zoom: zoomK && chImgs[zoomK] ? { show: true, src: chImgs[zoomK], name: zoomK.split(':').pop(), close: function () { self.setState({ chZoom: '' }); } } : { show: false },
+        semCrit: !crits.length, crit: crits.map(function (t, i) { return { t: t, rm: function () { setCrit(crits.filter(function (_, j) { return j !== i; })); } }; }), editavel: editavel,
+        critDraft: s.chCritDraft || '', onCrit: function (e) { self.setState({ chCritDraft: e.target.value }); },
+        addCrit: function () { const t = String(self.state.chCritDraft || '').trim(); if (!t) return; self.setState({ chCritDraft: '' }); setCrit(crits.concat([t])); },
+        temCiclo: !!chC.ciclo, ciclo: chC.ciclo ? 'Ciclo ' + chC.ciclo.n + ' do trilho' + (chC.ciclo.branch ? ' · ' + chC.ciclo.branch : '') + (chC.ciclo.pr ? ' · ' + chC.ciclo.pr : '') + '.' : '', verTrilho: function () { self.setState({ ptab: 'trilho' }); },
+        temResposta: !!chC.resposta, respBlocks: chC.resposta ? chatBlocks(chC.resposta) : [],
+        pedeNota: !chFechado(chC), notaLbl: st === 'aguardando_validacao' ? 'Nota (obrigatória para reprovar)' : 'Nota ou motivo (obrigatório para recusar)', nota: nota, onNota: function (e) { self.setState({ chNota: e.target.value }); },
+        acoes: acoes,
+        histOpen: !!s.chHist, histLbl: (s.chHist ? 'Recolher histórico' : 'Histórico (' + hist.length + ')'), toggleHist: function () { self.setState({ chHist: !self.state.chHist }); }, hist: hist,
+      };
+    })();
+
+    // ================= CHAMADOS (B3): refinar, executar, gate, dúvida =================
+    self._chSugReq = self._chSugReq || {};
+    const chSug = (s.chSug || {})[P.id + ':' + (chC ? chC.id : '')] || null;
+    if (chC && lgApi && lgApi.projects && lgApi.projects.chamadoSugestao && !self._chSugReq[P.id + ':' + chC.id]) {
+      self._chSugReq[P.id + ':' + chC.id] = true;
+      const kS = P.id + ':' + chC.id;
+      lgApi.projects.chamadoSugestao(lgTarget, chC.id).then(function (r) { if (r && r.sugestao) { const m = Object.assign({}, self.state.chSug || {}); m[kS] = r.sugestao; self.setState({ chSug: m }); } }).catch(function () {});
+    }
+    const chBusy = function (k) { return !!(s.busy || {})['ch:' + k]; };
+    const chSetBusy = function (k, on) { const b = Object.assign({}, self.state.busy || {}); if (on) b['ch:' + k] = true; else delete b['ch:' + k]; self.setState({ busy: b }); };
+    self._chAcoesB3 = function (c, A) {
+      const k = P.id + ':' + c.id;
+      const st = c.situacao;
+      if ((st === 'aberto' || st === 'em_refinamento') && c.tipo !== 'duvida') {
+        A(chBusy(k + ':ref') ? 'A Íris está lendo…' : 'Pedir refinamento à Íris', 'secondary', function () {
+          chSetBusy(k + ':ref', true);
+          const go = function () {
+            lgApi.projects.chamadoRefinar(lgTarget, c.id).then(function (r) {
+              chSetBusy(k + ':ref', false);
+              if (!r || !r.ok) { app.toast('Refinamento', (r && r.error) || 'Não veio resposta.'); return; }
+              const m = Object.assign({}, self.state.chSug || {}); m[k] = r.sugestao; self.setState({ chSug: m });
+              app.toast(c.id, 'A Íris sugeriu ' + r.sugestao.criterios.length + ' critério(s). Aceite os que fizerem sentido.');
+              if (self._loadChamados) self._loadChamados();
+            }).catch(function (e) { chSetBusy(k + ':ref', false); app.toast('Refinamento', String(e && e.message || e)); });
+          };
+          if (st === 'aberto') lgApi.projects.chamadoMover(lgTarget, c.id, 'em_refinamento', '').then(function () { go(); }); else go();
+        }, chBusy(k + ':ref'));
+      }
+      if (c.tipo === 'duvida' && st !== 'concluido' && st !== 'recusado') {
+        A(chBusy(k + ':resp') ? 'A Íris está lendo…' : (c.resposta ? 'Perguntar de novo à Íris' : 'Perguntar à Íris'), c.resposta ? 'ghost' : 'primary', function () {
+          chSetBusy(k + ':resp', true);
+          lgApi.projects.chamadoResponder(lgTarget, c.id).then(function (r) { chSetBusy(k + ':resp', false); chSetState(r, c.id, 'A Íris respondeu. Leia e conclua se estiver bom.'); }).catch(function (e) { chSetBusy(k + ':resp', false); app.toast('Dúvida', String(e && e.message || e)); });
+        }, chBusy(k + ':resp'));
+        if (c.resposta) A('Concluir com esta resposta', 'primary', function () { lgApi.projects.chamadoConcluirDuvida(lgTarget, c.id).then(function (r) { chSetState(r, c.id, 'Dúvida concluída.'); }); });
+      }
+      if (st === 'pronto') A(chBusy(k + ':exe') ? 'Abrindo o ciclo…' : 'Executar', 'primary', function () {
+        chSetBusy(k + ':exe', true);
+        lgApi.projects.chamadoExecutar(lgTarget, c.id).then(function (r) {
+          chSetBusy(k + ':exe', false);
+          if (!chSetState(r, c.id, r && r.trilho ? 'Ciclo aberto no trilho com o chamado em «Mapear gaps». O foco foi para Planejar.' : 'A Íris recebeu o chamado. Ao terminar, os portões decidem se vai para validação.')) return;
+          if (r && r.trilho && self.reloadIpcProjects) self.reloadIpcProjects();
+        }).catch(function (e) { chSetBusy(k + ':exe', false); app.toast('Executar', String(e && e.message || e)); });
+      }, chBusy(k + ':exe'));
+      if (st === 'em_execucao') A('Ver no trilho', 'secondary', function () { self.setState({ ptab: 'trilho' }); });
+      if (st === 'aguardando_validacao') {
+        A('Aprovar e concluir', 'primary', function () { lgApi.projects.chamadoDecidir(lgTarget, c.id, 'aprovado', String(self.state.chNota || '')).then(function (r) { if (chSetState(r, c.id, 'Aprovado no gate. Chamado concluído.')) self.setState({ chNota: '' }); }); });
+        A('Reprovar', 'ghost', function () { const n = String(self.state.chNota || '').trim(); if (!n) { app.toast('Reprovar', 'Escreva a nota dizendo o que falta.'); return; } lgApi.projects.chamadoDecidir(lgTarget, c.id, 'reprovado', n).then(function (r) { if (chSetState(r, c.id, 'Reprovado. O chamado voltou para pronto com a sua nota.')) self.setState({ chNota: '' }); }); });
+      }
+    };
+    if (chd.show && chC) {
+      const crits = (chC.refinamento && chC.refinamento.criterios) || [];
+      const editar = function (patch, msg) { lgApi.projects.chamadoEditar(lgTarget, chC.id, patch).then(function (r) { chSetState(r, chC.id, msg); }); };
+      const kSug = P.id + ':' + chC.id;
+      const resp = (s.chResp || {});
+      chd.temNotas = !!(chC.refinamento && chC.refinamento.notas); chd.notasTxt = (chC.refinamento && chC.refinamento.notas) || '';
+      chd.sug = chSug && chd.editavel ? {
+        show: true, temTexto: !!chSug.texto, blocks: chSug.texto ? chatBlocks(chSug.texto) : [],
+        crit: (chSug.criterios || []).map(function (t) { const ja = crits.indexOf(t) >= 0; return { t: t, ja: ja, pode: !ja, aceitar: function () { editar({ criterios: crits.concat([t]) }, 'Critério aceito.'); } }; }),
+        perg: (chSug.perguntas || []).map(function (q, i) { const rk = kSug + ':' + i; return { t: q, val: resp[rk] || '', on: function (e) { const m = Object.assign({}, self.state.chResp || {}); m[rk] = e.target.value; self.setState({ chResp: m }); }, responder: function () { const v = String((self.state.chResp || {})[rk] || '').trim(); if (!v) return; const atual = (chC.refinamento && chC.refinamento.notas) || ''; editar({ notas: (atual ? atual + '\n' : '') + 'P: ' + q + '\nR: ' + v }, 'Resposta guardada nas notas do refinamento.'); } }; }),
+        temNotas: !!chSug.notas, notas: chSug.notas || '', aceitarNotas: function () { const atual = (chC.refinamento && chC.refinamento.notas) || ''; editar({ notas: (atual ? atual + '\n' : '') + chSug.notas }, 'Notas aceitas.'); },
+      } : { show: false };
+      // As ações de B3 entram depois de montadas (o hook roda no próximo render).
+      const extra = []; self._chAcoesB3(chC, function (label, cls, go, off) { extra.push({ label: label, cls: cls, go: go, off: !!off }); });
+      const seen = {}; chd.acoes = extra.concat(chd.acoes).filter(function (a) { if (seen[a.label]) return false; seen[a.label] = 1; return true; });
+    }
+    // Formulário de abrir/editar chamado.
+    self._chOpenForm = function (c, pre) {
+      if (!P.local_path) { app.toast('Abrir chamado', 'Este projeto ainda não tem pasta no disco.'); return; }
+      const base = c ? { edit: c.id, tipo: c.tipo, prioridade: c.prioridade, titulo: c.titulo, a: c.descricao.a, b: c.descricao.b, c: c.descricao.c } : Object.assign({ edit: null, tipo: 'bug', prioridade: 'media', titulo: '', a: '', b: '', c: '' }, pre || {});
+      self.setState({ chForm: Object.assign({ open: true, busy: false, err: '' }, base), menu: false });
+    };
+    const CF = s.chForm || { open: false };
+    const cfSet = function (patch) { self.setState({ chForm: Object.assign({}, self.state.chForm || {}, patch) }); };
+    const cfAttKey = 'ch:' + P.id;
+    const cfAtt = (s.attach && s.attach[cfAttKey]) || [];
+    const cfRot = CH_ROT[CF.tipo || 'bug'] || CH_ROT.bug;
+    const chf = {
+      open: !!CF.open, novo: !CF.edit, eyebrow: CF.edit ? CF.edit + ' · editar' : 'Fila de chamados · ' + P.name, title: CF.edit ? 'Editar chamado' : 'Abrir chamado',
+      tipos: [['bug', 'Bug'], ['melhoria', 'Melhoria'], ['duvida', 'Dúvida']].map(function (t) { return { label: t[1], on: (CF.tipo || 'bug') === t[0] ? 'on' : '', pick: function () { cfSet({ tipo: t[0] }); } }; }),
+      pris: [['urgente', 'Urgente'], ['alta', 'Alta'], ['media', 'Média'], ['baixa', 'Baixa']].map(function (t) { return { label: t[1], on: (CF.prioridade || 'media') === t[0] ? 'on' : '', pick: function () { cfSet({ prioridade: t[0] }); } }; }),
+      titulo: CF.titulo || '', onTitulo: function (e) { cfSet({ titulo: e.target.value }); },
+      rotA: cfRot[0], rotB: cfRot[1], rotC: cfRot[2], temC: !!cfRot[2],
+      a: CF.a || '', b: CF.b || '', c: CF.c || '', onA: function (e) { cfSet({ a: e.target.value }); }, onB: function (e) { cfSet({ b: e.target.value }); }, onC: function (e) { cfSet({ c: e.target.value }); },
+      hasAtt: cfAtt.length > 0,
+      att: cfAtt.map(function (a) { return { name: a.name, title: a.name, size: a.size >= 1048576 ? (a.size / 1048576).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(a.size / 1024)) + ' KB', isImg: a.isImg, thumb: a.isImg ? a.data : '', remove: function () { const m = Object.assign({}, self.state.attach || {}); m[cfAttKey] = (m[cfAttKey] || []).filter(function (x) { return x.id !== a.id; }); self.setState({ attach: m }); } }; }),
+      pick: function () { const inp = document.createElement('input'); inp.type = 'file'; inp.multiple = true; inp.accept = 'image/*,.zip,.pdf,.txt,.log,.md,.json,.csv,.html,.xml,.yaml,.yml'; inp.onchange = function () { if (self.addAttachFiles) self.addAttachFiles(inp.files, 'chamado'); }; inp.click(); },
+      hasErr: !!CF.err, err: CF.err || '', busy: !!CF.busy, saveLbl: CF.busy ? 'Gravando…' : CF.edit ? 'Salvar' : 'Abrir chamado',
+      close: function () { self.setState({ chForm: { open: false } }); }, bg: function (e) { if (e && e.target === e.currentTarget && !CF.busy) self.setState({ chForm: { open: false } }); },
+      save: function () {
+        const F = self.state.chForm || {};
+        if (!String(F.titulo || '').trim()) { cfSet({ err: 'O título é obrigatório.' }); return; }
+        const dados = { tipo: F.tipo || 'bug', prioridade: F.prioridade || 'media', titulo: F.titulo, descricao: { a: F.a || '', b: F.b || '', c: F.c || '' } };
+        cfSet({ busy: true, err: '' });
+        const fim = function (r) {
+          if (!r || r.ok === false) { cfSet({ busy: false, err: (r && r.error) || 'Não gravou.' }); return; }
+          const m = Object.assign({}, self.state.attach || {}); delete m[cfAttKey];
+          if (F.propKey && r.chamado) { const pf = Object.assign({}, self.state.propFeito || {}); pf[F.propKey] = 'Aberto como ' + r.chamado.id + ' (editado antes).'; self.setState({ propFeito: pf }); }
+          self.setState({ chForm: { open: false }, attach: m, ptab: 'chamados', chSel: r.chamado ? r.chamado.id : self.state.chSel, chF: 'ativos' });
+          app.toast(r.chamado ? r.chamado.id : 'Chamado', F.edit ? 'Alterações gravadas.' : 'Chamado aberto' + ((r.chamado && r.chamado.anexos && r.chamado.anexos.length) ? ' com ' + r.chamado.anexos.length + (r.chamado.anexos.length === 1 ? ' anexo.' : ' anexos.') : '.'));
+          if (r.avisos && r.avisos.length) app.toast('Anexos', r.avisos.join(' '));
+          if (self._loadChamados) self._loadChamados();
+        };
+        if (F.edit) lgApi.projects.chamadoEditar(lgTarget, F.edit, dados).then(fim).catch(function (e) { cfSet({ busy: false, err: String(e && e.message || e) }); });
+        else lgApi.projects.chamadoCriar(lgTarget, Object.assign({ anexos: ((self.state.attach || {})[cfAttKey] || []).map(function (a) { return { name: a.name, type: a.type, data: a.data }; }) }, F.pre || {}, dados)).then(fim).catch(function (e) { cfSet({ busy: false, err: String(e && e.message || e) }); });
+      },
+    };
     // ================= ACESSOS =================
     // A4: cartões reais do projeto (projects:acessos). Valor em claro nunca chega aqui.
     self._acReq = self._acReq || {};
@@ -2914,7 +3211,7 @@ class Component extends DCLogic {
         },
         unaccept: () => { qaApi.seg.accept(qaTarget, f.fp, false, '', f.id + ' · ' + f.title).then(function () { self._loadSeg(); app.toast('Aceite retirado', f.id + ' volta a contar no portão.'); }); },
         toggle: () => { const o = Object.assign({}, s.fOpen); o[k] = !ex2; self.setState({ fOpen: o }); },
-        askFix: SR && SR.real ? () => self.setState({ chgOpen: true, chat: true, unread: 0, menu: false, chgDraft: 'Corrigir o achado de segurança ' + f.id + ' (' + f.sev + '): ' + f.title + '\nOnde: ' + f.where + '\nComo corrigir: ' + f.fix + (f.code ? '\nSugestão:\n' + f.code : '') + '\nNão mude o comportamento do produto além disso. A varredura de segurança roda de novo para confirmar.' }) : () => self.setFix(P.id, f.id, 'em correção'), markFixed: () => self.setFix(P.id, f.id, 'corrigida'), reopen: () => self.setFix(P.id, f.id, 'aberta'),
+        askFix: SR && SR.real ? () => self._chOpenForm(null, { tipo: 'bug', prioridade: /crit|alta/i.test(String(f.sev)) ? 'alta' : 'media', titulo: 'Corrigir ' + f.id + ': ' + f.title, a: f.title + '\nOnde: ' + f.where, b: 'Como corrigir: ' + f.fix + (f.code ? '\nSugestão:\n' + f.code : ''), c: 'A varredura de segurança roda de novo e não aponta mais ' + f.id + '. Não mude o comportamento do produto além disso.' }) : () => self.setFix(P.id, f.id, 'em correção'), markFixed: () => self.setFix(P.id, f.id, 'corrigida'), reopen: () => self.setFix(P.id, f.id, 'aberta'),
         copyFix: () => { try { navigator.clipboard.writeText(f.code); } catch (er) { /* sem área de transferência */ } app.toast('Sugestão copiada', f.id + ' · ' + f.title); },
         img: () => imgEv && openEv(true, imgEv.i) }; }),
       noFind: fShown.length === 0,
@@ -3106,6 +3403,7 @@ class Component extends DCLogic {
       actN: allPends.length, hasActN: allPends.length > 0, projN: PL.length,
       sideProjects: PL.map((p) => ({ name: p.name, code: p.code, step: p.stepName, pct: p.pct, col: STAT[p.status][2], on: pid === p.id ? 'on' : '', pend: p.pendN, hasPend: p.pendN > 0, open: () => openProj(p.id) })),
       // painel
+      chTop: (function () { const ks = Object.keys(s.chCount || {}).map(function (k) { return s.chCount[k]; }); const n = ks.reduce(function (a, k) { return a + (k.aguardandoCarlos || 0); }, 0); return n ? { show: true, txt: n + (n === 1 ? ' chamado aguardando sua decisão' : ' chamados aguardando sua decisão'), d: 'Validação depois dos portões ou chamado aberto por agente.' } : { show: false }; })(),
       kpis: [
         ['Projetos ativos', String(runN), PL.length + ' no total', 'var(--text-primary)', Math.round(runN / PL.length * 100), 'run', 'run'],
         ['Pendências abertas', String(allPends.length), allPends.length ? 'aguardando você' : 'nada aguardando você', allPends.length ? 'var(--warning)' : 'var(--flow)', Math.min(100, allPends.length * 20), allPends.length ? 'warn' : 'run', 'pend'],
@@ -3128,7 +3426,7 @@ class Component extends DCLogic {
       togglePause: () => self.togglePause(P.id),
       toGeral: () => self.setState({ ptab: 'geral' }), toEsteira: () => self.setState({ ptab: 'esteira' }), toTrilho: () => self.setState({ ptab: 'trilho' }), toGuard: () => self.setState({ ptab: 'qa' }),
       toLedger: () => { self.setState({ ptab: 'esteira', lf: 'all' }); goStage(s.stage, 'ledger'); },
-      ptabs: ([['geral', 'Visão geral', P.pendN, 'warn'], ['esteira', 'Esteira', null]].concat(projFinished ? [['trilho', 'Trilho', showAltTrack ? 1 : null, showAltTrack ? 'flow' : '']] : []).concat([['kanban', 'Kanban', null], ['roadmap', 'Roadmap', null], ['arquivos', 'Workspace', pFiles.length, ''], ['qa', 'QA', qaTabN, 'danger'], ['seg', 'Segurança', segTabN, 'danger'], ['acessos', 'Acessos', missingN, 'danger'], ['logs', 'Logs', lgFailN, 'danger']])).map((x) => ({ label: x[1], n: x[2], cls: x[3] || '', hasN: x[2] != null && x[2] !== 0, on: ptab === x[0] ? 'on' : '', pick: () => { self.setState({ ptab: x[0] }); if (x[0] === 'logs') self._loadRuns(false); if (x[0] === 'qa' && self._loadQa) self._loadQa(); if (x[0] === 'seg' && self._loadSeg) self._loadSeg(); } })),
+      ptabs: ([['geral', 'Visão geral', P.pendN, 'warn'], ['esteira', 'Esteira', null]].concat(projFinished ? [['trilho', 'Trilho', showAltTrack ? 1 : null, showAltTrack ? 'flow' : '']] : []).concat([['chamados', 'Chamados', P.local_path ? (chAtivosN || null) : null, chAguardaN ? 'warn' : ''], ['kanban', 'Kanban', null], ['roadmap', 'Roadmap', null], ['arquivos', 'Workspace', pFiles.length, ''], ['qa', 'QA', qaTabN, 'danger'], ['seg', 'Segurança', segTabN, 'danger'], ['acessos', 'Acessos', P.local_path ? acPendN : missingN, P.local_path ? 'warn' : 'danger'], ['logs', 'Logs', lgFailN, 'danger']])).map((x) => ({ label: x[1], n: x[2], cls: x[3] || '', hasN: x[2] != null && x[2] !== 0, on: ptab === x[0] ? 'on' : '', pick: () => { self.setState({ ptab: x[0] }); if (x[0] === 'logs') self._loadRuns(false); if (x[0] === 'qa' && self._loadQa) self._loadQa(); if (x[0] === 'seg' && self._loadSeg) self._loadSeg(); if (x[0] === 'acessos' && self._loadAcessos) self._loadAcessos(); if (x[0] === 'chamados' && self._loadChamados) self._loadChamados(); } })),
       pt: pt, cs: cs, showAltTrack: showAltTrack,
       altTrack: (function () {
         const curItem = trackItems[altTrackStep] || trackItems[0];
@@ -3198,7 +3496,8 @@ class Component extends DCLogic {
         const pubCommits = (pub && pub.commits) || [];
         const pubBtnLbl = !pub ? '' : pub.mode === 'pr' ? (pubRec && pubRec.kind === 'pr' ? 'Atualizar PR' : 'Abrir PR') : ('Juntar na principal (' + ((pubBranchObj && pubBranchObj.base) || 'principal') + ')');
         return {
-          title: 'Trilho de alteração',
+          title: (persistedTrack.chamados && persistedTrack.chamados.length && persistedTrack.title) || 'Trilho de alteração',
+          chLink: (persistedTrack.chamados && persistedTrack.chamados.length) ? { show: true, id: persistedTrack.chamados[0], go: function () { self.setState({ ptab: 'chamados', chSel: persistedTrack.chamados[0], chF: 'ativos' }); } } : { show: false },
           lead: !alterationsOpen
             ? 'Libere alterações para ativar o trilho. Enquanto fechado, só consulta.'
             : finished
@@ -3540,7 +3839,7 @@ class Component extends DCLogic {
           note: k === 'done'
             ? 'Etapa concluída. Você pode inspecionar o responsável e o escopo; a esteira encerrada não reabre automaticamente.'
             : (k === 'gate' || k === 'paused')
-              ? 'Gate/etapa sob sua atenção. Use Pedir alteração ou libere o responsável para seguir.'
+              ? 'Gate/etapa sob sua atenção. Abra um chamado ou libere o responsável para seguir.'
               : (k === 'run' ? 'Etapa em andamento com ' + st[1] + '.' : 'Etapa planejada — ainda não começou.'),
           ask: function() {
             const txt = 'Quero trabalhar o gate/etapa "' + st[0] + '" (' + st[1] + '). Detalhe o que falta e prepare o handoff para Paula planejar.';
@@ -3716,6 +4015,7 @@ class Component extends DCLogic {
         rules: G8.map((r, i) => { const ok = i < P.gN; return { t: r[0], m: ok ? r[1] + ' · verificado' : r[1], bg: ok ? 'var(--flow-subtle)' : 'var(--surface-3)', fg: ok ? 'var(--flow)' : 'var(--text-muted)', icon: ok ? IC.check : IC.clock, st: ok ? 'ok' : 'aguardando', cls: ok ? 'flow' : '' }; }) },
       lg: lg,
       acx: acx,
+      chx: chx, chd: chd, chf: chf, chOpenNew: function () { self._chOpenForm(null); },
       ac: {
         target: P.target, hasMissing: missingN > 0, missingTxt: missingN + (missingN === 1 ? ' variável faltando' : ' variáveis faltando'),
         add: () => openCred(null), invite: () => app.toast('Convite enviado', 'O convite chega por e-mail com acesso de leitura. Você ajusta o papel depois.'),
@@ -3779,7 +4079,7 @@ class Component extends DCLogic {
             } else {
               self.setState({ absorbed: absorbed });
             }
-            app.toast(next ? 'Trilho de alteração ativo' : 'Trilho fechado', next ? 'Chat e Pedir alteração alimentam o trilho. A esteira original permanece encerrada.' : 'Novos pedidos ficam bloqueados até liberar de novo.');
+            app.toast(next ? 'Trilho de alteração ativo' : 'Trilho fechado', next ? 'Chamados executados abrem ciclos no trilho. A esteira original permanece encerrada.' : 'Novos pedidos ficam bloqueados até liberar de novo.');
           }).catch(function () {
             app.toast(next ? 'Trilho de alteração ativo' : 'Trilho fechado', 'Controle atualizado neste painel.');
           });
@@ -3848,15 +4148,16 @@ class Component extends DCLogic {
         } else afterSave();
       },
       att: (function () {
-        // Anexos pendentes do projeto (chat e Pedir alteração usam a mesma lista).
+        // Anexos pendentes do chat (o formulário de chamado usa a chave própria 'ch:<projeto>').
         const app2 = self.props.app || { toast: function () {} };
         const MAX_N = 10, MAX_B = 25 * 1024 * 1024;
         const cur = (s.attach && s.attach[P.id]) || [];
         const fmt = function (b) { return b >= 1048576 ? (b / 1048576).toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; };
         self._attachPid = P.id;
         if (!self.addAttachFiles) {
-          self.addAttachFiles = function (files) {
-            const pid = self._attachPid;
+          self.addAttachFiles = function (files, zoneName) {
+            // O formulário de chamado guarda os anexos numa chave própria, separada do chat.
+            const pid = zoneName === 'chamado' ? 'ch:' + self._attachPid : self._attachPid;
             const list = Array.prototype.slice.call(files || []);
             if (!pid || !list.length) return;
             list.forEach(function (f, i) {
@@ -3885,13 +4186,13 @@ class Component extends DCLogic {
             const files = Array.prototype.slice.call(e.clipboardData.files || []);
             if (!files.length) return;
             e.preventDefault();
-            if (self.addAttachFiles) self.addAttachFiles(files);
+            if (self.addAttachFiles) self.addAttachFiles(files, zone(e).getAttribute('data-tv-attach'));
           });
           document.addEventListener('dragover', function (e) { if (zone(e)) { e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy'; } });
           document.addEventListener('drop', function (e) {
             if (!zone(e) || !e.dataTransfer || !e.dataTransfer.files || !e.dataTransfer.files.length) return;
             e.preventDefault();
-            if (self.addAttachFiles) self.addAttachFiles(e.dataTransfer.files);
+            if (self.addAttachFiles) self.addAttachFiles(e.dataTransfer.files, zone(e).getAttribute('data-tv-attach'));
           });
         }
         return {
