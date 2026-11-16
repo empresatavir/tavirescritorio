@@ -6,7 +6,7 @@ import { VaultIndexer } from './indexer';
 import type { EngineKind, TaskItem, EngineSettings, RunEvent, JobItem } from '../shared/types';
 import { registerStudioIpc } from './studio/ipcHandlers';
 import { registerRaioxIpc } from './raiox/raioxIpc';
-import { followOfficeRun, listOfficeRuns } from './officeRuns';
+import { cancelOfficeRun, followOfficeRun, listOfficeRuns } from './officeRuns';
 
 /** Janela atual (dialogs). Atualizada a cada criarJanela. */
 let mainWin: BrowserWindow | null = null;
@@ -238,7 +238,28 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
-  // Tasks
+  // Tasks · fila de execução (officeExec)
+  const execResult = (r: any) => (r && r.ok ? { ok: true, run: r.run } : { ok: false, error: r?.error || 'Não deu certo.' });
+  handle('tasks:run', (_e, id: string, opts: { mode?: string; agent?: string }) => {
+    const { execQueue } = require('./officeExec');
+    return execResult(execQueue().enqueue(String(id || ''), opts?.mode === 'plan' ? 'plan' : 'exec', String(opts?.agent || 'geral')));
+  });
+  handle('tasks:approve', (_e, id: string) => execResult(require('./officeExec').execQueue().approve(String(id || ''))));
+  handle('tasks:revise', (_e, id: string, note: string) => execResult(require('./officeExec').execQueue().revise(String(id || ''), String(note || ''))));
+  handle('tasks:stopRun', (_e, target: { taskId?: string; workspace?: string }) => {
+    const { execQueue, taskIdByWorkspace } = require('./officeExec');
+    const id = target?.taskId || (target?.workspace ? taskIdByWorkspace(target.workspace) : null);
+    if (!id) return { ok: false, error: 'Tarefa não encontrada.' };
+    return execResult(execQueue().stop(id));
+  });
+  handle('tasks:runs', () => {
+    try {
+      return require('./officeExec').execQueue().views();
+    } catch {
+      return {};
+    }
+  });
+
   handle('tasks:list', () => {
     try {
       const { listTaskRecords } = require('./project-fs');
@@ -499,6 +520,14 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   handle('runs:follow', async (_e, workspace: string, runId: string, mode: string, note?: string) => {
     try {
       return await followOfficeRun(String(workspace || ''), String(runId || ''), mode === 'correct' ? 'correct' : 'continue', String(note || ''));
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  handle('runs:cancel', (_e, workspace: string, runId: string) => {
+    try {
+      return cancelOfficeRun(String(workspace || ''), String(runId || ''));
     } catch (err) {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }
@@ -907,11 +936,14 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
 
   handle('creds:saveBundle', async (_e, provider: string, fields: Record<string, unknown>) => {
     const { saveBundle } = await import('./credentials');
-    return saveBundle(String(provider || ''), fields && typeof fields === 'object' ? fields : {});
+    const result = saveBundle(String(provider || ''), fields && typeof fields === 'object' ? fields : {});
+    if (result.ok && provider === 'escritorio_supabase') void import('./officeCloud').then((m) => m.startDeskCloud());
+    return result;
   });
 
   handle('creds:removeBundle', async (_e, provider: string) => {
     const { removeBundle } = await import('./credentials');
+    if (provider === 'escritorio_supabase') void import('./officeCloud').then((m) => m.stopDeskCloud());
     return removeBundle(String(provider || ''));
   });
 
@@ -976,9 +1008,11 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   handle('projects:runAltTrack', async (e, idOrPath: string, stepOverride?: number) => {
     let jobId = '';
     let jobTitle = 'Trilho de alteração';
+    // Pasta, item e início vão em todo evento: a tela Execuções casa a linha ao vivo com o run do livro.
+    let jobRef: { workspace?: string; focus?: string; projectName?: string; startedAt?: string } = {};
     const send = (evt: any) => {
       try {
-        e.sender.send('run:event', evt);
+        e.sender.send('run:event', jobRef.workspace ? { ...evt, meta: { ...jobRef, ...(evt.meta || {}) } } : evt);
       } catch {}
     };
     const stamp = () => new Date().toISOString();
@@ -991,6 +1025,7 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
           const job = abrirJobTrilho(info);
           jobId = job.id;
           jobTitle = job.title;
+          jobRef = { workspace: info.projectPath, focus: info.focus, projectName: info.projectName, startedAt: stamp() };
           registrarEventoJob(jobId, 'inicio', `Iniciando ${info.focus} com ${info.owner} · ${info.motor}`, 'info');
           send({
             runId: jobId,
@@ -1031,7 +1066,7 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
           timestamp: stamp(),
           type: 'error',
           content: String(res.error),
-          meta: { track: true, status: 'failed', progress: 100, title: jobTitle, focus: 'Trilho', owner: 'Escritório' },
+          meta: { track: true, status: 'failed', progress: 100, title: jobTitle, owner: 'Escritório', ...(jobRef.focus ? {} : { focus: 'Trilho' }) },
         });
       }
       return Object.assign({}, res, { jobId });

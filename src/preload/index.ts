@@ -57,6 +57,12 @@ const api: TavirApi = {
     logs: () => ipcRenderer.invoke('jobs:logs').catch(() => ({})),
   },
   tasks: {
+    /** Fila de execução: Executar (Agente geral ou do plano), Planejar com a Paula, aprovar, ajustar, parar. */
+    run: (id: string, opts: { mode: 'plan' | 'exec'; agent?: string }) => ipcRenderer.invoke('tasks:run', id, opts),
+    approve: (id: string) => ipcRenderer.invoke('tasks:approve', id),
+    revise: (id: string, note: string) => ipcRenderer.invoke('tasks:revise', id, note),
+    stopRun: (target: { taskId?: string; workspace?: string }) => ipcRenderer.invoke('tasks:stopRun', target),
+    runs: () => ipcRenderer.invoke('tasks:runs'),
     list: () => {
       try {
         const { listTaskRecords } = require('../main/project-fs');
@@ -202,6 +208,7 @@ const api: TavirApi = {
   runs: {
     office: () => ipcRenderer.invoke('runs:office'),
     follow: (workspace: string, runId: string, mode: string, note?: string) => ipcRenderer.invoke('runs:follow', workspace, runId, mode, note),
+    cancel: (workspace: string, runId: string) => ipcRenderer.invoke('runs:cancel', workspace, runId),
     list: (idOrPath: string, limit?: number) => ipcRenderer.invoke('runs:list', idOrPath, limit),
     read: (idOrPath: string, runId: string) => ipcRenderer.invoke('runs:read', idOrPath, runId),
     openFolder: (idOrPath: string, runId?: string) => ipcRenderer.invoke('runs:openFolder', idOrPath, runId),

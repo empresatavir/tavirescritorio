@@ -1,6 +1,7 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
+import * as os from 'node:os';
 import * as path from 'node:path';
 
 export interface SidecarConflict {
@@ -9,11 +10,22 @@ export interface SidecarConflict {
   motivo: string;
 }
 
+export interface SidecarProcess {
+  /** Executável no PATH (ex.: python, node) ou caminho relativo à pasta. Roda sem shell. */
+  comando: string;
+  args?: string[];
+}
+
 export interface SidecarSpec {
   id: string;
   nome: string;
   pasta: string;
   comando: string;
+  /**
+   * Processos iniciados direto, sem o script do projeto. Usado quando o script tem menu
+   * (o iniciar.bat do Docuflow escolhe sozinho uma opção que não sobe a API).
+   */
+  processos?: SidecarProcess[];
   healthUrl: string;
   portas: number[];
   conflito?: SidecarConflict;
@@ -28,6 +40,34 @@ export interface SidecarDeps {
   health: (url: string) => Promise<boolean>;
   portOwner: (port: number) => PortOwner | null;
   spawn: (spec: SidecarSpec) => { pid: number; kill: () => void };
+  /**
+   * Pids que o Escritório ligou, guardados fora do processo. Os sistemas rodam soltos
+   * (sobrevivem quando o Escritório fecha); com isso, o Escritório reaberto ainda sabe parar.
+   */
+  remember: { load: () => Record<string, number>; save: (map: Record<string, number>) => void };
+  killPid: (pid: number) => void;
+}
+
+const RUN_FILE = path.join(os.tmpdir(), 'tavir-sidecars-run.json');
+const defaultRemember: SidecarDeps['remember'] = {
+  load: () => {
+    try {
+      const raw = JSON.parse(fs.readFileSync(RUN_FILE, 'utf8'));
+      return raw && typeof raw === 'object' ? raw : {};
+    } catch {
+      return {};
+    }
+  },
+  save: (map) => {
+    try {
+      fs.writeFileSync(RUN_FILE, JSON.stringify(map), 'utf8');
+    } catch {
+      /* sem disco: só esta sessão sabe parar */
+    }
+  },
+};
+function defaultKillPid(pid: number): void {
+  if (pid > 0) execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true });
 }
 
 export interface SidecarView {
@@ -100,7 +140,41 @@ async function defaultHealth(url: string): Promise<boolean> {
   }
 }
 
+function killTree(pid: number, child: ChildProcess): void {
+  if (pid <= 0) return;
+  try {
+    execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true });
+  } catch {
+    child.kill();
+  }
+}
+
+/** Linha legível do que o sistema roda, para a tela e para a trava do --enable-meta-publish. */
+export function describeCommand(spec: SidecarSpec): string {
+  if (spec.processos?.length) return spec.processos.map((p) => [p.comando, ...(p.args ?? [])].join(' ')).join(' + ');
+  return spec.comando;
+}
+
 function defaultSpawn(spec: SidecarSpec): { pid: number; kill: () => void } {
+  if (spec.processos?.length) {
+    const started = spec.processos.map((proc) => {
+      const child: ChildProcess = spawn(proc.comando, proc.args ?? [], {
+        cwd: spec.pasta,
+        detached: true,
+        shell: false,
+        windowsHide: true,
+        stdio: 'ignore',
+      });
+      child.on('error', () => undefined);
+      child.unref();
+      return { pid: child.pid ?? 0, child };
+    });
+    const first = started.find((item) => item.pid > 0);
+    return {
+      pid: first?.pid ?? 0,
+      kill: () => started.forEach((item) => killTree(item.pid, item.child)),
+    };
+  }
   const command = path.join(spec.pasta, spec.comando);
   const child: ChildProcess = spawn(command, [], {
     cwd: spec.pasta,
@@ -113,20 +187,12 @@ function defaultSpawn(spec: SidecarSpec): { pid: number; kill: () => void } {
   const pid = child.pid ?? 0;
   return {
     pid,
-    kill: () => {
-      if (pid > 0) {
-        try {
-          execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true });
-        } catch {
-          child.kill();
-        }
-      }
-    },
+    kill: () => killTree(pid, child),
   };
 }
 
 function assertNoPublishFlag(spec: SidecarSpec): void {
-  const text = `${spec.comando} ${spec.pasta}`;
+  const text = `${describeCommand(spec)} ${spec.pasta}`;
   if (/enable-meta-publish/i.test(text)) {
     throw new Error('O Escritório não liga --enable-meta-publish. Isso fica no DarkFlow.');
   }
@@ -145,7 +211,24 @@ export function createSidecarManager(file: string, deps: Partial<SidecarDeps> = 
   const health = deps.health ?? defaultHealth;
   const portOwner = deps.portOwner ?? defaultPortOwner;
   const spawnSpec = deps.spawn ?? defaultSpawn;
+  const remember = deps.remember ?? defaultRemember;
+  const killPid = deps.killPid ?? defaultKillPid;
   const systems = () => loadSidecars(file);
+
+  /** Pid de uma sessão anterior do Escritório que ainda é o dono da porta do sistema. */
+  function earlierPid(spec: SidecarSpec): number | null {
+    const saved = Number(remember.load()[spec.id]) || 0;
+    if (!saved) return null;
+    const owner = spec.portas.map((port) => portOwner(port)).find((found) => found);
+    return owner && owner.pid === saved ? saved : null;
+  }
+  function forget(id: string): void {
+    const map = remember.load();
+    if (id in map) {
+      delete map[id];
+      remember.save(map);
+    }
+  }
 
   async function aliveIds(all: SidecarSpec[]): Promise<Set<string>> {
     const ids = new Set<string>();
@@ -165,11 +248,11 @@ export function createSidecarManager(file: string, deps: Partial<SidecarDeps> = 
           id: item.id,
           nome: item.nome,
           pasta: item.pasta,
-          comando: item.comando,
+          comando: describeCommand(item),
           healthUrl: item.healthUrl,
           portas: item.portas,
           saudavel,
-          nosso: children.has(item.id),
+          nosso: children.has(item.id) || (!!owner && Number(remember.load()[item.id]) === owner.pid),
           dono: owner ? `${owner.nome} · pid ${owner.pid}` : '',
         };
       }));
@@ -197,13 +280,27 @@ export function createSidecarManager(file: string, deps: Partial<SidecarDeps> = 
       const child = spawnSpec(spec);
       if (!child.pid) return { ok: false, error: 'o comando não devolveu um processo' };
       children.set(spec.id, child);
+      remember.save({ ...remember.load(), [spec.id]: child.pid });
       return { ok: true };
     },
     stop(id: string): { ok: boolean; error?: string } {
       const child = children.get(id);
-      if (!child) return { ok: false, error: 'esse sistema não foi iniciado pelo Escritório' };
-      child.kill();
-      children.delete(id);
+      if (child) {
+        child.kill();
+        children.delete(id);
+        forget(id);
+        return { ok: true };
+      }
+      // Ligado pelo Escritório numa sessão anterior (o app foi fechado e aberto de novo).
+      const spec = systems().find((item) => item.id === id);
+      const pid = spec ? earlierPid(spec) : null;
+      if (!pid) return { ok: false, error: 'esse sistema não foi iniciado pelo Escritório' };
+      try {
+        killPid(pid);
+      } catch (err) {
+        return { ok: false, error: `não consegui parar o pid ${pid}: ${err instanceof Error ? err.message : String(err)}` };
+      }
+      forget(id);
       return { ok: true };
     },
   };

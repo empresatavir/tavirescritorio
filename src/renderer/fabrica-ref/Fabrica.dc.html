@@ -2207,6 +2207,8 @@ class Component extends DCLogic {
     const deskRow = (i) => (((s.esteiraById && s.esteiraById[P.id]) || { stages: [] }).stages || [])[i] || null;
     const stState = (i) => {
       const r = deskRow(i);
+      // Esteira entregue (todas as etapas fechadas): linha antiga da mesa não reabre etapa no Kanban/roadmap.
+      if (P.n && P.done >= P.n) return 'done';
       if (r && r.status === 'done') return 'done';
       if (r && r.status === 'awaiting') return 'gate';
       if (r && r.status === 'running') return 'run';
@@ -3194,6 +3196,29 @@ class Component extends DCLogic {
         if (isM && c[0] === 'gate' && !s.envOk) cards.push({ n: 'ENV', t: 'Cadastrar SUPABASE_URL na Vercel', who: 'Carlos Henrique', ini: 'CH', skill: 'HTTP 409 FABRICA-COMPLETION-001', cls: 'gate', hasB: true, b: 'erro', bcls: 'danger', pick: () => self.setState({ ptab: 'acessos' }) });
         if (c[0] === 'todo' && cards.length > 6) { const more = cards.length - 5; cards = cards.slice(0, 5); cards.push({ n: '+' + more, t: 'mais ' + more + ' etapas planejadas', who: 'ver no roadmap', ini: '··', skill: 'até ' + ddmm(P.base, totalD - 1), cls: '', hasB: false, b: '', bcls: '', pick: () => self.setState({ ptab: 'roadmap' }) }); }
         if (c[0] === 'done' && cards.length > 6) { const more = cards.length - 5; cards = cards.slice(-5); cards.unshift({ n: '+' + more, t: more + ' etapas anteriores concluídas', who: 'várias mesas', ini: '··', skill: 'ver na esteira', cls: '', hasB: false, b: '', bcls: '', pick: () => self.setState({ ptab: 'esteira' }) }); }
+        // Itens do trilho de alteração deste projeto: um card por item (não por tentativa), por cima das etapas.
+        if (showAltTrack && trackItems.length) {
+          const rs = String(persistedTrack.runStatus || 'idle');
+          const waitQ = String(persistedTrack.waitingQuestion || '').trim();
+          const trackDone = rs === 'done' && altTrackStep >= trackItems.length - 1;
+          const itemCol = (i) => {
+            if (i < altTrackStep || (trackDone && i === altTrackStep)) return ['done', 'concluído', 'flow'];
+            if (i > altTrackStep) return ['todo', '', ''];
+            if (rs === 'running') return ['run', 'executando', 'flow'];
+            if (rs === 'paused') return ['run', 'pausado', 'warn'];
+            if (waitQ) return ['gate', 'pergunta', 'warn'];
+            if (persistedTrack.runError) return ['gate', 'falhou', 'danger'];
+            return ['gate', 'foco atual', 'warn'];
+          };
+          const tcards = trackItems.map((x, i) => ({ x: x, i: i, st: itemCol(i) })).filter((o) => o.st[0] === c[0]).map((o) => ({
+            n: 'T' + (o.i + 1), t: o.x.label, who: o.x.owner || 'Agentes',
+            ini: PEOPLE[o.x.owner] || String(o.x.owner || 'AG').slice(0, 2).toUpperCase(),
+            skill: 'trilho · ' + (o.x.skill || o.x.kind || ''), cls: o.st[0] === 'gate' ? 'gate' : '',
+            hasB: !!o.st[1], b: o.st[1], bcls: o.st[2],
+            pick: () => self.setState({ ptab: 'trilho', trackModal: true, trackIndex: o.i, trackTitle: o.x.label, trackOwner: o.x.owner, trackDraft: String(o.x.note || ''), trackBase: trackBaseOf(o.i), trackStatus: o.i < altTrackStep ? 'Concluído' : o.i === altTrackStep ? 'Foco atual' : 'A seguir' })
+          }));
+          cards = tcards.concat(cards);
+        }
         return { t: c[1], col: c[2], n: cards.length, cards: cards, empty: cards.length === 0 };
       }),
       rm: {

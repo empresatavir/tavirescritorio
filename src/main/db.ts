@@ -24,12 +24,26 @@ function getSqlite(): DatabaseSync | null {
   if (existsSync(dbSqlitePath)) {
     try {
       sqliteDb = new DatabaseSync(dbSqlitePath);
+      garantirColunas(sqliteDb);
       return sqliteDb;
     } catch (e) {
       console.error('[TAVIR DB] Erro ao conectar com SQLite:', e);
     }
   }
   return null;
+}
+
+/**
+ * Execução do trilho não vira mais task do Kanban do Escritório (que é só de tarefas avulsas).
+ * O título passa a morar no próprio job.
+ */
+function garantirColunas(sqlite: DatabaseSync): void {
+  try {
+    const cols = (sqlite.prepare('PRAGMA table_info(jobs)').all() as Array<{ name: string }>).map((c) => c.name);
+    if (cols.length && !cols.includes('title')) sqlite.exec('ALTER TABLE jobs ADD COLUMN title VARCHAR(300)');
+  } catch (err) {
+    console.error('[TAVIR DB] Não ajustou as colunas de jobs:', err);
+  }
 }
 
 function caminhoStoreJson(): string {
@@ -80,7 +94,7 @@ export function carregarDb(): DatabaseState {
           .prepare(
             `SELECT j.id, j.task_id, j.status, j.agent_id, j.origin, j.model_provider, j.model_name,
                     j.effort, j.budget_ceiling, j.error_message, j.created_at, j.cost_usd, j.tokens_total,
-                    t.title AS task_title
+                    COALESCE(t.title, j.title) AS task_title
              FROM jobs j
              LEFT JOIN tasks t ON t.id = j.task_id
              ORDER BY j.created_at DESC`,
@@ -221,19 +235,13 @@ export function abrirJobTrilho(info: {
   try {
     const projectId = acharProjetoId(sqlite, info.projectName, info.projectPath);
     if (!projectId) return job;
-    const taskId = `task-${id}`;
+    // Sem task: o trilho pertence à Fábrica do projeto, não ao Kanban do Escritório.
     sqlite
       .prepare(
-        `INSERT INTO tasks (id, project_id, title, status, priority, sector, created_at, updated_at)
-         VALUES (?, ?, ?, 'in_progress', 'Normal', 'Fábrica', ?, ?)`,
+        `INSERT INTO jobs (id, task_id, project_id, title, origin, model_provider, model_name, effort, status, workspace_path, created_at, updated_at)
+         VALUES (?, NULL, ?, ?, ?, ?, ?, 'trilho', 'running', ?, ?, ?)`,
       )
-      .run(taskId, projectId, title, now, now);
-    sqlite
-      .prepare(
-        `INSERT INTO jobs (id, task_id, project_id, origin, model_provider, model_name, effort, status, workspace_path, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, 'trilho', 'running', ?, ?, ?)`,
-      )
-      .run(id, taskId, projectId, `trilho:${info.owner}`.slice(0, 50), info.motor.slice(0, 50), info.model.slice(0, 100), info.projectPath.slice(0, 500), now, now);
+      .run(id, projectId, title, `trilho:${info.owner}`.slice(0, 50), info.motor.slice(0, 50), info.model.slice(0, 100), info.projectPath.slice(0, 500), now, now);
   } catch (err) {
     console.error('[TAVIR DB] Não gravou o job do trilho:', err);
   }
@@ -244,12 +252,8 @@ export function atualizarJobTrilho(id: string, status: 'running' | 'completed' |
   const sqlite = getSqlite();
   if (!sqlite || !id) return;
   const now = new Date().toISOString();
-  const taskStatus = status === 'completed' ? 'done' : status === 'failed' ? 'in_progress' : 'in_progress';
   try {
     sqlite.prepare('UPDATE jobs SET status = ?, error_message = ?, updated_at = ? WHERE id = ?').run(status, errorMessage.slice(0, 2000), now, id);
-    sqlite
-      .prepare('UPDATE tasks SET status = ?, updated_at = ? WHERE id = (SELECT task_id FROM jobs WHERE id = ?)')
-      .run(taskStatus, now, id);
   } catch (err) {
     console.error('[TAVIR DB] Não atualizou o job do trilho:', err);
   }

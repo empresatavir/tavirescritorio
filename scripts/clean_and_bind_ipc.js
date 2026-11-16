@@ -724,8 +724,10 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
           self.setState({ sidecars: Array.isArray(rows) ? rows : [] });
         }).catch(function() {});
       };
-      self.loadSidecars = loadSide;
+      self.loadSidecars = function() { loadSide(); setTimeout(loadSide, 2500); setTimeout(loadSide, 7000); };
       loadSide();
+      // O estado acompanha a realidade (o serviço pode subir/cair por fora).
+      if (!self._sideTimer) self._sideTimer = setInterval(loadSide, 5000);
     }
   }
   renderVals() {`
@@ -848,6 +850,8 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
         <div class="cfg-cards">${cardTpl('provCards')}</div>
         <div class="cfg-sec"><div class="eyebrow">Raio-X</div><p>URL, segredos da ponte de leitura e conta de e-mail. Segredo fica cifrado; a tela só mostra a prévia. Estes dois não passam pela API do provedor ao salvar.</p></div>
         <div class="cfg-cards">${cardTpl('bundleCards')}</div>
+        <div class="cfg-sec"><div class="eyebrow">TAVIR Escritório · fila na nuvem</div><p>Projeto Supabase do app de controle, separado do Raio-X. A chave de serviço fica só neste notebook, para o worker do Escritório; a chave pública e o usuário do app entram no build do APK.</p></div>
+        <div class="cfg-cards">${cardTpl('officeCards')}</div>
         <div class="card" style="padding: 12px 14px; display: flex; gap: 10px; font-size: 13px; background: var(--surface-0)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3"></path></svg><span class="sec">Cada token é conferido no provedor antes de entrar e fica cifrado (AES-256-GCM) no cofre desta máquina. Só o app usa, por variável de ambiente; nunca vai para tela, log, chat ou linha de comando.</span></div>
       </sc-if>
 
@@ -1017,7 +1021,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
       ] },
     ];
     const bundleList = s.bundleList && s.bundleList.length ? s.bundleList : BUNDLE_FALLBACK;
-    const bundleCards = bundleList.map(function(c) {
+    const toBundleCard = function(c) {
       const key = 'bd-' + c.provider;
       const fields = c.fields || [];
       return baseCard(key, !!c.connected, {
@@ -1050,13 +1054,17 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
           credApi.removeBundle(c.provider).then(function(r) { done(key, r, c.name + ' removido do cofre.'); });
         },
       });
-    });
-    const connectedN = ghCards.filter(function(c) { return c.connected; }).length + provCards.filter(function(c) { return c.connected; }).length + bundleCards.filter(function(c) { return c.connected; }).length;
+    };
+    const isOffice = function(c) { return String(c.provider || '').indexOf('escritorio_') === 0; };
+    const bundleCards = bundleList.filter(function(c) { return !isOffice(c); }).map(toBundleCard);
+    const officeCards = bundleList.filter(isOffice).map(toBundleCard);
+    const connectedN = ghCards.filter(function(c) { return c.connected; }).length + provCards.filter(function(c) { return c.connected; }).length + bundleCards.filter(function(c) { return c.connected; }).length + officeCards.filter(function(c) { return c.connected; }).length;
     return {
       ghCards: ghCards,
       provCards: provCards,
       bundleCards: bundleCards,
-      credCount: connectedN + ' de ' + (ghCards.length + provCards.length + bundleCards.length) + ' conectadas',
+      officeCards: officeCards,
+      credCount: connectedN + ' de ' + (ghCards.length + provCards.length + bundleCards.length + officeCards.length) + ' conectadas',
       v: v,`
     );
   }
@@ -1236,9 +1244,9 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     cfgHtml = cfgHtml.replace(
       sistemaHead,
       `${sistemaHead}
-        <div class="cfg-head"><div class="grow"><h2 class="cfg-h">Sistemas ligados</h2><p class="cfg-lead">DarkFlow e Docuflow sobem pelos scripts deles. O Escritório não publica.</p></div></div>
+        <div class="cfg-head"><div class="grow"><h2 class="cfg-h">Sistemas ligados</h2><p class="cfg-lead">Serviços que o Escritório sobe e vigia: DarkFlow, Docuflow e o escritório do app de controle (fila na nuvem). O Escritório não publica.</p></div></div>
         <div style="display: flex; flex-direction: column; gap: 8px">
-          <sc-for list="{{sidecars}}" as="side" hint-placeholder-count="2"><div class="card" style="padding: 14px; background: var(--surface-0); display: flex; gap: 12px; align-items: center"><div class="grow"><div style="font-weight: 600">{{side.nome}}</div><div class="mono" style="margin-top: 4px; font-size: 12px">{{side.pasta}}</div><div class="muted" style="margin-top: 4px; font-size: 12px">{{side.estado}}</div></div><button class="btn secondary" onClick="{{side.start}}">iniciar</button><button class="btn ghost" onClick="{{side.stop}}">parar</button></div></sc-for>
+          <sc-for list="{{sidecars}}" as="side" hint-placeholder-count="2"><div class="card" style="padding: 14px; background: var(--surface-0); display: flex; gap: 12px; align-items: center"><div class="grow"><div style="font-weight: 600">{{side.nome}}</div><div class="mono" style="margin-top: 4px; font-size: 12px">{{side.pasta}}</div><div class="muted" style="margin-top: 4px; font-size: 12px">{{side.estado}}</div></div><button class="{{side.startCls}}" disabled="{{side.running}}" onClick="{{side.start}}">{{side.startLbl}}</button><button class="{{side.stopCls}}" disabled="{{side.stopped}}" onClick="{{side.stop}}">parar</button></div></sc-for>
         </div>`
     );
   }
@@ -1247,7 +1255,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     cfgHtml = cfgHtml.replace(
       sysLine,
       `${sysLine}
-      sidecars: (s.sidecars || []).map((side) => ({ nome: side.nome, pasta: side.pasta, estado: side.saudavel ? 'no ar' : (side.dono || 'parado'), start: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.start(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não subiu'); if (self.loadSidecars) self.loadSidecars(); }); }, stop: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.stop(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não parou'); if (self.loadSidecars) self.loadSidecars(); }); } })),`
+      sidecars: (s.sidecars || []).map((side) => ({ nome: side.nome, pasta: side.pasta, estado: side.saudavel ? '● no ar' : (side.dono || 'parado'), running: !!side.saudavel, stopped: !side.saudavel && !side.nosso, startLbl: side.saudavel ? 'rodando' : 'iniciar', startCls: side.saudavel ? 'btn ghost' : 'btn secondary', stopCls: side.saudavel ? 'btn primary' : 'btn ghost', start: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.start(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não subiu'); if (self.loadSidecars) self.loadSidecars(); }); }, stop: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.stop(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não parou'); if (self.loadSidecars) self.loadSidecars(); }); } })),`
     );
   }
 
@@ -1523,20 +1531,7 @@ templateHtml = templateHtml.replace(
   "fillCls: j ? (STATUS[j.status] || STATUS.completed)[3] : '',"
 );
 
-const origJcur = "const jcur = s.jobs.find((j) => j.id === s.jobId) || jlist[0] || s.jobs[0];";
-const safeJcur = "const jcur = s.jobs.find((j) => j.id === s.jobId) || (!s.jobId ? (jlist[0] || s.jobs[0]) : null) || { id: s.jobId || '', title: 'Nenhum job ativo', who: '—', ini: '—', status: 'completed', progress: 0, model: '—', motor: '—', effort: '—', task: '—', cost: 0, ceiling: 0, started: '—', tokens: '0' };";
-templateHtml = templateHtml.replace(origJcur, safeJcur);
-templateHtml = templateHtml.replace(
-  "isFailed: jcur.status === 'failed',",
-  "isFailed: jcur.status === 'failed', failTitle: jcur.error ? 'A execução parou.' : 'O job parou antes do deploy.', failWhy: jcur.error || 'Variável obrigatória ausente: SUPABASE_URL. Nada foi publicado. O gate ap-02 espera sua decisão para registrar a variável e refazer.',"
-);
-const failBanner = '<b>O job parou antes do deploy.</b><p class="sec" style="margin-top: 4px; font-size: 13px">Variável obrigatória ausente: SUPABASE_URL. Nada foi publicado. O gate ap-02 espera sua decisão para registrar a variável e refazer.</p>';
-if (templateHtml.includes(failBanner)) {
-  templateHtml = templateHtml.replace(failBanner, '<b>{{job.failTitle}}</b><p class="sec" style="margin-top: 4px; font-size: 13px">{{job.failWhy}}</p>');
-  console.log('Banner de falha da execução passou a usar o erro real do job.');
-} else {
-  console.log('Banner de falha não encontrado para troca.');
-}
+// (Execuções: jcur, banner de falha e demais trocas da tela ficam no bloco 2.10c.)
 
 const origDcur = "const dcur = dlist.find((a) => a.id === s.approvalId) || dlist[0] || null;";
 const safeDcur = "const dcur = dlist.find((a) => a.id === s.approvalId) || dlist[0] || { id: '', group: 'none', kind: 'none', title: 'Nenhuma decisão pendente', who: '—', ini: '—', type: '—', status: 'approved', impact: 'baixo', task: '—', age: '—', ageH: 0, reason: 'Tudo liberado. Nenhum bloqueio humano na sala.', question: 'Sem aprovações pendentes.', yes: [], no: [], more: [] };";
@@ -1593,6 +1588,46 @@ const newMount = `componentDidMount() {
           vaultDocs: u.vaultDocs ? u.vaultDocs.length : 0
         });
         self.setState(u);
+        // Tarefas que chegam pelo APK (fila na nuvem) aparecem sem recarregar a tela.
+        if (!self._tasksTimer) {
+          const sig = function(list) { return (list || []).map(function(t) { return t.id + ':' + t.status + ':' + t.title + ':' + t.prio + ':' + t.sector; }).join('|'); };
+          // Estado da fila de execução de cada tarefa (officeExec), para selos e botões.
+          self.refreshTaskRuns = function() {
+            if (!window.tavir.tasks.runs) return Promise.resolve();
+            return window.tavir.tasks.runs().then(function(runs) {
+              const next = JSON.stringify(runs || {});
+              if (next !== self._taskRunsSig) { self._taskRunsSig = next; self.setState({ taskRuns: runs || {} }); }
+            }).catch(function() {});
+          };
+          self.taskRun = function(t, mode, agent) {
+            if (!window.tavir.tasks.run) return;
+            window.tavir.tasks.run(t.id, { mode: mode, agent: agent }).then(function(res) {
+              if (!res || !res.ok) { self.say('Não entrou na fila', (res && res.error) || 'Tente de novo.'); return; }
+              self.say(mode === 'plan' ? 'Paula vai planejar' : 'Na fila de execução', '#' + t.seq + ' · ' + t.title + (mode === 'plan' ? '. O plano volta em Planejado.' : '. Roda uma por vez; você aprova no fim.'));
+              self.log('Carlos', (mode === 'plan' ? 'pediu plano da #' : 'mandou executar a #') + t.seq + ' · ' + t.title);
+              window.tavir.tasks.list().then(function(list) { if (Array.isArray(list)) self.setState({ tasks: list }); }).catch(function() {});
+              self.refreshTaskRuns();
+            }).catch(function(err) { self.say('Não entrou na fila', String(err && err.message || err)); });
+          };
+          self.taskAct = function(t, act, note) {
+            const api = window.tavir.tasks;
+            const call = act === 'approve' ? api.approve(t.id) : act === 'revise' ? api.revise(t.id, note || '') : api.stopRun({ taskId: t.id });
+            call.then(function(res) {
+              if (!res || !res.ok) { self.say('Não deu certo', (res && res.error) || 'Tente de novo.'); return; }
+              const msg = { approve: ['Tarefa concluída', '#' + t.seq + ' foi para Concluído.'], revise: ['Ajuste na fila', 'A próxima tentativa da #' + t.seq + ' leva o seu pedido.'], stop: ['Execução parada', '#' + t.seq + ' saiu da fila.'] }[act];
+              self.say(msg[0], msg[1]);
+              window.tavir.tasks.list().then(function(list) { if (Array.isArray(list)) self.setState({ tasks: list }); }).catch(function() {});
+              self.refreshTaskRuns();
+            }).catch(function(err) { self.say('Não deu certo', String(err && err.message || err)); });
+          };
+          self.refreshTaskRuns();
+          self._tasksTimer = setInterval(function() {
+            window.tavir.tasks.list().then(function(list) {
+              if (Array.isArray(list) && sig(list) !== sig(self.state.tasks)) self.setState({ tasks: list });
+            }).catch(function() {});
+            self.refreshTaskRuns();
+          }, 3000);
+        }
         if (window.tavir.jobs.logs) {
           window.tavir.jobs.logs().then(function (logs) {
             if (logs && typeof logs === 'object') self.setState({ logs: Object.assign({}, logs, self.state.logs || {}) });
@@ -1608,11 +1643,14 @@ const newMount = `componentDidMount() {
       }).catch(function(err) {
         console.error('[TAVIR IPC] Erro ao sincronizar:', err);
       });
+      // Execuções: uma linha por item, cada execução é uma tentativa (regras em src/shared/execGroups.ts).
+      const XG = TavirExec;
+      self._execOverride = self._execOverride || {};
+      self._execAlias = self._execAlias || {};
+      // Só lê o log da tentativa. Quem escolhe linha e tentativa é a tela (jobGroup / jobId).
       self.openOfficeRun = function (job) {
-        if (!job) return;
-        self.setState({ jobId: job.id });
         const api = window.tavir && window.tavir.runs;
-        if (!api || !job.workspace) return;
+        if (!job || job.live || !api || !job.workspace) return;
         api.read(job.workspace, job.id).then(function (det) {
           const lines = [];
           function add(label, text) {
@@ -1623,7 +1661,7 @@ const newMount = `componentDidMount() {
             });
           }
           if (!det || !det.ok) {
-            lines.push({ ts: '', lvl: 'erro', cls: 'err', text: (det && det.error) || 'Sem log desta execução.' });
+            lines.push({ ts: '', lvl: 'erro', cls: 'err', text: (det && det.error) || 'Sem log desta tentativa.' });
           } else {
             const pause = det.meta && (det.meta.status === 'paused' || /pausado por carlos/i.test(String(det.meta.error || '')));
             if (pause) add('pausa', det.meta.error || 'Pausado por Carlos. A retomada continua deste ponto.');
@@ -1633,169 +1671,135 @@ const newMount = `componentDidMount() {
             add('resposta', det.resposta);
             add('stdout', det.stdout);
             add('stderr', det.stderr);
-            if (!lines.length) lines.push({ ts: '', lvl: 'log', cls: 'info', text: 'O motor não devolveu transcrição nesta execução.' });
+            if (!lines.length) lines.push({ ts: '', lvl: 'log', cls: 'info', text: 'O motor não devolveu transcrição nesta tentativa.' });
           }
           const logs = Object.assign({}, self.state.logs || {});
           const prev = logs[job.id] || [];
           const next = lines.slice(0, 2500);
-          logs[job.id] = job.status === 'running' && prev.length > next.length ? prev : next;
+          // Rodando: o que já chegou pelo evento ao vivo fica se a leitura do livro vier menor ou falhar.
+          logs[job.id] = job.status === 'running' && prev.length && (prev.length > next.length || !(det && det.ok)) ? prev : next;
           self.setState({ logs: logs });
         }).catch(function () {});
       };
-      self.followRun = function (mode) {
-        const jobs = self.state.jobs || [];
-        const job = jobs.filter(function (item) { return item.id === self.state.jobId; })[0];
+      // Continuar ou corrigir abre a tentativa N+1 na mesma linha. A anterior fica como estava.
+      self.followRun = function (mode, g) {
         const api = window.tavir;
-        if (!job || !api) return;
+        if (!g || !api) return;
         const note = String(self.state.jobFix || '').trim();
         if (mode === 'correct' && !note) {
           self.setState({ jobCorrect: true });
-          if (self.say) self.say('Correção', 'Escreva o que precisa mudar. A tentativa continua do checkpoint.');
+          if (self.say) self.say('Correção', 'Escreva o que precisa mudar. A nova tentativa continua do checkpoint.');
           return;
         }
-        const done = function (res, okText) {
-          if (res && res.ok === false) { if (self.say) self.say('Execução', res.error || 'Não continuou.'); return; }
-          self.setState({ jobCorrect: false, jobFix: '' });
-          if (self.say) self.say('Checkpoint', okText);
+        const next = g.count + 1;
+        const fail = function (err) {
+          self.setState({ execStarting: null });
+          if (self.say) self.say('Execução', String((err && (err.error || err.message)) || err || 'Não continuou.'));
+        };
+        const after = function (res) {
+          if (res && res.ok === false) fail(res);
           if (self.loadOfficeRuns) self.loadOfficeRuns();
         };
-        if (job.mod === 'Fábrica' && job.workspace && api.projects && api.projects.runAltTrack) {
-          const go = function () { return api.projects.runAltTrack(job.workspace); };
-          const chain = mode === 'correct' && api.projects.approveAltTrack
-            ? api.projects.approveAltTrack(job.workspace, 'reprovado', note).then(go)
-            : go();
-          chain.then(function (res) { done(res, mode === 'correct' ? 'Correção enviada. O trilho continua deste ponto.' : 'O trilho continua do checkpoint.'); }).catch(function (err) { if (self.say) self.say('Execução', String(err && err.message || err)); });
-          return;
+        const fromLedger = g.attempts.filter(function (a) { return !a.live; })[0];
+        let go = null;
+        if (g.module === 'Fábrica' && g.last.kind === 'trilho' && g.workspace && api.projects && api.projects.runAltTrack) {
+          go = function () {
+            const run = function () { return api.projects.runAltTrack(g.workspace); };
+            return mode === 'correct' && api.projects.approveAltTrack ? api.projects.approveAltTrack(g.workspace, 'reprovado', note).then(run) : run();
+          };
+        } else if (g.module === 'Raio-X' && g.place && api.raiox && api.raiox.analyse) {
+          go = function () { return api.raiox.analyse(g.place, [], mode === 'correct' ? note : ''); };
+        } else if (fromLedger && fromLedger.workspace && api.runs && api.runs.follow) {
+          go = function () { return api.runs.follow(fromLedger.workspace, fromLedger.id, mode, note); };
         }
-        if (job.mod === 'Raio-X' && job.place && api.raiox && api.raiox.analyse) {
-          api.raiox.analyse(job.place, [], mode === 'correct' ? note : '').then(function (res) {
-            done(res, mode === 'correct' ? 'Correção enviada. A análise continua deste ponto.' : 'A análise continua do checkpoint.');
-          }).catch(function (err) { if (self.say) self.say('Execução', String(err && err.message || err)); });
-          return;
-        }
-        if (!job.workspace || !api.runs || !api.runs.follow) { if (self.say) self.say('Execução', 'Não há checkpoint para continuar.'); return; }
-        api.runs.follow(job.workspace, job.id, mode, note).then(function (res) {
-          done(res, mode === 'correct' ? 'Correção enviada. A execução continua deste ponto.' : 'A execução continua do checkpoint.');
-        }).catch(function (err) { if (self.say) self.say('Execução', String(err && err.message || err)); });
+        if (!go) { if (self.say) self.say('Execução', 'Não há checkpoint para continuar.'); return; }
+        self.setState({ jobGroup: g.key, jobId: '', jobCorrect: false, jobFix: '', execStarting: { key: g.key, count: g.count, at: Date.now() } });
+        if (self.say) self.say('Tentativa ' + next, mode === 'correct' ? 'Correção enviada. A tentativa ' + next + ' continua do checkpoint.' : 'A tentativa ' + next + ' continua do checkpoint.');
+        go().then(after).catch(fail);
       };
+      // Pausar e cancelar param o processo de verdade. Módulo sem como parar não mostra os botões.
+      self.stopRun = function (kind, g) {
+        const api = window.tavir;
+        const a = g && g.last;
+        if (!a || !api || a.status !== 'running') return;
+        let stopped = false;
+        if (g.stop === 'trilho' && a.workspace && api.projects && api.projects.pauseAltTrack) { api.projects.pauseAltTrack(a.workspace); stopped = true; }
+        else if (g.stop === 'raiox' && a.place && api.raiox && api.raiox.stopAnalyse) { api.raiox.stopAnalyse(a.place); stopped = true; }
+        // Tarefa do Escritório não tem checkpoint: pausar é o mesmo que cancelar (o ajuste vira nova tentativa no Kanban).
+        else if (g.stop === 'escritorio' && api.tasks && api.tasks.stopRun) { api.tasks.stopRun({ workspace: a.workspace }); stopped = true; kind = 'cancelled'; }
+        if (!stopped) return;
+        self._execOverride[a.id] = kind;
+        if (kind === 'cancelled' && api.runs && api.runs.cancel && a.workspace) {
+          api.runs.cancel(a.workspace, a.id).then(function (res) {
+            if (res && res.ok && res.runId && res.runId !== a.id) self._execOverride[res.runId] = 'cancelled';
+            if (self.loadOfficeRuns) self.loadOfficeRuns();
+          }).catch(function () {});
+        }
+        const jobs = (self.state.jobs || []).map(function (j) { return j && j.id === a.id ? Object.assign({}, j, { status: kind }) : j; });
+        self.setState({ jobs: jobs });
+        if (self.say) self.say('Tentativa ' + a.n, kind === 'cancelled' ? 'Cancelada. O processo foi encerrado.' : 'Pausada. O checkpoint guarda este ponto.');
+      };
+      // A cada 4 s: junta por id com o que já está na tela (sem trocar a lista) e casa a linha ao vivo com o livro.
       self.loadOfficeRuns = function () {
         const api = window.tavir && window.tavir.runs;
         if (!api || !api.office) return;
         api.office().then(function (res) {
           if (!res || !res.ok || !Array.isArray(res.runs)) return;
-          self._meter = self._meter || {};
-          const jobs = res.runs.map(function (r) {
-            const pauseText = r.status === 'paused' || /pausado por carlos/i.test(String(r.error || ''));
-            const running = r.status === 'running';
-            const failed = r.status === 'failed' && !pauseText;
-            const paused = pauseText && r.status !== 'ok';
-            const secs = Math.round((r.durationMs || 0) / 1000);
-            let dur = 'sem tempo';
-            if (running && !r.durationMs) dur = 'em andamento';
-            else if (r.durationMs) {
-              if (secs < 60) dur = secs + ' s';
-              else if (secs < 3600) dur = Math.floor(secs / 60) + ' min ' + (secs % 60) + ' s';
-              else dur = Math.floor(secs / 3600) + ' h ' + Math.floor((secs % 3600) / 60) + ' min';
-            }
-            const freshCost = r.usage && r.usage.costUsd ? Number(r.usage.costUsd) : 0;
-            const old = (self.state.jobs || []).filter(function (item) { return item.id === r.id; })[0];
-            const cost = freshCost || (old && old.cost) || 0;
-            const freshTokens = r.usage ? ((r.usage.inputTokens || 0) + (r.usage.outputTokens || 0)) : 0;
-            const status = running ? 'running' : failed ? 'failed' : paused ? 'paused' : 'completed';
-            const startedMs = Date.parse(r.startedAt || '');
-            // Sem percentual inventado: concluída = 100%; as outras mostram tempo real do livro.
-            const progress = status === 'completed' ? 100 : 0;
-            const fmtMs = function (ms) {
-              const t = Math.max(0, Math.round(ms / 1000));
-              if (t < 60) return t + ' s';
-              if (t < 3600) return Math.floor(t / 60) + ' min ' + String(t % 60).padStart(2, '0') + ' s';
-              return Math.floor(t / 3600) + ' h ' + String(Math.floor((t % 3600) / 60)).padStart(2, '0') + ' min';
-            };
-            let progTxt = '100%';
-            if (status !== 'completed') {
-              const elapsed = running && Number.isFinite(startedMs) ? Date.now() - startedMs : (r.durationMs || 0);
-              progTxt = elapsed > 0 ? fmtMs(elapsed) : (running ? 'iniciando' : '—');
-            }
-            return {
-              id: r.id, title: r.label || r.id,
-              who: (r.module || 'Motor') + ' · ' + (r.place || r.owner || '') + ' · ' + dur,
-              ini: String(r.module || 'EX').slice(0, 2).toUpperCase(),
-              status: status,
-              progress: progress, progTxt: progTxt,
-              model: r.model || '—', motor: r.engine || '—', effort: r.mode || '—', task: r.stage || '—',
-              cost: cost, ceiling: 0,
-              started: String(r.startedAt || '').replace('T', ' ').slice(0, 19),
-              tokens: freshTokens ? String(freshTokens) : (old && old.tokens) || '—',
-              workspace: r.workspace, mod: r.module || '', place: r.place || '',
-              checkpointAt: r.checkpointAt || '', checkpointHint: r.checkpointHint || '',
-              error: paused ? '' : (r.error || ''), failText: paused ? '' : (r.error || '')
-            };
-          });
-          const cur = self.state.jobId;
-          if (cur && !jobs.some(function (j) { return j.id === cur; })) {
-            const heldJob = (self.state.jobs || []).filter(function (item) { return item.id === cur; })[0];
-            if (heldJob) jobs.unshift(heldJob);
-          }
+          const now = Date.now();
+          const fresh = res.runs.map(function (r) { return XG.attemptFromRun(r, now); });
+          const prev = (self.state.jobs || []).filter(function (j) { return j && j.key; });
+          const merged = XG.mergeAttempts(prev, fresh, self._execOverride);
+          self._execOverride = XG.pruneOverrides(self._execOverride, fresh);
+          Object.assign(self._execAlias, merged.aliases);
+          const jobs = merged.attempts.map(function (a) { return XG.jobRow(a, now); });
           const patch = { jobs: jobs };
-          if (!cur && jobs[0]) patch.jobId = jobs[0].id;
+          const logs = self.state.logs || {};
+          const moved = {};
+          Object.keys(merged.aliases).forEach(function (from) {
+            const to = merged.aliases[from];
+            if (logs[from] && logs[from].length && !(logs[to] && logs[to].length)) moved[to] = logs[from];
+          });
+          if (Object.keys(moved).length) patch.logs = Object.assign({}, logs, moved);
+          const curId = self.state.jobId;
+          if (curId && self._execAlias[curId]) patch.jobId = self._execAlias[curId];
+          const groups = XG.buildGroups(jobs, now);
+          const st = self.state.execStarting;
+          if (st) {
+            const sg = groups.filter(function (x) { return x.key === st.key; })[0];
+            if ((sg && sg.count > st.count) || now - st.at > 90000) patch.execStarting = null;
+          }
+          if (!self.state.jobGroup && !(patch.jobId || curId) && groups[0]) patch.jobGroup = groups[0].key;
           self.setState(patch);
-          const selected = jobs.find(function (j) { return j.id === (patch.jobId || cur); });
-          const known = self.state.logs && selected && self.state.logs[selected.id] && self.state.logs[selected.id].length;
-          if (selected && (!known || selected.status === 'running')) self.openOfficeRun(selected);
+          const sel = XG.pickSelection(groups, { groupKey: patch.jobGroup || self.state.jobGroup || '', attemptId: patch.jobId || curId || '' });
+          if (sel) {
+            const known = (patch.logs || logs)[sel.attempt.id];
+            if (!(known && known.length) || sel.attempt.status === 'running') self.openOfficeRun(sel.attempt);
+          }
         }).catch(function () {});
       };
       self.loadOfficeRuns();
       if (!self._officeTimer) self._officeTimer = setInterval(function () { self.loadOfficeRuns(); }, 4000);
       window.tavir.onEvent(function(evt) {
-        if (evt && evt.meta && evt.meta.track) {
-          const list = (self.state.jobs || []).slice();
-          let j = list.find(function(x) { return x.id === evt.runId; });
-          const ended = !!evt.meta.ended;
-          const st = ended ? (evt.meta.status || (evt.type === 'error' ? 'failed' : 'completed')) : 'running';
-          if (!j) {
-            j = {
-              id: evt.runId,
-              title: evt.meta.title || 'Trilho de alteração',
-              who: evt.meta.owner || 'Trilho',
-              ini: String(evt.meta.owner || 'TR').slice(0, 2).toUpperCase(),
-              status: st,
-              progress: st === 'completed' ? 100 : 0,
-              model: evt.meta.model || 'auto',
-              motor: evt.meta.motor || 'Cursor',
-              effort: 'trilho',
-              task: evt.meta.focus || 'trilho',
-              cost: 0,
-              ceiling: 0,
-              started: 'agora',
-              tokens: '0',
-              error: ended && st === 'failed' ? evt.content : ''
-            };
-            list.unshift(j);
-          } else if (ended) {
-            j.status = st;
-            if (st === 'completed') j.progress = 100;
-            if (evt.meta.title) j.title = evt.meta.title;
-            j.error = st === 'failed' ? evt.content : '';
-          } else if (j.status !== 'paused' && j.status !== 'failed' && j.status !== 'completed') {
-            j.status = 'running';
-            if (evt.meta.title) j.title = evt.meta.title;
-          }
-          const logs = Object.assign({}, self.state.logs || {});
-          const d = new Date();
-          const ts = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-          const bad = evt.type === 'error';
-          const text = String(evt.content || '');
-          const bucket = (logs[evt.runId] || []).slice();
-          const prev = bucket[bucket.length - 1];
-          const entry = { ts: ts, lvl: bad ? 'erro' : 'info', cls: bad ? 'err' : 'info', text: text };
-          if (prev && text && String(prev.text || '').length && text.startsWith(String(prev.text).slice(0, Math.min(String(prev.text).length, 120))) && text.length >= String(prev.text).length) bucket[bucket.length - 1] = entry;
-          else bucket.push(entry);
-          logs[evt.runId] = bucket;
-          const patch = { jobs: list, logs: logs };
-          if (!self.state.jobId) patch.jobId = evt.runId;
-          self.setState(patch);
-          return;
-        }
+        if (!(evt && evt.meta && evt.meta.track)) return;
+        const now = Date.now();
+        const prev = (self.state.jobs || []).filter(function (j) { return j && j.key; });
+        const res = XG.applyLiveEvent(prev, evt, self._execAlias, now);
+        const id = res.id;
+        const logs = Object.assign({}, self.state.logs || {});
+        const d = new Date();
+        const ts = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        const bad = evt.type === 'error';
+        const text = String(evt.content || '');
+        const bucket = (logs[id] || []).slice();
+        const last = bucket[bucket.length - 1];
+        const entry = { ts: ts, lvl: bad ? 'erro' : 'info', cls: bad ? 'err' : 'info', text: text };
+        if (last && text && String(last.text || '').length && text.startsWith(String(last.text).slice(0, Math.min(String(last.text).length, 120))) && text.length >= String(last.text).length) bucket[bucket.length - 1] = entry;
+        else bucket.push(entry);
+        logs[id] = bucket;
+        const patch = { logs: logs };
+        if (res.attempts !== prev) patch.jobs = res.attempts.map(function (a) { return XG.jobRow(a, now); });
+        self.setState(patch);
+        if (res.ended && self.loadOfficeRuns) self.loadOfficeRuns();
       });
     }
   }`;
@@ -1805,68 +1809,171 @@ if (templateHtml.includes(oldMount)) {
   console.log('componentDidMount atualizado com IPC reativo + Indexação na Abertura!');
 }
 
-templateHtml = templateHtml.replace('{{exec.total}} jobs', '{{exec.total}} execuções');
-templateHtml = templateHtml.replace('Nenhum job neste filtro.', 'Nenhuma execução de motor neste filtro.');
-templateHtml = templateHtml.replace('iniciado às {{job.started}}', '{{job.started}}');
-templateHtml = templateHtml.replace('<b style="font-size: 14px">Log ao vivo</b>', '<b style="font-size: 14px">Log do processo</b>');
-templateHtml = templateHtml.replace('<small>teto US$ {{job.ceiling}} · {{job.costPct}}% usado</small>', '<small>{{job.started}} · {{job.who}}</small>');
-templateHtml = templateHtml.replace('US$ {{j.costTxt}}<br>de {{j.ceiling}}', 'US$ {{j.costTxt}}');
-templateHtml = templateHtml.replace(
-  '<div class="grow"><b>O job parou antes do deploy.</b><p class="sec" style="margin-top: 4px; font-size: 13px">Variável obrigatória ausente: SUPABASE_URL. Nada foi publicado. O gate ap-02 espera sua decisão para registrar a variável e refazer.</p></div>',
-  '<div class="grow"><b>Esta execução falhou.</b><p class="sec" style="margin-top: 4px; font-size: 13px">{{job.failText}}</p></div>'
-);
-templateHtml = templateHtml.replace(
-  '<sc-if value="{{job.isFailed}}" hint-placeholder-val="{{false}}">\n        <div class="card" style="padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; border-color: var(--danger)">',
-  '<sc-if value="{{job.isRunning}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 16px 18px; border-color: var(--flow)"><b>Execução em andamento.</b><p class="sec" style="margin: 4px 0 0; font-size: 13px">{{job.title}} · {{job.who}}. O log abaixo é o processo real do motor.</p></div></sc-if>\n      <sc-if value="{{job.isFailed}}" hint-placeholder-val="{{false}}">\n        <div class="card" style="padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; border-color: var(--danger)">'
-);
-templateHtml = templateHtml.replace(
-  '<button class="btn secondary" sc-camel-on-click="{{jobRetry}}"><svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.retry}}"></path></svg>Refazer</button><button class="btn primary" sc-camel-on-click="{{goGate}}">Abrir gate</button>',
-  '<button class="btn primary" sc-camel-on-click="{{jobRetry}}">Continuar</button><button class="btn secondary" sc-camel-on-click="{{jobCorrect}}">Corrigir</button>'
-);
-templateHtml = templateHtml.replace(
-  '<button class="btn primary" sc-camel-on-click="{{jobResume}}">Retomar</button>',
-  '<button class="btn primary" sc-camel-on-click="{{jobResume}}">Continuar</button>'
-);
-templateHtml = templateHtml.replace(
-  '<div class="metric"><span class="eyebrow">Progresso</span><strong>{{job.progress}}%</strong>',
-  '<sc-if value="{{job.canFollow}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px"><sc-if value="{{job.hasCheckpoint}}" hint-placeholder-val="{{false}}"><div><b>Checkpoint · {{job.checkpointAt}}</b><p class="sec" style="margin: 4px 0 0; font-size: 13px">{{job.checkpointHint}}</p><p class="sec" style="margin: 4px 0 0; font-size: 13px">Há um checkpoint desta etapa. A nova tentativa continua dali.</p></div></sc-if><div style="display: flex; gap: 8px; flex-wrap: wrap"><button class="btn primary" sc-camel-on-click="{{jobRetry}}">Continuar</button><button class="btn secondary" sc-camel-on-click="{{jobCorrect}}">Corrigir</button></div></div></sc-if><sc-if value="{{showCorrect}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px"><b>Correção</b><p class="sec" style="margin: 0; font-size: 13px">Escreva o que precisa mudar. A próxima tentativa continua do checkpoint.</p><textarea class="input" rows="4" value="{{jobFix}}" sc-camel-on-change="{{onJobFix}}"></textarea><button class="btn primary" sc-camel-on-click="{{jobSendFix}}">Enviar correção e continuar</button></div></sc-if><div class="metric"><span class="eyebrow">{{job.progLbl}}</span><strong>{{job.progTxt}}</strong>'
-);
-templateHtml = templateHtml.replace(
-  'log: s.logs[jcur.id] || [], logN: (s.logs[jcur.id] || []).length',
-  'log: s.logs[jcur.id] || [], logN: (s.logs[jcur.id] || []).length, hasCheckpoint: !!jcur.checkpointAt, checkpointAt: jcur.checkpointAt || \'\', checkpointHint: jcur.checkpointHint || \'Há um checkpoint desta etapa. A nova tentativa continua dali.\', canFollow: jcur.status === \'failed\' || jcur.status === \'paused\' || !!jcur.checkpointAt, progTxt: jcur.progTxt || (jcur.progress + \'%\'), progLbl: jcur.status === \'completed\' ? \'Progresso\' : \'Tempo decorrido\''
-);
-// Andamento: execução real não tem percentual confiável. Concluída mostra 100%; as demais mostram
-// o tempo decorrido (rodando) ou o tempo até parar (pausada/falha), vindo do livro.
-templateHtml = templateHtml.replace(
-  'list: jlist.map((j) => ({ id: j.id, title: j.title, who: j.who, progress: j.progress,',
-  "list: jlist.map((j) => ({ id: j.id, title: j.title, who: j.who, progress: j.progress, progTxt: j.progTxt || (j.progress + '%'),"
-);
+// 2.10a Painel da sala: os cards de execução rodando mostram o tempo real, não percentual.
 templateHtml = templateHtml.replace(
   'jobs: running.map((j) => ({ title: j.title, who: j.who, ini: j.ini, model: j.model, progress: j.progress,',
   "jobs: running.map((j) => ({ title: j.title, who: j.who, ini: j.ini, model: j.model, progress: j.progress, progTxt: j.progTxt || (j.progress + '%'),"
 );
-templateHtml = templateHtml.split('<span class="num muted" style="font-size: 11px; width: 32px; text-align: right">{{j.progress}}%</span>').join('<span class="num muted" style="font-size: 11px; min-width: 32px; text-align: right; white-space: nowrap">{{j.progTxt}}</span>');
 templateHtml = templateHtml.split('<span class="num" style="font-size: 12px; width: 36px; text-align: right">{{j.progress}}%</span>').join('<span class="num" style="font-size: 12px; min-width: 36px; text-align: right; white-space: nowrap">{{j.progTxt}}</span>');
-templateHtml = templateHtml.replace(
-  "jobPause: setJob('paused', 'Pausado pelo operador'), jobResume: setJob('running', 'Retomado pelo operador'), jobCancel: setJob('failed', 'Cancelado pelo operador · nada publicado'), jobRetry: setJob('running', 'Refeito a partir do último passo válido'),",
-  "jobPause: function () { const api = (typeof window !== 'undefined' && window.tavir) || null; if (jcur.mod === 'Fábrica' && jcur.workspace && api && api.projects && api.projects.pauseAltTrack) api.projects.pauseAltTrack(jcur.workspace); if (jcur.mod === 'Raio-X' && jcur.place && api && api.raiox && api.raiox.stopAnalyse) api.raiox.stopAnalyse(jcur.place); setJob('paused', 'Pausado. O checkpoint guarda este ponto.')(); }, jobResume: function () { if (self.followRun) self.followRun('continue'); else setJob('running', 'Retomado pelo operador')(); }, jobCancel: setJob('failed', 'Cancelado pelo operador · nada publicado'), jobRetry: function () { if (self.followRun) self.followRun('continue'); }, jobCorrect: function () { self.setState({ jobCorrect: true }); }, jobSendFix: function () { if (self.followRun) self.followRun('correct'); }, onJobFix: function (e) { self.setState({ jobFix: e.target.value }); }, jobFix: s.jobFix || '', showCorrect: !!s.jobCorrect,"
-);
-templateHtml = templateHtml.replace(
-  "const jlist = jf === 'all' ? s.jobs : s.jobs.filter((j) => j.status === jf);",
-  "const jlist = jf === 'all' ? s.jobs : s.jobs.filter((j) => j.status === jf || j.mod === jf);"
-);
-templateHtml = templateHtml.replace(
-  "const costPct = Math.min(100, Math.round(jcur.cost / jcur.ceiling * 100));",
-  "const costPct = jcur.ceiling ? Math.min(100, Math.round(jcur.cost / jcur.ceiling * 100)) : 0;"
-);
-templateHtml = templateHtml.replace(
-  "pick: () => self.setState({ jobId: j.id })",
-  "pick: () => self.openOfficeRun ? self.openOfficeRun(j) : self.setState({ jobId: j.id })"
-);
-templateHtml = templateHtml.replace(
-  "filters: [['all', 'Todos'], ['running', 'Rodando'], ['queued', 'Fila'], ['failed', 'Falha'], ['paused', 'Pausados'], ['completed', 'Concluídos']].map((f) => ({ label: f[1], n: f[0] === 'all' ? s.jobs.length : s.jobs.filter((j) => j.status === f[0]).length, on: jf === f[0] ? 'on' : '', pick: () => self.setState({ jobFilter: f[0] }) })),",
-  "filters: [['all', 'Todos'], ['running', 'Rodando'], ['failed', 'Falha'], ['completed', 'Concluídos'], ['Raio-X', 'Raio-X'], ['Studio', 'Studio'], ['Fábrica', 'Fábrica'], ['Flow', 'Flow'], ['Edição', 'Edição']].map((f) => ({ label: f[1], n: f[0] === 'all' ? s.jobs.length : s.jobs.filter((j) => j.status === f[0] || j.mod === f[0]).length, on: jf === f[0] ? 'on' : '', pick: () => self.setState({ jobFilter: f[0] }) })),"
-);
+
+// 2.10c Execuções agrupadas por item. Uma linha por item (item do trilho, caso do Raio-X, peça do
+// Studio); cada execução ou retomada é uma tentativa. Sem barra de % inventada nem stepper fixo:
+// estado da última tentativa, número de tentativas e tempo real. Regras em src/shared/execGroups.ts,
+// que entra na tela compilado (dist/shared/execGroups.js) para a tela e os testes usarem o mesmo código.
+{
+  const execJs = path.resolve(__dirname, '../dist/shared/execGroups.js');
+  if (!fs.existsSync(execJs)) throw new Error('Rode npm run build:main antes: falta dist/shared/execGroups.js');
+  const execSrc = fs.readFileSync(execJs, 'utf8').replace(/\/\/# sourceMappingURL=.*$/m, '');
+  if (/\brequire\(/.test(execSrc)) throw new Error('execGroups.js não pode importar nada: ele roda dentro da tela.');
+  const jobsMark = 'const JOBS = [];';
+  if (!templateHtml.includes(jobsMark)) throw new Error('Execuções: não achei const JOBS para injetar TavirExec.');
+  templateHtml = templateHtml.replace(jobsMark, 'const TavirExec = (function () { const exports = {}; const module = { exports: exports };\n' + execSrc + '\nreturn module.exports; })();\n' + jobsMark);
+
+  const tplStart = templateHtml.indexOf('<!-- ========== EXECUÇÕES ========== -->');
+  const tplEnd = templateHtml.indexOf('<!-- ========== TASKS ========== -->');
+  if (tplStart === -1 || tplEnd === -1 || tplEnd < tplStart) throw new Error('Execuções: bloco do template não encontrado.');
+  const pauseIcon = '<svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.pause}}"></path></svg>';
+  const alertIcon = '<svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.alert}}"></path></svg>';
+  const execTpl = `<!-- ========== EXECUÇÕES ========== -->
+<sc-if value="{{is.exec}}" hint-placeholder-val="{{false}}">
+<div class="split screen">
+  <aside class="split-side">
+    <div style="padding: 20px 18px 14px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center"><h2 style="font-size: 18px; font-weight: 600">Execuções</h2><div class="grow"></div><span class="num muted" style="font-size: 12px">{{exec.totalTxt}}</span></div>
+      <div class="segs"><sc-for list="{{exec.filters}}" as="f" hint-placeholder-count="9"><button class="seg {{f.on}}" sc-camel-on-click="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+    </div>
+    <div class="rows" style="border-top: 1px solid var(--line)">
+      <sc-for list="{{exec.list}}" as="g" hint-placeholder-count="5">
+        <button class="row {{g.on}}" sc-camel-on-click="{{g.pick}}" style="align-items: flex-start">
+          <i class="{{g.dot}}" style="width: 8px; height: 8px; border-radius: 50%; background: {{g.color}}; margin-top: 7px; flex: none"></i>
+          <div class="grow" style="min-width: 0"><div class="t">{{g.title}}</div><div class="m">{{g.meta}}</div></div>
+        </button>
+      </sc-for>
+      <sc-if value="{{exec.empty}}" hint-placeholder-val="{{false}}"><p class="muted" style="padding: 24px 18px">Nenhuma execução neste filtro.</p></sc-if>
+    </div>
+  </aside>
+  <section class="split-main">
+    <sc-if value="{{job.none}}" hint-placeholder-val="{{false}}"><div class="page"><p class="muted">Nenhuma execução ainda. Quando um motor rodar, ela aparece aqui.</p></div></sc-if>
+    <sc-if value="{{job.has}}" hint-placeholder-val="{{true}}">
+    <div class="page">
+      <div class="phead">
+        <div class="grow" style="min-width: 260px">
+          <div style="display: flex; gap: 8px; align-items: center"><span class="eyebrow">{{job.eyebrow}}</span><span class="badge {{job.cls}}"><i></i>{{job.label}}</span></div>
+          <h1 style="margin-top: 8px">{{job.title}}</h1>
+          <p>{{job.sub}}</p>
+        </div>
+        <div class="actions">
+          <sc-if value="{{job.canStop}}" hint-placeholder-val="{{false}}"><button class="btn secondary" sc-camel-on-click="{{jobPause}}">${pauseIcon}Pausar</button><button class="btn danger" sc-camel-on-click="{{jobCancel}}">Cancelar</button></sc-if>
+          <sc-if value="{{job.canFollow}}" hint-placeholder-val="{{false}}"><button class="btn primary" sc-camel-on-click="{{jobRetry}}">Continuar</button><button class="btn secondary" sc-camel-on-click="{{jobCorrect}}">Corrigir</button></sc-if>
+        </div>
+      </div>
+
+      <sc-if value="{{job.starting}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 14px 18px; border-color: var(--flow)"><b>Nova tentativa</b><p class="sec" style="margin: 4px 0 0; font-size: 13px">{{job.startingTxt}}</p></div></sc-if>
+      <sc-if value="{{job.hasCheckpoint}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 14px 18px"><b>Checkpoint · {{job.checkpointAt}}</b><p class="sec" style="margin: 4px 0 0; font-size: 13px">{{job.checkpointHint}}</p></div></sc-if>
+      <sc-if value="{{showCorrect}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px"><b>Correção</b><p class="sec" style="margin: 0; font-size: 13px">Escreva o que precisa mudar. A próxima tentativa continua do checkpoint.</p><textarea class="input" rows="4" value="{{jobFix}}" sc-camel-on-change="{{onJobFix}}"></textarea><button class="btn primary" sc-camel-on-click="{{jobSendFix}}">Enviar correção e continuar</button></div></sc-if>
+      <sc-if value="{{job.isFailed}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; border-color: var(--danger)">
+          ${alertIcon}
+          <div class="grow"><b>{{job.failTitle}}</b><p class="sec" style="margin-top: 4px; font-size: 13px">{{job.failText}}</p></div>
+        </div>
+      </sc-if>
+
+      <div class="g4">
+        <div class="metric"><span class="eyebrow">{{job.stepLbl}}</span><strong style="font-size: 20px">{{job.stepTxt}}</strong><small>{{job.stepSub}}</small></div>
+        <div class="metric"><span class="eyebrow">Tentativas</span><strong style="font-size: 20px">{{job.countTxt}}</strong><small>{{job.totalTxt}}</small></div>
+        <div class="metric"><span class="eyebrow">Motor</span><strong style="font-size: 20px">{{job.motor}}</strong><small>{{job.model}}</small></div>
+        <sc-if value="{{job.hasUsage}}" hint-placeholder-val="{{false}}"><div class="metric"><span class="eyebrow">Tokens</span><strong style="font-size: 20px">{{job.tokensTxt}}</strong><small>{{job.costTxt}}</small></div></sc-if>
+      </div>
+
+      <section class="card" style="overflow: hidden">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line)"><b style="font-size: 14px">Tentativas</b><div class="grow"></div><span class="eyebrow">mais recente primeiro</span></div>
+        <div class="rows">
+          <sc-for list="{{job.attempts}}" as="a" hint-placeholder-count="3">
+            <button class="row {{a.on}}" sc-camel-on-click="{{a.pick}}">
+              <i class="{{a.dot}}" style="width: 8px; height: 8px; border-radius: 50%; background: {{a.color}}; flex: none"></i>
+              <div class="grow" style="min-width: 0"><div class="t">{{a.n}}</div><div class="m">{{a.meta}}</div></div>
+              <span class="badge {{a.cls}}"><i></i>{{a.label}}</span>
+            </button>
+          </sc-for>
+        </div>
+      </section>
+
+      <section class="ink {{sp.log}}">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--on-ink-line)">
+          <b style="font-size: 14px">{{job.logTitle}}</b>
+          <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{false}}"><span class="badge flow"><i class="live-dot" style="width: 6px; height: 6px"></i>ao vivo</span></sc-if>
+          <div class="grow"></div><span class="eyebrow">{{job.logN}} linhas</span>
+        </div>
+        <div class="log">
+          <sc-for list="{{job.log}}" as="l" hint-placeholder-count="6"><div><span class="ts">{{l.ts}}</span><span class="{{l.cls}}" style="width: 44px; flex: none">{{l.lvl}}</span><span>{{l.text}}</span></div></sc-for>
+          <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{false}}"><div><span class="ts">     </span><span class="ok">▍</span><span style="color: var(--on-ink-muted)">aguardando próximo passo</span></div></sc-if>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+  </section>
+</div>
+</sc-if>
+
+`;
+  templateHtml = templateHtml.slice(0, tplStart) + execTpl + templateHtml.slice(tplEnd);
+
+  const jsStart = templateHtml.indexOf('    // ---------- Execuções ----------');
+  const jsEnd = templateHtml.indexOf('    // ---------- Tasks ----------');
+  if (jsStart === -1 || jsEnd === -1 || jsEnd < jsStart) throw new Error('Execuções: bloco do render não encontrado.');
+  const execRender = `    // ---------- Execuções ----------
+    // Uma linha por item; cada execução é uma tentativa. Regras em src/shared/execGroups.ts (TavirExec).
+    const XG = TavirExec;
+    const xnow = Date.now();
+    const xall = XG.buildGroups((s.jobs || []).filter((j) => j && j.key), xnow);
+    const jf = s.jobFilter === 'failed' || s.jobFilter === 'paused' ? 'stopped' : (s.jobFilter || 'all');
+    const xlist = xall.filter((g) => XG.matchesFilter(g, jf));
+    const xsel = XG.pickSelection(xall, { groupKey: s.jobGroup || '', attemptId: s.jobId || '' }, xlist);
+    const xg = xsel ? xsel.group : null;
+    const xa = xsel ? xsel.attempt : null;
+    const XC = { running: ['Rodando', 'flow', 'var(--flow)'], completed: ['Concluído', '', 'var(--text-muted)'], failed: ['Falhou', 'danger', 'var(--danger)'], paused: ['Pausado', 'warn', 'var(--warning)'], cancelled: ['Cancelado', '', 'var(--line-strong)'] };
+    const xst = (k) => XC[k] || XC.completed;
+    const xpick = (g, a) => () => { self.setState({ jobGroup: g.key, jobId: a ? a.id : '', jobCorrect: false }); if (self.openOfficeRun) self.openOfficeRun(a || g.last); };
+    const xcounts = XG.filterCounts(xall);
+    const xwhen = (a) => a.startedMs ? new Date(a.startedMs).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'sem horário';
+    const xplace = (g) => g.place && g.place !== g.module ? g.place : '';
+    const exec = {
+      total: xall.length, totalTxt: xall.length === 1 ? '1 item' : xall.length + ' itens', empty: xlist.length === 0,
+      filters: XG.GROUP_FILTERS.map((f) => ({ label: f[1], n: xcounts[f[0]] || 0, on: jf === f[0] ? 'on' : '', pick: () => self.setState({ jobFilter: f[0] }) })),
+      list: xlist.map((g) => ({ title: g.title, color: xst(g.status)[2], dot: g.status === 'running' ? 'live-dot' : '', meta: [g.module, xplace(g), 'tentativa ' + g.count, g.totalMs ? XG.fmtDuration(g.totalMs) : ''].filter(Boolean).join(' · '), on: xg && g.key === xg.key ? 'on' : '', pick: xpick(g, null) }))
+    };
+    const xstarting = !!(xg && s.execStarting && s.execStarting.key === xg.key);
+    const xlog = xa ? (s.logs[xa.id] || []) : [];
+    const xlastTxt = xg ? XG.timeText(xg.status, XG.attemptElapsed(xg.last, xnow)) : '';
+    const job = !xg ? { has: false, none: true, log: [], logN: 0, attempts: [] } : {
+      has: true, none: false,
+      title: xg.title, eyebrow: [xg.module, xplace(xg)].filter(Boolean).join(' · '),
+      label: xst(xa.status)[0], cls: xst(xa.status)[1],
+      sub: 'Tentativa ' + xa.n + ' de ' + xg.count + ' · ' + XG.timeText(xa.status, XG.attemptElapsed(xa, xnow)) + ' · ' + xwhen(xa),
+      isRunning: xa.status === 'running', isFailed: xa.status === 'failed',
+      failTitle: 'A tentativa ' + xa.n + ' falhou.', failText: xa.error || 'O motor parou sem dizer o motivo. O log abaixo mostra até onde foi.',
+      canStop: !!xg.stop && !xstarting, canFollow: xg.canFollow && !xstarting,
+      hasCheckpoint: xg.canFollow && !xstarting && !!xg.checkpointAt, checkpointAt: xg.checkpointAt, checkpointHint: xg.checkpointHint || 'A próxima tentativa continua deste ponto.',
+      starting: xstarting, startingTxt: 'Abrindo a tentativa ' + (xg.count + 1) + '. Ela aparece aqui quando o motor começar.',
+      stepLbl: xg.stepText ? (/^Item /.test(xg.stepText) ? 'Trilho' : 'Etapa') : 'Andamento', stepTxt: xg.stepText || xlastTxt, stepSub: xg.stepText ? xlastTxt : 'última tentativa',
+      countTxt: String(xg.count), totalTxt: xg.totalMs ? 'tempo total ' + XG.fmtDuration(xg.totalMs) : 'sem tempo registrado',
+      motor: xa.engine || '—', model: xa.model || 'modelo padrão',
+      hasUsage: xa.costUsd > 0 || xa.tokens > 0, tokensTxt: xa.tokens ? xa.tokens.toLocaleString('pt-BR') : '—', costTxt: xa.costUsd > 0 ? 'US$ ' + money(xa.costUsd) + ' nesta tentativa' : 'entrada + saída, nesta tentativa',
+      attempts: xg.attempts.map((a) => ({ n: 'Tentativa ' + a.n, meta: xwhen(a) + ' · ' + XG.timeText(a.status, XG.attemptElapsed(a, xnow)), label: xst(a.status)[0], cls: xst(a.status)[1], color: xst(a.status)[2], dot: a.status === 'running' ? 'live-dot' : '', on: a.id === xa.id ? 'on' : '', pick: xpick(xg, a) })),
+      logTitle: 'Log do processo · tentativa ' + xa.n, log: xlog, logN: xlog.length
+    };
+
+`;
+  templateHtml = templateHtml.slice(0, jsStart) + execRender + templateHtml.slice(jsEnd);
+
+  const oldActions = "jobPause: setJob('paused', 'Pausado pelo operador'), jobResume: setJob('running', 'Retomado pelo operador'), jobCancel: setJob('failed', 'Cancelado pelo operador · nada publicado'), jobRetry: setJob('running', 'Refeito a partir do último passo válido'),";
+  if (!templateHtml.includes(oldActions)) throw new Error('Execuções: ações jobPause/jobCancel não encontradas.');
+  templateHtml = templateHtml.replace(
+    oldActions,
+    "jobPause: function () { if (self.stopRun) self.stopRun('paused', xg); }, jobCancel: function () { if (self.stopRun) self.stopRun('cancelled', xg); }, jobResume: function () { if (self.followRun) self.followRun('continue', xg); }, jobRetry: function () { if (self.followRun) self.followRun('continue', xg); }, jobCorrect: function () { self.setState({ jobCorrect: true }); }, jobSendFix: function () { if (self.followRun) self.followRun('correct', xg); }, onJobFix: function (e) { self.setState({ jobFix: e.target.value }); }, jobFix: s.jobFix || '', showCorrect: !!s.jobCorrect,"
+  );
+  console.log('Execuções agrupadas por item (tentativas, merge estável, cancelar de verdade).');
+}
 
 // 2.10b Enriquecer modal 'evidence' para exibir conteúdo de Conhecimento / Memória Tier 1 / Livros / Skills
 const origEvidenceSpec = `      evidence: { title: 'Evidência', lead: 'Leitura do artefato, sem executar o job de novo.', size: 'lg', primary: 'Fechar', cancel: 'Copiar caminho', fields: [
@@ -1952,7 +2059,11 @@ const newKanbanCard = `        <sc-for list="{{c.cards}}" as="t" hint-placeholde
             <sc-if value="{{t.hasJob}}" hint-placeholder-val="{{false}}"><div style="display: flex; align-items: center; gap: 8px"><div class="track" style="height: 4px"><div class="fill {{t.fillCls}}" style="width: {{t.jobPct}}%"></div></div><span class="num muted" style="font-size: 11px">{{t.jobPct}}%</span></div></sc-if>
             <div style="display: flex; align-items: center; gap: 8px"><span class="av" style="width: 24px; height: 24px; font-size: 9px">{{t.ini}}</span><span class="muted" style="font-size: 12px">{{t.who}} · {{t.sector}}</span><div class="grow"></div>
               <sc-if value="{{t.gate}}" hint-placeholder-val="{{false}}"><span class="badge danger">gate</span></sc-if>
-              <sc-if value="{{t.planning}}" hint-placeholder-val="{{false}}"><span class="badge warn">planejando</span></sc-if>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; min-height: 24px">
+              <sc-if value="{{t.hasRun}}" hint-placeholder-val="{{false}}"><span class="badge {{t.runCls}}"><i></i>{{t.runBadge}}</span></sc-if>
+              <div class="grow"></div>
+              <sc-if value="{{t.canRun}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" style="height: 24px; padding: 0 10px; font-size: 11px" sc-camel-on-click="{{t.runNow}}" title="Entra na fila e roda com o Agente geral (ou com o plano da Paula, se houver)">Executar</button></sc-if>
             </div>
           </div>
         </sc-for>`;
@@ -1964,9 +2075,19 @@ if (templateHtml.includes(origKanbanCard)) {
 
 const origTaskDrawerActions = `      <div class="actions"><button class="btn secondary" sc-camel-on-click="{{openPlan}}">Planejar com Paula</button><sc-if value="{{td.hasJob}}" hint-placeholder-val="{{false}}"><button class="btn primary" sc-camel-on-click="{{tdGoJob}}">Ver execução</button></sc-if></div>`;
 const newTaskDrawerActions = `      <sc-if value="{{td.hasDesc}}" hint-placeholder-val="{{false}}"><div class="field"><span>Contexto / Descrição</span><p class="sec" style="font-size: 13.5px; line-height: 1.55">{{td.desc}}</p></div></sc-if>
+      <sc-if value="{{td.hasRun}}" hint-placeholder-val="{{false}}"><div class="field"><span>Execução</span><div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span class="badge {{td.runCls}}"><i></i>{{td.runBadge}}</span><span class="muted" style="font-size: 12.5px">{{td.runMeta}}</span></div><sc-if value="{{td.hasRunError}}" hint-placeholder-val="{{false}}"><p style="font-size: 13px; color: var(--danger); margin: 6px 0 0">{{td.runError}}</p></sc-if></div></sc-if>
+      <sc-if value="{{td.hasSummary}}" hint-placeholder-val="{{false}}"><div class="field"><span>Resultado do agente</span><pre class="mono" style="margin: 0; padding: 12px; max-height: 220px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: var(--surface-0); border: 1px solid var(--line); border-radius: 10px; color: var(--text-secondary)">{{td.summary}}</pre></div></sc-if>
+      <sc-if value="{{td.hasPlan}}" hint-placeholder-val="{{false}}"><div class="field"><span>Plano da Paula</span><pre class="mono" style="margin: 0; padding: 12px; max-height: 220px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: var(--surface-0); border: 1px solid var(--line); border-radius: 10px; color: var(--text-secondary)">{{td.plan}}</pre></div></sc-if>
       <div class="actions" style="flex-wrap: wrap; gap: 8px">
+        <sc-if value="{{td.canRun}}" hint-placeholder-val="{{false}}"><button type="button" class="btn primary" sc-camel-on-click="{{tdRun}}">{{td.runLbl}}</button></sc-if>
+        <sc-if value="{{td.canRunPlan}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdRunGeral}}">Executar com o Agente geral</button></sc-if>
+        <sc-if value="{{td.canPlan}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdPlan}}">{{td.planLbl}}</button></sc-if>
+        <sc-if value="{{td.canApprove}}" hint-placeholder-val="{{false}}"><button type="button" class="btn primary" sc-camel-on-click="{{tdApprove}}">Aprovar e concluir</button></sc-if>
+        <sc-if value="{{td.canApprove}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdRevise}}">Pedir ajuste</button></sc-if>
+        <sc-if value="{{td.canRetry}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdRevise}}">Tentar de novo com ajuste</button></sc-if>
+        <sc-if value="{{td.canStop}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdStop}}">{{td.stopLbl}}</button></sc-if>
+        <sc-if value="{{td.hasRun}}" hint-placeholder-val="{{false}}"><button type="button" class="btn ghost" sc-camel-on-click="{{tdGoRun}}">Ver em Execuções</button></sc-if>
         <button type="button" class="btn secondary" sc-camel-on-click="{{tdEdit}}">Editar task</button>
-        <button type="button" class="btn secondary" sc-camel-on-click="{{openPlan}}">Planejar com Paula</button>
         <sc-if value="{{td.hasJob}}" hint-placeholder-val="{{false}}"><button type="button" class="btn primary" sc-camel-on-click="{{tdGoJob}}">Ver execução</button></sc-if>
         <div class="grow"></div>
         <button type="button" class="btn ghost" style="color: var(--danger)" sc-camel-on-click="{{tdDelete}}">Excluir task</button>
@@ -1995,6 +2116,8 @@ const newTaskAndEditDeleteSpec = `      task: { title: 'Nova task', eyebrow: 'Ka
         { k: 'sector', type: 'segs', label: 'Setor', val: (d && d.sector) || 'Estratégia', opts: ['Estratégia', 'Engenharia', 'Comercial', 'Conteúdo', 'Operação'] },
         { k: 'who', type: 'text', label: 'Agente / Responsável', val: (d && d.who) || 'Paula PM', ph: 'Ex.: Paula PM, Ari Arquiteto, Vitor Construtor' },
         { k: 'col', type: 'segs', label: 'Coluna no Kanban', val: (d && d.colLabel) || 'A planejar', opts: ['A planejar', 'Planejado', 'Em execução', 'Concluído'] }] },
+      'task-revise': { title: 'Pedir ajuste · #' + ((d && d.seq) || ''), eyebrow: 'Fila de execução', lead: 'O agente roda de novo (tentativa seguinte) com o seu pedido e o resultado anterior.', primary: 'Mandar para a fila', fields: [
+        { k: 'note', type: 'area', label: 'O que precisa mudar', ph: 'Ex.: faltou o domingo; resuma em 5 linhas', rows: 4, req: 'Escreva o que precisa mudar.' }] },
       'task-delete': { title: 'Excluir task #' + ((d && d.seq) || ''), eyebrow: 'Kanban · Exclusão de Tarefa', lead: 'Tem certeza que deseja excluir esta tarefa?', primary: 'Excluir definitivamente', primaryCls: 'danger', fields: [
         { k: 'n', type: 'note', tone: 'warn', text: 'A task #' + ((d && d.seq) || '') + ' ("' + ((d && d.title) || '') + '") será removida permanentemente do quadro Kanban e do banco SQLite.' }] },`;
 
@@ -2076,6 +2199,14 @@ const newSubmitTask = `    if (id === 'task') {
       this.say('Task atualizada', 'As alterações em #' + (d.seq || '') + ' foram salvas no SQLite.');
       return;
     }
+    if (id === 'task-revise') {
+      const d = s.mdata || {};
+      const note = String(v('note', '') || '').trim();
+      if (!note) { this.say('Falta o pedido', 'Escreva o que precisa mudar.'); return; }
+      this.setState({ modal: null, mdata: null });
+      if (this.taskAct) this.taskAct({ id: d.id, seq: d.seq, title: d.title }, 'revise', note);
+      return;
+    }
     if (id === 'task-delete') {
       const d = s.mdata || {};
       const updatedTasks = (s.tasks || []).filter(function(t) { return t.id !== d.id; });
@@ -2112,6 +2243,22 @@ const newTaskCardReturn = `return {
             jobPct: j ? j.progress : 0,
             fillCls: j ? (STATUS[j.status] || STATUS.completed)[3] : '',
             open: () => self.open('taskdetail', { id: t.id }),
+            ...(function () {
+              const rv = (s.taskRuns || {})[t.id] || null;
+              const RS = { queued: ['na fila', 'warn'], running: ['executando', 'flow'], review: ['aguarda você', 'warn'], failed: ['falhou', 'danger'], canceled: ['cancelado', ''], approved: ['aprovado', 'flow'], done: [rv && rv.mode === 'plan' ? 'plano pronto' : 'ajustando', 'flow'] };
+              const meta = rv ? (RS[rv.status] || ['', '']) : ['', ''];
+              const open = rv && (rv.status === 'queued' || rv.status === 'running');
+              return {
+                hasRun: !!rv,
+                runBadge: rv ? (meta[0] + (rv.status === 'queued' && rv.queuePos ? ' · ' + rv.queuePos + 'º' : '') + (rv.mode === 'exec' && rv.attempt > 1 ? ' · tentativa ' + rv.attempt : '')) : '',
+                runCls: meta[1],
+                canRun: !open && t.status !== 'done' && !(rv && rv.status === 'review'),
+                runNow: (e) => {
+                  if (e && e.stopPropagation) e.stopPropagation();
+                  if (self.taskRun) self.taskRun(t, 'exec', rv && rv.plan ? 'plano' : 'geral');
+                }
+              };
+            })(),
             edit: (e) => {
               if (e && e.stopPropagation) e.stopPropagation();
               self.open('task-edit', { id: t.id, seq: t.seq, title: t.title, desc: t.desc || '', prio: t.prio || 'Normal', sector: t.sector || 'Estratégia', who: t.who || 'Paula PM', status: t.status, colLabel: c[1] });
@@ -2141,7 +2288,7 @@ const origTdBlock = `    const td = {
 const newTdBlock = `    const tdColObj = COLS.find((c) => c[0] === tdT.status) || COLS[0];
     const td = {
       seq: tdT.seq, title: tdT.title, desc: tdT.desc || '', hasDesc: !!(tdT.desc && String(tdT.desc).trim()), who: tdT.who, sector: tdT.sector, prio: tdT.prio, prioCls: prioCls[tdT.prio] || '', gate: !!tdT.gate, hasJob: !!tdT.job,
-      moveHint: tdT.gate ? 'Com gate aberto, o card não sai de Em execução.' : 'Planejado → Em execução inicia o job ligado.',
+      moveHint: tdT.gate ? 'Com gate aberto, o card não sai de Em execução.' : 'Mudar de coluna não executa nada. Para rodar, use Executar.',
       moves: COLS.map((c) => ({ label: c[1], on: tdT.status === c[0] ? 'on' : '', pick: () => {
         if (tdT.gate && c[0] !== 'in_progress') { self.say('Gate aberto', 'Decida em Decisões antes de mover o card.'); return; }
         self.setState({ tasks: s.tasks.map((t) => t.id === tdT.id ? Object.assign({}, t, { status: c[0], planning: c[0] === 'to_plan' ? t.planning : false }) : t) });
@@ -2151,7 +2298,40 @@ const newTdBlock = `    const tdColObj = COLS.find((c) => c[0] === tdT.status) |
         self.log('Carlos', 'moveu #' + tdT.seq + ' para ' + c[1]);
         if (c[0] === 'in_progress' && tdT.job) { self.setState((st) => ({ jobs: st.jobs.map((j) => j.id === tdT.job && j.status !== 'running' ? Object.assign({}, j, { status: 'running', progress: Math.max(3, j.progress) }) : j) })); self.say('Job iniciado', tdT.job + ' começou a rodar.'); }
       } })),
-      hist: [{ t: '09:10', text: 'Card criado por ' + (tdT.who || 'Paula PM') }, { t: '10:42', text: 'Coluna atual: ' + tdColObj[1] }, { t: '12:31', text: tdT.gate ? 'Gate aberto · aguardando decisão' : 'Registrado no banco SQLite' }]
+      hist: [{ t: '09:10', text: 'Card criado por ' + (tdT.who || 'Paula PM') }, { t: '10:42', text: 'Coluna atual: ' + tdColObj[1] }, { t: '12:31', text: tdT.gate ? 'Gate aberto · aguardando decisão' : 'Registrado no banco SQLite' }],
+      ...(function () {
+        const rv = (s.taskRuns || {})[tdT.id] || null;
+        const AG = { geral: 'Agente geral', plano: 'Agente do plano', paula: 'Paula PM' };
+        const RS = { queued: ['na fila', 'warn'], running: ['executando', 'flow'], review: ['aguarda você', 'warn'], failed: ['falhou', 'danger'], canceled: ['cancelado', ''], approved: ['aprovado', 'flow'], done: [rv && rv.mode === 'plan' ? 'plano pronto' : 'ajustando', 'flow'] };
+        const meta = rv ? (RS[rv.status] || ['', '']) : ['', ''];
+        const open = !!rv && (rv.status === 'queued' || rv.status === 'running');
+        const review = !!rv && rv.status === 'review';
+        const ended = !!rv && rv.mode === 'exec' && (rv.status === 'failed' || rv.status === 'canceled');
+        const hasPlan = !!(rv && rv.plan);
+        const free = !open && !review && tdT.status !== 'done';
+        const when = rv && rv.at ? String(rv.at).slice(0, 16).replace('T', ' ') : '';
+        return {
+          hasRun: !!rv,
+          runBadge: rv ? (meta[0] + (rv.status === 'queued' && rv.queuePos ? ' · ' + rv.queuePos + 'º da fila' : '')) : '',
+          runCls: meta[1],
+          runMeta: rv ? ((rv.mode === 'plan' ? 'Plano' : 'Execução') + ' · ' + (AG[rv.agent] || rv.agent) + (rv.mode === 'exec' ? ' · tentativa ' + rv.attempt : '') + (when ? ' · ' + when : '')) : '',
+          hasRunError: !!(rv && rv.error && (rv.status === 'failed' || rv.status === 'canceled')),
+          runError: rv ? rv.error : '',
+          hasSummary: !!(rv && rv.mode === 'exec' && rv.summary),
+          summary: rv ? rv.summary : '',
+          hasPlan: hasPlan,
+          plan: rv ? rv.plan : '',
+          canRun: free && !ended,
+          runLbl: hasPlan ? 'Executar com o plano' : 'Executar com o Agente geral',
+          canRunPlan: free && !ended && hasPlan,
+          canPlan: free && !ended,
+          planLbl: hasPlan ? 'Planejar de novo com a Paula' : 'Planejar com a Paula',
+          canApprove: review,
+          canRetry: ended && tdT.status !== 'done',
+          canStop: open,
+          stopLbl: rv && rv.status === 'running' ? 'Parar execução' : 'Tirar da fila'
+        };
+      })()
     };`;
 
 if (templateHtml.includes(origTdBlock)) {
@@ -2163,7 +2343,14 @@ templateHtml = templateHtml.replace(
   "openPlan: () => self.open('plan', s.mdata), tdGoJob: () => self.go('exec', { jobId: tdT.job, jobFilter: 'all' }),",
   `openPlan: () => self.open('plan', s.mdata), tdGoJob: () => self.go('exec', { jobId: tdT.job, jobFilter: 'all' }),
       tdEdit: () => self.open('task-edit', { id: tdT.id, seq: tdT.seq, title: tdT.title, desc: tdT.desc || '', prio: tdT.prio || 'Normal', sector: tdT.sector || 'Estratégia', who: tdT.who || 'Paula PM', status: tdT.status, colLabel: tdColObj[1] }),
-      tdDelete: () => self.open('task-delete', { id: tdT.id, seq: tdT.seq, title: tdT.title }),`
+      tdDelete: () => self.open('task-delete', { id: tdT.id, seq: tdT.seq, title: tdT.title }),
+      tdRun: () => self.taskRun && self.taskRun(tdT, 'exec', ((s.taskRuns || {})[tdT.id] || {}).plan ? 'plano' : 'geral'),
+      tdRunGeral: () => self.taskRun && self.taskRun(tdT, 'exec', 'geral'),
+      tdPlan: () => self.taskRun && self.taskRun(tdT, 'plan', 'paula'),
+      tdApprove: () => self.taskAct && self.taskAct(tdT, 'approve'),
+      tdRevise: () => self.open('task-revise', { id: tdT.id, seq: tdT.seq, title: tdT.title }),
+      tdStop: () => self.taskAct && self.taskAct(tdT, 'stop'),
+      tdGoRun: () => { self.close(); self.go('exec', { jobFilter: 'Escritório' }); },`
 );
 
 const origProjectSpec = `      project: { title: 'Novo projeto', lead: 'Nome, trilho e onde o workspace mora.', primary: 'Criar projeto', done: ['Projeto criado', 'Paula abre o primeiro planejamento.'], fields: [
@@ -2431,12 +2618,7 @@ const newSubmitProjectAndFactory = `if (id === 'factory-delete') {
       } else {
         window.dispatchEvent(new CustomEvent('tavir:project-created', { detail: { project: fallbackProj, openConsole: isAbsorb } }));
       }
-      const taskOwner = isAbsorb ? pAbsorbAgent.split('(')[0].trim() : 'Paula PM';
-      const newTask = { id: 't' + Date.now(), seq: 40 + s.tasks.length, title: (isAbsorb ? '[Product Lab] Absorver ' : '') + pName + ' · ' + pTpl + ' (Git: ' + gitLabel + ')', status: 'to_plan', who: taskOwner, ini: isAbsorb ? 'PL' : 'PP', prio: 'Alta', sector: 'Engenharia', planning: true };
-      if (tavir && tavir.tasks && tavir.tasks.create) {
-        tavir.tasks.create({ title: newTask.title, prio: 'Alta', sector: 'Engenharia' });
-      }
-      this.setState({ tasks: [newTask].concat(s.tasks) });
+      // Projeto novo/absorvido fica na Fábrica; o Kanban do Escritório é só de tarefas avulsas.
       this.log('Carlos', (isAbsorb ? 'absorveu o projeto ' : 'criou a esteira ') + pName + ' · Git isolado: ' + gitLabel, '#B7F34A');
     }`;
 if (templateHtml.includes(origSubmitProject)) {

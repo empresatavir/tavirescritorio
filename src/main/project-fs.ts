@@ -3385,6 +3385,8 @@ export function listTaskRecords(): any[] {
         `SELECT t.id, t.seq, t.title, t.description, t.status, t.priority, t.sector, t.assignee_agent_id, t.gate_held, a.name as agent_name
          FROM tasks t
          LEFT JOIN agents a ON a.id = t.assignee_agent_id
+         -- Kanban do Escritório = tarefas avulsas. Item de trilho da Fábrica nunca entra aqui.
+         WHERE t.id NOT LIKE 'task-trilho-%' AND COALESCE(t.sector, '') <> 'Fábrica'
          ORDER BY COALESCE(t.seq, 9999) ASC, t.created_at DESC`,
       )
       .all() as any[];

@@ -343,4 +343,42 @@ describe('credenciais de deploy e dados no cofre', () => {
     expect(listBundles().every((item) => !item.connected)).toBe(true);
     expect(listCredentials().map((item) => item.provider)).toEqual(['vercel', 'supabase', 'netlify']);
   });
+
+  it('card do Supabase do Escritório: URL sugerida, app opcional e arquivo do worker', () => {
+    isolate();
+    const envFile = path.join(dir, 'escritorio-supabase.env');
+    process.env.TAVIR_ESCRITORIO_ENV_FILE = envFile;
+    try {
+      const vazio = listBundles().find((item) => item.provider === 'escritorio_supabase');
+      expect(vazio?.connected).toBe(false);
+      expect(vazio?.fields.find((f) => f.key === 'url')?.value).toBe('https://esswhkxdupgtlijdorro.supabase.co');
+
+      const service = 'sb_secret_' + 's'.repeat(30);
+      const anon = 'sb_publishable_' + 'a'.repeat(30);
+      expect(saveBundle('escritorio_supabase', { url: 'https://outro.exemplo.com', serviceKey: service, anonKey: anon }).ok).toBe(false);
+      const saved = saveBundle('escritorio_supabase', { url: 'https://esswhkxdupgtlijdorro.supabase.co/rest/v1/', serviceKey: service, anonKey: anon });
+      expect(saved.ok).toBe(true);
+      expect(JSON.stringify(saved)).not.toContain(service);
+      const view = saved.bundles.find((item) => item.provider === 'escritorio_supabase');
+      expect(view?.connected).toBe(true);
+      expect(view?.fields.find((f) => f.key === 'appPassword')?.optional).toBe(true);
+      expect(getBundle('escritorio_supabase')).toEqual({ url: 'https://esswhkxdupgtlijdorro.supabase.co', serviceKey: service, anonKey: anon });
+
+      const env = fs.readFileSync(envFile, 'utf8');
+      expect(env).toContain('SUPABASE_URL=https://esswhkxdupgtlijdorro.supabase.co');
+      expect(env).toContain(`SUPABASE_SERVICE_ROLE_KEY=${service}`);
+      expect(env).not.toContain(anon);
+
+      expect(saveBundle('escritorio_supabase', { url: 'https://esswhkxdupgtlijdorro.supabase.co', appEmail: 'sem-arroba' }).ok).toBe(false);
+      const comApp = saveBundle('escritorio_supabase', { url: 'https://esswhkxdupgtlijdorro.supabase.co', appEmail: 'app@tavir.com.br', appPassword: 'senha-forte-123' });
+      expect(comApp.ok).toBe(true);
+      expect(getBundle('escritorio_supabase')?.serviceKey).toBe(service);
+      expect(fs.readFileSync(envFile, 'utf8')).not.toContain('senha-forte-123');
+
+      removeBundle('escritorio_supabase');
+      expect(fs.existsSync(envFile)).toBe(false);
+    } finally {
+      delete process.env.TAVIR_ESCRITORIO_ENV_FILE;
+    }
+  });
 });

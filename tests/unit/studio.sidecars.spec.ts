@@ -2,9 +2,9 @@ import * as fs from 'node:fs';
 import * as http from 'node:http';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
-import { createSidecarManager, loadSidecars, parseListeningPid, type SidecarSpec } from '../../src/main/sidecars';
+import { createSidecarManager, describeCommand, loadSidecars, parseListeningPid, type SidecarSpec } from '../../src/main/sidecars';
 import { exportReelForDarkFlow } from '../../src/main/studio/darkflowExport';
 import { darkflowRequest } from '../../src/main/studio/darkflow';
 import { docuflowChannel } from '../../src/main/studio/docuflow';
@@ -31,10 +31,29 @@ function writeConfig(systems: SidecarSpec[]): string {
 describe('sidecars', () => {
   it('lê o exemplo sem a flag de publicação', () => {
     const systems = loadSidecars(path.resolve('db/sidecars.example.json'));
-    expect(systems.map((item) => item.id)).toEqual(['darkflow', 'docuflow']);
+    expect(systems.map((item) => item.id)).toEqual(['darkflow', 'docuflow', 'controle-mobile']);
     expect(systems[0].healthUrl).toBe('http://127.0.0.1:8765/api/health');
     expect(systems[1].healthUrl).toBe('http://127.0.0.1:5000/docs');
     expect(JSON.stringify(systems)).not.toContain('enable-meta-publish');
+  });
+
+  it('sobe a API e o Studio do Docuflow direto, sem o menu do iniciar.bat', () => {
+    const docuflow = loadSidecars(path.resolve('db/sidecars.example.json'))[1];
+    const linha = describeCommand(docuflow);
+    expect(linha).toContain('uvicorn docuflow.api:app');
+    expect(linha).toContain('--port 5000');
+    expect(linha).toContain('docuflow-studio/scripts/run-dev.mjs');
+    expect(linha).not.toContain('iniciar.bat');
+    expect(docuflow.conflito).toBeUndefined();
+  });
+
+  it('a trava da publicação da Meta também olha os argumentos', async () => {
+    let spawned = false;
+    const file = writeConfig([{ id: 'x', nome: 'X', pasta: os.tmpdir(), comando: 'x.bat', healthUrl: 'http://127.0.0.1:1/', portas: [], processos: [{ comando: 'python', args: ['main.py', '--enable-meta-publish'] }] }]);
+    const manager = createSidecarManager(file, { health: async () => false, portOwner: () => null, spawn: () => { spawned = true; return { pid: 1, kill: () => undefined }; } });
+    const res = await manager.start('x');
+    expect(res.ok).toBe(false);
+    expect(spawned).toBe(false);
   });
 
   it('reconhece quem escuta a porta', () => {
@@ -79,6 +98,29 @@ describe('sidecars', () => {
     expect(result.ok).toBe(false);
     expect(result.error).toContain('8765');
     expect(spawned).toBe(0);
+  });
+
+  it('Escritório reaberto ainda para o sistema que ele mesmo ligou, e só esse', async () => {
+    const file = writeConfig([{ id: 'cm', nome: 'Controle Mobile', pasta: 'C:/app', comando: 'x', healthUrl: 'http://cm/health', portas: [9010] }]);
+    let guardado: Record<string, number> = {};
+    const mortos: number[] = [];
+    const remember = { load: () => ({ ...guardado }), save: (m: Record<string, number>) => { guardado = { ...m }; } };
+    let dono: { pid: number; nome: string } | null = null;
+    const deps = { health: async () => false, portOwner: () => dono, killPid: (pid: number) => void mortos.push(pid), remember, spawn: () => ({ pid: 500, kill() {} }) };
+    expect((await createSidecarManager(file, deps).start('cm')).ok).toBe(true);
+    expect(guardado.cm).toBe(500);
+    // Escritório fechado e aberto de novo: módulo novo, sem o filho em memória, mesmo arquivo de pids.
+    vi.resetModules();
+    const { createSidecarManager: reaberto } = await import('../../src/main/sidecars');
+    const m = reaberto(file, deps);
+    dono = { pid: 777, nome: 'python.exe' };
+    expect(m.stop('cm')).toMatchObject({ ok: false });
+    expect(mortos).toEqual([]);
+    dono = { pid: 500, nome: 'python.exe' };
+    expect((await m.status())[0].nosso).toBe(true);
+    expect(m.stop('cm').ok).toBe(true);
+    expect(mortos).toEqual([500]);
+    expect(guardado.cm).toBeUndefined();
   });
 
   it('não liga a publicação da Meta', async () => {

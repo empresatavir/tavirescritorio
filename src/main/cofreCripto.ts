@@ -19,7 +19,7 @@ export function caminhoDaChave(): string {
   return join(pastaDaChave(), 'cofre.key');
 }
 
-function restringirAcesso(arquivo: string): void {
+export function restringirAcesso(arquivo: string): void {
   try {
     chmodSync(arquivo, 0o600);
   } catch {

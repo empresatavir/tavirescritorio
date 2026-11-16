@@ -19,6 +19,12 @@ export interface OfficeRun extends RunSummary {
   place: string;
   checkpointAt?: string;
   checkpointHint?: string;
+  /** Rótulo do checkpoint da pasta: diz a qual item ele pertence. */
+  checkpointLabel?: string;
+  /** Carlos cancelou esta tentativa (marcador em .tavir/runs/<id>/cancelled.json). */
+  cancelled?: boolean;
+  /** Posição do item no trilho do projeto, quando o run é de um item do trilho. */
+  trackPos?: { index: number; total: number };
 }
 
 function motorId(engine: string): MotorId {
@@ -87,7 +93,7 @@ export async function followOfficeRun(workspace: string, runId: string, mode: 'c
   });
   const settings = engineHub.getSettings();
   const motor = motorId(settings.defaultEngine);
-  const kind: RunKind = meta.kind === 'esteira' || meta.kind === 'trilho' || meta.kind === 'raiox' || meta.kind === 'chat' ? meta.kind : 'chat';
+  const kind: RunKind = meta.kind === 'esteira' || meta.kind === 'trilho' || meta.kind === 'raiox' || meta.kind === 'chat' || meta.kind === 'tarefa' ? meta.kind : 'chat';
   const handle = await startRun({
     workspace: root,
     kind,
@@ -129,6 +135,7 @@ export async function followOfficeRun(workspace: string, runId: string, mode: 'c
 const SKIP = new Set(['node_modules', '.git', 'dist', '.tavir', 'qa', '.next']);
 
 function moduleOf(run: RunSummary, place: string): string {
+  if (run.kind === 'tarefa' || place === 'Escritório') return 'Escritório';
   const blob = `${run.kind} ${run.owner} ${run.label} ${run.stage} ${place}`.toLowerCase();
   if (run.kind === 'raiox' || blob.includes('raio')) return 'Raio-X';
   if (blob.includes('flow')) return 'Flow';
@@ -172,12 +179,57 @@ function projectPlaces(): { workspace: string; place: string }[] {
   }
 }
 
+/** Rótulos dos itens do trilho do projeto (control.json), em minúsculas, na ordem. */
+export function trackLabels(workspace: string): string[] {
+  try {
+    const ctrl = JSON.parse(fs.readFileSync(path.join(workspace, '.tavir', 'control.json'), 'utf8')) as { alt_track?: { items?: Array<{ label?: string }> } };
+    const items = ctrl.alt_track && Array.isArray(ctrl.alt_track.items) ? ctrl.alt_track.items : [];
+    return items.map((item) => String(item.label || '').trim().toLowerCase());
+  } catch {
+    return [];
+  }
+}
+
+const RUN_ID_RE = /^[0-9]{8}-[0-9]{6}-(chat|esteira|trilho|raiox|tarefa)-[0-9a-f]{6}$/;
+
+function cancelMarker(workspace: string, runId: string): string {
+  return path.join(workspace, '.tavir', 'runs', runId, 'cancelled.json');
+}
+
+export function isCancelled(workspace: string, runId: string): boolean {
+  return RUN_ID_RE.test(runId) && fs.existsSync(cancelMarker(workspace, runId));
+}
+
+/**
+ * Marca a tentativa como cancelada. Quem para o processo é o módulo (pauseAltTrack, stopAnalyse);
+ * aqui só fica o registro, num arquivo à parte para o fim do run não apagar.
+ * Se o id não for do livro (linha do evento ao vivo), marca o run que está rodando na pasta.
+ */
+export function cancelOfficeRun(workspace: string, runId: string): { ok: true; runId: string } | { ok: false; error: string } {
+  const root = path.resolve(String(workspace || ''));
+  if (!workspace || !fs.existsSync(path.join(root, '.tavir', 'runs'))) return { ok: false, error: 'Esta execução não tem livro para registrar o cancelamento.' };
+  let target = RUN_ID_RE.test(runId) && fs.existsSync(path.join(root, '.tavir', 'runs', runId)) ? runId : '';
+  if (!target) target = (listRuns(root, 20).find((run) => run.status === 'running') || { id: '' }).id;
+  if (!target) return { ok: false, error: 'Nenhuma tentativa rodando nesta pasta.' };
+  fs.writeFileSync(cancelMarker(root, target), JSON.stringify({ at: new Date().toISOString(), by: 'Carlos' }), 'utf8');
+  return { ok: true, runId: target };
+}
+
 /** Toda chamada de motor que o livro gravou: Fábrica, Studio, Flow, Edição, Raio-X e chat. */
 export function listOfficeRuns(): OfficeRun[] {
   const places: { workspace: string; place: string }[] = projectPlaces();
   const nested: string[] = [];
   workspacesUnder(studioHome(), 0, { n: 0 }, nested);
   for (const workspace of nested) places.push({ workspace, place: 'Studio' });
+  try {
+    // Tarefas do Kanban do Escritório: uma pasta por tarefa (T-n), cada uma com o livro dela.
+    const { tarefasRoot } = require('./officeExec');
+    const tarefas: string[] = [];
+    workspacesUnder(tarefasRoot(), 0, { n: 0 }, tarefas);
+    for (const workspace of tarefas) places.push({ workspace, place: 'Escritório' });
+  } catch {
+    /* ainda não rodou nenhuma tarefa */
+  }
   try {
     const root = raioxRoot();
     for (const item of listCases(root)) places.push({ workspace: caseDir(root, item.id), place: item.id });
@@ -194,7 +246,9 @@ export function listOfficeRuns(): OfficeRun[] {
     const hint = checkpoint
       ? (checkpoint.reason || 'Há um checkpoint desta etapa. A nova tentativa continua dali.')
       : '';
+    const track = trackLabels(place.workspace);
     for (const run of listRuns(place.workspace, 80)) {
+      const index = run.kind === 'trilho' && track.length ? track.indexOf(String(run.label || '').trim().toLowerCase()) : -1;
       all.push({
         ...run,
         workspace: place.workspace,
@@ -202,6 +256,9 @@ export function listOfficeRuns(): OfficeRun[] {
         module: moduleOf(run, place.place),
         checkpointAt: checkpoint ? String(checkpoint.at || '').replace('T', ' ').slice(0, 19) : undefined,
         checkpointHint: hint || undefined,
+        checkpointLabel: checkpoint ? checkpoint.label : undefined,
+        cancelled: isCancelled(place.workspace, run.id) || undefined,
+        trackPos: index >= 0 ? { index, total: track.length } : undefined,
       });
     }
   }

@@ -71,12 +71,21 @@ process.on('uncaughtException', (err) => {
 
 app.whenReady().then(() => {
   criarJanela();
+  // Fila na nuvem: tarefas do APK entram no Kanban do Escritório (só com o card do Supabase preenchido).
+  void import('./officeCloud').then((m) => m.startDeskCloud()).catch((err) => console.error('[nuvem] não ligou:', err));
+  // Fila de execução das tarefas do Kanban (uma por vez). Recupera o que ficou rodando quando o app fechou.
+  void import('./officeExec').then((m) => m.startExecQueue()).catch((err) => console.error('[fila] não ligou:', err));
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       criarJanela();
     }
   });
+});
+
+app.on('before-quit', () => {
+  void import('./officeCloud').then((m) => m.stopDeskCloud()).catch(() => {});
+  void import('./officeExec').then((m) => m.stopExecQueue()).catch(() => {});
 });
 
 app.on('window-all-closed', () => {

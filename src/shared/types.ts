@@ -255,12 +255,14 @@ export interface CredentialResult {
   credentials: CredentialView[];
 }
 
-export type BundleProvider = 'raiox_supabase' | 'resend' | 'rapidapi_local';
+export type BundleProvider = 'raiox_supabase' | 'escritorio_supabase' | 'resend' | 'rapidapi_local';
 
 export interface BundleFieldView {
   key: string;
   label: string;
   secret: boolean;
+  /** Pode ficar vazio sem tirar o card de "conectado". */
+  optional?: boolean;
   value: string;
   preview: string;
 }
@@ -414,6 +416,11 @@ export interface TavirApi {
     logs: () => Promise<Record<string, Array<{ ts: string; lvl: string; cls: string; text: string }>>>;
   };
   tasks: {
+    run: (id: string, opts: { mode: 'plan' | 'exec'; agent?: string }) => Promise<{ ok: boolean; error?: string; run?: any }>;
+    approve: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    revise: (id: string, note: string) => Promise<{ ok: boolean; error?: string }>;
+    stopRun: (target: { taskId?: string; workspace?: string }) => Promise<{ ok: boolean; error?: string }>;
+    runs: () => Promise<Record<string, any>>;
     list: () => Promise<TaskItem[]>;
     create: (params: { title: string; desc?: string; prio: string; sector: string; who?: string; status?: string }) => Promise<TaskItem>;
     updateStatus: (id: string, status: TaskItem['status']) => Promise<any>;
@@ -515,6 +522,8 @@ export interface TavirApi {
   runs: {
     office: () => Promise<any>;
     follow: (workspace: string, runId: string, mode: string, note?: string) => Promise<any>;
+    /** Registra a tentativa como cancelada (o processo é parado pelo módulo). */
+    cancel: (workspace: string, runId: string) => Promise<{ ok: true; runId: string } | { ok: false; error: string }>;
     list: (idOrPath: string, limit?: number) => Promise<any>;
     read: (idOrPath: string, runId: string) => Promise<any>;
     openFolder: (idOrPath: string, runId?: string) => Promise<{ ok: boolean; error?: string }>;

@@ -6,9 +6,9 @@
  * db/credentials.json. A tela só recebe a conta, um detalhe e a prévia mascarada.
  * O token em claro só sai por getCredentialToken, no processo main.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import * as path from 'node:path';
-import { cifrar, decifrar } from './cofreCripto';
+import { caminhoDaChave, cifrar, decifrar, restringirAcesso } from './cofreCripto';
 import { maskToken } from './gitAccounts';
 
 export type CredentialProvider = 'vercel' | 'supabase' | 'netlify';
@@ -223,12 +223,16 @@ export function getCredentialToken(provider: CredentialProvider): string {
 }
 
 /** Provedores com vários campos. O token único de Vercel, Supabase e Netlify não usa isto. */
-export type BundleProvider = 'raiox_supabase' | 'resend' | 'rapidapi_local';
+export type BundleProvider = 'raiox_supabase' | 'escritorio_supabase' | 'resend' | 'rapidapi_local';
 
 const BUNDLE_META: Record<BundleProvider, { name: string; hint: string }> = {
   raiox_supabase: {
     name: 'Raio-X Supabase',
     hint: 'URL e segredos da ponte de leitura. Cada segredo fica cifrado; a tela só mostra a prévia.',
+  },
+  escritorio_supabase: {
+    name: 'TAVIR Escritório · Supabase',
+    hint: 'Fila na nuvem do app de controle (projeto separado do Raio-X). A chave de serviço fica só neste notebook, para o worker; a chave pública e o usuário do app vão no build do APK. E-mail e senha do app podem ficar para depois.',
   },
   rapidapi_local: {
     name: 'RapidAPI · Local Business Data',
@@ -240,7 +244,20 @@ const BUNDLE_META: Record<BundleProvider, { name: string; hint: string }> = {
   },
 };
 
-const BUNDLE_FIELDS: Record<BundleProvider, { key: string; label: string; secret: boolean }[]> = {
+interface BundleField {
+  key: string;
+  label: string;
+  secret: boolean;
+  /** Pode ficar vazio; não conta para "conectado". */
+  optional?: boolean;
+  /** Valor sugerido enquanto nada foi guardado. */
+  initial?: string;
+}
+
+/** Projeto Supabase do TAVIR Escritório (organização TAVIR, separado do Raio-X). */
+export const ESCRITORIO_SUPABASE_URL = 'https://esswhkxdupgtlijdorro.supabase.co';
+
+const BUNDLE_FIELDS: Record<BundleProvider, BundleField[]> = {
   raiox_supabase: [
     { key: 'url', label: 'URL do projeto', secret: false },
     { key: 'internalSecret', label: 'Segredo interno', secret: true },
@@ -248,6 +265,13 @@ const BUNDLE_FIELDS: Record<BundleProvider, { key: string; label: string; secret
     { key: 'deliverySecret', label: 'Segredo de entrega', secret: true },
     { key: 'inviteSecret', label: 'Segredo de convite', secret: true },
     { key: 'officeSyncSecret', label: 'Segredo de sincronização', secret: true },
+  ],
+  escritorio_supabase: [
+    { key: 'url', label: 'URL do projeto', secret: false, initial: ESCRITORIO_SUPABASE_URL },
+    { key: 'serviceKey', label: 'Chave de serviço (só no notebook)', secret: true },
+    { key: 'anonKey', label: 'Chave pública (anon / publishable)', secret: true },
+    { key: 'appEmail', label: 'E-mail do usuário do app', secret: false, optional: true },
+    { key: 'appPassword', label: 'Senha do usuário do app', secret: true, optional: true },
   ],
   rapidapi_local: [
     { key: 'apiKeys', label: 'Chaves da RapidAPI', secret: true },
@@ -269,6 +293,8 @@ export interface BundleFieldView {
   key: string;
   label: string;
   secret: boolean;
+  /** Pode ficar vazio sem tirar o card de "conectado". */
+  optional?: boolean;
   /** Vazio para segredo. O valor em claro de um segredo nunca volta para a tela. */
   value: string;
   preview: string;
@@ -291,7 +317,7 @@ export interface BundleResult {
 }
 
 export function isBundleProvider(p: unknown): p is BundleProvider {
-  return p === 'raiox_supabase' || p === 'resend' || p === 'rapidapi_local';
+  return p === 'raiox_supabase' || p === 'escritorio_supabase' || p === 'resend' || p === 'rapidapi_local';
 }
 
 function readBundles(): Partial<Record<BundleProvider, StoredBundle>> {
@@ -302,13 +328,13 @@ function readBundles(): Partial<Record<BundleProvider, StoredBundle>> {
 function bundleView(provider: BundleProvider, stored?: StoredBundle): BundleView {
   const meta = BUNDLE_META[provider];
   const values = stored?.values || {};
-  const fields = BUNDLE_FIELDS[provider].map((field) => {
-    const raw = values[field.key] || '';
-    if (!field.secret) return { ...field, value: raw, preview: raw };
+  const fields = BUNDLE_FIELDS[provider].map(({ key, label, secret, optional, initial }) => {
+    const raw = values[key] || '';
+    if (!secret) return { key, label, secret, optional: !!optional, value: raw || (stored ? '' : initial || ''), preview: raw };
     const clear = raw ? decifrar(raw) : '';
-    return { ...field, value: '', preview: clear ? maskToken(clear) : '' };
+    return { key, label, secret, optional: !!optional, value: '', preview: clear ? maskToken(clear) : '' };
   });
-  const connected = fields.every((field) => (field.secret ? !!field.preview : !!field.value));
+  const connected = !!stored && fields.every((field) => field.optional || (field.secret ? !!field.preview : !!field.value));
   return { provider, name: meta.name, hint: meta.hint, connected, fields, updated_at: stored?.updated_at || '' };
 }
 
@@ -337,15 +363,29 @@ export function saveBundle(providerRaw: string, input: Record<string, unknown> |
       if (/[\r\n]/.test(text)) return { ok: false, error: `${field.label} não pode ter quebra de linha.`, bundles: listBundles() };
       if (!text) {
         const prev = existing?.values?.[field.key] || '';
-        if (!prev) return { ok: false, error: `Informe ${field.label}.`, bundles: listBundles() };
-        values[field.key] = prev;
+        if (!prev && !field.optional) return { ok: false, error: `Informe ${field.label}.`, bundles: listBundles() };
+        if (prev) values[field.key] = prev;
         continue;
       }
       values[field.key] = cifrar(text);
       continue;
     }
-    if (!text) return { ok: false, error: `Informe ${field.label}.`, bundles: listBundles() };
+    if (!text) {
+      if (field.optional) continue;
+      return { ok: false, error: `Informe ${field.label}.`, bundles: listBundles() };
+    }
     if (field.key === 'url' && !httpsUrl(text)) return { ok: false, error: 'A URL do projeto precisa começar com https://.', bundles: listBundles() };
+    if (providerRaw === 'escritorio_supabase' && field.key === 'url') {
+      const host = new URL(text).hostname;
+      if (!host.endsWith('.supabase.co')) {
+        return { ok: false, error: 'Use a URL do projeto no Supabase (https://<id>.supabase.co).', bundles: listBundles() };
+      }
+      values[field.key] = `https://${host}`;
+      continue;
+    }
+    if (field.key === 'appEmail' && !/^[^\s@]+@[^\s@]+$/.test(text)) {
+      return { ok: false, error: `${field.label} precisa ser um e-mail.`, bundles: listBundles() };
+    }
     if ((field.key === 'from' || field.key === 'replyTo') && !/@/.test(text)) {
       return { ok: false, error: `${field.label} precisa ser um e-mail.`, bundles: listBundles() };
     }
@@ -353,6 +393,7 @@ export function saveBundle(providerRaw: string, input: Record<string, unknown> |
   }
   current[providerRaw] = { values, updated_at: new Date().toISOString() };
   writeBundles(current);
+  if (providerRaw === 'escritorio_supabase') exportEscritorioEnv();
   return { ok: true, bundle: bundleView(providerRaw, current[providerRaw]), bundles: listBundles() };
 }
 
@@ -361,6 +402,7 @@ export function removeBundle(providerRaw: string): BundleResult {
   const current = readBundles();
   delete current[providerRaw];
   writeBundles(current);
+  if (providerRaw === 'escritorio_supabase') exportEscritorioEnv();
   return { ok: true, bundles: listBundles() };
 }
 
@@ -372,8 +414,38 @@ export function getBundle(provider: BundleProvider): Record<string, string> | nu
   for (const field of BUNDLE_FIELDS[provider]) {
     const raw = stored.values?.[field.key] || '';
     const clear = field.secret ? (raw ? decifrar(raw) : '') : raw;
-    if (!clear) return null;
+    if (!clear) {
+      if (field.optional) continue;
+      return null;
+    }
     out[field.key] = clear;
   }
   return out;
+}
+
+/**
+ * Onde o worker Python do Escritório (backend/supabase_sync.py) lê a URL e a chave de serviço.
+ * Fica ao lado do cofre.key, com o mesmo ACL. Só vão estes dois campos; a senha do app não sai.
+ */
+export function escritorioEnvPath(): string {
+  return process.env.TAVIR_ESCRITORIO_ENV_FILE || path.join(path.dirname(caminhoDaChave()), 'escritorio-supabase.env');
+}
+
+/** Reescreve (ou apaga) o arquivo do worker conforme o card do cofre. */
+export function exportEscritorioEnv(): void {
+  const file = escritorioEnvPath();
+  const bundle = getBundle('escritorio_supabase');
+  if (!bundle) {
+    if (existsSync(file)) rmSync(file, { force: true });
+    return;
+  }
+  mkdirSync(path.dirname(file), { recursive: true });
+  const body = [
+    '# Gerado pelo TAVIR Escritório (Configurações › TAVIR Escritório · Supabase). Não edite à mão.',
+    `SUPABASE_URL=${bundle.url}`,
+    `SUPABASE_SERVICE_ROLE_KEY=${bundle.serviceKey}`,
+    '',
+  ].join('\n');
+  writeFileSync(file, body, { encoding: 'utf8', mode: 0o600 });
+  restringirAcesso(file);
 }
