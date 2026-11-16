@@ -65,6 +65,8 @@ export interface SegRun {
   target: string;
   commit: string;
   ok: boolean;
+  /** false quando nenhum arquivo foi lido: o portão segura sem nota (ausente em varreduras antigas). */
+  evaluated?: boolean;
   score: number;
   /** Abertas de severidade crítica ou alta: o que reprova o portão. */
   blocking: number;
@@ -134,13 +136,27 @@ function which(name: string): string | null {
   }
 }
 
-function isGitRepo(ws: string): boolean {
+/**
+ * Onde está o git da pasta. "own": o projeto tem o próprio repositório. "outer": a pasta está
+ * dentro do repositório de outra coisa (ex.: tavir-interno/ dentro do Escritório). Nesse caso o
+ * git responderia pelo repositório de fora: arquivos ignorados por ele somem da lista e o histórico
+ * varrido é o dele. A varredura trata "outer" como pasta sem git.
+ */
+export function gitScope(ws: string): { kind: 'own' | 'outer' | 'none'; top?: string } {
+  let top = '';
   try {
-    execFileSync('git', ['rev-parse', '--is-inside-work-tree'], { cwd: ws, stdio: 'pipe', windowsHide: true });
-    return true;
+    top = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd: ws, stdio: 'pipe', windowsHide: true, encoding: 'utf8' }).trim();
   } catch {
-    return false;
+    return { kind: 'none' };
   }
+  if (!top) return { kind: 'none' };
+  const norm = (p: string) => {
+    let r = path.resolve(p);
+    try { r = fs.realpathSync.native(r); } catch {}
+    r = toPosix(r).replace(/\/+$/, '');
+    return WIN ? r.toLowerCase() : r;
+  };
+  return norm(top) === norm(ws) ? { kind: 'own', top } : { kind: 'outer', top: toPosix(top) };
 }
 
 function gitFiles(ws: string, args: string[]): string[] {
@@ -461,8 +477,11 @@ async function npmAudit(ws: string, outDir: string, track: (c: ChildProcess | nu
 
 const SEMGREP_KEY = (id: string) => (/inject|sqli|command|exec|shell/i.test(id) ? 'inj' : /xss|innerhtml|html/i.test(id) ? 'xss' : /eval|deserial|pickle/i.test(id) ? 'eval' : /crypto|hash|md5|sha1|random/i.test(id) ? 'crypto' : /tls|ssl|cert|http/i.test(id) ? 'tls' : /secret|password|key|token/i.test(id) ? 'secrets' : /cors/i.test(id) ? 'cors' : 'sast');
 
-async function semgrep(bin: string, ws: string, outDir: string, track: (c: ChildProcess | null) => void): Promise<{ tool: SegTool; drafts: Draft[] }> {
-  const res = await runCommand(bin, ['scan', '--config', 'p/default', '--metrics=off', '--json', '--quiet', '--timeout', '30', '--exclude', 'qa', '--exclude', '.tavir', '.'], ws, 600000, track);
+async function semgrep(bin: string, ws: string, outDir: string, git: boolean, track: (c: ChildProcess | null) => void): Promise<{ tool: SegTool; drafts: Draft[] }> {
+  // Sem Git próprio, o semgrep obedeceria o .gitignore do repositório de fora e pularia a pasta toda.
+  const args = ['scan', '--config', 'p/default', '--metrics=off', '--json', '--quiet', '--timeout', '30', '--exclude', 'qa', '--exclude', '.tavir', '--exclude', 'node_modules', '--exclude', 'build', '--exclude', '.dart_tool'];
+  if (!git) args.push('--no-git-ignore');
+  const res = await runCommand(bin, [...args, '.'], ws, 600000, track);
   fs.writeFileSync(path.join(outDir, 'logs', 'semgrep.json'), res.out, 'utf8');
   let data: any = null;
   try { data = JSON.parse(res.out.slice(res.out.indexOf('{'))); } catch {}
@@ -588,8 +607,10 @@ export async function runSeg(opts: SegRunOptions): Promise<SegRun> {
   const notes: string[] = [];
   const tools: SegTool[] = [];
   const drafts: Draft[] = [];
-  const git = isGitRepo(workspace);
-  if (!git) notes.push('A pasta não é um repositório Git: histórico não foi verificado e a lista de arquivos veio da pasta inteira.');
+  const scope = gitScope(workspace);
+  const git = scope.kind === 'own';
+  if (scope.kind === 'outer') notes.push(`A pasta não tem Git próprio: está dentro do repositório ${scope.top}, que não é do projeto. A varredura leu a pasta inteira e não olhou histórico. Rode git init no projeto para ter histórico próprio.`);
+  else if (!git) notes.push('A pasta não é um repositório Git: histórico não foi verificado e a lista de arquivos veio da pasta inteira.');
 
   say('Listando os arquivos do projeto');
   const files = listFiles(workspace, git);
@@ -654,7 +675,7 @@ export async function runSeg(opts: SegRunOptions): Promise<SegRun> {
   const sg = which('semgrep');
   if (sg && !killed) {
     say('semgrep: análise estática');
-    const r = await semgrep(sg, workspace, dir, track);
+    const r = await semgrep(sg, workspace, dir, git, track);
     tools.push(r.tool);
     drafts.push(...r.drafts);
   }
@@ -707,16 +728,19 @@ export async function runSeg(opts: SegRunOptions): Promise<SegRun> {
     return { area, title, key, st: 'pass' };
   });
 
+  // Nenhum arquivo lido: não há o que aprovar nem nota que valha. O portão segura, mas diz o motivo.
+  const evaluated = texts.size > 0;
+  if (!evaluated) notes.unshift('Nenhum arquivo do projeto foi lido, então a segurança não foi avaliada. Confira a pasta do projeto e se ela tem código.');
   const commit = gitHead(workspace);
   const run: SegRun = {
     id, at: now.toISOString(), when: whenOf(now), by: 'Varredura TAVIR · white box', label: opts.label, target: toPosix(workspace), commit,
-    ok: !killed && blocking === 0, score, blocking, counts, tools, checks, findings, files: texts.size, dur: Math.round((Date.now() - started) / 100) / 10, notes,
+    ok: !killed && evaluated && blocking === 0, evaluated, score: evaluated ? score : 0, blocking, counts, tools, checks, findings, files: texts.size, dur: Math.round((Date.now() - started) / 100) / 10, notes,
     dir, report: path.join(dir, 'index.html'),
   };
   fs.writeFileSync(path.join(dir, 'resultado.json'), JSON.stringify(run, null, 2), 'utf8');
   fs.writeFileSync(run.report, renderSegReport(opts.projectName, run), 'utf8');
   fs.appendFileSync(path.join(segRoot(workspace), 'index.jsonl'), JSON.stringify({ id, at: run.at, ok: run.ok, score, blocking, open: open.length, label: opts.label || '' }) + '\n', 'utf8');
-  say(run.ok ? `Segurança aprovada · nota ${score}` : `Segurança reprovada · ${blocking} achado(s) crítico(s) ou alto(s)`);
+  say(segHead(run));
   return run;
 }
 
@@ -745,9 +769,15 @@ export function listSegRuns(workspace: string, limit = 30, overlay = true): SegR
   return out;
 }
 
+function segHead(run: SegRun): string {
+  const open = run.findings.filter((f) => f.st === 'aberta');
+  if (run.evaluated === false) return 'Segurança não avaliada · nenhum arquivo do projeto foi lido';
+  return run.ok ? `Segurança aprovada · nota ${run.score}/100 · ${open.length} achado(s) aberto(s) sem bloqueio` : `Segurança reprovada · ${run.blocking} achado(s) crítico(s) ou alto(s) · nota ${run.score}/100`;
+}
+
 export function segSummary(run: SegRun): string {
   const open = run.findings.filter((f) => f.st === 'aberta');
-  const head = run.ok ? `Segurança aprovada · nota ${run.score}/100 · ${open.length} achado(s) aberto(s) sem bloqueio` : `Segurança reprovada · ${run.blocking} achado(s) crítico(s) ou alto(s) · nota ${run.score}/100`;
+  const head = segHead(run);
   const list = open.filter((f) => SEV_ORDER[f.sev] <= SEV_ORDER['média']).slice(0, 8).map((f) => `- ${f.id} [${f.sev}] ${f.title} · ${f.where}`);
   return [head, `Relatório: qa/seguranca/${run.id}/index.html`, ...list, ...run.notes.slice(0, 2).map((n) => `Obs.: ${n}`)].join('\n');
 }
