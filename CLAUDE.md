@@ -66,5 +66,7 @@ Este arquivo é lido automaticamente pelo Claude (Claude Code, Claude Desktop, e
 - Antes de commitar algo do Raio-X: `npm run raiox:scan`.
 
 ### 10. Conversa e log: rolagem acompanha, passos recolhidos
-- Toda área que recebe texto enquanto o motor trabalha (conversa da Íris, log de etapa, log do trilho) leva o atributo `data-tv-follow`. O seguidor em `Fabrica.dc.html` mantém a rolagem no fim; se o Carlos subir para ler, para de puxar até ele voltar ao fim ou enviar outra mensagem. Não use `data-tv-follow` em texto parado (prévia, transcrição de execução encerrada).
-- Resposta de agente mostra o texto formatado (`chatBlocks`) e, acima dele, a trilha recolhida (`chatTrail`): em `thoughts`, linha com `→ ` é ferramenta, `» ` é o que o agente disse antes dela, o resto é registro técnico. Não despeje pensamento ou log aberto na conversa.
+- O leitor comum fica em `src/renderer/shared/tavir-reader.js` e `.css`; o build injeta os dois na página e as telas usam `window.TavirReader` (`blocks`, `trail`). Não copie o formatador para dentro de uma tela.
+- Toda área que recebe texto enquanto o motor trabalha (conversa da Íris, log de etapa, log do trilho) leva o atributo `data-tv-follow`: a rolagem fica no fim; se o Carlos subir para ler, para de puxar até ele voltar ao fim ou enviar outra mensagem. Não use em texto parado (prévia, transcrição de execução encerrada).
+- Resposta de agente mostra o texto formatado e, acima dele, a trilha recolhida: em `thoughts`, linha com `→ ` é ferramenta, `» ` é o que o agente disse antes dela, o resto é registro técnico. Não despeje pensamento ou log aberto na tela: resumo em uma linha, detalhe ao clicar.
+- Histórico da Íris: a tela mostra o que está em `.tavir/iris-chat.json`, mas para o motor só vai o recorte de `chatRecent` + `formatHistory` (depois da última «Nova conversa», com orçamento de caracteres). Mexeu no histórico, confira `historyBudget`: mostrar mais na tela nunca pode aumentar o que é enviado.

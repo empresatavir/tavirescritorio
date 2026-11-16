@@ -2675,6 +2675,51 @@ export function pauseProjectAltTrack(idOrPath: string): any {
   return getProjectAlterationsControl(idOrPath);
 }
 
+/** Falas que acompanham a próxima mensagem: só o que veio depois da última «Nova conversa». */
+export function chatRecent(history: any[]): Array<{ role: 'user' | 'assistant'; text: string }> {
+  const list = Array.isArray(history) ? history : [];
+  let from = 0;
+  list.forEach((m, i) => {
+    if (m && m.role === 'cut') from = i + 1;
+  });
+  return list
+    .slice(from)
+    .filter((m) => m && (m.role === 'me' || m.role === 'ag' || m.cls === 'me' || m.cls === 'ag'))
+    .filter((m) => !String(m.id || '').startsWith('iris-welcome'))
+    .slice(-14)
+    .map((m) => ({
+      role: (m.role === 'me' || m.cls === 'me' ? 'user' : 'assistant') as 'user' | 'assistant',
+      text: String(m.t || m.text || ''),
+    }))
+    .filter((m) => m.text.trim());
+}
+
+function chatContext(history: any[]): { turns: number; chars: number } {
+  const { historyBudget } = require('./irisAgent') as typeof import('./irisAgent');
+  return historyBudget(chatRecent(history));
+}
+
+/** «Nova conversa»: o histórico continua no disco e na tela, mas deixa de ir para o motor. */
+export function startNewProjectChat(idOrPath: string): any {
+  const info = inspectProjectFolder(idOrPath);
+  const chatFile = path.join(info.rootPath, '.tavir', 'iris-chat.json');
+  let history: any[] = [];
+  try {
+    if (fs.existsSync(chatFile)) history = JSON.parse(fs.readFileSync(chatFile, 'utf8')) || [];
+  } catch {}
+  if (!Array.isArray(history)) history = [];
+  if (history.length && history[history.length - 1]?.role === 'cut') return { ok: true, messages: history, context: { turns: 0, chars: 0 } };
+  history.push({ id: 'cut-' + Date.now(), role: 'cut', who: 'Carlos', ts: nowHM(), at: new Date().toISOString(), thoughts: [], t: '' });
+  if (history.length > 60) history = history.slice(-60);
+  try {
+    fs.mkdirSync(path.join(info.rootPath, '.tavir'), { recursive: true });
+    fs.writeFileSync(chatFile, JSON.stringify(history, null, 2), 'utf8');
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+  return { ok: true, messages: history, context: { turns: 0, chars: 0 } };
+}
+
 export function getProjectChatHistory(idOrPath: string): any {
   const info = inspectProjectFolder(idOrPath);
   const rootPath = info.rootPath;
@@ -2683,7 +2728,7 @@ export function getProjectChatHistory(idOrPath: string): any {
     if (fs.existsSync(chatFile)) {
       const parsed = JSON.parse(fs.readFileSync(chatFile, 'utf8'));
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return { ok: true, rootPath, messages: parsed };
+        return { ok: true, rootPath, messages: parsed, context: chatContext(parsed) };
       }
     }
   } catch {}
@@ -2774,15 +2819,7 @@ export async function askProjectIris(params: any): Promise<any> {
     history = getProjectChatHistory(idOrPath).messages || [];
   }
 
-  const recent = history
-    .filter((m) => m && (m.role === 'me' || m.role === 'ag' || m.cls === 'me' || m.cls === 'ag'))
-    .filter((m) => !String(m.id || '').startsWith('iris-welcome'))
-    .slice(-14)
-    .map((m) => ({
-      role: (m.role === 'me' || m.cls === 'me' ? 'user' : 'assistant') as 'user' | 'assistant',
-      text: String(m.t || m.text || ''),
-    }))
-    .filter((m) => m.text.trim());
+  const recent = chatRecent(history);
 
   const thoughts: string[] = [
     ...(attach.saved.length ? [`[Anexos] ${attach.saved.length} arquivo(s) em ${path.posix.dirname(attach.saved[0].rel)}`] : []),
@@ -2908,6 +2945,7 @@ export async function askProjectIris(params: any): Promise<any> {
     finished: control.finished,
     alt_track: getProjectAlterationsControl(idOrPath).alt_track,
     conversational: control.chat_unlocked,
+    context: chatContext(history),
     userMessage: userMsg,
     replyMessage: agentMsg,
     messages: history,

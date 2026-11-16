@@ -58,9 +58,13 @@ export interface IrisAgentResult {
 
 // ---------------------------------------------------------------- prompt
 
-const HISTORY_TURNS = 12;
-const HISTORY_CHARS = 16000;
-const TURN_CHARS = 2400;
+// Orçamento do histórico que vai em cada mensagem. As falas mais novas vão quase inteiras;
+// as mais antigas vão resumidas ao começo, só para manter o fio da conversa.
+const HISTORY_TURNS = 10;
+const HISTORY_CHARS = 6000;
+const TURN_CHARS = 1600;
+const FRESH_TURNS = 4;
+const OLD_TURN_CHARS = 320;
 const TRAIL_MAX = 120;
 
 function clipEnd(text: string, limit: number): string {
@@ -72,15 +76,23 @@ function clipEnd(text: string, limit: number): string {
 export function formatHistory(recent: IrisAgentRequest['recent']): string {
   const lines: string[] = [];
   let used = 0;
+  let age = 0;
   for (const m of (recent || []).slice(-HISTORY_TURNS).reverse()) {
-    const text = clipEnd(m.text, TURN_CHARS);
+    const text = clipEnd(m.text, age < FRESH_TURNS ? TURN_CHARS : OLD_TURN_CHARS);
     if (!text) continue;
+    age++;
     const line = `${m.role === 'user' ? 'Carlos' : 'Íris'}: ${text}`;
     if (used + line.length > HISTORY_CHARS) break;
     lines.unshift(line);
     used += line.length;
   }
   return lines.join('\n\n');
+}
+
+/** Quanto do histórico vai junto na próxima mensagem (falas e caracteres). */
+export function historyBudget(recent: IrisAgentRequest['recent']): { turns: number; chars: number } {
+  const text = formatHistory(recent);
+  return { turns: text ? text.split('\n\n').filter((l) => /^(Carlos|Íris): /.test(l)).length : 0, chars: text.length };
 }
 
 const READ_RULES = [

@@ -499,6 +499,11 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
         const c3 = Object.assign({}, st.chats || {});
         c3[pidNow] = (st.chats[pidNow] || base).concat([['Íris · ' + engLabel, reply, 'ag', thoughts || [], hm()]]);
         const patch = { chats: c3, typing: false };
+        if (extra && extra.context) {
+          const cc = Object.assign({}, st.chatCtx || {});
+          cc[pidNow] = extra.context;
+          patch.chatCtx = cc;
+        }
         if (extra && extra.alt_track) {
           const tm = Object.assign({}, st.altTrack || {});
           tm[pidNow] = extra.alt_track;
@@ -540,7 +545,8 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
         const registered = thoughts.some(function(t) { return String(t).indexOf('[Trilho]') >= 0; });
         finish((msg && msg.t) || 'Pedido registrado na memória do projeto.', thoughts, {
           alt_track: res && res.alt_track,
-          registered: registered
+          registered: registered,
+          context: res && res.context
         });
       }).catch(function(err) {
         finish('Não consegui falar com o motor agora (' + String(err && err.message || err) + ').', ['[Erro] askIris']);
@@ -2118,8 +2124,8 @@ if (templateHtml.includes(origKanbanCard)) {
 const origTaskDrawerActions = `      <div class="actions"><button class="btn secondary" sc-camel-on-click="{{openPlan}}">Planejar com Paula</button><sc-if value="{{td.hasJob}}" hint-placeholder-val="{{false}}"><button class="btn primary" sc-camel-on-click="{{tdGoJob}}">Ver execução</button></sc-if></div>`;
 const newTaskDrawerActions = `      <sc-if value="{{td.hasDesc}}" hint-placeholder-val="{{false}}"><div class="field"><span>Contexto / Descrição</span><p class="sec" style="font-size: 13.5px; line-height: 1.55">{{td.desc}}</p></div></sc-if>
       <sc-if value="{{td.hasRun}}" hint-placeholder-val="{{false}}"><div class="field"><span>Execução</span><div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span class="badge {{td.runCls}}"><i></i>{{td.runBadge}}</span><span class="muted" style="font-size: 12.5px">{{td.runMeta}}</span></div><sc-if value="{{td.hasRunError}}" hint-placeholder-val="{{false}}"><p style="font-size: 13px; color: var(--danger); margin: 6px 0 0">{{td.runError}}</p></sc-if></div></sc-if>
-      <sc-if value="{{td.hasSummary}}" hint-placeholder-val="{{false}}"><div class="field"><span>Resultado do agente</span><pre class="mono" style="margin: 0; padding: 12px; max-height: 220px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: var(--surface-0); border: 1px solid var(--line); border-radius: 10px; color: var(--text-secondary)">{{td.summary}}</pre></div></sc-if>
-      <sc-if value="{{td.hasPlan}}" hint-placeholder-val="{{false}}"><div class="field"><span>Plano da Paula</span><pre class="mono" style="margin: 0; padding: 12px; max-height: 220px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: var(--surface-0); border: 1px solid var(--line); border-radius: 10px; color: var(--text-secondary)">{{td.plan}}</pre></div></sc-if>
+      <sc-if value="{{td.hasSummary}}" hint-placeholder-val="{{false}}"><div class="field"><span>Resultado do agente</span><div class="tv-read {{td.sumCls}}"><div class="tv-md"><sc-for list="{{td.summaryBlocks}}" as="b" hint-placeholder-count="2"><sc-if value="{{b.h}}" hint-placeholder-val="{{false}}"><div class="tv-md-h"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="tv-md-p"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></p></sc-if><sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div class="tv-md-li" style="padding-left: {{b.pad}}px"><b>{{b.mark}}</b><span><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></span></div></sc-if><sc-if value="{{b.quote}}" hint-placeholder-val="{{false}}"><div class="tv-md-q"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.code}}" hint-placeholder-val="{{false}}"><pre class="tv-md-code">{{b.text}}</pre></sc-if><sc-if value="{{b.hr}}" hint-placeholder-val="{{false}}"><hr class="tv-md-hr"></sc-if></sc-for></div></div><button type="button" class="link" style="font-size: 12px; margin-top: 6px" sc-camel-on-click="{{tdToggleSum}}">{{td.sumLbl}}</button></div></sc-if>
+      <sc-if value="{{td.hasPlan}}" hint-placeholder-val="{{false}}"><div class="field"><span>Plano da Paula</span><div class="tv-read {{td.planCls}}"><div class="tv-md"><sc-for list="{{td.planBlocks}}" as="b" hint-placeholder-count="2"><sc-if value="{{b.h}}" hint-placeholder-val="{{false}}"><div class="tv-md-h"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="tv-md-p"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></p></sc-if><sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div class="tv-md-li" style="padding-left: {{b.pad}}px"><b>{{b.mark}}</b><span><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></span></div></sc-if><sc-if value="{{b.quote}}" hint-placeholder-val="{{false}}"><div class="tv-md-q"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.code}}" hint-placeholder-val="{{false}}"><pre class="tv-md-code">{{b.text}}</pre></sc-if><sc-if value="{{b.hr}}" hint-placeholder-val="{{false}}"><hr class="tv-md-hr"></sc-if></sc-for></div></div><button type="button" class="link" style="font-size: 12px; margin-top: 6px" sc-camel-on-click="{{tdTogglePlan}}">{{td.planLbl2}}</button></div></sc-if>
       <div class="actions" style="flex-wrap: wrap; gap: 8px">
         <sc-if value="{{td.canRun}}" hint-placeholder-val="{{false}}"><button type="button" class="btn primary" sc-camel-on-click="{{tdRun}}">{{td.runLbl}}</button></sc-if>
         <sc-if value="{{td.canRunPlan}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdRunGeral}}">Executar com o Agente geral</button></sc-if>
@@ -2363,6 +2369,10 @@ const newTdBlock = `    const tdColObj = COLS.find((c) => c[0] === tdT.status) |
           summary: rv ? rv.summary : '',
           hasPlan: hasPlan,
           plan: rv ? rv.plan : '',
+          summaryBlocks: (typeof window !== 'undefined' && window.TavirReader) ? window.TavirReader.blocks(rv ? rv.summary : '') : [],
+          planBlocks: (typeof window !== 'undefined' && window.TavirReader) ? window.TavirReader.blocks(rv ? rv.plan : '') : [],
+          sumCls: s.tdSumOpen ? 'open' : '', sumLbl: s.tdSumOpen ? 'Recolher' : 'Ler completo',
+          planCls: s.tdPlanOpen ? 'open' : '', planLbl2: s.tdPlanOpen ? 'Recolher' : 'Ler completo',
           canRun: free && !ended,
           runLbl: hasPlan ? 'Executar com o plano' : 'Executar com o Agente geral',
           canRunPlan: free && !ended && hasPlan,
@@ -2388,6 +2398,8 @@ templateHtml = templateHtml.replace(
       tdDelete: () => self.open('task-delete', { id: tdT.id, seq: tdT.seq, title: tdT.title }),
       tdRun: () => self.taskRun && self.taskRun(tdT, 'exec', ((s.taskRuns || {})[tdT.id] || {}).plan ? 'plano' : 'geral'),
       tdRunGeral: () => self.taskRun && self.taskRun(tdT, 'exec', 'geral'),
+      tdToggleSum: () => self.setState({ tdSumOpen: !self.state.tdSumOpen }),
+      tdTogglePlan: () => self.setState({ tdPlanOpen: !self.state.tdPlanOpen }),
       tdPlan: () => self.taskRun && self.taskRun(tdT, 'plan', 'paula'),
       tdApprove: () => self.taskAct && self.taskAct(tdT, 'approve'),
       tdRevise: () => self.open('task-revise', { id: tdT.id, seq: tdT.seq, title: tdT.title }),
@@ -2742,6 +2754,18 @@ if (templateHtml.includes(oldHealth)) {
 </script>`;
   templateHtml = templateHtml.replace(/<\/body>(?![\s\S]*<\/body>)/, buildScript + '\n</body>');
   console.log('Rodapé com a versão do build!');
+}
+
+// Leitor comum: fala de agente formatada, trilha recolhida, rolagem que acompanha.
+{
+  const readerDir = path.resolve(__dirname, '../src/renderer/shared');
+  const readerJs = fs.readFileSync(path.join(readerDir, 'tavir-reader.js'), 'utf8');
+  const readerCss = fs.readFileSync(path.join(readerDir, 'tavir-reader.css'), 'utf8');
+  if (/<\/script>/i.test(readerJs)) throw new Error('tavir-reader.js não pode conter </script>.');
+  const readerTag = '<style data-tv-reader>\n' + readerCss + '\n</style>\n<script data-tv-reader>\n' + readerJs + '\n</script>';
+  if (!/<\/body>(?![\s\S]*<\/body>)/.test(templateHtml)) throw new Error('Leitor comum: não achei </body> no template.');
+  templateHtml = templateHtml.replace(/<\/body>(?![\s\S]*<\/body>)/, () => readerTag + '\n</body>');
+  console.log('Leitor comum (tavir-reader) injetado!');
 }
 
 // ==========================================

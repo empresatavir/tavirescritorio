@@ -725,6 +725,15 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
+  handle('projects:newChat', (_e, idOrPath: string) => {
+    try {
+      const { startNewProjectChat } = require('./project-fs');
+      return startNewProjectChat(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
   handle('projects:getChat', (_e, idOrPath: string) => {
     try {
       const { getProjectChatHistory } = require('./project-fs');

@@ -121,6 +121,7 @@ const api: TavirApi = {
     openInExplorer: (idOrPath: string) => ipcRenderer.invoke('projects:openInExplorer', idOrPath),
     readFile: (filePath: string) => ipcRenderer.invoke('projects:readFile', filePath),
     getChat: (idOrPath: string) => ipcRenderer.invoke('projects:getChat', idOrPath),
+    newChat: (idOrPath: string) => ipcRenderer.invoke('projects:newChat', idOrPath),
     askIris: (params: any) => ipcRenderer.invoke('projects:askIris', params),
     getAlterationsControl: (idOrPath: string) => ipcRenderer.invoke('projects:getAlterationsControl', idOrPath),
     setAlterationsOpen: (idOrPath: string, open: boolean) => ipcRenderer.invoke('projects:setAlterationsOpen', idOrPath, open),

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { MotorStream, buildInvocation, classifyMotorError, cliModel, motorEnv, type MotorId } from '../../src/main/motors';
-import { buildPrompt, formatHistory, tidyReply, type IrisAgentRequest } from '../../src/main/irisAgent';
+import { buildPrompt, formatHistory, historyBudget, tidyReply, type IrisAgentRequest } from '../../src/main/irisAgent';
 import { buildTranscript, parseUsage } from '../../src/main/runLedger';
 
 const lines = (xs: unknown[]) => xs.map((x) => JSON.stringify(x)).join('\n');
@@ -205,7 +205,17 @@ describe('prompt da Íris', () => {
     const h = formatHistory(recent);
     expect(h).toContain('fala 29');
     expect(h).not.toContain('fala 0 ');
-    expect(h.length).toBeLessThanOrEqual(16000);
+    expect(h.length).toBeLessThanOrEqual(6000);
+  });
+
+  it('histórico: falas novas quase inteiras, antigas só o começo', () => {
+    const recent = Array.from({ length: 8 }, (_, i) => ({ role: (i % 2 ? 'assistant' : 'user') as 'user' | 'assistant', text: `fala ${i} ` + 'z'.repeat(1000) }));
+    const parts = formatHistory(recent).split('\n\n');
+    expect(parts).toHaveLength(8);
+    expect(parts[0].length).toBeLessThan(340);
+    expect(parts[7].length).toBeGreaterThan(1000);
+    expect(historyBudget(recent)).toEqual({ turns: 8, chars: formatHistory(recent).length });
+    expect(historyBudget([])).toEqual({ turns: 0, chars: 0 });
   });
 
   it('tira só a narração de abertura e mantém quebras de linha', () => {

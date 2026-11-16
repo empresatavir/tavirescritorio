@@ -446,6 +446,7 @@ export interface TavirApi {
     openInExplorer: (idOrPath: string) => Promise<{ ok: boolean; path?: string }>;
     readFile: (filePath: string) => Promise<{ ok: boolean; content?: string; size?: number }>;
     getChat: (idOrPath: string) => Promise<any>;
+    newChat: (idOrPath: string) => Promise<any>;
     askIris: (params: any) => Promise<any>;
     getAlterationsControl: (idOrPath: string) => Promise<ProjectAlterationsControl>;
     setAlterationsOpen: (idOrPath: string, open: boolean) => Promise<ProjectAlterationsControl>;
