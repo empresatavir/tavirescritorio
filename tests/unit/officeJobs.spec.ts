@@ -157,16 +157,43 @@ describe('jobs do APK viram execuções reais', () => {
   });
 });
 
-describe('entrega leva o arquivo do papel', () => {
-  it('Redator: o relatório traz o entrega.md e depois o resumo', async () => {
+const NL = String.fromCharCode(10);
+const lines = (...l: string[]) => l.join(NL);
+
+describe('entrega leva os arquivos da tarefa', () => {
+  it('lista .md/.txt da pasta (o do papel primeiro) e monta a entrega sem repetir', async () => {
     const fs = await import('node:fs');
     const os = await import('node:os');
     const path = await import('node:path');
-    const { withDeliverable } = await import('../../src/main/officeExec');
+    const { taskFiles, deliveryBody } = await import('../../src/main/officeExec');
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'entrega-'));
-    expect(withDeliverable(dir, 'redator', 'resumo')).toBe('resumo');
-    fs.writeFileSync(path.join(dir, 'entrega.md'), '# Pão caseiro\n1. Pano de algodão');
-    expect(withDeliverable(dir, 'redator', 'resumo')).toBe('# Pão caseiro\n1. Pano de algodão\n\n---\n\nresumo');
-    expect(withDeliverable(dir, 'geral', 'resumo')).toBe('resumo');
+    expect(taskFiles(dir, 'social')).toEqual([]);
+    const perfil = lines('# Perfil', '- 403 seguidores');
+    fs.writeFileSync(path.join(dir, 'a-notas.txt'), 'notas');
+    fs.writeFileSync(path.join(dir, 'analise-instagram.md'), perfil);
+    fs.writeFileSync(path.join(dir, 'foto.png'), 'x');
+    const files = taskFiles(dir, 'social');
+    expect(files.map((f) => f.name)).toEqual(['analise-instagram.md', 'a-notas.txt']);
+    const junto = lines(perfil, '', '---', '', 'resumo');
+    expect(deliveryBody('resumo', files.slice(0, 1))).toBe(junto);
+    // resultado antigo que já trazia o arquivo: não repete
+    expect(deliveryBody(junto, files.slice(0, 1))).toBe(junto);
+  });
+
+  it('o Kanban publica o resultado inteiro e os arquivos da tarefa', async () => {
+    const longo = 'Começo do texto. ' + 'x'.repeat(3000) + ' Fim.';
+    const { q, desk } = escritorio([{ ok: true, reply: longo }]);
+    desk.exec!.files = () => [{ name: 'analise-instagram.md', body: '# Perfil' }];
+    applyDeskCommand(desk, { id: UUID1, kind: 'job.create', payload: { kind: 'instagram', fields: { perfil: 'sol' } } });
+    await q.tick();
+    const w = new DeskWorker(desk, { rpc: async () => [], upsert: async () => {}, markDeleted: async () => {}, select: async () => [] }, 'escritorio:teste', () => {});
+    const tables = w.mirrorTables();
+    const run = (tables.find((t) => t.table === 'office_tasks')!.rows[0] as any).run;
+    expect(run.summary.startsWith('Começo do texto.')).toBe(true);
+    expect(run.summary.endsWith('Fim.')).toBe(true);
+    expect(run.files).toEqual([{ name: 'analise-instagram.md', body: '# Perfil' }]);
+    const entrega = tables.find((t) => t.table === 'office_deliveries')!.rows[0] as any;
+    expect(entrega.body.startsWith(lines('# Perfil', '', '---', '', 'Começo do texto.'))).toBe(true);
   });
 });
+

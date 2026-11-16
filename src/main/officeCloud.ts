@@ -17,6 +17,7 @@
 import { createHash } from 'node:crypto';
 import * as os from 'node:os';
 import * as path from 'node:path';
+import { deliveryBody } from './officeExec';
 
 export const DESK_KINDS = [
   'task.create', 'task.update', 'task.move', 'task.delete',
@@ -96,6 +97,8 @@ export interface DeskExec {
   liveLog?(rowId: string): Array<{ at: string; m: string }>;
   /** Modelo padrão do motor, só para mostrar. */
   model?(): string;
+  /** Arquivos .md/.txt que o agente gravou na pasta da tarefa. */
+  files?(task: DeskTask, agent: string): Array<{ name: string; body: string }>;
 }
 
 /** O que os jobs precisam de uma linha da fila (officeExec.TaskRunRow). */
@@ -263,6 +266,7 @@ export function jobMirror(
   rows: RunRow[],
   liveLog: (rowId: string) => Array<{ at: string; m: string }> = () => [],
   model = '',
+  filesOf: (task: DeskTask, agent: string) => Array<{ name: string; body: string }> = () => [],
 ): { jobs: Record<string, unknown>[]; deliveries: Record<string, unknown>[] } {
   const jobs: Record<string, unknown>[] = [];
   const deliveries: Record<string, unknown>[] = [];
@@ -314,7 +318,7 @@ export function jobMirror(
         title: t.title,
         meta: `${agentName(delivered.agent)} · tentativa ${delivered.attempt} · ${estado}`,
         url: `/reports/entrega-T-${t.seq}`,
-        body: delivered.result,
+        body: deliveryBody(String(delivered.result || ''), filesOf(t, delivered.agent)),
         created_at: delivered.finished_at || delivered.created_at,
       });
     }
@@ -555,9 +559,16 @@ export class DeskWorker {
     const ex = this.store.exec;
     const runs = ex ? ex.views() : {};
     const tasks = this.store.list();
-    const out = [{ table: 'office_tasks', key: 'id', rows: tasks.map((t) => toAppTask(t, runs[t.id]) as unknown as Record<string, unknown>) }];
+    const filesOf = (t: DeskTask, agent: string) => (ex && ex.files ? ex.files(t, agent) : []);
+    const withFiles = (t: DeskTask) => {
+      const run = runs[t.id];
+      if (!run || run.mode !== 'exec') return run;
+      const files = filesOf(t, String(run.agent || ''));
+      return files.length ? { ...run, files } : run;
+    };
+    const out = [{ table: 'office_tasks', key: 'id', rows: tasks.map((t) => toAppTask(t, withFiles(t)) as unknown as Record<string, unknown>) }];
     if (ex && ex.rows) {
-      const { jobs, deliveries } = jobMirror(tasks, ex.rows(), ex.liveLog ? (id) => ex.liveLog!(id) : undefined, ex.model ? ex.model() : '');
+      const { jobs, deliveries } = jobMirror(tasks, ex.rows(), ex.liveLog ? (id) => ex.liveLog!(id) : undefined, ex.model ? ex.model() : '', filesOf);
       out.push({ table: 'office_jobs', key: 'id', rows: jobs });
       out.push({ table: 'office_deliveries', key: 'slug', rows: deliveries });
       // Pendências do office.py eram simuladas; as de verdade são os resultados de tarefa (o APK monta).
@@ -727,6 +738,10 @@ export function realDeskStore(): DeskStore {
         views: () => q().views(),
         rows: () => q().rows(),
         liveLog: (rowId) => q().liveLog(rowId),
+        files: (task, agent) => {
+          const ox = require('./officeExec');
+          return ox.taskFiles(path.join(ox.tarefasRoot(), `T-${task.seq}`), agent);
+        },
         model: () => {
           try {
             const s = require('./drivers/engineHub').engineHub.getSettings();

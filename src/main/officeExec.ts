@@ -170,7 +170,8 @@ export function taskRunViews(rows: TaskRunRow[]): Record<string, TaskRunView> {
       agent: last.agent,
       attempt: last.attempt,
       queuePos: last.status === 'queued' ? queued.findIndex((r) => r.id === last.id) + 1 : 0,
-      summary: last.result.slice(-1500),
+      // Texto inteiro (do começo): o APK e as Decisões abrem para ler tudo.
+      summary: last.result.slice(0, 20000),
       plan: planOf(rows, id).slice(0, 4000),
       error: last.error.slice(0, 600),
       at: last.finished_at || last.started_at || last.created_at,
@@ -695,23 +696,47 @@ const realRunner: Runner = async (job, registerKill, say = () => {}) => {
     reply: result.text || '',
     exitCode: result.exitCode,
   });
-  const reply = withDeliverable(workspace, job.row.agent, result.text || '');
-  return { ok: !!result.ok && !paused, reply, error: result.error?.message, stopped: paused, runId: handle.id };
+  return { ok: !!result.ok && !paused, reply: result.text || '', error: result.error?.message, stopped: paused, runId: handle.id };
 };
 
-/** Arquivo que cada papel grava (o relatório leva o conteúdo, não só o resumo do agente). */
+/** Arquivo que cada papel grava (vem primeiro na entrega). */
 export const DELIVERABLE: Record<string, string> = { social: 'analise-instagram.md', redator: 'entrega.md' };
 
-export function withDeliverable(workspace: string, agent: string, summary: string): string {
-  const name = DELIVERABLE[agent];
-  if (!name) return summary;
+export interface TaskFile {
+  name: string;
+  body: string;
+}
+
+/** Arquivos de texto que o agente deixou na pasta da tarefa (o APK mostra para ler). */
+export function taskFiles(workspace: string, agent = ''): TaskFile[] {
+  let names: string[] = [];
   try {
-    const body = fs.readFileSync(path.join(workspace, name), 'utf8').trim();
-    if (!body) return summary;
-    return `${body.slice(0, 20000)}\n\n---\n\n${summary}`.trim();
+    names = fs
+      .readdirSync(workspace, { withFileTypes: true })
+      .filter((d) => d.isFile() && /\.(md|txt)$/i.test(d.name))
+      .map((d) => d.name)
+      .sort((a, b) => a.localeCompare(b));
   } catch {
-    return summary;
+    return [];
   }
+  const first = DELIVERABLE[agent];
+  if (first && names.includes(first)) names = [first, ...names.filter((n) => n !== first)];
+  const out: TaskFile[] = [];
+  for (const name of names.slice(0, 8)) {
+    try {
+      const body = fs.readFileSync(path.join(workspace, name), 'utf8').trim();
+      if (body) out.push({ name, body: body.slice(0, 30000) });
+    } catch {
+      /* arquivo sumiu no meio: ignora */
+    }
+  }
+  return out;
+}
+
+/** Corpo da entrega: os arquivos do papel e depois o resumo do agente (sem repetir o que já está no resumo). */
+export function deliveryBody(summary: string, files: TaskFile[]): string {
+  const parts = files.filter((f) => !summary.includes(f.body.slice(0, 200))).map((f) => f.body);
+  return [...parts, summary.trim()].filter(Boolean).join('\n\n---\n\n');
 }
 
 let queue: ExecQueue | null = null;
