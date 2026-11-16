@@ -444,6 +444,8 @@ export interface TavirApi {
     survey: (idOrPath: string) => Promise<any>;
     /** Retrato da absorção (.tavir/retrato.json), estado do fluxo e RETRATO.md. */
     retrato: (idOrPath: string) => Promise<{ ok: boolean; retrato?: any; estado?: any; retratoMd?: string; error?: string }>;
+    /** Absorção: clona o link (conta do cofre) ou copia a pasta para tavir-interno/ ou tavir-externo/. */
+    absorbPrepare: (params: { key?: string; fonte: 'link' | 'pasta'; url?: string; accountId?: string; path?: string; nome?: string; ownership?: string }) => Promise<{ ok: boolean; destino?: string; preenchido?: any; repo_url?: string; error?: string }>;
     inspectFolder: (idOrPath: string) => Promise<any>;
     openInExplorer: (idOrPath: string) => Promise<{ ok: boolean; path?: string }>;
     readFile: (filePath: string) => Promise<{ ok: boolean; content?: string; size?: number }>;

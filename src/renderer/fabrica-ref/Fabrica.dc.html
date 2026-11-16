@@ -1226,27 +1226,54 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
   </div></div>
 </sc-if>
 
-<!-- absorver pasta (Product Lab) -->
+<!-- absorver projeto (Product Lab): Origem → Preparar → Leitura → Retrato -->
 <sc-if value="{{abs.open}}" hint-placeholder-val="{{false}}">
-  <div class="back" onClick="{{abs.bg}}"><div class="modal lg" role="dialog" aria-modal="true" aria-label="Absorver pasta">
-    <div class="mhead"><span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h6l2 2h10v10H3zM12 12v5M9.5 14.5h5"></path></svg></span><div class="grow"><div class="eyebrow">Product Lab</div><h2>Absorver pasta</h2><p>O Product Lab lê a pasta, detecta a stack e sugere a esteira. Nada é alterado no disco: o projeto ganha Git e .env próprios.</p></div><button class="ibtn sm" onClick="{{abs.close}}" aria-label="Fechar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div>
+  <div class="back" onClick="{{abs.bg}}"><div class="modal lg" role="dialog" aria-modal="true" aria-label="Absorver projeto" style="max-width: 940px">
+    <div class="mhead"><span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--flow-subtle); color: var(--flow); flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h6l2 2h10v10H3zM12 12v5M9.5 14.5h5"></path></svg></span><div class="grow"><div class="eyebrow">Product Lab</div><h2>Absorver projeto</h2><p>{{abs.lead}}</p></div><button class="ibtn sm" onClick="{{abs.close}}" aria-label="Fechar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg></button></div>
     <div class="mbody">
-      <div style="display: flex; gap: 8px; align-items: center"><sc-for list="{{abs.steps}}" as="x" hint-placeholder-count="3"><span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600"><span class="mono" style="width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 10.5px; background: {{x.bg}}; color: {{x.fg}}">{{x.n}}</span>{{x.t}}<i style="width: 24px; height: 1px; background: var(--line-strong)"></i></span></sc-for></div>
-      <sc-if value="{{abs.isPath}}" hint-placeholder-val="{{true}}">
-        <label class="field"><span>Pasta no seu computador</span><input class="input mono" style="font-size: 12px" value="{{abs.path}}" onChange="{{abs.onPath}}" placeholder="C:\Users\...\minha-pasta"></label>
-        <div><div class="eyebrow" style="font-size: 10px; margin-bottom: 6px">Pastas recentes</div><sc-for list="{{abs.recent}}" as="r" hint-placeholder-count="3"><button class="fb-mi" onClick="{{r.pick}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h6l2 2h10v10H3z"></path></svg><span class="mono" style="font-size: 12px; font-weight: 500">{{r.t}}</span><small>{{r.d}}</small></button></sc-for></div>
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><sc-for list="{{abs.steps}}" as="x" hint-placeholder-count="4"><span style="display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--text-primary)"><span class="mono" style="width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 10.5px; background: {{x.bg}}; color: {{x.fg}}">{{x.n}}</span>{{x.t}}<i style="width: 24px; height: 1px; background: var(--line-strong)"></i></span></sc-for></div>
+      <sc-if value="{{abs.hasErr}}" hint-placeholder-val="{{false}}"><div class="fb-warn"><span class="grow">{{abs.err}}</span></div></sc-if>
+      <sc-if value="{{abs.isOrigem}}" hint-placeholder-val="{{true}}">
+        <div class="segs"><sc-for list="{{abs.fontes}}" as="f" hint-placeholder-count="2"><button type="button" class="seg {{f.on}}" onClick="{{f.pick}}">{{f.t}}</button></sc-for></div>
+        <sc-if value="{{abs.isLink}}" hint-placeholder-val="{{true}}">
+          <label class="field"><span>Link do repositório no GitHub</span><input class="input mono" style="font-size: 12px" value="{{abs.url}}" onInput="{{abs.onUrl}}" onChange="{{abs.onUrl}}" placeholder="https://github.com/dono/repositorio"></label>
+          <div class="field"><span>Conta do cofre usada no clone</span><div class="segs" style="flex-wrap: wrap"><sc-for list="{{abs.contas}}" as="c" hint-placeholder-count="2"><button type="button" class="seg {{c.on}}" onClick="{{c.pick}}">{{c.t}}</button></sc-for></div></div>
+          <sc-if value="{{abs.semConta}}" hint-placeholder-val="{{false}}"><div class="fb-warn"><span class="grow">Nenhuma conta do GitHub no cofre. Repositório público clona sem conta; para privado, cadastre a conta em Configurações › Contas e cofre.</span><button type="button" class="btn sm secondary" onClick="{{abs.toCofre}}">Contas e cofre</button></div></sc-if>
+        </sc-if>
+        <sc-if value="{{abs.isPasta}}" hint-placeholder-val="{{false}}">
+          <div class="field"><span>Pasta no seu computador</span><div style="display: flex; gap: 8px"><input class="input mono" style="font-size: 12px; flex: 1" value="{{abs.path}}" onInput="{{abs.onPath}}" onChange="{{abs.onPath}}" placeholder="C:\Users\...\minha-pasta"><button type="button" class="btn secondary" onClick="{{abs.pick}}">Escolher pasta</button></div><small>A pasta é copiada para a pasta do escopo, sem node_modules e sem pastas de build. A original fica intacta.</small></div>
+          <sc-if value="{{abs.hasRecent}}" hint-placeholder-val="{{false}}"><div><div class="eyebrow" style="font-size: 10px; margin-bottom: 6px">Últimas pastas absorvidas</div><sc-for list="{{abs.recent}}" as="r" hint-placeholder-count="3"><button class="fb-mi" onClick="{{r.pick}}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h6l2 2h10v10H3z"></path></svg><span class="mono" style="font-size: 12px; font-weight: 500">{{r.t}}</span><small>{{r.d}}</small></button></sc-for></div></sc-if>
+        </sc-if>
+        <div class="g2" style="gap: 10px"><label class="field"><span>Nome do projeto</span><input class="input" value="{{abs.name}}" onInput="{{abs.onName}}" onChange="{{abs.onName}}" placeholder="{{abs.namePh}}"></label><label class="field"><span>Cliente</span><input class="input" value="{{abs.client}}" onInput="{{abs.onClient}}" onChange="{{abs.onClient}}" placeholder="Nome do cliente"></label></div>
+        <div class="field"><span>Escopo</span><div class="segs"><sc-for list="{{abs.escopos}}" as="e" hint-placeholder-count="2"><button type="button" class="seg {{e.on}}" onClick="{{e.pick}}">{{e.t}}</button></sc-for></div><small>{{abs.escopoHint}}</small></div>
       </sc-if>
-      <sc-if value="{{abs.isBusy}}" hint-placeholder-val="{{false}}">
-        <div style="display: flex; flex-direction: column; gap: 8px"><sc-for list="{{abs.log}}" as="l" hint-placeholder-count="4"><div class="fb-st" style="font-size: 13px; padding: 10px 12px"><sc-if value="{{l.done}}" hint-placeholder-val="{{false}}"><span style="color: var(--flow)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span></sc-if><sc-if value="{{l.spin}}" hint-placeholder-val="{{true}}"><i class="spin" style="width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i></sc-if><sc-if value="{{l.wait}}" hint-placeholder-val="{{false}}"><span style="width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--line); flex: none"></span></sc-if><span>{{l.t}}</span></div></sc-for></div>
+      <sc-if value="{{abs.isPreparar}}" hint-placeholder-val="{{false}}">
+        <div class="fb-log" data-tv-follow style="max-height: 260px; overflow: auto"><div class="fb-ls" data-tv-follow><sc-for list="{{abs.prepLines}}" as="l" hint-placeholder-count="3"><div class="fb-ll" style="border-left-color: {{l.bd}}"><div style="white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; color: {{l.fg}}">{{l.t}}</div></div></sc-for></div></div>
+        <sc-if value="{{abs.prepOk}}" hint-placeholder-val="{{false}}">
+          <div class="g4"><sc-for list="{{abs.stats}}" as="x" hint-placeholder-count="4"><div class="metric" style="padding: 12px 14px; gap: 4px"><span class="eyebrow" style="font-size: 9.5px">{{x.k}}</span><b style="font-size: 14px; color: var(--text-primary); overflow-wrap: anywhere">{{x.v}}</b></div></sc-for></div>
+          <div class="mono muted" style="font-size: 11.5px; overflow-wrap: anywhere">{{abs.destino}}</div>
+        </sc-if>
       </sc-if>
-      <sc-if value="{{abs.isResult}}" hint-placeholder-val="{{false}}">
-        <div class="g4"><sc-for list="{{abs.stats}}" as="x" hint-placeholder-count="4"><div class="metric" style="padding: 12px 14px; gap: 4px"><span class="eyebrow" style="font-size: 9.5px">{{x.k}}</span><b style="font-size: 15px">{{x.v}}</b></div></sc-for></div>
-        <div class="eyebrow" style="font-size: 10px">Esteira</div>
-        <div class="g2" style="gap: 8px"><sc-for list="{{abs.tpls}}" as="x" hint-placeholder-count="6"><button class="choice {{x.on}}" onClick="{{x.pick}}"><span class="rd"></span><div class="grow"><b style="font-size: 13px">{{x.code}} · {{x.name}}</b><small style="display: block">{{x.meta}}</small></div><sc-if value="{{x.rec}}" hint-placeholder-val="{{false}}"><span class="badge action">sugerida</span></sc-if></button></sc-for></div>
-        <label class="field"><span>Nome do projeto</span><input class="input" value="{{abs.name}}" onChange="{{abs.onName}}"></label>
+      <sc-if value="{{abs.isLeitura}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; flex-direction: column; gap: 6px"><sc-for list="{{abs.passos}}" as="x" hint-placeholder-count="7"><div class="fb-st" style="font-size: 13px; padding: 10px 12px; align-items: flex-start"><sc-if value="{{x.ok}}" hint-placeholder-val="{{false}}"><span style="color: var(--flow)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span></sc-if><sc-if value="{{x.spin}}" hint-placeholder-val="{{false}}"><i class="spin" style="width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--line-strong); border-top-color: var(--flow); flex: none"></i></sc-if><sc-if value="{{x.inc}}" hint-placeholder-val="{{false}}"><span style="color: var(--warning); font-weight: 700; width: 14px; text-align: center">!</span></sc-if><sc-if value="{{x.wait}}" hint-placeholder-val="{{false}}"><span style="width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--line); flex: none"></span></sc-if><div class="grow" style="min-width: 0"><b style="color: var(--text-primary)">{{x.t}}</b> <span class="muted" style="font-size: 12px">{{x.who}} · {{x.doc}}</span><sc-if value="{{x.hasMotivo}}" hint-placeholder-val="{{false}}"><div style="font-size: 12px; color: var(--warning); margin-top: 2px">{{x.motivo}}</div></sc-if><sc-if value="{{x.hasFala}}" hint-placeholder-val="{{false}}"><button type="button" class="tv-trail-h" onClick="{{x.toggle}}" style="margin-top: 4px"><span>{{x.trailLabel}}</span><small>{{x.trailN}}</small></button><sc-if value="{{x.open}}" hint-placeholder-val="{{false}}"><div class="muted" data-tv-follow style="font-size: 12px; margin-top: 4px; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 140px; overflow: auto"><sc-for list="{{x.trail}}" as="t" hint-placeholder-count="2"><div>{{t.t}}</div></sc-for></div></sc-if></sc-if></div></div></sc-for></div>
+        <sc-if value="{{abs.leituraParada}}" hint-placeholder-val="{{false}}"><div class="fb-warn"><span class="grow">{{abs.paradaTxt}}</span></div></sc-if>
+      </sc-if>
+      <sc-if value="{{abs.isRetrato}}" hint-placeholder-val="{{false}}">
+        <div class="g4"><sc-for list="{{abs.rstats}}" as="x" hint-placeholder-count="4"><div class="metric" style="padding: 12px 14px; gap: 4px"><span class="eyebrow" style="font-size: 9.5px">{{x.k}}</span><b style="font-size: 14px; color: var(--text-primary)">{{x.v}}</b></div></sc-for></div>
+        <sc-if value="{{abs.hasInc}}" hint-placeholder-val="{{false}}"><div class="fb-warn" style="flex-direction: column; align-items: flex-start; gap: 4px"><b>Passos incompletos</b><sc-for list="{{abs.incs}}" as="x" hint-placeholder-count="1"><span style="font-size: 12.5px">{{x.t}}: {{x.m}}</span></sc-for></div></sc-if>
+        <div class="eyebrow" style="font-size: 10px">Serviços</div>
+        <div style="display: flex; flex-direction: column; gap: 4px"><sc-for list="{{abs.rservs}}" as="r" hint-placeholder-count="3"><div style="display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 13px"><b style="color: var(--text-primary)">{{r.nome}}</b><span class="badge {{r.cls}}" style="height: 18px">{{r.grau}}</span><span class="muted" style="font-size: 11.5px">{{r.assunto}}</span><span class="mono muted" style="font-size: 11px; overflow-wrap: anywhere">{{r.prova}}</span></div></sc-for></div>
+        <div class="eyebrow" style="font-size: 10px">Cobertura por pasta</div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{abs.cob}}" as="c" hint-placeholder-count="4"><span class="badge {{c.cls}}" title="{{c.n}} arquivo(s)">{{c.pasta}} · {{c.sit}}</span></sc-for></div>
+        <div class="eyebrow" style="font-size: 10px">RETRATO.md</div>
+        <div style="max-height: 340px; overflow: auto; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-0)"><div class="tv-md"><sc-for list="{{abs.retratoBlocks}}" as="b" hint-placeholder-count="2"><sc-if value="{{b.h}}" hint-placeholder-val="{{false}}"><div class="tv-md-h"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="tv-md-p"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></p></sc-if><sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div class="tv-md-li" style="padding-left: {{b.pad}}px"><b>{{b.mark}}</b><span><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></span></div></sc-if><sc-if value="{{b.quote}}" hint-placeholder-val="{{false}}"><div class="tv-md-q"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.code}}" hint-placeholder-val="{{false}}"><pre class="tv-md-code">{{b.text}}</pre></sc-if><sc-if value="{{b.hr}}" hint-placeholder-val="{{false}}"><hr class="tv-md-hr"></sc-if></sc-for></div></div>
+        <sc-if value="{{abs.corrigindo}}" hint-placeholder-val="{{false}}">
+          <label class="field"><span>O que está errado no retrato. Vai para context/correcoes.md e prevalece sobre o texto do agente.</span><textarea class="input" style="min-height: 90px; padding: 10px" value="{{abs.nota}}" onInput="{{abs.onNota}}" onChange="{{abs.onNota}}"></textarea></label>
+          <div class="field"><span>Passos para refazer</span><div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{abs.refazer}}" as="x" hint-placeholder-count="7"><button type="button" class="btn sm {{x.cls}}" onClick="{{x.pick}}">{{x.t}}</button></sc-for></div></div>
+        </sc-if>
       </sc-if>
     </div>
-    <div class="mfoot"><button class="btn secondary" onClick="{{abs.back}}" disabled="{{abs.busy}}">{{abs.backLbl}}</button><button class="btn primary" onClick="{{abs.next}}" disabled="{{abs.busy}}">{{abs.nextLbl}}</button></div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{abs.back}}" disabled="{{abs.backDis}}">{{abs.backLbl}}</button><div class="grow"></div><sc-if value="{{abs.hasAlt}}" hint-placeholder-val="{{false}}"><button class="btn secondary" onClick="{{abs.alt}}" disabled="{{abs.altDis}}">{{abs.altLbl}}</button></sc-if><button class="btn primary" onClick="{{abs.next}}" disabled="{{abs.nextDis}}">{{abs.nextLbl}}</button></div>
   </div></div>
 </sc-if>
 
@@ -1726,7 +1753,7 @@ function secHtml(P, r, list, checks, score) {
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { lgRuns: {}, lgSel: null, lgDet: null, lgView: 'transcricao', lgF: 'all', lgBusy: false, lgErr: '', pid: null, ptab: 'geral', pf: 'all', ps: 'pct', busy: {}, envOk: false, envDraft: '', envBusy: false, mPaused: false, ff: 'all', motors: {}, think: {}, runs: {}, chats: {}, chatThink: {}, menu: false, removed: {}, lastRm: null, rmOpen: false, chgOpen: false, chgDraft: '', altOpen: {}, altTrack: {}, abs: { open: false, step: 'path', path: ROOT + 'tavir-clientes\\loja-aurora-site', name: '', tpl: null, logN: 0 }, absorbed: [], treeClosed: {}, cfgOpen: false, inj: '', credEd: {}, reveal: {}, credF: 'all', cm: { open: false }, qaRuns: {}, secRuns: {}, qaSel: {}, secSel: {}, prog: {}, evf: 'all', repF: 'all', sevF: 'all', fOpen: {}, secFix: {}, evw: null, vt: 0, vplay: false, vsp: 1, gp: (() => { const o = {}; Object.keys(GP_INIT).forEach((k) => { o[k] = Object.assign({ resolved: {}, extra: [] }, GP_INIT[k]); }); return o; })(), stage: 5, tabs: {}, guard: GUARD.map((g) => g[3]), loading: {}, signed: false, signedAt: '', vp: 'desk', fixing: false, lf: 'stage', extra: [],
+    this.state = { lgRuns: {}, lgSel: null, lgDet: null, lgView: 'transcricao', lgF: 'all', lgBusy: false, lgErr: '', pid: null, ptab: 'geral', pf: 'all', ps: 'pct', busy: {}, envOk: false, envDraft: '', envBusy: false, mPaused: false, ff: 'all', motors: {}, think: {}, runs: {}, chats: {}, chatThink: {}, menu: false, removed: {}, lastRm: null, rmOpen: false, chgOpen: false, chgDraft: '', altOpen: {}, altTrack: {}, abs: { open: false, step: 'origem', fonte: 'link', url: '', conta: '', path: '', name: '', client: '', escopo: 'externo', busy: false, err: '', prep: null, projectId: null, nota: '', corrigindo: false, refazer: {}, trailOpen: {} }, absorbed: [], treeClosed: {}, cfgOpen: false, inj: '', credEd: {}, reveal: {}, credF: 'all', cm: { open: false }, qaRuns: {}, secRuns: {}, qaSel: {}, secSel: {}, prog: {}, evf: 'all', repF: 'all', sevF: 'all', fOpen: {}, secFix: {}, evw: null, vt: 0, vplay: false, vsp: 1, gp: (() => { const o = {}; Object.keys(GP_INIT).forEach((k) => { o[k] = Object.assign({ resolved: {}, extra: [] }, GP_INIT[k]); }); return o; })(), stage: 5, tabs: {}, guard: GUARD.map((g) => g[3]), loading: {}, signed: false, signedAt: '', vp: 'desk', fixing: false, lf: 'stage', extra: [],
       viewer: null, zoom: 1, imgBg: 'dark', mdMode: 'view', csvMode: 'table', edits: {}, saved: {}, ver: {},
       chat: false, unread: 2, typing: false, draft: '', msgs: [['Yuri UX', 'A hero ainda compete com o menu em 390 px. Proponho cortar o subtítulo e virar o menu ícone.', 'ag'], ['Vitor Construtor', 'Ajuste pronto no branch hero-390. Preciso da prova visual de novo.', 'ag']] };
   }
@@ -2435,26 +2462,172 @@ class Component extends DCLogic {
     };
 
     // ================= ABSORVER PASTA =================
-    const A = s.abs;
-    const detect = (path) => { const low = path.toLowerCase(); const tail = path.replace(/[\\/]+$/, '').split(/[\\/]/).pop() || 'projeto'; const h = tail.length; const tpl = /lp|landing|site/.test(low) ? 'LP-M1' : /oferta|offer/.test(low) ? 'OF-M0' : 'SY-M1'; const stack = tpl === 'LP-M1' ? 'Next.js' : tpl === 'OF-M0' ? 'Página estática' : 'Flutter / Mobile'; const pastas = 12 + (h * 7) % 30; return { tail: tail, tpl: tpl, stack: stack, pastas: pastas, arquivos: pastas * 5 + 7, git: /mobile-tavir/.test(low) ? 'já absorvida' : 'sem Git isolado' }; };
-    const D = detect(A.path || '');
-    const absLog = ['Lendo a árvore de pastas', 'Detectando stack e dependências', 'Procurando .git e .env', 'Comparando com os moldes de esteira'];
-    const abs = {
-      open: A.open, isPath: A.step === 'path', isBusy: A.step === 'busy', isResult: A.step === 'result', busy: A.step === 'busy',
-      steps: [['path', 'Pasta'], ['busy', 'Análise'], ['result', 'Esteira']].map((x, i) => { const idx = ['path', 'busy', 'result'].indexOf(A.step); return { t: x[1], n: '0' + (i + 1), on: i === idx ? 'on' : '', bg: i < idx ? 'var(--flow)' : i === idx ? 'var(--action-bg)' : 'var(--surface-3)', fg: i < idx ? 'var(--surface-1)' : i === idx ? 'var(--action-fg)' : 'var(--text-muted)' }; }),
-      path: A.path, onPath: (e) => self.setState({ abs: Object.assign({}, self.state.abs, { path: e.target.value }) }),
-      recent: [['tavir-clientes\\loja-aurora-site', 'pasta nova · nunca absorvida'], ['tavir-interno\\oferta-mentoria', 'pasta nova · nunca absorvida'], ['tavir-interno\\mobile-tavir-7375fb', 'já é o projeto App Tavir']].map((r) => ({ t: r[0], d: r[1], pick: () => self.setState({ abs: Object.assign({}, A, { path: ROOT + r[0] }) }) })),
-      log: absLog.map((l, i) => ({ t: l, done: i < A.logN, spin: i === A.logN, wait: i > A.logN })),
-      stats: [['Stack', D.stack], ['Pastas', String(D.pastas)], ['Arquivos', String(D.arquivos)], ['Git', D.git]].map((x) => ({ k: x[0], v: x[1] })),
-      tpls: ESTEIRAS.map((e) => ({ code: e[0], name: e[2], meta: TPL_STAGES[e[0]].length + ' etapas', rec: e[0] === D.tpl, on: (A.tpl || D.tpl) === e[0] ? 'on' : '', pick: () => self.setState({ abs: Object.assign({}, A, { tpl: e[0] }) }) })),
-      name: A.name, onName: (e) => self.setState({ abs: Object.assign({}, self.state.abs, { name: e.target.value }) }),
-      backLbl: A.step === 'result' ? 'Voltar' : 'Cancelar', nextLbl: A.step === 'result' ? 'Criar projeto' : A.step === 'busy' ? 'Analisando…' : 'Analisar pasta',
-      bg: (e) => { if (e && e.target === e.currentTarget && A.step !== 'busy') self.setState({ abs: Object.assign({}, A, { open: false }) }); },
-      close: () => self.setState({ abs: Object.assign({}, A, { open: false, step: 'path' }) }),
-      back: () => self.setState({ abs: A.step === 'result' ? Object.assign({}, A, { step: 'path' }) : Object.assign({}, A, { open: false, step: 'path' }) }),
-      next: () => { if (A.step === 'path') { if (!(A.path || '').trim()) { app.toast('Informe a pasta', 'Cole o caminho ou escolha uma pasta recente.'); return; } self.analyze(D.tail); } else if (A.step === 'result') self.absorb(Object.assign({}, D, { tpl: A.tpl || D.tpl, name: (A.name || '').trim() || D.tail, path: A.path })); }
+    // ================= ABSORVER PROJETO (Origem → Preparar → Leitura → Retrato) =================
+    const absT = () => (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+    const A = Object.assign({ open: false, step: 'origem', fonte: 'link', url: '', conta: '', path: '', name: '', client: '', escopo: 'externo', busy: false, err: '', prep: null, projectId: null, nota: '', corrigindo: false, refazer: {}, trailOpen: {} }, s.abs || {});
+    const setAbs = (patch) => self.setState({ abs: Object.assign({}, self.state.abs, patch) });
+    if (typeof window !== 'undefined' && window.tavir && !window.__tavirAbsLiveOn) {
+      window.__tavirAbsLiveOn = true;
+      window.__tavirAbsLive = {};
+      window.tavir.onEvent(function (evt) {
+        if (!evt || !evt.meta || !evt.meta.absorb) return;
+        const k = String(evt.meta.key || '');
+        const cur = window.__tavirAbsLive[k] || { lines: [], trail: {}, fala: {}, passo: '', done: false };
+        if (evt.meta.etapa === 'preparar') { if (evt.content) { const ln = String(evt.content); const head = function (x) { const m = String(x || '').match(/^([A-Za-z ]+):\s+\d/); return m ? m[1] : ''; }; const last = cur.lines[cur.lines.length - 1]; if (last && head(ln) && head(ln) === head(last)) cur.lines = cur.lines.slice(0, -1).concat([ln]); else cur.lines = cur.lines.concat([ln]).slice(-300); } cur.done = evt.type === 'done'; }
+        else {
+          const ps = String(evt.meta.passo || '');
+          if (ps) {
+            cur.passo = ps;
+            const c = String(evt.content || '');
+            if (c && c.indexOf('→ ') === 0) cur.trail[ps] = (cur.trail[ps] || []).concat([c]).slice(-60);
+            else if (c) cur.fala[ps] = c;
+          }
+          if (evt.type === 'done') cur.done = true;
+          if (evt.meta.refresh && window.__tavirAbsRefresh) window.__tavirAbsRefresh(k);
+        }
+        window.__tavirAbsLive[k] = cur;
+        if (window.__tavirFabPing) window.__tavirFabPing();
+      });
+    }
+    // Retrato e estado do fluxo do projeto em absorção (para os passos Leitura e Retrato).
+    self._absLoad = (pidA) => {
+      const t = absT(); if (!t || !t.projects || !t.projects.retrato || !pidA) return;
+      t.projects.retrato(pidA).then(function (res) {
+        const m = Object.assign({}, self.state.rtById || {}); m[pidA] = res && res.ok ? res : null; self.setState({ rtById: m });
+      }).catch(function () {});
     };
-    const openAbsorb = () => self.setState({ menu: false, abs: Object.assign({}, A, { open: true, step: 'path', tpl: null, name: '', logN: 0 }) });
+    if (typeof window !== 'undefined') window.__tavirAbsRefresh = function (k) { if (self._absLoad) self._absLoad(k); };
+    const absV = A.projectId ? (s.rtById || {})[A.projectId] || null : null;
+    const absEst = (absV && absV.estado) || null;
+    const absRet = (absV && absV.retrato) || null;
+    const absLive = (typeof window !== 'undefined' && window.__tavirAbsLive) || {};
+    const prepLive = absLive.novo || { lines: [] };
+    const projLive = A.projectId ? absLive[A.projectId] || { trail: {}, fala: {} } : { trail: {}, fala: {} };
+    const absLeituraOk = !!(absEst && absEst.etapas && absEst.etapas.leitura && absEst.etapas.leitura.situacao === 'ok' && absEst.etapas.retrato.situacao === 'ok');
+    const absRodando = !!(absEst && absEst.etapas && Object.keys(absEst.etapas).some(function (k) { return absEst.etapas[k].situacao === 'rodando'; }));
+    if (A.open && A.step === 'leitura' && A.projectId && !self._absPoll) {
+      self._absPoll = setTimeout(function () { self._absPoll = null; if (self.state.abs && self.state.abs.open && self.state.abs.step === 'leitura') self._absLoad(self.state.abs.projectId); }, 2500);
+    }
+    if (A.open && A.step === 'leitura' && absLeituraOk && !absRodando) setTimeout(function () { if (self.state.abs && self.state.abs.step === 'leitura') setAbs({ step: 'retrato' }); }, 0);
+    if (A.open && !s.absContas && !self._absContasReq) {
+      self._absContasReq = true;
+      const t = absT();
+      if (t && t.accounts && t.accounts.list) t.accounts.list().then(function (res) { self.setState({ absContas: (res && res.accounts) || [] }); }).catch(function () { self.setState({ absContas: [] }); });
+      else self.setState({ absContas: [] });
+    }
+    const absContas = s.absContas || [];
+    const ABS_PASSOS = [['produto', 'Produto', 'Dora'], ['arquitetura', 'Arquitetura', 'Ari'], ['dados', 'Dados', 'Ari'], ['design', 'Design system', 'Enzo'], ['ambiente', 'Ambiente', 'Ari'], ['integracoes', 'Integrações', 'Ari'], ['riscos', 'Riscos', 'Dora']];
+    const ABS_ASS = { deploy: 'Onde publica', banco: 'Banco', auth: 'Login', pagamento: 'Pagamento', mensagens: 'Mensagens', arquivos: 'Arquivos', medicao: 'Medição', ia: 'IA' };
+    const absStepIdx = ['origem', 'preparar', 'leitura', 'retrato'].indexOf(A.step);
+    const absPrepare = () => {
+      const t = absT();
+      if (A.fonte === 'link' && !String(A.url || '').trim()) { setAbs({ err: 'Cole o link do repositório.' }); return; }
+      if (A.fonte === 'pasta' && !String(A.path || '').trim()) { setAbs({ err: 'Escolha a pasta do projeto.' }); return; }
+      if (!t || !t.projects || !t.projects.absorbPrepare) { setAbs({ err: 'A absorção só funciona no app desktop.' }); return; }
+      if (typeof window !== 'undefined') window.__tavirAbsLive.novo = { lines: [], trail: {}, fala: {} };
+      setAbs({ step: 'preparar', busy: true, err: '', prep: null });
+      t.projects.absorbPrepare({ key: 'novo', fonte: A.fonte, url: A.url, accountId: A.conta || undefined, path: A.path, nome: A.name, ownership: A.escopo }).then(function (res) {
+        const cur = self.state.abs || {};
+        setAbs({ busy: false, prep: res, err: res && res.ok ? '' : String((res && res.error) || 'Falhou.'), name: cur.name || (res && res.preenchido && res.preenchido.nome) || '' });
+      }).catch(function (e) { setAbs({ busy: false, err: String(e && e.message || e) }); });
+    };
+    const absRegister = () => {
+      const t = absT(); const pr = A.prep;
+      if (!pr || !pr.ok || !t) return;
+      setAbs({ busy: true, err: '' });
+      t.projects.absorb({ local_path: pr.destino, name: String(A.name || '').trim() || (pr.preenchido && pr.preenchido.nome) || 'Projeto', company: String(A.client || '').trim() || 'Sem cliente', ownership: A.escopo, repo_url: pr.repo_url || '', git_account_id: A.conta || '', template_category: (pr.preenchido && pr.preenchido.familia) || 'sy', mode: 'manutencao', origem: { tipo: A.fonte, valor: A.fonte === 'link' ? A.url : A.path } }).then(function (proj) {
+        if (!proj || !proj.id) { setAbs({ busy: false, err: 'Não consegui registrar o projeto.' }); return; }
+        setAbs({ busy: false, projectId: proj.id, step: 'leitura' });
+        if (self.reloadIpcProjects) self.reloadIpcProjects();
+        if (typeof window !== 'undefined') window.dispatchEvent(new Event('tavir:project-created'));
+        self._absLoad(proj.id);
+        if (t.projects.absorbStart) t.projects.absorbStart(proj.id).then(function () { self._absLoad(proj.id); }).catch(function () {});
+        else app.toast('Projeto absorvido', 'A leitura pelo Product Lab entra na próxima versão.');
+      }).catch(function (e) { setAbs({ busy: false, err: String(e && e.message || e) }); });
+    };
+    const absDecide = (decision) => {
+      const t = absT(); if (!t || !t.projects || !t.projects.absorbDecide || !A.projectId) return;
+      const refazer = Object.keys(A.refazer || {}).filter(function (k) { return A.refazer[k]; });
+      if (decision === 'reprovado' && !String(A.nota || '').trim()) { setAbs({ err: 'Escreva o que está errado no retrato.' }); return; }
+      setAbs({ busy: true, err: '' });
+      t.projects.absorbDecide(A.projectId, decision, A.nota || '', refazer).then(function (res) {
+        if (!res || res.ok === false) { setAbs({ busy: false, err: String((res && res.error) || 'Falhou.') }); return; }
+        if (decision === 'aprovado') {
+          const pidA = A.projectId;
+          self.setState({ abs: Object.assign({}, self.state.abs, { open: false, busy: false }) });
+          if (self.reloadIpcProjects) self.reloadIpcProjects();
+          self._absLoad(pidA);
+          app.toast('Retrato aprovado', 'O projeto entrou em manutenção. Trilho e chamados liberados.');
+          setTimeout(function () { openProj(pidA); }, 300);
+        } else {
+          setAbs({ busy: false, corrigindo: false, nota: '', refazer: {}, step: 'leitura' });
+          self._absLoad(A.projectId);
+          if (t.projects.absorbResume) t.projects.absorbResume(A.projectId).then(function () { self._absLoad(A.projectId); }).catch(function () {});
+        }
+      }).catch(function (e) { setAbs({ busy: false, err: String(e && e.message || e) }); });
+    };
+    const absStop = () => { const t = absT(); if (t && t.projects && t.projects.absorbStop && A.projectId) t.projects.absorbStop(A.projectId).then(function () { self._absLoad(A.projectId); }); };
+    const absResume = () => { const t = absT(); if (t && t.projects && t.projects.absorbResume && A.projectId) { t.projects.absorbResume(A.projectId).then(function () { self._absLoad(A.projectId); }); setTimeout(function () { self._absLoad(A.projectId); }, 800); } };
+    const passosRet = (absRet && absRet.passos) || [];
+    const absPassos = ABS_PASSOS.map(function (x) {
+      const p = passosRet.find(function (y) { return y.id === x[0]; }) || { situacao: 'a_fazer' };
+      const sit = p.situacao;
+      const trail = (projLive.trail[x[0]] || []);
+      const fala = projLive.fala[x[0]] || '';
+      const lines = trail.concat(fala ? ['» ' + fala] : []);
+      const open = !!(A.trailOpen || {})[x[0]];
+      return { t: x[1], who: x[2], doc: 'context/' + (x[0] === 'design' ? 'design-system' : x[0]) + '.md', ok: sit === 'ok', spin: sit === 'rodando', inc: sit === 'incompleto', wait: sit === 'a_fazer', hasMotivo: !!p.motivo && sit === 'incompleto', motivo: p.motivo || '', hasFala: lines.length > 0, trail: lines.map(function (l) { return { t: l }; }), trailN: lines.length + ' linha(s)', trailLabel: fala ? String(fala).slice(0, 120) : 'Passos do agente', open: open || sit === 'rodando', toggle: function () { const to = Object.assign({}, A.trailOpen || {}); to[x[0]] = !open; setAbs({ trailOpen: to }); } };
+    });
+    const absParada = !!(absEst && !absRodando && !absLeituraOk && absEst.etapas && absEst.etapas.leitura && absEst.etapas.leitura.situacao !== 'a_fazer');
+    const retServs = ((absRet && absRet.servicos) || []).map(function (a) { const p = (a.provas || []).find(function (x) { return x.tipo === 'codigo'; }) || (a.provas || [])[0]; return { nome: a.nome, grau: a.grau === 'confirmado' ? 'confirmado' : 'a confirmar', cls: a.grau === 'confirmado' ? 'flow' : 'warn', assunto: ABS_ASS[a.assunto] || a.assunto, prova: p ? p.arquivo + (p.linha ? ':' + p.linha : '') : '' }; });
+    const abs = {
+      open: A.open, lead: A.step === 'origem' ? 'Link do GitHub ou pasta do computador. O projeto vai para a pasta do escopo e o Product Lab lê tudo, passo a passo.' : A.step === 'preparar' ? 'Clonando ou copiando para a pasta do escopo.' : A.step === 'leitura' ? 'O squad Product Lab lê o projeto em sete passos. Fechar esta janela não interrompe a leitura.' : 'Confira o retrato. Ele só vale depois da sua aprovação.',
+      isOrigem: A.step === 'origem', isPreparar: A.step === 'preparar', isLeitura: A.step === 'leitura', isRetrato: A.step === 'retrato',
+      hasErr: !!A.err, err: A.err, busy: !!A.busy,
+      steps: [['origem', 'Origem'], ['preparar', 'Preparar'], ['leitura', 'Leitura'], ['retrato', 'Retrato']].map(function (x, i) { return { t: x[1], n: '0' + (i + 1), bg: i < absStepIdx ? 'var(--flow)' : i === absStepIdx ? 'var(--action-bg)' : 'var(--surface-3)', fg: i < absStepIdx ? 'var(--surface-1)' : i === absStepIdx ? 'var(--action-fg)' : 'var(--text-muted)' }; }),
+      fontes: [['link', 'Link do GitHub'], ['pasta', 'Pasta no computador']].map(function (f) { return { t: f[1], on: A.fonte === f[0] ? 'on' : '', pick: function () { setAbs({ fonte: f[0], err: '' }); } }; }),
+      isLink: A.fonte === 'link', isPasta: A.fonte === 'pasta',
+      url: A.url, onUrl: function (e) { setAbs({ url: e.target.value }); },
+      contas: [{ id: '', t: 'Sem conta (público)' }].concat(absContas.map(function (c) { return { id: c.id, t: c.label + ' · ' + c.login }; })).map(function (c) { return { t: c.t, on: (A.conta || '') === c.id ? 'on' : '', pick: function () { setAbs({ conta: c.id }); } }; }),
+      semConta: !!s.absContas && absContas.length === 0,
+      toCofre: function () { if (app && app.go) app.go('config'); },
+      path: A.path, onPath: function (e) { setAbs({ path: e.target.value }); },
+      pick: function () { const t = absT(); if (t && t.projects && t.projects.pickFolder) t.projects.pickFolder().then(function (r) { if (r && !r.canceled && r.path) setAbs({ path: r.path }); }); },
+      recent: (s.absorbed || []).filter(function (p) { return p.local_path; }).slice(0, 5).map(function (p) { return { t: String(p.local_path), d: p.name, pick: function () { setAbs({ path: String(p.local_path) }); } }; }),
+      hasRecent: (s.absorbed || []).some(function (p) { return p.local_path; }),
+      name: A.name, onName: function (e) { setAbs({ name: e.target.value }); }, namePh: 'Preenchido pela leitura',
+      client: A.client, onClient: function (e) { setAbs({ client: e.target.value }); },
+      escopos: [['externo', 'Externo (cliente de fora)'], ['interno', 'Interno (TAVIR)']].map(function (e) { return { t: e[1], on: A.escopo === e[0] ? 'on' : '', pick: function () { setAbs({ escopo: e[0] }); } }; }),
+      escopoHint: A.escopo === 'externo' ? 'Vai para tavir-externo/<nome>.' : 'Vai para tavir-interno/<nome>.',
+      prepLines: (prepLive.lines || []).map(function (l) { const bad = /^Falhou|fatal|erro/i.test(l); return { t: l, bd: bad ? 'var(--danger)' : 'var(--flow)', fg: bad ? 'var(--danger)' : 'var(--text-secondary)' }; }),
+      prepOk: !!(A.prep && A.prep.ok),
+      destino: A.prep && A.prep.destino ? A.prep.destino : '',
+      stats: A.prep && A.prep.preenchido ? [['Nome', A.name || A.prep.preenchido.nome], ['Stack', (A.prep.preenchido.stack || []).join(', ') || '—'], ['Arquivos', String(A.prep.preenchido.arquivos)], ['Serviços', String(A.prep.preenchido.servicos)]].map(function (x) { return { k: x[0], v: x[1] }; }) : [],
+      passos: absPassos, leituraParada: absParada, paradaTxt: 'A leitura parou. «Retomar» continua do passo em que estava.',
+      rstats: absRet ? [['Stack', (absRet.stack || []).join(', ') || '—'], ['Serviços', String((absRet.servicos || []).length)], ['Confirmados', String((absRet.servicos || []).filter(function (x) { return x.grau === 'confirmado'; }).length)], ['Pastas lidas', String((absRet.cobertura || []).filter(function (c) { return c.situacao === 'lida'; }).length) + ' de ' + String((absRet.cobertura || []).length)]].map(function (x) { return { k: x[0], v: x[1] }; }) : [],
+      hasInc: passosRet.some(function (p) { return p.situacao === 'incompleto'; }),
+      incs: passosRet.filter(function (p) { return p.situacao === 'incompleto'; }).map(function (p) { const d = ABS_PASSOS.find(function (x) { return x[0] === p.id; }); return { t: d ? d[1] : p.id, m: p.motivo || '' }; }),
+      rservs: retServs,
+      cob: ((absRet && absRet.cobertura) || []).map(function (c) { return { pasta: c.pasta, n: c.arquivos, sit: c.situacao === 'lida' ? 'lida' : c.situacao === 'parcial' ? 'parcial' : 'não lida', cls: c.situacao === 'lida' ? 'flow' : c.situacao === 'parcial' ? 'warn' : 'danger' }; }),
+      retratoBlocks: chatBlocks((absV && absV.retratoMd) || 'O retrato ainda não foi escrito.'),
+      corrigindo: !!A.corrigindo, nota: A.nota, onNota: function (e) { setAbs({ nota: e.target.value }); },
+      refazer: ABS_PASSOS.map(function (x) { const on = !!(A.refazer || {})[x[0]]; return { t: x[1], cls: on ? 'primary' : 'secondary', pick: function () { const r = Object.assign({}, A.refazer || {}); r[x[0]] = !on; setAbs({ refazer: r }); } }; }),
+      backLbl: A.step === 'origem' ? 'Cancelar' : A.step === 'preparar' ? 'Voltar' : 'Fechar',
+      backDis: !!A.busy,
+      hasAlt: A.step === 'leitura' || A.step === 'retrato',
+      altLbl: A.step === 'leitura' ? (absRodando ? 'Parar' : 'Retomar') : (A.corrigindo ? 'Cancelar correção' : 'Pedir correção'),
+      altDis: !!A.busy || (A.step === 'leitura' && !absRodando && absLeituraOk),
+      alt: function () { if (A.step === 'leitura') { if (absRodando) absStop(); else absResume(); } else setAbs({ corrigindo: !A.corrigindo, err: '' }); },
+      nextLbl: A.step === 'origem' ? (A.fonte === 'link' ? 'Clonar' : 'Copiar') : A.step === 'preparar' ? (A.busy ? 'Preparando…' : 'Registrar e ler') : A.step === 'leitura' ? (absRodando ? 'Lendo…' : 'Ver retrato') : A.corrigindo ? 'Enviar correção' : 'Aprovar retrato',
+      nextDis: !!A.busy || (A.step === 'preparar' && !(A.prep && A.prep.ok)) || (A.step === 'leitura' && !absLeituraOk) || (A.step === 'retrato' && !absRet),
+      next: function () { if (A.step === 'origem') absPrepare(); else if (A.step === 'preparar') absRegister(); else if (A.step === 'leitura') setAbs({ step: 'retrato' }); else absDecide(A.corrigindo ? 'reprovado' : 'aprovado'); },
+      bg: function (e) { if (e && e.target === e.currentTarget && !A.busy) setAbs({ open: false }); },
+      close: function () { if (!A.busy) setAbs({ open: false }); },
+      back: function () { if (A.step === 'preparar') setAbs({ step: 'origem', err: '' }); else setAbs({ open: false }); },
+    };
+    // Reabre o acompanhamento de um projeto em absorção (cartão do painel ou Visão geral).
+    self._openAbsorbFor = (pidA, step) => { self.setState({ menu: false, abs: Object.assign({}, A, { open: true, step: step || 'leitura', projectId: pidA, err: '', busy: false, corrigindo: false }) }); self._absLoad(pidA); };
+    const openAbsorb = () => self.setState({ menu: false, abs: { open: true, step: 'origem', fonte: 'link', url: '', conta: '', path: '', name: '', client: '', escopo: 'externo', busy: false, err: '', prep: null, projectId: null, nota: '', corrigindo: false, refazer: {}, trailOpen: {} } });
     const openExplorer = () => { self.setState({ menu: false }); app.toast('Explorer aberto', P.path); };
 
     // ================= ACESSOS =================

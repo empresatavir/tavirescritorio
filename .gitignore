@@ -77,6 +77,7 @@ backend/workspaces/
 # Local agent / smoke workspaces (não versionar)
 tavir-interno/
 tavir-exterrno/
+tavir-externo/
 cline_log.txt
 cline_log_*.txt
 nul

@@ -220,11 +220,7 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
       "chat: false, unread: 0, typing: false, draft: '', msgs: []",
     );
 
-    // Absorver via modal IPC do Escritório
-    fabHtml = fabHtml.replace(
-      "const openAbsorb = () => self.setState({ menu: false, abs: Object.assign({}, A, { open: true, step: 'path', tpl: null, name: '', logN: 0 }) });",
-      "const openAbsorb = () => { self.setState({ menu: false }); if (app && app.modal) app.modal('factory-absorb', { tpl: 'Sistemas', mode: 'Manutenção' }); else self.setState({ abs: Object.assign({}, A, { open: true, step: 'path', tpl: null, name: '', logN: 0 }) }); };",
-    );
+    // Absorver: o modal próprio da Fábrica (Origem → Preparar → Leitura → Retrato) fica no Fabrica.dc.html.
 
     // Explorer real via IPC
     fabHtml = fabHtml.replace(

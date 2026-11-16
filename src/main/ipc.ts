@@ -473,6 +473,23 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
+  /** Envia uma linha de andamento da absorção para a tela (modal e cartão do projeto). */
+  const absorbEvent = (key: string, content: string, extra: Record<string, unknown> = {}, type: RunEvent['type'] = 'thought') => {
+    if (win.isDestroyed()) return;
+    win.webContents.send('run:event', { runId: `abs-${key}`, timestamp: new Date().toISOString(), type, content, meta: { absorb: true, key, ...extra } } satisfies RunEvent);
+  };
+  handle('projects:absorbPrepare', async (_e, params: any) => {
+    const key = String(params?.key || 'novo');
+    try {
+      const { prepararAbsorcao } = require('./absorcao/entrada');
+      const res = await prepararAbsorcao({ ...params, onLine: (l: string) => absorbEvent(key, l, { etapa: 'preparar' }) });
+      absorbEvent(key, res.ok ? 'Pasta pronta.' : String(res.error || 'Falhou.'), { etapa: 'preparar' }, 'done');
+      return res;
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+
   handle('projects:pickFolder', async () => {
     const opts: Electron.OpenDialogOptions = {
       title: 'Selecionar pasta do projeto existente (Product Lab · Absorção Isolada)',

@@ -13,7 +13,8 @@ import * as cycleGit from './cycleBranch';
 import type { CycleBranch, CyclePublish } from './cycleBranch';
 
 function getDbPath(): string {
-  return path.join(process.cwd(), 'backend', 'tavir.db');
+  // Testes apontam TAVIR_DATA_ROOT para uma pasta temporária (ver db.ts).
+  return path.join(process.env.TAVIR_DATA_ROOT || process.cwd(), 'backend', 'tavir.db');
 }
 
 function formatBytes(bytes: number): string {
@@ -868,7 +869,8 @@ export function createOrAbsorbProjectRecord(params: any): any {
   const projectId = crypto.randomUUID();
   const slug = `${slugBase}-${projectId.slice(0, 6)}`;
 
-  const rootFolder = ownership === 'externo' ? 'tavir-exterrno' : 'tavir-interno';
+  const { PASTA_ESCOPO } = require('./absorcao/entrada') as typeof import('./absorcao/entrada');
+  const rootFolder = PASTA_ESCOPO[ownership === 'externo' ? 'externo' : 'interno'];
   const wsPath = customPath && !customPath.startsWith('~') ? path.resolve(customPath) : path.join(process.cwd(), rootFolder, slug);
 
   let survey: any = null;
@@ -1054,27 +1056,42 @@ export function createOrAbsorbProjectRecord(params: any): any {
     console.error('[TAVIR ProjectFS] Erro ao gravar projeto no SQLite:', err);
   }
   if (survey?.note) seedEsteiraFromSurvey(wsPath, String(survey.note));
-  if (isAbsorb && params?.baseline !== false) scheduleBaseline(wsPath);
+  if (isAbsorb) {
+    // D1: QA e segurança não rodam mais sozinhos na absorção. Viram pendências «a fazer» do projeto,
+    // com «Rodar retrato inicial» nas abas QA e Segurança.
+    try {
+      const fluxo = require('./absorcao/fluxo') as typeof import('./absorcao/fluxo');
+      const ret = require('./absorcao/retrato') as typeof import('./absorcao/retrato');
+      ret.garantirExclude(wsPath);
+      const prevState = fluxo.lerEstado(wsPath);
+      if (!prevState) {
+        const origem = params?.origem && typeof params.origem === 'object' ? params.origem : undefined;
+        const st = fluxo.novoEstado(origem);
+        st.etapas.preparar = { situacao: 'ok', fim: nowIso };
+        st.etapas.detectores = { situacao: survey ? 'ok' : 'falhou', fim: nowIso };
+        fluxo.gravarEstado(wsPath, st);
+      }
+      const r = ret.lerRetrato(wsPath);
+      if (r && r.projeto !== name) ret.gravarRetrato(wsPath, { ...r, projeto: name });
+    } catch (err) {
+      console.error('[TAVIR ProjectFS] Falha ao preparar o estado da absorção:', err);
+    }
+    if (params?.git_account_id) {
+      try {
+        const ctrl = readControlJson(wsPath);
+        writeControlJson(wsPath, { ...ctrl, git_account: String(params.git_account_id) });
+      } catch {}
+    }
+    if (repoUrl) {
+      try {
+        const sqlite = new DatabaseSync(getDbPath());
+        sqlite.prepare('UPDATE projects SET repo_url = ? WHERE id = ?').run(repoUrl, newProj.id);
+        sqlite.close();
+      } catch {}
+    }
+  }
 
   return newProj;
-}
-
-/**
- * Retrato inicial do projeto absorvido: varredura de segurança e QA em segundo plano,
- * para as próximas execuções terem com o que comparar. Não bloqueia a absorção.
- */
-function scheduleBaseline(rootPath: string): void {
-  setTimeout(() => {
-    (async () => {
-      const seg = await runProjectSeg(rootPath, { label: 'Retrato inicial' });
-      const qa = await runProjectQa(rootPath, { label: 'Retrato inicial' });
-      try {
-        const ctrl = readControlJson(rootPath);
-        ctrl.baseline = { at: new Date().toISOString(), seg: seg.run?.id || null, qa: qa.run?.id || null };
-        writeControlJson(rootPath, ctrl);
-      } catch {}
-    })().catch(() => {});
-  }, 500);
 }
 
 export function resolveEngineSpec(engineName?: string, modelId?: string, effortId?: string) {
