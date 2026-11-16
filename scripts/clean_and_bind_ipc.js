@@ -1616,9 +1616,18 @@ const newMount = `componentDidMount() {
               if (!res || !res.ok) { self.say('Não deu certo', (res && res.error) || 'Tente de novo.'); return; }
               const msg = { approve: ['Tarefa concluída', '#' + t.seq + ' foi para Concluído.'], revise: ['Ajuste na fila', 'A próxima tentativa da #' + t.seq + ' leva o seu pedido.'], stop: ['Execução parada', '#' + t.seq + ' saiu da fila.'] }[act];
               self.say(msg[0], msg[1]);
+              if (self.refreshApprovals) self.refreshApprovals();
               window.tavir.tasks.list().then(function(list) { if (Array.isArray(list)) self.setState({ tasks: list }); }).catch(function() {});
               self.refreshTaskRuns();
             }).catch(function(err) { self.say('Não deu certo', String(err && err.message || err)); });
+          };
+          self.refreshApprovals = function() {
+            if (!window.tavir.approvals || !window.tavir.approvals.list) return;
+            window.tavir.approvals.list().then(function(list) {
+              if (!Array.isArray(list)) return;
+              const sigA = function(l) { return (l || []).map(function(x) { return x.id + ':' + x.status; }).join('|'); };
+              if (sigA(list) !== sigA(self.state.approvals)) self.setState({ approvals: list });
+            }).catch(function() {});
           };
           self.refreshTaskRuns();
           self._tasksTimer = setInterval(function() {
@@ -1626,6 +1635,7 @@ const newMount = `componentDidMount() {
               if (Array.isArray(list) && sig(list) !== sig(self.state.tasks)) self.setState({ tasks: list });
             }).catch(function() {});
             self.refreshTaskRuns();
+            self.refreshApprovals();
           }, 3000);
         }
         if (window.tavir.jobs.logs) {
@@ -1994,6 +2004,38 @@ const newPaletteRosterAndVault = `ROSTER.forEach((a) => hits.push({ k: 'Agente',
 if (templateHtml.includes(origPaletteRoster)) {
   templateHtml = templateHtml.replace(origPaletteRoster, newPaletteRosterAndVault);
   console.log('Paleta Ctrl + K conectada ao índice de abertura (vaultDocs)!');
+}
+
+// 2.10x Decisões: resultado de tarefa (fila de execução) decide a tarefa de verdade
+{
+  const anchor = `  decide(status) {
+    const s = this.state;
+    const a = s.approvals.find((x) => x.id === s.approvalId);
+    if (!a || a.status !== 'pending') return;
+`;
+  const hook = anchor + `    if (String(a.id).indexOf('revisao-T-') === 0 && typeof window !== 'undefined' && window.tavir && window.tavir.tasks) {
+      const self = this;
+      const seqN = Number(String(a.id).slice('revisao-T-'.length));
+      const tk = (s.tasks || []).find((t) => Number(t.seq) === seqN);
+      if (!tk) { this.say('Tarefa não encontrada', 'Atualize a tela de Tasks e tente de novo.'); return; }
+      const taskId = tk.id;
+      const note = String(s.decNote || '').trim();
+      if (status !== 'approved' && status !== 'rejected') { this.say('Abra a tarefa', 'O resultado completo está na gaveta da tarefa, em Tasks.'); return; }
+      const call = status === 'approved' ? window.tavir.tasks.approve(taskId) : window.tavir.tasks.revise(taskId, note || 'Recusado em Decisões.');
+      call.then(function (res) {
+        if (!res || !res.ok) { self.say('Não deu certo', (res && res.error) || 'Tente de novo.'); return; }
+        if (self.refreshApprovals) self.refreshApprovals();
+        if (self.refreshTaskRuns) self.refreshTaskRuns();
+        window.tavir.tasks.list().then(function (list) { if (Array.isArray(list)) self.setState({ tasks: list }); }).catch(function () {});
+      }).catch(function (err) { self.say('Não deu certo', String(err && err.message || err)); });
+    }
+`;
+  if (templateHtml.includes(anchor)) {
+    templateHtml = templateHtml.replace(anchor, hook);
+    console.log('Decisões: resultado de tarefa aprova/recusa a tarefa de verdade!');
+  } else {
+    console.warn('AVISO: decide(status) não encontrado; Decisões não age nas tarefas.');
+  }
 }
 
 // 2.11 Conecta a ação de disparar job no wizard com window.tavir.jobs.start

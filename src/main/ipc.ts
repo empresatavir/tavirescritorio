@@ -345,7 +345,15 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   // Approvals
   handle('approvals:list', () => {
     const db = carregarDb();
-    return db.approvals;
+    // Tarefa com resultado esperando o Carlos também é decisão (aprovar conclui; recusar vira nova tentativa).
+    let reviews: unknown[] = [];
+    try {
+      const { listTaskRecords } = require('./project-fs');
+      reviews = require('./officeExec').execQueue().approvals(listTaskRecords());
+    } catch {
+      reviews = [];
+    }
+    return (reviews as any[]).concat(db.approvals || []);
   });
 
   handle('approvals:decide', (_e, id: string, decision: 'approved' | 'rejected', comment?: string) => {

@@ -186,6 +186,11 @@ export class ExecQueue {
     return taskRunViews(this.store.all());
   }
 
+  /** Resultados esperando decisão, para a tela Decisões. */
+  approvals(tasks: ExecTask[], now = Date.now()): Array<Record<string, unknown>> {
+    return reviewApprovals(this.store.all(), tasks, now);
+  }
+
   enqueue(taskId: string, mode: RunMode, agent: string, opts: { origin?: string; note?: string; id?: string } = {}): ExecResult {
     const task = this.tasks.get(taskId);
     if (!task) return { ok: false, code: 404, error: 'Tarefa não existe no Escritório.' };
@@ -309,6 +314,62 @@ export class ExecQueue {
       this.busy = false;
     }
   }
+}
+
+// ---------------------------------------------------------------- decisões
+
+export const REVIEW_PREFIX = 'revisao-T-';
+
+function plainText(md: string): string {
+  return String(md || '')
+    .replace(/\r/g, '')
+    .replace(/\*\*|__|`/g, '')
+    .replace(/^\s{0,3}#{1,6}\s*/gm, '')
+    .replace(/^(\s*)[*-]\s+/gm, '$1• ')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function ageOf(iso: string, now = Date.now()): { age: string; ageH: number } {
+  const ms = Math.max(0, now - (Date.parse(iso) || now));
+  const min = Math.round(ms / 60000);
+  const ageH = ms / 3600000;
+  return { age: min < 1 ? 'agora' : min < 60 ? `há ${min} min` : `há ${Math.round(ageH)} h`, ageH };
+}
+
+/** Tarefas com resultado esperando o Carlos, no formato da tela Decisões (ApprovalItem). */
+export function reviewApprovals(rows: TaskRunRow[], tasks: ExecTask[], now = Date.now()): Array<Record<string, unknown>> {
+  const out: Array<Record<string, unknown>> = [];
+  for (const t of tasks) {
+    const last = latestOf(rows, t.id, 'exec');
+    if (!last || last.status !== 'review') continue;
+    const { age, ageH } = ageOf(last.finished_at || last.created_at, now);
+    out.push({
+      id: REVIEW_PREFIX + t.seq,
+      group: 'review',
+      kind: 'hardening',
+      title: `Resultado da T-${t.seq} · ${t.title}`,
+      who: AGENT_LABEL[last.agent] || 'Agente geral',
+      ini: 'AG',
+      type: 'Resultado de tarefa',
+      status: 'pending',
+      impact: 'baixo',
+      task: `#${t.seq}`,
+      age,
+      ageH,
+      reason: plainText(last.result).slice(0, 900) || 'O agente terminou sem texto de resumo.',
+      question: `O resultado atende a tarefa (tentativa ${last.attempt})?`,
+      yes: ['A tarefa vai para Concluído'],
+      no: ['O agente roda de novo com o seu motivo (nova tentativa)'],
+      more: ['Abra a tarefa no Kanban para ler o resultado completo'],
+      scope: 'Tarefa avulsa',
+      cost: '—',
+      time: '—',
+      link: ['Abrir tarefas', 'tasks'],
+    });
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------- ligações reais

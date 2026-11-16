@@ -205,3 +205,17 @@ describe('livro das tarefas', () => {
     expect(readRun(ws, id).ok).toBe(true);
   });
 });
+
+describe('decisões das tarefas', () => {
+  it('só resultado aguardando você vira decisão, com texto limpo', async () => {
+    const { reviewApprovals } = await import('../../src/main/officeExec');
+    const base = { mode: 'exec' as const, agent: 'geral', attempt: 1, note: '', origin: 'apk', started_at: null, run_id: null, error: '' };
+    const rows: TaskRunRow[] = [
+      { ...base, id: 'a', task_id: 't1', status: 'review', created_at: '2026-11-16T01:00:00Z', finished_at: '2026-11-16T01:10:00Z', result: '### Previsão\n**Chuva** à tarde' },
+      { ...base, id: 'b', task_id: 't2', status: 'running', created_at: '2026-11-16T01:00:00Z', finished_at: null, result: '' },
+    ];
+    const items = reviewApprovals(rows, [T1, T2], Date.parse('2026-11-16T01:40:00Z'));
+    expect(items).toHaveLength(1);
+    expect(items[0]).toMatchObject({ id: 'revisao-T-1', group: 'review', status: 'pending', task: '#1', age: 'há 30 min', reason: 'Previsão\nChuva à tarde' });
+  });
+});
