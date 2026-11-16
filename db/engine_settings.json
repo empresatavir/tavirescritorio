@@ -2,9 +2,9 @@
   "anthropicEnabled": false,
   "claudeEnabled": false,
   "cursorEnabled": true,
-  "antigravityEnabled": false,
+  "antigravityEnabled": true,
   "codexEnabled": false,
-  "defaultEngine": "cursor",
-  "defaultModel": "auto-smart",
-  "defaultEffort": "cost"
+  "defaultEngine": "antigravity",
+  "defaultModel": "gemini-3.8-flash",
+  "defaultEffort": "medium"
 }
