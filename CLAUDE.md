@@ -64,3 +64,7 @@ Este arquivo é lido automaticamente pelo Claude (Claude Code, Claude Desktop, e
 - Prioridade sempre aponta um gap da taxonomia (`src/shared/raiox.ts`). Implantação só com playbook `validado` (`raiox/playbooks/`); status `validado` só o Carlos escreve.
 - Motor sugere evidência e redige documento; aprovação é do Carlos, por hash.
 - Antes de commitar algo do Raio-X: `npm run raiox:scan`.
+
+### 10. Conversa e log: rolagem acompanha, passos recolhidos
+- Toda área que recebe texto enquanto o motor trabalha (conversa da Íris, log de etapa, log do trilho) leva o atributo `data-tv-follow`. O seguidor em `Fabrica.dc.html` mantém a rolagem no fim; se o Carlos subir para ler, para de puxar até ele voltar ao fim ou enviar outra mensagem. Não use `data-tv-follow` em texto parado (prévia, transcrição de execução encerrada).
+- Resposta de agente mostra o texto formatado (`chatBlocks`) e, acima dele, a trilha recolhida (`chatTrail`): em `thoughts`, linha com `→ ` é ferramenta, `» ` é o que o agente disse antes dela, o resto é registro técnico. Não despeje pensamento ou log aberto na conversa.

@@ -61,6 +61,7 @@ export interface IrisAgentResult {
 const HISTORY_TURNS = 12;
 const HISTORY_CHARS = 16000;
 const TURN_CHARS = 2400;
+const TRAIL_MAX = 120;
 
 function clipEnd(text: string, limit: number): string {
   const body = String(text || '').trim();
@@ -123,7 +124,7 @@ export function buildPrompt(req: IrisAgentRequest, access: MotorAccess): string 
       '- Se a pergunta depende do código, dos documentos ou do estado do projeto, leia os arquivos antes de responder e cite os caminhos relativos que usou.',
       '- Se não conseguir ler algo ou não souber, diga isso com clareza. Nunca invente arquivos, resultados, números ou ações que não fez.',
       '- Use o histórico da conversa: não repita o que já foi dito e entenda referências como "isso" ou "aquele arquivo".',
-      '- Tamanho proporcional à pergunta. Escreva em texto simples: parágrafos curtos e listas com "- ". Sem negrito, títulos ou tabelas (o chat não renderiza Markdown).',
+      '- Tamanho proporcional à pergunta. Formate para leitura: parágrafos curtos, listas com "- ", **negrito** só no que importa e `crases` em caminhos e comandos. Títulos (##) só em resposta longa. Sem tabelas.',
       ...rules.map((r) => `- ${r}`),
     );
     if (access === 'read') {
@@ -218,6 +219,9 @@ export async function converseWithIrisAgent(req: IrisAgentRequest): Promise<Iris
   }
 
   let lastActivity = '';
+  // Trilha da resposta: o que o agente disse antes de cada ferramenta (») e cada ferramenta (→).
+  const trail: string[] = [];
+  let pendingSpeech = '';
   const res = await runMotor({
     motor,
     workspace: req.workspace,
@@ -229,15 +233,23 @@ export async function converseWithIrisAgent(req: IrisAgentRequest): Promise<Iris
     onRaw: run ? run.raw : undefined,
     registerKill: req.registerKill,
     onProgress: (p) => {
-      if (!req.onProgress) return;
       if (p.activity && p.activity !== lastActivity) {
         lastActivity = p.activity;
-        req.onProgress(`→ ${p.activity}`);
+        if (trail.length < TRAIL_MAX) {
+          if (pendingSpeech) trail.push(`» ${clipEnd(pendingSpeech, 700)}`);
+          trail.push(`→ ${p.activity}`);
+        }
+        pendingSpeech = '';
+        req.onProgress?.(`→ ${p.activity}`);
       }
-      if (p.speech) req.onProgress(p.speech);
+      if (p.speech) {
+        pendingSpeech = p.speech;
+        req.onProgress?.(p.speech);
+      }
     },
   });
 
+  thoughts.push(...trail);
   const text = res.ok ? tidyReply(res.text) : res.error?.kind === 'paused' ? res.text.trim() || 'Pausado por Carlos.' : res.error?.message || 'O motor falhou.';
   const errorCode = res.ok
     ? undefined
