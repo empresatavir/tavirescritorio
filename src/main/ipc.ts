@@ -465,9 +465,12 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   handle('projects:retrato', (_e, idOrPath: string) => {
     try {
       const { resolveProjectRecord } = require('./project-fs');
-      const { visaoDaAbsorcao } = require('./absorcao/fluxo');
+      const { visaoDaAbsorcao, retratoDesatualizado } = require('./absorcao/fluxo');
       const rec = resolveProjectRecord(idOrPath);
-      return { ok: true, ...visaoDaAbsorcao(rec.local_path) };
+      const v = visaoDaAbsorcao(rec.local_path);
+      // A5: retrato aprovado com o código mudado desde então: a Visão geral oferece «Atualizar retrato».
+      const atualizacao = v.retrato?.aprovado && !v.rodando ? retratoDesatualizado(rec.local_path) : null;
+      return { ok: true, ...v, atualizacao };
     } catch (err) {
       return { ok: false, error: String(err) };
     }
@@ -485,6 +488,118 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
       const res = await prepararAbsorcao({ ...params, onLine: (l: string) => absorbEvent(key, l, { etapa: 'preparar' }) });
       absorbEvent(key, res.ok ? 'Pasta pronta.' : String(res.error || 'Falhou.'), { etapa: 'preparar' }, 'done');
       return res;
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+
+  const absorbRun = async (idOrPath: string) => {
+    const { resolveProjectRecord } = require('./project-fs');
+    const { rodarAbsorcao } = require('./absorcao/fluxo');
+    const rec = resolveProjectRecord(idOrPath);
+    return rodarAbsorcao(rec.local_path, {
+      nome: rec.name,
+      onEvent: (ev: any) => absorbEvent(rec.id, ev.content, { etapa: ev.etapa || 'leitura', passo: ev.passo || '', refresh: !!ev.refresh }, ev.type === 'done' ? 'done' : ev.type === 'error' ? 'error' : 'thought'),
+    });
+  };
+  handle('projects:absorbStart', async (_e, idOrPath: string) => {
+    try {
+      return await absorbRun(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:retratoAtualizar', async (_e, idOrPath: string) => {
+    try {
+      const { resolveProjectRecord } = require('./project-fs');
+      const { atualizarRetrato } = require('./absorcao/fluxo');
+      const rec = resolveProjectRecord(idOrPath);
+      return await atualizarRetrato(rec.local_path, {
+        onEvent: (ev: any) => absorbEvent(rec.id, ev.content, { etapa: ev.etapa || 'leitura', passo: ev.passo || '', refresh: !!ev.refresh }, ev.type === 'done' ? 'done' : ev.type === 'error' ? 'error' : 'thought'),
+      });
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:absorbResume', async (_e, idOrPath: string) => {
+    try {
+      return await absorbRun(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:absorbStop', (_e, idOrPath: string) => {
+    const { resolveProjectRecord } = require('./project-fs');
+    const { pararAbsorcao } = require('./absorcao/fluxo');
+    return pararAbsorcao(resolveProjectRecord(idOrPath).local_path);
+  });
+  handle('projects:absorbDecide', (_e, idOrPath: string, decision: string, note?: string, refazer?: string[]) => {
+    try {
+      const { resolveProjectRecord } = require('./project-fs');
+      const { decidirRetrato } = require('./absorcao/fluxo');
+      return decidirRetrato(resolveProjectRecord(idOrPath).local_path, decision === 'aprovado' ? 'aprovado' : 'reprovado', String(note || ''), Array.isArray(refazer) ? refazer.map(String) : []);
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:absorbPending', async (_e, idOrPath: string, id: string) => {
+    try {
+      const { resolveProjectRecord } = require('./project-fs');
+      const { rodarPendencia } = require('./absorcao/fluxo');
+      return await rodarPendencia(resolveProjectRecord(idOrPath).local_path, id === 'seg' ? 'seg' : 'qa');
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+
+  // A4: cartões de acesso por projeto. A tela recebe só prévia mascarada.
+  const acessosRoot = (idOrPath: string) => require('./project-fs').resolveProjectRecord(idOrPath).local_path as string;
+  handle('projects:acessos', (_e, idOrPath: string) => {
+    try {
+      const ac = require('./acessos');
+      return { ok: true, cartoes: ac.listarAcessos(acessosRoot(idOrPath)), contasGithub: ac.contasGithub() };
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err), cartoes: [], contasGithub: [] };
+    }
+  });
+  handle('projects:acessoSalvar', async (_e, idOrPath: string, servico: string, valores: Record<string, string>) => {
+    try {
+      const ac = require('./acessos');
+      const root = acessosRoot(idOrPath);
+      const r = ac.salvarAcesso(root, String(servico), valores || {});
+      // O cartão do GitHub também escolhe a conta que publica este projeto.
+      if (r.ok && servico === 'github' && valores?.conta) require('./project-fs').setProjectGitAccount(idOrPath, String(valores.conta));
+      if (r.ok && r.cartao?.guia?.confere) {
+        const c = await ac.conferirAcesso(root, String(servico));
+        return { ...c, ok: true, conferido: c.cartao?.conferido };
+      }
+      return r;
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:acessoSituacao', (_e, idOrPath: string, servico: string, situacao: string, nota?: string) => {
+    try {
+      return require('./acessos').mudarSituacao(acessosRoot(idOrPath), String(servico), situacao, nota);
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:acessoAbrirGuia', async (_e, servico: string) => {
+    // Só abre o endereço do catálogo de guias (nada vindo da tela vira URL).
+    const { guiaDe } = require('../shared/acessos');
+    const url = String(guiaDe(String(servico)).onde.url || '');
+    if (!/^https:\/\//.test(url)) return { ok: false, error: 'Serviço sem guia.' };
+    try {
+      await shell.openExternal(url);
+      return { ok: true, url };
+    } catch (err) {
+      return { ok: false, error: String(err), url };
+    }
+  });
+  handle('projects:acessoRemover', (_e, idOrPath: string, servico: string) => {
+    try {
+      return require('./acessos').removerAcesso(acessosRoot(idOrPath), String(servico));
     } catch (err) {
       return { ok: false, error: String(err instanceof Error ? err.message : err) };
     }

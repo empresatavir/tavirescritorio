@@ -330,6 +330,12 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
   <sc-if value="{{pt.geral}}" hint-placeholder-val="{{true}}">
   <div style="display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; animation: fade 200ms var(--ease) both">
     <div style="flex: 2 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+      <sc-if value="{{absBanner.show}}" hint-placeholder-val="{{false}}">
+        <section class="card" style="padding: 14px 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; border-color: var(--warning)"><div class="grow" style="min-width: 220px"><div class="eyebrow">Absorção · Product Lab</div><b style="font-size: 15px; color: var(--text-primary)">{{absBanner.txt}}</b><div class="muted" style="font-size: 12.5px; margin-top: 2px">{{absBanner.d}}</div></div><button class="btn sm primary" onClick="{{absBanner.open}}">{{absBanner.btn}}</button></section>
+      </sc-if>
+      <sc-if value="{{rtUpd.show}}" hint-placeholder-val="{{false}}">
+        <section class="card" style="padding: 14px 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap"><div class="grow" style="min-width: 220px"><div class="eyebrow">Retrato do projeto</div><b style="font-size: 15px; color: var(--text-primary)">{{rtUpd.txt}}</b><div class="muted" style="font-size: 12.5px; margin-top: 2px">{{rtUpd.d}}</div></div><button class="btn sm secondary" onClick="{{rtUpd.go}}" disabled="{{rtUpd.busy}}">{{rtUpd.lbl}}</button></section>
+      </sc-if>
       <sc-if value="{{health.show}}" hint-placeholder-val="{{false}}">
         <section class="card" style="padding: 14px 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px">
           <sc-for list="{{health.items}}" as="h" hint-placeholder-count="2"><button class="card lift" onClick="{{h.pick}}" style="text-align: left; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; background: var(--surface-2)"><span class="eyebrow" style="font-size: 10px">{{h.k}} · portão automático</span><span style="display: flex; gap: 8px; align-items: center"><span class="badge {{h.cls}}">{{h.t}}</span></span><span class="muted" style="font-size: 12px">{{h.d}}</span></button></sc-for>
@@ -841,6 +847,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
 
   <!-- QA -->
   <sc-if value="{{pt.qa}}" hint-placeholder-val="{{false}}">
+    <sc-if value="{{pendQa.show}}" hint-placeholder-val="{{false}}"><section class="card" style="padding: 14px 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; border-color: var(--flow-subtle-line)"><div class="grow"><div class="eyebrow">Pendência da absorção · a fazer</div><b style="font-size: 14px; color: var(--text-primary)">Retrato inicial de QA</b><div class="muted" style="font-size: 12.5px">Uma execução para ter com o que comparar nas próximas alterações.</div></div><button class="btn sm primary" onClick="{{pendQa.go}}" disabled="{{pendQa.run}}">{{pendQa.lbl}}</button></section></sc-if>
     <section class="card" style="padding: 18px 20px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; animation: fade 200ms var(--ease) both">
       <div style="width: 68px; height: 68px; border-radius: 50%; background: conic-gradient({{qa.ring}} 0 {{qa.pct}}%, var(--line) 0); display: grid; place-items: center; flex: none"><div style="width: 54px; height: 54px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center"><span class="num" style="font-size: 13px">{{qa.pct}}%</span></div></div>
       <div class="grow" style="min-width: 240px"><div class="eyebrow" style="display: flex; gap: 6px; align-items: center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3M7 15h10"></path></svg>QA · testes automatizados</div><b style="font-size: 17px; display: block; margin-top: 3px">{{qa.title}}</b><p class="sec" style="font-size: 12.5px; margin-top: 2px">{{qa.note}}</p></div>
@@ -907,6 +914,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
 
   <!-- SEGURANÇA -->
   <sc-if value="{{pt.seg}}" hint-placeholder-val="{{false}}">
+    <sc-if value="{{pendSeg.show}}" hint-placeholder-val="{{false}}"><section class="card" style="padding: 14px 18px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; border-color: var(--flow-subtle-line)"><div class="grow"><div class="eyebrow">Pendência da absorção · a fazer</div><b style="font-size: 14px; color: var(--text-primary)">Retrato inicial de segurança</b><div class="muted" style="font-size: 12.5px">Uma execução para ter com o que comparar nas próximas alterações.</div></div><button class="btn sm primary" onClick="{{pendSeg.go}}" disabled="{{pendSeg.run}}">{{pendSeg.lbl}}</button></section></sc-if>
     <section class="card" style="padding: 18px 20px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; animation: fade 200ms var(--ease) both">
       <div style="width: 68px; height: 68px; border-radius: 50%; background: conic-gradient({{sec.ring}} 0 {{sec.score}}%, var(--line) 0); display: grid; place-items: center; flex: none"><div style="width: 54px; height: 54px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; text-align: center"><span class="num" style="font-size: 14px; line-height: 1">{{sec.score}}<br><small style="font-size: 9px; color: var(--text-muted)">/100</small></span></div></div>
       <div class="grow" style="min-width: 240px"><div class="eyebrow" style="display: flex; gap: 6px; align-items: center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4"></path></svg>Segurança &amp; LGPD</div><b style="font-size: 17px; display: block; margin-top: 3px">{{sec.title}}</b><p class="sec" style="font-size: 12.5px; margin-top: 2px">{{sec.note}}</p></div>
@@ -993,6 +1001,54 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
 
   <!-- ACESSOS -->
   <sc-if value="{{pt.acessos}}" hint-placeholder-val="{{false}}">
+  <sc-if value="{{acx.real}}" hint-placeholder-val="{{false}}">
+  <div style="display: flex; flex-direction: column; gap: 14px; animation: fade 200ms var(--ease) both; margin-bottom: 18px">
+    <section class="card" style="padding: 18px 20px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap">
+      <div class="grow" style="min-width: 240px"><div class="eyebrow">Acessos deste projeto</div><b style="font-size: 15px; color: var(--text-primary)">{{acx.titulo}}</b><div class="muted" style="font-size: 12.5px; margin-top: 2px">Um cartão por serviço que o retrato encontrou. Os valores ficam cifrados neste projeto e a tela só mostra a prévia. Outro projeto não enxerga.</div></div>
+      <div class="segs"><sc-for list="{{acx.filters}}" as="f" hint-placeholder-count="4"><button class="seg {{f.on}}" onClick="{{f.pick}}" style="height: 28px; font-size: 12px">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+    </section>
+    <sc-if value="{{acx.vazio}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 13px; padding: 4px 2px">Nenhum cartão neste filtro.</p></sc-if>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px">
+    <sc-for list="{{acx.cards}}" as="c" hint-placeholder-count="3">
+      <section class="card" data-acesso="{{c.id}}" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; border-color: {{c.bd}}">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><b style="font-size: 15px; color: var(--text-primary)">{{c.nome}}</b><span class="badge {{c.sitCls}}"><i></i>{{c.sit}}</span><span class="badge {{c.grauCls}}">{{c.grau}}</span></div>
+        <div style="font-size: 12.5px; color: var(--text-secondary)">Por que: <span class="mono" style="font-size: 11.5px">{{c.motivo}}</span></div>
+        <sc-if value="{{c.hasFalta}}" hint-placeholder-val="{{false}}"><div style="font-size: 12.5px; color: var(--warning)">{{c.falta}}</div></sc-if>
+        <sc-if value="{{c.hasPrev}}" hint-placeholder-val="{{false}}"><div style="display: flex; flex-direction: column; gap: 3px"><sc-for list="{{c.previas}}" as="p" hint-placeholder-count="1"><div style="font-size: 12px; color: var(--text-secondary)">{{p.rot}}: <span class="mono" style="color: var(--text-primary)">{{p.v}}</span></div></sc-for></div></sc-if>
+        <sc-if value="{{c.conf.show}}" hint-placeholder-val="{{false}}"><div style="font-size: 12px; color: {{c.conf.col}}">{{c.conf.txt}}</div></sc-if>
+        <sc-if value="{{c.temNota}}" hint-placeholder-val="{{false}}"><div class="muted" style="font-size: 12px">Nota: {{c.nota}}</div></sc-if>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap">
+          <sc-if value="{{c.hasOnde}}" hint-placeholder-val="{{true}}"><button class="btn sm ghost" onClick="{{c.toggleOnde}}">{{c.ondeLbl}}</button></sc-if>
+          <button class="btn sm ghost" onClick="{{c.copiar}}">Copiar pedido ao cliente</button>
+          <button class="btn sm ghost" onClick="{{c.toggleForm}}">{{c.formLbl}}</button>
+        </div>
+        <sc-if value="{{c.ondeOpen}}" hint-placeholder-val="{{false}}">
+          <div style="border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; background: var(--surface-0)">
+            <div class="eyebrow">Onde conseguir</div>
+            <ol style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px"><sc-for list="{{c.passos}}" as="p" hint-placeholder-count="3"><li style="font-size: 12.5px; color: var(--text-primary)">{{p.t}}</li></sc-for></ol>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><button class="btn sm secondary" onClick="{{c.abrir}}">Abrir no navegador</button><span class="mono muted" style="font-size: 11px; overflow-wrap: anywhere">{{c.url}}</span></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{c.formOpen}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <sc-for list="{{c.campos}}" as="f" hint-placeholder-count="2">
+              <label class="field"><span>{{f.rot}}</span>
+                <sc-if value="{{f.isSel}}" hint-placeholder-val="{{false}}"><select class="input" value="{{f.val}}" onChange="{{f.on}}" style="height: 34px; font-size: 12.5px" aria-label="{{f.rot}}"><option value="">Escolha a conta do cofre</option><sc-for list="{{f.opts}}" as="o" hint-placeholder-count="2"><option value="{{o.id}}" selected="{{o.sel}}">{{o.rot}}</option></sc-for></select></sc-if>
+                <sc-if value="{{f.isArea}}" hint-placeholder-val="{{false}}"><textarea class="input mono" rows="4" value="{{f.val}}" onChange="{{f.on}}" placeholder="{{f.ph}}" style="resize: vertical; border-radius: 12px; font-size: 12px" aria-label="{{f.rot}}"></textarea></sc-if>
+                <sc-if value="{{f.isInput}}" hint-placeholder-val="{{true}}"><input class="input mono" type="{{f.type}}" value="{{f.val}}" onChange="{{f.on}}" placeholder="{{f.ph}}" autocomplete="off" style="height: 34px; font-size: 12px" aria-label="{{f.rot}}"></sc-if>
+              </label>
+            </sc-for>
+            <div class="muted" style="font-size: 11.5px">Campo vazio mantém o valor que já estava.</div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap"><button class="btn sm primary" onClick="{{c.salvar}}" disabled="{{c.busy}}">{{c.salvarLbl}}</button><button class="btn sm ghost" onClick="{{c.pedir}}">Pedir ao cliente</button><button class="btn sm ghost" onClick="{{c.naoAplica}}">Não se aplica</button><sc-if value="{{c.podeLimpar}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{c.limpar}}" style="color: var(--danger)">Apagar valores</button></sc-if></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{c.podeReabrir}}" hint-placeholder-val="{{false}}"><button class="link" onClick="{{c.reabrir}}" style="align-self: flex-start; font-size: 12px">Voltar para pendente</button></sc-if>
+      </section>
+    </sc-for>
+    </div>
+  </div>
+  </sc-if>
+  <sc-if value="{{acx.mock}}" hint-placeholder-val="{{true}}">
   <div style="display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; animation: fade 200ms var(--ease) both">
     <div style="flex: 2 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
       <section class="card" style="padding: 20px; display: flex; flex-direction: column; gap: 14px">
@@ -1051,6 +1107,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
       </section>
     </div>
   </div>
+  </sc-if>
   </sc-if>
 
   <!-- LOGS · livro de execuções -->
@@ -2032,7 +2089,7 @@ class Component extends DCLogic {
 
     // ================= PROJETOS =================
     const isM = pid === 'meridian';
-    const KIND = { gate: ['Gate', 'warn', IC.shield, 'var(--warning-subtle)', 'var(--warning)'], erro: ['Erro', 'danger', ICN.alert, 'var(--danger-subtle)', 'var(--danger)'], auth: ['Autorização', 'action', ICN.key, 'var(--action-subtle)', 'var(--action-subtle-text)'] };
+    const KIND = { gate: ['Gate', 'warn', IC.shield, 'var(--warning-subtle)', 'var(--warning)'], erro: ['Erro', 'danger', ICN.alert, 'var(--danger-subtle)', 'var(--danger)'], auth: ['Autorização', 'action', ICN.key, 'var(--action-subtle)', 'var(--action-subtle-text)'], afazer: ['A fazer', 'flow', IC.shield, 'var(--flow-subtle)', 'var(--flow)'] };
     const decorate = (projId, projName, p) => { const K = KIND[p.kind]; const key = projId + ':' + p.id; return Object.assign({}, p, { proj: projName, projId: projId, kind: K[0], kcls: K[1], icon: K[2], ibg: K[3], ifg: K[4], hasCode: !!p.code, busy: !!s.busy[key] }); };
     const mPends = [];
     if (!s.signed) mPends.push({ id: 'gate', kind: 'gate', t: 'Gate de QA · Completion Guard', d: pending ? pending + (pending === 1 ? ' critério ainda segura' : ' critérios ainda seguram') + ' a entrega. Resolva e assine para liberar Security.' : 'Tudo verificado. Falta a sua assinatura para seguir para Security.', who: 'Edna E2E', at: 'hoje 14:18', btn: pending ? 'Abrir gate' : 'Assinar no gate', act: () => goStage(5, 'guard') });
@@ -2042,7 +2099,10 @@ class Component extends DCLogic {
       if (!g || !Array.isArray(g.stages) || !g.stages.length) return;
       const d = s.gp[g.id] || { cur: 0, paused: false, resolved: {}, extra: [] }; const n = g.stages.length; const done = Math.min(Number(d.cur) || 0, n);
       const resolved = d.resolved || {};
-      const pends = (g.pends || []).filter((p) => !resolved[p.id]).map((p) => decorate(g.id, g.name, Object.assign({}, p, { btn: 'Autorizar', act: () => self.authorize(g.id, p) })));
+      const absPendE = (((s.rtById || {})[g.id] || {}).estado || {}).pendencias || [];
+      // D1: QA e segurança do projeto absorvido ficam como pendências «a fazer», com «Rodar agora».
+      const absPends = absPendE.filter((x) => x.situacao !== 'feito').map((x) => decorate(g.id, g.name, { id: 'abs-' + x.id, kind: 'afazer', t: x.titulo, d: x.id === 'qa' ? 'Rodar a suíte de QA uma vez para ter com o que comparar nas próximas alterações.' : 'Rodar a varredura de segurança white box uma vez para ter a linha de base.', who: 'Product Lab', at: 'absorção', btn: x.situacao === 'rodando' ? 'Rodando…' : 'Rodar agora', act: () => { if (self._runAbsPend) self._runAbsPend(g.id, x.id); } }));
+      const pends = (g.pends || []).filter((p) => !resolved[p.id]).map((p) => decorate(g.id, g.name, Object.assign({}, p, { btn: 'Autorizar', act: () => self.authorize(g.id, p) }))).concat(absPends);
       PL.push(Object.assign({}, g, { done: done, gN: done >= n ? 8 : g.guard, status: done >= n ? 'done' : d.paused ? 'paused' : 'run', pends: pends, acts: (d.extra || []).concat(g.acts || []), gates: (function () { const gs = g.stages.map((x, i) => /Gate|Aprovação/.test(x[0]) ? i : -1).filter((i) => i >= 0); return gs.length ? gs : [g.stages.length - 1]; })() }));
     });
     const STAT = { run: ['Em andamento', 'flow', '#1BC5BD'], paused: ['Pausado', 'warn', 'oklch(.80 .155 78)'], done: ['Concluído', 'action', '#B7F34A'] };
@@ -2230,6 +2290,16 @@ class Component extends DCLogic {
 
     // painel
     const fl = { all: () => true, run: (p) => p.status === 'run', pend: (p) => p.pendN > 0, paused: (p) => p.status === 'paused', done: (p) => p.status === 'done' };
+    // Absorção em curso (retrato ainda não aprovado): o cartão mostra o passo e reabre o acompanhamento.
+    const absInfoOf = (pidX) => {
+      const v = (s.rtById || {})[pidX]; const e = v && v.estado; const r = v && v.retrato;
+      if (!e || !r || r.aprovado) return null;
+      const feitos = (r.passos || []).filter(function (x) { return x.situacao === 'ok' || x.situacao === 'incompleto'; }).length;
+      const run = !!v.rodando;
+      const pronto = !!(e.etapas && e.etapas.leitura && e.etapas.leitura.situacao === 'ok' && e.etapas.retrato && e.etapas.retrato.situacao === 'ok');
+      const passoN = Math.min(7, feitos + 1);
+      return { pronto: pronto, run: run, step: pronto ? 'retrato' : 'leitura', txt: pronto ? 'retrato aguardando você' : run ? 'em absorção · passo ' + passoN + ' de 7' : 'absorção parada · passo ' + passoN + ' de 7', cls: pronto ? 'warn' : run ? 'flow' : 'warn' };
+    };
     const rowsP = PL.filter(fl[s.pf]).slice().sort((a, b) => s.ps === 'name' ? a.name.localeCompare(b.name) : b.pct - a.pct);
     const avg = Math.round(PL.reduce((a, p) => a + p.pct, 0) / PL.length);
     const guardOk = PL.filter((p) => p.gN === 8).length;
@@ -2458,7 +2528,8 @@ class Component extends DCLogic {
           steps: tr.steps, think: tr.meta,
           toggle: () => { const ct = Object.assign({}, s.chatThink); ct[k] = !op; self.setState({ chatThink: ct }); }
         };
-      })
+      });
+      })()
     };
 
     // ================= ABSORVER PASTA =================
@@ -2504,7 +2575,7 @@ class Component extends DCLogic {
     const prepLive = absLive.novo || { lines: [] };
     const projLive = A.projectId ? absLive[A.projectId] || { trail: {}, fala: {} } : { trail: {}, fala: {} };
     const absLeituraOk = !!(absEst && absEst.etapas && absEst.etapas.leitura && absEst.etapas.leitura.situacao === 'ok' && absEst.etapas.retrato.situacao === 'ok');
-    const absRodando = !!(absEst && absEst.etapas && Object.keys(absEst.etapas).some(function (k) { return absEst.etapas[k].situacao === 'rodando'; }));
+    const absRodando = !!(absV && absV.rodando);
     if (A.open && A.step === 'leitura' && A.projectId && !self._absPoll) {
       self._absPoll = setTimeout(function () { self._absPoll = null; if (self.state.abs && self.state.abs.open && self.state.abs.step === 'leitura') self._absLoad(self.state.abs.projectId); }, 2500);
     }
@@ -2578,7 +2649,7 @@ class Component extends DCLogic {
       const open = !!(A.trailOpen || {})[x[0]];
       return { t: x[1], who: x[2], doc: 'context/' + (x[0] === 'design' ? 'design-system' : x[0]) + '.md', ok: sit === 'ok', spin: sit === 'rodando', inc: sit === 'incompleto', wait: sit === 'a_fazer', hasMotivo: !!p.motivo && sit === 'incompleto', motivo: p.motivo || '', hasFala: lines.length > 0, trail: lines.map(function (l) { return { t: l }; }), trailN: lines.length + ' linha(s)', trailLabel: fala ? String(fala).slice(0, 120) : 'Passos do agente', open: open || sit === 'rodando', toggle: function () { const to = Object.assign({}, A.trailOpen || {}); to[x[0]] = !open; setAbs({ trailOpen: to }); } };
     });
-    const absParada = !!(absEst && !absRodando && !absLeituraOk && absEst.etapas && absEst.etapas.leitura && absEst.etapas.leitura.situacao !== 'a_fazer');
+    const absParada = !!(absEst && !absRodando && !absLeituraOk && absEst.etapas && absEst.etapas.leitura && absEst.etapas.leitura.situacao === 'falhou');
     const retServs = ((absRet && absRet.servicos) || []).map(function (a) { const p = (a.provas || []).find(function (x) { return x.tipo === 'codigo'; }) || (a.provas || [])[0]; return { nome: a.nome, grau: a.grau === 'confirmado' ? 'confirmado' : 'a confirmar', cls: a.grau === 'confirmado' ? 'flow' : 'warn', assunto: ABS_ASS[a.assunto] || a.assunto, prova: p ? p.arquivo + (p.linha ? ':' + p.linha : '') : '' }; });
     const abs = {
       open: A.open, lead: A.step === 'origem' ? 'Link do GitHub ou pasta do computador. O projeto vai para a pasta do escopo e o Product Lab lê tudo, passo a passo.' : A.step === 'preparar' ? 'Clonando ou copiando para a pasta do escopo.' : A.step === 'leitura' ? 'O squad Product Lab lê o projeto em sete passos. Fechar esta janela não interrompe a leitura.' : 'Confira o retrato. Ele só vale depois da sua aprovação.',
@@ -2630,7 +2701,71 @@ class Component extends DCLogic {
     const openAbsorb = () => self.setState({ menu: false, abs: { open: true, step: 'origem', fonte: 'link', url: '', conta: '', path: '', name: '', client: '', escopo: 'externo', busy: false, err: '', prep: null, projectId: null, nota: '', corrigindo: false, refazer: {}, trailOpen: {} } });
     const openExplorer = () => { self.setState({ menu: false }); app.toast('Explorer aberto', P.path); };
 
+    // API do app e alvo do projeto: declarados antes de chamados, acessos e logs, que usam os dois durante o render.
+    const lgApi = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+    const lgTarget = P.local_path || P.path || P.slug || P.id;
     // ================= ACESSOS =================
+    // A4: cartões reais do projeto (projects:acessos). Valor em claro nunca chega aqui.
+    self._acReq = self._acReq || {};
+    self._loadAcessos = () => {
+      if (!lgApi || !lgApi.projects || !lgApi.projects.acessos || !P.local_path) return;
+      const pidC = P.id;
+      lgApi.projects.acessos(lgTarget).then(function (res) { const m = Object.assign({}, self.state.acById || {}); m[pidC] = res && res.ok ? res : { cartoes: [], contasGithub: [] }; self.setState({ acById: m }); }).catch(function () {});
+    };
+    if (P.local_path && !self._acReq[P.id]) { self._acReq[P.id] = true; setTimeout(function () { self._loadAcessos(); }, 0); }
+    const ACV = (s.acById || {})[P.id] || null;
+    const acCards = (ACV && ACV.cartoes) || [];
+    const acPendN = acCards.filter(function (c) { return c.situacao === 'pendente' || c.situacao === 'pedir_ao_cliente'; }).length;
+    const AC_SIT = { pendente: ['Pendente', 'warn'], preenchido: ['Preenchido', 'flow'], pedir_ao_cliente: ['Pedir ao cliente', 'action'], nao_se_aplica: ['Não se aplica', ''] };
+    const acFsel = s.acF || 'todos';
+    const AC_FILT = { todos: function () { return true; }, pendente: function (c) { return c.situacao === 'pendente'; }, pedir_ao_cliente: function (c) { return c.situacao === 'pedir_ao_cliente'; }, preenchido: function (c) { return c.situacao === 'preenchido'; }, nao_se_aplica: function (c) { return c.situacao === 'nao_se_aplica'; } };
+    const acSetUi = function (k, patch) { const u = Object.assign({}, self.state.acUi || {}); u[k] = Object.assign({}, u[k] || {}, patch); self.setState({ acUi: u }); };
+    const acSetDraft = function (k, v) { const d = Object.assign({}, self.state.acDraft || {}); d[k] = v; self.setState({ acDraft: d }); };
+    const acApply = function (res, okMsg, title) { if (res && res.ok === false && !(res.cartao)) { app.toast(title, res.error || 'Não deu certo.'); return; } if (res && res.error) app.toast(title, res.error); else if (okMsg) app.toast(title, okMsg); if (self._loadAcessos) self._loadAcessos(); };
+    const acx = {
+      real: !!P.local_path, mock: !P.local_path,
+      titulo: acCards.length ? (acPendN ? acPendN + (acPendN === 1 ? ' acesso pendente' : ' acessos pendentes') + ' de ' + acCards.length : 'Todos os ' + acCards.length + ' acessos resolvidos') : 'Carregando os cartões…',
+      filters: [['todos', 'Todos'], ['pendente', 'Pendentes'], ['pedir_ao_cliente', 'Pedir ao cliente'], ['preenchido', 'Preenchidos'], ['nao_se_aplica', 'Não se aplica']].filter(function (f) { return f[0] === 'todos' || acCards.some(AC_FILT[f[0]]); }).map(function (f) { return { label: f[1], n: acCards.filter(AC_FILT[f[0]]).length, on: acFsel === f[0] ? 'on' : '', pick: function () { self.setState({ acF: f[0] }); } }; }),
+      vazio: false, cards: [],
+    };
+    acx.cards = acCards.filter(AC_FILT[acFsel] || AC_FILT.todos).map(function (c) {
+      const k = P.id + ':' + c.servico; const ui = (s.acUi || {})[k] || {}; const sit = AC_SIT[c.situacao] || AC_SIT.pendente; const g = c.guia || { campos: [], onde: { url: '', passos: [] }, pedidoAoCliente: '' };
+      const busy = !!(s.busy || {})['ac:' + k];
+      const formOpen = ui.form != null ? !!ui.form : c.situacao === 'pendente';
+      const prev = Object.keys(c.campos || {}).filter(function (ch) { return c.campos[ch].preenchido; }).map(function (ch) { const f = g.campos.find(function (x) { return x.chave === ch; }); return { rot: f ? f.rotulo : ch, v: c.campos[ch].previa }; });
+      const sitMuda = function (nova) { lgApi.projects.acessoSituacao(lgTarget, c.servico, nova).then(function (r) { acApply(r, nova === 'pedir_ao_cliente' ? 'Marcado para pedir ao cliente. Use «Copiar pedido ao cliente».' : nova === 'nao_se_aplica' ? 'Cartão fechado como «não se aplica».' : 'Cartão de volta para pendente.', g.nome || c.nome); acSetUi(k, { form: false }); }); };
+      return {
+        id: c.servico, nome: c.nome, motivo: c.motivo || 'sem prova registrada', grau: c.grau === 'confirmado' ? 'confirmado' : c.grau === 'indicio' ? 'indício' : 'sempre', grauCls: c.grau === 'confirmado' ? 'flow' : '',
+        sit: sit[0], sitCls: sit[1], bd: c.situacao === 'pendente' ? 'var(--warning)' : 'var(--line)',
+        hasFalta: (c.faltando || []).length > 0 && c.situacao !== 'nao_se_aplica', falta: 'Faltam: ' + (c.faltando || []).join(', '),
+        hasPrev: prev.length > 0, previas: prev,
+        conf: c.conferido ? { show: true, txt: (c.conferido.ok ? 'Conferido: ' : 'Conferência falhou: ') + c.conferido.detalhe, col: c.conferido.ok ? 'var(--flow)' : 'var(--danger)' } : { show: c.situacao === 'preenchido' && !g.confere, txt: 'Preenchido, sem conferência', col: 'var(--text-secondary)' },
+        temNota: !!c.nota, nota: c.nota || '',
+        hasOnde: !!(g.onde && g.onde.url), ondeOpen: !!ui.onde, ondeLbl: ui.onde ? 'Fechar «Onde conseguir»' : 'Onde conseguir', toggleOnde: function () { acSetUi(k, { onde: !ui.onde }); },
+        passos: ((g.onde && g.onde.passos) || []).map(function (p) { return { t: p }; }), url: (g.onde && g.onde.url) || '',
+        abrir: function () { lgApi.projects.acessoAbrirGuia(c.servico).then(function (r) { if (!r || !r.ok) app.toast('Abrir no navegador', (r && r.error) || 'Não abriu.'); }); },
+        copiar: function () { try { navigator.clipboard.writeText(g.pedidoAoCliente); app.toast('Pedido copiado', 'Cole no WhatsApp ou no e-mail do cliente.'); } catch (er) { app.toast('Pedido ao cliente', g.pedidoAoCliente); } },
+        formOpen: formOpen, formLbl: formOpen ? 'Fechar' : (c.situacao === 'preenchido' ? 'Trocar valores' : 'Preencher'), toggleForm: function () { acSetUi(k, { form: !formOpen }); },
+        campos: g.campos.map(function (f) { const dk = k + ':' + f.chave; const isSel = c.servico === 'github' && f.chave === 'conta'; const val = (s.acDraft || {})[dk] || ''; return { rot: f.rotulo, ph: f.exemplo || (f.segredo ? 'cole aqui' : ''), isSel: isSel, isArea: !isSel && !!f.multilinha, isInput: !isSel && !f.multilinha, type: f.segredo ? 'password' : 'text', val: val, on: function (e) { acSetDraft(dk, e.target.value); }, opts: ((ACV && ACV.contasGithub) || []).map(function (a) { return { id: a.id, rot: a.rotulo, sel: a.id === val }; }) }; }),
+        busy: busy, salvarLbl: busy ? 'Salvando…' : (g.confere ? 'Salvar e conferir' : 'Salvar'),
+        salvar: function () {
+          const vals = {}; g.campos.forEach(function (f) { const v = (self.state.acDraft || {})[k + ':' + f.chave]; if (v) vals[f.chave] = v; });
+          if (!Object.keys(vals).length) { app.toast(g.nome || c.nome, 'Preencha ao menos um campo.'); return; }
+          const bz = Object.assign({}, self.state.busy || {}); bz['ac:' + k] = true; self.setState({ busy: bz });
+          lgApi.projects.acessoSalvar(lgTarget, c.servico, vals).then(function (r) {
+            const bz2 = Object.assign({}, self.state.busy || {}); delete bz2['ac:' + k];
+            const d = Object.assign({}, self.state.acDraft || {}); g.campos.forEach(function (f) { delete d[k + ':' + f.chave]; });
+            self.setState({ busy: bz2, acDraft: d });
+            if (r && r.ok) acSetUi(k, { form: false });
+            acApply(r, r && r.conferido ? (r.conferido.ok ? 'Salvo e conferido: ' + r.conferido.detalhe : null) : 'Salvo e cifrado neste projeto.', g.nome || c.nome);
+          }).catch(function (e) { const bz3 = Object.assign({}, self.state.busy || {}); delete bz3['ac:' + k]; self.setState({ busy: bz3 }); app.toast(g.nome || c.nome, String(e && e.message || e)); });
+        },
+        pedir: function () { sitMuda('pedir_ao_cliente'); }, naoAplica: function () { sitMuda('nao_se_aplica'); },
+        podeReabrir: c.situacao === 'nao_se_aplica' || c.situacao === 'pedir_ao_cliente', reabrir: function () { sitMuda('pendente'); },
+        podeLimpar: prev.length > 0, limpar: function () { lgApi.projects.acessoRemover(lgTarget, c.servico).then(function (r) { acApply(r, 'Valores apagados deste projeto.', g.nome || c.nome); }); },
+      };
+    });
+    acx.vazio = !!P.local_path && !!ACV && acx.cards.length === 0;
     const credBase = P.env.map((v, i) => { const real = v[3] === 'later' || v[3] === 'missing' ? '' : realOf(v[1]); const pp = P.people[Math.min(1, P.people.length - 1)]; return { k: v[0], val: real, note: v[3] === 'later' ? v[1] : '', env: v[2], st: v[3] || 'ok', svc: svcOf(v[0], P.target), by: pp ? pp[1] : 'Carlos Henrique', upd: ddmm(P.base, Math.min(i * 2, 6)) }; });
     const CE = s.credEd[P.id] || { added: [], edited: {}, removed: {} };
     const credAll = credBase.filter((c) => !CE.removed[c.k]).map((c) => CE.edited[c.k] ? Object.assign({}, c, CE.edited[c.k], { note: '' }) : c).concat(CE.added.filter((c) => !CE.removed[c.k]));
@@ -2841,8 +2976,6 @@ class Component extends DCLogic {
 
     const qaTabN = QR && QR.fail ? QR.fail : null; const segTabN = fOpen.filter((f) => SEV[f.sev][0] <= 1).length || null;
     // ================= LOGS · livro de execuções (.tavir/runs) =================
-    const lgApi = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
-    const lgTarget = P.local_path || P.path || P.slug || P.id;
     const lgList = (s.lgRuns || {})[P.id] || [];
     self._loadQa = () => {
       if (!lgApi || !lgApi.qa) return;
@@ -2880,6 +3013,17 @@ class Component extends DCLogic {
       }).catch(function () {});
     };
     if (P.local_path && !self._rtReq[P.id]) { self._rtReq[P.id] = true; setTimeout(function () { self._loadRetrato(); }, 0); }
+    self._runAbsPend = (pidX, which) => {
+      const t = lgApi; if (!t || !t.projects || !t.projects.absorbPending) return;
+      const bz = Object.assign({}, self.state.busy || {}); bz[pidX + ':abs-' + which] = true; self.setState({ busy: bz });
+      const v0 = Object.assign({}, (self.state.rtById || {})[pidX] || {}); if (v0.estado) { v0.estado = Object.assign({}, v0.estado, { pendencias: (v0.estado.pendencias || []).map(function (x) { return x.id === which ? Object.assign({}, x, { situacao: 'rodando' }) : x; }) }); const m0 = Object.assign({}, self.state.rtById || {}); m0[pidX] = v0; self.setState({ rtById: m0 }); }
+      t.projects.absorbPending(pidX, which).then(function (res) {
+        const bz2 = Object.assign({}, self.state.busy || {}); delete bz2[pidX + ':abs-' + which]; self.setState({ busy: bz2 });
+        if (res && res.ok === false) app.toast(which === 'qa' ? 'QA' : 'Segurança', res.error || 'Não rodou.');
+        else app.toast(which === 'qa' ? 'Retrato inicial de QA' : 'Retrato inicial de segurança', 'Pronto. A pendência foi fechada.');
+        if (self._loadRetrato) self._loadRetrato(); if (self._loadQa) self._loadQa(); if (self._loadSeg) self._loadSeg(); if (self.reloadIpcProjects) self.reloadIpcProjects();
+      }).catch(function (e) { const bz3 = Object.assign({}, self.state.busy || {}); delete bz3[pidX + ':abs-' + which]; self.setState({ busy: bz3 }); app.toast('Pendência', String(e && e.message || e)); });
+    };
     const RTV = (s.rtById || {})[P.id] || null;
     const RTR = (RTV && RTV.retrato) || null;
     const RT_ASS = { deploy: 'Onde publica', banco: 'Banco', auth: 'Login', pagamento: 'Pagamento', mensagens: 'Mensagens', arquivos: 'Arquivos', medicao: 'Medição', ia: 'IA' };
@@ -2973,7 +3117,7 @@ class Component extends DCLogic {
       sorts: [['pct', 'Por progresso'], ['name', 'Por nome']].map((f) => ({ label: f[1], on: s.ps === f[0] ? 'on' : '', pick: () => self.setState({ ps: f[0] }) })),
       rowsP: rowsP.map((p) => ({ slug: p.slug.replace(/\\/g, '/'), cap: p.cap.toUpperCase(), think: p.think || '', name: p.name, client: p.client, code: p.code, pct: p.pct, col: STAT[p.status][2], state: STAT[p.status][0], cls: STAT[p.status][1], stage: p.stepName, owner: p.owner, steps: p.done + '/' + p.n, hasPend: p.pendN > 0, noPend: p.pendN === 0, pendTxt: p.pendN + (p.pendN === 1 ? ' pendência' : ' pendências'),
         nodes: p.stages.map((_, i) => { const c = p.done, gate = p.pendN > 0 || (p.id === 'meridian' && p.gateNow); return { hasLine: i > 0, flex: i > 0 ? '1' : '0 0 auto', line: i <= c ? 'var(--flow)' : 'var(--line)', done: i < c, size: i === c ? 16 : 12, bg: i < c ? 'var(--flow)' : i === c ? 'var(--warning-subtle)' : 'var(--surface-2)', bd: i < c ? 'var(--flow)' : i === c ? 'var(--warning)' : 'var(--line-strong)', anim: i === c && gate && p.status === 'run' ? 'ringwarn 2s var(--ease) infinite' : 'none' }; }),
-        open: () => openProj(p.id) })),
+        open: () => { const ai = absInfoOf(p.id); if (ai && self._openAbsorbFor) { openProj(p.id); self._openAbsorbFor(p.id, ai.step); } else openProj(p.id); }, hasAbs: !!absInfoOf(p.id), absTxt: (absInfoOf(p.id) || {}).txt || '', absCls: (absInfoOf(p.id) || {}).cls || '', hasCh: !!((s.chCount || {})[p.id] && (s.chCount || {})[p.id].abertos), chTxt: (function () { const k = (s.chCount || {})[p.id]; if (!k) return ''; return k.abertos + (k.abertos === 1 ? ' chamado' : ' chamados') + (k.aguardandoCarlos ? ' · ' + k.aguardandoCarlos + ' aguardando você' : ''); })(), chCls: ((s.chCount || {})[p.id] || {}).aguardandoCarlos ? 'warn' : '' })),
       noRows: rowsP.length === 0,
       esteiras: ESTEIRAS.map((e) => { const used = PL.filter((p) => p.line === e[0]).length; return { code: e[0], fam: e[1], name: e[2], d: e[3], st: e[6].map((x) => ({ t: x })), guard: e[7], meta: TPL_STAGES[e[0]].length + ' etapas · ' + new Set(TPL_STAGES[e[0]].map((x) => x[1])).size + ' mesas', lead: 'Paula PM', use: used ? used + (used === 1 ? ' projeto' : ' projetos') : 'sem uso' }; }),
       // projeto
@@ -3366,6 +3510,15 @@ class Component extends DCLogic {
         };
       })(),
       pends: P.pends, noPends: P.pendN === 0, rt: rt,
+      rtUpd: (function () {
+        const u = RTV && RTV.atualizacao; if (!u || !u.mudou) return { show: false };
+        const busy = !!(s.busy || {})['rtupd:' + P.id];
+        return { show: true, busy: busy, lbl: busy ? 'Atualizando…' : 'Atualizar retrato', txt: 'O código mudou desde o retrato aprovado', d: u.arquivos.length + (u.arquivos.length === 1 ? ' arquivo mudou' : ' arquivos mudaram') + ' (' + String(u.de || '').slice(0, 7) + ' → ' + String(u.para || '').slice(0, 7) + '). Passos que serão refeitos: ' + (u.passos.join(', ') || 'nenhum') + '.',
+          go: function () { const t = lgApi; if (!t || !t.projects || !t.projects.retratoAtualizar) return; const b = Object.assign({}, self.state.busy || {}); b['rtupd:' + P.id] = true; self.setState({ busy: b }); app.toast('Atualizar retrato', 'Detectores e passos afetados rodando. Pode seguir usando o app.'); t.projects.retratoAtualizar(lgTarget).then(function (r) { const b2 = Object.assign({}, self.state.busy || {}); delete b2['rtupd:' + P.id]; self.setState({ busy: b2 }); app.toast('Atualizar retrato', r && r.ok ? 'Retrato atualizado.' : ((r && r.error) || 'Não atualizou.')); if (self._loadRetrato) self._loadRetrato(); if (self._loadAcessos) self._loadAcessos(); }).catch(function () {}); } };
+      })(),
+      absBanner: (function () { const ai = absInfoOf(P.id); return ai ? { show: true, txt: ai.txt.charAt(0).toUpperCase() + ai.txt.slice(1), d: ai.pronto ? 'Confira o retrato e aprove para liberar o trilho e os chamados.' : ai.run ? 'O squad Product Lab está lendo o projeto. Pode fechar e voltar depois.' : 'A leitura foi interrompida. Retomar continua do passo em que estava.', btn: ai.pronto ? 'Ver retrato' : 'Acompanhar', open: () => { if (self._openAbsorbFor) self._openAbsorbFor(P.id, ai.step); } } : { show: false }; })(),
+      pendQa: (function () { const e = (RTV && RTV.estado && RTV.estado.pendencias) || []; const x = e.find(function (y) { return y.id === 'qa' && y.situacao !== 'feito'; }); return x ? { show: true, run: x.situacao === 'rodando', lbl: x.situacao === 'rodando' ? 'Rodando…' : 'Rodar retrato inicial', go: () => self._runAbsPend(P.id, 'qa') } : { show: false }; })(),
+      pendSeg: (function () { const e = (RTV && RTV.estado && RTV.estado.pendencias) || []; const x = e.find(function (y) { return y.id === 'seg' && y.situacao !== 'feito'; }); return x ? { show: true, run: x.situacao === 'rodando', lbl: x.situacao === 'rodando' ? 'Rodando…' : 'Rodar retrato inicial', go: () => self._runAbsPend(P.id, 'seg') } : { show: false }; })(),
       timeline: P.acts.slice(0, 6).map((e, i) => ({ t: e[0], x: e[1], w: e[2], c: i === 0 ? 'var(--flow)' : 'var(--line-strong)' })),
       vsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], now: k === 'run' || k === 'gate' || k === 'paused', st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: k === 'run' || k === 'gate' || k === 'paused' ? 'var(--surface-3)' : 'transparent', pick: stepPick(i) }; }),
       gsteps: P.stages.map((x, i) => { const k = stState(i); const Z = SS[k]; const isCur = i === P.done && P.status !== 'done'; const isSel = Number(s.stage) === i; const blockP = P.pends[0]; return { n: String(i + 1).padStart(2, '0'), t: x[0], who: x[1], skill: x[2], st: Z[0], cls: Z[1], bg: Z[2], fg: Z[3], bd: Z[4], tc: k === 'todo' ? 'var(--text-secondary)' : 'var(--text-primary)', rowBg: isSel ? 'var(--surface-3)' : (isCur ? 'var(--surface-3)' : 'transparent'), when: ddmm(P.base, startOf(i)) + (x[3] > 1 ? ' → ' + ddmm(P.base, startOf(i) + x[3] - 1) : ''),
@@ -3562,6 +3715,7 @@ class Component extends DCLogic {
       gg: { n: P.gN, pct: Math.round(P.gN / 8 * 100), col: P.gN === 8 ? 'var(--flow)' : 'var(--warning)', title: P.gN === 8 ? 'Completion Guard 8 de 8' : (8 - P.gN) + ' regras ainda abertas', note: P.gN === 8 ? 'Todas as regras físicas passaram. O gate final foi assinado.' : 'As regras fecham conforme as etapas de construção, QA e segurança terminam. Nada é marcado à mão.',
         rules: G8.map((r, i) => { const ok = i < P.gN; return { t: r[0], m: ok ? r[1] + ' · verificado' : r[1], bg: ok ? 'var(--flow-subtle)' : 'var(--surface-3)', fg: ok ? 'var(--flow)' : 'var(--text-muted)', icon: ok ? IC.check : IC.clock, st: ok ? 'ok' : 'aguardando', cls: ok ? 'flow' : '' }; }) },
       lg: lg,
+      acx: acx,
       ac: {
         target: P.target, hasMissing: missingN > 0, missingTxt: missingN + (missingN === 1 ? ' variável faltando' : ' variáveis faltando'),
         add: () => openCred(null), invite: () => app.toast('Convite enviado', 'O convite chega por e-mail com acesso de leitura. Você ajusta o papel depois.'),

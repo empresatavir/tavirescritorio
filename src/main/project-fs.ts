@@ -11,6 +11,10 @@ import { listQaRuns, qaSummary, runQa, type QaRun } from './qa/qaRunner';
 import { listSegRuns, runSeg, segSummary, setSegAccept, type SegRun } from './seg/segScanner';
 import * as cycleGit from './cycleBranch';
 import type { CycleBranch, CyclePublish } from './cycleBranch';
+import * as absDetectores from './absorcao/detectores';
+import * as absRetrato from './absorcao/retrato';
+import * as absFluxo from './absorcao/fluxo';
+import { PASTA_ESCOPO } from './absorcao/entrada';
 
 function getDbPath(): string {
   // Testes apontam TAVIR_DATA_ROOT para uma pasta temporária (ver db.ts).
@@ -598,16 +602,14 @@ export function surveyWorkspace(wsPath: string): any {
   // Camada 1 da absorção: leitura inteira, sem corte, com provas. O resumo antigo passa a sair dela.
   let lev: import('./absorcao/detectores').Levantamento | null = null;
   try {
-    const { detectar } = require('./absorcao/detectores') as typeof import('./absorcao/detectores');
-    lev = detectar(root);
+    lev = absDetectores.detectar(root);
     fileCount = lev.arquivos;
     dirCount = lev.pastas;
     truncated = false;
     for (const s of lev.servicos.filter((x) => x.assunto === 'deploy')) deploy.push(`${s.nome} (\`${s.provas[0]?.arquivo || ''}\`)`);
     for (const k of lev.env) if (!envKeys.includes(k)) envKeys.push(k);
     for (const st of lev.stack) stacks.add(st);
-    const ret = require('./absorcao/retrato') as typeof import('./absorcao/retrato');
-    ret.gravarRetrato(root, ret.montarRetrato(path.basename(root), lev, ret.lerRetrato(root)));
+    absRetrato.gravarRetrato(root, absRetrato.montarRetrato(path.basename(root), lev, absRetrato.lerRetrato(root)));
   } catch (err) {
     console.error('[TAVIR ProjectFS] Detectores da absorção falharam:', err);
   }
@@ -869,7 +871,6 @@ export function createOrAbsorbProjectRecord(params: any): any {
   const projectId = crypto.randomUUID();
   const slug = `${slugBase}-${projectId.slice(0, 6)}`;
 
-  const { PASTA_ESCOPO } = require('./absorcao/entrada') as typeof import('./absorcao/entrada');
   const rootFolder = PASTA_ESCOPO[ownership === 'externo' ? 'externo' : 'interno'];
   const wsPath = customPath && !customPath.startsWith('~') ? path.resolve(customPath) : path.join(process.cwd(), rootFolder, slug);
 
@@ -1060,8 +1061,8 @@ export function createOrAbsorbProjectRecord(params: any): any {
     // D1: QA e segurança não rodam mais sozinhos na absorção. Viram pendências «a fazer» do projeto,
     // com «Rodar retrato inicial» nas abas QA e Segurança.
     try {
-      const fluxo = require('./absorcao/fluxo') as typeof import('./absorcao/fluxo');
-      const ret = require('./absorcao/retrato') as typeof import('./absorcao/retrato');
+      const fluxo = absFluxo;
+      const ret = absRetrato;
       ret.garantirExclude(wsPath);
       const prevState = fluxo.lerEstado(wsPath);
       if (!prevState) {
@@ -1148,7 +1149,7 @@ export function projectEngineSpec(rootPath: string) {
 
 export type DecisionEntry = {
   at: string;
-  kind: 'esteira' | 'trilho' | 'seguranca' | 'publicacao';
+  kind: 'esteira' | 'trilho' | 'seguranca' | 'publicacao' | 'absorcao' | 'chamado';
   stage: string;
   decision: 'aprovado' | 'reprovado';
   question?: string;
@@ -1164,6 +1165,41 @@ function logDecision(rootPath: string, entry: Omit<DecisionEntry, 'at' | 'by'>):
     fs.appendFileSync(path.join(rootPath, '.tavir', 'decisoes.jsonl'), JSON.stringify(full) + '\n', 'utf8');
   } catch {}
   return full;
+}
+
+/** Gancho para os módulos novos (absorção, chamados): grava uma decisão do Carlos no livro do projeto. */
+export function registrarDecisao(rootPath: string, entry: Omit<DecisionEntry, 'at' | 'by'>): DecisionEntry {
+  return logDecision(rootPath, entry);
+}
+
+/**
+ * Gate do retrato aprovado (D1): o projeto absorvido entra direto em manutenção. Cada etapa da esteira
+ * recebe a nota de cobertura e fecha pelo gate do Carlos; o trilho de alteração é liberado.
+ */
+export function encerrarPelaAbsorcao(idOrPath: string, nota = ''): { ok: boolean; decision: DecisionEntry } {
+  const rec = resolveProjectRecord(idOrPath);
+  const root = rec.local_path;
+  const decision = logDecision(root, { kind: 'absorcao', stage: 'Retrato do projeto', decision: 'aprovado', note: String(nota || '').trim() || undefined });
+  const desk = readEsteira(root);
+  const marca = 'Coberta pela absorção: ver context/RETRATO.md';
+  for (const st of desk.stages) {
+    if (!st.note.includes(marca)) st.note = st.note.trim() ? `${st.note.trim()}
+
+${marca}` : marca;
+    st.status = 'done';
+    st.decision = decision;
+  }
+  writeEsteira(root, desk);
+  try {
+    const { DatabaseSync } = require('node:sqlite');
+    const sqlite = new DatabaseSync(getDbPath());
+    sqlite.prepare('UPDATE projects SET status = ?, stages_done = total_stages, updated_at = ? WHERE id = ?').run('done', new Date().toISOString(), rec.id);
+    sqlite.close();
+  } catch (err) {
+    console.error('[TAVIR ProjectFS] Falha ao encerrar o projeto absorvido:', err);
+  }
+  setProjectAlterationsOpen(root, true);
+  return { ok: true, decision };
 }
 
 export function listProjectDecisions(idOrPath: string): any {
@@ -2551,6 +2587,7 @@ export async function executeAltTrackStep(
     alterationsOpen: true,
     asChangeRequest: asChange,
     recent: [],
+    retrato: absRetrato.resumoDoRetrato(ctrl.rootPath, 3000),
     timeoutMs: 1800000,
     runKind: 'trilho',
     runLabel: focus.label,
@@ -2902,6 +2939,7 @@ export async function askProjectIris(params: any): Promise<any> {
       recent,
       memorySnippet: memoryText,
       projectFacts,
+      retrato: absRetrato.resumoDoRetrato(rootPath, 3000),
       timeoutMs: forceChange ? 900000 : 300000,
       onProgress: typeof params?.onProgress === 'function' ? params.onProgress : undefined,
       registerKill: typeof params?.registerKill === 'function' ? params.registerKill : undefined,

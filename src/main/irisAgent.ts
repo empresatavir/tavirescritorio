@@ -34,6 +34,8 @@ export interface IrisAgentRequest {
   memorySnippet?: string;
   /** Fatos do projeto para a Íris (stack, situação, trilho). Uma linha por fato. */
   projectFacts?: string[];
+  /** A5: resumo do retrato do projeto (context/RETRATO.md). Entra com teto fixo e nunca no histórico. */
+  retrato?: string;
   timeoutMs?: number;
   onProgress?: (line: string) => void;
   registerKill?: (kill: () => void) => void;
@@ -107,6 +109,9 @@ const WRITE_RULES = [
   'Na resposta final, diga em poucas linhas o que mudou (arquivos) e como verificou.',
 ];
 
+/** Teto do retrato no pedido (caracteres). */
+export const RETRATO_MAX = 3000;
+
 export function buildPrompt(req: IrisAgentRequest, access: MotorAccess): string {
   const isChat = (req.runKind || 'chat') === 'chat';
   const situation = req.finished
@@ -147,6 +152,7 @@ export function buildPrompt(req: IrisAgentRequest, access: MotorAccess): string 
         `- O projeto está no trilho de alteração, no foco "${req.stageName}". Se a mensagem pedir análise, plano ou execução, termine com "Pacote do trilho:" e 3 a 6 itens; esse texto vai para o próximo agente.`,
       );
     }
+    if (req.retrato?.trim()) parts.push('', '## Retrato do projeto', clipEnd(req.retrato, RETRATO_MAX));
     if (req.memorySnippet?.trim()) {
       parts.push('', '## Memória do projeto (trecho recente)', clipEnd(req.memorySnippet, 2500));
     }
@@ -167,6 +173,7 @@ export function buildPrompt(req: IrisAgentRequest, access: MotorAccess): string 
     ...rules.map((r) => `- ${r}`),
     '- Nunca afirme ter feito algo que não fez. Resultados de build e testes só valem se você os executou nesta sessão.',
   );
+  if (req.retrato?.trim()) parts.push('', '## Retrato do projeto', clipEnd(req.retrato, RETRATO_MAX));
   const history = formatHistory(req.recent);
   if (history) parts.push('', '## Conversa recente', history);
   parts.push('', '## Pedido', req.question.trim());

@@ -446,6 +446,22 @@ export interface TavirApi {
     retrato: (idOrPath: string) => Promise<{ ok: boolean; retrato?: any; estado?: any; retratoMd?: string; error?: string }>;
     /** Absorção: clona o link (conta do cofre) ou copia a pasta para tavir-interno/ ou tavir-externo/. */
     absorbPrepare: (params: { key?: string; fonte: 'link' | 'pasta'; url?: string; accountId?: string; path?: string; nome?: string; ownership?: string }) => Promise<{ ok: boolean; destino?: string; preenchido?: any; repo_url?: string; error?: string }>;
+    /** Leitura em sete passos pelo Product Lab (só leitura). Retomar continua do passo parado. */
+    absorbStart: (idOrPath: string) => Promise<{ ok: boolean; error?: string; parado?: boolean }>;
+    absorbResume: (idOrPath: string) => Promise<{ ok: boolean; error?: string; parado?: boolean }>;
+    absorbStop: (idOrPath: string) => Promise<{ ok: boolean }>;
+    /** Gate do retrato: só o Carlos aprova. Reprovar exige nota e refaz os passos escolhidos. */
+    absorbDecide: (idOrPath: string, decision: 'aprovado' | 'reprovado', note?: string, refazer?: string[]) => Promise<{ ok: boolean; error?: string }>;
+    /** Pendência «a fazer» de QA ou segurança do projeto absorvido. */
+    absorbPending: (idOrPath: string, id: 'qa' | 'seg') => Promise<{ ok: boolean; error?: string; runId?: string }>;
+    /** A5: detectores de novo e só os passos afetados pelo que mudou desde o commit do retrato. */
+    retratoAtualizar: (idOrPath: string) => Promise<{ ok: boolean; error?: string; passos?: string[] }>;
+    /** A4: cartões de acesso do projeto (só prévia mascarada) e contas do GitHub do cofre. */
+    acessos: (idOrPath: string) => Promise<{ ok: boolean; error?: string; cartoes: any[]; contasGithub: Array<{ id: string; rotulo: string }> }>;
+    acessoSalvar: (idOrPath: string, servico: string, valores: Record<string, string>) => Promise<{ ok: boolean; error?: string; cartao?: any; conferido?: { ok: boolean; em: string; detalhe: string } }>;
+    acessoSituacao: (idOrPath: string, servico: string, situacao: 'pendente' | 'preenchido' | 'pedir_ao_cliente' | 'nao_se_aplica', nota?: string) => Promise<{ ok: boolean; error?: string; cartao?: any }>;
+    acessoRemover: (idOrPath: string, servico: string) => Promise<{ ok: boolean; error?: string; cartao?: any }>;
+    acessoAbrirGuia: (servico: string) => Promise<{ ok: boolean; error?: string; url?: string }>;
     inspectFolder: (idOrPath: string) => Promise<any>;
     openInExplorer: (idOrPath: string) => Promise<{ ok: boolean; path?: string }>;
     readFile: (filePath: string) => Promise<{ ok: boolean; content?: string; size?: number }>;

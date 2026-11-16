@@ -450,6 +450,13 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             }
             self.setState({ absorbed: nextAbs, altOpen: altMap, altTrack: trackMap, motors: motors });
           }).catch(function() {});
+          if (tavir.projects.retrato) {
+            tavir.projects.retrato(key).then(function(res) {
+              const rmap = Object.assign({}, self.state.rtById || {});
+              rmap[proj.id] = res && res.ok ? res : null;
+              self.setState({ rtById: rmap });
+            }).catch(function() {});
+          }
           if (tavir.projects.getEsteira) {
             tavir.projects.getEsteira(key).then(function(res) {
               if (!res || !res.esteira) return;
@@ -493,7 +500,7 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
       const finish = function(reply, thoughts, extra) {
         const st = self.state;
         const c3 = Object.assign({}, st.chats || {});
-        c3[pidNow] = (st.chats[pidNow] || base).concat([['Íris · ' + engLabel, reply, 'ag', thoughts || [], hm()]]);
+        c3[pidNow] = (st.chats[pidNow] || base).concat([['Íris · ' + engLabel, reply, 'ag', thoughts || [], hm(), [], (extra && extra.meta) || null]]);
         const patch = { chats: c3, typing: false };
         if (extra && extra.context) {
           const cc = Object.assign({}, st.chatCtx || {});
