@@ -2125,7 +2125,8 @@ class Component extends DCLogic {
     const isOpen = !!pid;
     const cur = s.signed ? 6 : 5;
     const gN = s.guard.filter(Boolean).length, gT = GUARD.length, allOk = gN === gT, pending = gT - gN;
-    const S = STG[s.stage];
+    // STG é a esteira da demonstração (9 etapas). Projeto real tem moldes de até 15: etapa fora dela usa uma linha neutra.
+    const S = STG[s.stage] || ['Etapa ' + (Number(s.stage) + 1), '—', '—', '—', '—', '—', STG[0][6]];
     const tabKeys = S[6];
     const tab = s.tabs[s.stage] && tabKeys.some((t) => t[0] === s.tabs[s.stage]) ? s.tabs[s.stage] : tabKeys[0][0];
     const goStage = (i, t) => { const tb = Object.assign({}, s.tabs); if (t) tb[i] = t; self.setState({ stage: i, tabs: tb, ptab: 'esteira' }); };
@@ -4386,7 +4387,7 @@ class Component extends DCLogic {
       },
       now: now, nodes: STG.map((_, i) => nodeOf(i)),
       sel: { n: '0' + (s.stage + 1), label: S[0], owner: S[1], ini: S[2], role: S[3], dur: s.stage === cur && s.signed ? 'em curso' : S[4], cost: S[5], fileN: filesOf(s.stage).length, busy: s.stage === cur ? 'busy' : '',
-        state: s.stage < cur ? 'concluída' : s.stage === cur ? (s.signed ? 'em andamento' : 'no gate') : 'aguardando', locked: s.stage >= cur, waiting: s.stage > cur, prev: STG[Math.max(0, s.stage - 1)][0],
+        state: s.stage < cur ? 'concluída' : s.stage === cur ? (s.signed ? 'em andamento' : 'no gate') : 'aguardando', locked: s.stage >= cur, waiting: s.stage > cur, prev: (STG[Math.max(0, s.stage - 1)] || ['Etapa ' + Math.max(1, Number(s.stage))])[0],
         icon: s.stage < cur ? IC.check : s.stage === cur ? (s.signed ? IC.clock : IC.shield) : IC.clock,
         ibg: s.stage < cur ? 'var(--flow-subtle)' : s.stage === cur ? 'var(--warning-subtle)' : 'var(--surface-0)', ifg: s.stage < cur ? 'var(--flow)' : s.stage === cur ? 'var(--warning)' : 'var(--text-muted)' },
       redoSel: () => app.modal('redo', { stage: S[0] }),
