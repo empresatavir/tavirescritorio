@@ -5,7 +5,7 @@ import * as os from 'node:os';
 import * as crypto from 'node:crypto';
 import { execFile, execFileSync, spawn } from 'node:child_process';
 import { fitCall } from '../shared/engineCatalog';
-import { esteiraTemplate, LEGACY_STAGE_NAMES, type EsteiraCode, type EsteiraStage } from '../shared/esteiras';
+import { esteiraTemplate, LEGACY_STAGE_NAMES, stageContract, type EsteiraCode, type EsteiraStage } from '../shared/esteiras';
 import { commitStep, type StepCommitResult } from './stepCommit';
 import { annotateRun, type RunChanges } from './runLedger';
 import { listQaRuns, qaSummary, runQa, type QaRun } from './qa/qaRunner';
@@ -3367,14 +3367,38 @@ export function decideEsteiraGate(idOrPath: string, index: number, decision: 'ap
   };
 }
 
+export const PACOTE_ETAPA = 'Pacote para a próxima etapa:';
+
+/**
+ * O que levar de uma nota de etapa para a próxima: o «Pacote para a próxima etapa» quando o agente
+ * escreveu; senão o começo da resposta, sem a seção de verificação, sem linhas de registro do Escritório
+ * e cortado em fim de linha (nunca no meio da palavra).
+ */
+export function stageHandoff(note: string, limit = 1200): string {
+  const text = String(note || '').replace(/\r\n/g, '\n');
+  const at = text.lastIndexOf(PACOTE_ETAPA);
+  let body = at >= 0 ? text.slice(at + PACOTE_ETAPA.length) : text;
+  if (at < 0) {
+    body = body.split(/\n#{1,4}\s*Como (foi )?verifica/i)[0];
+    body = body.replace(/^#{1,4}\s.*$/gm, '').replace(/^_.*arquivo\(s\) mudaram.*_$/gm, '').replace(/^-{3,}$/gm, '');
+  } else {
+    body = body.split(/\n_/)[0];
+  }
+  body = body.replace(/\(file:\/\/\/[^)]*\)/g, '').replace(/\n{3,}/g, '\n\n').trim();
+  if (body.length <= limit) return body;
+  const cut = body.slice(0, limit);
+  const nl = cut.lastIndexOf('\n');
+  return (nl > limit * 0.5 ? cut.slice(0, nl) : cut.replace(/\s+\S*$/, '')) + '\n…';
+}
+
 /** Resumo do que as etapas anteriores entregaram, para a etapa atual não trabalhar no escuro. */
 function earlierStagesDigest(desk: EsteiraDesk, defs: EsteiraStage[], at: number): string {
   const parts: string[] = [];
-  let budget = 8000;
+  let budget = 6000;
   for (let i = at - 1; i >= 0 && budget > 0; i--) {
     const note = desk.stages[i]?.note.trim();
     if (!note || desk.stages[i].status !== 'done') continue;
-    const piece = `${defs[i]?.name || `Etapa ${i + 1}`} (${defs[i]?.owner || '—'}):\n${note.slice(-Math.min(2000, budget))}`;
+    const piece = `${defs[i]?.name || `Etapa ${i + 1}`} (${defs[i]?.owner || '—'}):\n${stageHandoff(note, Math.min(1200, budget))}`;
     parts.unshift(piece);
     budget -= piece.length;
   }
@@ -3403,19 +3427,27 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
   }
   const stage = desk.stages[at];
   const prior = stage.note.trim();
-  const instruction = stage.instruction.trim() || 'Levante o que esta etapa pede a partir dos arquivos do workspace. Não invente fato que não esteja na pasta.';
+  const contract = stageContract(def.name);
+  const instruction = stage.instruction.trim();
   const digest = earlierStagesDigest(desk, defs, at);
+  // A Talita só conduz as etapas de QA; Loop Linter e Completion Guard têm portão de QA, mas são do compilador.
+  const qaTalita = def.qa && /^QA\b/i.test(def.name);
   const question =
-    `Você conduz a etapa ${at + 1} de ${defs.length}, "${def.name}", com ${def.owner} (${def.skill}).\n` +
-    `Instrução desta etapa:\n${instruction}\n\n` +
+    `Você conduz a etapa ${at + 1} de ${defs.length}, "${def.name}" (${def.skill}).\n\n` +
+    (contract
+      ? `OBJETIVO: ${contract.objetivo}\nENTREGA: ${contract.entrega}\nPRONTO QUANDO: ${contract.pronto}\n\n`
+      : 'OBJETIVO: entregue o que o nome da etapa pede, a partir dos arquivos do workspace. Não invente fato que não esteja na pasta.\n\n') +
+    (instruction ? `INSTRUÇÃO DO CARLOS PARA ESTA ETAPA (vale sobre o contrato acima):\n${instruction}\n\n` : '') +
+    'Comece pelo que a entrega pede. Leia só os arquivos de que precisa para isso; não releia o projeto inteiro nem refaça o que as etapas anteriores entregaram.\n\n' +
     (digest ? `O QUE AS ETAPAS ANTERIORES ENTREGARAM (use como base, não refaça):\n${digest}\n\n` : '') +
     (prior ? `CHECKPOINT — a etapa já tem este levantamento. Não recomece do zero. Continue ou revise a partir dele:\n${prior.slice(-5000)}\n\n` : '') +
-    (def.qa
+    (qaTalita
       ? 'Esta etapa é o QA desta aplicação, com a Talita. Leia o que o app faz e monte o plano de testes em qa/plano.md: o que precisa passar antes de entregar, quais comandos a pasta já tem e o que ainda falta. Se não houver node_modules, instale as dependências do gerenciador do projeto. Deixe os testes no lugar que esse gerenciador espera. Não declare a etapa concluída: o portão automático roda em seguida, instala o que ainda faltar e grava vídeo, prints e o relatório em qa/evidencias/.\n\n'
       : '') +
     (def.gate
       ? 'Esta etapa é um gate. Não edite arquivos. Resuma o que foi entregue até aqui com caminhos de arquivo, aponte riscos e liste exatamente o que precisa da decisão do Carlos. A etapa só fecha quando ele aprovar.'
-      : 'Pode alterar o workspace só no que a instrução pede. Ao terminar, liste os arquivos que criou ou alterou.');
+      : 'Pode alterar o workspace só no que a entrega pede. Ao terminar, liste os arquivos que criou ou alterou e como conferiu.') +
+    `\n\nTermine a resposta com "${PACOTE_ETAPA}" e 3 a 6 itens curtos: o que entregou (com caminho), o que ficou pendente e o que a próxima etapa precisa saber. Esse trecho é o que a próxima etapa recebe.`;
   stage.status = 'running';
   writeEsteira(info.rootPath, desk);
   liveAgents.set(key, { paused: false, speech: prior, step: at, itemId: `esteira-${at}`, label: def.name });

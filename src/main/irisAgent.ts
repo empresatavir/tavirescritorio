@@ -7,6 +7,7 @@
  */
 import { startRun, type RunChanges, type RunHandle, type RunKind } from './runLedger';
 import { abrirGuarda, fecharGuarda, resumoBarrados, type Barrado } from './tavirGuarda';
+import { agentProfile, agentProfileBlock } from '../shared/agentes';
 import {
   MOTOR_LABEL,
   buildInvocation,
@@ -177,9 +178,13 @@ export function buildPrompt(req: IrisAgentRequest, access: MotorAccess): string 
     return parts.join('\n');
   }
 
-  // Etapa da esteira ou passo do trilho: o pedido já traz o papel do agente.
+  // Etapa da esteira ou passo do trilho: o pedido começa pelo perfil do dono da etapa.
+  const profile = agentProfile(req.stageOwner);
   parts.push(
-    `Você é um agente da Fábrica TAVIR trabalhando no projeto "${req.projectName}". Escreva em português do Brasil.`,
+    profile
+      ? `Você é ${req.stageOwner}, ${profile.papel}. Trabalha no projeto "${req.projectName}". Escreva em português do Brasil.`
+      : `Você é um agente da Fábrica TAVIR trabalhando no projeto "${req.projectName}". Escreva em português do Brasil.`,
+    ...(profile ? ['', ...agentProfileBlock(req.stageOwner)] : []),
     '',
     '## Projeto',
     ...facts.map((f) => `- ${f}`),

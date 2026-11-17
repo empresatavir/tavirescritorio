@@ -10,7 +10,8 @@ Tudo vive no app Electron (`src/`). O frontend SolidJS (`frontend/`) e o backend
 | :--- | :--- |
 | `src/shared/esteiras.ts` | Fonte única dos moldes (LP-C1, LP-M1, OF-C1, OF-M0, SY-C1, SY-M1). Cada etapa tem `gate`, `qa` e `seg`. O build do renderer injeta a mesma lista no painel. |
 | `src/main/project-fs.ts` | Esteira, trilho de alteração, absorção, portões e decisões. |
-| `src/main/runLedger.ts` | Livro de execuções em `.tavir/runs/<id>/` e git sombra em `.tavir/shadow.git`. |
+| `src/shared/agentes.ts` | Perfil de cada dono de etapa (papel, como trabalha, o que não faz). O pedido de etapa e de passo do trilho começa por ele. |
+| `src/main/runLedger.ts` | Livro de execuções em `.tavir/runs/<id>/` e git sombra em `.tavir/shadow.git`. Cada linha do motor ganha a hora de chegada (`stdout.tempos`, `stderr.tempos`); a tela Execuções mostra dd/mm HH:MM:SS. |
 | `src/main/stepCommit.ts` | Commit por passo, só com os arquivos que a execução mudou. |
 | `src/main/cycleBranch.ts` | Branch por ciclo do trilho, merge local e PR no GitHub. |
 | `src/main/gitAccounts.ts` | Contas do GitHub (TAVIR e Pessoal) no cofre da máquina; identidade dos commits. |
@@ -27,6 +28,7 @@ Tudo vive no app Electron (`src/`). O frontend SolidJS (`frontend/`) e o backend
 
 - **Criação e absorção:** `createOrAbsorbProjectRecord`. A absorção grava o projeto no SQLite (`backend/tavir.db`) e segue o fluxo da seção «Absorção» abaixo. QA e segurança não rodam sozinhos na absorção: viram as pendências «Retrato inicial de QA» e «Retrato inicial de segurança» (a fazer), que o Carlos roda quando quiser. Nos testes passe `baseline: false`. A criação sempre faz `git init`; a absorção também, quando a pasta não é versionada por ninguém (sem git ou ignorada pelo repositório de fora, `needsOwnGit`). Subpasta versionada por um monorepo do cliente fica como está.
 - **Esteira:** `runEsteiraStage`. Uma etapa só roda com os gates anteriores aprovados. Gates ficam `awaiting` até `decideEsteiraGate`; decisões vão para `.tavir/decisoes.jsonl`. Etapas `qa` e `seg` só viram `done` se o portão passar.
+- **Pedido da etapa:** começa pelo perfil do dono (`agentes.ts`) e traz o contrato da etapa (`STAGE_CONTRACTS` em `esteiras.ts`: objetivo, entrega e critério de pronto). A instrução escrita pelo Carlos na etapa vale sobre o contrato. Etapa nova em molde precisa de contrato, e dono novo precisa de perfil (`tests/unit/etapaPedido.spec.ts` confere). O agente termina com «Pacote para a próxima etapa:»; a etapa seguinte recebe só esse pacote de cada etapa anterior (`stageHandoff`), sem a seção de verificação. O texto de QA da Talita vai só nas etapas que começam com «QA»; Loop Linter e Completion Guard têm portão de QA, mas o pedido é do compilador.
 - **Trilho de alteração (manutenção):** `executeAltTrackStep`. O item "Validar & build" roda QA e segurança, e só fecha com os dois aprovados.
 - **Anexos na Íris e no chamado:**
   - **Como anexar:** botão de clipe, Ctrl+V com print ou arrastar para a janela. O chat e o formulário de chamado têm listas separadas (o formulário usa a chave `ch:<projeto>`); no chamado os arquivos vão para `.tavir/chamados/CH-0001/anexos/`.

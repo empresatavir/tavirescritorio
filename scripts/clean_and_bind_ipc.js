@@ -1468,7 +1468,7 @@ templateHtml = templateHtml.replace(
 );
 templateHtml = templateHtml.replace(
   '.log div{animation:fade 300ms var(--ease) both;display:flex;gap:12px}',
-  '.log div{animation:fade 300ms var(--ease) both;display:flex;gap:12px;align-items:flex-start}.log div > span:last-child{white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;flex:1}'
+  '.log div{animation:fade 300ms var(--ease) both;display:flex;gap:12px;align-items:flex-start}.log div > span:last-child{white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;flex:1}.log .ts{flex:none;width:112px;white-space:nowrap;color:var(--on-ink-muted)}.log div.tg{cursor:pointer}.log div.tg:hover > span:last-child{text-decoration:underline}'
 );
 
 // 2.1 Limpa os JOBS mockados
@@ -1681,30 +1681,53 @@ const newMount = `componentDidMount() {
       const XG = TavirExec;
       self._execOverride = self._execOverride || {};
       self._execAlias = self._execAlias || {};
+      // Hora de cada linha do log: dd/mm HH:MM:SS. Sem hora registrada, a coluna fica vazia.
+      window.__tavirLogTime = function (ms) {
+        if (!ms || isNaN(ms)) return '';
+        const d = new Date(ms);
+        const p = function (n) { return String(n).padStart(2, '0'); };
+        return p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+      };
       // Só lê o log da tentativa. Quem escolhe linha e tentativa é a tela (jobGroup / jobId).
       self.openOfficeRun = function (job) {
         const api = window.tavir && window.tavir.runs;
         if (!job || job.live || !api || !job.workspace) return;
         api.read(job.workspace, job.id).then(function (det) {
           const lines = [];
-          function add(label, text) {
+          const T = window.__tavirLogTime;
+          function add(label, text, ms, extra) {
             const body = text && text.text ? text.text : text;
             if (!body) return;
-            String(body).split(/\\r?\\n/).slice(0, 2500).forEach(function (line) {
-              lines.push({ ts: '', lvl: label || 'log', cls: label === 'erro' ? 'err' : 'info', text: line });
+            String(body).split(/\\r?\\n/).slice(0, 2500).forEach(function (line, i) {
+              lines.push(Object.assign({ ts: i === 0 ? T(ms) : '', lvl: label || 'log', cls: label === 'erro' ? 'err' : 'info', text: line }, extra || {}));
             });
           }
           if (!det || !det.ok) {
             lines.push({ ts: '', lvl: 'erro', cls: 'err', text: (det && det.error) || 'Sem log desta tentativa.' });
           } else {
-            const pause = det.meta && (det.meta.status === 'paused' || /pausado por carlos/i.test(String(det.meta.error || '')));
-            if (pause) add('pausa', det.meta.error || 'Pausado por Carlos. A retomada continua deste ponto.');
-            else if (det.meta && det.meta.error) add('erro', det.meta.error);
-            add('pedido', det.prompt);
-            add('passo', det.transcricao);
-            add('resposta', det.resposta);
-            add('stdout', det.stdout);
-            add('stderr', det.stderr);
+            const m = det.meta || {};
+            const t0 = m.startedAt ? Date.parse(m.startedAt) : 0;
+            const t1 = m.finishedAt ? Date.parse(m.finishedAt) : 0;
+            const pause = m.status === 'paused' || /pausado por carlos/i.test(String(m.error || ''));
+            // O pedido entra recolhido numa linha; abre ao clicar (regra do leitor: detalhe ao clicar).
+            const prLines = det.prompt ? String(det.prompt.text || det.prompt).split(/\\r?\\n/).length : 0;
+            if (prLines) {
+              lines.push({ ts: T(t0), lvl: 'pedido', cls: 'info', text: 'Pedido enviado ao motor · ' + prLines + ' linhas · clique para abrir', prHead: true });
+              add('', det.prompt, 0, { pr: true, lvl: '' });
+            }
+            const passos = Array.isArray(det.passos) ? det.passos : [];
+            const LV = { ferramenta: 'passo', fala: 'agente', erro: 'erro', pensamento: 'pensa', fim: 'fim' };
+            // Passos, stdout solto e stderr na ordem em que chegaram (linhas sem hora ficam no fim do seu grupo).
+            const timed = [];
+            if (passos.length) passos.forEach(function (p, i) { timed.push({ at: p.at, k: i, row: { ts: T(p.at), lvl: LV[p.kind] || 'passo', cls: p.kind === 'erro' ? 'err' : p.kind === 'fala' || p.kind === 'fim' ? 'ok' : 'info', text: p.text } }); });
+            else add('passo', det.transcricao);
+            (det.stdoutLines || []).forEach(function (l, i) { timed.push({ at: l.at, k: 1e6 + i, row: { ts: T(l.at), lvl: 'stdout', cls: 'info', text: l.text } }); });
+            (det.stderrLines || []).forEach(function (l, i) { timed.push({ at: l.at, k: 2e6 + i, row: { ts: T(l.at), lvl: 'stderr', cls: 'info', text: l.text } }); });
+            timed.sort(function (a, b) { return (a.at || Infinity) - (b.at || Infinity) || a.k - b.k; });
+            timed.forEach(function (x) { lines.push(x.row); });
+            if (det.resposta && (det.resposta.text || det.resposta)) add('resposta', det.resposta, t1);
+            if (pause) add('pausa', m.error || 'Pausado por Carlos. A retomada continua deste ponto.', t1);
+            else if (m.error) add('erro', m.error, t1);
             if (!lines.length) lines.push({ ts: '', lvl: 'log', cls: 'info', text: 'O motor não devolveu transcrição nesta tentativa.' });
           }
           const logs = Object.assign({}, self.state.logs || {});
@@ -1820,8 +1843,7 @@ const newMount = `componentDidMount() {
         const res = XG.applyLiveEvent(prev, evt, self._execAlias, now);
         const id = res.id;
         const logs = Object.assign({}, self.state.logs || {});
-        const d = new Date();
-        const ts = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        const ts = window.__tavirLogTime(now);
         const bad = evt.type === 'error';
         const text = String(evt.content || '');
         const bucket = (logs[id] || []).slice();
@@ -1938,8 +1960,8 @@ templateHtml = templateHtml.split('<span class="num" style="font-size: 12px; wid
           <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{false}}"><span class="badge flow"><i class="live-dot" style="width: 6px; height: 6px"></i>ao vivo</span></sc-if>
           <div class="grow"></div><span class="eyebrow">{{job.logN}} linhas</span>
         </div>
-        <div class="log">
-          <sc-for list="{{job.log}}" as="l" hint-placeholder-count="6"><div><span class="ts">{{l.ts}}</span><span class="{{l.cls}}" style="width: 44px; flex: none">{{l.lvl}}</span><span>{{l.text}}</span></div></sc-for>
+        <div class="log" data-tv-follow>
+          <sc-for list="{{job.log}}" as="l" hint-placeholder-count="6"><div class="{{l.tg}}" sc-camel-on-click="{{l.click}}"><span class="ts">{{l.ts}}</span><span class="{{l.cls}}" style="width: 64px; flex: none">{{l.lvl}}</span><span>{{l.text}}</span></div></sc-for>
           <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{false}}"><div><span class="ts">     </span><span class="ok">▍</span><span style="color: var(--on-ink-muted)">aguardando próximo passo</span></div></sc-if>
         </div>
       </section>
@@ -1977,7 +1999,9 @@ templateHtml = templateHtml.split('<span class="num" style="font-size: 12px; wid
       list: xlist.map((g) => ({ title: g.title, color: xst(g.status)[2], dot: g.status === 'running' ? 'live-dot' : '', meta: [g.module, xplace(g), 'tentativa ' + g.count, g.totalMs ? XG.fmtDuration(g.totalMs) : ''].filter(Boolean).join(' · '), on: xg && g.key === xg.key ? 'on' : '', pick: xpick(g, null) }))
     };
     const xstarting = !!(xg && s.execStarting && s.execStarting.key === xg.key);
-    const xlog = xa ? (s.logs[xa.id] || []) : [];
+    const xprOpen = !!(xa && s.logPrompt && s.logPrompt[xa.id]);
+    const xtoggle = () => { const o = Object.assign({}, self.state.logPrompt || {}); o[xa.id] = !xprOpen; self.setState({ logPrompt: o }); };
+    const xlog = xa ? (s.logs[xa.id] || []).filter((l) => !l.pr || xprOpen).map((l) => l.prHead ? Object.assign({}, l, { tg: 'tg', click: xtoggle, text: xprOpen ? l.text.replace('clique para abrir', 'clique para recolher') : l.text }) : Object.assign({ tg: '', click: null }, l)) : [];
     const xlastTxt = xg ? XG.timeText(xg.status, XG.attemptElapsed(xg.last, xnow)) : '';
     const job = !xg ? { has: false, none: true, log: [], logN: 0, attempts: [] } : {
       has: true, none: false,

@@ -345,17 +345,50 @@ function toolResultText(content: unknown): string {
  * Converte o stream do motor (stream-json do Cursor/Claude, --json do Codex) numa transcrição
  * legível: o que o agente disse, cada ferramenta chamada com a entrada e o resultado.
  */
-export function buildTranscript(stdout: string): { markdown: string; toolCalls: number; toolErrors: number } {
+export interface TranscriptEntry {
+  /** Hora em que a linha do motor chegou (ms), quando o registro tem os tempos. */
+  at?: number;
+  kind: 'fala' | 'ferramenta' | 'resultado' | 'erro' | 'pensamento' | 'fim';
+  /** Uma linha, para o log da tela. */
+  text: string;
+}
+
+/** Resumo de uma linha para os parâmetros de uma ferramenta (caminho, comando ou o primeiro campo). */
+function oneLine(input: unknown, limit = 160): string {
+  let v: any = input;
+  if (typeof v === 'string') {
+    try { v = JSON.parse(v); } catch {}
+  }
+  if (v && typeof v === 'object' && !Array.isArray(v)) {
+    const pick = v.CommandLine ?? v.command ?? v.cmd ?? v.Path ?? v.path ?? v.file_path ?? v.AbsolutePath ?? v.TargetFile ?? v.pattern ?? v.Query ?? v.query ?? v.url ?? v.Action;
+    if (pick != null) {
+      const range = v.StartLine != null ? ` (linhas ${v.StartLine}–${v.EndLine ?? '?'})` : '';
+      v = String(pick) + range;
+    }
+  }
+  const s = (typeof v === 'string' ? v : JSON.stringify(v ?? '')).replace(/\s+/g, ' ').trim();
+  return s.length > limit ? s.slice(0, limit) + '…' : s;
+}
+
+export function buildTranscript(stdout: string, times?: number[]): { markdown: string; toolCalls: number; toolErrors: number; entries: TranscriptEntry[] } {
   const out: string[] = [];
+  const entries: TranscriptEntry[] = [];
   let toolCalls = 0;
   let toolErrors = 0;
   let speech = '';
+  let at: number | undefined;
+  let speechAt: number | undefined;
   const flushSpeech = () => {
-    if (speech.trim()) out.push(`**Agente:** ${speech.trim()}`, '');
+    if (speech.trim()) {
+      out.push(`**Agente:** ${speech.trim()}`, '');
+      entries.push({ at: speechAt ?? at, kind: 'fala', text: oneLine(speech.trim(), 400) });
+    }
     speech = '';
+    speechAt = undefined;
   };
   const say = (text: string) => {
     if (!text) return;
+    if (!speech) speechAt = at;
     // Snapshots crescentes (Cursor) substituem o trecho anterior; deltas somam.
     if (speech && text.startsWith(speech)) speech = text;
     else if (!speech.endsWith(text)) speech += text;
@@ -364,15 +397,29 @@ export function buildTranscript(stdout: string): { markdown: string; toolCalls: 
     flushSpeech();
     toolCalls++;
     out.push(`🔧 **${name}**`, '```', short(input, 1200), '```', '');
+    entries.push({ at, kind: 'ferramenta', text: `${name} · ${oneLine(input)}` });
   };
   const result = (text: string, failed = false) => {
     flushSpeech();
     if (failed) toolErrors++;
     out.push(`${failed ? '⛔' : '↳'} resultado`, '```', short(text, 1500), '```', '');
+    if (failed) entries.push({ at, kind: 'erro', text: oneLine(text, 300) });
+  };
+  const think = (text: string) => {
+    flushSpeech();
+    out.push(`💭 _${short(text, 1500)}_`, '');
+    entries.push({ at, kind: 'pensamento', text: oneLine(text, 300) });
+  };
+  const end = (line: string) => {
+    out.push(line, '');
+    entries.push({ at, kind: 'fim', text: line.replace(/^■ /, '') });
   };
   let sawJson = false;
 
-  for (const line of String(stdout || '').split(/\r?\n/)) {
+  const all = String(stdout || '').split(/\r?\n/);
+  for (let i = 0; i < all.length; i++) {
+    const line = all[i];
+    at = times && times[i] != null ? times[i] : at;
     const piece = line.trim();
     if (!piece) continue;
     let obj: any = null;
@@ -399,7 +446,7 @@ export function buildTranscript(stdout: string): { markdown: string; toolCalls: 
       if (r.response) say(String(r.response));
       flushSpeech();
       for (const d of Array.isArray(r.denied_actions) ? r.denied_actions : []) result(`Ação bloqueada: ${d.display_name || d.action}`, true);
-      out.push(`■ fim: ${r.status || '?'}${r.duration_seconds != null ? ` · ${Math.round(Number(r.duration_seconds))} s` : ''}${r.error ? ` · ${r.error}` : ''}`, '');
+      end(`■ fim: ${r.status || '?'}${r.duration_seconds != null ? ` · ${Math.round(Number(r.duration_seconds))} s` : ''}${r.error ? ` · ${r.error}` : ''}`);
       continue;
     }
 
@@ -410,10 +457,8 @@ export function buildTranscript(stdout: string): { markdown: string; toolCalls: 
       for (const part of obj.message.content) {
         if (part?.type === 'text' && type === 'assistant' && isDelta) speech += part.text || '';
         else if (part?.type === 'text' && type === 'assistant') say(part.text || '');
-        else if (part?.type === 'thinking' && part.thinking) {
-          flushSpeech();
-          out.push(`💭 _${short(part.thinking, 1500)}_`, '');
-        } else if (part?.type === 'tool_use') tool(part.name || 'ferramenta', part.input);
+        else if (part?.type === 'thinking' && part.thinking) think(part.thinking);
+        else if (part?.type === 'tool_use') tool(part.name || 'ferramenta', part.input);
         else if (part?.type === 'tool_result') result(toolResultText(part.content), Boolean(part.is_error));
       }
       continue;
@@ -433,10 +478,8 @@ export function buildTranscript(stdout: string): { markdown: string; toolCalls: 
     if ((type === 'item.started' || type === 'item.completed') && obj.item) {
       const item = obj.item;
       if (item.type === 'agent_message' && type === 'item.completed') say((item.text || '') + '\n');
-      else if (item.type === 'reasoning' && type === 'item.completed' && item.text) {
-        flushSpeech();
-        out.push(`💭 _${short(item.text, 1500)}_`, '');
-      } else if (item.type === 'command_execution') {
+      else if (item.type === 'reasoning' && type === 'item.completed' && item.text) think(item.text);
+      else if (item.type === 'command_execution') {
         if (type === 'item.started') tool('shell', item.command);
         else result(`${item.aggregated_output || ''}\n(código de saída ${item.exit_code ?? '?'})`, Number(item.exit_code) > 0);
       } else if (item.type === 'file_change' && type === 'item.completed') {
@@ -455,7 +498,7 @@ export function buildTranscript(stdout: string): { markdown: string; toolCalls: 
         obj.duration_ms != null ? `${Math.round(Number(obj.duration_ms) / 1000)} s` : '',
         obj.total_cost_usd != null ? `US$ ${Number(obj.total_cost_usd).toFixed(4)}` : '',
       ].filter(Boolean);
-      out.push(`■ ${bits.join(' · ')}`, '');
+      end(`■ ${bits.join(' · ')}`);
       continue;
     }
     if (type === 'error' || type === 'turn.failed') {
@@ -466,7 +509,7 @@ export function buildTranscript(stdout: string): { markdown: string; toolCalls: 
     if (typeof delta === 'string') say(delta);
   }
   flushSpeech();
-  return { markdown: out.join('\n').trim(), toolCalls, toolErrors };
+  return { markdown: out.join('\n').trim(), toolCalls, toolErrors, entries };
 }
 
 // ---------------------------------------------------------------- ciclo de uma execução
@@ -521,6 +564,18 @@ export async function startRun(info: RunStartInfo): Promise<RunHandle> {
   const stderrFile = path.join(dir, 'stderr.log');
   const stdoutStream = fs.createWriteStream(stdoutFile, { flags: 'a' });
   const stderrStream = fs.createWriteStream(stderrFile, { flags: 'a' });
+  // Hora de chegada de cada linha (ms, uma por linha, na mesma ordem do .log): o log da tela mostra a hora de cada passo.
+  const stdoutTimes = fs.createWriteStream(path.join(dir, TIMES_OUT), { flags: 'a' });
+  const stderrTimes = fs.createWriteStream(path.join(dir, TIMES_ERR), { flags: 'a' });
+  const stdoutTimeList: number[] = [];
+  const stamp = (text: string, sink: fs.WriteStream, list?: number[]) => {
+    const now = Date.now();
+    let n = 0;
+    for (let i = text.indexOf('\n'); i >= 0; i = text.indexOf('\n', i + 1)) n++;
+    if (!n) return;
+    sink.write(`${now}\n`.repeat(n));
+    if (list) for (let k = 0; k < n; k++) list.push(now);
+  };
   let stdoutAll = '';
 
   // Retrato "antes". Se falhar (pasta enorme, git ausente), a execução segue sem diff.
@@ -537,15 +592,17 @@ export async function startRun(info: RunStartInfo): Promise<RunHandle> {
     if (stream === 'stdout') {
       stdoutAll += text;
       stdoutStream.write(redact(text));
+      stamp(text, stdoutTimes, stdoutTimeList);
     } else {
       stderrStream.write(redact(text));
+      stamp(text, stderrTimes);
     }
   };
 
   const closeStream = (s: fs.WriteStream) => new Promise<void>((resolve) => s.end(() => resolve()));
 
   const finish = async (end: RunFinishInfo): Promise<RunMeta> => {
-    await Promise.all([closeStream(stdoutStream), closeStream(stderrStream)]);
+    await Promise.all([closeStream(stdoutStream), closeStream(stderrStream), closeStream(stdoutTimes), closeStream(stderrTimes)]);
     const finishedAt = Date.now();
     meta.status = end.status || (end.ok ? 'ok' : 'failed');
     if (end.error) meta.error = redact(end.error).slice(0, 2000);
@@ -560,7 +617,7 @@ export async function startRun(info: RunStartInfo): Promise<RunHandle> {
     } catch {}
 
     fs.writeFileSync(path.join(dir, 'resposta.md'), redact(end.reply), 'utf8');
-    const transcript = buildTranscript(stdoutAll);
+    const transcript = buildTranscript(stdoutAll, stdoutTimeList);
     meta.toolCalls = transcript.toolCalls;
     meta.toolErrors = transcript.toolErrors;
     fs.writeFileSync(path.join(dir, 'transcricao.md'), redact(transcript.markdown), 'utf8');
@@ -690,6 +747,26 @@ function readText(file: string, limit: number): { text: string; cut: boolean; by
   }
 }
 
+const TIMES_OUT = 'stdout.tempos';
+const TIMES_ERR = 'stderr.tempos';
+
+/** Tempos das linhas que sobraram no trecho lido (o .log grande é lido pelo fim). */
+function linesWithTimes(dir: string, text: string, cut: boolean, timesFile: string): { lines: string[]; times: number[] } {
+  let lines = text.split(/\r?\n/);
+  if (cut) lines = lines.slice(1);
+  let all: number[] = [];
+  try {
+    all = fs.readFileSync(path.join(dir, timesFile), 'utf8').split('\n').filter(Boolean).map(Number);
+  } catch {}
+  if (!all.length) return { lines, times: [] };
+  // Depois da última quebra vem o vazio ou a linha ainda incompleta (sem tempo): alinha pelo fim do que já fechou.
+  const closed = lines.length - 1;
+  const times = new Array<number>(lines.length);
+  const tail = all.slice(-closed);
+  for (let i = 0; i < tail.length; i++) times[closed - tail.length + i] = tail[i];
+  return { lines, times };
+}
+
 export function readRun(workspace: string, id: string): any {
   if (!isRunId(id)) return { ok: false, error: 'Execução inválida.' };
   const meta = readMeta(workspace, id);
@@ -699,11 +776,22 @@ export function readRun(workspace: string, id: string): any {
   let transcricao = readText(path.join(dir, 'transcricao.md'), 400 * 1024).text;
   // Enquanto roda, a transcrição ainda não foi gravada: monta do stdout que já chegou.
   // O stdout.log já passou pelo redator ao ser escrito.
-  if (!transcricao && meta.status === 'running' && stdout.text) {
-    const firstBreak = stdout.cut ? stdout.text.indexOf('\n') : -1;
-    transcricao = buildTranscript(firstBreak >= 0 ? stdout.text.slice(firstBreak + 1) : stdout.text).markdown;
-  }
+  const out = linesWithTimes(dir, stdout.text, stdout.cut, TIMES_OUT);
+  const built = buildTranscript(out.lines.join('\n'), out.times);
+  // No log da tela, caminhos dentro do projeto aparecem relativos (a pasta inteira repetia em toda linha).
+  // O stdout gravado já passou pelo redator: compara com o caminho redigido também.
+  const redact = makeRedactor(workspace);
+  const roots = Array.from(new Set([meta.workspace || workspace, workspace].filter(Boolean).flatMap((w: string) => [w, redact(w)]).flatMap((w) => [w, w.replace(/\\/g, '/')])))
+    .sort((a, b) => b.length - a.length);
+  for (const e of built.entries) for (const r of roots) e.text = e.text.split(r + '/').join('').split(r + '\\').join('').split(r).join('.');
+  if (!transcricao && meta.status === 'running' && stdout.text) transcricao = built.markdown;
+  const stderr = readText(path.join(dir, 'stderr.log'), 100 * 1024);
+  const err = linesWithTimes(dir, stderr.text, stderr.cut, TIMES_ERR);
   return {
+    // Passos com hora, uma linha cada, para o log da tela (o .md segue para leitura completa).
+    passos: built.entries,
+    stdoutLines: out.lines.map((text, i) => ({ at: out.times[i], text })).filter((l) => l.text.trim() && !l.text.trim().startsWith('{')),
+    stderrLines: err.lines.map((text, i) => ({ at: err.times[i], text })).filter((l) => l.text.trim()),
     ok: true,
     dir,
     meta,
