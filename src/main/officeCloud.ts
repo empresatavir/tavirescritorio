@@ -18,7 +18,8 @@ import { createHash } from 'node:crypto';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { deliveryBody } from './officeExec';
-import { ACTION_VIDEO, IRIS, OFFICE_AGENTS, isTriage, officeAction, officeAgent, publishedAgents, videoShortcode, type PublishedEngine } from '../shared/officeAgents';
+import { ACTION_STUDY, ACTION_VIDEO, IRIS, MAICON, OFFICE_AGENTS, STUDY_OWNERS, isTriage, officeAction, officeAgent, publishedAgents, videoShortcode, type PublishedEngine } from '../shared/officeAgents';
+import { firstStudyLink, studyCode, studySource } from './officeStudy';
 
 export const DESK_KINDS = [
   'task.create', 'task.update', 'task.move', 'task.delete',
@@ -182,14 +183,14 @@ export const ROLE_NAMES = OFFICE_AGENTS.map((a) => a.name);
 function agentName(agent: string): string {
   const m = /^agente:(.+)$/.exec(agent || '');
   if (m) return m[1];
-  return ({ social: 'Social', redator: 'Redator', raiox: 'Pesquisador', paula: 'Paula PM', plano: 'Agente do plano', video: IRIS, triagem: 'Triagem' } as Record<string, string>)[agent] || 'Agente geral';
+  return ({ social: 'Social', redator: 'Redator', raiox: 'Pesquisador', paula: 'Paula PM', plano: 'Agente do plano', video: IRIS, estudo: MAICON, triagem: 'Triagem' } as Record<string, string>)[agent] || 'Agente geral';
 }
 
 function kindOf(agent: string): string {
   if (agent === 'social' || agent === 'video') return 'instagram';
   if (agent === 'redator') return 'editorial';
   if (agent === 'raiox') return 'raiox';
-  if (agent === 'triagem' || /^agente:/.test(agent || '')) return 'agent';
+  if (agent === 'triagem' || agent === 'estudo' || /^agente:/.test(agent || '')) return 'agent';
   return 'tarefa';
 }
 
@@ -205,7 +206,7 @@ function parseFields(raw?: string): Record<string, string> {
 }
 
 /** Título e descrição da tarefa que nasce de um pedido de job. Erro em `error` se faltou campo. */
-export type JobSpec = { title: string; desc: string; sector: string; agent: string; fields?: Record<string, string> };
+export type JobSpec = { title: string; desc: string; sector: string; agent: string; fields?: Record<string, string>; owner?: string };
 
 /** Vídeo do Instagram por link: vai para a extração pela RapidAPI (agente `video`). */
 function videoTask(link: string): JobSpec | { error: string } {
@@ -220,9 +221,28 @@ function videoTask(link: string): JobSpec | { error: string } {
   };
 }
 
+/** Estudo de vídeo (Instagram ou YouTube) pelo Maicon: ver, transcrever, abrir os links e cruzar com o Escritório. */
+function studyTask(link: string, instrucao = '', owner = MAICON): JobSpec | { error: string } {
+  const source = studySource(link);
+  if (!source) return { error: 'Cole o link de um vídeo do Instagram (Reel ou post) ou do YouTube.' };
+  const origem = source === 'youtube' ? 'YouTube' : 'Instagram';
+  const pedido = instrucao.replace(link, '').trim();
+  return {
+    title: `Estudo de vídeo · ${origem} · ${studyCode(link)}`,
+    desc: `Pedido pelo APK a ${owner}. Vídeo do ${origem}: ${link}${pedido ? `
+O que o Carlos quer saber: ${pedido}` : ''}
+O Escritório baixa, transcreve e separa quadros e links; ${owner} estuda e cruza com o Escritório.`,
+    sector: JOB_SECTOR.agent,
+    agent: 'estudo',
+    owner,
+    fields: { link, fonte: source, dono: owner, ...(pedido ? { pergunta: pedido } : {}) },
+  };
+}
+
 export function jobTask(kind: string, fields: Record<string, string>): JobSpec | { error: string } {
   const f = (k: string) => String(fields[k] ?? '').trim();
   if (kind === 'instagram') {
+    if (/estud/i.test(f('escopo'))) return studyTask(f('link') || f('perfil'));
     if (f('link') || /v[ií]deo/i.test(f('escopo'))) return videoTask(f('link') || f('perfil'));
     const perfil = f('perfil').replace(/^@/, '');
     if (!perfil) return { error: 'Informe o perfil do Instagram.' };
@@ -246,9 +266,11 @@ export function jobTask(kind: string, fields: Record<string, string>): JobSpec |
     if (!instrucao) return { error: 'Escreva a instrução para o agente.' };
     const who = f('agent') || f('agente');
     const title = instrucao.length > 70 ? `${instrucao.slice(0, 67)}…` : instrucao;
+    if (isTriage(who) && firstStudyLink(instrucao)) return studyTask(firstStudyLink(instrucao), instrucao);
     if (isTriage(who)) return { title: `Triagem · ${title}`, desc: `Pedido pelo APK sem agente escolhido:\n${instrucao}`, sector: JOB_SECTOR.agent, agent: 'triagem' };
     const ag = officeAgent(who);
     const action = officeAction(ag, f('action') || f('acao'));
+    if (ag && STUDY_OWNERS.includes(ag.name) && action && action.id === ACTION_STUDY) return studyTask(firstStudyLink(instrucao) || (/https?:\/\/\S+/.exec(instrucao) || [instrucao])[0], instrucao, ag.name);
     if (ag && ag.name === IRIS && action && action.id === ACTION_VIDEO) return videoTask((/https?:\/\/\S+/.exec(instrucao) || [instrucao])[0]);
     const nome = ag ? ag.name : 'Analista';
     return {
@@ -440,7 +462,7 @@ function applyFresh(store: DeskStore, cmd: Command): Outcome {
     if (!task) {
       const spec = jobTask(kind, fields);
       if ('error' in spec) return reject(400, spec.error);
-      task = store.create({ id: cmd.id, title: spec.title, desc: spec.desc, prio: 'Normal', sector: spec.sector, status: 'to_plan', who: agentName(spec.agent) });
+      task = store.create({ id: cmd.id, title: spec.title, desc: spec.desc, prio: 'Normal', sector: spec.sector, status: 'to_plan', who: spec.owner || agentName(spec.agent) });
       const r = store.exec.enqueue(task.id, 'exec', spec.agent, { origin: 'apk', id: cmd.id, fields: { ...fields, ...(spec.fields || {}), kind } });
       if (!r.ok) return reject(r.code, r.error);
     }

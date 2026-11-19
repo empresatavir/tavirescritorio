@@ -99,6 +99,7 @@ export const AGENT_LABEL: Record<string, string> = {
   redator: 'Redator',
   raiox: 'Pesquisador · Raio-X',
   video: 'Íris Instagram',
+  estudo: 'Estudo de vídeo',
   triagem: 'Triagem',
 };
 const OPEN: TaskRunStatus[] = ['queued', 'running'];
@@ -123,7 +124,7 @@ export function kindOfAgent(agent: string): string {
   if (agent === 'social' || agent === 'video') return 'instagram';
   if (agent === 'redator') return 'editorial';
   if (agent === 'raiox') return 'raiox';
-  if (agent === 'triagem' || /^agente:/.test(agent || '')) return 'agent';
+  if (agent === 'triagem' || agent === 'estudo' || /^agente:/.test(agent || '')) return 'agent';
   return 'tarefa';
 }
 
@@ -211,6 +212,7 @@ function rolePrompt(agent: string, f: Record<string, string>): string {
       'Afirmação sem base na legenda, na transcrição ou nos números fica marcada como hipótese.',
     ].filter(Boolean).join('\n');
   }
+  if (agent === 'estudo') return studyPrompt(f);
   if (agent === 'triagem') {
     return [
       'Você faz a triagem do TAVIR Escritório: o Carlos não escolheu agente.',
@@ -218,7 +220,7 @@ function rolePrompt(agent: string, f: Record<string, string>): string {
       ...OFFICE_AGENTS.map((a) => `- ${a.name}: ${a.role}`),
       `Pedido do Carlos: ${f.instrucao || '(na tarefa)'}`,
       'Comece a resposta com uma linha "Agente escolhido: <nome> · <motivo em uma frase>". Depois atenda o pedido no papel desse agente.',
-      'Se o pedido for analisar um vídeo do Instagram por link, não tente baixar: diga que ele deve ser pedido em Analisar Instagram › Vídeo por link, que usa a extração pela API.',
+      'Se o pedido for estudar um vídeo (Instagram ou YouTube) ou avaliar se algo mostrado num vídeo vale para o Escritório, não tente baixar: diga que ele deve ser pedido ao Maicon › Estudar vídeo, que baixa, transcreve e separa quadros e links antes.',
     ].join('\n');
   }
   const m = /^agente:(.+)$/.exec(agent || '');
@@ -226,12 +228,92 @@ function rolePrompt(agent: string, f: Record<string, string>): string {
     const ag = officeAgent(m[1]);
     return [
       `Você é ${m[1]}, do TAVIR Escritório. ${ROLE_BRIEF[m[1]] || ''}`,
-      ag?.scope ? agentScope(ag.scope) : '',
+      ag?.scope ? agentScope(ag.scope) : ag?.id ? agentSoul(ag.id) : '',
       f.acao ? `Opção escolhida no app: ${f.acao}` : '',
       `Pedido do Carlos: ${f.instrucao || '(na tarefa)'}`,
     ].filter(Boolean).join('\n');
   }
   return '';
+}
+
+/** Estudo de vídeo: o Escritório já preparou a pasta (officeStudy.prepStudy); o Maicon estuda e decide. */
+function studyPrompt(f: Record<string, string>): string {
+  const origem = f.fonte === 'youtube' ? 'YouTube' : 'Instagram';
+  const yuri = f.dono === 'Yuri YouTube';
+  return [
+    yuri
+      ? 'Você é o Yuri YouTube, analista de inteligência de negócios do TAVIR Escritório. Seu trabalho aqui é estudar um vídeo, tirar o que ele ensina e dizer ao Carlos o que vale aplicar ou guardar no Escritório.'
+      : 'Você é o Maicon, arquiteto de integrações do TAVIR Escritório. Seu trabalho aqui é estudar um vídeo e dizer ao Carlos o que dele vale trazer para o Escritório.',
+    yuri ? skillScope('youtube-business-intelligence') : agentScope('maicon.md'),
+    `Vídeo do ${origem}: ${f.link || '(link na tarefa)'}`,
+    f.pergunta ? `O que o Carlos quer saber: ${f.pergunta}` : '',
+    'O Escritório já preparou esta pasta. Leia nesta ordem:',
+    '1. video.json: autor ou canal, legenda ou descrição, duração e números.',
+    '2. transcricao.txt (quando existe): o que foi falado, com o instante de cada trecho no YouTube.',
+    '3. quadros/indice.md e as imagens quadros/q*.jpg: abra e olhe cada quadro. É assim que você "vê" o vídeo: telas, código, nomes de ferramentas, URLs e textos na tela.',
+    '4. links.json: sites e repositórios citados. Abra cada um que for relevante (README, documentação, preço, licença) e procure também os que aparecem só nos quadros.',
+    '5. escritorio.md: retrato do Escritório (regras, módulos, skills, agentes e bibliotecas). Para confirmar algo, leia os arquivos citados na pasta do Escritório; não altere nada lá.',
+    f.transcricao ? `Aviso sobre a preparação: ${f.transcricao}` : '',
+    'Não baixe o vídeo de novo, não use navegador para o Instagram e não instale nada. Abrir sites e repositórios citados é permitido, só leitura.',
+    'Grave o relatório em estudo-video.md com estas seções, nesta ordem:',
+    [
+      '## Resumo em 5 linhas',
+      '## O que o vídeo mostra (com o instante de cada ponto e o quadro que mostra, quando houver)',
+      '## Links e ferramentas citados (o que é cada um, licença, custo e estado do projeto)',
+      '## Cruzamento com o Escritório (o que já temos, onde, e o que seria novo)',
+      '## Parecer: Absorver 100% · Absorver em parte · Só o conceito · Rejeitar (escolha um, com prós, contras, esforço e risco)',
+      '## Aprendizados para guardar (o que vale virar conhecimento do Escritório, mesmo que não se implemente nada)',
+      '## Próximo passo sugerido (o chamado ou a tarefa que o Carlos abriria, se aprovar)',
+      '## Dados da coleta (fonte, transcrição, quadros vistos, links abertos e Requests da RapidAPI quando Instagram)',
+    ].join('\n'),
+    'Cada afirmação sobre o vídeo cita a fala, o quadro ou a legenda. O que não estiver lá fica marcado como hipótese. Não implemente nada e não grave fora desta pasta: o parecer é para o Carlos decidir.',
+  ].filter(Boolean).join('\n');
+}
+
+/** Pasta da agência (AgenciaIA), ao lado do Escritório. As fichas citam caminhos a partir dela. */
+export function agencyRoot(): string {
+  return process.env.TAVIR_AGENCIA_ROOT || path.join(path.dirname(process.cwd()), 'AgenciaIA');
+}
+
+/**
+ * Ficha do agente da equipe: soul_text em backend/tavir.db (tabela agents) ou, sem ela,
+ * AgenciaIA/escritorio/equipe/<id>.md. Fica fora do git do Escritório; aqui só se lê.
+ */
+export function agentSoul(id: string, dbPath = path.join(process.cwd(), 'backend', 'tavir.db'), agency = agencyRoot()): string {
+  let text = '';
+  try {
+    const { DatabaseSync } = require('node:sqlite');
+    const db = new DatabaseSync(dbPath, { readOnly: true });
+    try {
+      const row = db.prepare('SELECT soul_text FROM agents WHERE id = ?').get(id) as { soul_text?: string } | undefined;
+      text = String(row?.soul_text || '').trim();
+    } finally {
+      db.close();
+    }
+  } catch {
+    text = '';
+  }
+  if (!text) {
+    try {
+      text = fs.readFileSync(path.join(agency, 'escritorio', 'equipe', `${id}.md`), 'utf8').trim();
+    } catch {
+      text = '';
+    }
+  }
+  if (!text) return '';
+  const where = fs.existsSync(agency) ? ` Os caminhos citados nela partem de ${agency}; leia o que precisar de lá, sem alterar.` : '';
+  return `Sua ficha na equipe TAVIR.${where}\n${text.slice(0, 6000)}`;
+}
+
+/** Método de uma skill (agentes/escopo/skills/<nome>/SKILL.md), cortado para caber no pedido. */
+function skillScope(name: string): string {
+  try {
+    const text = fs.readFileSync(path.join(process.cwd(), 'agentes', 'escopo', 'skills', name, 'SKILL.md'), 'utf8').replace(/^---[\s\S]*?---\s*/, '').trim();
+    return text ? `Seu método (skill ${name}; os passos de coleta já foram feitos pelo Escritório, use a parte de análise):
+${text.slice(0, 5000)}` : '';
+  } catch {
+    return '';
+  }
 }
 
 /** Escopo canônico do agente (agentes/escopo/agentes/), cortado para caber no pedido. */
@@ -690,6 +772,15 @@ async function runRaiox(job: Parameters<Runner>[0], registerKill: (kill: () => v
 
 const realRunner: Runner = async (job, registerKill, say = () => {}) => {
   if (job.row.agent === 'raiox' && job.row.mode === 'exec') return runRaiox(job, registerKill, say);
+  const isStudy = job.row.agent === 'estudo' && job.row.mode === 'exec';
+  if (isStudy) {
+    // Download, transcrição, quadros, links citados e retrato do Escritório acontecem aqui, antes do motor.
+    const { prepStudy } = require('./officeStudy');
+    const prep = await prepStudy(fieldsOf(job.row).link, taskWorkspace(job.task), say, registerKill);
+    if (!prep.ok) return { ok: false, reply: '', error: prep.error, stopped: prep.stopped };
+    if (prep.notes.length) job = { ...job, prompt: job.prompt.replace('Não baixe o vídeo de novo', `Aviso sobre a preparação: ${prep.notes.join(' ')} Diga isso em Dados da coleta e não invente o que faltou.
+Não baixe o vídeo de novo`) };
+  }
   const isVideo = job.row.agent === 'video' && job.row.mode === 'exec';
   if (isVideo) {
     // Extração pela RapidAPI, download e transcrição acontecem aqui, antes do motor.
@@ -756,7 +847,7 @@ const realRunner: Runner = async (job, registerKill, say = () => {}) => {
 };
 
 /** Arquivo que cada papel grava (vem primeiro na entrega). */
-export const DELIVERABLE: Record<string, string> = { social: 'analise-instagram.md', redator: 'entrega.md', video: 'analise-video.md' };
+export const DELIVERABLE: Record<string, string> = { social: 'analise-instagram.md', redator: 'entrega.md', video: 'analise-video.md', estudo: 'estudo-video.md' };
 
 export interface TaskFile {
   name: string;

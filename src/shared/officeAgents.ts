@@ -4,6 +4,8 @@
  * `scope` aponta o escopo canônico em agentes/escopo/agentes/; sem ele, vale só o `brief`.
  */
 
+import { ROSTER, SECTOR_ORDER } from './officeRoster';
+
 export interface OfficeAgentAction {
   id: string;
   /** Texto do botão no app. */
@@ -14,6 +16,10 @@ export interface OfficeAgentAction {
 
 export interface OfficeAgent {
   name: string;
+  /** Slug do agente em backend/tavir.db (equipe da agência). Vazio nos ajudantes do Escritório. */
+  id?: string;
+  /** Grupo na lista do app (SECTOR_ORDER). */
+  sector?: string;
   /** Uma linha, para a lista do app. */
   role: string;
   /** Como o agente trabalha (vai no pedido). */
@@ -25,8 +31,16 @@ export interface OfficeAgent {
 export const TRIAGE = 'triagem';
 export const IRIS = 'Íris Instagram';
 export const ACTION_VIDEO = 'video';
+export const MAICON = 'Maicon';
+/** Estudo de vídeo (Instagram ou YouTube): ver, transcrever, abrir os links e cruzar com o Escritório. */
+export const ACTION_STUDY = 'estudo-video';
+/** Analista de YouTube da agência (analista-youtube): inteligência de negócios em vídeos. */
+export const YURI_YOUTUBE = 'Yuri YouTube';
+/** Quem pode estudar vídeo: o Maicon olha ferramenta e absorção; o Yuri olha negócio e aprendizado. */
+export const STUDY_OWNERS = [MAICON, YURI_YOUTUBE];
 
-export const OFFICE_AGENTS: OfficeAgent[] = [
+/** Agentes com comportamento próprio no Escritório (opções, escopo canônico) e os ajudantes genéricos. */
+const CURATED: OfficeAgent[] = [
   {
     name: IRIS,
     role: 'Analista de Instagram: perfis, conteúdo e vídeos',
@@ -39,14 +53,20 @@ export const OFFICE_AGENTS: OfficeAgent[] = [
     ],
   },
   {
-    name: 'Maicon',
-    role: 'Arquiteto de integrações: avalia ferramentas antes de adotar',
-    brief: 'Você avalia ferramentas de terceiros e entrega um parecer: absorver por inteiro, em parte, só o conceito ou rejeitar.',
+    name: MAICON,
+    role: 'Arquiteto de integrações: estuda vídeos e ferramentas e diz se vale trazer para o Escritório',
+    brief: 'Você avalia ferramentas e conteúdos de terceiros e entrega um parecer: absorver por inteiro, em parte, só o conceito ou rejeitar.',
     scope: 'maicon.md',
     actions: [
+      { id: ACTION_STUDY, label: 'Estudar vídeo (Instagram ou YouTube)', hint: 'Cole o link do Reel, do post ou do vídeo do YouTube' },
       { id: 'ferramenta', label: 'Avaliar ferramenta', hint: 'Cole o link do repositório ou do site' },
-      { id: 'ferramenta-video', label: 'Avaliar ferramenta mostrada em vídeo', hint: 'Cole o link do vídeo' },
     ],
+  },
+  {
+    name: YURI_YOUTUBE,
+    role: 'Inteligência de negócios em vídeos: aulas, podcasts e entrevistas do YouTube ou do Instagram',
+    brief: 'Você transforma um vídeo em inteligência rastreável: tese, modelo de negócio, operação, oportunidades e experimentos para a TAVIR, com o instante de cada ponto.',
+    actions: [{ id: ACTION_STUDY, label: 'Estudar vídeo e tirar aprendizados', hint: 'Cole o link do YouTube ou do Instagram e diga o que quer aprender' }],
   },
   {
     name: 'Atlas Web',
@@ -137,6 +157,28 @@ export const OFFICE_AGENTS: OfficeAgent[] = [
   },
 ];
 
+/**
+ * Catálogo que o app mostra: a equipe inteira da agência (ROSTER), na ordem dos grupos,
+ * com o que o Escritório já sabe de cada um (CURATED) por cima, e os ajudantes genéricos no fim.
+ */
+function buildCatalog(): OfficeAgent[] {
+  const byName = new Map(CURATED.map((c) => [c.name, c]));
+  const team: OfficeAgent[] = ROSTER.map((r) => {
+    const c = byName.get(r.name);
+    if (c) return { ...c, id: r.id, sector: r.sector, role: c.role || r.role };
+    return { name: r.name, id: r.id, sector: r.sector, role: r.role, brief: `Você é ${r.name}, da equipe TAVIR: ${r.role}.`, actions: r.actions };
+  });
+  const inTeam = new Set(team.map((t) => t.name));
+  const helpers = CURATED.filter((c) => !inTeam.has(c.name)).map((c) => ({ ...c, sector: 'Escritório' }));
+  const rank = (s?: string) => {
+    const i = SECTOR_ORDER.indexOf(s || '');
+    return i < 0 ? SECTOR_ORDER.length : i;
+  };
+  return [...team, ...helpers].map((x, i) => ({ x, i })).sort((p, q) => rank(p.x.sector) - rank(q.x.sector) || p.i - q.i).map((p) => p.x);
+}
+
+export const OFFICE_AGENTS: OfficeAgent[] = buildCatalog();
+
 export function officeAgent(name: string | null | undefined): OfficeAgent | null {
   const wanted = String(name || '').trim().toLowerCase();
   if (!wanted) return null;
@@ -154,8 +196,8 @@ export function isTriage(name: string | null | undefined): boolean {
 }
 
 /** O que o Escritório publica para o app montar a tela de Chamar agente. */
-export function publishedAgents(model: string): Array<{ name: string; model: string; role: string; actions: OfficeAgentAction[] }> {
-  return OFFICE_AGENTS.map((a) => ({ name: a.name, model, role: a.role, actions: a.actions }));
+export function publishedAgents(model: string): Array<{ name: string; model: string; role: string; sector: string; actions: OfficeAgentAction[] }> {
+  return OFFICE_AGENTS.map((a) => ({ name: a.name, model, role: a.role, sector: a.sector || 'Escritório', actions: a.actions }));
 }
 
 /** Motor ligado no Escritório, como o app mostra na escolha de motor e esforço. */

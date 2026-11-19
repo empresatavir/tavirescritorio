@@ -90,7 +90,7 @@ function toWav(source: string, dest: string): Promise<void> {
 }
 
 /** Transcrição local com o whisper.cpp do Studio. Devolve o texto ('' quando não há fala). */
-async function transcribeLocal(video: string): Promise<string> {
+export async function transcribeLocal(video: string): Promise<string> {
   const { whisperInstalled, WHISPER_MODEL, WHISPER_VERSION } = require('./studio/whisper');
   const { motionDir } = require('./studio/motionHome');
   if (!whisperInstalled()) throw new Error('o whisper.cpp do Studio não está instalado neste notebook');
