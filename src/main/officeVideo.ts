@@ -107,7 +107,8 @@ export async function transcribeLocal(video: string): Promise<string> {
       whisperCppVersion: WHISPER_VERSION,
       model: WHISPER_MODEL,
       tokenLevelTimestamps: false,
-      language: 'pt',
+      // O idioma vem do vídeo: forçar 'pt' faz o whisper "traduzir" fala em inglês e inventar texto.
+      language: 'auto',
       printOutput: false,
     });
     return (out.transcription || []).map((t) => String(t.text || '').trim()).filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
