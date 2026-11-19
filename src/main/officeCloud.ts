@@ -789,7 +789,13 @@ let timer: NodeJS.Timeout | null = null;
 export function startDeskCloud(onApplied: () => void = () => {}): boolean {
   stopDeskCloud();
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { getBundle } = require('./credentials');
+  const { getBundle, exportEscritorioEnv } = require('./credentials');
+  // Mantém em dia os arquivos derivados do card (worker e chaves do build do APK).
+  try {
+    exportEscritorioEnv();
+  } catch (err: any) {
+    console.warn('[nuvem] não regravou os arquivos do card:', err?.message || err);
+  }
   const b = getBundle('escritorio_supabase');
   if (!b?.url || !b?.serviceKey) return false;
   const worker = new DeskWorker(realDeskStore(), new SupabaseRestTs(b.url, b.serviceKey), undefined, undefined, onApplied);

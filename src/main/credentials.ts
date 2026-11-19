@@ -431,10 +431,32 @@ export function escritorioEnvPath(): string {
   return process.env.TAVIR_ESCRITORIO_ENV_FILE || path.join(path.dirname(caminhoDaChave()), 'escritorio-supabase.env');
 }
 
-/** Reescreve (ou apaga) o arquivo do worker conforme o card do cofre. */
+/**
+ * Chaves do build do APK (`flutter build apk --dart-define-from-file`), lidas por
+ * `aplicativo/build_apk.ps1` do Novo App. Só o que já vai dentro do APK: URL, chave pública
+ * e o usuário do app. A chave de serviço nunca entra aqui.
+ */
+export function escritorioApkDefinesPath(): string {
+  return process.env.TAVIR_APK_DEFINES || path.join(path.dirname(caminhoDaChave()), 'escritorio-apk.json');
+}
+
+function exportApkDefines(bundle: Record<string, string> | null): void {
+  const file = escritorioApkDefinesPath();
+  if (!bundle || !bundle.anonKey || !bundle.appEmail || !bundle.appPassword) {
+    if (existsSync(file)) rmSync(file, { force: true });
+    return;
+  }
+  mkdirSync(path.dirname(file), { recursive: true });
+  const body = { SUPABASE_URL: bundle.url, SUPABASE_ANON_KEY: bundle.anonKey, SUPABASE_EMAIL: bundle.appEmail, SUPABASE_PASSWORD: bundle.appPassword };
+  writeFileSync(file, JSON.stringify(body, null, 2) + '\n', { encoding: 'utf8', mode: 0o600 });
+  restringirAcesso(file);
+}
+
+/** Reescreve (ou apaga) o arquivo do worker e o das chaves do APK conforme o card do cofre. */
 export function exportEscritorioEnv(): void {
   const file = escritorioEnvPath();
   const bundle = getBundle('escritorio_supabase');
+  exportApkDefines(bundle);
   if (!bundle) {
     if (existsSync(file)) rmSync(file, { force: true });
     return;
