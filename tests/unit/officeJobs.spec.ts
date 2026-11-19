@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { ExecQueue, parseRaioxTarget, type ExecStore, type ExecTask, type Runner, type RunnerResult, type TaskRunRow } from '../../src/main/officeExec';
 import { applyDeskCommand, DeskWorker, jobMirror, jobTask, type DeskRemote, type DeskStore, type DeskTask, type Outcome } from '../../src/main/officeCloud';
 
-const UUID1 = '11111111-2222-4333-8444-555555555555';
+import { publishedAgents } from '../../src/shared/officeAgents';
+
+const UUID1 ='11111111-2222-4333-8444-555555555555';
 const UUID2 = '66666666-7777-4888-9999-aaaaaaaaaaaa';
 
 /** Kanban + fila em memória, como o Escritório real (tarefa criada pelo pedido do APK). */
@@ -91,7 +93,7 @@ describe('jobs do APK viram execuções reais', () => {
     await q.tick();
     expect(agents).toEqual(['redator', 'agente:Revisor']);
     expect(prompts[0]).toContain('Post sobre: Pão de fermentação natural');
-    expect(prompts[1]).toContain('Você é o Revisor');
+    expect(prompts[1]).toContain('Você é Revisor');
     expect(prompts[1]).toContain('Revise o contrato da pasta');
     expect(applyDeskCommand(desk, { id: 'v1', kind: 'job.create', payload: { kind: 'agent', fields: { instrucao: '' } } })).toMatchObject({ status: 'rejected', code: 400 });
     expect(applyDeskCommand(desk, { id: 'v2', kind: 'job.create', payload: { kind: 'xpto', fields: {} } })).toMatchObject({ status: 'rejected', code: 400 });
@@ -103,6 +105,53 @@ describe('jobs do APK viram execuções reais', () => {
     expect(parseRaioxTarget('Padaria Sol · padariasol.com.br')).toEqual({ company: 'Padaria Sol', link: 'https://padariasol.com.br' });
     expect(parseRaioxTarget('Padaria Sol @padariasol')).toEqual({ company: 'Padaria Sol', link: 'https://www.instagram.com/padariasol/' });
     expect(parseRaioxTarget('https://www.loja.com.br/')).toEqual({ company: 'loja.com.br', link: 'https://www.loja.com.br/' });
+  });
+
+  it('Instagram com vídeo por link vai para a extração pela API; link ruim é recusado', async () => {
+    const { q, desk, prompts, agents, rows } = escritorio();
+    const link = 'https://www.instagram.com/reel/DAbc123xyz/';
+    expect(jobTask('instagram', { escopo: 'Vídeo por link', link: 'https://exemplo.com/video' })).toHaveProperty('error');
+    expect(jobTask('instagram', { escopo: 'Vídeo por link' })).toHaveProperty('error');
+    expect(jobTask('instagram', { perfil: '@padaria', escopo: 'Stories' })).toMatchObject({ agent: 'social' });
+    const out = applyDeskCommand(desk, { id: UUID1, kind: 'job.create', payload: { kind: 'instagram', fields: { escopo: 'Vídeo por link', link } } });
+    expect(out).toMatchObject({ status: 'applied', code: 201 });
+    expect((out.body as any).title).toBe('Análise de vídeo · DAbc123xyz');
+    expect((out.body as any).kind).toBe('instagram');
+    await q.tick();
+    expect(agents).toEqual(['video']);
+    expect(JSON.parse(rows[0].fields!)).toMatchObject({ link, kind: 'instagram' });
+    expect(prompts[0]).toContain('Íris Instagram');
+    expect(prompts[0]).toContain('video.json');
+    expect(prompts[0]).toContain('## Interessa ao escritório?');
+    expect(prompts[0]).toContain('não use navegador');
+  });
+
+  it('Chamar agente aceita os agentes do catálogo, a opção pronta e a triagem', async () => {
+    const { q, desk, prompts, agents } = escritorio();
+    applyDeskCommand(desk, { id: UUID1, kind: 'job.create', payload: { kind: 'agent', fields: { agent: 'Maicon', action: 'ferramenta', instrucao: 'https://github.com/x/y' } } });
+    applyDeskCommand(desk, { id: UUID2, kind: 'job.create', payload: { kind: 'agent', fields: { agent: 'triagem', instrucao: 'Quero melhorar o site da padaria' } } });
+    await q.tick();
+    await q.tick();
+    expect(agents).toEqual(['agente:Maicon', 'triagem']);
+    expect(prompts[0]).toContain('Você é Maicon');
+    expect(prompts[0]).toContain('Opção escolhida no app: Avaliar ferramenta');
+    expect(prompts[1]).toContain('Agente escolhido:');
+    expect(prompts[1]).toContain('- Atlas Web:');
+    expect(jobTask('agent', { agent: 'Íris Instagram', action: 'video', instrucao: 'veja https://www.instagram.com/p/Cxyz12345/ por favor' })).toMatchObject({ agent: 'video', fields: { link: 'https://www.instagram.com/p/Cxyz12345/' } });
+    expect(jobTask('agent', { agent: 'Íris Instagram', action: 'video', instrucao: 'sem link' })).toHaveProperty('error');
+    expect(jobTask('agent', { agente: 'Desconhecido', instrucao: 'faça algo' })).toMatchObject({ agent: 'agente:Analista' });
+  });
+
+  it('o catálogo publicado traz papel e opções de cada agente, sem repetir nome', () => {
+    const list = publishedAgents('claude · sonnet');
+    expect(new Set(list.map((a) => a.name)).size).toBe(list.length);
+    expect(list.map((a) => a.name)).toEqual(expect.arrayContaining(['Íris Instagram', 'Maicon', 'Yuri UX', 'Paula PM', 'Revisor']));
+    for (const a of list) {
+      expect(a.role.length).toBeGreaterThan(5);
+      expect(a.actions.length).toBeGreaterThan(0);
+      expect(a.model).toBe('claude · sonnet');
+    }
+    expect(list[0].name).not.toBe('Paula PM');
   });
 
   it('pausar, retomar e cancelar pelo APK', async () => {

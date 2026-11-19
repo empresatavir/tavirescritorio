@@ -18,6 +18,7 @@ import { createHash } from 'node:crypto';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { deliveryBody } from './officeExec';
+import { ACTION_VIDEO, IRIS, OFFICE_AGENTS, isTriage, officeAction, officeAgent, publishedAgents, videoShortcode } from '../shared/officeAgents';
 
 export const DESK_KINDS = [
   'task.create', 'task.update', 'task.move', 'task.delete',
@@ -174,19 +175,19 @@ export function toAppTask(t: DeskTask, run?: Record<string, unknown> | null): Ap
 
 export const JOB_AGENT: Record<string, string> = { instagram: 'social', editorial: 'redator', raiox: 'raiox' };
 const JOB_SECTOR: Record<string, string> = { instagram: 'Marketing', editorial: 'Conteúdo', raiox: 'Comercial', agent: 'Operação' };
-export const ROLE_NAMES = ['Analista', 'Revisor', 'Redator', 'Pesquisador', 'Social'];
+export const ROLE_NAMES = OFFICE_AGENTS.map((a) => a.name);
 
 function agentName(agent: string): string {
   const m = /^agente:(.+)$/.exec(agent || '');
   if (m) return m[1];
-  return ({ social: 'Social', redator: 'Redator', raiox: 'Pesquisador', paula: 'Paula PM', plano: 'Agente do plano' } as Record<string, string>)[agent] || 'Agente geral';
+  return ({ social: 'Social', redator: 'Redator', raiox: 'Pesquisador', paula: 'Paula PM', plano: 'Agente do plano', video: IRIS, triagem: 'Triagem' } as Record<string, string>)[agent] || 'Agente geral';
 }
 
 function kindOf(agent: string): string {
-  if (agent === 'social') return 'instagram';
+  if (agent === 'social' || agent === 'video') return 'instagram';
   if (agent === 'redator') return 'editorial';
   if (agent === 'raiox') return 'raiox';
-  if (/^agente:/.test(agent || '')) return 'agent';
+  if (agent === 'triagem' || /^agente:/.test(agent || '')) return 'agent';
   return 'tarefa';
 }
 
@@ -202,9 +203,25 @@ function parseFields(raw?: string): Record<string, string> {
 }
 
 /** Título e descrição da tarefa que nasce de um pedido de job. Erro em `error` se faltou campo. */
-export function jobTask(kind: string, fields: Record<string, string>): { title: string; desc: string; sector: string; agent: string } | { error: string } {
+export type JobSpec = { title: string; desc: string; sector: string; agent: string; fields?: Record<string, string> };
+
+/** Vídeo do Instagram por link: vai para a extração pela RapidAPI (agente `video`). */
+function videoTask(link: string): JobSpec | { error: string } {
+  const code = videoShortcode(link);
+  if (!code) return { error: 'Informe o link de um Reel ou post do Instagram (instagram.com/reel/… ou /p/…).' };
+  return {
+    title: `Análise de vídeo · ${code}`,
+    desc: `Pedido pelo APK. Vídeo do Instagram por link: ${link}\nExtração pela RapidAPI, download, transcrição e relatório.`,
+    sector: JOB_SECTOR.instagram,
+    agent: 'video',
+    fields: { link, escopo: 'Vídeo por link' },
+  };
+}
+
+export function jobTask(kind: string, fields: Record<string, string>): JobSpec | { error: string } {
   const f = (k: string) => String(fields[k] ?? '').trim();
   if (kind === 'instagram') {
+    if (f('link') || /v[ií]deo/i.test(f('escopo'))) return videoTask(f('link') || f('perfil'));
     const perfil = f('perfil').replace(/^@/, '');
     if (!perfil) return { error: 'Informe o perfil do Instagram.' };
     return { title: `Análise Instagram · @${perfil} · ${f('escopo') || 'Perfil completo'}`, desc: `Pedido pelo APK. Perfil @${perfil}, escopo ${f('escopo') || 'perfil completo'}.`, sector: JOB_SECTOR.instagram, agent: 'social' };
@@ -225,9 +242,20 @@ export function jobTask(kind: string, fields: Record<string, string>): { title: 
   if (kind === 'agent') {
     const instrucao = f('instrucao');
     if (!instrucao) return { error: 'Escreva a instrução para o agente.' };
-    const nome = ROLE_NAMES.includes(f('agente')) ? f('agente') : 'Analista';
+    const who = f('agent') || f('agente');
     const title = instrucao.length > 70 ? `${instrucao.slice(0, 67)}…` : instrucao;
-    return { title: `${nome} · ${title}`, desc: `Pedido pelo APK ao ${nome}:\n${instrucao}`, sector: JOB_SECTOR.agent, agent: `agente:${nome}` };
+    if (isTriage(who)) return { title: `Triagem · ${title}`, desc: `Pedido pelo APK sem agente escolhido:\n${instrucao}`, sector: JOB_SECTOR.agent, agent: 'triagem' };
+    const ag = officeAgent(who);
+    const action = officeAction(ag, f('action') || f('acao'));
+    if (ag && ag.name === IRIS && action && action.id === ACTION_VIDEO) return videoTask((/https?:\/\/\S+/.exec(instrucao) || [instrucao])[0]);
+    const nome = ag ? ag.name : 'Analista';
+    return {
+      title: `${nome} · ${title}`,
+      desc: `Pedido pelo APK a ${nome}${action ? ` (${action.label})` : ''}:\n${instrucao}`,
+      sector: JOB_SECTOR.agent,
+      agent: `agente:${nome}`,
+      fields: action ? { acao: action.label } : undefined,
+    };
   }
   return { error: `Tipo de job desconhecido: ${kind || '(vazio)'}` };
 }
@@ -411,7 +439,7 @@ function applyFresh(store: DeskStore, cmd: Command): Outcome {
       const spec = jobTask(kind, fields);
       if ('error' in spec) return reject(400, spec.error);
       task = store.create({ id: cmd.id, title: spec.title, desc: spec.desc, prio: 'Normal', sector: spec.sector, status: 'to_plan', who: agentName(spec.agent) });
-      const r = store.exec.enqueue(task.id, 'exec', spec.agent, { origin: 'apk', id: cmd.id, fields: { ...fields, kind } });
+      const r = store.exec.enqueue(task.id, 'exec', spec.agent, { origin: 'apk', id: cmd.id, fields: { ...fields, ...(spec.fields || {}), kind } });
       if (!r.ok) return reject(r.code, r.error);
     }
     const body = jobBody(store, task.id);
@@ -638,7 +666,7 @@ export class DeskWorker {
           { label: 'TAVIR Escritório · Kanban', meta: `${tasks.length} tarefa(s)`, status: 'ok' },
           { label: 'Fila de execução', meta: running ? `executando · ${queued} na fila` : queued ? `${queued} na fila` : 'parada, sem pedidos', status: 'ok' },
         ],
-        agents: ['Agente geral', 'Paula PM', 'Social', 'Redator', 'Pesquisador', 'Analista', 'Revisor'].map((name) => ({ name, model })),
+        agents: publishedAgents(model),
         app_version: 'escritorio-1',
       }],
       'id',

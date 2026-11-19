@@ -14,6 +14,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { OFFICE_AGENTS, officeAgent } from '../shared/officeAgents';
 
 export type RunMode = 'plan' | 'exec';
 export type TaskRunStatus = 'queued' | 'running' | 'review' | 'done' | 'approved' | 'failed' | 'canceled';
@@ -97,17 +98,13 @@ export const AGENT_LABEL: Record<string, string> = {
   social: 'Social',
   redator: 'Redator',
   raiox: 'Pesquisador · Raio-X',
+  video: 'Íris Instagram',
+  triagem: 'Triagem',
 };
 const OPEN: TaskRunStatus[] = ['queued', 'running'];
 
-/** Agentes que o APK chama pelo "Chamar agente" (e o que cada um faz). */
-export const ROLE_BRIEF: Record<string, string> = {
-  Analista: 'Você analisa a situação ou os dados indicados e entrega um diagnóstico com números, causas prováveis e recomendações priorizadas.',
-  Revisor: 'Você revisa o material indicado (texto, documento ou código), aponta problemas concretos e propõe a versão corrigida.',
-  Redator: 'Você escreve o texto pedido, claro e pronto para usar, em português do Brasil.',
-  Pesquisador: 'Você pesquisa o assunto em fontes públicas, cita cada fonte com link e separa fato de opinião.',
-  Social: 'Você cuida de redes sociais: analisa perfis, propõe pautas, legendas e calendário.',
-};
+/** Agentes que o APK chama pelo "Chamar agente" (e o que cada um faz). Vem do catálogo. */
+export const ROLE_BRIEF: Record<string, string> = Object.fromEntries(OFFICE_AGENTS.map((a) => [a.name, a.brief]));
 
 export function isAgent(agent: string): boolean {
   if (agent in AGENT_LABEL) return true;
@@ -123,10 +120,10 @@ export function agentLabel(agent: string): string {
 
 /** Tipo de entrega (kind do APK) pelo agente da execução. */
 export function kindOfAgent(agent: string): string {
-  if (agent === 'social') return 'instagram';
+  if (agent === 'social' || agent === 'video') return 'instagram';
   if (agent === 'redator') return 'editorial';
   if (agent === 'raiox') return 'raiox';
-  if (/^agente:/.test(agent || '')) return 'agent';
+  if (agent === 'triagem' || /^agente:/.test(agent || '')) return 'agent';
   return 'tarefa';
 }
 
@@ -200,11 +197,53 @@ function rolePrompt(agent: string, f: Record<string, string>): string {
       'Grave o texto final em entrega.md, pronto para publicar (título, corpo e chamada). Não publique.',
     ].join('\n');
   }
+  if (agent === 'video') {
+    return [
+      'Você é a Íris Instagram, analista de conteúdo do TAVIR Escritório.',
+      `O Escritório já extraiu este vídeo pela RapidAPI e baixou o arquivo: ${f.link || '(link na tarefa)'}.`,
+      'Nesta pasta estão video.json (autor, legenda, números e dados da coleta) e, quando houve fala, transcricao.txt. Leia os dois antes de escrever.',
+      f.transcricao ? `Aviso sobre a transcrição: ${f.transcricao} Diga isso no relatório e não invente o que foi falado.` : '',
+      'Não acesse o Instagram, não baixe nada e não use navegador: trabalhe só com o que está na pasta.',
+      'Grave o relatório em analise-video.md com estas seções, nesta ordem:',
+      '## O que é o vídeo\n## Análise (tema, formato, tom, estrutura, público e potencial)\n## Como se comportaria no escritório\n## Interessa ao escritório?\n## Dados da coleta',
+      'Em "Interessa ao escritório?" comece por Sim, Não ou Em parte e justifique com o que está no vídeo.',
+      'Em "Dados da coleta" informe provedor, Requests da RapidAPI usados (requests.total de video.json) e se houve transcrição.',
+      'Afirmação sem base na legenda, na transcrição ou nos números fica marcada como hipótese.',
+    ].filter(Boolean).join('\n');
+  }
+  if (agent === 'triagem') {
+    return [
+      'Você faz a triagem do TAVIR Escritório: o Carlos não escolheu agente.',
+      'Agentes disponíveis:',
+      ...OFFICE_AGENTS.map((a) => `- ${a.name}: ${a.role}`),
+      `Pedido do Carlos: ${f.instrucao || '(na tarefa)'}`,
+      'Comece a resposta com uma linha "Agente escolhido: <nome> · <motivo em uma frase>". Depois atenda o pedido no papel desse agente.',
+      'Se o pedido for analisar um vídeo do Instagram por link, não tente baixar: diga que ele deve ser pedido em Analisar Instagram › Vídeo por link, que usa a extração pela API.',
+    ].join('\n');
+  }
   const m = /^agente:(.+)$/.exec(agent || '');
   if (m) {
-    return [`Você é o ${m[1]} do TAVIR Escritório. ${ROLE_BRIEF[m[1]] || ''}`, `Pedido do Carlos: ${f.instrucao || '(na tarefa)'}`].join('\n');
+    const ag = officeAgent(m[1]);
+    return [
+      `Você é ${m[1]}, do TAVIR Escritório. ${ROLE_BRIEF[m[1]] || ''}`,
+      ag?.scope ? agentScope(ag.scope) : '',
+      f.acao ? `Opção escolhida no app: ${f.acao}` : '',
+      `Pedido do Carlos: ${f.instrucao || '(na tarefa)'}`,
+    ].filter(Boolean).join('\n');
   }
   return '';
+}
+
+/** Escopo canônico do agente (agentes/escopo/agentes/), cortado para caber no pedido. */
+function agentScope(file: string): string {
+  try {
+    const root = process.cwd();
+    const text = fs.readFileSync(path.join(root, 'agentes', 'escopo', 'agentes', file), 'utf8').trim();
+    if (!text) return '';
+    return `Seu escopo canônico (os caminhos citados partem de ${root}):\n${text.slice(0, 6000)}`;
+  } catch {
+    return '';
+  }
 }
 
 export function buildPrompt(opts: { mode: RunMode; agent: string; task: ExecTask; plan: string; note: string; previous: string; workspace: string; fields?: Record<string, string> }): string {
@@ -651,6 +690,14 @@ async function runRaiox(job: Parameters<Runner>[0], registerKill: (kill: () => v
 
 const realRunner: Runner = async (job, registerKill, say = () => {}) => {
   if (job.row.agent === 'raiox' && job.row.mode === 'exec') return runRaiox(job, registerKill, say);
+  const isVideo = job.row.agent === 'video' && job.row.mode === 'exec';
+  if (isVideo) {
+    // Extração pela RapidAPI, download e transcrição acontecem aqui, antes do motor.
+    const { prepVideo } = require('./officeVideo');
+    const prep = await prepVideo(fieldsOf(job.row).link, taskWorkspace(job.task), say, registerKill);
+    if (!prep.ok) return { ok: false, reply: '', error: prep.error, stopped: prep.stopped };
+    if (prep.transcriptNote) job = { ...job, prompt: job.prompt.replace('Não acesse o Instagram', `Aviso sobre a transcrição: ${prep.transcriptNote} Diga isso no relatório e não invente o que foi falado.\nNão acesse o Instagram`) };
+  }
   const { startRun } = require('./runLedger');
   const { runMotor, findMotorBinary, normalizeMotorId } = require('./motors');
   const { engineHub } = require('./drivers/engineHub');
@@ -696,11 +743,15 @@ const realRunner: Runner = async (job, registerKill, say = () => {}) => {
     reply: result.text || '',
     exitCode: result.exitCode,
   });
+  if (isVideo && result.ok && !paused) {
+    const { renderVideoHtml } = require('./officeVideo');
+    await renderVideoHtml(workspace).catch(() => false);
+  }
   return { ok: !!result.ok && !paused, reply: result.text || '', error: result.error?.message, stopped: paused, runId: handle.id };
 };
 
 /** Arquivo que cada papel grava (vem primeiro na entrega). */
-export const DELIVERABLE: Record<string, string> = { social: 'analise-instagram.md', redator: 'entrega.md' };
+export const DELIVERABLE: Record<string, string> = { social: 'analise-instagram.md', redator: 'entrega.md', video: 'analise-video.md' };
 
 export interface TaskFile {
   name: string;
