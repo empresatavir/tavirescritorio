@@ -702,7 +702,12 @@ const realRunner: Runner = async (job, registerKill, say = () => {}) => {
   const { runMotor, findMotorBinary, normalizeMotorId } = require('./motors');
   const { engineHub } = require('./drivers/engineHub');
   const settings = engineHub.getSettings();
-  const motor = normalizeMotorId(settings.defaultEngine);
+  // O app pode escolher motor e esforço entre os ligados; sem escolha, vale o padrão do Escritório.
+  const { callForRequest, publishedEngines } = require('../shared/officeAgents');
+  const { engines: enabled } = engineHub.getCatalog();
+  const { motorById } = require('../shared/engineCatalog');
+  const call = callForRequest(fieldsOf(job.row), publishedEngines(enabled.map((e: { id: string }) => motorById(e.id)), settings), settings);
+  const motor = normalizeMotorId(call.engine);
   const workspace = taskWorkspace(job.task);
   const access = job.row.mode === 'plan' ? 'read' : 'write';
   const timeoutMs = 45 * 60 * 1000;
@@ -715,8 +720,8 @@ const realRunner: Runner = async (job, registerKill, say = () => {}) => {
     projectName: 'Escritório',
     engine: motor,
     binary: findMotorBinary(motor) || '',
-    model: settings.defaultModel,
-    effort: settings.defaultEffort,
+    model: call.model,
+    effort: call.effort,
     mode: access,
     args: [],
     timeoutMs,
@@ -727,8 +732,8 @@ const realRunner: Runner = async (job, registerKill, say = () => {}) => {
     motor,
     workspace,
     prompt: job.prompt,
-    model: settings.defaultModel,
-    effort: settings.defaultEffort,
+    model: call.model,
+    effort: call.effort,
     access,
     timeoutMs,
     onProgress: (p: { activity?: string }) => p && p.activity && say(p.activity),

@@ -158,6 +158,64 @@ export function publishedAgents(model: string): Array<{ name: string; model: str
   return OFFICE_AGENTS.map((a) => ({ name: a.name, model, role: a.role, actions: a.actions }));
 }
 
+/** Motor ligado no Escritório, como o app mostra na escolha de motor e esforço. */
+export interface PublishedEngine {
+  id: string;
+  label: string;
+  /** Modelo usado quando o app escolhe este motor (o padrão do Escritório, se for o motor padrão). */
+  model: string;
+  modelLabel: string;
+  efforts: Array<{ id: string; label: string }>;
+  defaultEffort: string;
+  isDefault: boolean;
+}
+
+/**
+ * Motores que o app pode escolher: só os ligados. Com um só, o app nem mostra a escolha.
+ * Vai em office_status.stats.engines (a tabela não tem coluna própria).
+ */
+export function publishedEngines(
+  motors: Array<{ id: string; label: string; defaultModel: string; defaultEffort: string; models: Array<{ id: string; label: string; efforts: Array<{ id: string; label: string }> }> }>,
+  settings: { defaultEngine: string; defaultModel: string; defaultEffort: string },
+): PublishedEngine[] {
+  return motors.map((m) => {
+    const isDefault = m.id === settings.defaultEngine;
+    const wanted = isDefault ? settings.defaultModel : m.defaultModel;
+    const model = m.models.find((x) => x.id === wanted) || m.models[0];
+    const efforts = (model?.efforts || []).map((e) => ({ id: e.id, label: e.label }));
+    const pref = isDefault ? settings.defaultEffort : m.defaultEffort;
+    return {
+      id: m.id,
+      label: m.label,
+      model: model?.id || '',
+      modelLabel: model?.label || '',
+      efforts,
+      defaultEffort: efforts.some((e) => e.id === pref) ? pref : efforts[0]?.id || '',
+      isDefault,
+    };
+  });
+}
+
+/**
+ * Motor, modelo e esforço de um pedido do app. `motor`/`esforco` só valem se o motor estiver ligado;
+ * senão fica o padrão do Escritório.
+ */
+export function callForRequest(
+  fields: Record<string, string> | null | undefined,
+  engines: PublishedEngine[],
+  settings: { defaultEngine: string; defaultModel: string; defaultEffort: string },
+): { engine: string; model: string; effort: string } {
+  const f = fields || {};
+  const wanted = String(f.motor || '').trim().toLowerCase();
+  const chosen = engines.find((e) => e.id === wanted) || engines.find((e) => e.isDefault);
+  const base = chosen
+    ? { engine: chosen.id, model: chosen.model, effort: chosen.defaultEffort }
+    : { engine: settings.defaultEngine, model: settings.defaultModel, effort: settings.defaultEffort };
+  const effort = String(f.esforco || '').trim().toLowerCase();
+  if (effort && chosen && chosen.efforts.some((e) => e.id === effort)) base.effort = effort;
+  return base;
+}
+
 /** Link de vídeo do Instagram que a extração aceita (Reel, post ou IGTV). */
 export const VIDEO_LINK_RE = /^https?:\/\/(?:www\.)?instagram\.com\/(reel|reels|p|tv)\/([A-Za-z0-9_-]{5,20})\/?(?:[?#]\S*)?$/i;
 

@@ -18,7 +18,7 @@ import { createHash } from 'node:crypto';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { deliveryBody } from './officeExec';
-import { ACTION_VIDEO, IRIS, OFFICE_AGENTS, isTriage, officeAction, officeAgent, publishedAgents, videoShortcode } from '../shared/officeAgents';
+import { ACTION_VIDEO, IRIS, OFFICE_AGENTS, isTriage, officeAction, officeAgent, publishedAgents, videoShortcode, type PublishedEngine } from '../shared/officeAgents';
 
 export const DESK_KINDS = [
   'task.create', 'task.update', 'task.move', 'task.delete',
@@ -98,6 +98,8 @@ export interface DeskExec {
   liveLog?(rowId: string): Array<{ at: string; m: string }>;
   /** Modelo padrão do motor, só para mostrar. */
   model?(): string;
+  /** Motores ligados, para o app escolher motor e esforço (só aparece a escolha com mais de um). */
+  engines?(): PublishedEngine[];
   /** Arquivos .md/.txt que o agente gravou na pasta da tarefa. */
   files?(task: DeskTask, agent: string): Array<{ name: string; body: string }>;
 }
@@ -661,6 +663,7 @@ export class DeskWorker {
           completedToday: rows.filter((r) => r.mode === 'exec' && ['review', 'approved', 'done'].includes(r.status) && isToday(r.finished_at, today)).length,
           running,
           queued,
+          engines: ex && ex.engines ? ex.engines() : [],
         },
         services: [
           { label: 'TAVIR Escritório · Kanban', meta: `${tasks.length} tarefa(s)`, status: 'ok' },
@@ -776,6 +779,16 @@ export function realDeskStore(): DeskStore {
             return [s.defaultEngine, s.defaultModel].filter(Boolean).join(' · ');
           } catch {
             return '';
+          }
+        },
+        engines: () => {
+          try {
+            const hub = require('./drivers/engineHub').engineHub;
+            const { motorById } = require('../shared/engineCatalog');
+            const { publishedEngines } = require('../shared/officeAgents');
+            return publishedEngines(hub.getCatalog().engines.map((e: { id: string }) => motorById(e.id)), hub.getSettings());
+          } catch {
+            return [];
           }
         },
       } as DeskExec;
