@@ -230,7 +230,8 @@ export async function startMotionJob(ask: MotionAsk): Promise<MotionJob> {
       });
       reply = result.text || '';
       failed = result.ok ? '' : (result.error?.message || 'motor não respondeu');
-      await run.finish({ ok: result.ok, exitCode: result.exitCode ?? null, reply, error: failed || undefined });
+      const kind = result.error && 'kind' in result.error ? String((result.error as { kind?: string }).kind || '') : '';
+      await run.finish({ ok: result.ok, status: kind === 'paused' ? 'paused' : undefined, exitCode: result.exitCode ?? null, reply, error: failed || undefined });
     } catch (err) {
       failed = err instanceof Error ? err.message : String(err);
       await run.finish({ ok: false, reply: '', error: failed }).catch(() => undefined);

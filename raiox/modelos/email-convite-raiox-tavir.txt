@@ -1,0 +1,13 @@
+Olá, {{CONTACT_NAME}}.
+
+A TAVIR preparou um convite para o Raio-X de {{COMPANY_NAME}}.
+
+São duas telas no mesmo link, cerca de 15 minutos e um único envio ao final. Não informe senhas, tokens ou conversas privadas.
+
+Preencha por este endereço individual:
+{{FORM_URL}}
+
+O link expira e deixa de aceitar alterações depois do envio. Se você não esperava este convite, responda a este e-mail.
+
+TAVIR
+Inteligência que entra em operação.

@@ -21,6 +21,17 @@ import type {
   SerieInput,
 } from './studio';
 import type { PreviewView } from './studioPreview';
+import type { RaioxCase, RaioxCatalogItem, RaioxGap } from './raiox';
+
+export interface RaioxScreenCase extends RaioxCase {
+  coverage: { stage: string; label: string; total: number; usable: number }[];
+  confidence: { observed: number; usable: number; ratio: number };
+  classes: { cls: string; label: string; n: number }[];
+  pending: number;
+  scan?: { id: string; label: string; covered: boolean }[];
+  methodPages: { path: string; title: string }[];
+  next: string;
+}
 
 export type DomainId = 'op' | 'mod' | 'com' | 'soc' | 'kn' | 'est' | 'sys';
 
@@ -244,6 +255,34 @@ export interface CredentialResult {
   credentials: CredentialView[];
 }
 
+export type BundleProvider = 'raiox_supabase' | 'escritorio_supabase' | 'resend' | 'rapidapi_local';
+
+export interface BundleFieldView {
+  key: string;
+  label: string;
+  secret: boolean;
+  /** Pode ficar vazio sem tirar o card de "conectado". */
+  optional?: boolean;
+  value: string;
+  preview: string;
+}
+
+export interface BundleView {
+  provider: BundleProvider;
+  name: string;
+  hint: string;
+  connected: boolean;
+  fields: BundleFieldView[];
+  updated_at: string;
+}
+
+export interface BundleResult {
+  ok: boolean;
+  error?: string;
+  bundle?: BundleView;
+  bundles: BundleView[];
+}
+
 export interface AltTrackPublishInfo {
   ok: boolean;
   error?: string;
@@ -377,6 +416,11 @@ export interface TavirApi {
     logs: () => Promise<Record<string, Array<{ ts: string; lvl: string; cls: string; text: string }>>>;
   };
   tasks: {
+    run: (id: string, opts: { mode: 'plan' | 'exec'; agent?: string }) => Promise<{ ok: boolean; error?: string; run?: any }>;
+    approve: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    revise: (id: string, note: string) => Promise<{ ok: boolean; error?: string }>;
+    stopRun: (target: { taskId?: string; workspace?: string }) => Promise<{ ok: boolean; error?: string }>;
+    runs: () => Promise<Record<string, any>>;
     list: () => Promise<TaskItem[]>;
     create: (params: { title: string; desc?: string; prio: string; sector: string; who?: string; status?: string }) => Promise<TaskItem>;
     updateStatus: (id: string, status: TaskItem['status']) => Promise<any>;
@@ -398,10 +442,46 @@ export interface TavirApi {
     pickFolder: () => Promise<{ canceled: boolean; path: string | null }>;
     absorb: (params: CreateFactoryProjectParams) => Promise<FactoryProjectItem>;
     survey: (idOrPath: string) => Promise<any>;
+    /** Retrato da absorção (.tavir/retrato.json), estado do fluxo e RETRATO.md. */
+    retrato: (idOrPath: string) => Promise<{ ok: boolean; retrato?: any; estado?: any; retratoMd?: string; error?: string }>;
+    /** Absorção: clona o link (conta do cofre) ou copia a pasta para tavir-interno/ ou tavir-externo/. */
+    absorbPrepare: (params: { key?: string; fonte: 'link' | 'pasta'; url?: string; accountId?: string; path?: string; nome?: string; ownership?: string }) => Promise<{ ok: boolean; destino?: string; preenchido?: any; repo_url?: string; error?: string }>;
+    /** Leitura em sete passos pelo Product Lab (só leitura). Retomar continua do passo parado. */
+    absorbStart: (idOrPath: string) => Promise<{ ok: boolean; error?: string; parado?: boolean }>;
+    absorbResume: (idOrPath: string) => Promise<{ ok: boolean; error?: string; parado?: boolean }>;
+    absorbStop: (idOrPath: string) => Promise<{ ok: boolean }>;
+    /** Gate do retrato: só o Carlos aprova. Reprovar exige nota e refaz os passos escolhidos. */
+    absorbDecide: (idOrPath: string, decision: 'aprovado' | 'reprovado', note?: string, refazer?: string[]) => Promise<{ ok: boolean; error?: string }>;
+    /** Pendência «a fazer» de QA ou segurança do projeto absorvido. */
+    absorbPending: (idOrPath: string, id: 'qa' | 'seg') => Promise<{ ok: boolean; error?: string; runId?: string }>;
+    /** A5: detectores de novo e só os passos afetados pelo que mudou desde o commit do retrato. */
+    retratoAtualizar: (idOrPath: string) => Promise<{ ok: boolean; error?: string; passos?: string[] }>;
+    /** A4: cartões de acesso do projeto (só prévia mascarada) e contas do GitHub do cofre. */
+    acessos: (idOrPath: string) => Promise<{ ok: boolean; error?: string; cartoes: any[]; contasGithub: Array<{ id: string; rotulo: string }> }>;
+    acessoSalvar: (idOrPath: string, servico: string, valores: Record<string, string>) => Promise<{ ok: boolean; error?: string; cartao?: any; conferido?: { ok: boolean; em: string; detalhe: string } }>;
+    acessoSituacao: (idOrPath: string, servico: string, situacao: 'pendente' | 'preenchido' | 'pedir_ao_cliente' | 'nao_se_aplica', nota?: string) => Promise<{ ok: boolean; error?: string; cartao?: any }>;
+    acessoRemover: (idOrPath: string, servico: string) => Promise<{ ok: boolean; error?: string; cartao?: any }>;
+    acessoAbrirGuia: (servico: string) => Promise<{ ok: boolean; error?: string; url?: string }>;
+    /** B1: chamados do projeto (.tavir/chamados). Mover pela tela é sempre o Carlos. */
+    chamados: (idOrPath: string) => Promise<{ ok: boolean; error?: string; chamados: any[]; contagem?: any }>;
+    chamado: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoCriar: (idOrPath: string, dados: { tipo?: string; titulo: string; descricao?: { a?: string; b?: string; c?: string }; prioridade?: string; anexos?: Array<{ name: string; type?: string; data: string }>; criterios?: string[]; origem?: 'formulario' | 'conversa'; autorNome?: string; motor?: string; runId?: string }) => Promise<{ ok: boolean; error?: string; chamado?: any; avisos?: string[] }>;
+    chamadoEditar: (idOrPath: string, id: string, ed: { tipo?: string; titulo?: string; descricao?: { a?: string; b?: string; c?: string }; prioridade?: string; criterios?: string[]; notas?: string; perguntas?: string[]; resposta?: string }) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoMover: (idOrPath: string, id: string, para: string, nota?: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoAnexar: (idOrPath: string, id: string, itens: Array<{ name: string; type?: string; data: string }>) => Promise<{ ok: boolean; error?: string; chamado?: any; avisos?: string[] }>;
+    chamadoRefinar: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; sugestao?: { criterios: string[]; perguntas: string[]; notas: string; texto: string; runId?: string; em: string } }>;
+    chamadoSugestao: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; sugestao?: any }>;
+    chamadoResponder: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoExecutar: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; chamado?: any; trilho?: boolean }>;
+    chamadoDecidir: (idOrPath: string, id: string, decisao: 'aprovado' | 'reprovado', nota?: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoConcluirDuvida: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    chamadoAnexo: (idOrPath: string, id: string, name: string) => Promise<{ ok: boolean; error?: string; dataUrl?: string }>;
+    chamadosContagem: (idOrPath: string) => Promise<{ ok: boolean; error?: string; contagem?: { total: number; abertos: number; aguardandoCarlos: number; porSituacao: Record<string, number> } }>;
     inspectFolder: (idOrPath: string) => Promise<any>;
     openInExplorer: (idOrPath: string) => Promise<{ ok: boolean; path?: string }>;
     readFile: (filePath: string) => Promise<{ ok: boolean; content?: string; size?: number }>;
     getChat: (idOrPath: string) => Promise<any>;
+    newChat: (idOrPath: string) => Promise<any>;
     askIris: (params: any) => Promise<any>;
     getAlterationsControl: (idOrPath: string) => Promise<ProjectAlterationsControl>;
     setAlterationsOpen: (idOrPath: string, open: boolean) => Promise<ProjectAlterationsControl>;
@@ -454,16 +534,20 @@ export interface TavirApi {
   };
   /** Credenciais de deploy e dados no cofre (Vercel, Supabase, Netlify). O token nunca volta para a tela. */
   creds: {
-    list: () => Promise<{ ok: boolean; credentials: CredentialView[] }>;
+    list: () => Promise<{ ok: boolean; credentials: CredentialView[]; bundles?: BundleView[] }>;
     save: (provider: CredentialProvider, token: string) => Promise<CredentialResult>;
     remove: (provider: CredentialProvider) => Promise<CredentialResult>;
     test: (provider: CredentialProvider) => Promise<CredentialResult>;
     openTokenPage: (provider: CredentialProvider) => Promise<{ ok: boolean; error?: string; url?: string }>;
+    saveBundle: (provider: BundleProvider, fields: Record<string, string>) => Promise<BundleResult>;
+    removeBundle: (provider: BundleProvider) => Promise<BundleResult>;
   };
   seg: {
-    run: (idOrPath: string) => Promise<{ ok: boolean; run?: any; error?: string }>;
-    list: (idOrPath: string) => Promise<{ ok: boolean; runs: any[]; running: boolean; lines: string[] }>;
+    /** Sem only: varredura completa (todos os itens). Com only: só aquele item, os demais herdados. */
+    run: (idOrPath: string, only?: string) => Promise<{ ok: boolean; run?: any; error?: string }>;
+    list: (idOrPath: string) => Promise<{ ok: boolean; runs: any[]; running: boolean; lines: string[]; items?: any[]; mode?: string; only?: string }>;
     stop: (idOrPath: string) => Promise<{ ok: boolean }>;
+    acceptItem: (idOrPath: string, fps: string[], note: string, title?: string) => Promise<{ ok: boolean; error?: string; n?: number }>;
     accept: (idOrPath: string, fp: string, accept: boolean, note?: string, title?: string) => Promise<{ ok: boolean; error?: string }>;
     open: (idOrPath: string, runId: string, rel?: string) => Promise<{ ok: boolean; error?: string; path?: string }>;
   };
@@ -474,6 +558,10 @@ export interface TavirApi {
     open: (idOrPath: string, runId: string, rel?: string) => Promise<{ ok: boolean; error?: string; path?: string }>;
   };
   runs: {
+    office: () => Promise<any>;
+    follow: (workspace: string, runId: string, mode: string, note?: string) => Promise<any>;
+    /** Registra a tentativa como cancelada (o processo é parado pelo módulo). */
+    cancel: (workspace: string, runId: string) => Promise<{ ok: true; runId: string } | { ok: false; error: string }>;
     list: (idOrPath: string, limit?: number) => Promise<any>;
     read: (idOrPath: string, runId: string) => Promise<any>;
     openFolder: (idOrPath: string, runId?: string) => Promise<{ ok: boolean; error?: string }>;
@@ -564,6 +652,54 @@ export interface TavirApi {
       board: () => Promise<{ ok: boolean; error?: string; compositions: Array<{ projectId?: string; title?: string }>; jobs: Array<{ jobId?: string; status?: string }> }>;
       open: (slug?: string) => Promise<{ ok: boolean }>;
     };
+  };
+  raiox: {
+    catalog: () => Promise<
+      | { ok: true; catalog: RaioxCatalogItem[]; gaps: RaioxGap[]; fronts: readonly { id: string; label: string; physicalOnly: boolean }[]; infra: unknown; ciclo: unknown }
+      | { ok: false; error: string }
+    >;
+    list: () => Promise<{ ok: true; cases: RaioxScreenCase[] } | { ok: false; error: string }>;
+    get: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    create: (input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    updateFrontier: (id: string, patch: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    addEvidence: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    pickFile: (id: string, sub: 'evidencias' | 'execucao') => Promise<{ ok: true; artifact: { file: string; sha256: string; collectedAt: string } } | { ok: false; error: string }>;
+    reviewEvidence: (id: string, evId: string, decision: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    removeEvidence: (id: string, evId: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    setPriority: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    setDebrief: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    openFolder: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    sync: () => Promise<{ ok: true; created: number; updated: number } | { ok: false; error: string }>;
+    analyse: (id: string, fronts: string[], note?: string) => Promise<{ ok: true; created: number } | { ok: false; error: string }>;
+    stopAnalyse: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    runs: (id: string) => Promise<{ ok: true; live: { running: boolean; speech: string; activity: string }; runs: unknown[] } | { ok: false; error: string }>;
+    readRun: (id: string, runId: string) => Promise<any>;
+    remove: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    pickPath: () => Promise<{ ok: true; path: string } | { ok: false; error: string }>;
+    attach: (id: string, src: string, field?: string) => Promise<any>;
+    writeDocuments: (id: string) => Promise<{ ok: true; version: number; problems: string[] } | { ok: false; error: string }>;
+    renderPdfs: (id: string, version: number) => Promise<{ ok: true } | { ok: false; error: string }>;
+    openDocument: (id: string, relative: string) => Promise<{ ok: boolean; error?: string }>;
+    viewDocument: (id: string, relative: string) => Promise<{ ok: boolean; error?: string }>;
+    viewReport: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    collectLocal: (id: string, mapsUrl?: string) => Promise<{ ok: boolean; status?: string; message?: string; requests?: number; place?: { name: string; address: string; rating: number | null; reviews: number | null } | null; matchedBy?: string; error?: string }>;
+    localTarget: (id: string) => Promise<{ ok: boolean; mapsUrl?: string; origin?: string; error?: string }>;
+    approveDocuments: (id: string, hashes: string[]) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    exportPdfs: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    recordDelivery: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    close: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => () => void;
+    playbooks: () => Promise<
+      | { ok: true; playbooks: Array<{ id: string; title: string; stage: string; wave: number; status: string; version: string; problems: string[] }> }
+      | { ok: false; error: string }
+    >;
+    playbook: (id: string) => Promise<{ ok: true; playbook: unknown } | { ok: false; error: string }>;
+    startExecution: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    recordMetric: (id: string, metric: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    checkStep: (id: string, step: number, proof: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    closeExecution: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    openPlaybook: (id: string) => Promise<{ ok: boolean; error?: string }>;
+    openFabrica: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
   };
   onEvent: (callback: (event: RunEvent) => void) => () => void;
   onStudioEvent: (callback: (event: StudioEvent) => void) => () => void;

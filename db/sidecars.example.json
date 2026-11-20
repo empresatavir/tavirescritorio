@@ -43,6 +43,26 @@
         }
       ],
       "nota": "Sobe só a API (5000) e o Studio web (3000), sem o TTS local: assim não disputa a porta 8765 com o DarkFlow. O iniciar.bat tem menu e a opção padrão não sobe a API."
+    },
+    {
+      "id": "controle-mobile",
+      "nome": "TAVIR Controle Mobile · Escritório",
+      "pasta": "C:/Users/carlo/Downloads/Projetos a Estudar/tavirescritorio/tavir-interno/novo-app-2dad16",
+      "comando": "python backend/server.py",
+      "healthUrl": "http://127.0.0.1:9010/health",
+      "portas": [
+        9010
+      ],
+      "processos": [
+        {
+          "comando": "python",
+          "args": [
+            "-u",
+            "backend/server.py"
+          ]
+        }
+      ],
+      "nota": "office.py na 9010 com o worker da fila na nuvem. As chaves do Supabase vêm do card TAVIR Escritório · Supabase (Contas e cofre). Não rode junto com supabase_sync.py sozinho."
     }
   ]
 }

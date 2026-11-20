@@ -1,6 +1,7 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
+import * as os from 'node:os';
 import * as path from 'node:path';
 
 export interface SidecarConflict {
@@ -39,6 +40,65 @@ export interface SidecarDeps {
   health: (url: string) => Promise<boolean>;
   portOwner: (port: number) => PortOwner | null;
   spawn: (spec: SidecarSpec) => { pid: number; kill: () => void };
+  /**
+   * Pids que o Escritório ligou, guardados fora do processo. Os sistemas rodam soltos
+   * (sobrevivem quando o Escritório fecha); com isso, o Escritório reaberto ainda sabe parar.
+   */
+  remember: { load: () => Record<string, number>; save: (map: Record<string, number>) => void };
+  killPid: (pid: number) => void;
+  /** Linha de comando de um processo (para saber se o dono da porta é mesmo este sistema). */
+  commandLine: (pid: number) => string;
+}
+
+const RUN_FILE = path.join(os.tmpdir(), 'tavir-sidecars-run.json');
+const defaultRemember: SidecarDeps['remember'] = {
+  load: () => {
+    try {
+      const raw = JSON.parse(fs.readFileSync(RUN_FILE, 'utf8'));
+      return raw && typeof raw === 'object' ? raw : {};
+    } catch {
+      return {};
+    }
+  },
+  save: (map) => {
+    try {
+      fs.writeFileSync(RUN_FILE, JSON.stringify(map), 'utf8');
+    } catch {
+      /* sem disco: só esta sessão sabe parar */
+    }
+  },
+};
+function defaultKillPid(pid: number): void {
+  if (pid > 0) execFileSync('taskkill', ['/PID', String(pid), '/T', '/F'], { windowsHide: true });
+}
+
+function defaultCommandLine(pid: number): string {
+  try {
+    return execFileSync(
+      'powershell',
+      ['-NoProfile', '-NonInteractive', '-Command', `(Get-CimInstance Win32_Process -Filter "ProcessId=${Number(pid)}").CommandLine`],
+      { encoding: 'utf8', windowsHide: true, timeout: 15000 },
+    ).trim();
+  } catch {
+    return '';
+  }
+}
+
+const norm = (text: string) => String(text || '').replace(/\\/g, '/').replace(/"/g, '').toLowerCase();
+
+/**
+ * O processo dono da porta é deste sistema? Vale a pasta do sistema na linha de comando
+ * ou o script/módulo que o Escritório usa para ligá-lo (ex.: backend/server.py, docuflow.api:app).
+ */
+export function belongsTo(spec: SidecarSpec, commandLine: string): boolean {
+  const cmd = norm(commandLine);
+  if (!cmd) return false;
+  if (spec.pasta && cmd.includes(norm(spec.pasta).replace(/\/+$/, ''))) return true;
+  const tokens = [
+    ...String(spec.comando || '').split(/\s+/),
+    ...(spec.processos ?? []).flatMap((item) => item.args ?? []),
+  ].filter((token) => token && !token.startsWith('-') && /[./:]/.test(token) && !/^\d+(\.\d+)*$/.test(token) && token !== '.');
+  return tokens.some((token) => cmd.includes(norm(token)));
 }
 
 export interface SidecarView {
@@ -182,7 +242,25 @@ export function createSidecarManager(file: string, deps: Partial<SidecarDeps> = 
   const health = deps.health ?? defaultHealth;
   const portOwner = deps.portOwner ?? defaultPortOwner;
   const spawnSpec = deps.spawn ?? defaultSpawn;
+  const remember = deps.remember ?? defaultRemember;
+  const killPid = deps.killPid ?? defaultKillPid;
+  const commandLine = deps.commandLine ?? defaultCommandLine;
   const systems = () => loadSidecars(file);
+
+  /** Pid de uma sessão anterior do Escritório que ainda é o dono da porta do sistema. */
+  function earlierPid(spec: SidecarSpec): number | null {
+    const saved = Number(remember.load()[spec.id]) || 0;
+    if (!saved) return null;
+    const owner = spec.portas.map((port) => portOwner(port)).find((found) => found);
+    return owner && owner.pid === saved ? saved : null;
+  }
+  function forget(id: string): void {
+    const map = remember.load();
+    if (id in map) {
+      delete map[id];
+      remember.save(map);
+    }
+  }
 
   async function aliveIds(all: SidecarSpec[]): Promise<Set<string>> {
     const ids = new Set<string>();
@@ -206,7 +284,7 @@ export function createSidecarManager(file: string, deps: Partial<SidecarDeps> = 
           healthUrl: item.healthUrl,
           portas: item.portas,
           saudavel,
-          nosso: children.has(item.id),
+          nosso: children.has(item.id) || (!!owner && Number(remember.load()[item.id]) === owner.pid),
           dono: owner ? `${owner.nome} · pid ${owner.pid}` : '',
         };
       }));
@@ -234,13 +312,45 @@ export function createSidecarManager(file: string, deps: Partial<SidecarDeps> = 
       const child = spawnSpec(spec);
       if (!child.pid) return { ok: false, error: 'o comando não devolveu um processo' };
       children.set(spec.id, child);
+      remember.save({ ...remember.load(), [spec.id]: child.pid });
       return { ok: true };
     },
     stop(id: string): { ok: boolean; error?: string } {
       const child = children.get(id);
-      if (!child) return { ok: false, error: 'esse sistema não foi iniciado pelo Escritório' };
-      child.kill();
-      children.delete(id);
+      if (child) {
+        child.kill();
+        children.delete(id);
+        forget(id);
+        return { ok: true };
+      }
+      // Ligado pelo Escritório numa sessão anterior (o app foi fechado e aberto de novo).
+      const spec = systems().find((item) => item.id === id);
+      if (!spec) return { ok: false, error: 'sistema não encontrado' };
+      const pid = earlierPid(spec);
+      const alvos = new Set<number>(pid ? [pid] : []);
+      if (!pid) {
+        // Ligado por fora (terminal, outro app, sessão antiga): confere quem está na porta antes de parar.
+        for (const port of spec.portas) {
+          const owner = portOwner(port);
+          if (!owner) continue;
+          if (!belongsTo(spec, commandLine(owner.pid))) {
+            return { ok: false, error: `a porta ${port} está com ${owner.nome} (pid ${owner.pid}), que não é o ${spec.nome}. Não parei.` };
+          }
+          alvos.add(owner.pid);
+        }
+        if (!alvos.size) {
+          forget(id);
+          return { ok: true };
+        }
+      }
+      for (const alvo of alvos) {
+        try {
+          killPid(alvo);
+        } catch (err) {
+          return { ok: false, error: `não consegui parar o pid ${alvo}: ${err instanceof Error ? err.message : String(err)}` };
+        }
+      }
+      forget(id);
       return { ok: true };
     },
   };

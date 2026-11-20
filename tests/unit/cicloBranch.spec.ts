@@ -27,7 +27,7 @@ import {
   commitIdentity,
   commitIdentityEnv,
 } from '../../src/main/gitAccounts';
-import { getCredentialToken, listCredentials, removeCredential, saveCredential } from '../../src/main/credentials';
+import { getBundle, getCredentialToken, listBundles, listCredentials, removeBundle, removeCredential, saveBundle, saveCredential } from '../../src/main/credentials';
 import { commitStep } from '../../src/main/stepCommit';
 
 const git = (cwd: string, ...args: string[]) => execFileSync('git', args, { cwd, encoding: 'utf8', windowsHide: true }).trim();
@@ -308,5 +308,77 @@ describe('credenciais de deploy e dados no cofre', () => {
     expect(bad.ok).toBe(false);
     expect((await saveCredential('heroku', 'abc')).ok).toBe(false);
     expect(listCredentials().every((c) => !c.connected)).toBe(true);
+  });
+
+  it('guarda os campos do Raio-X e a tela só vê a prévia do segredo', () => {
+    isolate();
+    const secret = 'office-sync-' + 'k'.repeat(24);
+    const fields = {
+      url: 'https://exemplo.supabase.co',
+      internalSecret: secret,
+      reviewSecret: secret + '-r',
+      deliverySecret: secret + '-d',
+      inviteSecret: secret + '-i',
+      officeSyncSecret: secret + '-s',
+    };
+    const saved = saveBundle('raiox_supabase', fields);
+    expect(saved.ok).toBe(true);
+    expect(JSON.stringify(saved)).not.toContain(secret);
+    const view = saved.bundles.find((item) => item.provider === 'raiox_supabase');
+    expect(view?.connected).toBe(true);
+    expect(view?.fields.find((item) => item.key === 'url')?.preview).toBe(fields.url);
+    expect(view?.fields.find((item) => item.key === 'officeSyncSecret')?.preview).toContain('…');
+    expect(view?.fields.find((item) => item.key === 'officeSyncSecret')?.value).toBe('');
+    const raw = fs.readFileSync(path.join(dir, 'db', 'credentials.json'), 'utf8');
+    expect(raw).not.toContain(secret);
+    expect(getBundle('raiox_supabase')?.officeSyncSecret).toBe(fields.officeSyncSecret);
+    const kept = saveBundle('raiox_supabase', { ...fields, officeSyncSecret: '' });
+    expect(kept.ok).toBe(true);
+    expect(getBundle('raiox_supabase')?.officeSyncSecret).toBe(fields.officeSyncSecret);
+    expect(saveBundle('resend', { apiKey: secret, from: 'TAVIR', replyTo: 'ola@tavir.com.br', templateId: 'tpl' }).ok).toBe(false);
+    expect(saveBundle('resend', { apiKey: secret, from: 'TAVIR <ola@tavir.com.br>', replyTo: 'ola@tavir.com.br', templateId: 'tpl' }).ok).toBe(true);
+    expect(JSON.stringify(listBundles())).not.toContain(secret);
+    removeBundle('raiox_supabase');
+    removeBundle('resend');
+    expect(listBundles().every((item) => !item.connected)).toBe(true);
+    expect(listCredentials().map((item) => item.provider)).toEqual(['vercel', 'supabase', 'netlify']);
+  });
+
+  it('card do Supabase do Escritório: URL sugerida, app opcional e arquivo do worker', () => {
+    isolate();
+    const envFile = path.join(dir, 'escritorio-supabase.env');
+    process.env.TAVIR_ESCRITORIO_ENV_FILE = envFile;
+    try {
+      const vazio = listBundles().find((item) => item.provider === 'escritorio_supabase');
+      expect(vazio?.connected).toBe(false);
+      expect(vazio?.fields.find((f) => f.key === 'url')?.value).toBe('https://esswhkxdupgtlijdorro.supabase.co');
+
+      const service = 'sb_secret_' + 's'.repeat(30);
+      const anon = 'sb_publishable_' + 'a'.repeat(30);
+      expect(saveBundle('escritorio_supabase', { url: 'https://outro.exemplo.com', serviceKey: service, anonKey: anon }).ok).toBe(false);
+      const saved = saveBundle('escritorio_supabase', { url: 'https://esswhkxdupgtlijdorro.supabase.co/rest/v1/', serviceKey: service, anonKey: anon });
+      expect(saved.ok).toBe(true);
+      expect(JSON.stringify(saved)).not.toContain(service);
+      const view = saved.bundles.find((item) => item.provider === 'escritorio_supabase');
+      expect(view?.connected).toBe(true);
+      expect(view?.fields.find((f) => f.key === 'appPassword')?.optional).toBe(true);
+      expect(getBundle('escritorio_supabase')).toEqual({ url: 'https://esswhkxdupgtlijdorro.supabase.co', serviceKey: service, anonKey: anon });
+
+      const env = fs.readFileSync(envFile, 'utf8');
+      expect(env).toContain('SUPABASE_URL=https://esswhkxdupgtlijdorro.supabase.co');
+      expect(env).toContain(`SUPABASE_SERVICE_ROLE_KEY=${service}`);
+      expect(env).not.toContain(anon);
+
+      expect(saveBundle('escritorio_supabase', { url: 'https://esswhkxdupgtlijdorro.supabase.co', appEmail: 'sem-arroba' }).ok).toBe(false);
+      const comApp = saveBundle('escritorio_supabase', { url: 'https://esswhkxdupgtlijdorro.supabase.co', appEmail: 'app@tavir.com.br', appPassword: 'senha-forte-123' });
+      expect(comApp.ok).toBe(true);
+      expect(getBundle('escritorio_supabase')?.serviceKey).toBe(service);
+      expect(fs.readFileSync(envFile, 'utf8')).not.toContain('senha-forte-123');
+
+      removeBundle('escritorio_supabase');
+      expect(fs.existsSync(envFile)).toBe(false);
+    } finally {
+      delete process.env.TAVIR_ESCRITORIO_ENV_FILE;
+    }
   });
 });

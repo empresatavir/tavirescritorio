@@ -1,19 +1,28 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { escritaDoEscritorio, resumoBarrados } from './tavirGuarda';
 import * as os from 'node:os';
 import * as crypto from 'node:crypto';
 import { execFile, execFileSync, spawn } from 'node:child_process';
 import { fitCall } from '../shared/engineCatalog';
-import { esteiraTemplate, LEGACY_STAGE_NAMES, type EsteiraCode, type EsteiraStage } from '../shared/esteiras';
+import { esteiraTemplate, LEGACY_STAGE_NAMES, stageContract, type EsteiraCode, type EsteiraStage } from '../shared/esteiras';
 import { commitStep, type StepCommitResult } from './stepCommit';
 import { annotateRun, type RunChanges } from './runLedger';
 import { listQaRuns, qaSummary, runQa, type QaRun } from './qa/qaRunner';
-import { listSegRuns, runSeg, segSummary, setSegAccept, type SegRun } from './seg/segScanner';
+import { listSegRuns, runSeg, segSummary, setSegAccept, SEG_ITEMS, type SegItem, type SegItemKey, type SegRun } from './seg/segScanner';
 import * as cycleGit from './cycleBranch';
 import type { CycleBranch, CyclePublish } from './cycleBranch';
+import * as absDetectores from './absorcao/detectores';
+import * as absRetrato from './absorcao/retrato';
+import * as absFluxo from './absorcao/fluxo';
+import { PASTA_ESCOPO } from './absorcao/entrada';
+import * as chamadosMod from './chamados';
+import * as irisAgentMod from './irisAgent';
+import * as attachmentsMod from './attachments';
 
 function getDbPath(): string {
-  return path.join(process.cwd(), 'backend', 'tavir.db');
+  // Testes apontam TAVIR_DATA_ROOT para uma pasta temporária (ver db.ts).
+  return path.join(process.env.TAVIR_DATA_ROOT || process.cwd(), 'backend', 'tavir.db');
 }
 
 function formatBytes(bytes: number): string {
@@ -472,10 +481,8 @@ export function deleteProjectWithOptions(
   return { ok: true, deletedFiles: deletedFromDisk, path: targetPath };
 }
 
-const SURVEY_SKIP_DIRS = new Set([
-  'node_modules', '.git', 'dist', 'build', '.next', 'out', 'coverage', '__pycache__',
-  '.venv', 'venv', '.dart_tool', '.gradle', 'ephemeral', '.idea', '.pytest_cache', 'Pods',
-]);
+export { SURVEY_SKIP_DIRS } from '../shared/absorcao';
+import { SURVEY_SKIP_DIRS } from '../shared/absorcao';
 
 const SURVEY_LANG: Record<string, string> = {
   ts: 'TypeScript', tsx: 'TypeScript', js: 'JavaScript', jsx: 'JavaScript', mjs: 'JavaScript',
@@ -596,6 +603,21 @@ export function surveyWorkspace(wsPath: string): any {
   };
   walk(root, '', 0);
 
+  // Camada 1 da absorção: leitura inteira, sem corte, com provas. O resumo antigo passa a sair dela.
+  let lev: import('./absorcao/detectores').Levantamento | null = null;
+  try {
+    lev = absDetectores.detectar(root);
+    fileCount = lev.arquivos;
+    dirCount = lev.pastas;
+    truncated = false;
+    for (const s of lev.servicos.filter((x) => x.assunto === 'deploy')) deploy.push(`${s.nome} (\`${s.provas[0]?.arquivo || ''}\`)`);
+    for (const k of lev.env) if (!envKeys.includes(k)) envKeys.push(k);
+    for (const st of lev.stack) stacks.add(st);
+    absRetrato.gravarRetrato(root, absRetrato.montarRetrato(path.basename(root), lev, absRetrato.lerRetrato(root)));
+  } catch (err) {
+    console.error('[TAVIR ProjectFS] Detectores da absorção falharam:', err);
+  }
+
   let about = '';
   const readme = ['README.md', 'readme.md', 'README.txt'].map((n) => path.join(root, n)).find((p) => fs.existsSync(p));
   if (readme) {
@@ -638,6 +660,7 @@ export function surveyWorkspace(wsPath: string): any {
     dirty,
     hasGit,
     deploy: deployLine,
+    servicos: lev ? lev.servicos.map((a) => ({ servico: a.servico, nome: a.nome, assunto: a.assunto, grau: a.grau, prova: a.provas[0] ? `${a.provas[0].arquivo}${a.provas[0].linha ? `:${a.provas[0].linha}` : ''}` : '' })) : [],
     envKeys,
     files: fileCount,
     dirs: dirCount,
@@ -852,7 +875,7 @@ export function createOrAbsorbProjectRecord(params: any): any {
   const projectId = crypto.randomUUID();
   const slug = `${slugBase}-${projectId.slice(0, 6)}`;
 
-  const rootFolder = ownership === 'externo' ? 'tavir-exterrno' : 'tavir-interno';
+  const rootFolder = PASTA_ESCOPO[ownership === 'externo' ? 'externo' : 'interno'];
   const wsPath = customPath && !customPath.startsWith('~') ? path.resolve(customPath) : path.join(process.cwd(), rootFolder, slug);
 
   let survey: any = null;
@@ -903,7 +926,10 @@ export function createOrAbsorbProjectRecord(params: any): any {
 
     try {
       const hadGit = fs.existsSync(path.join(wsPath, '.git'));
-      if (!hadGit && !isAbsorb) {
+      // Criação sempre ganha git. Absorção também, quando a pasta não é versionada por ninguém
+      // (sem git, ou dentro de um repositório que a ignora): sem isso, branch, PR e o portão de
+      // segurança acabariam usando o repositório de fora.
+      if (!hadGit && (!isAbsorb || cycleGit.needsOwnGit(wsPath))) {
         execFileSync('git', ['init'], { cwd: wsPath, windowsHide: true });
         execFileSync('git', ['config', '--local', 'user.name', gitUserName], { cwd: wsPath, windowsHide: true });
         execFileSync('git', ['config', '--local', 'user.email', gitUserEmail], { cwd: wsPath, windowsHide: true });
@@ -1035,27 +1061,42 @@ export function createOrAbsorbProjectRecord(params: any): any {
     console.error('[TAVIR ProjectFS] Erro ao gravar projeto no SQLite:', err);
   }
   if (survey?.note) seedEsteiraFromSurvey(wsPath, String(survey.note));
-  if (isAbsorb && params?.baseline !== false) scheduleBaseline(wsPath);
+  if (isAbsorb) {
+    // D1: QA e segurança não rodam mais sozinhos na absorção. Viram pendências «a fazer» do projeto,
+    // com «Rodar retrato inicial» nas abas QA e Segurança.
+    try {
+      const fluxo = absFluxo;
+      const ret = absRetrato;
+      ret.garantirExclude(wsPath);
+      const prevState = fluxo.lerEstado(wsPath);
+      if (!prevState) {
+        const origem = params?.origem && typeof params.origem === 'object' ? params.origem : undefined;
+        const st = fluxo.novoEstado(origem);
+        st.etapas.preparar = { situacao: 'ok', fim: nowIso };
+        st.etapas.detectores = { situacao: survey ? 'ok' : 'falhou', fim: nowIso };
+        fluxo.gravarEstado(wsPath, st);
+      }
+      const r = ret.lerRetrato(wsPath);
+      if (r && r.projeto !== name) ret.gravarRetrato(wsPath, { ...r, projeto: name });
+    } catch (err) {
+      console.error('[TAVIR ProjectFS] Falha ao preparar o estado da absorção:', err);
+    }
+    if (params?.git_account_id) {
+      try {
+        const ctrl = readControlJson(wsPath);
+        writeControlJson(wsPath, { ...ctrl, git_account: String(params.git_account_id) });
+      } catch {}
+    }
+    if (repoUrl) {
+      try {
+        const sqlite = new DatabaseSync(getDbPath());
+        sqlite.prepare('UPDATE projects SET repo_url = ? WHERE id = ?').run(repoUrl, newProj.id);
+        sqlite.close();
+      } catch {}
+    }
+  }
 
   return newProj;
-}
-
-/**
- * Retrato inicial do projeto absorvido: varredura de segurança e QA em segundo plano,
- * para as próximas execuções terem com o que comparar. Não bloqueia a absorção.
- */
-function scheduleBaseline(rootPath: string): void {
-  setTimeout(() => {
-    (async () => {
-      const seg = await runProjectSeg(rootPath, { label: 'Retrato inicial' });
-      const qa = await runProjectQa(rootPath, { label: 'Retrato inicial' });
-      try {
-        const ctrl = readControlJson(rootPath);
-        ctrl.baseline = { at: new Date().toISOString(), seg: seg.run?.id || null, qa: qa.run?.id || null };
-        writeControlJson(rootPath, ctrl);
-      } catch {}
-    })().catch(() => {});
-  }, 500);
 }
 
 export function resolveEngineSpec(engineName?: string, modelId?: string, effortId?: string) {
@@ -1112,7 +1153,7 @@ export function projectEngineSpec(rootPath: string) {
 
 export type DecisionEntry = {
   at: string;
-  kind: 'esteira' | 'trilho' | 'seguranca' | 'publicacao';
+  kind: 'esteira' | 'trilho' | 'seguranca' | 'publicacao' | 'absorcao' | 'chamado';
   stage: string;
   decision: 'aprovado' | 'reprovado';
   question?: string;
@@ -1126,8 +1167,44 @@ function logDecision(rootPath: string, entry: Omit<DecisionEntry, 'at' | 'by'>):
   try {
     fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
     fs.appendFileSync(path.join(rootPath, '.tavir', 'decisoes.jsonl'), JSON.stringify(full) + '\n', 'utf8');
+    escritaDoEscritorio(path.join(rootPath, '.tavir', 'decisoes.jsonl'));
   } catch {}
   return full;
+}
+
+/** Gancho para os módulos novos (absorção, chamados): grava uma decisão do Carlos no livro do projeto. */
+export function registrarDecisao(rootPath: string, entry: Omit<DecisionEntry, 'at' | 'by'>): DecisionEntry {
+  return logDecision(rootPath, entry);
+}
+
+/**
+ * Gate do retrato aprovado (D1): o projeto absorvido entra direto em manutenção. Cada etapa da esteira
+ * recebe a nota de cobertura e fecha pelo gate do Carlos; o trilho de alteração é liberado.
+ */
+export function encerrarPelaAbsorcao(idOrPath: string, nota = ''): { ok: boolean; decision: DecisionEntry } {
+  const rec = resolveProjectRecord(idOrPath);
+  const root = rec.local_path;
+  const decision = logDecision(root, { kind: 'absorcao', stage: 'Retrato do projeto', decision: 'aprovado', note: String(nota || '').trim() || undefined });
+  const desk = readEsteira(root);
+  const marca = 'Coberta pela absorção: ver context/RETRATO.md';
+  for (const st of desk.stages) {
+    if (!st.note.includes(marca)) st.note = st.note.trim() ? `${st.note.trim()}
+
+${marca}` : marca;
+    st.status = 'done';
+    st.decision = decision;
+  }
+  writeEsteira(root, desk);
+  try {
+    const { DatabaseSync } = require('node:sqlite');
+    const sqlite = new DatabaseSync(getDbPath());
+    sqlite.prepare('UPDATE projects SET status = ?, stages_done = total_stages, updated_at = ? WHERE id = ?').run('done', new Date().toISOString(), rec.id);
+    sqlite.close();
+  } catch (err) {
+    console.error('[TAVIR ProjectFS] Falha ao encerrar o projeto absorvido:', err);
+  }
+  setProjectAlterationsOpen(root, true);
+  return { ok: true, decision };
 }
 
 export function listProjectDecisions(idOrPath: string): any {
@@ -1196,7 +1273,7 @@ export function setQaListener(fn: QaListener | null): void {
 }
 
 /** Roda a suíte de QA do projeto. Um QA por projeto por vez. */
-export async function runProjectQa(idOrPath: string, opts: { label?: string; onProgress?: (line: string) => void } = {}): Promise<{ ok: boolean; run?: QaRun; error?: string }> {
+export async function runProjectQa(idOrPath: string, opts: { label?: string; onProgress?: (line: string) => void; registerKill?: (kill: () => void) => void } = {}): Promise<{ ok: boolean; run?: QaRun; error?: string }> {
   const rec = resolveProjectRecord(idOrPath);
   const rootPath = rec.local_path;
   if (!rootPath || !fs.existsSync(rootPath)) return { ok: false, error: 'Pasta do projeto não encontrada.' };
@@ -1220,6 +1297,7 @@ export async function runProjectQa(idOrPath: string, opts: { label?: string; onP
       },
       registerKill: (kill) => {
         live.kill = kill;
+        opts.registerKill?.(kill);
       },
     });
     emit(undefined, run);
@@ -1249,36 +1327,47 @@ export function listProjectQa(idOrPath: string): { ok: boolean; runs: QaRun[]; r
 
 // ------------------------------------------------------------------ portão de segurança
 
-type SegListener = (event: { projectKey: string; rootPath: string; line?: string; done?: SegRun; running: boolean }) => void;
+type SegListener = (event: { projectKey: string; rootPath: string; line?: string; done?: SegRun; running: boolean; items?: SegItem[]; mode?: 'completa' | 'isolada'; only?: string }) => void;
 let segListener: SegListener | null = null;
-const segLive = new Map<string, { kill?: () => void; label: string; lines: string[] }>();
+type SegLive = { kill?: () => void; label: string; lines: string[]; items: SegItem[]; mode: 'completa' | 'isolada'; only?: SegItemKey };
+const segLive = new Map<string, SegLive>();
 
 export function setSegListener(fn: SegListener | null): void {
   segListener = fn;
 }
 
 /** Varredura white box do projeto. Uma por projeto por vez. */
-export async function runProjectSeg(idOrPath: string, opts: { label?: string; onProgress?: (line: string) => void } = {}): Promise<{ ok: boolean; run?: SegRun; error?: string }> {
+export async function runProjectSeg(idOrPath: string, opts: { label?: string; only?: string; onProgress?: (line: string) => void } = {}): Promise<{ ok: boolean; run?: SegRun; error?: string }> {
   const rec = resolveProjectRecord(idOrPath);
   const rootPath = rec.local_path;
   if (!rootPath || !fs.existsSync(rootPath)) return { ok: false, error: 'Pasta do projeto não encontrada.' };
   if (segLive.has(rootPath)) return { ok: false, error: 'Já há uma varredura de segurança rodando neste projeto.' };
-  const live = { label: opts.label || 'Painel', lines: [] as string[] } as { kill?: () => void; label: string; lines: string[] };
+  const item = opts.only ? SEG_ITEMS.find((i) => i.key === opts.only) : undefined;
+  if (opts.only && !item) return { ok: false, error: 'Item de varredura desconhecido.' };
+  const mode: 'completa' | 'isolada' = item ? 'isolada' : 'completa';
+  const live: SegLive = { label: opts.label || 'Painel', lines: [], items: [], mode, only: item?.key };
   segLive.set(rootPath, live);
   const emit = (line?: string, done?: SegRun) => {
     try {
-      segListener?.({ projectKey: rec.id, rootPath, line, done, running: !done });
+      segListener?.({ projectKey: rec.id, rootPath, line, done, running: !done, items: live.items, mode, only: item?.key });
     } catch {}
   };
   try {
     const run = await runSeg({
       workspace: rootPath,
       projectName: rec.name,
-      label: opts.label,
+      label: item ? `${opts.label || 'Painel'} · isolada · ${item.name}` : opts.label,
+      only: item?.key,
       onProgress: (line) => {
         live.lines = live.lines.concat(line).slice(-80);
         opts.onProgress?.(line);
         emit(line);
+      },
+      onItem: (ev) => {
+        live.items = ev.items;
+        const cur = ev.items[ev.index];
+        if (cur && cur.status !== 'rodando') emit(`Item ${ev.index + 1} de ${ev.total} · ${cur.name}: ${cur.status}`);
+        else emit(`Item ${ev.index + 1} de ${ev.total} · ${cur ? cur.name : ''}`);
       },
       registerKill: (kill) => {
         live.kill = kill;
@@ -1303,10 +1392,25 @@ export function stopProjectSeg(idOrPath: string): { ok: boolean } {
   return { ok: !!live };
 }
 
-export function listProjectSeg(idOrPath: string): { ok: boolean; runs: SegRun[]; running: boolean; lines: string[] } {
+export function listProjectSeg(idOrPath: string): { ok: boolean; runs: SegRun[]; running: boolean; lines: string[]; items: SegItem[]; mode?: string; only?: string } {
   const rootPath = resolveProjectRecord(idOrPath).local_path;
   const live = segLive.get(rootPath);
-  return { ok: true, runs: rootPath ? listSegRuns(rootPath) : [], running: !!live, lines: live?.lines || [] };
+  return { ok: true, runs: rootPath ? listSegRuns(rootPath) : [], running: !!live, lines: live?.lines || [], items: live?.items || [], mode: live?.mode, only: live?.only };
+}
+
+/**
+ * Aceite de risco de um item inteiro: todos os achados abertos dele, com uma justificativa só.
+ * É decisão do Carlos pela tela; fica uma linha no livro de decisões com quantos e quais.
+ */
+export function acceptProjectSegItem(idOrPath: string, fps: string[], note = '', title = ''): { ok: boolean; error?: string; n?: number } {
+  const rootPath = resolveProjectRecord(idOrPath).local_path;
+  if (!rootPath || !fs.existsSync(rootPath)) return { ok: false, error: 'Pasta do projeto não encontrada.' };
+  const list = Array.from(new Set((fps || []).map(String))).filter((fp) => /^[0-9a-f]{16}$/.test(fp));
+  if (!list.length) return { ok: false, error: 'Nenhum achado aberto neste item.' };
+  if (!String(note).trim()) return { ok: false, error: 'Escreva por que o risco é aceito.' };
+  for (const fp of list) setSegAccept(rootPath, fp, { by: 'Carlos Henrique', note: String(note).trim().slice(0, 1000), title });
+  logDecision(rootPath, { kind: 'seguranca', stage: title || 'item da varredura', decision: 'aprovado', note: `Risco aceito em ${list.length} achado(s): ${String(note).trim()}` });
+  return { ok: true, n: list.length };
 }
 
 /** Aceite de risco pelo CEO (com justificativa) ou retirada do aceite. Fica no livro de decisões. */
@@ -1384,7 +1488,9 @@ export type AltTrackState = {
   branchPending?: { dirty: string[]; error: string } | null;
   /** PR aberto ou merge local feito pelo CEO. */
   publish?: CyclePublish | null;
-  cycles?: Array<{ closed_at: string; title: string; items: AltTrackItem[]; branch?: CycleBranch | null; publish?: CyclePublish | null }>;
+  cycles?: Array<{ closed_at: string; title: string; items: AltTrackItem[]; branch?: CycleBranch | null; publish?: CyclePublish | null; chamados?: string[] }>;
+  /** Chamados que este ciclo executa (B3). Fecham para validação só depois dos portões. */
+  chamados?: string[];
 };
 
 const EMPTY_NOTES: AltTrackNotes = { map: '', plan: '', fix: '', build: '' };
@@ -1509,6 +1615,7 @@ function readControlJson(rootPath: string): Record<string, unknown> {
 function writeControlJson(rootPath: string, data: Record<string, unknown>): void {
   fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
   fs.writeFileSync(controlFilePath(rootPath), JSON.stringify(data, null, 2), 'utf8');
+  escritaDoEscritorio(controlFilePath(rootPath));
 }
 
 function checkpointFilePath(rootPath: string): string {
@@ -1669,9 +1776,11 @@ function normalizeAltTrack(raw: unknown, alterationsOpen: boolean): AltTrackStat
               items: normalizeItems(row.items, EMPTY_NOTES),
               branch: normalizeBranch(row.branch),
               publish: normalizePublish(row.publish),
+              ...(Array.isArray(row.chamados) ? { chamados: row.chamados.map((x) => String(x)).slice(0, 20) } : {}),
             };
           })
       : [],
+    chamados: Array.isArray(base.chamados) ? base.chamados.map((x) => String(x)).filter((x) => /^CH-\d+$/.test(x)).slice(0, 20) : [],
   };
 }
 
@@ -1807,7 +1916,7 @@ export function setProjectAlterationsOpen(idOrPath: string, open: boolean): any 
             notes: prevTrack.notes || { ...EMPTY_NOTES },
             active: true,
             step: prevTrack.step || 0,
-            title: 'Trilho de alteração',
+            title: prevTrack.chamados?.length ? prevTrack.title : 'Trilho de alteração',
             updated_at: new Date().toISOString(),
           }
         : {
@@ -1858,7 +1967,7 @@ export function setProjectAltTrackStep(idOrPath: string, step: number): any {
         notes: track.notes || { ...EMPTY_NOTES },
         active: true,
         step: nextStep,
-        title: 'Trilho de alteração',
+        title: track.chamados?.length ? track.title : 'Trilho de alteração',
         updated_at: new Date().toISOString(),
       },
     });
@@ -2014,6 +2123,27 @@ export function closeProjectAltTrackItem(idOrPath: string, fromStep?: number): a
   try {
     writeTrackMarkdown(ctrl.rootPath, track);
   } catch {}
+  // B3: chamados do ciclo vão para validação só se os portões mais recentes passaram.
+  if (last && track.chamados?.length) {
+    try {
+      const qa = listQaRuns(ctrl.rootPath, 1)[0];
+      const seg = listSegRuns(ctrl.rootPath, 1)[0];
+      chamadosMod.aoFecharCicloDoTrilho(ctrl.rootPath, track, { qa: !!qa?.ok, seg: !!seg?.ok });
+    } catch {}
+  }
+  return getProjectAlterationsControl(idOrPath);
+}
+
+/** B3: marca o ciclo atual como execução de chamados (título e ids sobrevivem às leituras). */
+export function setAltTrackChamados(idOrPath: string, title: string, ids: string[]): any {
+  const ctrl = getProjectAlterationsControl(idOrPath);
+  if (!ctrl.alterations_open) return { ...ctrl, ok: false, error: 'Trilho fechado.' };
+  const prev = readControlJson(ctrl.rootPath);
+  const track = normalizeAltTrack(prev.alt_track, true);
+  track.title = String(title || track.title).slice(0, 200);
+  track.chamados = ids.filter((x) => /^CH-\d+$/.test(x)).slice(0, 20);
+  track.updated_at = new Date().toISOString();
+  writeControlJson(ctrl.rootPath, { ...prev, alterations_open: true, updated_at: track.updated_at, alt_track: track });
   return getProjectAlterationsControl(idOrPath);
 }
 
@@ -2031,7 +2161,10 @@ export function startNewAltTrackCycle(idOrPath: string): any {
     items: track.items,
     branch: track.branch || null,
     publish: track.publish || null,
+    ...(track.chamados?.length ? { chamados: track.chamados } : {}),
   };
+  track.chamados = [];
+  track.title = 'Trilho de alteração';
   // Ciclo publicado: o próximo sai da branch de origem. Sem publicar, empilha sobre o atual.
   if (track.publish) {
     try {
@@ -2514,6 +2647,7 @@ export async function executeAltTrackStep(
     alterationsOpen: true,
     asChangeRequest: asChange,
     recent: [],
+    retrato: absRetrato.resumoDoRetrato(ctrl.rootPath, 3000),
     timeoutMs: 1800000,
     runKind: 'trilho',
     runLabel: focus.label,
@@ -2523,7 +2657,19 @@ export async function executeAltTrackStep(
       if (live) live.kill = kill;
     },
   });
-  const reply = String(agentRes.text || '').trim() || 'O agente não devolveu texto neste item.';
+  let reply = String(agentRes.text || '').trim() || 'O agente não devolveu texto neste item.';
+  // B5: o que o agente achou fora do escopo vira chamado «aberto» (origem trilho), sem parar o ciclo.
+  if (agentRes.ok) {
+    try {
+      const pc = chamadosMod.parseChamados(reply, { root: ctrl.rootPath, max: 5 });
+      if (pc.propostas.length) {
+        const g = chamadosMod.gravarPropostas(ctrl.rootPath, pc.propostas, { nome: focus.owner, motor: eng.name, runId: agentRes.runId, origem: 'trilho' });
+        reply = (pc.texto || reply) + `
+
+_Chamados abertos fora do escopo: ${g.criados.map((c) => c.id).join(', ') || 'nenhum novo'}${g.repetidos.length ? ` (já existiam: ${g.repetidos.map((c) => c.id).join(', ')})` : ''}._`;
+      }
+    } catch {}
+  }
   try { writeProof(ctrl.rootPath, focus.label, pedido, reply); } catch {}
   if (agentRes.ok) pushLine(reply.slice(0, 240), 'info');
   else log.push(reply.slice(0, 240));
@@ -2563,6 +2709,7 @@ export async function executeAltTrackStep(
   const current = next.items[next.step] || focus;
   const exec = agentRes.runId ? ` · execução ${agentRes.runId}` : '';
   if (agentRes.runId) log.push(`Execução registrada em .tavir/runs/${agentRes.runId}`);
+  if (agentRes.barrados?.length) log.push(resumoBarrados(agentRes.barrados));
   if (agentRes.ok) current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · ${focus.owner}${exec}\n${reply}\n${commitNote ? `\n_${commitNote}_\n` : ''}`;
   if (qaNote) current.note = `${current.note.trim()}\n\n### ${stamp} · Portão de QA e segurança\n${qaNote}\n`;
   if (agentRes.ok && (focus.kind === 'plan' || focus.kind === 'map')) next.items = applyProposedTracks(next.items, reply);
@@ -2592,6 +2739,12 @@ export async function executeAltTrackStep(
     next.runStatus = 'done';
     next.checkpoint = null;
     clearCheckpointFile(ctrl.rootPath);
+    // B3: o ciclo fechou com os portões de QA e segurança aprovados neste item.
+    if (next.chamados?.length) {
+      try {
+        chamadosMod.aoFecharCicloDoTrilho(ctrl.rootPath, next, { qa: !!qa?.ok, seg: !!seg?.ok });
+      } catch {}
+    }
   } else if (!next.auto) {
     // Manual: o item fica entregue no foco e só avança no "Seguir para…" do Carlos.
     next.runStatus = 'idle';
@@ -2671,6 +2824,50 @@ export function pauseProjectAltTrack(idOrPath: string): any {
   return getProjectAlterationsControl(idOrPath);
 }
 
+/** Falas que acompanham a próxima mensagem: só o que veio depois da última «Nova conversa». */
+export function chatRecent(history: any[]): Array<{ role: 'user' | 'assistant'; text: string }> {
+  const list = Array.isArray(history) ? history : [];
+  let from = 0;
+  list.forEach((m, i) => {
+    if (m && m.role === 'cut') from = i + 1;
+  });
+  return list
+    .slice(from)
+    .filter((m) => m && (m.role === 'me' || m.role === 'ag' || m.cls === 'me' || m.cls === 'ag'))
+    .filter((m) => !String(m.id || '').startsWith('iris-welcome'))
+    .slice(-14)
+    .map((m) => ({
+      role: (m.role === 'me' || m.cls === 'me' ? 'user' : 'assistant') as 'user' | 'assistant',
+      text: String(m.t || m.text || ''),
+    }))
+    .filter((m) => m.text.trim());
+}
+
+function chatContext(history: any[]): { turns: number; chars: number } {
+  return irisAgentMod.historyBudget(chatRecent(history));
+}
+
+/** «Nova conversa»: o histórico continua no disco e na tela, mas deixa de ir para o motor. */
+export function startNewProjectChat(idOrPath: string): any {
+  const info = inspectProjectFolder(idOrPath);
+  const chatFile = path.join(info.rootPath, '.tavir', 'iris-chat.json');
+  let history: any[] = [];
+  try {
+    if (fs.existsSync(chatFile)) history = JSON.parse(fs.readFileSync(chatFile, 'utf8')) || [];
+  } catch {}
+  if (!Array.isArray(history)) history = [];
+  if (history.length && history[history.length - 1]?.role === 'cut') return { ok: true, messages: history, context: { turns: 0, chars: 0 } };
+  history.push({ id: 'cut-' + Date.now(), role: 'cut', who: 'Carlos', ts: nowHM(), at: new Date().toISOString(), thoughts: [], t: '' });
+  if (history.length > 60) history = history.slice(-60);
+  try {
+    fs.mkdirSync(path.join(info.rootPath, '.tavir'), { recursive: true });
+    fs.writeFileSync(chatFile, JSON.stringify(history, null, 2), 'utf8');
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+  return { ok: true, messages: history, context: { turns: 0, chars: 0 } };
+}
+
 export function getProjectChatHistory(idOrPath: string): any {
   const info = inspectProjectFolder(idOrPath);
   const rootPath = info.rootPath;
@@ -2679,7 +2876,7 @@ export function getProjectChatHistory(idOrPath: string): any {
     if (fs.existsSync(chatFile)) {
       const parsed = JSON.parse(fs.readFileSync(chatFile, 'utf8'));
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return { ok: true, rootPath, messages: parsed };
+        return { ok: true, rootPath, messages: parsed, context: chatContext(parsed) };
       }
     }
   } catch {}
@@ -2693,7 +2890,7 @@ export function getProjectChatHistory(idOrPath: string): any {
     model: welcomeEng.model,
     ts: nowHM(),
     thoughts: [`[Workspace] ${rootPath}`, `[Estrutura] ${info.dirCount} pastas e ${info.fileCount} arquivos (${info.stacks})`],
-    t: `Olá, Carlos! Sou a Íris do projeto "${info.name}". Posso ler o código e os documentos para responder, e fazer mudanças quando você enviar um «Pedir alteração». O motor fica no seletor do chat.`,
+    t: `Olá, Carlos! Sou a Íris do projeto "${info.name}". Posso ler o código e os documentos para responder. Quando a conversa chegar a um defeito ou melhoria, eu proponho um chamado e você abre pelo cartão. O motor fica no seletor do chat.`,
   };
 
   try {
@@ -2706,7 +2903,8 @@ export function getProjectChatHistory(idOrPath: string): any {
 
 export async function askProjectIris(params: any): Promise<any> {
   const idOrPath = String(params?.projectId || params?.projectPath || params?.projectName || 'projeto').trim();
-  const question = String(params?.question || params?.message || '').trim();
+  const attachInputs: import('./attachments').AttachmentInput[] = Array.isArray(params?.attachments) ? params.attachments : [];
+  const question = String(params?.question || params?.message || '').trim() || (attachInputs.length ? 'Veja os anexos.' : '');
   const eng = params?.engine
     ? resolveEngineSpec(params.engine, params.model, params.effort)
     : projectEngineSpec(resolveProjectRecord(idOrPath).local_path);
@@ -2752,6 +2950,12 @@ export async function askProjectIris(params: any): Promise<any> {
     } catch {}
   };
 
+  // Anexos (prints, zip, logs) ficam em .tavir/anexos/ do projeto; o agente recebe os caminhos.
+  const attachMod = attachmentsMod;
+  const attach = attachInputs.length ? attachMod.saveAttachments(rootPath, attachInputs) : { saved: [], errors: [] };
+  const attachLine = attachMod.attachmentsLine(attach.saved);
+  const questionWithFiles = attachLine ? `${question}\n${attachLine}` : question;
+
   const chatFile = path.join(rootPath, '.tavir', 'iris-chat.json');
   let history: any[] = [];
   try {
@@ -2763,17 +2967,11 @@ export async function askProjectIris(params: any): Promise<any> {
     history = getProjectChatHistory(idOrPath).messages || [];
   }
 
-  const recent = history
-    .filter((m) => m && (m.role === 'me' || m.role === 'ag' || m.cls === 'me' || m.cls === 'ag'))
-    .filter((m) => !String(m.id || '').startsWith('iris-welcome'))
-    .slice(-14)
-    .map((m) => ({
-      role: (m.role === 'me' || m.cls === 'me' ? 'user' : 'assistant') as 'user' | 'assistant',
-      text: String(m.t || m.text || ''),
-    }))
-    .filter((m) => m.text.trim());
+  const recent = chatRecent(history);
 
   const thoughts: string[] = [
+    ...(attach.saved.length ? [`[Anexos] ${attach.saved.length} arquivo(s) em ${path.posix.dirname(attach.saved[0].rel)}`] : []),
+    ...attach.errors.map((e) => `[Anexos] ${e}`),
     `[${eng.caption}] Modo conversação no workspace do projeto`,
     `[Workspace] ${info.name} · ${rootPath}`,
     `[Controle] ${control.finished ? (control.alterations_open ? 'Handoff · liberado' : 'Handoff · fechado') : 'Esteira ativa'}`,
@@ -2783,6 +2981,9 @@ export async function askProjectIris(params: any): Promise<any> {
   let reply = '';
   let runId = '';
   let agentOk = false;
+  let propostas: Array<chamadosMod.PropostaChamado & { duplicado?: string }> = [];
+  let propostaAvisos: string[] = [];
+  let chamadosVarredura: { criados: string[]; repetidos: string[] } | null = null;
   const wantsChange =
     forceChange ||
     /\b(alter|muda|ajuste|corrija|corri|implement|adicione|remova|refator)\w*/i.test(question);
@@ -2794,7 +2995,8 @@ export async function askProjectIris(params: any): Promise<any> {
       `Use **Liberar alterações** e envie o pedido de novo. Enquanto isso, posso responder perguntas sobre o projeto.`;
     thoughts.push('[Local] Pedido de alteração com o projeto fechado');
   } else {
-    const { converseWithIrisAgent } = require('./irisAgent') as typeof import('./irisAgent');
+    // `params.converse` só vem do processo main (testes); pela tela não passa função.
+    const converseWithIrisAgent: typeof irisAgentMod.converseWithIrisAgent = typeof params?.converse === 'function' ? params.converse : irisAgentMod.converseWithIrisAgent;
     const track = control.alt_track;
     const projectFacts = [
       info.stacks ? `Stack detectada: ${info.stacks}` : '',
@@ -2806,7 +3008,7 @@ export async function askProjectIris(params: any): Promise<any> {
     ].filter(Boolean);
     const agentRes = await converseWithIrisAgent({
       workspace: rootPath,
-      question,
+      question: question + attachMod.attachmentsPrompt(attach.saved, attach.errors),
       projectName: info.name || control.projectName,
       stageName,
       stageOwner,
@@ -2819,6 +3021,7 @@ export async function askProjectIris(params: any): Promise<any> {
       recent,
       memorySnippet: memoryText,
       projectFacts,
+      retrato: absRetrato.resumoDoRetrato(rootPath, 3000),
       timeoutMs: forceChange ? 900000 : 300000,
       onProgress: typeof params?.onProgress === 'function' ? params.onProgress : undefined,
       registerKill: typeof params?.registerKill === 'function' ? params.registerKill : undefined,
@@ -2833,12 +3036,26 @@ export async function askProjectIris(params: any): Promise<any> {
       reply = 'Não consegui obter resposta do agente neste turno. Tente de novo em instantes.';
     }
     if (agentRes.ok) absorbMemory(`(${eng.name} · chat) "${question.slice(0, 160)}" → ${reply.replace(/\s+/g, ' ').slice(0, 240)}`);
-    if (forceChange) {
-      absorbChangeRequest(question);
-      thoughts.push('[Absorção] CHANGE_REQUESTS.md atualizado (pedido de alteração)');
+    // B4: blocos CHAMADO: saem do texto (o histórico enviado ao motor não cresce) e viram propostas.
+    if (agentOk) {
+      const pc = chamadosMod.parseChamados(reply, { root: rootPath, max: params?.varredura ? 8 : 5 });
+      if (pc.propostas.length || pc.avisos.length) {
+        reply = pc.texto || (pc.propostas.length ? 'Proposta de chamado abaixo.' : reply);
+        propostaAvisos = pc.avisos;
+        if (params?.varredura) {
+          const g = chamadosMod.gravarPropostas(rootPath, pc.propostas, { nome: 'Íris', motor: eng.name, runId, origem: 'varredura' });
+          chamadosVarredura = { criados: g.criados.map((c) => c.id), repetidos: g.repetidos.map((c) => c.id) };
+          thoughts.push(`[Chamados] varredura: ${g.criados.length} aberto(s), ${g.repetidos.length} já existia(m)`);
+        } else {
+          propostas = pc.propostas.map((p) => {
+            const dup = chamadosMod.tituloDuplicado(rootPath, p.titulo);
+            return dup ? { ...p, duplicado: dup.id } : p;
+          });
+        }
+      }
     }
     if (agentOk && control.finished && control.alterations_open) {
-      const tracked = recordIrisOnAltTrack(idOrPath, question, reply);
+      const tracked = recordIrisOnAltTrack(idOrPath, questionWithFiles, reply);
       if (tracked) {
         thoughts.push(
           `[Trilho] Registro no foco ${ALT_TRACK_STEPS[tracked.step]?.label || 'Mapear gaps'}`,
@@ -2860,6 +3077,7 @@ export async function askProjectIris(params: any): Promise<any> {
     ts: nowHM(),
     thoughts: [],
     t: question,
+    ...(attach.saved.length ? { attachments: attach.saved.map((a) => ({ name: a.name, rel: a.rel, kind: a.kind, size: a.size })) } : {}),
   };
 
   const agentMsg = {
@@ -2874,6 +3092,9 @@ export async function askProjectIris(params: any): Promise<any> {
     thoughts,
     t: reply,
     ...(runId ? { runId } : {}),
+    ...(propostas.length ? { propostas } : {}),
+    ...(propostaAvisos.length ? { propostaAvisos } : {}),
+    ...(chamadosVarredura ? { chamadosVarredura } : {}),
   };
 
   history.push(userMsg, agentMsg);
@@ -2894,6 +3115,7 @@ export async function askProjectIris(params: any): Promise<any> {
     finished: control.finished,
     alt_track: getProjectAlterationsControl(idOrPath).alt_track,
     conversational: control.chat_unlocked,
+    context: chatContext(history),
     userMessage: userMsg,
     replyMessage: agentMsg,
     messages: history,
@@ -3013,6 +3235,7 @@ function writeEsteira(rootPath: string, desk: EsteiraDesk): void {
   desk.names = projectStages(rootPath).stages.map((d) => d.name);
   fs.mkdirSync(path.join(rootPath, '.tavir'), { recursive: true });
   fs.writeFileSync(esteiraFile(rootPath), JSON.stringify(desk, null, 2), 'utf8');
+  escritaDoEscritorio(esteiraFile(rootPath));
   syncEsteiraProgress(rootPath, desk);
 }
 
@@ -3144,14 +3367,38 @@ export function decideEsteiraGate(idOrPath: string, index: number, decision: 'ap
   };
 }
 
+export const PACOTE_ETAPA = 'Pacote para a próxima etapa:';
+
+/**
+ * O que levar de uma nota de etapa para a próxima: o «Pacote para a próxima etapa» quando o agente
+ * escreveu; senão o começo da resposta, sem a seção de verificação, sem linhas de registro do Escritório
+ * e cortado em fim de linha (nunca no meio da palavra).
+ */
+export function stageHandoff(note: string, limit = 1200): string {
+  const text = String(note || '').replace(/\r\n/g, '\n');
+  const at = text.lastIndexOf(PACOTE_ETAPA);
+  let body = at >= 0 ? text.slice(at + PACOTE_ETAPA.length) : text;
+  if (at < 0) {
+    body = body.split(/\n#{1,4}\s*Como (foi )?verifica/i)[0];
+    body = body.replace(/^#{1,4}\s.*$/gm, '').replace(/^_.*arquivo\(s\) mudaram.*_$/gm, '').replace(/^-{3,}$/gm, '');
+  } else {
+    body = body.split(/\n_/)[0];
+  }
+  body = body.replace(/\(file:\/\/\/[^)]*\)/g, '').replace(/\n{3,}/g, '\n\n').trim();
+  if (body.length <= limit) return body;
+  const cut = body.slice(0, limit);
+  const nl = cut.lastIndexOf('\n');
+  return (nl > limit * 0.5 ? cut.slice(0, nl) : cut.replace(/\s+\S*$/, '')) + '\n…';
+}
+
 /** Resumo do que as etapas anteriores entregaram, para a etapa atual não trabalhar no escuro. */
 function earlierStagesDigest(desk: EsteiraDesk, defs: EsteiraStage[], at: number): string {
   const parts: string[] = [];
-  let budget = 8000;
+  let budget = 6000;
   for (let i = at - 1; i >= 0 && budget > 0; i--) {
     const note = desk.stages[i]?.note.trim();
     if (!note || desk.stages[i].status !== 'done') continue;
-    const piece = `${defs[i]?.name || `Etapa ${i + 1}`} (${defs[i]?.owner || '—'}):\n${note.slice(-Math.min(2000, budget))}`;
+    const piece = `${defs[i]?.name || `Etapa ${i + 1}`} (${defs[i]?.owner || '—'}):\n${stageHandoff(note, Math.min(1200, budget))}`;
     parts.unshift(piece);
     budget -= piece.length;
   }
@@ -3180,16 +3427,27 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
   }
   const stage = desk.stages[at];
   const prior = stage.note.trim();
-  const instruction = stage.instruction.trim() || 'Levante o que esta etapa pede a partir dos arquivos do workspace. Não invente fato que não esteja na pasta.';
+  const contract = stageContract(def.name);
+  const instruction = stage.instruction.trim();
   const digest = earlierStagesDigest(desk, defs, at);
+  // A Talita só conduz as etapas de QA; Loop Linter e Completion Guard têm portão de QA, mas são do compilador.
+  const qaTalita = def.qa && /^QA\b/i.test(def.name);
   const question =
-    `Você conduz a etapa ${at + 1} de ${defs.length}, "${def.name}", com ${def.owner} (${def.skill}).\n` +
-    `Instrução desta etapa:\n${instruction}\n\n` +
+    `Você conduz a etapa ${at + 1} de ${defs.length}, "${def.name}" (${def.skill}).\n\n` +
+    (contract
+      ? `OBJETIVO: ${contract.objetivo}\nENTREGA: ${contract.entrega}\nPRONTO QUANDO: ${contract.pronto}\n\n`
+      : 'OBJETIVO: entregue o que o nome da etapa pede, a partir dos arquivos do workspace. Não invente fato que não esteja na pasta.\n\n') +
+    (instruction ? `INSTRUÇÃO DO CARLOS PARA ESTA ETAPA (vale sobre o contrato acima):\n${instruction}\n\n` : '') +
+    'Comece pelo que a entrega pede. Leia só os arquivos de que precisa para isso; não releia o projeto inteiro nem refaça o que as etapas anteriores entregaram.\n\n' +
     (digest ? `O QUE AS ETAPAS ANTERIORES ENTREGARAM (use como base, não refaça):\n${digest}\n\n` : '') +
     (prior ? `CHECKPOINT — a etapa já tem este levantamento. Não recomece do zero. Continue ou revise a partir dele:\n${prior.slice(-5000)}\n\n` : '') +
+    (qaTalita
+      ? 'Esta etapa é o QA desta aplicação, com a Talita. Leia o que o app faz e monte o plano de testes em qa/plano.md: o que precisa passar antes de entregar, quais comandos a pasta já tem e o que ainda falta. Se não houver node_modules, instale as dependências do gerenciador do projeto. Deixe os testes no lugar que esse gerenciador espera. Não declare a etapa concluída: o portão automático roda em seguida, instala o que ainda faltar e grava vídeo, prints e o relatório em qa/evidencias/.\n\n'
+      : '') +
     (def.gate
       ? 'Esta etapa é um gate. Não edite arquivos. Resuma o que foi entregue até aqui com caminhos de arquivo, aponte riscos e liste exatamente o que precisa da decisão do Carlos. A etapa só fecha quando ele aprovar.'
-      : 'Pode alterar o workspace só no que a instrução pede. Ao terminar, liste os arquivos que criou ou alterou.');
+      : 'Pode alterar o workspace só no que a entrega pede. Ao terminar, liste os arquivos que criou ou alterou e como conferiu.') +
+    `\n\nTermine a resposta com "${PACOTE_ETAPA}" e 3 a 6 itens curtos: o que entregou (com caminho), o que ficou pendente e o que a próxima etapa precisa saber. Esse trecho é o que a próxima etapa recebe.`;
   stage.status = 'running';
   writeEsteira(info.rootPath, desk);
   liveAgents.set(key, { paused: false, speech: prior, step: at, itemId: `esteira-${at}`, label: def.name });
@@ -3243,6 +3501,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     const facts = [
       changed == null ? '' : changed ? `${changed} arquivo(s) mudaram` : def.gate ? '' : 'Atenção: nenhum arquivo mudou nesta etapa',
       commit ? commitLine(commit) : '',
+      agentRes.barrados?.length ? resumoBarrados(agentRes.barrados) : '',
     ].filter(Boolean);
     current.note =
       (current.note ? current.note + '\n\n' : '') +
@@ -3263,9 +3522,21 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
   writeEsteira(info.rootPath, fresh);
   let qa: QaRun | null = null;
   let qaError = '';
+  let pausedQa = false;
   if (qaGate) {
     liveAgents.set(key, { paused: false, speech: 'Portão de QA rodando', step: at, itemId: `esteira-${at}`, label: def.name });
-    const res = await runProjectQa(info.rootPath, { label: `Esteira · ${def.name}` });
+    const res = await runProjectQa(info.rootPath, {
+      label: `Esteira · ${def.name}`,
+      onProgress: (line) => {
+        const live = liveAgents.get(key);
+        if (live) live.speech = line;
+      },
+      registerKill: (kill) => {
+        const live = liveAgents.get(key);
+        if (live) live.kill = kill;
+      },
+    });
+    pausedQa = !!liveAgents.get(key)?.paused;
     liveAgents.delete(key);
     qa = res.run || null;
     qaError = res.error || '';
@@ -3277,7 +3548,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
       `### ${new Date().toISOString().slice(0, 16).replace('T', ' ')} · Portão de QA\n` +
       (qa ? qaSummary(qa) : `QA não rodou: ${qaError}`) +
       '\n';
-    row.status = passed ? 'done' : 'idle';
+    row.status = pausedQa ? 'paused' : passed ? 'done' : 'idle';
     if (qa) row.qa = (row.qa || []).concat(qa.id).slice(-30);
     writeEsteira(info.rootPath, after);
     fresh.stages[at] = row;
@@ -3310,11 +3581,12 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
   const last = at >= fresh.stages.length - 1;
   const qaOk = !qaGate || !!qa?.ok;
   const segOk = !segGate || !!seg?.ok;
-  const ok = Boolean(agentRes.ok) && !paused && qaOk && segOk;
+  const held = paused || pausedQa;
+  const ok = Boolean(agentRes.ok) && !held && qaOk && segOk;
   return {
     ...esteiraPayload(info.rootPath, fresh),
     ok,
-    paused,
+    paused: held,
     gate: def.gate,
     awaiting: ok && def.gate,
     commit,
@@ -3322,7 +3594,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     seg,
     continued: ok && !def.gate && !last && fresh.auto,
     reply: agentRes.text,
-    error: ok || paused
+    error: ok || held
       ? undefined
       : !qaOk
         ? qa ? `QA reprovou «${def.name}»: ${qa.empty ? 'nenhum teste rodou' : `${qa.fail} de ${qa.total} testes falharam`}.` : `QA não rodou: ${qaError}`
@@ -3355,6 +3627,8 @@ export function listTaskRecords(): any[] {
         `SELECT t.id, t.seq, t.title, t.description, t.status, t.priority, t.sector, t.assignee_agent_id, t.gate_held, a.name as agent_name
          FROM tasks t
          LEFT JOIN agents a ON a.id = t.assignee_agent_id
+         -- Kanban do Escritório = tarefas avulsas. Item de trilho da Fábrica nunca entra aqui.
+         WHERE t.id NOT LIKE 'task-trilho-%' AND COALESCE(t.sector, '') <> 'Fábrica'
          ORDER BY COALESCE(t.seq, 9999) ASC, t.created_at DESC`,
       )
       .all() as any[];

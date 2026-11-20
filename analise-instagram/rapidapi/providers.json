@@ -1,0 +1,29 @@
+{
+  "schema": "tavir-instagram-rapidapi-providers/v1",
+  "nota": "Allowlist dos provedores de Instagram com assinatura confirmada para a Íris. Local Business Data NÃO entra aqui: é presença local, não perfil de Instagram.",
+  "providers": {
+    "best_experience": {
+      "label": "Instagram Best Experience",
+      "host": "instagram-best-experience.p.rapidapi.com",
+      "priority": 1,
+      "quota_mensal_confirmada": 100,
+      "capabilities": ["profile", "posts", "reels", "stories", "highlights", "comments", "metadata"]
+    },
+    "social_premium": {
+      "label": "Instagram Scraper AI1",
+      "host": "instagram-scraper-ai1.p.rapidapi.com",
+      "priority": 2,
+      "quota_mensal_confirmada": 25,
+      "nota": "Quota baixa (25/mês). Usar só como fallback quando o Best Experience não atender.",
+      "capabilities": ["profile", "feed", "reels", "highlights", "comments", "audio", "metadata"]
+    },
+    "instagram_looter2": {
+      "label": "Instagram Looter",
+      "host": "instagram-looter2.p.rapidapi.com",
+      "priority": 3,
+      "quota_mensal_confirmada": 100,
+      "nota": "Fallback secundário para download de mídia. Usa as mesmas keys do best_experience.",
+      "capabilities": ["media_lookup", "media_info", "media_download", "user_lookup", "hashtag", "explore", "search"]
+    }
+  }
+}

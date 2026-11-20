@@ -65,6 +65,8 @@ export interface SegRun {
   target: string;
   commit: string;
   ok: boolean;
+  /** false quando nenhum arquivo foi lido: o portão segura sem nota (ausente em varreduras antigas). */
+  evaluated?: boolean;
   score: number;
   /** Abertas de severidade crítica ou alta: o que reprova o portão. */
   blocking: number;
@@ -77,13 +79,43 @@ export interface SegRun {
   notes: string[];
   dir: string;
   report: string;
+  /** completa (todos os itens) ou isolada (um item; os outros herdados). Ausente em varreduras antigas. */
+  mode?: 'completa' | 'isolada';
+  only?: SegItemKey;
+  cancelled?: boolean;
+  items?: SegItem[];
+}
+
+export type SegItemKey = 'segredos' | 'codigo' | 'lgpd' | 'gitleaks' | 'historico' | 'deps' | 'pip' | 'semgrep' | 'trivy';
+/** ok = passou; problema = achou algo; erro = a verificação não executou; nao_aplica = sem o que verificar. */
+export type SegItemStatus = 'pendente' | 'rodando' | 'ok' | 'problema' | 'erro' | 'nao_aplica';
+
+export interface SegItem {
+  key: SegItemKey;
+  name: string;
+  what: string;
+  status: SegItemStatus;
+  found: number;
+  note?: string;
+  error?: string;
+  /** Hora da última verificação deste item (ISO) e o rótulo curto. */
+  at?: string;
+  when?: string;
+  ms?: number;
+  /** Varredura em que o item rodou de fato (outra, quando herdado). */
+  from?: string;
+  /** A completa foi cancelada antes deste item terminar: o resultado é o herdado. */
+  cancelled?: boolean;
 }
 
 export interface SegRunOptions {
   workspace: string;
   projectName: string;
   label?: string;
+  /** Roda só este item e herda os demais da varredura anterior. */
+  only?: SegItemKey;
   onProgress?: (line: string) => void;
+  onItem?: (ev: { index: number; total: number; items: SegItem[] }) => void;
   registerKill?: (kill: () => void) => void;
 }
 
@@ -134,13 +166,27 @@ function which(name: string): string | null {
   }
 }
 
-function isGitRepo(ws: string): boolean {
+/**
+ * Onde está o git da pasta. "own": o projeto tem o próprio repositório. "outer": a pasta está
+ * dentro do repositório de outra coisa (ex.: tavir-interno/ dentro do Escritório). Nesse caso o
+ * git responderia pelo repositório de fora: arquivos ignorados por ele somem da lista e o histórico
+ * varrido é o dele. A varredura trata "outer" como pasta sem git.
+ */
+export function gitScope(ws: string): { kind: 'own' | 'outer' | 'none'; top?: string } {
+  let top = '';
   try {
-    execFileSync('git', ['rev-parse', '--is-inside-work-tree'], { cwd: ws, stdio: 'pipe', windowsHide: true });
-    return true;
+    top = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd: ws, stdio: 'pipe', windowsHide: true, encoding: 'utf8' }).trim();
   } catch {
-    return false;
+    return { kind: 'none' };
   }
+  if (!top) return { kind: 'none' };
+  const norm = (p: string) => {
+    let r = path.resolve(p);
+    try { r = fs.realpathSync.native(r); } catch {}
+    r = toPosix(r).replace(/\/+$/, '');
+    return WIN ? r.toLowerCase() : r;
+  };
+  return norm(top) === norm(ws) ? { kind: 'own', top } : { kind: 'outer', top: toPosix(top) };
 }
 
 function gitFiles(ws: string, args: string[]): string[] {
@@ -461,8 +507,11 @@ async function npmAudit(ws: string, outDir: string, track: (c: ChildProcess | nu
 
 const SEMGREP_KEY = (id: string) => (/inject|sqli|command|exec|shell/i.test(id) ? 'inj' : /xss|innerhtml|html/i.test(id) ? 'xss' : /eval|deserial|pickle/i.test(id) ? 'eval' : /crypto|hash|md5|sha1|random/i.test(id) ? 'crypto' : /tls|ssl|cert|http/i.test(id) ? 'tls' : /secret|password|key|token/i.test(id) ? 'secrets' : /cors/i.test(id) ? 'cors' : 'sast');
 
-async function semgrep(bin: string, ws: string, outDir: string, track: (c: ChildProcess | null) => void): Promise<{ tool: SegTool; drafts: Draft[] }> {
-  const res = await runCommand(bin, ['scan', '--config', 'p/default', '--metrics=off', '--json', '--quiet', '--timeout', '30', '--exclude', 'qa', '--exclude', '.tavir', '.'], ws, 600000, track);
+async function semgrep(bin: string, ws: string, outDir: string, git: boolean, track: (c: ChildProcess | null) => void): Promise<{ tool: SegTool; drafts: Draft[] }> {
+  // Sem Git próprio, o semgrep obedeceria o .gitignore do repositório de fora e pularia a pasta toda.
+  const args = ['scan', '--config', 'p/default', '--metrics=off', '--json', '--quiet', '--timeout', '30', '--exclude', 'qa', '--exclude', '.tavir', '--exclude', 'node_modules', '--exclude', 'build', '--exclude', '.dart_tool'];
+  if (!git) args.push('--no-git-ignore');
+  const res = await runCommand(bin, [...args, '.'], ws, 600000, track);
   fs.writeFileSync(path.join(outDir, 'logs', 'semgrep.json'), res.out, 'utf8');
   let data: any = null;
   try { data = JSON.parse(res.out.slice(res.out.indexOf('{'))); } catch {}
@@ -567,11 +616,73 @@ function lastRun(workspace: string): SegRun | null {
   return runs[runs.length - 1] || null;
 }
 
+/** Itens da varredura, na ordem da completa. Cada um é uma verificação que já existia; aqui só se orquestra. */
+export const SEG_ITEMS: { key: SegItemKey; name: string; what: string }[] = [
+  { key: 'segredos', name: 'Regras TAVIR · segredos', what: 'Chaves, tokens e senhas no código e .env versionado' },
+  { key: 'codigo', name: 'Regras TAVIR · código', what: 'Padrões perigosos no código' },
+  { key: 'lgpd', name: 'Regras TAVIR · LGPD e configuração', what: 'CSP, rastreadores, consentimento e encarregado' },
+  { key: 'gitleaks', name: 'gitleaks', what: 'Segredos no código e no histórico (ferramenta externa)' },
+  { key: 'historico', name: 'Regras TAVIR · histórico do Git', what: 'Segredos que ficaram em commits antigos' },
+  { key: 'deps', name: 'Auditoria de dependências', what: 'npm/pnpm audit nas dependências do projeto' },
+  { key: 'pip', name: 'pip-audit', what: 'Dependências Python (requirements.txt)' },
+  { key: 'semgrep', name: 'semgrep', what: 'Análise estática (ferramenta externa)' },
+  { key: 'trivy', name: 'trivy', what: 'Dependências e configuração (ferramenta externa)' },
+];
+
+/** Em que item caiu cada ferramenta (o achado mesclado guarda «a + b» no campo tool). */
+export function segItemOfTool(tool: string): SegItemKey | null {
+  const t = String(tool || '').trim();
+  if (t === 'Regras TAVIR · segredos') return 'segredos';
+  if (t === 'Regras TAVIR · código') return 'codigo';
+  if (t === 'Regras TAVIR · LGPD' || t === 'Regras TAVIR · configuração' || t === 'Regras TAVIR · LGPD e configuração') return 'lgpd';
+  if (t === 'gitleaks') return 'gitleaks';
+  if (t === 'Regras TAVIR · histórico' || t === 'Regras TAVIR · histórico do Git') return 'historico';
+  if (t === 'pip-audit') return 'pip';
+  if (/ audit$/.test(t)) return 'deps';
+  if (t === 'semgrep') return 'semgrep';
+  if (t === 'trivy') return 'trivy';
+  return null;
+}
+
+export function segItemsOfFinding(f: { tool: string }): SegItemKey[] {
+  return Array.from(new Set(String(f.tool || '').split(' + ').map(segItemOfTool).filter(Boolean) as SegItemKey[]));
+}
+
+const ITEMS_FILE = 'itens.json';
+
+/** Achados crus de cada item da varredura anterior, para herdar o que não rodou agora. */
+function prevItemDrafts(prev: SegRun | null): Partial<Record<SegItemKey, Draft[]>> {
+  if (!prev) return {};
+  try {
+    return JSON.parse(fs.readFileSync(path.join(prev.dir, ITEMS_FILE), 'utf8')) || {};
+  } catch {}
+  // Varredura antiga, sem itens.json: reparte os achados pelo primeiro item da ferramenta.
+  const out: Partial<Record<SegItemKey, Draft[]>> = {};
+  for (const f of prev.findings || []) {
+    if (f.st === 'corrigida') continue;
+    const k = segItemsOfFinding(f)[0];
+    if (!k) continue;
+    const { id: _id, st: _st, accepted: _acc, ...d } = f;
+    (out[k] = out[k] || []).push(d);
+  }
+  return out;
+}
+
+function prevItemTool(prev: SegRun | null, key: SegItemKey): SegTool | undefined {
+  return (prev?.tools || []).find((t) => segItemOfTool(t.name) === key);
+}
+
 export async function runSeg(opts: SegRunOptions): Promise<SegRun> {
   const workspace = path.resolve(opts.workspace);
   const started = Date.now();
   const now = new Date();
-  const id = stampId(now);
+  // Id com resolução de segundo: uma isolada rápida logo depois da anterior pega o próximo livre.
+  let stamp = now;
+  let id = stampId(stamp);
+  while (fs.existsSync(path.join(segRoot(workspace), id))) {
+    stamp = new Date(stamp.getTime() + 1000);
+    id = stampId(stamp);
+  }
   const prev = lastRun(workspace);
   const dir = path.join(segRoot(workspace), id);
   fs.mkdirSync(path.join(dir, 'logs'), { recursive: true });
@@ -584,12 +695,13 @@ export async function runSeg(opts: SegRunOptions): Promise<SegRun> {
     killed = true;
     try { (child as ChildProcess | null)?.kill(); } catch {}
   });
+  const only = opts.only && SEG_ITEMS.some((i) => i.key === opts.only) ? opts.only : null;
 
   const notes: string[] = [];
-  const tools: SegTool[] = [];
-  const drafts: Draft[] = [];
-  const git = isGitRepo(workspace);
-  if (!git) notes.push('A pasta não é um repositório Git: histórico não foi verificado e a lista de arquivos veio da pasta inteira.');
+  const scope = gitScope(workspace);
+  const git = scope.kind === 'own';
+  if (scope.kind === 'outer') notes.push(`A pasta não tem Git próprio: está dentro do repositório ${scope.top}, que não é do projeto. A varredura leu a pasta inteira e não olhou histórico. Rode git init no projeto para ter histórico próprio.`);
+  else if (!git) notes.push('A pasta não é um repositório Git: histórico não foi verificado e a lista de arquivos veio da pasta inteira.');
 
   say('Listando os arquivos do projeto');
   const files = listFiles(workspace, git);
@@ -599,86 +711,164 @@ export async function runSeg(opts: SegRunOptions): Promise<SegRun> {
     if (t != null) texts.set(f, t);
   }
   if (files.length >= MAX_FILES) notes.push(`O projeto tem mais de ${MAX_FILES} arquivos; só os primeiros foram lidos pelas regras próprias.`);
-
-  say(`Procurando segredos e padrões perigosos em ${texts.size} arquivo(s)`);
-  let t0 = Date.now();
-  const secretDrafts: Draft[] = [];
-  const codeDrafts: Draft[] = [];
-  for (const [rel, text] of texts) {
-    scanSecrets(rel, text, secretDrafts);
-    scanCode(rel, text, codeDrafts);
-  }
-  secretDrafts.push(...envFindings(workspace, git));
   const sig = collectSignals(workspace, files, texts);
-  const sigDrafts = signalFindings(sig);
-  drafts.push(...secretDrafts, ...codeDrafts, ...sigDrafts);
-  tools.push({ name: 'Regras TAVIR · segredos', ran: true, note: `${secretDrafts.length} achado(s) em ${texts.size} arquivo(s)`, ms: 0 });
-  tools.push({ name: 'Regras TAVIR · código', ran: true, note: `${CODE_RULES.length} regras · ${codeDrafts.length} achado(s)`, ms: Date.now() - t0 });
-  tools.push({ name: 'Regras TAVIR · LGPD e configuração', ran: true, note: `${sigDrafts.length} achado(s)`, ms: 0 });
-
-  const gl = which('gitleaks');
-  if (gl && !killed) {
-    say('gitleaks: segredos no código e no histórico');
-    const r = await gitleaks(gl, workspace, dir, git, track);
-    tools.push(r.tool);
-    drafts.push(...r.drafts);
-  }
-  // Roda mesmo com o gitleaks: ele descarta valores de baixa entropia que as regras próprias pegam.
-  if (git && !killed) {
-    say('Procurando segredos no histórico do Git');
-    const r = await scanHistory(workspace, new Set(secretDrafts.map((d) => d.fp)), track);
-    tools.push({ name: 'Regras TAVIR · histórico do Git', ran: !r.note.startsWith('git log falhou'), note: `${r.drafts.length} achado(s) · ${r.note}`, ms: r.ms });
-    drafts.push(...r.drafts);
-  }
-
   const hasNode = fs.existsSync(path.join(workspace, 'package.json'));
-  if (hasNode && !killed) {
-    say('Auditando dependências');
-    const r = await npmAudit(workspace, dir, track);
-    tools.push(r.tool);
-    drafts.push(...r.drafts);
-  }
-  const pa = which('pip-audit');
-  if (!killed && pa && fs.existsSync(path.join(workspace, 'requirements.txt'))) {
-    say('pip-audit: dependências Python');
-    const res = await runCommand(pa, ['-r', 'requirements.txt', '-f', 'json'], workspace, 300000, track);
-    fs.writeFileSync(path.join(dir, 'logs', 'pip-audit.json'), res.out, 'utf8');
-    let data: any = null;
-    try { data = JSON.parse(res.out.slice(res.out.indexOf('{'))); } catch {}
-    const deps = data?.dependencies || [];
-    for (const d of deps) for (const v of d.vulns || []) {
-      drafts.push({ fp: sha(`pip|${d.name}|${v.id}`), sev: 'alta', title: `${d.name}: ${v.id}`, key: 'deps', tool: 'pip-audit', where: `${d.name} ${d.version}`, desc: String(v.description || '').slice(0, 600), ev: `${v.id} · ${d.name} ${d.version}`, impact: '', fix: v.fix_versions?.length ? `Atualizar para ${v.fix_versions.join(' ou ')}.` : 'Sem versão corrigida.', code: '', refs: [v.id, ...(v.aliases || [])].slice(0, 3) });
-    }
-    tools.push({ name: 'pip-audit', ran: !!data, note: data ? `${deps.length} pacote(s) verificados` : `Não rodou: ${tail(res.out, 3)}`, ms: res.ms, log: 'logs/pip-audit.json' });
-  }
+  const gl = which('gitleaks');
   const sg = which('semgrep');
-  if (sg && !killed) {
-    say('semgrep: análise estática');
-    const r = await semgrep(sg, workspace, dir, track);
-    tools.push(r.tool);
-    drafts.push(...r.drafts);
-  }
   const tv = which('trivy');
-  if (tv && !killed) {
-    say('trivy: dependências e configuração');
-    const r = await trivy(tv, workspace, dir, track);
-    tools.push(r.tool);
-    drafts.push(...r.drafts);
+  const pa = which('pip-audit');
+
+  // Cada item devolve a ferramenta (ou null quando não se aplica, com o motivo) e os achados crus.
+  type Out = { tool: SegTool | null; drafts: Draft[]; skip?: string };
+  const itemDrafts: Partial<Record<SegItemKey, Draft[]>> = {};
+  const inherited = prevItemDrafts(prev);
+  const RUNNERS: Record<SegItemKey, () => Promise<Out>> = {
+    segredos: async () => {
+      say(`Procurando segredos em ${texts.size} arquivo(s)`);
+      const t0 = Date.now();
+      const out: Draft[] = [];
+      for (const [rel, text] of texts) scanSecrets(rel, text, out);
+      out.push(...envFindings(workspace, git));
+      return { tool: { name: 'Regras TAVIR · segredos', ran: true, note: `${out.length} achado(s) em ${texts.size} arquivo(s)`, ms: Date.now() - t0 }, drafts: out };
+    },
+    codigo: async () => {
+      say(`Procurando padrões perigosos em ${texts.size} arquivo(s)`);
+      const t0 = Date.now();
+      const out: Draft[] = [];
+      for (const [rel, text] of texts) scanCode(rel, text, out);
+      return { tool: { name: 'Regras TAVIR · código', ran: true, note: `${CODE_RULES.length} regras · ${out.length} achado(s)`, ms: Date.now() - t0 }, drafts: out };
+    },
+    lgpd: async () => {
+      say('Conferindo LGPD e configuração');
+      const out = signalFindings(sig);
+      return { tool: { name: 'Regras TAVIR · LGPD e configuração', ran: true, note: `${out.length} achado(s)`, ms: 0 }, drafts: out };
+    },
+    gitleaks: async () => {
+      if (!gl) return { tool: null, drafts: [], skip: 'gitleaks não instalado' };
+      say('gitleaks: segredos no código e no histórico');
+      return gitleaks(gl, workspace, dir, git, track);
+    },
+    historico: async () => {
+      if (!git) return { tool: null, drafts: [], skip: scope.kind === 'outer' ? 'Pasta sem Git próprio' : 'Pasta sem Git' };
+      say('Procurando segredos no histórico do Git');
+      // O histórico ignora o que já está no código atual: usa os segredos desta rodada ou recalcula na isolada.
+      let current = itemDrafts.segredos;
+      if (!current || (only && only !== 'segredos')) {
+        current = [];
+        for (const [rel, text] of texts) scanSecrets(rel, text, current);
+        current.push(...envFindings(workspace, git));
+      }
+      const r = await scanHistory(workspace, new Set(current.map((d) => d.fp)), track);
+      return { tool: { name: 'Regras TAVIR · histórico do Git', ran: !r.note.startsWith('git log falhou'), note: `${r.drafts.length} achado(s) · ${r.note}`, ms: r.ms }, drafts: r.drafts };
+    },
+    deps: async () => {
+      if (!hasNode) return { tool: null, drafts: [], skip: 'Sem package.json' };
+      say('Auditando dependências');
+      return npmAudit(workspace, dir, track);
+    },
+    pip: async () => {
+      if (!pa) return { tool: null, drafts: [], skip: 'pip-audit não instalado' };
+      if (!fs.existsSync(path.join(workspace, 'requirements.txt'))) return { tool: null, drafts: [], skip: 'Sem requirements.txt' };
+      say('pip-audit: dependências Python');
+      const res = await runCommand(pa, ['-r', 'requirements.txt', '-f', 'json'], workspace, 300000, track);
+      fs.writeFileSync(path.join(dir, 'logs', 'pip-audit.json'), res.out, 'utf8');
+      let data: any = null;
+      try { data = JSON.parse(res.out.slice(res.out.indexOf('{'))); } catch {}
+      const deps = data?.dependencies || [];
+      const out: Draft[] = [];
+      for (const d of deps) for (const v of d.vulns || []) {
+        out.push({ fp: sha(`pip|${d.name}|${v.id}`), sev: 'alta', title: `${d.name}: ${v.id}`, key: 'deps', tool: 'pip-audit', where: `${d.name} ${d.version}`, desc: String(v.description || '').slice(0, 600), ev: `${v.id} · ${d.name} ${d.version}`, impact: '', fix: v.fix_versions?.length ? `Atualizar para ${v.fix_versions.join(' ou ')}.` : 'Sem versão corrigida.', code: '', refs: [v.id, ...(v.aliases || [])].slice(0, 3) });
+      }
+      return { tool: { name: 'pip-audit', ran: !!data, note: data ? `${deps.length} pacote(s) verificados` : `Não rodou: ${tail(res.out, 3)}`, ms: res.ms, log: 'logs/pip-audit.json' }, drafts: out };
+    },
+    semgrep: async () => {
+      if (!sg) return { tool: null, drafts: [], skip: 'semgrep não instalado' };
+      say('semgrep: análise estática');
+      return semgrep(sg, workspace, dir, git, track);
+    },
+    trivy: async () => {
+      if (!tv) return { tool: null, drafts: [], skip: 'trivy não instalado' };
+      say('trivy: dependências e configuração');
+      return trivy(tv, workspace, dir, track);
+    },
+  };
+
+  const prevItems = new Map((prev?.items || []).map((i) => [i.key, i]));
+  const items: SegItem[] = SEG_ITEMS.map((i) => ({ key: i.key, name: i.name, what: i.what, status: 'pendente', found: 0 }));
+  const tools: SegTool[] = [];
+  const emit = (idx: number) => opts.onItem?.({ index: idx, total: items.length, items: items.map((x) => ({ ...x })) });
+  const executed = new Set<SegItemKey>();
+  // Item que não roda agora (isolada ou cancelada) fica como estava na varredura anterior.
+  const inherit = (it: SegItem) => {
+    const p = prevItems.get(it.key);
+    const d = inherited[it.key] || [];
+    itemDrafts[it.key] = d;
+    const tool = prevItemTool(prev, it.key);
+    if (tool) tools.push(tool);
+    if (p) Object.assign(it, { status: p.status === 'rodando' ? 'pendente' : p.status, at: p.at, when: p.when, ms: p.ms, note: p.note, error: p.error, found: d.length, from: p.from || prev!.id });
+    else if (prev) Object.assign(it, { status: d.length ? 'problema' : tool ? (tool.ran ? 'ok' : 'erro') : 'pendente', found: d.length, from: prev.id, at: prev.at, when: prev.when, note: tool?.note });
+  };
+  for (let idx = 0; idx < items.length; idx++) {
+    const it = items[idx];
+    if (only && it.key !== only) { inherit(it); continue; }
+    if (killed) {
+      inherit(it);
+      it.cancelled = true;
+      emit(idx);
+      continue;
+    }
+    it.status = 'rodando';
+    emit(idx);
+    const t0 = Date.now();
+    try {
+      const r = await RUNNERS[it.key]();
+      const at = new Date();
+      if (killed) {
+        inherit(it);
+        it.cancelled = true;
+      } else {
+        executed.add(it.key);
+        itemDrafts[it.key] = r.drafts;
+        if (r.tool) tools.push(r.tool);
+        const failed = r.tool ? !r.tool.ran && /^(Não rodou|git log falhou)/.test(r.tool.note) : false;
+        Object.assign(it, {
+          status: r.skip ? 'nao_aplica' : failed ? 'erro' : r.drafts.length ? 'problema' : 'ok',
+          note: r.skip || r.tool?.note || '', error: failed ? r.tool!.note : undefined, found: r.drafts.length,
+          at: at.toISOString(), when: whenOf(at), ms: Date.now() - t0, from: id,
+        });
+      }
+    } catch (err) {
+      // Item que quebra não derruba a varredura: registra o erro e segue para o próximo.
+      const at = new Date();
+      executed.add(it.key);
+      itemDrafts[it.key] = [];
+      Object.assign(it, { status: 'erro', error: err instanceof Error ? err.message : String(err), note: 'A verificação falhou ao executar', found: 0, at: at.toISOString(), when: whenOf(at), ms: Date.now() - t0, from: id });
+      say(`${it.name}: falhou ao executar`);
+    }
+    emit(idx);
   }
+  const drafts: Draft[] = [];
+  for (const it of items) drafts.push(...(itemDrafts[it.key] || []));
   const missing = [!gl && 'gitleaks', !sg && 'semgrep', !tv && 'trivy'].filter(Boolean) as string[];
   if (missing.length) notes.push(`Ferramentas externas ausentes: ${missing.join(', ')}. As regras próprias cobriram segredos, histórico e código; instale para ampliar a cobertura.`);
-  if (killed) notes.push('Varredura interrompida antes do fim.');
+  if (killed) notes.push('Varredura cancelada antes do fim. Os itens que não rodaram mantêm o resultado da varredura anterior.');
+  if (only) notes.push(`Varredura isolada de ${items.find((i) => i.key === only)!.name}. Os demais itens vêm da varredura ${prev ? prev.id : 'anterior (nenhuma)'}.`);
+  fs.writeFileSync(path.join(dir, ITEMS_FILE), JSON.stringify(itemDrafts), 'utf8');
 
   // Deduplica por impressão digital, ordena e numera.
   const byFp = new Map<string, Draft>();
   for (const d of drafts) if (!byFp.has(d.fp) || SEV_ORDER[d.sev] < SEV_ORDER[byFp.get(d.fp)!.sev]) byFp.set(d.fp, d);
-  const merged = mergeAcrossTools(Array.from(byFp.values()));
+  const merged = mergeAcrossTools(Array.from(byFp.values()).map((d) => ({ ...d })));
   byFp.clear();
   for (const d of merged) byFp.set(d.fp, d);
   const accepts = readSegAccepts(workspace);
   const current = merged.map<SegFinding>((d) => ({ ...d, id: '', st: accepts[d.fp] ? 'aceita' : 'aberta', accepted: accepts[d.fp] }));
-  // O que estava aberto na varredura anterior e sumiu agora foi corrigido.
-  const fixed = (prev?.findings || []).filter((f) => f.st !== 'corrigida' && !byFp.has(f.fp)).map((f) => ({ ...f, st: 'corrigida' as SegStatus }));
+  // O que estava aberto na varredura anterior e sumiu agora foi corrigido, desde que o item dele tenha rodado sem erro.
+  const verified = (f: SegFinding) => {
+    const ks = segItemsOfFinding(f);
+    return ks.length > 0 && ks.every((k) => executed.has(k) && items.find((i) => i.key === k)!.status !== 'erro');
+  };
+  const fixed = (prev?.findings || []).filter((f) => f.st !== 'corrigida' && !byFp.has(f.fp) && verified(f)).map((f) => ({ ...f, st: 'corrigida' as SegStatus }));
   const findings = current.concat(fixed).sort((a, b) => Number(a.st === 'corrigida') - Number(b.st === 'corrigida') || SEV_ORDER[a.sev] - SEV_ORDER[b.sev] || a.where.localeCompare(b.where));
   findings.forEach((f, i) => { f.id = `F-${String(i + 1).padStart(2, '0')}`; });
 
@@ -707,16 +897,19 @@ export async function runSeg(opts: SegRunOptions): Promise<SegRun> {
     return { area, title, key, st: 'pass' };
   });
 
+  // Nenhum arquivo lido: não há o que aprovar nem nota que valha. O portão segura, mas diz o motivo.
+  const evaluated = texts.size > 0;
+  if (!evaluated) notes.unshift('Nenhum arquivo do projeto foi lido, então a segurança não foi avaliada. Confira a pasta do projeto e se ela tem código.');
   const commit = gitHead(workspace);
   const run: SegRun = {
     id, at: now.toISOString(), when: whenOf(now), by: 'Varredura TAVIR · white box', label: opts.label, target: toPosix(workspace), commit,
-    ok: !killed && blocking === 0, score, blocking, counts, tools, checks, findings, files: texts.size, dur: Math.round((Date.now() - started) / 100) / 10, notes,
-    dir, report: path.join(dir, 'index.html'),
+    ok: !killed && evaluated && blocking === 0, evaluated, score: evaluated ? score : 0, blocking, counts, tools, checks, findings, files: texts.size, dur: Math.round((Date.now() - started) / 100) / 10, notes,
+    dir, report: path.join(dir, 'index.html'), mode: only ? 'isolada' : 'completa', only: only || undefined, cancelled: killed || undefined, items,
   };
   fs.writeFileSync(path.join(dir, 'resultado.json'), JSON.stringify(run, null, 2), 'utf8');
   fs.writeFileSync(run.report, renderSegReport(opts.projectName, run), 'utf8');
-  fs.appendFileSync(path.join(segRoot(workspace), 'index.jsonl'), JSON.stringify({ id, at: run.at, ok: run.ok, score, blocking, open: open.length, label: opts.label || '' }) + '\n', 'utf8');
-  say(run.ok ? `Segurança aprovada · nota ${score}` : `Segurança reprovada · ${blocking} achado(s) crítico(s) ou alto(s)`);
+  fs.appendFileSync(path.join(segRoot(workspace), 'index.jsonl'), JSON.stringify({ id, at: run.at, ok: run.ok, score, blocking, open: open.length, label: opts.label || '', mode: run.mode, only: only || '' }) + '\n', 'utf8');
+  say(segHead(run));
   return run;
 }
 
@@ -745,9 +938,15 @@ export function listSegRuns(workspace: string, limit = 30, overlay = true): SegR
   return out;
 }
 
+function segHead(run: SegRun): string {
+  const open = run.findings.filter((f) => f.st === 'aberta');
+  if (run.evaluated === false) return 'Segurança não avaliada · nenhum arquivo do projeto foi lido';
+  return run.ok ? `Segurança aprovada · nota ${run.score}/100 · ${open.length} achado(s) aberto(s) sem bloqueio` : `Segurança reprovada · ${run.blocking} achado(s) crítico(s) ou alto(s) · nota ${run.score}/100`;
+}
+
 export function segSummary(run: SegRun): string {
   const open = run.findings.filter((f) => f.st === 'aberta');
-  const head = run.ok ? `Segurança aprovada · nota ${run.score}/100 · ${open.length} achado(s) aberto(s) sem bloqueio` : `Segurança reprovada · ${run.blocking} achado(s) crítico(s) ou alto(s) · nota ${run.score}/100`;
+  const head = segHead(run);
   const list = open.filter((f) => SEV_ORDER[f.sev] <= SEV_ORDER['média']).slice(0, 8).map((f) => `- ${f.id} [${f.sev}] ${f.title} · ${f.where}`);
   return [head, `Relatório: qa/seguranca/${run.id}/index.html`, ...list, ...run.notes.slice(0, 2).map((n) => `Obs.: ${n}`)].join('\n');
 }

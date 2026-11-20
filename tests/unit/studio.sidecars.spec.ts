@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as http from 'node:http';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createHash } from 'node:crypto';
 import { createSidecarManager, describeCommand, loadSidecars, parseListeningPid, type SidecarSpec } from '../../src/main/sidecars';
 import { exportReelForDarkFlow } from '../../src/main/studio/darkflowExport';
@@ -31,7 +31,7 @@ function writeConfig(systems: SidecarSpec[]): string {
 describe('sidecars', () => {
   it('lê o exemplo sem a flag de publicação', () => {
     const systems = loadSidecars(path.resolve('db/sidecars.example.json'));
-    expect(systems.map((item) => item.id)).toEqual(['darkflow', 'docuflow']);
+    expect(systems.map((item) => item.id)).toEqual(['darkflow', 'docuflow', 'controle-mobile']);
     expect(systems[0].healthUrl).toBe('http://127.0.0.1:8765/api/health');
     expect(systems[1].healthUrl).toBe('http://127.0.0.1:5000/docs');
     expect(JSON.stringify(systems)).not.toContain('enable-meta-publish');
@@ -98,6 +98,52 @@ describe('sidecars', () => {
     expect(result.ok).toBe(false);
     expect(result.error).toContain('8765');
     expect(spawned).toBe(0);
+  });
+
+  it('Escritório reaberto ainda para o sistema que ele mesmo ligou, e só esse', async () => {
+    const file = writeConfig([{ id: 'cm', nome: 'Controle Mobile', pasta: 'C:/app', comando: 'x', healthUrl: 'http://cm/health', portas: [9010] }]);
+    let guardado: Record<string, number> = {};
+    const mortos: number[] = [];
+    const remember = { load: () => ({ ...guardado }), save: (m: Record<string, number>) => { guardado = { ...m }; } };
+    let dono: { pid: number; nome: string } | null = null;
+    const deps = { health: async () => false, portOwner: () => dono, killPid: (pid: number) => void mortos.push(pid), remember, spawn: () => ({ pid: 500, kill() {} }), commandLine: () => 'C:\\outro\\app.exe' };
+    expect((await createSidecarManager(file, deps).start('cm')).ok).toBe(true);
+    expect(guardado.cm).toBe(500);
+    // Escritório fechado e aberto de novo: módulo novo, sem o filho em memória, mesmo arquivo de pids.
+    vi.resetModules();
+    const { createSidecarManager: reaberto } = await import('../../src/main/sidecars');
+    const m = reaberto(file, deps);
+    dono = { pid: 777, nome: 'python.exe' };
+    expect(m.stop('cm')).toMatchObject({ ok: false });
+    expect(mortos).toEqual([]);
+    dono = { pid: 500, nome: 'python.exe' };
+    expect((await m.status())[0].nosso).toBe(true);
+    expect(m.stop('cm').ok).toBe(true);
+    expect(mortos).toEqual([500]);
+    expect(guardado.cm).toBeUndefined();
+  });
+
+  it('para o sistema ligado por fora quando o dono da porta é ele; outro programa na porta não é tocado', () => {
+    const file = writeConfig([{
+      id: 'cm-fora', nome: 'Controle Mobile', pasta: 'C:/Projetos/novo-app', comando: 'python backend/server.py',
+      healthUrl: 'http://cm/health', portas: [9010], processos: [{ comando: 'python', args: ['-u', 'backend/server.py'] }],
+    }]);
+    const mortos: number[] = [];
+    let dono: { pid: number; nome: string } | null = { pid: 32108, nome: 'python.exe' };
+    let linha = 'python -u backend/server.py';
+    const remember = { load: () => ({}), save: () => {} };
+    const m = createSidecarManager(file, { portOwner: () => dono, killPid: (pid) => void mortos.push(pid), remember, commandLine: () => linha });
+    expect(m.stop('cm-fora').ok).toBe(true);
+    expect(mortos).toEqual([32108]);
+    linha = '"C:\\Projetos\\novo-app\\.venv\\Scripts\\python.exe" outro.py';
+    expect(m.stop('cm-fora').ok).toBe(true);
+    linha = 'C:\\Program Files\\Outro\\servidor.exe --port 9010';
+    const r = m.stop('cm-fora');
+    expect(r.ok).toBe(false);
+    expect(r.error).toContain('não é o Controle Mobile');
+    expect(mortos).toEqual([32108, 32108]);
+    dono = null;
+    expect(m.stop('cm-fora').ok).toBe(true);
   });
 
   it('não liga a publicação da Meta', async () => {

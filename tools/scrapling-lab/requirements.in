@@ -1,0 +1,2 @@
+# Runtime completo auditado em 2026-08-29. O lock fixa toda a árvore e seus hashes.
+scrapling[all]==0.4.15

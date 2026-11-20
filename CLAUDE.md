@@ -56,5 +56,25 @@ Este arquivo é lido automaticamente pelo Claude (Claude Code, Claude Desktop, e
 - Etapa ou item de trilho só fecha por gate do CEO (`decideEsteiraGate`), portão de QA (`src/main/qa/`) ou portão de segurança (`src/main/seg/`). Nunca marque etapa como concluída pela resposta do motor.
 - Moldes das esteiras só em `src/shared/esteiras.ts`. Ao inserir etapa no meio de um molde que já tem projetos, registre os nomes antigos em `LEGACY_STAGE_NAMES`.
 - Evidências ficam em `qa/evidencias/` e `qa/seguranca/` do projeto, fora do git dele. Segredo em relatório sempre mascarado (`maskSecret`).
+- Estado em `.tavir/` (control, esteira, retrato, decisões, chamados, acessos, cofre) só muda pelo Escritório: a guarda (`src/main/tavirGuarda.ts`) desfaz o que o agente mexer na rodada. Gravação nova de estado chama `escritaDoEscritorio` logo depois.
 - Absorção dispara o retrato inicial (QA + segurança). Em scripts de teste, absorva com `baseline: false`.
 - Mudança que envolva motores precisa passar em `npm run test:motores` nos quatro (claude, codex, antigravity, cursor).
+
+### 9. Raio-X: dado de cliente fora do git, decisão na tela
+- Mapa em `docs/modules/raiox.md`. Casos ficam em `%APPDATA%/<app>/raiox/casos/`, nunca no repositório.
+- Prioridade sempre aponta um gap da taxonomia (`src/shared/raiox.ts`). Implantação só com playbook `validado` (`raiox/playbooks/`); status `validado` só o Carlos escreve.
+- Motor sugere evidência e redige documento; aprovação é do Carlos, por hash.
+- Antes de commitar algo do Raio-X: `npm run raiox:scan`.
+
+### 10. Conversa e log: rolagem acompanha, passos recolhidos
+- O leitor comum fica em `src/renderer/shared/tavir-reader.js` e `.css`; o build injeta os dois na página e as telas usam `window.TavirReader` (`blocks`, `trail`). Não copie o formatador para dentro de uma tela.
+- Toda área que recebe texto enquanto o motor trabalha (conversa da Íris, log de etapa, log do trilho) leva o atributo `data-tv-follow`: a rolagem fica no fim; se o Carlos subir para ler, para de puxar até ele voltar ao fim ou enviar outra mensagem. Não use em texto parado (prévia, transcrição de execução encerrada).
+- Resposta de agente mostra o texto formatado e, acima dele, a trilha recolhida: em `thoughts`, linha com `→ ` é ferramenta, `» ` é o que o agente disse antes dela, o resto é registro técnico. Não despeje pensamento ou log aberto na tela: resumo em uma linha, detalhe ao clicar.
+- Histórico da Íris: a tela mostra o que está em `.tavir/iris-chat.json`, mas para o motor só vai o recorte de `chatRecent` + `formatHistory` (depois da última «Nova conversa», com orçamento de caracteres). Mexeu no histórico, confira `historyBudget`: mostrar mais na tela nunca pode aumentar o que é enviado.
+
+### 11. Absorção, acessos e chamados: o motor propõe, o Carlos decide
+- Mapa em `docs/modules/fabrica.md` (seções Absorção, Acessos por projeto e Chamados). Lógica nova em `src/main/absorcao/`, `src/main/acessos.ts` e `src/main/chamados.ts`; em `project-fs.ts`, `irisAgent.ts`, `ipc.ts`, `preload` e `types.ts` só ganchos.
+- Retrato só vale aprovado pelo Carlos (`decidirRetrato`). Documento da leitura passa pela checagem de citação; rota de URL e nome de pacote não contam como caminho.
+- Chamado só muda de situação pela tabela de `podeMover`: agente só cria; «aguardando validação» só pelo Escritório depois dos portões; concluir é gate do Carlos. Resposta de motor nunca move chamado.
+- Credencial de serviço fica cifrada em `.tavir/credentials.json` do próprio projeto; a tela só vê a prévia, e o valor nunca vai em pedido a agente nem em log.
+- Projeto de cliente clonado vai para `tavir-externo/` (fora do git do Escritório). Em teste, absorva com `baseline: false` e use `TAVIR_DATA_ROOT` para o banco.

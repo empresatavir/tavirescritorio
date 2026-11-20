@@ -57,7 +57,7 @@ export function renderSegReport(projectName: string, run: SegRun): string {
 <header class="top"><div class="brand"><i></i><b>TAVIR</b> Fábrica · Segurança white box</div>
 <h1>${esc(projectName)}</h1>
 <div class="meta">${esc(run.id)} · ${esc(run.when)} · ${run.files} arquivo(s) lidos · commit ${esc(run.commit)}${run.label ? ` · ${esc(run.label)}` : ''}</div>
-<div class="score"><div class="ring" style="background:${ring}">${run.score}</div><div><div class="verdict ${run.ok ? 'ok' : 'bad'}" style="margin-top:0">${run.ok ? 'Aprovado' : 'Reprovado'} · ${run.ok ? 'nenhum achado crítico ou alto aberto' : `${run.blocking} achado(s) crítico(s) ou alto(s)`}</div><div class="sev">${sevPills}</div></div></div>
+<div class="score"><div class="ring" style="background:${ring}">${run.evaluated === false ? '–' : run.score}</div><div><div class="verdict ${run.ok ? 'ok' : 'bad'}" style="margin-top:0">${run.evaluated === false ? 'Não avaliado · nenhum arquivo do projeto foi lido' : `${run.ok ? 'Aprovado' : 'Reprovado'} · ${run.ok ? 'nenhum achado crítico ou alto aberto' : `${run.blocking} achado(s) crítico(s) ou alto(s)`}`}</div><div class="sev">${sevPills}</div></div></div>
 <div style="height:40px"></div></header>
 <main>
 <div class="kpis"><div class="kpi"><span class="eyebrow">Nota</span><b>${run.score}/100</b></div><div class="kpi"><span class="eyebrow">Abertos</span><b class="${open.length ? 'bad' : 'ok'}">${open.length}</b></div><div class="kpi"><span class="eyebrow">Corrigidos</span><b class="ok">${fixed.length}</b></div><div class="kpi"><span class="eyebrow">Riscos aceitos</span><b>${accepted.length}</b></div></div>

@@ -220,11 +220,7 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
       "chat: false, unread: 0, typing: false, draft: '', msgs: []",
     );
 
-    // Absorver via modal IPC do Escritório
-    fabHtml = fabHtml.replace(
-      "const openAbsorb = () => self.setState({ menu: false, abs: Object.assign({}, A, { open: true, step: 'path', tpl: null, name: '', logN: 0 }) });",
-      "const openAbsorb = () => { self.setState({ menu: false }); if (app && app.modal) app.modal('factory-absorb', { tpl: 'Sistemas', mode: 'Manutenção' }); else self.setState({ abs: Object.assign({}, A, { open: true, step: 'path', tpl: null, name: '', logN: 0 }) }); };",
-    );
+    // Absorver: o modal próprio da Fábrica (Origem → Preparar → Leitura → Retrato) fica no Fabrica.dc.html.
 
     // Explorer real via IPC
     fabHtml = fabHtml.replace(
@@ -454,6 +450,21 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
             }
             self.setState({ absorbed: nextAbs, altOpen: altMap, altTrack: trackMap, motors: motors });
           }).catch(function() {});
+          if (tavir.projects.retrato) {
+            tavir.projects.retrato(key).then(function(res) {
+              const rmap = Object.assign({}, self.state.rtById || {});
+              rmap[proj.id] = res && res.ok ? res : null;
+              self.setState({ rtById: rmap });
+            }).catch(function() {});
+          }
+          if (tavir.projects.chamadosContagem) {
+            tavir.projects.chamadosContagem(key).then(function(res) {
+              if (!res || !res.ok) return;
+              const cmap = Object.assign({}, self.state.chCount || {});
+              cmap[proj.id] = res.contagem;
+              self.setState({ chCount: cmap });
+            }).catch(function() {});
+          }
           if (tavir.projects.getEsteira) {
             tavir.projects.getEsteira(key).then(function(res) {
               if (!res || !res.esteira) return;
@@ -497,8 +508,13 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
       const finish = function(reply, thoughts, extra) {
         const st = self.state;
         const c3 = Object.assign({}, st.chats || {});
-        c3[pidNow] = (st.chats[pidNow] || base).concat([['Íris · ' + engLabel, reply, 'ag', thoughts || [], hm()]]);
+        c3[pidNow] = (st.chats[pidNow] || base).concat([['Íris · ' + engLabel, reply, 'ag', thoughts || [], hm(), [], (extra && extra.meta) || null]]);
         const patch = { chats: c3, typing: false };
+        if (extra && extra.context) {
+          const cc = Object.assign({}, st.chatCtx || {});
+          cc[pidNow] = extra.context;
+          patch.chatCtx = cc;
+        }
         if (extra && extra.alt_track) {
           const tm = Object.assign({}, st.altTrack || {});
           tm[pidNow] = extra.alt_track;
@@ -533,6 +549,7 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
         effort: engEffort,
         question: txt,
         asChangeRequest: !!opts.asChangeRequest,
+        varredura: !!opts.varredura,
         persona: 'Íris · Inteligência do Projeto'
       }).then(function(res) {
         const msg = res && res.replyMessage;
@@ -540,8 +557,15 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
         const registered = thoughts.some(function(t) { return String(t).indexOf('[Trilho]') >= 0; });
         finish((msg && msg.t) || 'Pedido registrado na memória do projeto.', thoughts, {
           alt_track: res && res.alt_track,
-          registered: registered
+          registered: registered,
+          context: res && res.context,
+          meta: msg ? { id: msg.id, runId: msg.runId || '', engine: msg.engine || engLabel, propostas: msg.propostas || [], propostaAvisos: msg.propostaAvisos || [], chamadosVarredura: msg.chamadosVarredura || null, anexosRel: (opts.anexosRel || []) } : null
         });
+        if (msg && msg.chamadosVarredura) {
+          const cv = msg.chamadosVarredura;
+          app.toast('Procurar melhorias', cv.criados.length ? cv.criados.length + (cv.criados.length === 1 ? ' chamado aberto pela Íris' : ' chamados abertos pela Íris') + (cv.repetidos.length ? ' · ' + cv.repetidos.length + ' já existia(m)' : '') + '.' : 'Nenhum chamado novo' + (cv.repetidos.length ? ' (' + cv.repetidos.length + ' já existia(m))' : '') + '.');
+        }
+        if (msg && (msg.chamadosVarredura || (msg.propostas || []).length) && self._loadChamados) self._loadChamados();
       }).catch(function(err) {
         finish('Não consegui falar com o motor agora (' + String(err && err.message || err) + ').', ['[Erro] askIris']);
       });
@@ -589,6 +613,22 @@ if (manifest[fabUuid] && manifest[fabUuid].compressed) {
     manifest[fabUuid].data = zlib.gzipSync(Buffer.from(fabHtml, 'utf8')).toString('base64');
     console.log('Fábrica limpa e atualizada! (referência sem mock + IPC)');
   }
+}
+
+// 1.2c Raio-X: página própria + IPC
+const raioxUuid = 'd11b3692-f681-4d6a-9af2-a0e63665359e';
+{
+  const raioxPath = path.resolve(__dirname, '../src/renderer/raiox-ref/RaioX.dc.html');
+  if (!fs.existsSync(raioxPath)) {
+    throw new Error('Raio-X: src/renderer/raiox-ref/RaioX.dc.html não encontrado.');
+  }
+  let raioxHtml = fs.readFileSync(raioxPath, 'utf8');
+  raioxHtml = raioxHtml.replace(/<script src="\.\/vendor\/react\.js"><\/script>\s*/g, '');
+  raioxHtml = raioxHtml.replace(/<script src="\.\/vendor\/react-dom\.js"><\/script>\s*/g, '');
+  if (!manifest[raioxUuid]) manifest[raioxUuid] = { compressed: true };
+  manifest[raioxUuid].data = zlib.gzipSync(Buffer.from(raioxHtml, 'utf8')).toString('base64');
+  manifest[raioxUuid].compressed = true;
+  console.log('Raio-X: página própria injetada');
 }
 
 // 1.2b Atualizar d4030abe (Sistema / Configurações: Motores de IA via SDK Local + Módulos em vez de Projetos)
@@ -708,8 +748,10 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
           self.setState({ sidecars: Array.isArray(rows) ? rows : [] });
         }).catch(function() {});
       };
-      self.loadSidecars = loadSide;
+      self.loadSidecars = function() { loadSide(); setTimeout(loadSide, 2500); setTimeout(loadSide, 7000); };
       loadSide();
+      // O estado acompanha a realidade (o serviço pode subir/cair por fora).
+      if (!self._sideTimer) self._sideTimer = setInterval(loadSide, 5000);
     }
   }
   renderVals() {`
@@ -803,19 +845,24 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     cfgHtml = cfgHtml.replace("['motores', 'Motores de IA', 4], ", "['motores', 'Motores de IA', 4], ['contas', 'Contas e cofre'], ");
     const cardTpl = (list) => `<sc-for list="{{${list}}}" as="c" hint-placeholder-count="2">
             <article class="cfg-card {{c.cls}}">
-              <header class="cfg-card-h"><span class="cfg-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.ico}}"></path></svg></span><b class="grow">{{c.title}}</b><details class="cfg-help"><summary class="cfg-ibtn" title="Como gerar o token" aria-label="Como gerar o token de {{c.title}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 16v-4M12 8h.01"></path></svg></summary><div class="cfg-pop" role="dialog" aria-label="Como gerar o token de {{c.title}}"><b>Como gerar o token</b><ol><sc-for list="{{c.steps}}" as="st" hint-placeholder-count="4"><li>{{st.t}}</li></sc-for></ol><button class="btn sm secondary" onClick="{{c.openToken}}">{{c.openLbl}} ↗</button></div></details><button class="cfg-ibtn" onClick="{{c.openToken}}" title="{{c.openLbl}}" aria-label="{{c.openLbl}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></button><span class="cfg-dot {{c.cls}}" role="img" aria-label="{{c.badge}}" title="{{c.badge}}"></span></header>
+              <header class="cfg-card-h"><span class="cfg-card-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.ico}}"></path></svg></span><b class="grow">{{c.title}}</b><sc-if value="{{c.hasLink}}" hint-placeholder-val="{{true}}"><details class="cfg-help"><summary class="cfg-ibtn" title="Como gerar o token" aria-label="Como gerar o token de {{c.title}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 16v-4M12 8h.01"></path></svg></summary><div class="cfg-pop" role="dialog" aria-label="Como gerar o token de {{c.title}}"><b>Como gerar o token</b><ol><sc-for list="{{c.steps}}" as="st" hint-placeholder-count="4"><li>{{st.t}}</li></sc-for></ol><button class="btn sm secondary" onClick="{{c.openToken}}">{{c.openLbl}} ↗</button></div></details><button class="cfg-ibtn" onClick="{{c.openToken}}" title="{{c.openLbl}}" aria-label="{{c.openLbl}}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></button></sc-if><span class="cfg-dot {{c.cls}}" role="img" aria-label="{{c.badge}}" title="{{c.badge}}"></span></header>
               <div class="cfg-card-sub">{{c.sub}}</div>
               <sc-if value="{{c.connected}}" hint-placeholder-val="{{false}}">
                 <div class="cfg-card-who"><b>{{c.who}}</b><sc-if value="{{c.isDef}}" hint-placeholder-val="{{false}}"><span class="badge action">padrão</span></sc-if><sc-if value="{{c.canDef}}" hint-placeholder-val="{{false}}"><button class="cfg-link" onClick="{{c.setDef}}">tornar padrão</button></sc-if><sc-if value="{{c.noPush}}" hint-placeholder-val="{{false}}"><span class="badge warn">sem escopo repo</span></sc-if></div>
                 <dl class="cfg-kv"><sc-for list="{{c.kv}}" as="k" hint-placeholder-count="3"><dt>{{k.k}}</dt><dd class="mono">{{k.v}}</dd></sc-for></dl>
               </sc-if>
-              <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}">
+              <sc-if value="{{c.showSingle}}" hint-placeholder-val="{{true}}">
                 <input class="input" type="password" autocomplete="off" spellcheck="false" placeholder="{{c.ph}}" value="{{c.token}}" onChange="{{c.onToken}}" aria-label="Token {{c.title}}">
+              </sc-if>
+              <sc-if value="{{c.showMulti}}" hint-placeholder-val="{{false}}">
+                <sc-for list="{{c.inputs}}" as="f" hint-placeholder-count="2">
+                  <label class="field" style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 11px; color: var(--text-secondary)">{{f.label}}</span><input class="input" type="{{f.kind}}" autocomplete="off" spellcheck="false" placeholder="{{f.ph}}" value="{{f.value}}" onChange="{{f.on}}" aria-label="{{f.label}}"></label>
+                </sc-for>
               </sc-if>
               <sc-if value="{{c.hasMsg}}" hint-placeholder-val="{{false}}"><div class="cfg-card-msg" style="color: {{c.msgColor}}">{{c.msg}}</div></sc-if>
               <footer class="cfg-card-f">
                 <sc-if value="{{c.showForm}}" hint-placeholder-val="{{true}}"><div class="grow"></div><sc-if value="{{c.editing}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{c.cancel}}">Cancelar</button></sc-if><button class="btn sm primary" onClick="{{c.save}}" disabled="{{c.busy}}">{{c.saveLbl}}</button></sc-if>
-                <sc-if value="{{c.showActions}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{c.test}}" disabled="{{c.busy}}">{{c.testLbl}}</button><button class="btn sm secondary" onClick="{{c.edit}}">Trocar token</button><div class="grow"></div><button class="btn sm ghost" onClick="{{c.remove}}">Remover</button></sc-if>
+                <sc-if value="{{c.showActions}}" hint-placeholder-val="{{false}}"><sc-if value="{{c.showTest}}" hint-placeholder-val="{{true}}"><button class="btn sm secondary" onClick="{{c.test}}" disabled="{{c.busy}}">{{c.testLbl}}</button></sc-if><button class="btn sm secondary" onClick="{{c.edit}}">{{c.editLbl}}</button><div class="grow"></div><button class="btn sm ghost" onClick="{{c.remove}}">Remover</button></sc-if>
               </footer>
             </article>
           </sc-for>`;
@@ -825,6 +872,10 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
         <div class="cfg-cards two">${cardTpl('ghCards')}</div>
         <div class="cfg-sec"><div class="eyebrow">Deploy e dados</div><p>Ficam guardadas e conferidas, prontas para quando a Fábrica publicar os projetos.</p></div>
         <div class="cfg-cards">${cardTpl('provCards')}</div>
+        <div class="cfg-sec"><div class="eyebrow">Raio-X</div><p>URL, segredos da ponte de leitura e conta de e-mail. Segredo fica cifrado; a tela só mostra a prévia. Estes dois não passam pela API do provedor ao salvar.</p></div>
+        <div class="cfg-cards">${cardTpl('bundleCards')}</div>
+        <div class="cfg-sec"><div class="eyebrow">TAVIR Escritório · fila na nuvem</div><p>Projeto Supabase do app de controle, separado do Raio-X. A chave de serviço fica só neste notebook, para o worker do Escritório; a chave pública e o usuário do app entram no build do APK.</p></div>
+        <div class="cfg-cards">${cardTpl('officeCards')}</div>
         <div class="card" style="padding: 12px 14px; display: flex; gap: 10px; font-size: 13px; background: var(--surface-0)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--flow)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3"></path></svg><span class="sec">Cada token é conferido no provedor antes de entrar e fica cifrado (AES-256-GCM) no cofre desta máquina. Só o app usa, por variável de ambiente; nunca vai para tela, log, chat ou linha de comando.</span></div>
       </sc-if>
 
@@ -839,7 +890,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
       self._accLoading = true;
       Promise.all([accApi ? accApi.list() : null, credApi ? credApi.list() : null]).then(function(r) {
         self._accLoading = false;
-        self.setState({ accLoaded: true, accList: (r[0] && r[0].accounts) || [], credList: (r[1] && r[1].credentials) || [] });
+        self.setState({ accLoaded: true, accList: (r[0] && r[0].accounts) || [], credList: (r[1] && r[1].credentials) || [], bundleList: (r[1] && r[1].bundles) || [] });
       }).catch(function() { self._accLoading = false; self.setState({ accLoaded: true }); });
     }
     if (typeof document !== 'undefined' && !window.__cfgHelpOn) {
@@ -857,6 +908,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
       const top = Object.assign({}, extra || {});
       if (res && Array.isArray(res.accounts)) top.accList = res.accounts;
       if (res && Array.isArray(res.credentials)) top.credList = res.credentials;
+      if (res && Array.isArray(res.bundles)) top.bundleList = res.bundles;
       const m = Object.assign({}, self.state.cs || {}); m[key] = Object.assign({}, m[key] || {}, patch); top.cs = m;
       self.setState(top);
     };
@@ -865,12 +917,18 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     const baseCard = function(key, connected, extra) {
       const st = cs[key] || {};
       const editing = !!st.edit;
+      const extraMulti = !!(extra && extra.multi);
       return Object.assign({
         cls: connected ? 'on' : '',
         connected: connected,
         editing: connected && editing,
         showForm: !connected || editing,
+        showSingle: (!connected || editing) && !extraMulti,
+        showMulti: (!connected || editing) && !!extraMulti,
         showActions: connected && !editing,
+        hasLink: true,
+        showTest: true,
+        editLbl: 'Trocar token',
         token: st.token || '',
         onToken: function(e) { setCard(key, { token: e.target.value }); },
         busy: !!st.busy,
@@ -970,11 +1028,67 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
         remove: function() { if (!credApi) return; if (typeof window !== 'undefined' && window.confirm && !window.confirm('Remover o token da ' + c.name + ' do cofre?')) return; credApi.remove(c.provider).then(function(r) { done(key, r, 'Token removido do cofre.'); }); },
       });
     });
-    const connectedN = ghCards.filter(function(c) { return c.connected; }).length + provCards.filter(function(c) { return c.connected; }).length;
+    const BUNDLE_FALLBACK = [
+      { provider: 'raiox_supabase', name: 'Raio-X Supabase', hint: 'URL e segredos da ponte de leitura. Cada segredo fica cifrado; a tela só mostra a prévia.', connected: false, fields: [
+        { key: 'url', label: 'URL do projeto', secret: false, value: '', preview: '' },
+        { key: 'internalSecret', label: 'Segredo interno', secret: true, value: '', preview: '' },
+        { key: 'reviewSecret', label: 'Segredo de revisão', secret: true, value: '', preview: '' },
+        { key: 'deliverySecret', label: 'Segredo de entrega', secret: true, value: '', preview: '' },
+        { key: 'inviteSecret', label: 'Segredo de convite', secret: true, value: '', preview: '' },
+        { key: 'officeSyncSecret', label: 'Segredo de sincronização', secret: true, value: '', preview: '' },
+      ] },
+      { provider: 'resend', name: 'Resend', hint: 'Conta de e-mail do Raio-X. A chave fica cifrada; remetente, resposta e modelo ficam em claro.', connected: false, fields: [
+        { key: 'apiKey', label: 'Chave da API', secret: true, value: '', preview: '' },
+        { key: 'from', label: 'Remetente', secret: false, value: '', preview: '' },
+        { key: 'replyTo', label: 'Resposta para', secret: false, value: '', preview: '' },
+        { key: 'templateId', label: 'Modelo', secret: false, value: '', preview: '' },
+      ] },
+    ];
+    const bundleList = s.bundleList && s.bundleList.length ? s.bundleList : BUNDLE_FALLBACK;
+    const toBundleCard = function(c) {
+      const key = 'bd-' + c.provider;
+      const fields = c.fields || [];
+      return baseCard(key, !!c.connected, {
+        multi: true, hasLink: false, showTest: false, editLbl: 'Alterar',
+        title: c.name, sub: c.hint, ico: c.provider === 'resend' ? 'M4 6h16v12H4zM4 6l8 7 8-7' : PROV_ICO.supabase,
+        who: '', isDef: false, canDef: false, noPush: false,
+        kv: c.connected ? fields.map(function(f) { return { k: f.label, v: f.preview || '—' }; }) : [],
+        inputs: fields.map(function(f) {
+          const typed = (cs[key] || {})[f.key];
+          return {
+            label: f.label, kind: f.secret ? 'password' : 'text',
+            ph: f.secret ? (c.connected ? 'em branco mantém o atual' : '') : '',
+            value: typed != null ? typed : (f.secret ? '' : (f.value || '')),
+            on: function(e) { const patch = {}; patch[f.key] = e.target.value; setCard(key, patch); },
+          };
+        }),
+        save: function() {
+          if (!credApi || !credApi.saveBundle) { setCard(key, { msg: 'Disponível só no app desktop.', err: true }); return; }
+          const fieldsOut = {};
+          fields.forEach(function(f) {
+            const typed = (cs[key] || {})[f.key];
+            fieldsOut[f.key] = typed != null ? typed : (f.secret ? '' : (f.value || ''));
+          });
+          setCard(key, { busy: true, msg: 'Guardando no cofre…', err: false });
+          credApi.saveBundle(c.provider, fieldsOut).then(function(r) { done(key, r, c.name + ' guardado.'); }).catch(fail(key));
+        },
+        remove: function() {
+          if (!credApi || !credApi.removeBundle) return;
+          if (typeof window !== 'undefined' && window.confirm && !window.confirm('Remover ' + c.name + ' do cofre?')) return;
+          credApi.removeBundle(c.provider).then(function(r) { done(key, r, c.name + ' removido do cofre.'); });
+        },
+      });
+    };
+    const isOffice = function(c) { return String(c.provider || '').indexOf('escritorio_') === 0; };
+    const bundleCards = bundleList.filter(function(c) { return !isOffice(c); }).map(toBundleCard);
+    const officeCards = bundleList.filter(isOffice).map(toBundleCard);
+    const connectedN = ghCards.filter(function(c) { return c.connected; }).length + provCards.filter(function(c) { return c.connected; }).length + bundleCards.filter(function(c) { return c.connected; }).length + officeCards.filter(function(c) { return c.connected; }).length;
     return {
       ghCards: ghCards,
       provCards: provCards,
-      credCount: connectedN + ' de ' + (ghCards.length + provCards.length) + ' conectadas',
+      bundleCards: bundleCards,
+      officeCards: officeCards,
+      credCount: connectedN + ' de ' + (ghCards.length + provCards.length + bundleCards.length + officeCards.length) + ' conectadas',
       v: v,`
     );
   }
@@ -1154,9 +1268,9 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     cfgHtml = cfgHtml.replace(
       sistemaHead,
       `${sistemaHead}
-        <div class="cfg-head"><div class="grow"><h2 class="cfg-h">Sistemas ligados</h2><p class="cfg-lead">DarkFlow e Docuflow sobem pelos scripts deles. O Escritório não publica.</p></div></div>
+        <div class="cfg-head"><div class="grow"><h2 class="cfg-h">Sistemas ligados</h2><p class="cfg-lead">Serviços que o Escritório sobe e vigia: DarkFlow, Docuflow e o escritório do app de controle (fila na nuvem). O Escritório não publica.</p></div></div>
         <div style="display: flex; flex-direction: column; gap: 8px">
-          <sc-for list="{{sidecars}}" as="side" hint-placeholder-count="2"><div class="card" style="padding: 14px; background: var(--surface-0); display: flex; gap: 12px; align-items: center"><div class="grow"><div style="font-weight: 600">{{side.nome}}</div><div class="mono" style="margin-top: 4px; font-size: 12px">{{side.pasta}}</div><div class="muted" style="margin-top: 4px; font-size: 12px">{{side.estado}}</div></div><button class="btn secondary" onClick="{{side.start}}">iniciar</button><button class="btn ghost" onClick="{{side.stop}}">parar</button></div></sc-for>
+          <sc-for list="{{sidecars}}" as="side" hint-placeholder-count="2"><div class="card" style="padding: 14px; background: var(--surface-0); display: flex; gap: 12px; align-items: center"><div class="grow"><div style="font-weight: 600">{{side.nome}}</div><div class="mono" style="margin-top: 4px; font-size: 12px">{{side.pasta}}</div><div class="muted" style="margin-top: 4px; font-size: 12px">{{side.estado}}</div></div><button class="{{side.startCls}}" disabled="{{side.running}}" onClick="{{side.start}}">{{side.startLbl}}</button><button class="{{side.stopCls}}" disabled="{{side.stopped}}" onClick="{{side.stop}}">parar</button></div></sc-for>
         </div>`
     );
   }
@@ -1165,7 +1279,7 @@ if (manifest[cfgUuid] && manifest[cfgUuid].compressed) {
     cfgHtml = cfgHtml.replace(
       sysLine,
       `${sysLine}
-      sidecars: (s.sidecars || []).map((side) => ({ nome: side.nome, pasta: side.pasta, estado: side.saudavel ? 'no ar' : (side.dono || 'parado'), start: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.start(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não subiu'); if (self.loadSidecars) self.loadSidecars(); }); }, stop: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.stop(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não parou'); if (self.loadSidecars) self.loadSidecars(); }); } })),`
+      sidecars: (s.sidecars || []).map((side) => ({ nome: side.nome, pasta: side.pasta, estado: side.saudavel ? '● no ar' : (side.dono || 'parado'), running: !!side.saudavel, stopped: !side.saudavel && !side.nosso, startLbl: side.saudavel ? 'rodando' : 'iniciar', startCls: side.saudavel ? 'btn ghost' : 'btn secondary', stopCls: side.saudavel ? 'btn primary' : 'btn ghost', start: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.start(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não subiu'); if (self.loadSidecars) self.loadSidecars(); }); }, stop: () => { const api = (typeof window !== 'undefined' && window.tavir && window.tavir.studio) || null; if (!api || !api.sidecars) return; api.sidecars.stop(side.id).then((res) => { if (!res || res.ok === false) app.toast('Sistema', (res && res.error) || 'não parou'); if (self.loadSidecars) self.loadSidecars(); }); } })),`
     );
   }
 
@@ -1354,7 +1468,7 @@ templateHtml = templateHtml.replace(
 );
 templateHtml = templateHtml.replace(
   '.log div{animation:fade 300ms var(--ease) both;display:flex;gap:12px}',
-  '.log div{animation:fade 300ms var(--ease) both;display:flex;gap:12px;align-items:flex-start}.log div > span:last-child{white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;flex:1}'
+  '.log div{animation:fade 300ms var(--ease) both;display:flex;gap:12px;align-items:flex-start}.log div > span:last-child{white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;flex:1}.log .ts{flex:none;width:112px;white-space:nowrap;color:var(--on-ink-muted)}.log div.tg{cursor:pointer}.log div.tg:hover > span:last-child{text-decoration:underline}'
 );
 
 // 2.1 Limpa os JOBS mockados
@@ -1441,20 +1555,7 @@ templateHtml = templateHtml.replace(
   "fillCls: j ? (STATUS[j.status] || STATUS.completed)[3] : '',"
 );
 
-const origJcur = "const jcur = s.jobs.find((j) => j.id === s.jobId) || jlist[0] || s.jobs[0];";
-const safeJcur = "const jcur = s.jobs.find((j) => j.id === s.jobId) || jlist[0] || s.jobs[0] || { id: '', title: 'Nenhum job ativo', who: '—', ini: '—', status: 'completed', progress: 0, model: '—', motor: '—', effort: '—', task: '—', cost: 0, ceiling: 0, started: '—', tokens: '0' };";
-templateHtml = templateHtml.replace(origJcur, safeJcur);
-templateHtml = templateHtml.replace(
-  "isFailed: jcur.status === 'failed',",
-  "isFailed: jcur.status === 'failed', failTitle: jcur.error ? 'A execução parou.' : 'O job parou antes do deploy.', failWhy: jcur.error || 'Variável obrigatória ausente: SUPABASE_URL. Nada foi publicado. O gate ap-02 espera sua decisão para registrar a variável e refazer.',"
-);
-const failBanner = '<b>O job parou antes do deploy.</b><p class="sec" style="margin-top: 4px; font-size: 13px">Variável obrigatória ausente: SUPABASE_URL. Nada foi publicado. O gate ap-02 espera sua decisão para registrar a variável e refazer.</p>';
-if (templateHtml.includes(failBanner)) {
-  templateHtml = templateHtml.replace(failBanner, '<b>{{job.failTitle}}</b><p class="sec" style="margin-top: 4px; font-size: 13px">{{job.failWhy}}</p>');
-  console.log('Banner de falha da execução passou a usar o erro real do job.');
-} else {
-  console.log('Banner de falha não encontrado para troca.');
-}
+// (Execuções: jcur, banner de falha e demais trocas da tela ficam no bloco 2.10c.)
 
 const origDcur = "const dcur = dlist.find((a) => a.id === s.approvalId) || dlist[0] || null;";
 const safeDcur = "const dcur = dlist.find((a) => a.id === s.approvalId) || dlist[0] || { id: '', group: 'none', kind: 'none', title: 'Nenhuma decisão pendente', who: '—', ini: '—', type: '—', status: 'approved', impact: 'baixo', task: '—', age: '—', ageH: 0, reason: 'Tudo liberado. Nenhum bloqueio humano na sala.', question: 'Sem aprovações pendentes.', yes: [], no: [], more: [] };";
@@ -1472,6 +1573,17 @@ const origTdT = "const tdT = s.modal === 'taskdetail' ? (s.tasks.find((t) => t.i
 const safeTdT = "const tdT = (s.modal === 'taskdetail' ? (s.tasks.find((t) => t.id === (s.mdata && s.mdata.id)) || s.tasks[0]) : s.tasks[0]) || { seq: 0, title: 'Nenhuma tarefa', who: '—', sector: '—', prio: 'Normal', gate: false, job: null, status: 'to_plan' };";
 templateHtml = templateHtml.replace(origTdT, safeTdT);
 console.log('Fallbacks de segurança aplicados!');
+
+// 2.9b Desliga o simulador da maquete. O tick() original somava progresso e custo aleatórios e
+// cortava o log em 40 linhas a cada 1,8 s; o livro de execuções sobrescrevia a cada 4 s e a tela
+// oscilava. Progresso, custo e log vêm só do livro (loadOfficeRuns) e dos eventos do motor.
+{
+  const tickStart = templateHtml.indexOf('tick() {\n    this.setState((s) => {');
+  const tickEnd = tickStart === -1 ? -1 : templateHtml.indexOf('\n  say(t, m)', tickStart);
+  if (tickStart === -1 || tickEnd === -1) throw new Error('Execuções: tick() da maquete não encontrado; o simulador ficaria ligado.');
+  templateHtml = templateHtml.slice(0, tickStart) + 'tick() { /* simulador desligado: dados reais vêm do livro */ }\n' + templateHtml.slice(tickEnd);
+  console.log('Simulador de execuções desligado!');
+}
 
 // 2.10 Injeta sincronização IPC reativa + Indexação na Abertura (Estilo Concierge) no componentDidMount
 const oldMount = 'componentDidMount() { this.timer = setInterval(() => this.tick(), 1800); }';
@@ -1500,6 +1612,56 @@ const newMount = `componentDidMount() {
           vaultDocs: u.vaultDocs ? u.vaultDocs.length : 0
         });
         self.setState(u);
+        // Tarefas que chegam pelo APK (fila na nuvem) aparecem sem recarregar a tela.
+        if (!self._tasksTimer) {
+          const sig = function(list) { return (list || []).map(function(t) { return t.id + ':' + t.status + ':' + t.title + ':' + t.prio + ':' + t.sector; }).join('|'); };
+          // Estado da fila de execução de cada tarefa (officeExec), para selos e botões.
+          self.refreshTaskRuns = function() {
+            if (!window.tavir.tasks.runs) return Promise.resolve();
+            return window.tavir.tasks.runs().then(function(runs) {
+              const next = JSON.stringify(runs || {});
+              if (next !== self._taskRunsSig) { self._taskRunsSig = next; self.setState({ taskRuns: runs || {} }); }
+            }).catch(function() {});
+          };
+          self.taskRun = function(t, mode, agent) {
+            if (!window.tavir.tasks.run) return;
+            window.tavir.tasks.run(t.id, { mode: mode, agent: agent }).then(function(res) {
+              if (!res || !res.ok) { self.say('Não entrou na fila', (res && res.error) || 'Tente de novo.'); return; }
+              self.say(mode === 'plan' ? 'Paula vai planejar' : 'Na fila de execução', '#' + t.seq + ' · ' + t.title + (mode === 'plan' ? '. O plano volta em Planejado.' : '. Roda uma por vez; você aprova no fim.'));
+              self.log('Carlos', (mode === 'plan' ? 'pediu plano da #' : 'mandou executar a #') + t.seq + ' · ' + t.title);
+              window.tavir.tasks.list().then(function(list) { if (Array.isArray(list)) self.setState({ tasks: list }); }).catch(function() {});
+              self.refreshTaskRuns();
+            }).catch(function(err) { self.say('Não entrou na fila', String(err && err.message || err)); });
+          };
+          self.taskAct = function(t, act, note) {
+            const api = window.tavir.tasks;
+            const call = act === 'approve' ? api.approve(t.id) : act === 'revise' ? api.revise(t.id, note || '') : api.stopRun({ taskId: t.id });
+            call.then(function(res) {
+              if (!res || !res.ok) { self.say('Não deu certo', (res && res.error) || 'Tente de novo.'); return; }
+              const msg = { approve: ['Tarefa concluída', '#' + t.seq + ' foi para Concluído.'], revise: ['Ajuste na fila', 'A próxima tentativa da #' + t.seq + ' leva o seu pedido.'], stop: ['Execução parada', '#' + t.seq + ' saiu da fila.'] }[act];
+              self.say(msg[0], msg[1]);
+              if (self.refreshApprovals) self.refreshApprovals();
+              window.tavir.tasks.list().then(function(list) { if (Array.isArray(list)) self.setState({ tasks: list }); }).catch(function() {});
+              self.refreshTaskRuns();
+            }).catch(function(err) { self.say('Não deu certo', String(err && err.message || err)); });
+          };
+          self.refreshApprovals = function() {
+            if (!window.tavir.approvals || !window.tavir.approvals.list) return;
+            window.tavir.approvals.list().then(function(list) {
+              if (!Array.isArray(list)) return;
+              const sigA = function(l) { return (l || []).map(function(x) { return x.id + ':' + x.status; }).join('|'); };
+              if (sigA(list) !== sigA(self.state.approvals)) self.setState({ approvals: list });
+            }).catch(function() {});
+          };
+          self.refreshTaskRuns();
+          self._tasksTimer = setInterval(function() {
+            window.tavir.tasks.list().then(function(list) {
+              if (Array.isArray(list) && sig(list) !== sig(self.state.tasks)) self.setState({ tasks: list });
+            }).catch(function() {});
+            self.refreshTaskRuns();
+            self.refreshApprovals();
+          }, 3000);
+        }
         if (window.tavir.jobs.logs) {
           window.tavir.jobs.logs().then(function (logs) {
             if (logs && typeof logs === 'object') self.setState({ logs: Object.assign({}, logs, self.state.logs || {}) });
@@ -1515,61 +1677,185 @@ const newMount = `componentDidMount() {
       }).catch(function(err) {
         console.error('[TAVIR IPC] Erro ao sincronizar:', err);
       });
-      window.tavir.onEvent(function(evt) {
-        if (evt && evt.meta && evt.meta.track) {
-          const list = (self.state.jobs || []).slice();
-          let j = list.find(function(x) { return x.id === evt.runId; });
-          const st = evt.meta.status || (evt.type === 'error' ? 'failed' : evt.type === 'done' ? 'completed' : 'running');
-          if (!j) {
-            j = {
-              id: evt.runId,
-              title: evt.meta.title || 'Trilho de alteração',
-              who: evt.meta.owner || 'Trilho',
-              ini: String(evt.meta.owner || 'TR').slice(0, 2).toUpperCase(),
-              status: st,
-              progress: evt.meta.progress || 12,
-              model: evt.meta.model || 'auto',
-              motor: evt.meta.motor || 'Cursor',
-              effort: 'trilho',
-              task: evt.meta.focus || 'trilho',
-              cost: 0,
-              ceiling: 0,
-              started: 'agora',
-              tokens: '0',
-              error: evt.type === 'error' ? evt.content : ''
-            };
-            list.unshift(j);
+      // Execuções: uma linha por item, cada execução é uma tentativa (regras em src/shared/execGroups.ts).
+      const XG = TavirExec;
+      self._execOverride = self._execOverride || {};
+      self._execAlias = self._execAlias || {};
+      // Hora de cada linha do log: dd/mm HH:MM:SS. Sem hora registrada, a coluna fica vazia.
+      window.__tavirLogTime = function (ms) {
+        if (!ms || isNaN(ms)) return '';
+        const d = new Date(ms);
+        const p = function (n) { return String(n).padStart(2, '0'); };
+        return p(d.getDate()) + '/' + p(d.getMonth() + 1) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+      };
+      // Só lê o log da tentativa. Quem escolhe linha e tentativa é a tela (jobGroup / jobId).
+      self.openOfficeRun = function (job) {
+        const api = window.tavir && window.tavir.runs;
+        if (!job || job.live || !api || !job.workspace) return;
+        api.read(job.workspace, job.id).then(function (det) {
+          const lines = [];
+          const T = window.__tavirLogTime;
+          function add(label, text, ms, extra) {
+            const body = text && text.text ? text.text : text;
+            if (!body) return;
+            String(body).split(/\\r?\\n/).slice(0, 2500).forEach(function (line, i) {
+              lines.push(Object.assign({ ts: i === 0 ? T(ms) : '', lvl: label || 'log', cls: label === 'erro' ? 'err' : 'info', text: line }, extra || {}));
+            });
+          }
+          if (!det || !det.ok) {
+            lines.push({ ts: '', lvl: 'erro', cls: 'err', text: (det && det.error) || 'Sem log desta tentativa.' });
           } else {
-            j.status = st;
-            j.progress = evt.meta.progress || j.progress;
-            if (evt.meta.title) j.title = evt.meta.title;
-            if (evt.type === 'error') j.error = evt.content;
-            if (evt.type === 'done') j.error = '';
+            const m = det.meta || {};
+            const t0 = m.startedAt ? Date.parse(m.startedAt) : 0;
+            const t1 = m.finishedAt ? Date.parse(m.finishedAt) : 0;
+            const pause = m.status === 'paused' || /pausado por carlos/i.test(String(m.error || ''));
+            // O pedido entra recolhido numa linha; abre ao clicar (regra do leitor: detalhe ao clicar).
+            const prLines = det.prompt ? String(det.prompt.text || det.prompt).split(/\\r?\\n/).length : 0;
+            if (prLines) {
+              lines.push({ ts: T(t0), lvl: 'pedido', cls: 'info', text: 'Pedido enviado ao motor · ' + prLines + ' linhas · clique para abrir', prHead: true });
+              add('', det.prompt, 0, { pr: true, lvl: '' });
+            }
+            const passos = Array.isArray(det.passos) ? det.passos : [];
+            const LV = { ferramenta: 'passo', fala: 'agente', erro: 'erro', pensamento: 'pensa', fim: 'fim' };
+            // Passos, stdout solto e stderr na ordem em que chegaram (linhas sem hora ficam no fim do seu grupo).
+            const timed = [];
+            if (passos.length) passos.forEach(function (p, i) { timed.push({ at: p.at, k: i, row: { ts: T(p.at), lvl: LV[p.kind] || 'passo', cls: p.kind === 'erro' ? 'err' : p.kind === 'fala' || p.kind === 'fim' ? 'ok' : 'info', text: p.text } }); });
+            else add('passo', det.transcricao);
+            (det.stdoutLines || []).forEach(function (l, i) { timed.push({ at: l.at, k: 1e6 + i, row: { ts: T(l.at), lvl: 'stdout', cls: 'info', text: l.text } }); });
+            (det.stderrLines || []).forEach(function (l, i) { timed.push({ at: l.at, k: 2e6 + i, row: { ts: T(l.at), lvl: 'stderr', cls: 'info', text: l.text } }); });
+            timed.sort(function (a, b) { return (a.at || Infinity) - (b.at || Infinity) || a.k - b.k; });
+            timed.forEach(function (x) { lines.push(x.row); });
+            if (det.resposta && (det.resposta.text || det.resposta)) add('resposta', det.resposta, t1);
+            if (pause) add('pausa', m.error || 'Pausado por Carlos. A retomada continua deste ponto.', t1);
+            else if (m.error) add('erro', m.error, t1);
+            if (!lines.length) lines.push({ ts: '', lvl: 'log', cls: 'info', text: 'O motor não devolveu transcrição nesta tentativa.' });
           }
           const logs = Object.assign({}, self.state.logs || {});
-          const d = new Date();
-          const ts = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-          const bad = evt.type === 'error';
-          const text = String(evt.content || '');
-          const bucket = (logs[evt.runId] || []).slice();
-          const prev = bucket[bucket.length - 1];
-          const entry = { ts: ts, lvl: bad ? 'erro' : 'info', cls: bad ? 'err' : 'info', text: text };
-          if (prev && text && String(prev.text || '').length && text.startsWith(String(prev.text).slice(0, Math.min(String(prev.text).length, 120))) && text.length >= String(prev.text).length) bucket[bucket.length - 1] = entry;
-          else bucket.push(entry);
-          logs[evt.runId] = bucket;
-          const patch = { jobs: list, logs: logs };
-          if (!self.state.jobId) patch.jobId = evt.runId;
-          self.setState(patch);
+          const prev = logs[job.id] || [];
+          const next = lines.slice(0, 2500);
+          // Rodando: o que já chegou pelo evento ao vivo fica se a leitura do livro vier menor ou falhar.
+          logs[job.id] = job.status === 'running' && prev.length && (prev.length > next.length || !(det && det.ok)) ? prev : next;
+          self.setState({ logs: logs });
+        }).catch(function () {});
+      };
+      // Continuar ou corrigir abre a tentativa N+1 na mesma linha. A anterior fica como estava.
+      self.followRun = function (mode, g) {
+        const api = window.tavir;
+        if (!g || !api) return;
+        const note = String(self.state.jobFix || '').trim();
+        if (mode === 'correct' && !note) {
+          self.setState({ jobCorrect: true });
+          if (self.say) self.say('Correção', 'Escreva o que precisa mudar. A nova tentativa continua do checkpoint.');
           return;
         }
-        if (evt.type === 'tool_start' || evt.type === 'status' || evt.type === 'thought') {
-          const list = (self.state.jobs || []).slice();
-          const j = list.find(function(x) { return x.id === evt.runId; });
-          if (j) {
-            j.progress = Math.min(95, j.progress + 8);
-            self.setState({ jobs: list });
-          }
+        const next = g.count + 1;
+        const fail = function (err) {
+          self.setState({ execStarting: null });
+          if (self.say) self.say('Execução', String((err && (err.error || err.message)) || err || 'Não continuou.'));
+        };
+        const after = function (res) {
+          if (res && res.ok === false) fail(res);
+          if (self.loadOfficeRuns) self.loadOfficeRuns();
+        };
+        const fromLedger = g.attempts.filter(function (a) { return !a.live; })[0];
+        let go = null;
+        if (g.module === 'Fábrica' && g.last.kind === 'trilho' && g.workspace && api.projects && api.projects.runAltTrack) {
+          go = function () {
+            const run = function () { return api.projects.runAltTrack(g.workspace); };
+            return mode === 'correct' && api.projects.approveAltTrack ? api.projects.approveAltTrack(g.workspace, 'reprovado', note).then(run) : run();
+          };
+        } else if (g.module === 'Raio-X' && g.place && api.raiox && api.raiox.analyse) {
+          go = function () { return api.raiox.analyse(g.place, [], mode === 'correct' ? note : ''); };
+        } else if (fromLedger && fromLedger.workspace && api.runs && api.runs.follow) {
+          go = function () { return api.runs.follow(fromLedger.workspace, fromLedger.id, mode, note); };
         }
+        if (!go) { if (self.say) self.say('Execução', 'Não há checkpoint para continuar.'); return; }
+        self.setState({ jobGroup: g.key, jobId: '', jobCorrect: false, jobFix: '', execStarting: { key: g.key, count: g.count, at: Date.now() } });
+        if (self.say) self.say('Tentativa ' + next, mode === 'correct' ? 'Correção enviada. A tentativa ' + next + ' continua do checkpoint.' : 'A tentativa ' + next + ' continua do checkpoint.');
+        go().then(after).catch(fail);
+      };
+      // Pausar e cancelar param o processo de verdade. Módulo sem como parar não mostra os botões.
+      self.stopRun = function (kind, g) {
+        const api = window.tavir;
+        const a = g && g.last;
+        if (!a || !api || a.status !== 'running') return;
+        let stopped = false;
+        if (g.stop === 'trilho' && a.workspace && api.projects && api.projects.pauseAltTrack) { api.projects.pauseAltTrack(a.workspace); stopped = true; }
+        else if (g.stop === 'raiox' && a.place && api.raiox && api.raiox.stopAnalyse) { api.raiox.stopAnalyse(a.place); stopped = true; }
+        // Tarefa do Escritório não tem checkpoint: pausar é o mesmo que cancelar (o ajuste vira nova tentativa no Kanban).
+        else if (g.stop === 'escritorio' && api.tasks && api.tasks.stopRun) { api.tasks.stopRun({ workspace: a.workspace }); stopped = true; kind = 'cancelled'; }
+        if (!stopped) return;
+        self._execOverride[a.id] = kind;
+        if (kind === 'cancelled' && api.runs && api.runs.cancel && a.workspace) {
+          api.runs.cancel(a.workspace, a.id).then(function (res) {
+            if (res && res.ok && res.runId && res.runId !== a.id) self._execOverride[res.runId] = 'cancelled';
+            if (self.loadOfficeRuns) self.loadOfficeRuns();
+          }).catch(function () {});
+        }
+        const jobs = (self.state.jobs || []).map(function (j) { return j && j.id === a.id ? Object.assign({}, j, { status: kind }) : j; });
+        self.setState({ jobs: jobs });
+        if (self.say) self.say('Tentativa ' + a.n, kind === 'cancelled' ? 'Cancelada. O processo foi encerrado.' : 'Pausada. O checkpoint guarda este ponto.');
+      };
+      // A cada 4 s: junta por id com o que já está na tela (sem trocar a lista) e casa a linha ao vivo com o livro.
+      self.loadOfficeRuns = function () {
+        const api = window.tavir && window.tavir.runs;
+        if (!api || !api.office) return;
+        api.office().then(function (res) {
+          if (!res || !res.ok || !Array.isArray(res.runs)) return;
+          const now = Date.now();
+          const fresh = res.runs.map(function (r) { return XG.attemptFromRun(r, now); });
+          const prev = (self.state.jobs || []).filter(function (j) { return j && j.key; });
+          const merged = XG.mergeAttempts(prev, fresh, self._execOverride);
+          self._execOverride = XG.pruneOverrides(self._execOverride, fresh);
+          Object.assign(self._execAlias, merged.aliases);
+          const jobs = merged.attempts.map(function (a) { return XG.jobRow(a, now); });
+          const patch = { jobs: jobs };
+          const logs = self.state.logs || {};
+          const moved = {};
+          Object.keys(merged.aliases).forEach(function (from) {
+            const to = merged.aliases[from];
+            if (logs[from] && logs[from].length && !(logs[to] && logs[to].length)) moved[to] = logs[from];
+          });
+          if (Object.keys(moved).length) patch.logs = Object.assign({}, logs, moved);
+          const curId = self.state.jobId;
+          if (curId && self._execAlias[curId]) patch.jobId = self._execAlias[curId];
+          const groups = XG.buildGroups(jobs, now);
+          const st = self.state.execStarting;
+          if (st) {
+            const sg = groups.filter(function (x) { return x.key === st.key; })[0];
+            if ((sg && sg.count > st.count) || now - st.at > 90000) patch.execStarting = null;
+          }
+          if (!self.state.jobGroup && !(patch.jobId || curId) && groups[0]) patch.jobGroup = groups[0].key;
+          self.setState(patch);
+          const sel = XG.pickSelection(groups, { groupKey: patch.jobGroup || self.state.jobGroup || '', attemptId: patch.jobId || curId || '' });
+          if (sel) {
+            const known = (patch.logs || logs)[sel.attempt.id];
+            if (!(known && known.length) || sel.attempt.status === 'running') self.openOfficeRun(sel.attempt);
+          }
+        }).catch(function () {});
+      };
+      self.loadOfficeRuns();
+      if (!self._officeTimer) self._officeTimer = setInterval(function () { self.loadOfficeRuns(); }, 4000);
+      window.tavir.onEvent(function(evt) {
+        if (!(evt && evt.meta && evt.meta.track)) return;
+        const now = Date.now();
+        const prev = (self.state.jobs || []).filter(function (j) { return j && j.key; });
+        const res = XG.applyLiveEvent(prev, evt, self._execAlias, now);
+        const id = res.id;
+        const logs = Object.assign({}, self.state.logs || {});
+        const ts = window.__tavirLogTime(now);
+        const bad = evt.type === 'error';
+        const text = String(evt.content || '');
+        const bucket = (logs[id] || []).slice();
+        const last = bucket[bucket.length - 1];
+        const entry = { ts: ts, lvl: bad ? 'erro' : 'info', cls: bad ? 'err' : 'info', text: text };
+        if (last && text && String(last.text || '').length && text.startsWith(String(last.text).slice(0, Math.min(String(last.text).length, 120))) && text.length >= String(last.text).length) bucket[bucket.length - 1] = entry;
+        else bucket.push(entry);
+        logs[id] = bucket;
+        const patch = { logs: logs };
+        if (res.attempts !== prev) patch.jobs = res.attempts.map(function (a) { return XG.jobRow(a, now); });
+        self.setState(patch);
+        if (res.ended && self.loadOfficeRuns) self.loadOfficeRuns();
       });
     }
   }`;
@@ -1577,6 +1863,174 @@ const newMount = `componentDidMount() {
 if (templateHtml.includes(oldMount)) {
   templateHtml = templateHtml.replace(oldMount, newMount);
   console.log('componentDidMount atualizado com IPC reativo + Indexação na Abertura!');
+}
+
+// 2.10a Painel da sala: os cards de execução rodando mostram o tempo real, não percentual.
+templateHtml = templateHtml.replace(
+  'jobs: running.map((j) => ({ title: j.title, who: j.who, ini: j.ini, model: j.model, progress: j.progress,',
+  "jobs: running.map((j) => ({ title: j.title, who: j.who, ini: j.ini, model: j.model, progress: j.progress, progTxt: j.progTxt || (j.progress + '%'),"
+);
+templateHtml = templateHtml.split('<span class="num" style="font-size: 12px; width: 36px; text-align: right">{{j.progress}}%</span>').join('<span class="num" style="font-size: 12px; min-width: 36px; text-align: right; white-space: nowrap">{{j.progTxt}}</span>');
+
+// 2.10c Execuções agrupadas por item. Uma linha por item (item do trilho, caso do Raio-X, peça do
+// Studio); cada execução ou retomada é uma tentativa. Sem barra de % inventada nem stepper fixo:
+// estado da última tentativa, número de tentativas e tempo real. Regras em src/shared/execGroups.ts,
+// que entra na tela compilado (dist/shared/execGroups.js) para a tela e os testes usarem o mesmo código.
+{
+  const execJs = path.resolve(__dirname, '../dist/shared/execGroups.js');
+  if (!fs.existsSync(execJs)) throw new Error('Rode npm run build:main antes: falta dist/shared/execGroups.js');
+  const execSrc = fs.readFileSync(execJs, 'utf8').replace(/\/\/# sourceMappingURL=.*$/m, '');
+  if (/\brequire\(/.test(execSrc)) throw new Error('execGroups.js não pode importar nada: ele roda dentro da tela.');
+  const jobsMark = 'const JOBS = [];';
+  if (!templateHtml.includes(jobsMark)) throw new Error('Execuções: não achei const JOBS para injetar TavirExec.');
+  templateHtml = templateHtml.replace(jobsMark, 'const TavirExec = (function () { const exports = {}; const module = { exports: exports };\n' + execSrc + '\nreturn module.exports; })();\n' + jobsMark);
+
+  const tplStart = templateHtml.indexOf('<!-- ========== EXECUÇÕES ========== -->');
+  const tplEnd = templateHtml.indexOf('<!-- ========== TASKS ========== -->');
+  if (tplStart === -1 || tplEnd === -1 || tplEnd < tplStart) throw new Error('Execuções: bloco do template não encontrado.');
+  const pauseIcon = '<svg width="16" height="16" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="{{ic.pause}}"></path></svg>';
+  const alertIcon = '<svg width="20" height="20" sc-camel-view-box="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ic.alert}}"></path></svg>';
+  const execTpl = `<!-- ========== EXECUÇÕES ========== -->
+<sc-if value="{{is.exec}}" hint-placeholder-val="{{false}}">
+<div class="split screen">
+  <aside class="split-side">
+    <div style="padding: 20px 18px 14px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center"><h2 style="font-size: 18px; font-weight: 600">Execuções</h2><div class="grow"></div><span class="num muted" style="font-size: 12px">{{exec.totalTxt}}</span></div>
+      <div class="segs"><sc-for list="{{exec.filters}}" as="f" hint-placeholder-count="9"><button class="seg {{f.on}}" sc-camel-on-click="{{f.pick}}">{{f.label}}<span class="c">{{f.n}}</span></button></sc-for></div>
+    </div>
+    <div class="rows" style="border-top: 1px solid var(--line)">
+      <sc-for list="{{exec.list}}" as="g" hint-placeholder-count="5">
+        <button class="row {{g.on}}" sc-camel-on-click="{{g.pick}}" style="align-items: flex-start">
+          <i class="{{g.dot}}" style="width: 8px; height: 8px; border-radius: 50%; background: {{g.color}}; margin-top: 7px; flex: none"></i>
+          <div class="grow" style="min-width: 0"><div class="t">{{g.title}}</div><div class="m">{{g.meta}}</div></div>
+        </button>
+      </sc-for>
+      <sc-if value="{{exec.empty}}" hint-placeholder-val="{{false}}"><p class="muted" style="padding: 24px 18px">Nenhuma execução neste filtro.</p></sc-if>
+    </div>
+  </aside>
+  <section class="split-main">
+    <sc-if value="{{job.none}}" hint-placeholder-val="{{false}}"><div class="page"><p class="muted">Nenhuma execução ainda. Quando um motor rodar, ela aparece aqui.</p></div></sc-if>
+    <sc-if value="{{job.has}}" hint-placeholder-val="{{true}}">
+    <div class="page">
+      <div class="phead">
+        <div class="grow" style="min-width: 260px">
+          <div style="display: flex; gap: 8px; align-items: center"><span class="eyebrow">{{job.eyebrow}}</span><span class="badge {{job.cls}}"><i></i>{{job.label}}</span></div>
+          <h1 style="margin-top: 8px">{{job.title}}</h1>
+          <p>{{job.sub}}</p>
+        </div>
+        <div class="actions">
+          <sc-if value="{{job.canStop}}" hint-placeholder-val="{{false}}"><button class="btn secondary" sc-camel-on-click="{{jobPause}}">${pauseIcon}Pausar</button><button class="btn danger" sc-camel-on-click="{{jobCancel}}">Cancelar</button></sc-if>
+          <sc-if value="{{job.canFollow}}" hint-placeholder-val="{{false}}"><button class="btn primary" sc-camel-on-click="{{jobRetry}}">Continuar</button><button class="btn secondary" sc-camel-on-click="{{jobCorrect}}">Corrigir</button></sc-if>
+        </div>
+      </div>
+
+      <sc-if value="{{job.starting}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 14px 18px; border-color: var(--flow)"><b>Nova tentativa</b><p class="sec" style="margin: 4px 0 0; font-size: 13px">{{job.startingTxt}}</p></div></sc-if>
+      <sc-if value="{{job.hasCheckpoint}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 14px 18px"><b>Checkpoint · {{job.checkpointAt}}</b><p class="sec" style="margin: 4px 0 0; font-size: 13px">{{job.checkpointHint}}</p></div></sc-if>
+      <sc-if value="{{showCorrect}}" hint-placeholder-val="{{false}}"><div class="card" style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px"><b>Correção</b><p class="sec" style="margin: 0; font-size: 13px">Escreva o que precisa mudar. A próxima tentativa continua do checkpoint.</p><textarea class="input" rows="4" value="{{jobFix}}" sc-camel-on-change="{{onJobFix}}"></textarea><button class="btn primary" sc-camel-on-click="{{jobSendFix}}">Enviar correção e continuar</button></div></sc-if>
+      <sc-if value="{{job.isFailed}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; border-color: var(--danger)">
+          ${alertIcon}
+          <div class="grow"><b>{{job.failTitle}}</b><p class="sec" style="margin-top: 4px; font-size: 13px">{{job.failText}}</p></div>
+        </div>
+      </sc-if>
+
+      <div class="g4">
+        <div class="metric"><span class="eyebrow">{{job.stepLbl}}</span><strong style="font-size: 20px">{{job.stepTxt}}</strong><small>{{job.stepSub}}</small></div>
+        <div class="metric"><span class="eyebrow">Tentativas</span><strong style="font-size: 20px">{{job.countTxt}}</strong><small>{{job.totalTxt}}</small></div>
+        <div class="metric"><span class="eyebrow">Motor</span><strong style="font-size: 20px">{{job.motor}}</strong><small>{{job.model}}</small></div>
+        <sc-if value="{{job.hasUsage}}" hint-placeholder-val="{{false}}"><div class="metric"><span class="eyebrow">Tokens</span><strong style="font-size: 20px">{{job.tokensTxt}}</strong><small>{{job.costTxt}}</small></div></sc-if>
+      </div>
+
+      <section class="card" style="overflow: hidden">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line)"><b style="font-size: 14px">Tentativas</b><div class="grow"></div><span class="eyebrow">mais recente primeiro</span></div>
+        <div class="rows">
+          <sc-for list="{{job.attempts}}" as="a" hint-placeholder-count="3">
+            <button class="row {{a.on}}" sc-camel-on-click="{{a.pick}}">
+              <i class="{{a.dot}}" style="width: 8px; height: 8px; border-radius: 50%; background: {{a.color}}; flex: none"></i>
+              <div class="grow" style="min-width: 0"><div class="t">{{a.n}}</div><div class="m">{{a.meta}}</div></div>
+              <span class="badge {{a.cls}}"><i></i>{{a.label}}</span>
+            </button>
+          </sc-for>
+        </div>
+      </section>
+
+      <section class="ink {{sp.log}}">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--on-ink-line)">
+          <b style="font-size: 14px">{{job.logTitle}}</b>
+          <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{false}}"><span class="badge flow"><i class="live-dot" style="width: 6px; height: 6px"></i>ao vivo</span></sc-if>
+          <div class="grow"></div><span class="eyebrow">{{job.logN}} linhas</span>
+        </div>
+        <div class="log" data-tv-follow>
+          <sc-for list="{{job.log}}" as="l" hint-placeholder-count="6"><div class="{{l.tg}}" sc-camel-on-click="{{l.click}}"><span class="ts">{{l.ts}}</span><span class="{{l.cls}}" style="width: 64px; flex: none">{{l.lvl}}</span><span>{{l.text}}</span></div></sc-for>
+          <sc-if value="{{job.isRunning}}" hint-placeholder-val="{{false}}"><div><span class="ts">     </span><span class="ok">▍</span><span style="color: var(--on-ink-muted)">aguardando próximo passo</span></div></sc-if>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+  </section>
+</div>
+</sc-if>
+
+`;
+  templateHtml = templateHtml.slice(0, tplStart) + execTpl + templateHtml.slice(tplEnd);
+
+  const jsStart = templateHtml.indexOf('    // ---------- Execuções ----------');
+  const jsEnd = templateHtml.indexOf('    // ---------- Tasks ----------');
+  if (jsStart === -1 || jsEnd === -1 || jsEnd < jsStart) throw new Error('Execuções: bloco do render não encontrado.');
+  const execRender = `    // ---------- Execuções ----------
+    // Uma linha por item; cada execução é uma tentativa. Regras em src/shared/execGroups.ts (TavirExec).
+    const XG = TavirExec;
+    const xnow = Date.now();
+    const xall = XG.buildGroups((s.jobs || []).filter((j) => j && j.key), xnow);
+    const jf = s.jobFilter === 'failed' || s.jobFilter === 'paused' ? 'stopped' : (s.jobFilter || 'all');
+    const xlist = xall.filter((g) => XG.matchesFilter(g, jf));
+    const xsel = XG.pickSelection(xall, { groupKey: s.jobGroup || '', attemptId: s.jobId || '' }, xlist);
+    const xg = xsel ? xsel.group : null;
+    const xa = xsel ? xsel.attempt : null;
+    const XC = { running: ['Rodando', 'flow', 'var(--flow)'], completed: ['Concluído', '', 'var(--text-muted)'], failed: ['Falhou', 'danger', 'var(--danger)'], paused: ['Pausado', 'warn', 'var(--warning)'], cancelled: ['Cancelado', '', 'var(--line-strong)'] };
+    const xst = (k) => XC[k] || XC.completed;
+    const xpick = (g, a) => () => { self.setState({ jobGroup: g.key, jobId: a ? a.id : '', jobCorrect: false }); if (self.openOfficeRun) self.openOfficeRun(a || g.last); };
+    const xcounts = XG.filterCounts(xall);
+    const xwhen = (a) => a.startedMs ? new Date(a.startedMs).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'sem horário';
+    const xplace = (g) => g.place && g.place !== g.module ? g.place : '';
+    const exec = {
+      total: xall.length, totalTxt: xall.length === 1 ? '1 item' : xall.length + ' itens', empty: xlist.length === 0,
+      filters: XG.GROUP_FILTERS.map((f) => ({ label: f[1], n: xcounts[f[0]] || 0, on: jf === f[0] ? 'on' : '', pick: () => self.setState({ jobFilter: f[0] }) })),
+      list: xlist.map((g) => ({ title: g.title, color: xst(g.status)[2], dot: g.status === 'running' ? 'live-dot' : '', meta: [g.module, xplace(g), 'tentativa ' + g.count, g.totalMs ? XG.fmtDuration(g.totalMs) : ''].filter(Boolean).join(' · '), on: xg && g.key === xg.key ? 'on' : '', pick: xpick(g, null) }))
+    };
+    const xstarting = !!(xg && s.execStarting && s.execStarting.key === xg.key);
+    const xprOpen = !!(xa && s.logPrompt && s.logPrompt[xa.id]);
+    const xtoggle = () => { const o = Object.assign({}, self.state.logPrompt || {}); o[xa.id] = !xprOpen; self.setState({ logPrompt: o }); };
+    const xlog = xa ? (s.logs[xa.id] || []).filter((l) => !l.pr || xprOpen).map((l) => l.prHead ? Object.assign({}, l, { tg: 'tg', click: xtoggle, text: xprOpen ? l.text.replace('clique para abrir', 'clique para recolher') : l.text }) : Object.assign({ tg: '', click: null }, l)) : [];
+    const xlastTxt = xg ? XG.timeText(xg.status, XG.attemptElapsed(xg.last, xnow)) : '';
+    const job = !xg ? { has: false, none: true, log: [], logN: 0, attempts: [] } : {
+      has: true, none: false,
+      title: xg.title, eyebrow: [xg.module, xplace(xg)].filter(Boolean).join(' · '),
+      label: xst(xa.status)[0], cls: xst(xa.status)[1],
+      sub: 'Tentativa ' + xa.n + ' de ' + xg.count + ' · ' + XG.timeText(xa.status, XG.attemptElapsed(xa, xnow)) + ' · ' + xwhen(xa),
+      isRunning: xa.status === 'running', isFailed: xa.status === 'failed',
+      failTitle: 'A tentativa ' + xa.n + ' falhou.', failText: xa.error || 'O motor parou sem dizer o motivo. O log abaixo mostra até onde foi.',
+      canStop: !!xg.stop && !xstarting, canFollow: xg.canFollow && !xstarting,
+      hasCheckpoint: xg.canFollow && !xstarting && !!xg.checkpointAt, checkpointAt: xg.checkpointAt, checkpointHint: xg.checkpointHint || 'A próxima tentativa continua deste ponto.',
+      starting: xstarting, startingTxt: 'Abrindo a tentativa ' + (xg.count + 1) + '. Ela aparece aqui quando o motor começar.',
+      stepLbl: xg.stepText ? (/^Item /.test(xg.stepText) ? 'Trilho' : 'Etapa') : 'Andamento', stepTxt: xg.stepText || xlastTxt, stepSub: xg.stepText ? xlastTxt : 'última tentativa',
+      countTxt: String(xg.count), totalTxt: xg.totalMs ? 'tempo total ' + XG.fmtDuration(xg.totalMs) : 'sem tempo registrado',
+      motor: xa.engine || '—', model: xa.model || 'modelo padrão',
+      hasUsage: xa.costUsd > 0 || xa.tokens > 0, tokensTxt: xa.tokens ? xa.tokens.toLocaleString('pt-BR') : '—', costTxt: xa.costUsd > 0 ? 'US$ ' + money(xa.costUsd) + ' nesta tentativa' : 'entrada + saída, nesta tentativa',
+      attempts: xg.attempts.map((a) => ({ n: 'Tentativa ' + a.n, meta: xwhen(a) + ' · ' + XG.timeText(a.status, XG.attemptElapsed(a, xnow)), label: xst(a.status)[0], cls: xst(a.status)[1], color: xst(a.status)[2], dot: a.status === 'running' ? 'live-dot' : '', on: a.id === xa.id ? 'on' : '', pick: xpick(xg, a) })),
+      logTitle: 'Log do processo · tentativa ' + xa.n, log: xlog, logN: xlog.length
+    };
+
+`;
+  templateHtml = templateHtml.slice(0, jsStart) + execRender + templateHtml.slice(jsEnd);
+
+  const oldActions = "jobPause: setJob('paused', 'Pausado pelo operador'), jobResume: setJob('running', 'Retomado pelo operador'), jobCancel: setJob('failed', 'Cancelado pelo operador · nada publicado'), jobRetry: setJob('running', 'Refeito a partir do último passo válido'),";
+  if (!templateHtml.includes(oldActions)) throw new Error('Execuções: ações jobPause/jobCancel não encontradas.');
+  templateHtml = templateHtml.replace(
+    oldActions,
+    "jobPause: function () { if (self.stopRun) self.stopRun('paused', xg); }, jobCancel: function () { if (self.stopRun) self.stopRun('cancelled', xg); }, jobResume: function () { if (self.followRun) self.followRun('continue', xg); }, jobRetry: function () { if (self.followRun) self.followRun('continue', xg); }, jobCorrect: function () { self.setState({ jobCorrect: true }); }, jobSendFix: function () { if (self.followRun) self.followRun('correct', xg); }, onJobFix: function (e) { self.setState({ jobFix: e.target.value }); }, jobFix: s.jobFix || '', showCorrect: !!s.jobCorrect,"
+  );
+  console.log('Execuções agrupadas por item (tentativas, merge estável, cancelar de verdade).');
 }
 
 // 2.10b Enriquecer modal 'evidence' para exibir conteúdo de Conhecimento / Memória Tier 1 / Livros / Skills
@@ -1598,6 +2052,38 @@ const newPaletteRosterAndVault = `ROSTER.forEach((a) => hits.push({ k: 'Agente',
 if (templateHtml.includes(origPaletteRoster)) {
   templateHtml = templateHtml.replace(origPaletteRoster, newPaletteRosterAndVault);
   console.log('Paleta Ctrl + K conectada ao índice de abertura (vaultDocs)!');
+}
+
+// 2.10x Decisões: resultado de tarefa (fila de execução) decide a tarefa de verdade
+{
+  const anchor = `  decide(status) {
+    const s = this.state;
+    const a = s.approvals.find((x) => x.id === s.approvalId);
+    if (!a || a.status !== 'pending') return;
+`;
+  const hook = anchor + `    if (String(a.id).indexOf('revisao-T-') === 0 && typeof window !== 'undefined' && window.tavir && window.tavir.tasks) {
+      const self = this;
+      const seqN = Number(String(a.id).slice('revisao-T-'.length));
+      const tk = (s.tasks || []).find((t) => Number(t.seq) === seqN);
+      if (!tk) { this.say('Tarefa não encontrada', 'Atualize a tela de Tasks e tente de novo.'); return; }
+      const taskId = tk.id;
+      const note = String(s.decNote || '').trim();
+      if (status !== 'approved' && status !== 'rejected') { this.say('Abra a tarefa', 'O resultado completo está na gaveta da tarefa, em Tasks.'); return; }
+      const call = status === 'approved' ? window.tavir.tasks.approve(taskId) : window.tavir.tasks.revise(taskId, note || 'Recusado em Decisões.');
+      call.then(function (res) {
+        if (!res || !res.ok) { self.say('Não deu certo', (res && res.error) || 'Tente de novo.'); return; }
+        if (self.refreshApprovals) self.refreshApprovals();
+        if (self.refreshTaskRuns) self.refreshTaskRuns();
+        window.tavir.tasks.list().then(function (list) { if (Array.isArray(list)) self.setState({ tasks: list }); }).catch(function () {});
+      }).catch(function (err) { self.say('Não deu certo', String(err && err.message || err)); });
+    }
+`;
+  if (templateHtml.includes(anchor)) {
+    templateHtml = templateHtml.replace(anchor, hook);
+    console.log('Decisões: resultado de tarefa aprova/recusa a tarefa de verdade!');
+  } else {
+    console.warn('AVISO: decide(status) não encontrado; Decisões não age nas tarefas.');
+  }
 }
 
 // 2.11 Conecta a ação de disparar job no wizard com window.tavir.jobs.start
@@ -1663,7 +2149,11 @@ const newKanbanCard = `        <sc-for list="{{c.cards}}" as="t" hint-placeholde
             <sc-if value="{{t.hasJob}}" hint-placeholder-val="{{false}}"><div style="display: flex; align-items: center; gap: 8px"><div class="track" style="height: 4px"><div class="fill {{t.fillCls}}" style="width: {{t.jobPct}}%"></div></div><span class="num muted" style="font-size: 11px">{{t.jobPct}}%</span></div></sc-if>
             <div style="display: flex; align-items: center; gap: 8px"><span class="av" style="width: 24px; height: 24px; font-size: 9px">{{t.ini}}</span><span class="muted" style="font-size: 12px">{{t.who}} · {{t.sector}}</span><div class="grow"></div>
               <sc-if value="{{t.gate}}" hint-placeholder-val="{{false}}"><span class="badge danger">gate</span></sc-if>
-              <sc-if value="{{t.planning}}" hint-placeholder-val="{{false}}"><span class="badge warn">planejando</span></sc-if>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; min-height: 24px">
+              <sc-if value="{{t.hasRun}}" hint-placeholder-val="{{false}}"><span class="badge {{t.runCls}}"><i></i>{{t.runBadge}}</span></sc-if>
+              <div class="grow"></div>
+              <sc-if value="{{t.canRun}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm secondary" style="height: 24px; padding: 0 10px; font-size: 11px" sc-camel-on-click="{{t.runNow}}" title="Entra na fila e roda com o Agente geral (ou com o plano da Paula, se houver)">Executar</button></sc-if>
             </div>
           </div>
         </sc-for>`;
@@ -1675,9 +2165,19 @@ if (templateHtml.includes(origKanbanCard)) {
 
 const origTaskDrawerActions = `      <div class="actions"><button class="btn secondary" sc-camel-on-click="{{openPlan}}">Planejar com Paula</button><sc-if value="{{td.hasJob}}" hint-placeholder-val="{{false}}"><button class="btn primary" sc-camel-on-click="{{tdGoJob}}">Ver execução</button></sc-if></div>`;
 const newTaskDrawerActions = `      <sc-if value="{{td.hasDesc}}" hint-placeholder-val="{{false}}"><div class="field"><span>Contexto / Descrição</span><p class="sec" style="font-size: 13.5px; line-height: 1.55">{{td.desc}}</p></div></sc-if>
+      <sc-if value="{{td.hasRun}}" hint-placeholder-val="{{false}}"><div class="field"><span>Execução</span><div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span class="badge {{td.runCls}}"><i></i>{{td.runBadge}}</span><span class="muted" style="font-size: 12.5px">{{td.runMeta}}</span></div><sc-if value="{{td.hasRunError}}" hint-placeholder-val="{{false}}"><p style="font-size: 13px; color: var(--danger); margin: 6px 0 0">{{td.runError}}</p></sc-if></div></sc-if>
+      <sc-if value="{{td.hasSummary}}" hint-placeholder-val="{{false}}"><div class="field"><span>Resultado do agente</span><div class="tv-read {{td.sumCls}}"><div class="tv-md"><sc-for list="{{td.summaryBlocks}}" as="b" hint-placeholder-count="2"><sc-if value="{{b.h}}" hint-placeholder-val="{{false}}"><div class="tv-md-h"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="tv-md-p"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></p></sc-if><sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div class="tv-md-li" style="padding-left: {{b.pad}}px"><b>{{b.mark}}</b><span><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></span></div></sc-if><sc-if value="{{b.quote}}" hint-placeholder-val="{{false}}"><div class="tv-md-q"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.code}}" hint-placeholder-val="{{false}}"><pre class="tv-md-code">{{b.text}}</pre></sc-if><sc-if value="{{b.hr}}" hint-placeholder-val="{{false}}"><hr class="tv-md-hr"></sc-if></sc-for></div></div><button type="button" class="link" style="font-size: 12px; margin-top: 6px" sc-camel-on-click="{{tdToggleSum}}">{{td.sumLbl}}</button></div></sc-if>
+      <sc-if value="{{td.hasPlan}}" hint-placeholder-val="{{false}}"><div class="field"><span>Plano da Paula</span><div class="tv-read {{td.planCls}}"><div class="tv-md"><sc-for list="{{td.planBlocks}}" as="b" hint-placeholder-count="2"><sc-if value="{{b.h}}" hint-placeholder-val="{{false}}"><div class="tv-md-h"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.p}}" hint-placeholder-val="{{true}}"><p class="tv-md-p"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></p></sc-if><sc-if value="{{b.li}}" hint-placeholder-val="{{false}}"><div class="tv-md-li" style="padding-left: {{b.pad}}px"><b>{{b.mark}}</b><span><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></span></div></sc-if><sc-if value="{{b.quote}}" hint-placeholder-val="{{false}}"><div class="tv-md-q"><sc-for list="{{b.segs}}" as="g" hint-placeholder-count="1"><span class="{{g.c}}">{{g.t}}</span></sc-for></div></sc-if><sc-if value="{{b.code}}" hint-placeholder-val="{{false}}"><pre class="tv-md-code">{{b.text}}</pre></sc-if><sc-if value="{{b.hr}}" hint-placeholder-val="{{false}}"><hr class="tv-md-hr"></sc-if></sc-for></div></div><button type="button" class="link" style="font-size: 12px; margin-top: 6px" sc-camel-on-click="{{tdTogglePlan}}">{{td.planLbl2}}</button></div></sc-if>
       <div class="actions" style="flex-wrap: wrap; gap: 8px">
+        <sc-if value="{{td.canRun}}" hint-placeholder-val="{{false}}"><button type="button" class="btn primary" sc-camel-on-click="{{tdRun}}">{{td.runLbl}}</button></sc-if>
+        <sc-if value="{{td.canRunPlan}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdRunGeral}}">Executar com o Agente geral</button></sc-if>
+        <sc-if value="{{td.canPlan}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdPlan}}">{{td.planLbl}}</button></sc-if>
+        <sc-if value="{{td.canApprove}}" hint-placeholder-val="{{false}}"><button type="button" class="btn primary" sc-camel-on-click="{{tdApprove}}">Aprovar e concluir</button></sc-if>
+        <sc-if value="{{td.canApprove}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdRevise}}">Pedir ajuste</button></sc-if>
+        <sc-if value="{{td.canRetry}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdRevise}}">Tentar de novo com ajuste</button></sc-if>
+        <sc-if value="{{td.canStop}}" hint-placeholder-val="{{false}}"><button type="button" class="btn secondary" sc-camel-on-click="{{tdStop}}">{{td.stopLbl}}</button></sc-if>
+        <sc-if value="{{td.hasRun}}" hint-placeholder-val="{{false}}"><button type="button" class="btn ghost" sc-camel-on-click="{{tdGoRun}}">Ver em Execuções</button></sc-if>
         <button type="button" class="btn secondary" sc-camel-on-click="{{tdEdit}}">Editar task</button>
-        <button type="button" class="btn secondary" sc-camel-on-click="{{openPlan}}">Planejar com Paula</button>
         <sc-if value="{{td.hasJob}}" hint-placeholder-val="{{false}}"><button type="button" class="btn primary" sc-camel-on-click="{{tdGoJob}}">Ver execução</button></sc-if>
         <div class="grow"></div>
         <button type="button" class="btn ghost" style="color: var(--danger)" sc-camel-on-click="{{tdDelete}}">Excluir task</button>
@@ -1706,6 +2206,8 @@ const newTaskAndEditDeleteSpec = `      task: { title: 'Nova task', eyebrow: 'Ka
         { k: 'sector', type: 'segs', label: 'Setor', val: (d && d.sector) || 'Estratégia', opts: ['Estratégia', 'Engenharia', 'Comercial', 'Conteúdo', 'Operação'] },
         { k: 'who', type: 'text', label: 'Agente / Responsável', val: (d && d.who) || 'Paula PM', ph: 'Ex.: Paula PM, Ari Arquiteto, Vitor Construtor' },
         { k: 'col', type: 'segs', label: 'Coluna no Kanban', val: (d && d.colLabel) || 'A planejar', opts: ['A planejar', 'Planejado', 'Em execução', 'Concluído'] }] },
+      'task-revise': { title: 'Pedir ajuste · #' + ((d && d.seq) || ''), eyebrow: 'Fila de execução', lead: 'O agente roda de novo (tentativa seguinte) com o seu pedido e o resultado anterior.', primary: 'Mandar para a fila', fields: [
+        { k: 'note', type: 'area', label: 'O que precisa mudar', ph: 'Ex.: faltou o domingo; resuma em 5 linhas', rows: 4, req: 'Escreva o que precisa mudar.' }] },
       'task-delete': { title: 'Excluir task #' + ((d && d.seq) || ''), eyebrow: 'Kanban · Exclusão de Tarefa', lead: 'Tem certeza que deseja excluir esta tarefa?', primary: 'Excluir definitivamente', primaryCls: 'danger', fields: [
         { k: 'n', type: 'note', tone: 'warn', text: 'A task #' + ((d && d.seq) || '') + ' ("' + ((d && d.title) || '') + '") será removida permanentemente do quadro Kanban e do banco SQLite.' }] },`;
 
@@ -1787,6 +2289,14 @@ const newSubmitTask = `    if (id === 'task') {
       this.say('Task atualizada', 'As alterações em #' + (d.seq || '') + ' foram salvas no SQLite.');
       return;
     }
+    if (id === 'task-revise') {
+      const d = s.mdata || {};
+      const note = String(v('note', '') || '').trim();
+      if (!note) { this.say('Falta o pedido', 'Escreva o que precisa mudar.'); return; }
+      this.setState({ modal: null, mdata: null });
+      if (this.taskAct) this.taskAct({ id: d.id, seq: d.seq, title: d.title }, 'revise', note);
+      return;
+    }
     if (id === 'task-delete') {
       const d = s.mdata || {};
       const updatedTasks = (s.tasks || []).filter(function(t) { return t.id !== d.id; });
@@ -1823,6 +2333,22 @@ const newTaskCardReturn = `return {
             jobPct: j ? j.progress : 0,
             fillCls: j ? (STATUS[j.status] || STATUS.completed)[3] : '',
             open: () => self.open('taskdetail', { id: t.id }),
+            ...(function () {
+              const rv = (s.taskRuns || {})[t.id] || null;
+              const RS = { queued: ['na fila', 'warn'], running: ['executando', 'flow'], review: ['aguarda você', 'warn'], failed: ['falhou', 'danger'], canceled: ['cancelado', ''], approved: ['aprovado', 'flow'], done: [rv && rv.mode === 'plan' ? 'plano pronto' : 'ajustando', 'flow'] };
+              const meta = rv ? (RS[rv.status] || ['', '']) : ['', ''];
+              const open = rv && (rv.status === 'queued' || rv.status === 'running');
+              return {
+                hasRun: !!rv,
+                runBadge: rv ? (meta[0] + (rv.status === 'queued' && rv.queuePos ? ' · ' + rv.queuePos + 'º' : '') + (rv.mode === 'exec' && rv.attempt > 1 ? ' · tentativa ' + rv.attempt : '')) : '',
+                runCls: meta[1],
+                canRun: !open && t.status !== 'done' && !(rv && rv.status === 'review'),
+                runNow: (e) => {
+                  if (e && e.stopPropagation) e.stopPropagation();
+                  if (self.taskRun) self.taskRun(t, 'exec', rv && rv.plan ? 'plano' : 'geral');
+                }
+              };
+            })(),
             edit: (e) => {
               if (e && e.stopPropagation) e.stopPropagation();
               self.open('task-edit', { id: t.id, seq: t.seq, title: t.title, desc: t.desc || '', prio: t.prio || 'Normal', sector: t.sector || 'Estratégia', who: t.who || 'Paula PM', status: t.status, colLabel: c[1] });
@@ -1852,7 +2378,7 @@ const origTdBlock = `    const td = {
 const newTdBlock = `    const tdColObj = COLS.find((c) => c[0] === tdT.status) || COLS[0];
     const td = {
       seq: tdT.seq, title: tdT.title, desc: tdT.desc || '', hasDesc: !!(tdT.desc && String(tdT.desc).trim()), who: tdT.who, sector: tdT.sector, prio: tdT.prio, prioCls: prioCls[tdT.prio] || '', gate: !!tdT.gate, hasJob: !!tdT.job,
-      moveHint: tdT.gate ? 'Com gate aberto, o card não sai de Em execução.' : 'Planejado → Em execução inicia o job ligado.',
+      moveHint: tdT.gate ? 'Com gate aberto, o card não sai de Em execução.' : 'Mudar de coluna não executa nada. Para rodar, use Executar.',
       moves: COLS.map((c) => ({ label: c[1], on: tdT.status === c[0] ? 'on' : '', pick: () => {
         if (tdT.gate && c[0] !== 'in_progress') { self.say('Gate aberto', 'Decida em Decisões antes de mover o card.'); return; }
         self.setState({ tasks: s.tasks.map((t) => t.id === tdT.id ? Object.assign({}, t, { status: c[0], planning: c[0] === 'to_plan' ? t.planning : false }) : t) });
@@ -1862,7 +2388,44 @@ const newTdBlock = `    const tdColObj = COLS.find((c) => c[0] === tdT.status) |
         self.log('Carlos', 'moveu #' + tdT.seq + ' para ' + c[1]);
         if (c[0] === 'in_progress' && tdT.job) { self.setState((st) => ({ jobs: st.jobs.map((j) => j.id === tdT.job && j.status !== 'running' ? Object.assign({}, j, { status: 'running', progress: Math.max(3, j.progress) }) : j) })); self.say('Job iniciado', tdT.job + ' começou a rodar.'); }
       } })),
-      hist: [{ t: '09:10', text: 'Card criado por ' + (tdT.who || 'Paula PM') }, { t: '10:42', text: 'Coluna atual: ' + tdColObj[1] }, { t: '12:31', text: tdT.gate ? 'Gate aberto · aguardando decisão' : 'Registrado no banco SQLite' }]
+      hist: [{ t: '09:10', text: 'Card criado por ' + (tdT.who || 'Paula PM') }, { t: '10:42', text: 'Coluna atual: ' + tdColObj[1] }, { t: '12:31', text: tdT.gate ? 'Gate aberto · aguardando decisão' : 'Registrado no banco SQLite' }],
+      ...(function () {
+        const rv = (s.taskRuns || {})[tdT.id] || null;
+        const AG = { geral: 'Agente geral', plano: 'Agente do plano', paula: 'Paula PM' };
+        const RS = { queued: ['na fila', 'warn'], running: ['executando', 'flow'], review: ['aguarda você', 'warn'], failed: ['falhou', 'danger'], canceled: ['cancelado', ''], approved: ['aprovado', 'flow'], done: [rv && rv.mode === 'plan' ? 'plano pronto' : 'ajustando', 'flow'] };
+        const meta = rv ? (RS[rv.status] || ['', '']) : ['', ''];
+        const open = !!rv && (rv.status === 'queued' || rv.status === 'running');
+        const review = !!rv && rv.status === 'review';
+        const ended = !!rv && rv.mode === 'exec' && (rv.status === 'failed' || rv.status === 'canceled');
+        const hasPlan = !!(rv && rv.plan);
+        const free = !open && !review && tdT.status !== 'done';
+        const when = rv && rv.at ? String(rv.at).slice(0, 16).replace('T', ' ') : '';
+        return {
+          hasRun: !!rv,
+          runBadge: rv ? (meta[0] + (rv.status === 'queued' && rv.queuePos ? ' · ' + rv.queuePos + 'º da fila' : '')) : '',
+          runCls: meta[1],
+          runMeta: rv ? ((rv.mode === 'plan' ? 'Plano' : 'Execução') + ' · ' + (AG[rv.agent] || rv.agent) + (rv.mode === 'exec' ? ' · tentativa ' + rv.attempt : '') + (when ? ' · ' + when : '')) : '',
+          hasRunError: !!(rv && rv.error && (rv.status === 'failed' || rv.status === 'canceled')),
+          runError: rv ? rv.error : '',
+          hasSummary: !!(rv && rv.mode === 'exec' && rv.summary),
+          summary: rv ? rv.summary : '',
+          hasPlan: hasPlan,
+          plan: rv ? rv.plan : '',
+          summaryBlocks: (typeof window !== 'undefined' && window.TavirReader) ? window.TavirReader.blocks(rv ? rv.summary : '') : [],
+          planBlocks: (typeof window !== 'undefined' && window.TavirReader) ? window.TavirReader.blocks(rv ? rv.plan : '') : [],
+          sumCls: s.tdSumOpen ? 'open' : '', sumLbl: s.tdSumOpen ? 'Recolher' : 'Ler completo',
+          planCls: s.tdPlanOpen ? 'open' : '', planLbl2: s.tdPlanOpen ? 'Recolher' : 'Ler completo',
+          canRun: free && !ended,
+          runLbl: hasPlan ? 'Executar com o plano' : 'Executar com o Agente geral',
+          canRunPlan: free && !ended && hasPlan,
+          canPlan: free && !ended,
+          planLbl: hasPlan ? 'Planejar de novo com a Paula' : 'Planejar com a Paula',
+          canApprove: review,
+          canRetry: ended && tdT.status !== 'done',
+          canStop: open,
+          stopLbl: rv && rv.status === 'running' ? 'Parar execução' : 'Tirar da fila'
+        };
+      })()
     };`;
 
 if (templateHtml.includes(origTdBlock)) {
@@ -1874,7 +2437,16 @@ templateHtml = templateHtml.replace(
   "openPlan: () => self.open('plan', s.mdata), tdGoJob: () => self.go('exec', { jobId: tdT.job, jobFilter: 'all' }),",
   `openPlan: () => self.open('plan', s.mdata), tdGoJob: () => self.go('exec', { jobId: tdT.job, jobFilter: 'all' }),
       tdEdit: () => self.open('task-edit', { id: tdT.id, seq: tdT.seq, title: tdT.title, desc: tdT.desc || '', prio: tdT.prio || 'Normal', sector: tdT.sector || 'Estratégia', who: tdT.who || 'Paula PM', status: tdT.status, colLabel: tdColObj[1] }),
-      tdDelete: () => self.open('task-delete', { id: tdT.id, seq: tdT.seq, title: tdT.title }),`
+      tdDelete: () => self.open('task-delete', { id: tdT.id, seq: tdT.seq, title: tdT.title }),
+      tdRun: () => self.taskRun && self.taskRun(tdT, 'exec', ((s.taskRuns || {})[tdT.id] || {}).plan ? 'plano' : 'geral'),
+      tdRunGeral: () => self.taskRun && self.taskRun(tdT, 'exec', 'geral'),
+      tdToggleSum: () => self.setState({ tdSumOpen: !self.state.tdSumOpen }),
+      tdTogglePlan: () => self.setState({ tdPlanOpen: !self.state.tdPlanOpen }),
+      tdPlan: () => self.taskRun && self.taskRun(tdT, 'plan', 'paula'),
+      tdApprove: () => self.taskAct && self.taskAct(tdT, 'approve'),
+      tdRevise: () => self.open('task-revise', { id: tdT.id, seq: tdT.seq, title: tdT.title }),
+      tdStop: () => self.taskAct && self.taskAct(tdT, 'stop'),
+      tdGoRun: () => { self.close(); self.go('exec', { jobFilter: 'Escritório' }); },`
 );
 
 const origProjectSpec = `      project: { title: 'Novo projeto', lead: 'Nome, trilho e onde o workspace mora.', primary: 'Criar projeto', done: ['Projeto criado', 'Paula abre o primeiro planejamento.'], fields: [
@@ -2142,12 +2714,7 @@ const newSubmitProjectAndFactory = `if (id === 'factory-delete') {
       } else {
         window.dispatchEvent(new CustomEvent('tavir:project-created', { detail: { project: fallbackProj, openConsole: isAbsorb } }));
       }
-      const taskOwner = isAbsorb ? pAbsorbAgent.split('(')[0].trim() : 'Paula PM';
-      const newTask = { id: 't' + Date.now(), seq: 40 + s.tasks.length, title: (isAbsorb ? '[Product Lab] Absorver ' : '') + pName + ' · ' + pTpl + ' (Git: ' + gitLabel + ')', status: 'to_plan', who: taskOwner, ini: isAbsorb ? 'PL' : 'PP', prio: 'Alta', sector: 'Engenharia', planning: true };
-      if (tavir && tavir.tasks && tavir.tasks.create) {
-        tavir.tasks.create({ title: newTask.title, prio: 'Alta', sector: 'Engenharia' });
-      }
-      this.setState({ tasks: [newTask].concat(s.tasks) });
+      // Projeto novo/absorvido fica na Fábrica; o Kanban do Escritório é só de tarefas avulsas.
       this.log('Carlos', (isAbsorb ? 'absorveu o projeto ' : 'criou a esteira ') + pName + ' · Git isolado: ' + gitLabel, '#B7F34A');
     }`;
 if (templateHtml.includes(origSubmitProject)) {
@@ -2229,6 +2796,18 @@ if (templateHtml.includes(oldHealth)) {
 </script>`;
   templateHtml = templateHtml.replace(/<\/body>(?![\s\S]*<\/body>)/, buildScript + '\n</body>');
   console.log('Rodapé com a versão do build!');
+}
+
+// Leitor comum: fala de agente formatada, trilha recolhida, rolagem que acompanha.
+{
+  const readerDir = path.resolve(__dirname, '../src/renderer/shared');
+  const readerJs = fs.readFileSync(path.join(readerDir, 'tavir-reader.js'), 'utf8');
+  const readerCss = fs.readFileSync(path.join(readerDir, 'tavir-reader.css'), 'utf8');
+  if (/<\/script>/i.test(readerJs)) throw new Error('tavir-reader.js não pode conter </script>.');
+  const readerTag = '<style data-tv-reader>\n' + readerCss + '\n</style>\n<script data-tv-reader>\n' + readerJs + '\n</script>';
+  if (!/<\/body>(?![\s\S]*<\/body>)/.test(templateHtml)) throw new Error('Leitor comum: não achei </body> no template.');
+  templateHtml = templateHtml.replace(/<\/body>(?![\s\S]*<\/body>)/, () => readerTag + '\n</body>');
+  console.log('Leitor comum (tavir-reader) injetado!');
 }
 
 // ==========================================

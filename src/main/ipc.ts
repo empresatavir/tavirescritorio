@@ -5,6 +5,8 @@ import { criarWorktree, removerWorktree } from './gitFlow';
 import { VaultIndexer } from './indexer';
 import type { EngineKind, TaskItem, EngineSettings, RunEvent, JobItem } from '../shared/types';
 import { registerStudioIpc } from './studio/ipcHandlers';
+import { registerRaioxIpc } from './raiox/raioxIpc';
+import { cancelOfficeRun, followOfficeRun, listOfficeRuns } from './officeRuns';
 
 /** Janela atual (dialogs). Atualizada a cada criarJanela. */
 let mainWin: BrowserWindow | null = null;
@@ -236,7 +238,28 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
-  // Tasks
+  // Tasks · fila de execução (officeExec)
+  const execResult = (r: any) => (r && r.ok ? { ok: true, run: r.run } : { ok: false, error: r?.error || 'Não deu certo.' });
+  handle('tasks:run', (_e, id: string, opts: { mode?: string; agent?: string }) => {
+    const { execQueue } = require('./officeExec');
+    return execResult(execQueue().enqueue(String(id || ''), opts?.mode === 'plan' ? 'plan' : 'exec', String(opts?.agent || 'geral')));
+  });
+  handle('tasks:approve', (_e, id: string) => execResult(require('./officeExec').execQueue().approve(String(id || ''))));
+  handle('tasks:revise', (_e, id: string, note: string) => execResult(require('./officeExec').execQueue().revise(String(id || ''), String(note || ''))));
+  handle('tasks:stopRun', (_e, target: { taskId?: string; workspace?: string }) => {
+    const { execQueue, taskIdByWorkspace } = require('./officeExec');
+    const id = target?.taskId || (target?.workspace ? taskIdByWorkspace(target.workspace) : null);
+    if (!id) return { ok: false, error: 'Tarefa não encontrada.' };
+    return execResult(execQueue().stop(id));
+  });
+  handle('tasks:runs', () => {
+    try {
+      return require('./officeExec').execQueue().views();
+    } catch {
+      return {};
+    }
+  });
+
   handle('tasks:list', () => {
     try {
       const { listTaskRecords } = require('./project-fs');
@@ -322,7 +345,15 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   // Approvals
   handle('approvals:list', () => {
     const db = carregarDb();
-    return db.approvals;
+    // Tarefa com resultado esperando o Carlos também é decisão (aprovar conclui; recusar vira nova tentativa).
+    let reviews: unknown[] = [];
+    try {
+      const { listTaskRecords } = require('./project-fs');
+      reviews = require('./officeExec').execQueue().approvals(listTaskRecords());
+    } catch {
+      reviews = [];
+    }
+    return (reviews as any[]).concat(db.approvals || []);
   });
 
   handle('approvals:decide', (_e, id: string, decision: 'approved' | 'rejected', comment?: string) => {
@@ -430,6 +461,220 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
+  // Absorção completa (retrato, leitura, gate). Lógica em src/main/absorcao/.
+  handle('projects:retrato', (_e, idOrPath: string) => {
+    try {
+      const { resolveProjectRecord } = require('./project-fs');
+      const { visaoDaAbsorcao, retratoDesatualizado } = require('./absorcao/fluxo');
+      const rec = resolveProjectRecord(idOrPath);
+      const v = visaoDaAbsorcao(rec.local_path);
+      // A5: retrato aprovado com o código mudado desde então: a Visão geral oferece «Atualizar retrato».
+      const atualizacao = v.retrato?.aprovado && !v.rodando ? retratoDesatualizado(rec.local_path) : null;
+      return { ok: true, ...v, atualizacao };
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  /** Envia uma linha de andamento da absorção para a tela (modal e cartão do projeto). */
+  const absorbEvent = (key: string, content: string, extra: Record<string, unknown> = {}, type: RunEvent['type'] = 'thought') => {
+    if (win.isDestroyed()) return;
+    win.webContents.send('run:event', { runId: `abs-${key}`, timestamp: new Date().toISOString(), type, content, meta: { absorb: true, key, ...extra } } satisfies RunEvent);
+  };
+  handle('projects:absorbPrepare', async (_e, params: any) => {
+    const key = String(params?.key || 'novo');
+    try {
+      const { prepararAbsorcao } = require('./absorcao/entrada');
+      const res = await prepararAbsorcao({ ...params, onLine: (l: string) => absorbEvent(key, l, { etapa: 'preparar' }) });
+      absorbEvent(key, res.ok ? 'Pasta pronta.' : String(res.error || 'Falhou.'), { etapa: 'preparar' }, 'done');
+      return res;
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+
+  const absorbRun = async (idOrPath: string) => {
+    const { resolveProjectRecord } = require('./project-fs');
+    const { rodarAbsorcao } = require('./absorcao/fluxo');
+    const rec = resolveProjectRecord(idOrPath);
+    return rodarAbsorcao(rec.local_path, {
+      nome: rec.name,
+      onEvent: (ev: any) => absorbEvent(rec.id, ev.content, { etapa: ev.etapa || 'leitura', passo: ev.passo || '', refresh: !!ev.refresh }, ev.type === 'done' ? 'done' : ev.type === 'error' ? 'error' : 'thought'),
+    });
+  };
+  handle('projects:absorbStart', async (_e, idOrPath: string) => {
+    try {
+      return await absorbRun(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:retratoAtualizar', async (_e, idOrPath: string) => {
+    try {
+      const { resolveProjectRecord } = require('./project-fs');
+      const { atualizarRetrato } = require('./absorcao/fluxo');
+      const rec = resolveProjectRecord(idOrPath);
+      return await atualizarRetrato(rec.local_path, {
+        onEvent: (ev: any) => absorbEvent(rec.id, ev.content, { etapa: ev.etapa || 'leitura', passo: ev.passo || '', refresh: !!ev.refresh }, ev.type === 'done' ? 'done' : ev.type === 'error' ? 'error' : 'thought'),
+      });
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:absorbResume', async (_e, idOrPath: string) => {
+    try {
+      return await absorbRun(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:absorbStop', (_e, idOrPath: string) => {
+    const { resolveProjectRecord } = require('./project-fs');
+    const { pararAbsorcao } = require('./absorcao/fluxo');
+    return pararAbsorcao(resolveProjectRecord(idOrPath).local_path);
+  });
+  handle('projects:absorbDecide', (_e, idOrPath: string, decision: string, note?: string, refazer?: string[]) => {
+    try {
+      const { resolveProjectRecord } = require('./project-fs');
+      const { decidirRetrato } = require('./absorcao/fluxo');
+      return decidirRetrato(resolveProjectRecord(idOrPath).local_path, decision === 'aprovado' ? 'aprovado' : 'reprovado', String(note || ''), Array.isArray(refazer) ? refazer.map(String) : []);
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:absorbPending', async (_e, idOrPath: string, id: string) => {
+    try {
+      const { resolveProjectRecord } = require('./project-fs');
+      const { rodarPendencia } = require('./absorcao/fluxo');
+      return await rodarPendencia(resolveProjectRecord(idOrPath).local_path, id === 'seg' ? 'seg' : 'qa');
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+
+  // A4: cartões de acesso por projeto. A tela recebe só prévia mascarada.
+  const acessosRoot = (idOrPath: string) => require('./project-fs').resolveProjectRecord(idOrPath).local_path as string;
+  handle('projects:acessos', (_e, idOrPath: string) => {
+    try {
+      const ac = require('./acessos');
+      return { ok: true, cartoes: ac.listarAcessos(acessosRoot(idOrPath)), contasGithub: ac.contasGithub() };
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err), cartoes: [], contasGithub: [] };
+    }
+  });
+  handle('projects:acessoSalvar', async (_e, idOrPath: string, servico: string, valores: Record<string, string>) => {
+    try {
+      const ac = require('./acessos');
+      const root = acessosRoot(idOrPath);
+      const r = ac.salvarAcesso(root, String(servico), valores || {});
+      // O cartão do GitHub também escolhe a conta que publica este projeto.
+      if (r.ok && servico === 'github' && valores?.conta) require('./project-fs').setProjectGitAccount(idOrPath, String(valores.conta));
+      if (r.ok && r.cartao?.guia?.confere) {
+        const c = await ac.conferirAcesso(root, String(servico));
+        return { ...c, ok: true, conferido: c.cartao?.conferido };
+      }
+      return r;
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:acessoSituacao', (_e, idOrPath: string, servico: string, situacao: string, nota?: string) => {
+    try {
+      return require('./acessos').mudarSituacao(acessosRoot(idOrPath), String(servico), situacao, nota);
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+  handle('projects:acessoAbrirGuia', async (_e, servico: string) => {
+    // Só abre o endereço do catálogo de guias (nada vindo da tela vira URL).
+    const { guiaDe } = require('../shared/acessos');
+    const url = String(guiaDe(String(servico)).onde.url || '');
+    if (!/^https:\/\//.test(url)) return { ok: false, error: 'Serviço sem guia.' };
+    try {
+      await shell.openExternal(url);
+      return { ok: true, url };
+    } catch (err) {
+      return { ok: false, error: String(err), url };
+    }
+  });
+  handle('projects:acessoRemover', (_e, idOrPath: string, servico: string) => {
+    try {
+      return require('./acessos').removerAcesso(acessosRoot(idOrPath), String(servico));
+    } catch (err) {
+      return { ok: false, error: String(err instanceof Error ? err.message : err) };
+    }
+  });
+
+  // B1: chamados do projeto. A tela move sempre como 'ceo' (clique do Carlos); nunca como Escritório.
+  const chRoot = (idOrPath: string) => require('./project-fs').resolveProjectRecord(idOrPath).local_path as string;
+  const chErr = (err: unknown) => ({ ok: false, error: String(err instanceof Error ? err.message : err) });
+  handle('projects:chamados', (_e, idOrPath: string) => {
+    try {
+      const ch = require('./chamados');
+      const root = chRoot(idOrPath);
+      return { ok: true, chamados: ch.listarChamados(root), contagem: ch.contarChamados(root) };
+    } catch (err) { return { ...chErr(err), chamados: [] }; }
+  });
+  handle('projects:chamado', (_e, idOrPath: string, id: string) => {
+    try {
+      const c = require('./chamados').lerChamado(chRoot(idOrPath), String(id));
+      return c ? { ok: true, chamado: c } : { ok: false, error: 'Chamado não encontrado.' };
+    } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoCriar', (_e, idOrPath: string, dados: any) => {
+    try {
+      const d = dados || {};
+      // Pela tela só o Carlos cria; proposta da Íris aceita no cartão chega com origem 'conversa'.
+      const origem = d.origem === 'conversa' ? 'conversa' : 'formulario';
+      const autor = origem === 'conversa' ? { tipo: 'agente', nome: String(d.autorNome || 'Íris'), motor: d.motor, runId: d.runId, origem } : { tipo: 'ceo', nome: 'Carlos', origem };
+      const ch = require('./chamados');
+      const root = chRoot(idOrPath);
+      if (origem === 'conversa') {
+        const dup = ch.tituloDuplicado(root, String(d.titulo || ''));
+        if (dup) return { ok: true, repetido: true, chamado: ch.apontadoDeNovo(root, dup, String(d.autorNome || 'Íris')) };
+      }
+      const anexos = (Array.isArray(d.anexos) ? d.anexos : []).concat(ch.anexosDaConversa(root, Array.isArray(d.anexosRel) ? d.anexosRel : []));
+      return ch.criarChamado(root, { tipo: d.tipo, titulo: d.titulo, descricao: d.descricao, prioridade: d.prioridade, anexos, criterios: d.criterios, autor, evidenciaNaoConferida: d.evidenciaNaoConferida || undefined });
+    } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoEditar', (_e, idOrPath: string, id: string, ed: any) => {
+    try { return require('./chamados').editarChamado(chRoot(idOrPath), String(id), ed || {}); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoMover', (_e, idOrPath: string, id: string, para: string, nota?: string) => {
+    try {
+      if (para === 'aguardando_validacao' || para === 'concluido') return { ok: false, error: para === 'concluido' ? 'Concluir é pelo gate do chamado.' : 'Aguardando validação só pelo Escritório, depois dos portões.' };
+      return require('./chamados').moverChamado(chRoot(idOrPath), String(id), para, 'ceo', String(nota || ''));
+    } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoAnexar', (_e, idOrPath: string, id: string, itens: any[]) => {
+    try { return require('./chamados').anexarAoChamado(chRoot(idOrPath), String(id), Array.isArray(itens) ? itens : []); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoAnexo', (_e, idOrPath: string, id: string, name: string) => {
+    try { return require('./chamados').anexoComoDataUrl(chRoot(idOrPath), String(id), String(name)); } catch (err) { return chErr(err); }
+  });
+  // B3: refinar (sugestão), executar pelo trilho, gate e dúvida. Mover sempre como Carlos.
+  handle('projects:chamadoRefinar', async (_e, idOrPath: string, id: string) => {
+    try { return await require('./chamados').refinarChamado(chRoot(idOrPath), String(id)); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoSugestao', (_e, idOrPath: string, id: string) => {
+    try { return { ok: true, sugestao: require('./chamados').lerSugestao(chRoot(idOrPath), String(id)) }; } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoResponder', async (_e, idOrPath: string, id: string) => {
+    try { return await require('./chamados').responderDuvida(chRoot(idOrPath), String(id)); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoExecutar', (_e, idOrPath: string, id: string) => {
+    try { return require('./chamados').executarChamado(chRoot(idOrPath), String(id)); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoDecidir', (_e, idOrPath: string, id: string, decisao: string, nota?: string) => {
+    try { return require('./chamados').decidirChamado(chRoot(idOrPath), String(id), decisao === 'aprovado' ? 'aprovado' : 'reprovado', String(nota || '')); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadoConcluirDuvida', (_e, idOrPath: string, id: string) => {
+    try { return require('./chamados').moverChamado(chRoot(idOrPath), String(id), 'concluido', 'ceo'); } catch (err) { return chErr(err); }
+  });
+  handle('projects:chamadosContagem', (_e, idOrPath: string) => {
+    try { return { ok: true, contagem: require('./chamados').contarChamados(chRoot(idOrPath)) }; } catch (err) { return chErr(err); }
+  });
+
   handle('projects:pickFolder', async () => {
     const opts: Electron.OpenDialogOptions = {
       title: 'Selecionar pasta do projeto existente (Product Lab · Absorção Isolada)',
@@ -486,6 +731,30 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     return resolveProjectRecord(String(idOrPath || '')).local_path;
   };
 
+  handle('runs:office', () => {
+    try {
+      return { ok: true, runs: listOfficeRuns() };
+    } catch (err) {
+      return { ok: false, error: String(err), runs: [] };
+    }
+  });
+
+  handle('runs:follow', async (_e, workspace: string, runId: string, mode: string, note?: string) => {
+    try {
+      return await followOfficeRun(String(workspace || ''), String(runId || ''), mode === 'correct' ? 'correct' : 'continue', String(note || ''));
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
+  handle('runs:cancel', (_e, workspace: string, runId: string) => {
+    try {
+      return cancelOfficeRun(String(workspace || ''), String(runId || ''));
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+
   handle('runs:list', (_e, idOrPath: string, limit?: number) => {
     try {
       const { listRuns } = require('./runLedger');
@@ -539,12 +808,12 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   // ---------------- Portão de segurança ----------------
   {
     const { setSegListener } = require('./project-fs');
-    setSegListener((ev: { projectKey: string; rootPath: string; line?: string; done?: any; running: boolean }) => {
+    setSegListener((ev: { projectKey: string; rootPath: string; line?: string; done?: any; running: boolean; items?: any[]; mode?: string; only?: string }) => {
       const event = {
         runId: `seg-${ev.projectKey}`,
         type: ev.done ? 'done' : 'thought',
         content: ev.line || (ev.done ? (ev.done.ok ? 'Segurança aprovada' : 'Segurança reprovada') : ''),
-        meta: { seg: true, projectKey: ev.projectKey, rootPath: ev.rootPath, runSeg: ev.done ? ev.done.id : undefined, ok: ev.done ? ev.done.ok : undefined },
+        meta: { seg: true, projectKey: ev.projectKey, rootPath: ev.rootPath, runSeg: ev.done ? ev.done.id : undefined, ok: ev.done ? ev.done.ok : undefined, items: ev.items, mode: ev.mode, only: ev.only },
       };
       for (const w of BrowserWindow.getAllWindows()) {
         try {
@@ -554,10 +823,10 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     });
   }
 
-  handle('seg:run', async (_e, idOrPath: string) => {
+  handle('seg:run', async (_e, idOrPath: string, only?: string) => {
     try {
       const { runProjectSeg } = require('./project-fs');
-      return await runProjectSeg(idOrPath, { label: 'Painel' });
+      return await runProjectSeg(idOrPath, { label: 'Painel', only: only ? String(only) : undefined });
     } catch (err) {
       return { ok: false, error: String(err) };
     }
@@ -585,6 +854,15 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     try {
       const { acceptProjectSegFinding } = require('./project-fs');
       return acceptProjectSegFinding(idOrPath, fp, !!accept, note || '', title || '');
+    } catch (err) {
+      return { ok: false, error: String(err) };
+    }
+  });
+
+  handle('seg:acceptItem', (_e, idOrPath: string, fps: string[], note?: string, title?: string) => {
+    try {
+      const { acceptProjectSegItem } = require('./project-fs');
+      return acceptProjectSegItem(idOrPath, Array.isArray(fps) ? fps : [], note || '', title || '');
     } catch (err) {
       return { ok: false, error: String(err) };
     }
@@ -667,6 +945,15 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
       return readProjectFileContent(filePath);
     } catch (err) {
       return { ok: false, content: '', size: 0 };
+    }
+  });
+
+  handle('projects:newChat', (_e, idOrPath: string) => {
+    try {
+      const { startNewProjectChat } = require('./project-fs');
+      return startNewProjectChat(idOrPath);
+    } catch (err) {
+      return { ok: false, error: String(err) };
     }
   });
 
@@ -868,8 +1155,8 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
 
   // Credenciais de deploy e dados (Vercel, Supabase, Netlify): mesmo contrato das contas do GitHub.
   handle('creds:list', async () => {
-    const { listCredentials } = await import('./credentials');
-    return { ok: true, credentials: listCredentials() };
+    const { listBundles, listCredentials } = await import('./credentials');
+    return { ok: true, credentials: listCredentials(), bundles: listBundles() };
   });
 
   handle('creds:save', async (_e, provider: string, token: string) => {
@@ -885,6 +1172,19 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   handle('creds:test', async (_e, provider: string) => {
     const { testCredential } = await import('./credentials');
     return testCredential(String(provider || ''));
+  });
+
+  handle('creds:saveBundle', async (_e, provider: string, fields: Record<string, unknown>) => {
+    const { saveBundle } = await import('./credentials');
+    const result = saveBundle(String(provider || ''), fields && typeof fields === 'object' ? fields : {});
+    if (result.ok && provider === 'escritorio_supabase') void import('./officeCloud').then((m) => m.startDeskCloud());
+    return result;
+  });
+
+  handle('creds:removeBundle', async (_e, provider: string) => {
+    const { removeBundle } = await import('./credentials');
+    if (provider === 'escritorio_supabase') void import('./officeCloud').then((m) => m.stopDeskCloud());
+    return removeBundle(String(provider || ''));
   });
 
   handle('creds:openTokenPage', async (_e, provider: string) => {
@@ -948,9 +1248,11 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   handle('projects:runAltTrack', async (e, idOrPath: string, stepOverride?: number) => {
     let jobId = '';
     let jobTitle = 'Trilho de alteração';
+    // Pasta, item e início vão em todo evento: a tela Execuções casa a linha ao vivo com o run do livro.
+    let jobRef: { workspace?: string; focus?: string; projectName?: string; startedAt?: string } = {};
     const send = (evt: any) => {
       try {
-        e.sender.send('run:event', evt);
+        e.sender.send('run:event', jobRef.workspace ? { ...evt, meta: { ...jobRef, ...(evt.meta || {}) } } : evt);
       } catch {}
     };
     const stamp = () => new Date().toISOString();
@@ -963,6 +1265,7 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
           const job = abrirJobTrilho(info);
           jobId = job.id;
           jobTitle = job.title;
+          jobRef = { workspace: info.projectPath, focus: info.focus, projectName: info.projectName, startedAt: stamp() };
           registrarEventoJob(jobId, 'inicio', `Iniciando ${info.focus} com ${info.owner} · ${info.motor}`, 'info');
           send({
             runId: jobId,
@@ -979,21 +1282,21 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
             timestamp: stamp(),
             type: level === 'error' ? 'error' : 'thought',
             content: text,
-            meta: { track: true, status: level === 'error' ? 'failed' : 'running', progress: level === 'error' ? 100 : 60, title: jobTitle },
+            meta: { track: true, title: jobTitle },
           });
         },
         onEnd(info: { ok: boolean; status: string; text: string }) {
           const status = info.status === 'failed' ? 'failed' : info.status === 'waiting' || info.status === 'paused' ? 'paused' : 'completed';
           if (jobId) {
             atualizarJobTrilho(jobId, status, info.ok ? '' : info.text);
-            registrarEventoJob(jobId, 'fim', info.text, info.ok ? 'info' : 'error');
+            registrarEventoJob(jobId, 'fim', info.text, info.ok || info.status === 'paused' ? 'info' : 'error');
           }
           send({
             runId: jobId || 'trilho-local',
             timestamp: stamp(),
             type: info.ok ? 'done' : info.status === 'paused' ? 'thought' : 'error',
             content: info.text,
-            meta: { track: true, status, progress: 100, title: jobTitle },
+            meta: { track: true, ended: true, status, title: jobTitle },
           });
         },
       }, step);
@@ -1003,7 +1306,7 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
           timestamp: stamp(),
           type: 'error',
           content: String(res.error),
-          meta: { track: true, status: 'failed', progress: 100, title: jobTitle, focus: 'Trilho', owner: 'Escritório' },
+          meta: { track: true, status: 'failed', progress: 100, title: jobTitle, owner: 'Escritório', ...(jobRef.focus ? {} : { focus: 'Trilho' }) },
         });
       }
       return Object.assign({}, res, { jobId });
@@ -1115,5 +1418,6 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
   });
 
   registerStudioIpc(handle);
+  registerRaioxIpc(handle);
 }
 
