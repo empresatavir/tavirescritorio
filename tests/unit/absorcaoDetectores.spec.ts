@@ -70,23 +70,23 @@ describe('detectores da absorção', () => {
   });
 
   it('valor de .env não aparece no retrato.json', () => {
-    const segredo = 'sk_live_' + 'Q7v'.repeat(12);
+    const segredo = 'valorQueNaoPodeVazarNoRetrato99';
     const dir = pasta({
-      '.env': `STRIPE_SECRET_KEY=${segredo}\nDATABASE_URL=postgres://u:senhaSuperSecreta123@db.host/x\n`,
-      'src/pay.ts': `import Stripe from 'stripe';\nconst s = new Stripe('${segredo}');\n`,
-      'package.json': JSON.stringify({ dependencies: { stripe: '1' } }),
+      '.env': `API_TOKEN=${segredo}\nDATABASE_URL=postgres://u:senhaSuperSecreta123@db.host/x\n`,
+      'src/api.ts': `export const token = '${segredo}';\n`,
+      'package.json': JSON.stringify({ name: 'loja' }),
     });
     const lev = detectar(dir);
     gravarRetrato(dir, montarRetrato('x', lev));
     const json = fs.readFileSync(retratoPath(dir), 'utf8');
     expect(json).not.toContain(segredo);
     expect(json).not.toContain('senhaSuperSecreta123');
-    expect(json).toContain('STRIPE_SECRET_KEY');
+    expect(json).toContain('API_TOKEN');
   });
 
   it('mascara segredo no trecho de código', () => {
-    expect(mascararLinha("const key = '" + "sk_test_" + "abcdefghijklmnop1234" + "';")).not.toContain('abcdefghijklmnop1234');
-    expect(mascararLinha("import Stripe from 'stripe';")).toContain("'stripe'");
+    expect(mascararLinha("const password = 'segredoSuper123';")).not.toContain('segredoSuper123');
+    expect(mascararLinha("import Cliente from 'cliente';")).toContain("'cliente'");
   });
 
   it('pasta com mais de 2.500 arquivos é lida por completo', () => {
@@ -96,10 +96,10 @@ describe('detectores da absorção', () => {
       fs.mkdirSync(sub, { recursive: true });
       for (let i = 0; i < 100; i++) fs.writeFileSync(path.join(sub, `f${i}.txt`), 'x');
     }
-    fs.writeFileSync(path.join(dir, 'src', 'm29', 'pay.ts'), "import Stripe from 'stripe';\n");
+    fs.writeFileSync(path.join(dir, 'src', 'm29', 'pay.ts'), "import MercadoPago from 'mercadopago';\n");
     const lev = detectar(dir);
     expect(lev.arquivos).toBe(3001);
-    expect(achado(lev, 'stripe')).toBeTruthy();
+    expect(achado(lev, 'mercadopago')).toBeTruthy();
     expect(lev.porPasta['src/m29']).toBe(101);
   });
 
