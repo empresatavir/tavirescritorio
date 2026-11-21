@@ -1,0 +1,98 @@
+[
+  {
+    "motor": "cursor",
+    "label": "Cursor",
+    "model": "auto-smart",
+    "effort": "medium",
+    "available": true,
+    "ok": false,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": false,
+        "ms": 802786,
+        "detail": "A análise não devolveu sugestões válidas: frente inválida na evidência 5"
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": false,
+        "ms": 273714,
+        "detail": "escreveu no repositório; relatorio-raio-x.md: número sem fonte: 21, 11; plano-crescimento.md: número sem fonte: 21, 11"
+      }
+    ]
+  },
+  {
+    "motor": "claude",
+    "label": "Claude",
+    "model": "claude-sonnet-5-5",
+    "effort": "medium",
+    "available": true,
+    "ok": false,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": false,
+        "ms": 15970,
+        "detail": "A conta do Claude não tem acesso a esse modelo (o provedor pediu um plano pago). Troque o modelo ou o plano."
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": false,
+        "ms": 11899,
+        "detail": "A conta do Claude não tem acesso a esse modelo (o provedor pediu um plano pago). Troque o modelo ou o plano."
+      }
+    ]
+  },
+  {
+    "motor": "codex",
+    "label": "Codex",
+    "model": "codex-default",
+    "effort": "medium",
+    "available": true,
+    "ok": false,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": false,
+        "ms": 22805,
+        "detail": "O Codex não está autenticado. Em Configurações → Motores, use «Entrar com login» ou salve a chave no cofre."
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": false,
+        "ms": 20540,
+        "detail": "O Codex não está autenticado. Em Configurações → Motores, use «Entrar com login» ou salve a chave no cofre."
+      }
+    ]
+  },
+  {
+    "motor": "antigravity",
+    "label": "Antigravity",
+    "model": "gemini-4-argon",
+    "effort": "medium",
+    "available": true,
+    "ok": false,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": false,
+        "ms": 150235,
+        "detail": "A análise não devolveu sugestões válidas: frente inválida na evidência 5"
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": false,
+        "ms": 213438,
+        "detail": "plano-crescimento.md: número sem fonte: 31, 61"
+      }
+    ]
+  }
+]

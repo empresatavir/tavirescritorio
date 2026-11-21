@@ -1,0 +1,18 @@
+{
+  "case_id": "c0ffee00-1111-4222-8333-444455556666",
+  "company_name": "Café Lumen (fictício)",
+  "public_sources_authorized": true,
+  "stage_1": {
+    "empresa_nome": "Café Lumen (fictício)",
+    "cargo_contato": "sócia",
+    "cidade_uf": "Cidade Fictícia/SP",
+    "nicho": "confeitaria",
+    "canais_atuais": "Instagram e WhatsApp",
+    "maior_dificuldade": "Muita gente pergunta preço no direct e some depois da resposta."
+  },
+  "stage_2": {
+    "pedidos_por_semana": "cerca de 12 encomendas de bolo",
+    "tempo_resposta": "respondemos o WhatsApp no fim do dia",
+    "como_mede": "não medimos de onde vem o pedido"
+  }
+}

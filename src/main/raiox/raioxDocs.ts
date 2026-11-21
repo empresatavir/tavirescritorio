@@ -29,6 +29,10 @@ export interface DocsDeps {
   repo?: string;
   execFile?: typeof execFile;
   ledger?: { start: typeof startRun };
+  /** F11: motor, modelo e esforço desta rodada (conformidade). Sem valor = configuração do Escritório. */
+  engine?: { motor: MotorId; model: string; effort: string };
+  /** F11: instrução extra no fim do prompt. */
+  extra?: string;
 }
 
 function sha256(file: string): string {
@@ -77,9 +81,12 @@ async function writeDocumentsOnce(root: string, id: string, deps: DocsDeps): Pro
   const version = nextVersion(caseDir(root, id));
   const repo = deps.repo || repoRoot();
   buildContext(root, current, 'redacao', { version, repo });
-  const prompt = fs.readFileSync(path.join(caseDir(root, id), '_contexto', 'prompt.md'), 'utf8');
-  const settings = engineHub.getSettings();
-  const motor = officeMotor(settings.defaultEngine);
+  const basePrompt = fs.readFileSync(path.join(caseDir(root, id), '_contexto', 'prompt.md'), 'utf8');
+  const prompt = deps.extra ? `${basePrompt}\n\n${deps.extra}` : basePrompt;
+  const settings = deps.engine
+    ? { defaultEngine: deps.engine.motor, defaultModel: deps.engine.model, defaultEffort: deps.engine.effort }
+    : engineHub.getSettings();
+  const motor = deps.engine ? deps.engine.motor : officeMotor(settings.defaultEngine);
   const workspace = caseDir(root, id);
   const runner = deps.run ?? runMotor;
   const now = (deps.now ?? (() => new Date().toISOString()))();

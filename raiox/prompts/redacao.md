@@ -1,6 +1,6 @@
 Redija os dois documentos do caso `{{CASE_ID}}`, versão {{N}}.
 
-Leia só o que está em `_contexto/`: o prompt, `_contexto/modelos/`, `_contexto/evidencias-aprovadas.json`, `_contexto/decisao.json` e `_contexto/playbook.md`. Não use evidência pendente, rejeitada ou de fora desses arquivos. Não invente preço, promoção, estoque, depoimento, capacidade, faturamento, ranking ou prazo.
+Leia só o que está em `_contexto/`: o prompt, `_contexto/modelos/`, `_contexto/evidencias-aprovadas.json`, `_contexto/decisao.json` e `_contexto/playbook.md`. Não use evidência pendente, rejeitada ou de fora desses arquivos. Não invente preço, promoção, estoque, depoimento, capacidade, faturamento, ranking ou prazo. Número só entra se estiver nas evidências ou na decisão; na coluna "Esforço" do plano, escreva baixo, médio ou alto, sem minutos, horas ou custo.
 
 Grave exatamente:
 

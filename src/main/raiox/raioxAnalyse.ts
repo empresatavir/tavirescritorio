@@ -40,6 +40,10 @@ export interface AnalyseDeps {
   local?: (c: RaioxCase) => Promise<LocalResult>;
   /** Checagem dos links antes do motor (G-PR1 controle 5). Nos testes, só roda se for injetada. */
   links?: (c: RaioxCase) => Promise<LinkReport>;
+  /** F11: motor, modelo e esforço desta rodada (conformidade). Sem valor = configuração do Escritório. */
+  engine?: { motor: MotorId; model: string; effort: string };
+  /** F11: instrução extra no fim do prompt (rodada de conformidade sem rede). */
+  extra?: string;
 }
 
 export function rapidKeys(): string[] {
@@ -119,13 +123,14 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
   buildContext(root, current, 'analise', { fronts, repo });
   const basePrompt = fs.readFileSync(path.join(caseDir(root, id), '_contexto', 'prompt.md'), 'utf8');
   const note = (deps.note || '').trim();
-  const prompt = note
+  const corrected = note
     ? `${basePrompt}\n\nCORREÇÃO DO CARLOS. Continue do ponto em que parou e não refaça o que já está válido:\n${note}`
     : basePrompt;
-  const settings = engineHub.getSettings();
-  const motor = officeMotor(settings.defaultEngine);
-  const model = settings.defaultModel;
-  const effort = settings.defaultEffort;
+  const prompt = deps.extra ? `${corrected}\n\n${deps.extra}` : corrected;
+  const settings = deps.engine ? null : engineHub.getSettings();
+  const motor = deps.engine ? deps.engine.motor : officeMotor(settings!.defaultEngine);
+  const model = deps.engine ? deps.engine.model : settings!.defaultModel;
+  const effort = deps.engine ? deps.engine.effort : settings!.defaultEffort;
   const workspace = caseDir(root, id);
   const binary = findMotorBinary(motor) || '';
   const now = (deps.now ?? (() => new Date().toISOString()))();

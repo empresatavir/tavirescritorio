@@ -1,0 +1,98 @@
+[
+  {
+    "motor": "cursor",
+    "label": "Cursor",
+    "model": "auto-smart",
+    "effort": "medium",
+    "available": true,
+    "ok": false,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": false,
+        "ms": 209718,
+        "detail": "número sem fonte: 13, 10"
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": true,
+        "ms": 243620,
+        "detail": "ok"
+      }
+    ]
+  },
+  {
+    "motor": "claude",
+    "label": "Claude",
+    "model": "claude-sonnet-5-5",
+    "effort": "medium",
+    "available": true,
+    "ok": false,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": false,
+        "ms": 19900,
+        "detail": "A conta do Claude não tem acesso a esse modelo (o provedor pediu um plano pago). Troque o modelo ou o plano."
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": false,
+        "ms": 22772,
+        "detail": "A conta do Claude não tem acesso a esse modelo (o provedor pediu um plano pago). Troque o modelo ou o plano."
+      }
+    ]
+  },
+  {
+    "motor": "codex",
+    "label": "Codex",
+    "model": "codex-default",
+    "effort": "medium",
+    "available": true,
+    "ok": false,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": false,
+        "ms": 25519,
+        "detail": "O Codex não está autenticado. Em Configurações → Motores, use «Entrar com login» ou salve a chave no cofre."
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": false,
+        "ms": 21717,
+        "detail": "O Codex não está autenticado. Em Configurações → Motores, use «Entrar com login» ou salve a chave no cofre."
+      }
+    ]
+  },
+  {
+    "motor": "antigravity",
+    "label": "Antigravity",
+    "model": "gemini-4-argon",
+    "effort": "medium",
+    "available": true,
+    "ok": false,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": false,
+        "ms": 342511,
+        "detail": "A análise escreveu no repositório. Nada foi aceito.\n M src/main/flow/biblioteca.ts\n M src/renderer/studio-ref/Flow.dc.html\n M src/renderer/studio-ref/Studio.dc.html\n M tests/unit/flow.biblioteca.spec.ts\n?? relatorios/flow/F2/\n?? tests/unit/flow.cliente.spec.ts"
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": false,
+        "ms": 128981,
+        "detail": "plano-crescimento.md: número sem fonte: 50"
+      }
+    ]
+  }
+]

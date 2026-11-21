@@ -1,0 +1,50 @@
+[
+  {
+    "motor": "cursor",
+    "label": "Cursor",
+    "model": "auto-smart",
+    "effort": "medium",
+    "available": true,
+    "ok": true,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": true,
+        "ms": 101079,
+        "detail": "ok"
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": true,
+        "ms": 164071,
+        "detail": "ok"
+      }
+    ]
+  },
+  {
+    "motor": "antigravity",
+    "label": "Antigravity",
+    "model": "gemini-4-argon",
+    "effort": "medium",
+    "available": true,
+    "ok": true,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": true,
+        "ms": 132776,
+        "detail": "ok"
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": true,
+        "ms": 227263,
+        "detail": "ok"
+      }
+    ]
+  }
+]

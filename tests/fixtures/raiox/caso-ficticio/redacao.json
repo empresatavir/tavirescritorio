@@ -1,0 +1,25 @@
+{
+  "evidence": [
+    { "stage": "encontrar", "source": "Instagram @cafelumen.ficticio (cópia em analise/fontes/instagram.md)", "claim": "A bio pede pedidos pelo direct e não tem link.", "classification": "observado", "gapIds": ["instagram-sem-destino"] },
+    { "stage": "conversar", "source": "Instagram @cafelumen.ficticio (cópia em analise/fontes/instagram.md)", "claim": "Perguntas de preço ficaram sem resposta pública em 4 das 7 fotos de bolo.", "classification": "observado", "gapIds": ["whatsapp-lento"] },
+    { "stage": "conversar", "source": "Formulário 2", "claim": "A empresa responde o WhatsApp no fim do dia.", "classification": "informado", "gapIds": ["whatsapp-lento"] },
+    { "stage": "vender", "source": "Site cafelumen.exemplo (cópia em analise/fontes/site.md)", "claim": "O site não tem link para WhatsApp nem pedido online.", "classification": "observado", "gapIds": ["sem-canal-pedido"] },
+    { "stage": "medir", "source": "Formulário 2", "claim": "A empresa não mede de onde vem o pedido.", "classification": "informado", "gapIds": ["nao-mede"] }
+  ],
+  "priority": {
+    "stage": "encontrar",
+    "gapId": "instagram-sem-destino",
+    "bottleneck": "Quem vê o bolo no Instagram não tem um caminho claro até o pedido.",
+    "rationale": "As perguntas de preço aparecem, mas o perfil não leva a lugar nenhum e o atendimento só responde no fim do dia.",
+    "confidence": "media"
+  },
+  "debrief": {
+    "decision": "proposta_emitida",
+    "reason": "O gargalo está no caminho do Instagram até o pedido.",
+    "offerId": "crescimento",
+    "depth": "guiado",
+    "plan30": "Colocar na bio um link único para pedir pelo WhatsApp e um destaque 'Como encomendar'.",
+    "plan60": "Responder perguntas de preço no mesmo dia com uma mensagem pronta e registrar de onde veio cada pedido.",
+    "plan90": "Revisar os sabores mais pedidos e ajustar o cardápio publicado."
+  }
+}
