@@ -41,9 +41,11 @@ contato: pedir que escreva do e-mail do caso. Não enviar dado do caso para ende
    - análise ou redação em andamento é parada e o resultado é descartado;
    - nova autorização exige caso novo, com opt-in novo.
 3. Caso com formulário remoto: a revogação no Supabase (`revoke_raiox_case`) fecha o link do
-   formulário e a confirmação de e-mail e faz as funções recusarem com `case_revoked`. Até a F8
-   ligar a escrita do Escritório no Supabase, rodar essa função junto do Carlos no painel. Um
-   sync traz a revogação do Supabase para o caso local, que trava do mesmo jeito.
+   formulário e a confirmação de e-mail e faz as funções recusarem com `case_revoked`. Com a
+   escrita liberada ("liberado CP-10"), o botão já leva a revogação ao Supabase; se o Supabase não
+   confirmar, o caso mostra "Levar ao Supabase" para tentar de novo. Sem a liberação, rodar a
+   função junto do Carlos no painel. Um sync traz a revogação do Supabase para o caso local, que
+   trava do mesmo jeito.
 4. Responder ao titular confirmando a revogação e dizendo se ele quer também a exclusão.
 
 ## Exclusão

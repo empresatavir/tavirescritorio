@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.office-raiox-sync]
 verify_jwt = false
+
+[functions.titular-case]
+verify_jwt = false

@@ -38,8 +38,8 @@ import {
   checkStep,
 } from './raioxRules';
 import { createOrAbsorbProjectRecord } from '../project-fs';
-import { continueRemote, syncCases, writeAnalysisInput } from './raioxBridge';
-import { grantRelease, readReleases, revokeRelease, type RaioxReleaseKind } from './releases';
+import { continueRemote, purgeRemote, revokeRemote, syncCases, writeAnalysisInput } from './raioxBridge';
+import { grantRelease, isReleased, readReleases, revokeRelease, type RaioxReleaseKind } from './releases';
 import { prepareDelivery, sendInvite, sendPreparedDelivery, type InviteRequest } from './raioxSend';
 import { analyse, analysisLive, collectLocalFor, stopAnalyse } from './raioxAnalyse';
 import { documentPath, documentsBusy, renderPdfs, stopDocuments, writeDocuments } from './raioxDocs';
@@ -60,6 +60,22 @@ function fail(err: unknown): { ok: false; error: string } {
 
 function saved(c: RaioxCase) {
   return { ok: true as const, case: present(c) };
+}
+
+/** F8: revogação local levada ao Supabase; falha volta como aviso, sem desfazer a local. */
+async function pushRevocation(root: string, id: string) {
+  const c = readCase(root, id);
+  if (!c.revocation) throw new RaioxError('Registre a revogação antes.');
+  if (!c.remote?.supabaseId) throw new RaioxError('Este caso não tem formulário no Supabase.');
+  try {
+    await revokeRemote(c.remote.supabaseId, c.revocation.channel, c.revocation.requestedAt, { root });
+  } catch (err) {
+    const msg = err instanceof RaioxError ? err.message : 'sem detalhe.';
+    return { ...saved(c), warning: `Revogação registrada aqui, mas o Supabase não confirmou. ${msg}` };
+  }
+  const next = { ...c, revocation: { ...c.revocation, remoteAt: new Date().toISOString() } };
+  writeCase(root, next);
+  return saved(next);
 }
 
 function mutate(id: string, fn: (c: RaioxCase) => RaioxCase) {
@@ -484,7 +500,15 @@ export function registerRaioxIpc(handle: Handle): void {
     }
   });
 
-  handle('raiox:revoke', (_e, id: string, input: RaioxRevocationInput) => {
+  handle('raiox:pushRevocation', async (_e, id: string) => {
+    try {
+      return await pushRevocation(raioxRoot(), id);
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:revoke', async (_e, id: string, input: RaioxRevocationInput) => {
     try {
       const root = raioxRoot();
       const next = revokeCase(readCase(root, id), input || { channel: '' }, new Date().toISOString());
@@ -492,6 +516,8 @@ export function registerRaioxIpc(handle: Handle): void {
       // Para o que estiver rodando neste caso; a gravação final deles também confere a revogação.
       stopAnalyse(id);
       stopDocuments(id);
+      // F8: leva a revogação ao Supabase. A local já vale; falha no Supabase fica visível na tela.
+      if (next.remote?.supabaseId && isReleased(root, 'escritaSupabase')) return await pushRevocation(root, id);
       return saved(next);
     } catch (err) {
       return fail(err);
@@ -506,14 +532,16 @@ export function registerRaioxIpc(handle: Handle): void {
     }
   });
 
-  handle('raiox:purge', (_e, id: string, input: PurgeInput) => {
+  handle('raiox:purge', async (_e, id: string, input: PurgeInput) => {
     try {
       // Rodada em andamento grava no fim (livro de execuções, caso): recriaria a pasta apagada.
       const docs = documentsBusy(id);
       if (analysisLive(id).running || docs.writing || docs.rendering) {
         throw new RaioxError('Há análise ou redação rodando neste caso. Pare e espere terminar antes de expurgar.');
       }
-      return { ok: true, report: purgeCase(raioxRoot(), id, input || { reason: '', confirm: '' }) };
+      const root = raioxRoot();
+      const remote = isReleased(root, 'escritaSupabase') ? (supabaseId: string) => purgeRemote(supabaseId, { root }) : undefined;
+      return { ok: true, report: await purgeCase(root, id, input || { reason: '', confirm: '' }, { remote }) };
     } catch (err) {
       return fail(err);
     }

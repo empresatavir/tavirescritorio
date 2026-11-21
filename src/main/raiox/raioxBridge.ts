@@ -270,7 +270,7 @@ export async function syncCases(deps: SyncDeps = {}): Promise<{ ok: true; create
 // Nenhuma mensagem leva segredo, corpo bruto ou detalhe SQL.
 // ---------------------------------------------------------------------------
 
-export type RaioxWriteFunction = 'create-case' | 'continue-case' | 'review-case' | 'delivery-case' | 'invite-case';
+export type RaioxWriteFunction = 'create-case' | 'continue-case' | 'review-case' | 'delivery-case' | 'invite-case' | 'titular-case';
 
 export interface RaioxWriteConfig {
   url: string;
@@ -300,6 +300,7 @@ const WRITE_SECRET: Record<RaioxWriteFunction, { key: keyof RaioxWriteConfig; he
   'review-case': { key: 'reviewSecret', header: 'x-raiox-review-secret' },
   'delivery-case': { key: 'deliverySecret', header: 'x-raiox-delivery-secret' },
   'invite-case': { key: 'inviteSecret', header: 'x-raiox-invite-secret' },
+  'titular-case': { key: 'internalSecret', header: 'x-raiox-internal-secret' },
 };
 
 function defaultWriteConfig(): RaioxWriteConfig | null {
@@ -490,4 +491,35 @@ export async function inviteFinalize(caseId: string, deliveryId: string, status:
   const out = await edgeWrite('invite-case', finalizeBody(caseId, deliveryId, status, providerId, errorCode), deps);
   if (out.status !== status) throw new RaioxError(WRITE_INVALID);
   return { status, alreadyFinalized: out.already_finalized === true };
+}
+
+/** G-PR1 controle 8 no Supabase: fecha formulário e confirmação; funções passam a recusar. */
+export async function revokeRemote(caseId: string, channel: string, requestedAt: string, deps: WriteDeps): Promise<{ already: boolean }> {
+  const out = await edgeWrite('titular-case', {
+    action: 'revoke', case_id: requireUuid(caseId, 'Caso remoto'), channel, requested_at: requestedAt,
+  }, deps);
+  if (out.action !== 'revoke') throw new RaioxError(WRITE_INVALID);
+  return { already: out.already === true };
+}
+
+export interface RemotePurge { purged: boolean; before: Record<string, number>; after: Record<string, number>; storageToCheck: number; providerToCheck: number }
+
+function countMap(value: unknown): Record<string, number> {
+  const out: Record<string, number> = {};
+  if (value && typeof value === 'object') {
+    for (const [k, n] of Object.entries(value as Record<string, unknown>)) {
+      if (/^[a-z_]{1,40}$/.test(k) && Number.isInteger(n)) out[k] = Number(n);
+    }
+  }
+  return out;
+}
+
+/** G-PR1 controle 7 no Supabase: apaga o caso e devolve contagens antes/depois. */
+export async function purgeRemote(caseId: string, deps: WriteDeps): Promise<RemotePurge> {
+  const out = await edgeWrite('titular-case', { action: 'purge', case_id: requireUuid(caseId, 'Caso remoto') }, deps);
+  if (out.action !== 'purge') throw new RaioxError(WRITE_INVALID);
+  return {
+    purged: out.purged === true, before: countMap(out.before), after: countMap(out.after),
+    storageToCheck: Number(out.storage_objects_to_check) || 0, providerToCheck: Number(out.provider_messages_to_check) || 0,
+  };
 }

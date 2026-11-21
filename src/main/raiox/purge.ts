@@ -4,7 +4,7 @@
  * Apaga tudo o que um caso deixou nesta máquina (pasta do caso com PDFs e histórico de rodadas,
  * cópias exportadas, conversas dos motores sobre a pasta do caso, temporários), confere de novo
  * e grava um relatório de ausência sem dado pessoal em `<raiz>/expurgos/`. O que fica fora do
- * alcance do app (Supabase antes da F8, Telegram, Resend, arquivos compartilhados dos motores)
+ * alcance do app (Supabase sem a escrita liberada, Telegram, Resend, arquivos compartilhados dos motores)
  * entra no relatório como pendente ou manual, nunca como limpo.
  */
 import { createHash } from 'node:crypto';
@@ -30,6 +30,8 @@ export interface PurgeDeps {
   home?: string;
   tmp?: string;
   now?: () => string;
+  /** F8: expurgo no Supabase (só com a escrita liberada). Sem ele, o Supabase fica pendente. */
+  remote?: (supabaseId: string) => Promise<{ purged: boolean; before: Record<string, number>; after: Record<string, number>; storageToCheck: number; providerToCheck: number }>;
 }
 
 interface Finding { area: string; paths: string[]; note: string; kind: 'remove' | 'manual' | 'pending' }
@@ -212,7 +214,7 @@ function collect(root: string, c: RaioxCase, deps: PurgeDeps): Finding[] {
     findings.push({ area: 'PDFs exportados antes do registro', paths: [], note: 'O caso tem PDF, mas não há registro de exportação (exportações anteriores ao controle 7 não eram registradas). Conferir a pasta para onde foram exportados.', kind: 'manual' });
   }
   if (c.remote?.supabaseId) {
-    findings.push({ area: 'Supabase', paths: [], note: `Rodar com o Carlos: select public.purge_raiox_case('${c.remote.supabaseId}'); e guardar o "after" com tudo em zero. Até a F8 o Escritório não escreve no Supabase.`, kind: 'pending' });
+    findings.push({ area: 'Supabase', paths: [], note: `Rodar com o Carlos: select public.purge_raiox_case('${c.remote.supabaseId}'); e guardar o "after" com tudo em zero. Com a escrita liberada ("liberado CP-10"), o próprio expurgo faz isso.`, kind: 'pending' });
   }
   if (vendors.has('telegram') || c.remote?.supabaseId) {
     findings.push({ area: 'Telegram', paths: [], note: `Apagar no chat do bot as mensagens com o código ${c.id}. O bot só recebeu o código do caso.`, kind: 'manual' });
@@ -248,12 +250,14 @@ export function previewPurge(root: string, id: string, deps: PurgeDeps = {}): Pu
 
 export interface PurgeInput { reason: string; confirm: string }
 
-export function purgeCase(root: string, id: string, input: PurgeInput, deps: PurgeDeps = {}): RaioxPurgeReport {
+export async function purgeCase(root: string, id: string, input: PurgeInput, deps: PurgeDeps = {}): Promise<RaioxPurgeReport> {
   const c = readCase(root, id);
   if (!RAIOX_PURGE_REASONS.includes(input.reason as RaioxPurgeReason)) throw new RaioxError('Escolha o motivo do expurgo.');
   if (String(input.confirm || '').trim().toUpperCase() !== c.id) throw new RaioxError(`Para confirmar, digite o código do caso (${c.id}).`);
   const home = deps.home ?? os.homedir();
   const now = (deps.now ?? (() => new Date().toISOString()))();
+  // Supabase primeiro: se falhar, nada local é apagado e o Carlos tenta de novo com o caso inteiro.
+  const remote = c.remote?.supabaseId && deps.remote ? await deps.remote(c.remote.supabaseId) : null;
   const before = collect(root, c, deps);
   const removed = new Map<string, number>();
   for (const f of before) {
@@ -277,6 +281,19 @@ export function purgeCase(root: string, id: string, input: PurgeInput, deps: Pur
   }
   if (exists(dir)) after.set('pasta do caso', 1);
   const areas = before.map((f) => toArea(f, home, removed.get(f.area) ?? 0, after.get(f.area) ?? (f.kind === 'remove' ? 0 : f.paths.length)));
+  if (remote) {
+    const sum = (m: Record<string, number>) => Object.values(m).reduce((a, b) => a + b, 0);
+    const left = sum(remote.after);
+    const found = sum(remote.before);
+    const extra = remote.storageToCheck ? ` Conferir ${remote.storageToCheck} arquivo(s) no Storage.` : '';
+    const idx = areas.findIndex((a) => a.area === 'Supabase');
+    const area: RaioxPurgeArea = {
+      area: 'Supabase', found, removed: found - left, remaining: left,
+      status: left === 0 && !remote.storageToCheck ? 'limpo' : 'manual',
+      note: (remote.purged ? 'Caso, sessões, respostas, consentimentos, eventos, aprovações, documentos, entregas, convites, confirmações e opt-in apagados pela função de expurgo; contagem depois do expurgo conferida.' : 'O caso já não existia no Supabase.') + extra,
+    };
+    if (idx >= 0) areas[idx] = area; else areas.push(area);
+  }
   const report: RaioxPurgeReport = {
     caseId: c.id,
     ...(c.remote?.supabaseId ? { supabaseId: c.remote.supabaseId } : {}),

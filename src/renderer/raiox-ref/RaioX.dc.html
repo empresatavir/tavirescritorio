@@ -181,6 +181,8 @@
       <b style="color: var(--danger)">Autorização revogada pelo titular</b>
       <span class="muted" style="font-size: 13px">{{revokedText}}</span>
       <span class="muted" style="font-size: 13px">Nenhuma etapa nova roda: análise, redação, PDF, entrega e execução ficam travadas. O caso pode ser lido e expurgado.</span>
+      <sc-if value="{{revokeRemotePending}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 8px; align-items: center"><span class="muted" style="font-size: 13px">O Supabase ainda não recebeu a revogação.</span><button class="btn secondary sm" onClick="{{pushRevocation}}">Levar ao Supabase</button></div></sc-if>
+      <sc-if value="{{hasNotice}}" hint-placeholder-val="{{false}}"><span style="color: var(--danger); font-size: 13px">{{notice}}</span></sc-if>
     </section>
   </sc-if>
   <sc-if value="{{hasRemoteCase}}" hint-placeholder-val="{{false}}">
@@ -1027,7 +1029,7 @@ class Component extends DCLogic {
     const fail = function (res) { self.setState({ error: (res && res.error) || 'Não foi possível concluir. Nada foi gravado.' }); };
     const refreshOpen = function (res) {
       if (!res || !res.ok) return fail(res);
-      self.setState({ openCase: res.case, modal: null, error: '', removeId: null });
+      self.setState({ openCase: res.case, modal: null, error: '', removeId: null, notice: res.warning || '' });
       if (self.reload) self.reload();
     };
     // Redação e PDF devolvem só o resultado, não o caso: avisa enquanto roda, mostra o erro e relê o caso na mesma aba.
@@ -1714,6 +1716,14 @@ class Component extends DCLogic {
         api.raiox.revoke(current.id, { channel: form.channel || '', requestedAt: when, note: form.note || '' }).then(refreshOpen).catch(function () { fail(); });
       },
       modalInvite: s.modal === 'invite',
+      hasNotice: !!s.notice,
+      notice: s.notice || '',
+      revokeRemotePending: Boolean(current && current.revocation && !current.revocation.remoteAt && current.remote && current.remote.supabaseId && !current.remote.revoked),
+      pushRevocation: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.pushRevocation) return;
+        api.raiox.pushRevocation(current.id).then(refreshOpen).catch(function () { fail(); });
+      },
       avisoVersao: AVISO_VERSAO,
       invForm: s.invForm || blankInvite(),
       invOff: (function () { const f = s.invForm || blankInvite(); return !(f.company && f.contact && f.email && f.channel && f.when && f.operator && f.notice); })(),

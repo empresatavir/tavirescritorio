@@ -81,16 +81,16 @@ describe('G-PR1 controle 7 — expurgo provado', () => {
     expect(fs.existsSync(s.exported)).toBe(true);
   });
 
-  it('recusa sem motivo ou sem digitar o código do caso', () => {
+  it('recusa sem motivo ou sem digitar o código do caso', async () => {
     const s = scene();
-    expect(() => purgeCase(s.root, ID, { reason: '', confirm: ID }, { home: s.home, tmp: s.tmp })).toThrow(/motivo/);
-    expect(() => purgeCase(s.root, ID, { reason: 'ensaio', confirm: 'RX-00000000' }, { home: s.home, tmp: s.tmp })).toThrow(/digite o código/);
+    await expect(purgeCase(s.root, ID, { reason: '', confirm: ID }, { home: s.home, tmp: s.tmp })).rejects.toThrow(/motivo/);
+    await expect(purgeCase(s.root, ID, { reason: 'ensaio', confirm: 'RX-00000000' }, { home: s.home, tmp: s.tmp })).rejects.toThrow(/digite o código/);
     expect(fs.existsSync(s.dir)).toBe(true);
   });
 
-  it('apaga caso, cópias, temporários e conversas dos motores; confere e não toca no resto', () => {
+  it('apaga caso, cópias, temporários e conversas dos motores; confere e não toca no resto', async () => {
     const s = scene();
-    const report = purgeCase(s.root, ID, { reason: 'ensaio', confirm: ID.toLowerCase() }, { home: s.home, tmp: s.tmp, now: () => NOW });
+    const report = await purgeCase(s.root, ID, { reason: 'ensaio', confirm: ID.toLowerCase() }, { home: s.home, tmp: s.tmp, now: () => NOW });
     for (const gone of [s.dir, s.exported, s.temporary, s.claude, s.cursorHash, s.codex, s.brain]) expect(fs.existsSync(gone), gone).toBe(false);
     for (const kept of [s.otherClaude, s.otherCodex, s.otherBrain, s.shared]) expect(fs.existsSync(kept), kept).toBe(true);
     for (const a of report.areas.filter((x) => x.area !== 'motor · arquivos compartilhados')) {
@@ -104,9 +104,9 @@ describe('G-PR1 controle 7 — expurgo provado', () => {
     expect(listCases(s.root)).toEqual([]);
   });
 
-  it('relatório de ausência fica fora da pasta do caso e não tem dado pessoal', () => {
+  it('relatório de ausência fica fora da pasta do caso e não tem dado pessoal', async () => {
     const s = scene();
-    purgeCase(s.root, ID, { reason: 'pedido_titular', confirm: ID }, { home: s.home, tmp: s.tmp, now: () => NOW });
+    await purgeCase(s.root, ID, { reason: 'pedido_titular', confirm: ID }, { home: s.home, tmp: s.tmp, now: () => NOW });
     const files = fs.readdirSync(path.join(s.root, 'expurgos'));
     expect(files).toHaveLength(1);
     const raw = fs.readFileSync(path.join(s.root, 'expurgos', files[0]), 'utf8');
@@ -119,7 +119,7 @@ describe('G-PR1 controle 7 — expurgo provado', () => {
 
   it('caso remoto: Supabase fica pendente, Telegram manual e o sync não traz o caso de volta', async () => {
     const s = scene(true);
-    const report = purgeCase(s.root, ID, { reason: 'pedido_titular', confirm: ID }, { home: s.home, tmp: s.tmp, now: () => NOW });
+    const report = await purgeCase(s.root, ID, { reason: 'pedido_titular', confirm: ID }, { home: s.home, tmp: s.tmp, now: () => NOW });
     const supa = report.areas.find((a) => a.area === 'Supabase')!;
     expect(supa.status).toBe('pendente');
     expect(supa.note).toContain(`purge_raiox_case('${UUID}')`);
@@ -159,5 +159,33 @@ describe('G-PR1 controle 7 — expurgo provado', () => {
       }
     }
     expect([...created].sort()).toEqual([...tables].sort());
+  });
+  it('F8: com a escrita liberada, o Supabase é expurgado antes e entra como apagado', async () => {
+    const s = scene(true);
+    const order: string[] = [];
+    const remote = async (id: string) => {
+      order.push(`remote:${id}:${fs.existsSync(s.dir)}`);
+      return { purged: true, before: { cases: 1, form_sessions: 2 }, after: { cases: 0, form_sessions: 0 }, storageToCheck: 0, providerToCheck: 1 };
+    };
+    const report = await purgeCase(s.root, ID, { reason: 'pedido_titular', confirm: ID }, { home: s.home, tmp: s.tmp, now: () => NOW, remote });
+    expect(order).toEqual([`remote:${UUID}:true`]);
+    expect(report.areas.find((a) => a.area === 'Supabase')).toMatchObject({ status: 'limpo', found: 3, removed: 3, remaining: 0 });
+  });
+
+  it('F8: falha no Supabase não apaga nada local', async () => {
+    const s = scene(true);
+    const remote = async () => { throw new Error('O Supabase não concluiu a etapa interna do Raio X.'); };
+    await expect(purgeCase(s.root, ID, { reason: 'pedido_titular', confirm: ID }, { home: s.home, tmp: s.tmp, remote })).rejects.toThrow(/Supabase/);
+    expect(fs.existsSync(s.dir)).toBe(true);
+    expect(fs.existsSync(path.join(s.root, 'expurgos'))).toBe(false);
+  });
+
+  it('F8: função titular-case revoga e expurga pelas funções do banco, com o segredo interno', () => {
+    const fn = fs.readFileSync(path.join(REPO, 'raiox', 'web', 'supabase', 'functions', 'titular-case', 'index.ts'), 'utf8');
+    expect(fn).toContain('x-raiox-internal-secret');
+    expect(fn).toContain('supabase.rpc("revoke_raiox_case"');
+    expect(fn).toContain('supabase.rpc("purge_raiox_case"');
+    const config = fs.readFileSync(path.join(REPO, 'raiox', 'web', 'supabase', 'config.toml'), 'utf8');
+    expect(config).toMatch(/\[functions\.titular-case\]\s+verify_jwt = false/);
   });
 });

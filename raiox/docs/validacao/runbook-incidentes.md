@@ -169,4 +169,3 @@ vazado) + seção 4 para `RAIOX_OFFICE_SYNC_SECRET`, porque exercita banco, fun�
 - Carlos: ensaio registrado acima; contato do advogado; conferir quem tem acesso aos painéis
   (Supabase, Vercel, Resend, Telegram, RapidAPI).
 - Advogado: critério e prazo de comunicação ao titular e à ANPD; textos.
-- Código: botão de revogação do Escritório levar ao Supabase (F8).

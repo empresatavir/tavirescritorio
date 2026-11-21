@@ -9,6 +9,8 @@ import {
   deliveryPrepare,
   inviteFinalize,
   persistReview,
+  purgeRemote,
+  revokeRemote,
   safeFormUrl,
   writeAnalysisInput,
   type RaioxWriteConfig,
@@ -182,5 +184,30 @@ describe('F8 T8.1 — funções de escrita', () => {
       FORM + '&x=1', FORM + '#frag', 'https://raiox.tavir.com.br/outra?exp=1795000000&sig=' + 'a'.repeat(64)]) {
       expect(() => safeFormUrl(bad), bad).toThrow(/fora do formato/);
     }
+  });
+});
+
+describe('F8 — revogação e expurgo no Supabase', () => {
+  it('titular-case leva canal e data da revogação e devolve só contagens no expurgo', async () => {
+    const root = released();
+    const calls: Call[] = [];
+    const f = fake((call) => (call.body.action === 'revoke'
+      ? { body: { ok: true, action: 'revoke', already: false } }
+      : { body: { ok: true, action: 'purge', purged: true, before: { cases: 1, optins: 1, 'nome da empresa': 9 }, after: { cases: 0, optins: 0 }, storage_objects_to_check: 0, provider_messages_to_check: 2 } }), calls);
+    expect(await revokeRemote(CASE, 'email', NOW, deps(root, f))).toEqual({ already: false });
+    expect(calls[0].url).toBe(`${HOST}/functions/v1/titular-case`);
+    expect(calls[0].headers.get('x-raiox-internal-secret')).toBe(SECRETS.internalSecret);
+    expect(calls[0].body).toEqual({ action: 'revoke', case_id: CASE, channel: 'email', requested_at: NOW });
+    const purged = await purgeRemote(CASE, deps(root, f));
+    expect(purged).toEqual({ purged: true, before: { cases: 1, optins: 1 }, after: { cases: 0, optins: 0 }, storageToCheck: 0, providerToCheck: 2 });
+  });
+
+  it('sem a liberação, revogação e expurgo remotos não chamam a rede', async () => {
+    const root = temp();
+    const calls: Call[] = [];
+    const f = fake(() => ({ body: { ok: true } }), calls);
+    await expect(revokeRemote(CASE, 'email', NOW, deps(root, f))).rejects.toThrow(/CP-10/);
+    await expect(purgeRemote(CASE, deps(root, f))).rejects.toThrow(/CP-10/);
+    expect(calls).toHaveLength(0);
   });
 });
