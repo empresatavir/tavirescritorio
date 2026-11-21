@@ -3,6 +3,8 @@ import { RAIOX_CATALOG, RAIOX_REMOTE_STATUS, type RaioxCase, type RaioxRemoteSta
 import { getBundle } from '../credentials';
 import { RaioxError, caseIdFromUuid, createCase } from './raioxRules';
 import { listCases, writeCase } from './raioxStore';
+import { repoRoot } from './raioxContext';
+import { readVendorCatalog, recordVendor } from './vendors';
 
 const USER_AGENT = 'TAVIR-Escritorio-RaioX/1.0';
 const HOST = 'skcbjwqajdovxlsxeszv.supabase.co';
@@ -29,6 +31,7 @@ export interface SyncDeps {
   root?: string;
   config?: () => RaioxSyncConfig | null;
   timeoutMs?: number;
+  repo?: string;
 }
 
 interface RemoteCase {
@@ -208,6 +211,7 @@ export async function syncCases(deps: SyncDeps = {}): Promise<{ ok: true; create
   const byRemote = new Map(local.filter((item) => item.remote?.supabaseId).map((item) => [item.remote!.supabaseId, item]));
   const taken = new Set(local.map((item) => item.id));
   const mode = RAIOX_CATALOG.find((item) => item.id === 'diagnostico');
+  const catalog = readVendorCatalog(deps.repo ?? repoRoot());
   let created = 0;
   let updated = 0;
   for (const item of remote) {
@@ -232,7 +236,12 @@ export async function syncCases(deps: SyncDeps = {}): Promise<{ ok: true; create
       consent: { kind: 'formulario', at: now, note: '' },
     }, now, localUuid);
     createdCase.remote = { supabaseId: item.id, status: item.status, syncedAt: now };
-    writeCase(root, createdCase);
+    // G-PR1 controle 6: caso que veio do formulário já passou por Vercel, Supabase e o aviso do Telegram.
+    let withVendors: RaioxCase = createdCase;
+    for (const [vendor, use] of [['vercel', 'formulário'], ['supabase', 'caso remoto'], ['telegram', 'aviso de formulário recebido']] as const) {
+      withVendors = recordVendor(withVendors, catalog, vendor, use, now);
+    }
+    writeCase(root, withVendors);
     taken.add(createdCase.id);
     created += 1;
   }

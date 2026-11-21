@@ -323,6 +323,18 @@
         </div>
       </sc-for>
       <sc-for list="{{hypotheses}}" as="h" hint-placeholder-count="0"><p class="sec">{{h.text}}</p></sc-for>
+      <sc-if value="{{hasVendors}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; align-items: center; gap: 8px"><span class="eyebrow">Serviços que tocaram este caso</span><div class="grow"></div><sc-if value="{{vendorsPending}}" hint-placeholder-val="{{false}}"><small style="color: var(--warning, #c98a00)">{{vendorsPendingText}}</small></sc-if></div>
+          <sc-for list="{{vendors}}" as="v" hint-placeholder-count="0">
+            <div style="display: flex; flex-direction: column; gap: 2px; font-size: 13px">
+              <b>{{v.nome}}</b>
+              <span class="muted">{{v.usos}}</span>
+              <span class="muted">Região: {{v.regiao}} · Retenção: {{v.retencao}} · Exclusão: {{v.exclusao}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
     </section>
   </sc-if>
 
@@ -1357,6 +1369,15 @@ class Component extends DCLogic {
         return { label: item[0], n: item[1], on: s.tab === index ? 'on' : '', pick: function () { self.setState({ tab: index }); } };
       }),
       tEv: s.tab === 0, tDev: s.tab === 1, tCon: s.tab === 2, tExec: canExec && s.tab === 3,
+      hasVendors: Boolean(current && current.vendors && current.vendors.length),
+      vendors: ((current && current.vendors) || []).map(function (v) {
+        return { nome: v.nome, usos: (v.usos || []).join(' · '), regiao: v.regiao, retencao: v.retencao, exclusao: v.exclusao };
+      }),
+      vendorsPending: ((current && current.vendors) || []).some(function (v) { return !v.confirmado; }),
+      vendorsPendingText: (function () {
+        var n = ((current && current.vendors) || []).filter(function (v) { return !v.confirmado; }).length;
+        return n === 1 ? '1 serviço com termos a confirmar' : n + ' serviços com termos a confirmar';
+      })(),
       evFilters: [['all', 'Todas'], ['observado', 'Observado'], ['informado', 'Informado'], ['inferido', 'Inferido'], ['indisponivel', 'Indisponível'], ['pendente', 'Pendentes']].map(function (item) {
         const n = evidence.filter(function (ev) { return item[0] === 'all' ? true : item[0] === 'pendente' ? ev.review === 'pendente' : ev.classification === item[0]; }).length;
         return { label: item[1], n: n, on: s.evFilter === item[0] ? 'on' : '', pick: function () { self.setState({ evFilter: item[0] }); } };

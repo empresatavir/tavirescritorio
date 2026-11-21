@@ -12,6 +12,7 @@ import { RaioxError, addEvidence, addHypotheses } from './raioxRules';
 import { caseDir, readCase, writeCase } from './raioxStore';
 import { ensureLocal, readTarget, saveTarget, wantsLocal, type LocalResult } from './localBusiness';
 import { shapeProblem, verifyCaseLinks, type LinkReport } from './linkGuard';
+import { motorVendor, readVendorCatalog, recordVendor } from './vendors';
 import { getBundle } from '../credentials';
 import type { RaioxCase } from '../../shared/raiox';
 
@@ -81,7 +82,7 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
   if (fronts.some((front) => !RAIOX_FRONTS.some((item) => item.id === front))) {
     throw new RaioxError('Frente de varredura inválida.');
   }
-  const current = readCase(root, id);
+  let current = readCase(root, id);
   const input = path.join(caseDir(root, id), 'analise', 'analysis-input.json');
   if (!fs.existsSync(input) && (blank(current.frontier) || blank(current.publicLink))) {
     throw new RaioxError('Preencha a fronteira e o link público antes da análise.');
@@ -138,6 +139,7 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
   } catch (err) {
     throw new RaioxError(err instanceof Error ? err.message : 'Não foi possível abrir o livro de execuções.');
   }
+  const catalog = readVendorCatalog(repo);
   const local = deps.local ?? (deps.run ? null : (c: RaioxCase) => collectLocalFor(root, c));
   if (local && wantsLocal(current, fronts)) {
     live.set(id, { running: true, speech: '', activity: 'Consultando a ficha do Google Maps' });
@@ -146,10 +148,14 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
       const got = await local(current);
       handle.raw('stdout', `Ficha do Google Maps (Local Business Data): ${got.status} · ${got.message} · ${got.requests.total} consultas
 `);
+      if (got.requests.total > 0) current = recordVendor(current, catalog, 'rapidapi', 'ficha do Google Maps', now);
     } catch {
       // A consulta é um reforço: se falhar, o motor segue com o que estiver público.
     }
   }
+  // O motor recebe a pasta do caso a partir daqui: registra antes, mesmo que a rodada falhe.
+  current = recordVendor(current, catalog, motorVendor(motor), `análise · ${model || 'modelo padrão'}`, now);
+  writeCase(root, current);
   live.set(id, { running: true, speech: '', activity: 'Preparando a análise' });
   deps.onProgress?.({ id, speech: '', activity: 'Preparando a análise', running: true });
   const runner = deps.run ?? runMotor;

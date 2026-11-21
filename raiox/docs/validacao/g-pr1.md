@@ -59,3 +59,25 @@ do CP-10 (R5).
 - **Limite conhecido:** perfil pessoal (Instagram de pessoa física) e PII de terceiros dentro de
   texto livre não têm detecção automática; ficam na revisão do Carlos ao abrir o caso. O
   formulário recusa sem dizer qual campo causou a recusa (ajuste junto do T10.4).
+
+### Controle 6 — Fornecedores por caso (código concluído em 2026-11-21)
+
+- **Catálogo:** `raiox/fornecedores.json` com Vercel, Supabase, Telegram, Resend, RapidAPI e os
+  quatro provedores de motor (Anthropic, OpenAI, Google, Cursor). Finalidade e dados preenchidos;
+  região, retenção e exclusão como `a confirmar` e `confirmado: false`. Só o Carlos confirma.
+- **Registro no caso** (`src/main/raiox/vendors.ts`, campo `vendors` do `caso.json`): cópia da
+  ficha no primeiro uso, primeiro e último uso, e a lista de usos (ex.: `análise · modelo`).
+  - análise: motor e modelo registrados **antes** do motor receber a pasta (vale mesmo se a
+    rodada falhar); RapidAPI quando a consulta da ficha do Google fez requisição;
+  - redação: motor e modelo, também antes de rodar;
+  - caso vindo do formulário: Vercel, Supabase e Telegram (este só recebe o código do caso).
+  - Resend entra quando o convite e a entrega forem ligados (F8).
+- **Tela:** aba Devolutiva mostra "Serviços que tocaram este caso" com usos, região, retenção e
+  exclusão, e avisa quantos ainda têm termos a confirmar.
+- **Testes:** `tests/unit/raioxVendors.spec.ts` (catálogo completo e nada confirmado, um
+  fornecedor por motor, registro sem repetição, confirmação posterior, análise que falha mas
+  registra o motor).
+- **Pendente do Carlos:** confirmar região, retenção e exclusão de cada serviço no painel ou
+  contrato e marcar `confirmado: true` em `raiox/fornecedores.json`. O `RX-854A8212` foi
+  analisado antes deste controle e não tem a lista (análise no Cursor e redação no Google pelo
+  histórico de rodadas).

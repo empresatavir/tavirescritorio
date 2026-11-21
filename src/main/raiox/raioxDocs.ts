@@ -10,6 +10,7 @@ import { lintDocument } from './raioxDocLint';
 import { RaioxError, attachDocuments } from './raioxRules';
 import { caseDir, readCase, writeCase } from './raioxStore';
 import type { RaioxDocument } from '../../shared/raiox';
+import { motorVendor, readVendorCatalog, recordVendor } from './vendors';
 
 const TIMEOUT_MS = 45 * 60 * 1000;
 const PDF_TIMEOUT_MS = 90_000;
@@ -87,6 +88,9 @@ async function writeDocumentsOnce(root: string, id: string, deps: DocsDeps): Pro
     projectName: current.id, engine: motor, binary: findMotorBinary(motor) || '',
     model: settings.defaultModel, effort: settings.defaultEffort, mode: 'write', args: [], timeoutMs: TIMEOUT_MS, prompt,
   });
+  // G-PR1 controle 6: o motor recebe a pasta do caso; registra antes, mesmo que a redação falhe.
+  const withVendor = recordVendor(current, readVendorCatalog(repo), motorVendor(motor), `redação · ${settings.defaultModel || 'modelo padrão'}`, now);
+  writeCase(root, withVendor);
   const result = await runner({
     motor, workspace, prompt, model: settings.defaultModel, effort: settings.defaultEffort,
     access: 'write', timeoutMs: TIMEOUT_MS,
@@ -120,7 +124,7 @@ async function writeDocumentsOnce(root: string, id: string, deps: DocsDeps): Pro
       createdAt: now,
     });
   }
-  writeCase(root, attachDocuments(current, docs, now));
+  writeCase(root, attachDocuments(withVendor, docs, now));
   await handle.finish({ ok: true, reply: result.text || '' });
   return { ok: true, version, problems: docs.flatMap((doc) => doc.lint) };
 }

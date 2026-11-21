@@ -991,5 +991,14 @@ export interface RaioxCase {
   priority?: RaioxPriority; debrief?: RaioxDebrief; execution?: RaioxExecution; remote?: RaioxRemote;
   consent?: { kind: 'termo_assinado' | 'verbal_registrado' | 'interno' | 'formulario'; at: string; note: string };
   anexos?: RaioxAnexo[];
+  /** G-PR1 controle 6: serviços que tocaram dados deste caso (cópia do catálogo no momento do uso). */
+  vendors?: RaioxVendor[];
   createdAt: string; updatedAt: string; closedAt?: string;
+}
+export interface RaioxVendor {
+  id: string; nome: string; finalidade: string; dados: string;
+  regiao: string; retencao: string; exclusao: string; confirmado: boolean;
+  primeiroUso: string; ultimoUso: string;
+  /** Usos registrados (ex.: "análise · gemini-3.8-flash"), sem repetição. */
+  usos: string[];
 }
