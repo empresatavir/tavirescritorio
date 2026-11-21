@@ -19,7 +19,12 @@ Tabela da seção 3 de `docs/planning/PLANO_RAIOX.md`, com o destino e o papel. 
 | `agentes/escopo/agentes/analista-web.md` | Analista web, adaptado aos caminhos novos. |
 | `agentes/escopo/skills/funil-vendas/` | Skill de funil que o prompt usa. |
 | `raiox/web/supabase/functions/office-raiox-sync/index.ts` | Fonte publicada da leitura. Contrato abaixo. |
-| `src/main/raiox/raioxBridge.ts` | Leitura do Supabase (`syncCases`). As funções de escrita (`continueCase`, `reviewCase`, `deliveryCase`, `inviteCase`) ainda recusam: entram na F8 do GOAL. |
+| `src/main/raiox/raioxBridge.ts` | Leitura do Supabase (`syncCases`) e escrita da F8: `createRemoteCase`, `continueRemote`, `persistReview`, `deliveryPrepare`/`deliveryFinalize`, `inviteFinalize`, `revokeRemote`, `purgeRemote`. Toda escrita passa por `assertReleased('escritaSupabase')`. |
+| `src/main/raiox/releases.ts` | Liberações em `<raiz privada>/liberacoes.json`: escrita no Supabase ("liberado CP-10") e e-mail externo ("liberado piloto"). Só mudam pelo clique do Carlos com a frase; antes do CP-12, e-mail só para o domínio do remetente. |
+| `src/main/raiox/raioxSend.ts` | Resend: convite (cria caso remoto com opt-in, caso local ligado e manda o link) e entrega em dois atos (preparar; "Autorizar envio para <e-mail>"), com idempotência e modelos de `raiox/modelos/`. |
+| `src/main/raiox/inviteRequests.ts` | Pedido de convite vindo do APK (job `raiox_convite` em `officeCloud.ts`): fica pendente em `<raiz privada>/convites-pendentes/` até o Carlos revisar e enviar. |
+| `src/main/raiox/optin.ts`, `purge.ts`, `vendors.ts`, `linkGuard.ts` | Controles do G-PR1: opt-in, expurgo provado, fornecedores por caso e entrada segura. |
+| `raiox/web/supabase/functions/titular-case/index.ts` | Revogação e expurgo pedidos pelo Escritório (segredo interno), chamando `revoke_raiox_case` e `purge_raiox_case`. |
 | `src/main/raiox/raioxAnalyse.ts`, `raioxContext.ts`, `localBusiness.ts` | Análise pelo motor escolhido no Escritório, com contexto copiado para a pasta do caso e consulta do Google Maps (RapidAPI Local Business). |
 | `src/main/raiox/raioxDocs.ts`, `raioxDocLint.ts` | Redação dos dois documentos, checagem (seções, termos proibidos, formato de `sugestoes.json`) e PDF por `tools/publicar.py`. |
 | `src/main/raiox/raioxView.ts` | Leitura interna do caso para a tela. |
@@ -29,7 +34,6 @@ Tabela da seção 3 de `docs/planning/PLANO_RAIOX.md`, com o destino e o papel. 
 | `src/shared/raiox.ts`, `src/main/raiox/raioxRules.ts` | Domínio, taxonomia e regras puras do caso. |
 | `src/renderer/raiox-ref/RaioX.dc.html` | Tela do Raio-X, injetada no build. |
 | `tests/unit/raiox*.spec.ts` | Regras, pasta privada, ponte, F6, playbooks, Local Business e leitura do caso. |
-| — | Entrega por e-mail (Resend) ainda não existe: F8 do GOAL. |
 | `%APPDATA%/<app>/raiox/casos/RX-XXXXXXXX/legado/` | Casos antigos com dado de cliente. Fora do git. Cópia só com aprovação no checkpoint. |
 | Cofre (`src/main/credentials.ts`) | Segredos `RAIOX_*` e `RESEND_*`. O Carlos digita na tela. Nada em arquivo de texto. |
 | — | `TELEGRAM_*` sai do Raio-X. |
