@@ -981,6 +981,16 @@ export interface RaioxDebrief {
 export interface RaioxMetric { key: string; label: string; value: number; unit: string; at: string; moment: 'd0' | 'd30'; source: string; }
 export interface RaioxStepCheck { step: number; doneAt: string; proof: { kind: 'arquivo' | 'link' | 'nota'; value: string; sha256?: string }; }
 export interface RaioxExecution { gapId: string; playbookVersion: string; startedAt: string; steps: RaioxStepCheck[]; metrics: RaioxMetric[]; fabricaProjectId?: string; closedAt?: string; }
+/** Versão do aviso de privacidade em vigor. Igual a AVISO_VERSAO em raiox/web/api/_raiox.mjs. */
+export const RAIOX_AVISO_VERSAO = '2026-11-21';
+/** G-PR1 controle 1: canais aceitos para o opt-in. Igual à migração 20261121130000. */
+export const RAIOX_OPTIN_CHANNELS = ['whatsapp', 'telefone', 'presencial', 'videochamada', 'email'] as const;
+export type RaioxOptinChannel = typeof RAIOX_OPTIN_CHANNELS[number];
+export const RAIOX_OPTIN_LABEL: Record<RaioxOptinChannel, string> = {
+  whatsapp: 'WhatsApp', telefone: 'Telefone', presencial: 'Presencial', videochamada: 'Videochamada', email: 'E-mail',
+};
+/** Como o contato aceitou receber o convite. Registrado pelo Carlos antes de criar o caso remoto. */
+export interface RaioxOptin { channel: RaioxOptinChannel; obtainedAt: string; policyVersion: string; operator: string; }
 export interface RaioxRemote { supabaseId: string; status: RaioxRemoteStatus; syncedAt: string; formUrl?: string; emailVerified?: boolean; }
 export interface RaioxCase {
   id: string; uuid: string; legacy: boolean;
@@ -993,6 +1003,8 @@ export interface RaioxCase {
   anexos?: RaioxAnexo[];
   /** G-PR1 controle 6: serviços que tocaram dados deste caso (cópia do catálogo no momento do uso). */
   vendors?: RaioxVendor[];
+  /** G-PR1 controle 1: opt-in que autorizou o convite deste caso. */
+  optin?: RaioxOptin;
   createdAt: string; updatedAt: string; closedAt?: string;
 }
 export interface RaioxVendor {

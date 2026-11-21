@@ -88,6 +88,32 @@ do CP-10 (R5).
   `RAIOX_EMAIL_FROM` e `RAIOX_APP_URL` na Vercel; o formulário antigo em duas etapas
   (`submit_raiox_form`) continua sem a terceira decisão e não deve ser usado no piloto real.
 
+### Controle 1 — Opt-in antes do caso (código concluído em 2026-11-21)
+
+- **Migração nova** `raiox/web/supabase/migrations/20261121130000_raiox_gpr1_optin.sql` (não
+  aplicada; R5 até o CP-10):
+  - tabela `raiox_optins` (e-mail do contato, canal, horário do aceite, versão do aviso, quem
+    registrou), RLS ligada e sem acesso para `anon`/`authenticated`;
+  - `raiox_cases.optin_id` obrigatório para linha nova (`check ... not valid`: os casos antigos
+    não reprovam, os novos não entram sem opt-in) e um opt-in serve a um caso só;
+  - `create_raiox_case_with_optin` grava opt-in e caso na mesma transação e recusa canal fora da
+    lista (WhatsApp, telefone, presencial, videochamada, e-mail), aceite no futuro (tolerância de
+    5 min) ou com mais de 30 dias, versão fora do formato e operador vazio.
+- **`create-case`:** sem `optin` responde `optin_required` antes de abrir conexão com o banco;
+  opt-in malformado responde `optin_invalid`. Não insere mais direto em `raiox_cases`. Se a
+  sessão do formulário ou o convite falham, apaga o caso e o opt-in.
+- **Escritório** (`src/main/raiox/optin.ts`): `createCasePayload` é o único jeito de montar o
+  corpo do `create-case` e recusa sem opt-in válido, com a mensagem na tela; exige a versão do
+  aviso em vigor (`RAIOX_AVISO_VERSAO`, igual à do formulário). O caso guarda o opt-in em
+  `caso.json` (`optin`). O botão "Enviar convite" (T8.3) e o pedido do APK (T8.4) entram na F8
+  e passam por essa função.
+- **Testes:** `tests/unit/raioxOptin.spec.ts` (sem opt-in não há pedido, cada recusa, corpo
+  completo, mesma versão e mesmos canais no Escritório, formulário, função e migração, função
+  recusa antes do banco e banco exige `optin_id`).
+- **Pendente:** aplicar a migração e publicar o `create-case` no CP-10. A versão do aviso muda
+  quando a página de privacidade (controle 2) ganhar o texto do advogado: trocar nos dois lugares
+  (o teste acusa se ficarem diferentes).
+
 ### Controle 6 — Fornecedores por caso (código concluído em 2026-11-21)
 
 - **Catálogo:** `raiox/fornecedores.json` com Vercel, Supabase, Telegram, Resend, RapidAPI e os
