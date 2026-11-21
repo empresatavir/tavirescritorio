@@ -85,6 +85,7 @@
     <div class="actions">
       <button class="btn ghost" onClick="{{openReleases}}" title="Escrita no Supabase (CP-10) e e-mail externo (CP-12)">Liberações</button>
       <button class="btn secondary" onClick="{{syncForms}}">Sincronizar formulários</button>
+      <button class="btn secondary" onClick="{{openInvite}}">Enviar convite</button>
       <button class="btn primary" onClick="{{newCase}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Novo caso</button>
     </div>
   </div>
@@ -550,6 +551,26 @@
   </div></div>
 </sc-if>
 
+<sc-if value="{{modalInvite}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Enviar convite" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Enviar convite</h2><p>Cria o caso no Supabase e manda o link do formulário por e-mail. Só com o aceite do contato registrado.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <label class="field"><span>Empresa *</span><input class="input" value="{{invForm.company}}" onChange="{{onInvCompany}}"></label>
+      <label class="field"><span>Contato *</span><input class="input" value="{{invForm.contact}}" onChange="{{onInvContact}}"></label>
+      <label class="field"><span>E-mail *</span><input class="input" type="email" value="{{invForm.email}}" onChange="{{onInvEmail}}"></label>
+      <div style="border-top: 1px solid var(--line, rgba(127,127,127,.25)); padding-top: 10px; display: flex; flex-direction: column; gap: 10px">
+        <b style="font-size: 13px">Aceite do contato (opt-in)</b>
+        <label class="field"><span>Por onde aceitou *</span><select class="input" value="{{invForm.channel}}" onChange="{{onInvChannel}}"><option value="">Escolha</option><sc-for list="{{revokeChannels}}" as="o" hint-placeholder-count="5"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></label>
+        <label class="field"><span>Quando aceitou *</span><input class="input" type="datetime-local" value="{{invForm.when}}" onChange="{{onInvWhen}}"></label>
+        <label class="field"><span>Quem registrou *</span><input class="input" value="{{invForm.operator}}" onChange="{{onInvOperator}}"></label>
+        <label style="display: flex; gap: 8px; align-items: flex-start; font-size: 13px"><input type="checkbox" checked="{{invForm.notice}}" onChange="{{onInvNotice}}"><span>O contato aceitou depois de receber o aviso de privacidade (versão {{avisoVersao}}).</span></label>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" disabled="{{invOff}}" onClick="{{submitInvite}}">Criar caso e enviar convite</button></div>
+  </div></div>
+</sc-if>
+
 <sc-if value="{{modalReleases}}" hint-placeholder-val="{{false}}">
   <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Liberações" onClick="{{modalStop}}">
     <div class="mhead"><div class="grow"><h2>Liberações do Raio-X</h2><p>Escrita no Supabase e e-mail para fora da TAVIR ficam desligados até você liberar, com a mesma frase do checkpoint.</p></div></div>
@@ -679,6 +700,8 @@ const STATUS_NOTE = {
 const REMOTE_LABEL = { draft: 'Rascunho', form_1_sent: 'Convite enviado', form_1_received: 'Formulário 1 recebido', form_2_sent: 'Formulário 2 enviado', form_2_received: 'Formulário recebido', awaiting_approval: 'Aguardando autorizar análise', analysing: 'Em análise', review: 'Documentos em revisão', ready: 'Pronto para entregar', sent: 'Entregue', closed: 'Encerrado' };
 const ORIGIN_LABEL = { amigo: 'Amigo', rua: 'Rua', formulario: 'Formulário', indicacao: 'Indicação' };
 // Mesmos canais de RAIOX_OPTIN_CHANNELS (src/shared/raiox.ts).
+const AVISO_VERSAO = '2026-11-21';
+const blankInvite = function () { return { company: '', contact: '', email: '', channel: '', when: '', operator: 'Carlos', notice: false }; };
 const RELEASES = [
   { id: 'escritaSupabase', title: 'Escrita no Supabase', phrase: 'liberado CP-10', help: 'Convite, formulário 2, análise, aprovação e entrega passam a gravar no Supabase. Libere só no smoke do CP-10.' },
   { id: 'emailExterno', title: 'E-mail para fora da TAVIR', phrase: 'liberado piloto', help: 'Antes disso, convite e entrega só vão para o domínio do remetente. Libere só no CP-12.' },
@@ -1045,6 +1068,8 @@ class Component extends DCLogic {
       const hasPdf = hasDocs && docsArr.every(function (doc) { return !!doc.pdf; });
       const approved = !!(deb && deb.approval && hasDocs && docsArr.every(function (doc) { return deb.approval.hashes.indexOf(doc.sha256) >= 0; }));
       const delivered = !!(deb && deb.delivery);
+      const remoteDelivery = !!(current.remote && current.remote.supabaseId);
+      const pendingDel = deb && deb.pendingDelivery;
       const closed = current.status === 'fechado';
       const lastDocRun = runsNow.filter(function (r) { return /reda/i.test(r.label || ''); })[0];
       const docFailed = !writingNow && lastDocRun && lastDocRun.status !== 'ok' && lastDocRun.status !== 'running' && (!hasDocs || new Date(lastDocRun.startedAt) > new Date(docsArr[0].createdAt));
@@ -1060,6 +1085,24 @@ class Component extends DCLogic {
         { label: 'Checagem', done: hasDocs && !writingNow && lintN === 0, bad: hasDocs && !writingNow && lintN > 0, detail: !hasDocs || writingNow ? 'Roda sozinha quando os documentos ficam prontos.' : lintN ? (lintN + (lintN === 1 ? ' problema' : ' problemas') + ' nos documentos. Veja abaixo e gere de novo.') : 'Seções, termos proibidos e corte público conferidos. Nenhum problema.' },
         { label: 'PDF', done: hasPdf && !renderingNow, run: renderingNow, detail: renderingNow ? 'Gerando os PDFs…' : hasPdf ? 'Relatório e plano em PDF.' : 'Gera o PDF dos dois documentos com a marca TAVIR.', actLabel: renderingNow ? 'Gerando…' : hasPdf ? 'Gerar de novo' : 'Gerar PDF', act: function () { docsJob('pdf'); }, off: !hasDocs || lintN > 0 || approved },
         { label: 'Aprovação', done: approved, detail: approved ? ('Aprovados por hash em ' + fmtWhen(deb.approval.at) + '.') : 'Leia os dois documentos e aprove. Qualquer mudança depois invalida.', actLabel: 'Aprovar documentos', btn: 'primary', act: function () { approveDocsFn(); }, off: !hasPdf || lintN > 0 || approved },
+        remoteDelivery ? {
+          label: 'Entrega', done: delivered,
+          detail: delivered ? ('Entrega por e-mail para ' + deb.delivery.to + ' em ' + fmtWhen(deb.delivery.at) + '.')
+            : pendingDel ? ('Preparada no Supabase para ' + pendingDel.email + '. O envio só sai com a sua autorização.')
+            : 'Registra a aprovação no Supabase e prepara o e-mail. O envio é um segundo clique.',
+          actLabel: pendingDel ? ('Autorizar envio para ' + pendingDel.email) : 'Preparar entrega por e-mail', btn: pendingDel ? 'primary' : 'secondary',
+          act: function () {
+            const api = tavirApi();
+            if (!api) return;
+            if (pendingDel) {
+              if (window.confirm && !window.confirm('Enviar o relatório e o plano para ' + pendingDel.email + '? Não tem volta.')) return;
+              api.raiox.sendDelivery(current.id, pendingDel.email).then(refreshOpen).catch(function () { fail(); });
+            } else {
+              api.raiox.prepareDelivery(current.id).then(refreshOpen).catch(function () { fail(); });
+            }
+          },
+          off: !approved || delivered || !hasPdf,
+          hasAlt: hasPdf, altLabel: 'Exportar PDFs', alt: function () { const api = tavirApi(); if (api) api.raiox.exportPdfs(current.id).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); } } :
         { label: 'Entrega', done: delivered, detail: delivered ? ('Entrega ' + (deb.delivery.channel === 'manual' ? 'manual' : 'por e-mail') + ' para ' + deb.delivery.to + ' em ' + fmtWhen(deb.delivery.at) + '.') : 'Exporte os PDFs e registre para quem foram entregues.', actLabel: 'Registrar entrega', act: function () { self.setState({ modal: 'delivery', error: '', debForm: Object.assign({}, blankDeb(), { reason: '' }) }); }, off: !approved || delivered,
           hasAlt: hasPdf, altLabel: 'Exportar PDFs', alt: function () { const api = tavirApi(); if (api) api.raiox.exportPdfs(current.id).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); } },
         { label: 'Encerrar caso', done: closed, detail: closed ? 'Caso encerrado.' : 'Fecha o diagnóstico. Com proposta aceita, abre a aba Execução.', actLabel: 'Encerrar caso', act: function () { const api = tavirApi(); if (api) api.raiox.close(current.id).then(refreshOpen).catch(function () { fail(); }); }, off: closed || (!delivered && !(deb && deb.decision === 'nao_emitir')) },
@@ -1669,6 +1712,29 @@ class Component extends DCLogic {
         if (!api || !current || !api.raiox.revoke) return;
         const when = form.requestedAt ? new Date(form.requestedAt).toISOString() : '';
         api.raiox.revoke(current.id, { channel: form.channel || '', requestedAt: when, note: form.note || '' }).then(refreshOpen).catch(function () { fail(); });
+      },
+      modalInvite: s.modal === 'invite',
+      avisoVersao: AVISO_VERSAO,
+      invForm: s.invForm || blankInvite(),
+      invOff: (function () { const f = s.invForm || blankInvite(); return !(f.company && f.contact && f.email && f.channel && f.when && f.operator && f.notice); })(),
+      openInvite: function () { self.setState({ modal: 'invite', error: '', invForm: blankInvite() }); },
+      onInvCompany: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { company: event.target.value }) }); },
+      onInvContact: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { contact: event.target.value }) }); },
+      onInvEmail: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { email: event.target.value }) }); },
+      onInvChannel: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { channel: event.target.value }) }); },
+      onInvWhen: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { when: event.target.value }) }); },
+      onInvOperator: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { operator: event.target.value }) }); },
+      onInvNotice: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { notice: !!event.target.checked }) }); },
+      submitInvite: function () {
+        const api = tavirApi();
+        const f = s.invForm || blankInvite();
+        if (!api || !api.raiox.sendInvite || !f.notice) return;
+        const optin = { channel: f.channel, obtainedAt: f.when ? new Date(f.when).toISOString() : '', policyVersion: AVISO_VERSAO, operator: f.operator };
+        api.raiox.sendInvite({ company: f.company, contact: f.contact, email: f.email, optin: optin }).then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          self.setState({ modal: null, error: '', invForm: null, caseId: res.case.id, openCase: res.case });
+          if (self.reload) self.reload();
+        }).catch(function () { fail(); });
       },
       modalReleases: s.modal === 'releases',
       openReleases: function () {

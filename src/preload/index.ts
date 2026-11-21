@@ -370,6 +370,9 @@ const api: TavirApi = {
     revokeRelease: (kind: string) => ipcRenderer.invoke('raiox:revokeRelease', kind),
     remoteForm2: (id: string) => ipcRenderer.invoke('raiox:remoteForm2', id),
     remoteAnalyse: (id: string) => ipcRenderer.invoke('raiox:remoteAnalyse', id),
+    prepareDelivery: (id: string) => ipcRenderer.invoke('raiox:prepareDelivery', id),
+    sendDelivery: (id: string, email: string) => ipcRenderer.invoke('raiox:sendDelivery', id, email),
+    sendInvite: (input: { company: string; contact: string; email: string; optin: { channel: string; obtainedAt: string; policyVersion: string; operator: string } }) => ipcRenderer.invoke('raiox:sendInvite', input),
     onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => {
       const handler = (_e: Electron.IpcRendererEvent, progress: { id: string; speech: string; activity: string; running: boolean }) => callback(progress);
       ipcRenderer.on('raiox:progress', handler);

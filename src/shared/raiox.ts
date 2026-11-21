@@ -977,6 +977,8 @@ export interface RaioxDebrief {
   documents?: RaioxDocument[];
   approval?: { hashes: string[]; at: string };
   delivery?: { channel: 'manual' | 'resend'; to: string; at: string; note?: string };
+  /** F8 T8.2: entrega preparada no Supabase, esperando o "Autorizar envio" do Carlos. */
+  pendingDelivery?: { deliveryId: string; idempotencyKey: string; email: string; contactName: string; companyName: string; round: number; preparedAt: string };
 }
 export interface RaioxMetric { key: string; label: string; value: number; unit: string; at: string; moment: 'd0' | 'd30'; source: string; }
 export interface RaioxStepCheck { step: number; doneAt: string; proof: { kind: 'arquivo' | 'link' | 'nota'; value: string; sha256?: string }; }

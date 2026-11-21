@@ -40,6 +40,7 @@ import {
 import { createOrAbsorbProjectRecord } from '../project-fs';
 import { continueRemote, syncCases, writeAnalysisInput } from './raioxBridge';
 import { grantRelease, readReleases, revokeRelease, type RaioxReleaseKind } from './releases';
+import { prepareDelivery, sendInvite, sendPreparedDelivery, type InviteRequest } from './raioxSend';
 import { analyse, analysisLive, collectLocalFor, stopAnalyse } from './raioxAnalyse';
 import { documentPath, documentsBusy, renderPdfs, stopDocuments, writeDocuments } from './raioxDocs';
 import { listRuns, readRun } from '../runLedger';
@@ -225,6 +226,31 @@ export function registerRaioxIpc(handle: Handle): void {
     try {
       if (kind !== 'escritaSupabase' && kind !== 'emailExterno') throw new RaioxError('Liberação desconhecida.');
       return { ok: true, releases: revokeRelease(raioxRoot(), kind) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  // F8 T8.2 — entrega em dois atos do Carlos; T8.3 — convite com opt-in.
+  handle('raiox:prepareDelivery', async (_e, id: string) => {
+    try {
+      return saved(await prepareDelivery(id, { root: raioxRoot() }));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:sendDelivery', async (_e, id: string, email: string) => {
+    try {
+      return saved(await sendPreparedDelivery(id, String(email || ''), { root: raioxRoot() }));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:sendInvite', async (_e, input: InviteRequest) => {
+    try {
+      return saved(await sendInvite(input || ({} as InviteRequest), { root: raioxRoot() }));
     } catch (err) {
       return fail(err);
     }

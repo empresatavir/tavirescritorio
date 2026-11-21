@@ -696,6 +696,9 @@ export interface TavirApi {
     revokeRelease: (kind: 'escritaSupabase' | 'emailExterno') => Promise<{ ok: true; releases: { escritaSupabase?: { at: string }; emailExterno?: { at: string } } } | { ok: false; error: string }>;
     remoteForm2: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     remoteAnalyse: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    prepareDelivery: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    sendDelivery: (id: string, email: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    sendInvite: (input: { company: string; contact: string; email: string; optin: { channel: string; obtainedAt: string; policyVersion: string; operator: string } }) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => () => void;
     playbooks: () => Promise<
       | { ok: true; playbooks: Array<{ id: string; title: string; stage: string; wave: number; status: string; version: string; problems: string[] }> }
