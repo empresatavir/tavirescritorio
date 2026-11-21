@@ -163,6 +163,27 @@ do CP-10 (R5).
   `revoke_raiox_case` roda junto do Carlos. Canal de privacidade (Carlos) e prazos e textos de
   resposta (advogado). Tela não conferida com o app aberto.
 
+### Controle 9 — Roteiro de incidentes (rascunho concluído em 2026-11-21)
+
+- **Roteiro:** `raiox/docs/validacao/runbook-incidentes.md`, com ordem fixa (conter, registrar,
+  avaliar, acionar, fechar) e um passo a passo para cada cenário:
+  - e-mail ao endereço errado: fechar links e confirmação do caso; documento entregue é dado
+    fora do controle e aciona o advogado;
+  - link vazado: fechar as sessões do caso (o banco só tem o hash, o link morre na hora); trocar
+    `FORM_LINK_SIGNING_SECRET` não fecha link já emitido;
+  - Telegram comprometido: revogar o token no BotFather, regravar `TELEGRAM_BOT_TOKEN`, conferir
+    o chat (o bot só recebe código de caso);
+  - rotação de segredos: tabela com cada segredo, onde fica, quem usa e o efeito da troca;
+  - incidente em fornecedor: cruzar o período com o campo `vendors` de cada caso (controle 6);
+  - contenção rápida para quando o alcance ainda é desconhecido.
+- **Evidência:** registro de incidente real fora do git (`%APPDATA%/<app>/raiox/incidentes/`),
+  só com código do caso e segredo mascarado; nada de prova é apagado antes do registro.
+- **Testes:** `tests/unit/raioxRunbook.spec.ts` (todos os cenários; todo segredo lido pelo
+  formulário e pelas funções está na tabela de rotação, então segredo novo sem linha no roteiro
+  reprova; SQL de contenção igual ao da revogação; sem código de caso nem e-mail no arquivo).
+- **Pendente:** ensaio com caso fictício (Carlos, tabela «Ensaio»); contato do advogado e
+  critério de comunicação ao titular e à ANPD (advogado).
+
 ### Controle 6 — Fornecedores por caso (código concluído em 2026-11-21)
 
 - **Catálogo:** `raiox/fornecedores.json` com Vercel, Supabase, Telegram, Resend, RapidAPI e os
