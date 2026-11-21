@@ -163,6 +163,41 @@ do CP-10 (R5).
   `revoke_raiox_case` roda junto do Carlos. Canal de privacidade (Carlos) e prazos e textos de
   resposta (advogado). Tela não conferida com o app aberto.
 
+### Controle 7 — Expurgo provado (código concluído em 2026-11-21)
+
+- **Escritório** (`src/main/raiox/purge.ts`): botão **Expurgar caso**. Antes de apagar, mostra a
+  prévia de cada lugar; pede o motivo (pedido do titular, fim da retenção, ensaio) e que se
+  digite o código do caso. Recusa se houver análise ou redação rodando.
+  - apaga: pasta do caso (caso, evidências, análise, documentos, PDFs, execução e histórico de
+    rodadas), PDFs exportados (exportação passou a registrar pasta e hash de cada arquivo; só
+    apaga se o hash bate), temporários com o código do caso e as conversas dos motores sobre a
+    pasta do caso: Claude (`~/.claude/projects/<pasta>`), Cursor (`~/.cursor/chats/<md5>` e
+    `meta.json` com o `cwd`), Codex (sessão cujo `cwd` é a pasta do caso) e Antigravity
+    (`brain/<conversa>` que cita a pasta do caso);
+  - depois de apagar, procura tudo de novo e só marca **Apagado** o que não reaparece;
+  - fica como **Conferir**: arquivos que o motor divide entre todas as conversas (banco do
+    Cursor e resumos do Antigravity), Telegram, Resend, projeto da Fábrica ligado ao caso e PDFs
+    exportados antes deste controle; **Pendente**: Supabase até a F8;
+  - relatório de ausência em `<raiz>/expurgos/<caso>-<data>.json`, fora da pasta do caso, com
+    código do caso, id remoto, motivo, data e contagens por lugar; sem nome, contato, e-mail ou
+    pasta de exportação;
+  - o sync não recria caso remoto já expurgado.
+- **Supabase** (migração nova `20261121150000_raiox_gpr1_expurgo.sql`, não aplicada; R5):
+  `purge_raiox_case(uuid)` apaga respostas antes das sessões (chave `on delete restrict`), depois
+  consentimentos, eventos, aprovações, documentos, entregas, convites, confirmações de e-mail,
+  sessões, o caso e o opt-in; devolve contagens antes e depois e quantos arquivos do Storage e
+  mensagens do Resend conferir. Só `service_role`.
+- **Prévia real** (só leitura) no `RX-854A8212`: pasta do caso, 1 conversa do Cursor e 3 do
+  Antigravity seriam apagadas; 3 arquivos compartilhados de motor citam a pasta (Conferir); o caso
+  tem PDF sem registro de exportação (Conferir). Nada foi apagado.
+- **Testes:** `tests/unit/raioxExpurgo.spec.ts` (prévia não apaga; recusa sem motivo ou código;
+  caso fictício com rastro em todos os lugares é apagado e conferido sem tocar conversas de outros
+  trabalhos; relatório sem PII e fora da pasta; Supabase pendente, Telegram manual e sync que não
+  recria; toda tabela com `case_id` nas migrações entra na função, na ordem certa).
+- **Pendente:** ensaio do Carlos com caso fictício pelo botão (tabela «Ensaio» do roteiro de
+  incidentes); aplicar a migração no CP-10; levar o expurgo ao Supabase pelo Escritório (F8).
+  Tela não conferida com o app aberto.
+
 ### Controle 9 — Roteiro de incidentes (rascunho concluído em 2026-11-21)
 
 - **Roteiro:** `raiox/docs/validacao/runbook-incidentes.md`, com ordem fixa (conter, registrar,

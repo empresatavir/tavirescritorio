@@ -42,9 +42,10 @@ import { syncCases } from './raioxBridge';
 import { analyse, analysisLive, collectLocalFor, stopAnalyse } from './raioxAnalyse';
 import { documentPath, documentsBusy, renderPdfs, stopDocuments, writeDocuments } from './raioxDocs';
 import { listRuns, readRun } from '../runLedger';
-import { listCases, raioxRoot, readCase, storeFile, writeCase, caseDir, deleteCase } from './raioxStore';
+import { listCases, raioxRoot, readCase, storeFile, writeCase, caseDir, deleteCase, sha256File } from './raioxStore';
 import { analysisReportHtml, documentHtml, openReader } from './raioxView';
 import { LocalBusinessError, readTarget, targetFromAnalysis } from './localBusiness';
+import { previewPurge, purgeCase, type PurgeInput } from './purge';
 import { playbookStatusFor, lintPlaybook, loadPlaybooks, requirePlaybook } from './playbooks';
 
 type Handle = (channel: string, listener: (...args: any[]) => any) => void;
@@ -366,10 +367,15 @@ export function registerRaioxIpc(handle: Handle): void {
       const current = readCase(raioxRoot(), id);
       const pdfs = (current.debrief?.documents || []).map((doc) => doc.pdf).filter((item): item is string => !!item);
       if (!pdfs.length) return { ok: false, error: 'Gere os PDFs antes de exportar.' };
+      const files: { name: string; sha256: string }[] = [];
       for (const relative of pdfs) {
         const src = documentPath(raioxRoot(), id, relative);
         fs.copyFileSync(src, path.join(picked.filePaths[0], path.basename(src)));
+        files.push({ name: path.basename(src), sha256: sha256File(src) });
       }
+      // G-PR1 controle 7: o expurgo precisa saber para onde as cópias foram.
+      const latest = readCase(raioxRoot(), id);
+      writeCase(raioxRoot(), { ...latest, exports: [...(latest.exports || []), { at: new Date().toISOString(), dir: picked.filePaths[0], files }] });
       return { ok: true };
     } catch (err) {
       return fail(err);
@@ -401,6 +407,27 @@ export function registerRaioxIpc(handle: Handle): void {
       stopAnalyse(id);
       stopDocuments(id);
       return saved(next);
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:purgePreview', (_e, id: string) => {
+    try {
+      return { ok: true, preview: previewPurge(raioxRoot(), id) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:purge', (_e, id: string, input: PurgeInput) => {
+    try {
+      // Rodada em andamento grava no fim (livro de execuções, caso): recriaria a pasta apagada.
+      const docs = documentsBusy(id);
+      if (analysisLive(id).running || docs.writing || docs.rendering) {
+        throw new RaioxError('Há análise ou redação rodando neste caso. Pare e espere terminar antes de expurgar.');
+      }
+      return { ok: true, report: purgeCase(raioxRoot(), id, input || { reason: '', confirm: '' }) };
     } catch (err) {
       return fail(err);
     }

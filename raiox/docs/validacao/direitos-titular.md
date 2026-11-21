@@ -49,9 +49,11 @@ contato: pedir que escreva do e-mail do caso. Não enviar dado do caso para ende
 ## Exclusão
 
 1. Revogar primeiro (passo acima), para nada novo rodar.
-2. Expurgar o caso (controle 7, botão "Expurgar caso" — ainda não existe; até lá, "Excluir"
-   apaga a pasta local e o Supabase é limpo junto do Carlos).
-3. Guardar só o relatório de ausência, sem PII, e responder ao titular com a data.
+2. No Escritório: caso → **Expurgar caso** → conferir a prévia, motivo «Pedido do titular» e
+   digitar o código do caso. "Excluir" não serve aqui: só apaga a pasta e não deixa prova.
+3. Fechar os itens que o relatório marcar como Pendente ou Conferir (Supabase com
+   `purge_raiox_case`, Telegram, Resend, arquivos compartilhados dos motores).
+4. Guardar só o relatório de ausência (`expurgos/`, sem PII) e responder ao titular com a data.
 
 ## Pendências
 

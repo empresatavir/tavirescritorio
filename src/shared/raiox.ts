@@ -1008,7 +1008,27 @@ export interface RaioxCase {
   /** G-PR1 controle 1: opt-in que autorizou o convite deste caso. */
   optin?: RaioxOptin;
   revocation?: RaioxRevocation;
+  /** G-PR1 controle 7: cópias de PDF levadas para fora da pasta do caso (o expurgo apaga). */
+  exports?: RaioxExport[];
   createdAt: string; updatedAt: string; closedAt?: string;
+}
+export interface RaioxExport { at: string; dir: string; files: { name: string; sha256: string }[] }
+
+/** G-PR1 controle 7: motivo do expurgo. */
+export const RAIOX_PURGE_REASONS = ['pedido_titular', 'retencao', 'ensaio'] as const;
+export type RaioxPurgeReason = (typeof RAIOX_PURGE_REASONS)[number];
+export const RAIOX_PURGE_REASON_LABEL: Record<RaioxPurgeReason, string> = {
+  pedido_titular: 'Pedido do titular',
+  retencao: 'Fim do prazo de retenção',
+  ensaio: 'Ensaio com caso fictício',
+};
+/** limpo: apagado e conferido; pendente: depende de etapa futura; manual: o Carlos confere fora do app. */
+export type RaioxPurgeStatus = 'limpo' | 'pendente' | 'manual';
+export interface RaioxPurgeArea { area: string; found: number; removed: number; remaining: number; status: RaioxPurgeStatus; note: string }
+/** Relatório de ausência: sem nome, contato, e-mail ou conteúdo do caso. */
+export interface RaioxPurgeReport {
+  caseId: string; supabaseId?: string; reason: RaioxPurgeReason; purgedAt: string;
+  areas: RaioxPurgeArea[]; complete: boolean;
 }
 export interface RaioxVendor {
   id: string; nome: string; finalidade: string; dados: string;

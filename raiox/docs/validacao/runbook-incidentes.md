@@ -140,7 +140,8 @@ O registro de incidente real fica fora do git, em
 - causa, correção e o teste que impede a volta.
 
 Não apagar logs, linhas do banco ou mensagens que sirvam de prova antes de copiar para o
-registro. Expurgo de caso envolvido em incidente só depois do registro fechado.
+registro. Expurgo de caso envolvido em incidente (botão «Expurgar caso», controle 7) só depois do
+registro fechado.
 
 ## Acionamento jurídico
 
@@ -168,5 +169,4 @@ vazado) + seção 4 para `RAIOX_OFFICE_SYNC_SECRET`, porque exercita banco, fun�
 - Carlos: ensaio registrado acima; contato do advogado; conferir quem tem acesso aos painéis
   (Supabase, Vercel, Resend, Telegram, RapidAPI).
 - Advogado: critério e prazo de comunicação ao titular e à ANPD; textos.
-- Código: botão de revogação do Escritório levar ao Supabase (F8) e expurgo (controle 7) entram
-  neste roteiro quando existirem.
+- Código: botão de revogação do Escritório levar ao Supabase (F8).

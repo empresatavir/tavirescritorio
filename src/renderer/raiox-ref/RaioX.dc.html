@@ -169,6 +169,7 @@
       <button class="btn secondary" onClick="{{openEvidence}}">Registrar evidência</button>
       <button class="btn secondary" onClick="{{openEdit}}">Editar caso</button>
       <sc-if value="{{canRevoke}}" hint-placeholder-val="{{true}}"><button class="btn ghost" onClick="{{openRevoke}}" title="O titular pediu para retirar a autorização">Registrar revogação</button></sc-if>
+      <button class="btn ghost" onClick="{{openPurge}}" title="Apaga o caso aqui, nos motores e nas cópias exportadas, com relatório de ausência">Expurgar caso</button>
       <button class="btn ghost" onClick="{{removeCase}}">Excluir</button>
       <button class="btn primary" onClick="{{openFolder}}">Abrir pasta</button>
     </div>
@@ -532,6 +533,30 @@
   </div></div>
 </sc-if>
 
+<sc-if value="{{modalPurge}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Expurgar caso" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Expurgar caso</h2><p>Apaga o caso deste computador, as conversas dos motores sobre ele e as cópias exportadas, confere de novo e guarda um relatório sem dado pessoal. Não tem volta.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <sc-if value="{{purgeLoading}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 13px">Procurando o que o caso deixou…</p></sc-if>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <sc-for list="{{purgeAreas}}" as="a" hint-placeholder-count="4">
+          <div style="display: flex; gap: 10px; align-items: baseline; font-size: 13px"><strong style="min-width: 76px; color: {{a.color}}">{{a.tag}}</strong><div class="grow"><div>{{a.area}} <span class="muted">{{a.count}}</span></div><small class="muted">{{a.note}}</small></div></div>
+        </sc-for>
+      </div>
+      <sc-if value="{{purgeAsking}}" hint-placeholder-val="{{true}}">
+        <label class="field"><span>Motivo *</span><select class="input" value="{{purgeForm.reason}}" onChange="{{onPurgeReason}}"><option value="">Escolha</option><sc-for list="{{purgeReasons}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></label>
+        <label class="field"><span>Digite {{purgeCaseId}} para confirmar *</span><input class="input" value="{{purgeForm.confirm}}" onChange="{{onPurgeConfirm}}" autocomplete="off"></label>
+      </sc-if>
+      <sc-if value="{{purgeDone}}" hint-placeholder-val="{{false}}"><p style="font-size: 13px">{{purgeDoneText}}</p></sc-if>
+    </div>
+    <div class="mfoot">
+      <sc-if value="{{purgeAsking}}" hint-placeholder-val="{{true}}"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{submitPurge}}">Expurgar</button></sc-if>
+      <sc-if value="{{purgeDone}}" hint-placeholder-val="{{false}}"><button class="btn primary" onClick="{{finishPurge}}">Fechar</button></sc-if>
+    </div>
+  </div></div>
+</sc-if>
+
 <sc-if value="{{modalEdit}}" hint-placeholder-val="{{false}}">
   <div class="back" onClick="{{modalBg}}"><div class="modal lg" role="dialog" aria-modal="true" aria-label="Editar caso" onClick="{{modalStop}}">
     <div class="mhead"><div class="grow"><h2>Editar caso</h2><p>{{editLead}}</p></div></div>
@@ -616,6 +641,8 @@ const STATUS_NOTE = {
 const REMOTE_LABEL = { draft: 'Rascunho', form_1_sent: 'Convite enviado', form_1_received: 'Formulário 1 recebido', form_2_sent: 'Formulário 2 enviado', form_2_received: 'Formulário recebido', awaiting_approval: 'Aguardando autorizar análise', analysing: 'Em análise', review: 'Documentos em revisão', ready: 'Pronto para entregar', sent: 'Entregue', closed: 'Encerrado' };
 const ORIGIN_LABEL = { amigo: 'Amigo', rua: 'Rua', formulario: 'Formulário', indicacao: 'Indicação' };
 // Mesmos canais de RAIOX_OPTIN_CHANNELS (src/shared/raiox.ts).
+const PURGE_REASONS = [{ id: 'pedido_titular', label: 'Pedido do titular' }, { id: 'retencao', label: 'Fim do prazo de retenção' }, { id: 'ensaio', label: 'Ensaio com caso fictício' }];
+const PURGE_TAG = { limpo: ['Apagado', 'var(--success, #2f7d4f)'], pendente: ['Pendente', 'var(--warning, #a86b00)'], manual: ['Conferir', 'var(--danger)'] };
 const REVOKE_CHANNELS = [{ id: 'whatsapp', label: 'WhatsApp' }, { id: 'telefone', label: 'Telefone' }, { id: 'presencial', label: 'Presencial' }, { id: 'videochamada', label: 'Videochamada' }, { id: 'email', label: 'E-mail' }];
 const MODE_DAYS = { estudo_rapido: '1 dia', diagnostico: '3 dias', completo: '7 dias' };
 const CLASS_META = { observado: ['Observado', 'flow', 'var(--flow)'], informado: ['Informado', '', 'var(--text-muted)'], inferido: ['Inferido', 'warn', 'var(--warning)'], indisponivel: ['Indisponível', 'danger', 'var(--danger)'] };
@@ -1599,6 +1626,45 @@ class Component extends DCLogic {
         if (!api || !current || !api.raiox.revoke) return;
         const when = form.requestedAt ? new Date(form.requestedAt).toISOString() : '';
         api.raiox.revoke(current.id, { channel: form.channel || '', requestedAt: when, note: form.note || '' }).then(refreshOpen).catch(function () { fail(); });
+      },
+      modalPurge: s.modal === 'purge',
+      purgeLoading: s.modal === 'purge' && !s.purgeAreas && !s.purgeReport,
+      purgeAsking: s.modal === 'purge' && !s.purgeReport,
+      purgeDone: Boolean(s.purgeReport),
+      purgeCaseId: current ? current.id : '',
+      purgeReasons: PURGE_REASONS,
+      purgeForm: s.purgeForm || { reason: '', confirm: '' },
+      purgeAreas: ((s.purgeReport && s.purgeReport.areas) || s.purgeAreas || []).map(function (a) {
+        const tag = s.purgeReport ? (PURGE_TAG[a.status] || PURGE_TAG.manual) : (a.status === 'limpo' ? ['Vai apagar', 'inherit'] : (PURGE_TAG[a.status] || PURGE_TAG.manual));
+        const count = s.purgeReport ? (a.found ? '· ' + a.removed + ' de ' + a.found + ' apagado(s)' : '') : (a.found ? '· ' + a.found + ' item(ns)' : '· nada encontrado');
+        return { area: a.area, note: a.note, tag: tag[0], color: tag[1], count: count };
+      }),
+      purgeDoneText: s.purgeReport
+        ? (s.purgeReport.complete ? 'Expurgo completo: tudo apagado e conferido. Relatório guardado em expurgos/.' : 'Expurgo local feito e conferido. Os itens marcados como Pendente ou Conferir ficam com o Carlos; o relatório guardado em expurgos/ registra cada um.')
+        : '',
+      openPurge: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.purgePreview) return;
+        self.setState({ modal: 'purge', error: '', purgeAreas: null, purgeReport: null, purgeForm: { reason: '', confirm: '' } });
+        api.raiox.purgePreview(current.id).then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          self.setState({ purgeAreas: res.preview.areas });
+        }).catch(function () { fail(); });
+      },
+      onPurgeReason: function (event) { self.setState({ purgeForm: Object.assign({}, s.purgeForm, { reason: event.target.value }) }); },
+      onPurgeConfirm: function (event) { self.setState({ purgeForm: Object.assign({}, s.purgeForm, { confirm: event.target.value }) }); },
+      submitPurge: function () {
+        const api = tavirApi();
+        const form = s.purgeForm || {};
+        if (!api || !current || !api.raiox.purge) return;
+        api.raiox.purge(current.id, { reason: form.reason || '', confirm: form.confirm || '' }).then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          self.setState({ purgeReport: res.report, error: '' });
+        }).catch(function () { fail(); });
+      },
+      finishPurge: function () {
+        self.setState({ caseId: null, openCase: null, modal: null, purgeReport: null, purgeAreas: null });
+        if (self.reload) self.reload();
       },
       modalRm: s.modal === 'remove',
       modalBg: function (event) { if (event && event.target !== event.currentTarget) return; self.setState({ modal: null, error: '', removeId: null }); },

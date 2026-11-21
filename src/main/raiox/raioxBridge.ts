@@ -5,6 +5,7 @@ import { RaioxError, caseIdFromUuid, createCase } from './raioxRules';
 import { listCases, writeCase } from './raioxStore';
 import { repoRoot } from './raioxContext';
 import { readVendorCatalog, recordVendor } from './vendors';
+import { purgedRemoteIds } from './purge';
 
 const USER_AGENT = 'TAVIR-Escritorio-RaioX/1.0';
 const HOST = 'skcbjwqajdovxlsxeszv.supabase.co';
@@ -220,7 +221,10 @@ export async function syncCases(deps: SyncDeps = {}): Promise<{ ok: true; create
   const catalog = readVendorCatalog(deps.repo ?? repoRoot());
   let created = 0;
   let updated = 0;
+  // G-PR1 controle 7: caso expurgado não volta pelo sync, mesmo que o Supabase ainda o tenha.
+  const purged = purgedRemoteIds(root);
   for (const item of remote) {
+    if (purged.has(item.id)) continue;
     const existing = byRemote.get(item.id);
     if (existing) {
       const next: RaioxCase = {
