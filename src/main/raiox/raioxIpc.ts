@@ -38,7 +38,8 @@ import {
   checkStep,
 } from './raioxRules';
 import { createOrAbsorbProjectRecord } from '../project-fs';
-import { syncCases } from './raioxBridge';
+import { continueRemote, syncCases, writeAnalysisInput } from './raioxBridge';
+import { grantRelease, readReleases, revokeRelease, type RaioxReleaseKind } from './releases';
 import { analyse, analysisLive, collectLocalFor, stopAnalyse } from './raioxAnalyse';
 import { documentPath, documentsBusy, renderPdfs, stopDocuments, writeDocuments } from './raioxDocs';
 import { listRuns, readRun } from '../runLedger';
@@ -198,6 +199,65 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:sync', async () => {
     try {
       return await syncCases({ root: raioxRoot() });
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  // F8 T8.1 — liberações (só por clique do Carlos com a frase) e escrita no Supabase.
+  handle('raiox:releases', () => {
+    try {
+      return { ok: true, releases: readReleases(raioxRoot()) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:grantRelease', (_e, kind: RaioxReleaseKind, phrase: string) => {
+    try {
+      return { ok: true, releases: grantRelease(raioxRoot(), kind, String(phrase || ''), new Date().toISOString()) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:revokeRelease', (_e, kind: RaioxReleaseKind) => {
+    try {
+      if (kind !== 'escritaSupabase' && kind !== 'emailExterno') throw new RaioxError('Liberação desconhecida.');
+      return { ok: true, releases: revokeRelease(raioxRoot(), kind) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:remoteForm2', async (_e, id: string) => {
+    try {
+      const root = raioxRoot();
+      const current = readCase(root, id);
+      assertActive(current);
+      if (!current.remote?.supabaseId) throw new RaioxError('Este caso não veio do formulário.');
+      const out = await continueRemote(current.remote.supabaseId, 'form2', { root });
+      if (out.action !== 'form2') throw new RaioxError('Resposta inesperada do Supabase.');
+      const latest = readCase(root, id);
+      assertActive(latest);
+      return mutate(id, (c) => ({ ...c, remote: { ...c.remote!, formUrl: out.formUrl }, updatedAt: new Date().toISOString() }));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:remoteAnalyse', async (_e, id: string) => {
+    try {
+      const root = raioxRoot();
+      const current = readCase(root, id);
+      assertActive(current);
+      if (!current.remote?.supabaseId) throw new RaioxError('Este caso não veio do formulário.');
+      const out = await continueRemote(current.remote.supabaseId, 'analyse', { root });
+      if (out.action !== 'analyse') throw new RaioxError('Resposta inesperada do Supabase.');
+      // Revogação registrada enquanto a função respondia: o pacote não entra.
+      assertActive(readCase(root, id));
+      writeAnalysisInput(root, id, out.packet);
+      return saved(readCase(root, id));
     } catch (err) {
       return fail(err);
     }

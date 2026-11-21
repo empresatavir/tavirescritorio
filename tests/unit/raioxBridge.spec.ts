@@ -4,10 +4,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { RAIOX_CATALOG } from '../../src/shared/raiox';
 import {
-  continueCase,
-  deliveryCase,
-  inviteCase,
-  reviewCase,
+  continueRemote,
   syncCases,
   type RaioxSyncConfig,
 } from '../../src/main/raiox/raioxBridge';
@@ -19,7 +16,6 @@ const SECRET = 'a'.repeat(32);
 const NOW = '2026-11-09T18:00:00.000Z';
 const LATER = '2026-11-09T19:00:00.000Z';
 const REMOTE_ID = 'e7c28036-77da-43da-bfd4-5c51eb908253';
-const LOCKED = 'Escrita no Supabase liberada só após o corte (CP-9).';
 
 const dirs: string[] = [];
 
@@ -202,10 +198,10 @@ describe('ponte de leitura do Raio-X', () => {
     expect(listCases(root).find((item) => item.id === 'RX-E7C28036')?.remote?.revoked).toBe(true);
   });
 
-  it('declara a escrita e recusa chamá-la', () => {
-    expect(() => continueCase()).toThrow(new RaioxError(LOCKED));
-    expect(() => reviewCase()).toThrow(LOCKED);
-    expect(() => deliveryCase()).toThrow(LOCKED);
-    expect(() => inviteCase()).toThrow(LOCKED);
+  it('escrita sem a liberação do CP-10 recusa sem chamar a rede', async () => {
+    const root = tempRoot();
+    const fetchImpl = (async () => { throw new Error('não deveria chamar'); }) as typeof fetch;
+    await expect(continueRemote(REMOTE_ID, 'form2', { root, fetchImpl })).rejects.toThrow(RaioxError);
+    await expect(continueRemote(REMOTE_ID, 'form2', { root, fetchImpl })).rejects.toThrow(/liberado CP-10/);
   });
 });

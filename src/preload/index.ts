@@ -365,6 +365,11 @@ const api: TavirApi = {
     revoke: (id: string, input: { channel: string; requestedAt?: string; note?: string }) => ipcRenderer.invoke('raiox:revoke', id, input),
     purgePreview: (id: string) => ipcRenderer.invoke('raiox:purgePreview', id),
     purge: (id: string, input: { reason: string; confirm: string }) => ipcRenderer.invoke('raiox:purge', id, input),
+    releases: () => ipcRenderer.invoke('raiox:releases'),
+    grantRelease: (kind: string, phrase: string) => ipcRenderer.invoke('raiox:grantRelease', kind, phrase),
+    revokeRelease: (kind: string) => ipcRenderer.invoke('raiox:revokeRelease', kind),
+    remoteForm2: (id: string) => ipcRenderer.invoke('raiox:remoteForm2', id),
+    remoteAnalyse: (id: string) => ipcRenderer.invoke('raiox:remoteAnalyse', id),
     onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => {
       const handler = (_e: Electron.IpcRendererEvent, progress: { id: string; speech: string; activity: string; running: boolean }) => callback(progress);
       ipcRenderer.on('raiox:progress', handler);

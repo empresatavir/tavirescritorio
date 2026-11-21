@@ -83,6 +83,7 @@
       <p>Leitura de presença, atendimento e oferta antes de vender. Nenhuma proposta sai sem caso aberto e evidência classificada.</p>
     </div>
     <div class="actions">
+      <button class="btn ghost" onClick="{{openReleases}}" title="Escrita no Supabase (CP-10) e e-mail externo (CP-12)">Liberações</button>
       <button class="btn secondary" onClick="{{syncForms}}">Sincronizar formulários</button>
       <button class="btn primary" onClick="{{newCase}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Novo caso</button>
     </div>
@@ -179,6 +180,22 @@
       <b style="color: var(--danger)">Autorização revogada pelo titular</b>
       <span class="muted" style="font-size: 13px">{{revokedText}}</span>
       <span class="muted" style="font-size: 13px">Nenhuma etapa nova roda: análise, redação, PDF, entrega e execução ficam travadas. O caso pode ser lido e expurgado.</span>
+    </section>
+  </sc-if>
+  <sc-if value="{{hasRemoteCase}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+        <b>Formulário no Supabase</b><span class="badge">{{remoteStatus}}</span>
+        <span class="muted" style="font-size: 13px">{{remoteEmail}}</span>
+        <div class="grow"></div>
+        <button class="btn secondary" onClick="{{remoteForm2}}">Gerar formulário 2</button>
+        <button class="btn secondary" onClick="{{remoteAnalyse}}">Autorizar análise</button>
+      </div>
+      <sc-if value="{{hasRemoteForm}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; gap: 8px; align-items: center"><input class="input" readonly value="{{remoteFormUrl}}" style="flex: 1; font-size: 12px"><button class="btn ghost" onClick="{{copyRemoteForm}}">Copiar link</button></div>
+        <small class="muted">Link pessoal do formulário 2. Mande só para o e-mail confirmado do caso.</small>
+      </sc-if>
+      <sc-if value="{{hasRemoteNote}}" hint-placeholder-val="{{false}}"><small class="muted">{{remoteNote}}</small></sc-if>
     </section>
   </sc-if>
   <section class="card rx-live {{live.cls}}">
@@ -533,6 +550,27 @@
   </div></div>
 </sc-if>
 
+<sc-if value="{{modalReleases}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Liberações" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Liberações do Raio-X</h2><p>Escrita no Supabase e e-mail para fora da TAVIR ficam desligados até você liberar, com a mesma frase do checkpoint.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 14px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <sc-for list="{{releaseRows}}" as="r" hint-placeholder-count="2">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div style="display: flex; gap: 8px; align-items: center"><b>{{r.title}}</b><span class="badge">{{r.state}}</span></div>
+          <small class="muted">{{r.help}}</small>
+          <div style="display: flex; gap: 8px">
+            <input class="input" style="flex: 1" placeholder="{{r.phrase}}" value="{{r.typed}}" onChange="{{r.onType}}" autocomplete="off">
+            <button class="btn primary" onClick="{{r.grant}}">Liberar</button>
+            <button class="btn ghost" onClick="{{r.revoke}}">Desligar</button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Fechar</button></div>
+  </div></div>
+</sc-if>
+
 <sc-if value="{{modalPurge}}" hint-placeholder-val="{{false}}">
   <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Expurgar caso" onClick="{{modalStop}}">
     <div class="mhead"><div class="grow"><h2>Expurgar caso</h2><p>Apaga o caso deste computador, as conversas dos motores sobre ele e as cópias exportadas, confere de novo e guarda um relatório sem dado pessoal. Não tem volta.</p></div></div>
@@ -641,6 +679,11 @@ const STATUS_NOTE = {
 const REMOTE_LABEL = { draft: 'Rascunho', form_1_sent: 'Convite enviado', form_1_received: 'Formulário 1 recebido', form_2_sent: 'Formulário 2 enviado', form_2_received: 'Formulário recebido', awaiting_approval: 'Aguardando autorizar análise', analysing: 'Em análise', review: 'Documentos em revisão', ready: 'Pronto para entregar', sent: 'Entregue', closed: 'Encerrado' };
 const ORIGIN_LABEL = { amigo: 'Amigo', rua: 'Rua', formulario: 'Formulário', indicacao: 'Indicação' };
 // Mesmos canais de RAIOX_OPTIN_CHANNELS (src/shared/raiox.ts).
+const RELEASES = [
+  { id: 'escritaSupabase', title: 'Escrita no Supabase', phrase: 'liberado CP-10', help: 'Convite, formulário 2, análise, aprovação e entrega passam a gravar no Supabase. Libere só no smoke do CP-10.' },
+  { id: 'emailExterno', title: 'E-mail para fora da TAVIR', phrase: 'liberado piloto', help: 'Antes disso, convite e entrega só vão para o domínio do remetente. Libere só no CP-12.' },
+];
+const REMOTE_HINT = { form_1_received: 'Formulário 1 respondido.', form_2_sent: 'Formulário 2 enviado.', form_2_received: 'Formulário 2 respondido: pode autorizar a análise.' };
 const PURGE_REASONS = [{ id: 'pedido_titular', label: 'Pedido do titular' }, { id: 'retencao', label: 'Fim do prazo de retenção' }, { id: 'ensaio', label: 'Ensaio com caso fictício' }];
 const PURGE_TAG = { limpo: ['Apagado', 'var(--success, #2f7d4f)'], pendente: ['Pendente', 'var(--warning, #a86b00)'], manual: ['Conferir', 'var(--danger)'] };
 const REVOKE_CHANNELS = [{ id: 'whatsapp', label: 'WhatsApp' }, { id: 'telefone', label: 'Telefone' }, { id: 'presencial', label: 'Presencial' }, { id: 'videochamada', label: 'Videochamada' }, { id: 'email', label: 'E-mail' }];
@@ -1626,6 +1669,46 @@ class Component extends DCLogic {
         if (!api || !current || !api.raiox.revoke) return;
         const when = form.requestedAt ? new Date(form.requestedAt).toISOString() : '';
         api.raiox.revoke(current.id, { channel: form.channel || '', requestedAt: when, note: form.note || '' }).then(refreshOpen).catch(function () { fail(); });
+      },
+      modalReleases: s.modal === 'releases',
+      openReleases: function () {
+        const api = tavirApi();
+        if (!api || !api.raiox.releases) return;
+        self.setState({ modal: 'releases', error: '', releaseTyped: {} });
+        api.raiox.releases().then(function (res) { if (res && res.ok) self.setState({ releases: res.releases }); else fail(res); }).catch(function () { fail(); });
+      },
+      releaseRows: RELEASES.map(function (r) {
+        const on = s.releases && s.releases[r.id];
+        const typed = (s.releaseTyped || {})[r.id] || '';
+        const done = function (res) { if (!res || !res.ok) return fail(res); self.setState({ releases: res.releases, error: '', releaseTyped: {} }); };
+        return {
+          title: r.title, help: r.help, phrase: 'Digite: ' + r.phrase, typed: typed,
+          state: on ? 'Liberado em ' + new Date(on.at).toLocaleString('pt-BR') : 'Desligado',
+          onType: function (event) { const next = Object.assign({}, s.releaseTyped || {}); next[r.id] = event.target.value; self.setState({ releaseTyped: next }); },
+          grant: function () { const api = tavirApi(); if (api && api.raiox.grantRelease) api.raiox.grantRelease(r.id, typed).then(done).catch(function () { fail(); }); },
+          revoke: function () { const api = tavirApi(); if (api && api.raiox.revokeRelease) api.raiox.revokeRelease(r.id).then(done).catch(function () { fail(); }); },
+        };
+      }),
+      hasRemoteCase: Boolean(current && current.remote && current.remote.supabaseId),
+      remoteStatus: current && current.remote ? (REMOTE_LABEL[current.remote.status] || current.remote.status) : '',
+      remoteEmail: current && current.remote ? (current.remote.emailVerified ? 'E-mail confirmado' : 'E-mail ainda não confirmado') : '',
+      hasRemoteForm: Boolean(current && current.remote && current.remote.formUrl),
+      remoteFormUrl: current && current.remote ? (current.remote.formUrl || '') : '',
+      hasRemoteNote: Boolean(current && current.remote && REMOTE_HINT[current.remote.status]),
+      remoteNote: current && current.remote ? (REMOTE_HINT[current.remote.status] || '') : '',
+      copyRemoteForm: function () {
+        const url = current && current.remote && current.remote.formUrl;
+        if (url && typeof navigator !== 'undefined' && navigator.clipboard) navigator.clipboard.writeText(url).catch(function () {});
+      },
+      remoteForm2: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.remoteForm2) return;
+        api.raiox.remoteForm2(current.id).then(refreshOpen).catch(function () { fail(); });
+      },
+      remoteAnalyse: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.remoteAnalyse) return;
+        api.raiox.remoteAnalyse(current.id).then(refreshOpen).catch(function () { fail(); });
       },
       modalPurge: s.modal === 'purge',
       purgeLoading: s.modal === 'purge' && !s.purgeAreas && !s.purgeReport,
