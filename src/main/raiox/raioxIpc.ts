@@ -41,6 +41,7 @@ import { createOrAbsorbProjectRecord } from '../project-fs';
 import { continueRemote, purgeRemote, revokeRemote, syncCases, writeAnalysisInput } from './raioxBridge';
 import { grantRelease, isReleased, readReleases, revokeRelease, type RaioxReleaseKind } from './releases';
 import { prepareDelivery, sendInvite, sendPreparedDelivery, type InviteRequest } from './raioxSend';
+import { dropInviteRequest, listInviteRequests } from './inviteRequests';
 import { analyse, analysisLive, collectLocalFor, stopAnalyse } from './raioxAnalyse';
 import { documentPath, documentsBusy, renderPdfs, stopDocuments, writeDocuments } from './raioxDocs';
 import { listRuns, readRun } from '../runLedger';
@@ -264,9 +265,30 @@ export function registerRaioxIpc(handle: Handle): void {
     }
   });
 
-  handle('raiox:sendInvite', async (_e, input: InviteRequest) => {
+  handle('raiox:sendInvite', async (_e, input: InviteRequest, requestId?: string) => {
     try {
-      return saved(await sendInvite(input || ({} as InviteRequest), { root: raioxRoot() }));
+      const root = raioxRoot();
+      const created = await sendInvite(input || ({} as InviteRequest), { root });
+      // T8.4: pedido do APK que virou convite sai da lista de pendentes.
+      if (requestId) dropInviteRequest(root, String(requestId));
+      return saved(created);
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:inviteRequests', () => {
+    try {
+      return { ok: true, requests: listInviteRequests(raioxRoot()) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:dropInviteRequest', (_e, id: string) => {
+    try {
+      dropInviteRequest(raioxRoot(), String(id || ''));
+      return { ok: true };
     } catch (err) {
       return fail(err);
     }

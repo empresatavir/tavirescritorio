@@ -20,6 +20,8 @@ import * as path from 'node:path';
 import { deliveryBody } from './officeExec';
 import { ACTION_STUDY, ACTION_VIDEO, IRIS, MAICON, OFFICE_AGENTS, STUDY_OWNERS, isTriage, officeAction, officeAgent, publishedAgents, videoShortcode, type PublishedEngine } from '../shared/officeAgents';
 import { firstStudyLink, studyCode, studySource } from './officeStudy';
+import { inviteRequestFromApk } from './raiox/inviteRequests';
+import { raioxRoot } from './raiox/raioxStore';
 
 export const DESK_KINDS = [
   'task.create', 'task.update', 'task.move', 'task.delete',
@@ -453,6 +455,11 @@ function applyFresh(store: DeskStore, cmd: Command): Outcome {
   }
 
   if (cmd.kind === 'job.create') {
+    // F8 T8.4: convite do Raio-X pedido pelo APK vira pedido pendente no Raio-X; nada é enviado aqui (R4).
+    if (text(p.kind) === 'raiox_convite') {
+      const r = inviteRequestFromApk(raioxRoot(), cmd.id, p.fields, new Date().toISOString());
+      return r.ok ? { status: 'applied', code: 201, body: r.body, ref: r.ref } : reject(400, r.error);
+    }
     if (!store.exec) return reject(503, 'A fila de execução não está ligada neste Escritório');
     const kind = text(p.kind);
     const raw = p.fields && typeof p.fields === 'object' ? (p.fields as Record<string, unknown>) : {};

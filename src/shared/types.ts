@@ -698,7 +698,9 @@ export interface TavirApi {
     remoteAnalyse: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     prepareDelivery: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     sendDelivery: (id: string, email: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
-    sendInvite: (input: { company: string; contact: string; email: string; optin: { channel: string; obtainedAt: string; policyVersion: string; operator: string } }) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    sendInvite: (input: { company: string; contact: string; email: string; optin: { channel: string; obtainedAt: string; policyVersion: string; operator: string } }, requestId?: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    inviteRequests: () => Promise<{ ok: true; requests: { id: string; at: string; origin: 'apk'; company: string; contact: string; email: string; optin: { channel: string; obtainedAt: string; policyVersion: string; operator: string } }[] } | { ok: false; error: string }>;
+    dropInviteRequest: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>;
     pushRevocation: (id: string) => Promise<{ ok: true; case: RaioxScreenCase; warning?: string } | { ok: false; error: string }>;
     onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => () => void;
     playbooks: () => Promise<

@@ -92,6 +92,19 @@
   <sc-if value="{{hasSyncError}}" hint-placeholder-val="{{false}}">
     <p style="color: var(--danger); font-size: 13px; margin: 0">{{syncError}}</p>
   </sc-if>
+  <sc-if value="{{hasInviteRequests}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+      <b>Convites pedidos pelo app</b>
+      <small class="muted">Nada foi enviado. Confira os dados e o aceite antes de mandar.</small>
+      <sc-for list="{{inviteRequests}}" as="r" hint-placeholder-count="1">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px">
+          <div class="grow"><b>{{r.company}}</b> · {{r.contact}} · {{r.email}}<br><span class="muted">{{r.optin}}</span></div>
+          <button class="btn secondary sm" onClick="{{r.review}}">Revisar e enviar</button>
+          <button class="btn ghost sm" onClick="{{r.drop}}">Descartar</button>
+        </div>
+      </sc-for>
+    </section>
+  </sc-if>
 
   <section class="card rx-pub">
     <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="eyebrow">Site público</span><span class="badge">não sobe sozinho</span></div>
@@ -852,6 +865,11 @@ class Component extends DCLogic {
         api.raiox.playbooks().then(function (res) {
           if (!self._alive || !res || !res.ok) return;
           self.setState({ playbooks: res.playbooks || [] });
+        }).catch(function () {});
+      }
+      if (api.raiox.inviteRequests) {
+        api.raiox.inviteRequests().then(function (res) {
+          if (self._alive && res && res.ok) self.setState({ inviteRequests: res.requests || [] });
         }).catch(function () {});
       }
       api.raiox.catalog().then(function (res) {
@@ -1727,7 +1745,26 @@ class Component extends DCLogic {
       avisoVersao: AVISO_VERSAO,
       invForm: s.invForm || blankInvite(),
       invOff: (function () { const f = s.invForm || blankInvite(); return !(f.company && f.contact && f.email && f.channel && f.when && f.operator && f.notice); })(),
-      openInvite: function () { self.setState({ modal: 'invite', error: '', invForm: blankInvite() }); },
+      openInvite: function () { self.setState({ modal: 'invite', error: '', invForm: blankInvite(), invRequestId: null }); },
+      hasInviteRequests: (s.inviteRequests || []).length > 0,
+      inviteRequests: (s.inviteRequests || []).map(function (r) {
+        const chan = (REVOKE_CHANNELS.find(function (o) { return o.id === r.optin.channel; }) || { label: r.optin.channel }).label;
+        const pad = function (n) { return String(n).padStart(2, '0'); };
+        const d = new Date(r.optin.obtainedAt);
+        const local = isNaN(d.getTime()) ? '' : d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+        return {
+          company: r.company, contact: r.contact, email: r.email,
+          optin: 'Aceite por ' + chan + (local ? ' em ' + d.toLocaleString('pt-BR') : '') + ' · aviso ' + r.optin.policyVersion + ' · registrado por ' + r.optin.operator,
+          // O aviso fica desmarcado: o Carlos confirma de novo antes de mandar.
+          review: function () { self.setState({ modal: 'invite', error: '', invRequestId: r.id, invForm: { company: r.company, contact: r.contact, email: r.email, channel: r.optin.channel, when: local, operator: r.optin.operator, notice: false } }); },
+          drop: function () {
+            const api = tavirApi();
+            if (!api || !api.raiox.dropInviteRequest) return;
+            if (window.confirm && !window.confirm('Descartar o pedido de convite de ' + r.company + '? Nada foi enviado.')) return;
+            api.raiox.dropInviteRequest(r.id).then(function (res) { if (!res || !res.ok) return fail(res); if (self.reload) self.reload(); }).catch(function () { fail(); });
+          },
+        };
+      }),
       onInvCompany: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { company: event.target.value }) }); },
       onInvContact: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { contact: event.target.value }) }); },
       onInvEmail: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { email: event.target.value }) }); },
@@ -1740,7 +1777,7 @@ class Component extends DCLogic {
         const f = s.invForm || blankInvite();
         if (!api || !api.raiox.sendInvite || !f.notice) return;
         const optin = { channel: f.channel, obtainedAt: f.when ? new Date(f.when).toISOString() : '', policyVersion: AVISO_VERSAO, operator: f.operator };
-        api.raiox.sendInvite({ company: f.company, contact: f.contact, email: f.email, optin: optin }).then(function (res) {
+        api.raiox.sendInvite({ company: f.company, contact: f.contact, email: f.email, optin: optin }, s.invRequestId || undefined).then(function (res) {
           if (!res || !res.ok) return fail(res);
           self.setState({ modal: null, error: '', invForm: null, caseId: res.case.id, openCase: res.case });
           if (self.reload) self.reload();
