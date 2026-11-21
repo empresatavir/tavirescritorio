@@ -48,6 +48,55 @@ function validateStructuredAnswers(answers) {
   return true;
 }
 
+// G-PR1 controle 5: o formulário recusa link de rede interna, arquivo compartilhado ou com credencial,
+// e texto com CPF, cartão ou senha. A checagem de DNS e redirect roda no Escritório antes da análise.
+const FILE_HOSTS = /(^|\.)(drive\.google\.com|docs\.google\.com|dropbox\.com|dropboxusercontent\.com|wetransfer\.com|we\.tl|onedrive\.live\.com|1drv\.ms|sharepoint\.com|mega\.nz|icloud\.com)$/i;
+const SECRET_PARAM = /^(token|access_token|password|senha|pass|pwd|key|api_?key|secret|auth|session|sid|code)$/i;
+const LOCAL_NAME = /(^localhost$|\.localhost$|\.local$|\.internal$|\.lan$|\.home$|\.corp$|^metadata(\.google\.internal)?$)/i;
+
+export function linkProblem(raw) {
+  let url;
+  try { url = new URL(raw); } catch { return "invalid"; }
+  if (url.protocol !== "https:" && url.protocol !== "http:") return "protocol";
+  if (url.username || url.password) return "credentials";
+  if (url.port && url.port !== "80" && url.port !== "443") return "port";
+  const host = url.hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  if (/^[\d.]+$/.test(host) || host.includes(":")) return "ip";
+  if (LOCAL_NAME.test(host) || !host.includes(".")) return "internal";
+  if (FILE_HOSTS.test(host)) return "file_share";
+  if (/\.(pdf|docx?|xlsx?|pptx?|csv|zip|rar|7z)$/i.test(url.pathname)) return "document";
+  for (const key of url.searchParams.keys()) if (SECRET_PARAM.test(key)) return "secret_param";
+  return null;
+}
+
+function luhnCard(text) {
+  for (const m of text.matchAll(/\b\d{4}[ -]?\d{4}[ -]?\d{4}[ -]?\d{4}\b/g)) {
+    const digits = m[0].replace(/\D/g, "");
+    let sum = 0;
+    for (let i = 0; i < digits.length; i += 1) {
+      let d = Number(digits[digits.length - 1 - i]);
+      if (i % 2 === 1) { d *= 2; if (d > 9) d -= 9; }
+      sum += d;
+    }
+    if (sum % 10 === 0) return true;
+  }
+  return false;
+}
+
+export function forbiddenContent(text) {
+  const value = String(text || "");
+  if (/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/.test(value)) return "cpf";
+  if (luhnCard(value)) return "card";
+  if (/\b(senha|password|passwd|token|api[_ -]?key|secret)\s*[:=]\s*\S+/i.test(value)) return "credential";
+  return null;
+}
+
+function answersAreSafe(answers) {
+  for (const value of Object.values(answers)) if (forbiddenContent(value)) return false;
+  const links = String(answers.links || "").match(/\bhttps?:\/\/[^\s<>"'`)\]]+/gi) || [];
+  return links.every((link) => !linkProblem(link.replace(/[.,;:!?]+$/, "")));
+}
+
 const supabaseServerKey = () => {
   const key = process.env.SUPA_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!key) throw new Error("missing_SUPA_SERVICE_ROLE_KEY");
@@ -120,7 +169,7 @@ export function parseAnswers(body, stage) {
       "tempo_resposta", "canal_fechamento", "mensuracao_status", "frequencia_conteudo",
       "disponibilidade_conteudo", "possui_loja_fisica"];
   if (required.some((key) => !answers[key]) || answers.website || answers.consentimento_publico !== "on" || answers.consentimento_email !== "on"
-      || !validateStructuredAnswers(answers)) return null;
+      || !validateStructuredAnswers(answers) || !answersAreSafe(answers)) return null;
   if (stage === 1 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answers.email)) return null;
   if (stage === 2 && answers.possui_loja_fisica === "Sim" && (!answers.endereco || !answers.google_perfil_status)) return null;
   const localFields = ["endereco", "google_perfil_status", "area_atendida", "horarios_funcionamento",

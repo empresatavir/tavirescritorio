@@ -107,3 +107,22 @@ test("chave secreta nova não é repetida no bearer", () => {
   assert.equal(headers.apikey, "sb_secret_test");
   assert.equal(headers.Authorization, undefined);
 });
+
+test("G-PR1 controle 5: formulário recusa link inseguro e dado proibido", async () => {
+  const { linkProblem, forbiddenContent } = await import("../api/_raiox.mjs");
+  const withLinks = (links) => parseAnswers({ ...stageOne, links }, 1);
+  assert.ok(withLinks("https://instagram.com/lojapiloto\nhttps://www.google.com/maps/place/Loja"));
+  for (const bad of [
+    "http://localhost:3000/admin", "http://127.0.0.1/", "http://10.0.0.5/painel", "http://[::1]/",
+    "https://user:pw@loja.com.br/", "https://drive.google.com/file/d/abc", "https://loja.com.br/contrato.pdf",
+    "https://loja.com.br/?token=abc", "http://metadata.google.internal/", "https://loja.com.br:8443/",
+  ]) {
+    assert.ok(linkProblem(bad), bad);
+    assert.equal(withLinks(bad), null, bad);
+  }
+  assert.equal(forbiddenContent("CPF 123.456.789-09"), "cpf");
+  assert.equal(forbiddenContent("cartão 4111 1111 1111 1111"), "card");
+  assert.equal(forbiddenContent("senha: abc123"), "credential");
+  assert.equal(forbiddenContent("WhatsApp +55 21 96501-4443"), null);
+  assert.equal(parseAnswers({ ...stageOne, objetivo: "meu CPF 123.456.789-09" }, 1), null);
+});

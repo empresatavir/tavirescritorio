@@ -24,6 +24,7 @@ import {
   type RaioxStage,
   type RaioxStepCheck,
 } from '../../shared/raiox';
+import { extractLinks, forbiddenContent, shapeProblem } from './linkGuard';
 
 export class RaioxError extends Error {
   constructor(message: string) {
@@ -110,6 +111,23 @@ function optional(value: string | undefined | null): string | undefined {
 function writable(c: RaioxCase): RaioxCase {
   if (c.legacy) throw new RaioxError('Caso legado é somente leitura.');
   return structuredClone(c);
+}
+
+/** G-PR1 controle 5: o caso não guarda CPF, cartão ou credencial, e o link público tem de ser aceitável. */
+function assertSafeCase(c: RaioxCase): void {
+  const fields: [string, string | undefined][] = [
+    ['empresa', c.company], ['contato', c.contact], ['objetivo', c.objective],
+    ['decisão', c.decisionNeeded], ['fronteira', c.frontier], ['segmento', c.segment],
+    ['link público', c.publicLink], ['nota do consentimento', c.consent?.note],
+  ];
+  for (const [label, value] of fields) {
+    const found = forbiddenContent(value || '');
+    if (found) throw new RaioxError(`O campo ${label} tem ${found}. Esse dado não entra no Raio-X: apague antes de salvar.`);
+  }
+  for (const link of extractLinks([c.publicLink, c.frontier, c.objective, c.decisionNeeded].join('\n'))) {
+    const problem = shapeProblem(link);
+    if (problem) throw new RaioxError(`Link não aceito (${problem}): ${link}`);
+  }
 }
 
 function finish(c: RaioxCase, now: string): RaioxCase {
@@ -221,6 +239,7 @@ export function createCase(input: RaioxCaseInput, now: string, uuid: string): Ra
     createdAt: now,
     updatedAt: now,
   };
+  assertSafeCase(c);
   return finish(c, now);
 }
 
@@ -248,6 +267,7 @@ export function updateFrontier(c: RaioxCase, patch: Partial<RaioxCaseInput>, now
   if (patch.segment !== undefined) next.segment = optional(patch.segment);
   if (patch.publicLink !== undefined) next.publicLink = optional(patch.publicLink);
   if (patch.consent !== undefined) next.consent = patch.consent;
+  assertSafeCase(next);
   return finish(next, now);
 }
 

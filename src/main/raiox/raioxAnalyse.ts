@@ -10,7 +10,8 @@ import { buildContext, repoRoot } from './raioxContext';
 import { suggestionShape } from './raioxDocLint';
 import { RaioxError, addEvidence, addHypotheses } from './raioxRules';
 import { caseDir, readCase, writeCase } from './raioxStore';
-import { ensureLocal, saveTarget, wantsLocal, type LocalResult } from './localBusiness';
+import { ensureLocal, readTarget, saveTarget, wantsLocal, type LocalResult } from './localBusiness';
+import { shapeProblem, verifyCaseLinks, type LinkReport } from './linkGuard';
 import { getBundle } from '../credentials';
 import type { RaioxCase } from '../../shared/raiox';
 
@@ -36,6 +37,8 @@ export interface AnalyseDeps {
   note?: string;
   /** Consulta da ficha do Google antes do motor. Nos testes, só roda se for injetada. */
   local?: (c: RaioxCase) => Promise<LocalResult>;
+  /** Checagem dos links antes do motor (G-PR1 controle 5). Nos testes, só roda se for injetada. */
+  links?: (c: RaioxCase) => Promise<LinkReport>;
 }
 
 export function rapidKeys(): string[] {
@@ -44,7 +47,11 @@ export function rapidKeys(): string[] {
 }
 
 export function collectLocalFor(root: string, c: RaioxCase, force = false, mapsUrl = ''): Promise<LocalResult> {
-  if (mapsUrl.trim()) saveTarget(caseDir(root, c.id), mapsUrl);
+  if (mapsUrl.trim()) {
+    const problem = /^https?:/i.test(mapsUrl.trim()) ? shapeProblem(mapsUrl.trim()) : null;
+    if (problem) throw new RaioxError(`Link do Maps não aceito (${problem}).`);
+    saveTarget(caseDir(root, c.id), mapsUrl);
+  }
   return ensureLocal(root, c, { keys: rapidKeys, force });
 }
 
@@ -80,6 +87,25 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     throw new RaioxError('Preencha a fronteira e o link público antes da análise.');
   }
   if (live.get(id)?.running) throw new RaioxError('Já existe uma análise em andamento neste caso.');
+
+  const verify = deps.links ?? (deps.run ? null : (c: RaioxCase) => {
+    const target = readTarget(caseDir(root, id));
+    return verifyCaseLinks(caseDir(root, id), c, target ? [target.mapsUrl] : []);
+  });
+  if (verify) {
+    live.set(id, { running: true, speech: '', activity: 'Conferindo os links do caso' });
+    deps.onProgress?.({ id, speech: '', activity: 'Conferindo os links do caso', running: true });
+    let report: LinkReport;
+    try {
+      report = await verify(current);
+    } finally {
+      live.delete(id);
+    }
+    if (report.blocked.length) {
+      const lines = report.blocked.map((item) => `${item.url} (${item.reason})`).join('; ');
+      throw new RaioxError(`A análise não começou: link bloqueado pela checagem de segurança. ${lines}. Corrija o link no caso e tente de novo.`);
+    }
+  }
 
   const repo = deps.repo || repoRoot();
   const before = (deps.gitStatus ?? (() => porcelain(repo)))();
