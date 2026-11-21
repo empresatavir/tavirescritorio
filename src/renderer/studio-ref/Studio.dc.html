@@ -251,15 +251,16 @@
               <div style="display: flex; align-items: center"><span class="eyebrow">Pacote · Paulo Publicador</span><div class="grow"></div><span class="num muted" style="font-size: 12px">{{capLen}} / 2.200</span></div>
               <label class="field"><span>Legenda</span><textarea class="input" rows="4" value="{{caption}}" onChange="{{onCaption}}"></textarea></label>
               <label class="field"><span>Hashtags · {{tagCount}} / 5</span><input class="input" value="{{tagText}}" onChange="{{onTags}}" aria-label="Hashtags"></label>
-              <label class="field"><span>Quando publicar</span><input class="input" value="{{when}}" onChange="{{onWhen}}" aria-label="Quando publicar"></label>
+              <sc-if value="{{whenManual}}" hint-placeholder-val="{{false}}"><label class="field"><span>Quando publicar</span><input class="input" value="{{when}}" onChange="{{onWhen}}" aria-label="Quando publicar"></label></sc-if>
+              <sc-if value="{{isFlowFmt}}" hint-placeholder-val="{{true}}"><p class="muted" style="font-size: 12px">Data, hora e ativação da agenda ficam no Flow.</p></sc-if>
             </div>
-            <sc-if value="{{notConfirming}}" hint-placeholder-val="{{true}}"><div class="actions"><button class="btn secondary" onClick="{{buildPack}}">Montar pacote</button><button class="btn secondary" onClick="{{openPack}}">Abrir pasta</button><sc-if value="{{isLong}}" hint-placeholder-val="{{false}}"><button class="btn secondary" onClick="{{sendEdition}}">Enviar para Edição</button></sc-if><button class="btn primary" onClick="{{askPublish}}">Enviar para publicação</button><span class="muted" style="font-size: 12px">Publicar passa por um gate seu.</span></div></sc-if>
+            <sc-if value="{{notConfirming}}" hint-placeholder-val="{{true}}"><div class="actions"><button class="btn secondary" onClick="{{buildPack}}">Montar pacote</button><button class="btn secondary" onClick="{{openPack}}">Abrir pasta</button><sc-if value="{{isLong}}" hint-placeholder-val="{{false}}"><button class="btn secondary" onClick="{{sendEdition}}">Enviar para Edição</button></sc-if><button class="btn primary" onClick="{{askPublish}}">{{publishLabel}}</button><span class="muted" style="font-size: 12px">{{publishHint}}</span></div></sc-if>
             <sc-if value="{{confirming}}" hint-placeholder-val="{{false}}">
               <div class="ink" style="padding: 20px 22px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; animation: slideup 220ms var(--ease) both">
                 <span style="width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: rgba(183,243,74,.14); color: #B7F34A; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v6c0 4 3 6.5 7 8 4-1.5 7-4 7-8V6zM9 12l2 2 4-4"></path></svg></span>
-                <div class="grow" style="min-width: 220px"><b>Gate de publicação</b><p class="muted" style="font-size: 13px; margin-top: 2px">Publicar é irreversível. Paulo publica em {{slotLabel}} no perfil {{profName}} e registra no livro-razão.</p></div>
+                <div class="grow" style="min-width: 220px"><b>{{gateTitle}}</b><p class="muted" style="font-size: 13px; margin-top: 2px">{{gateText}}</p></div>
                 <button class="btn sm onink-sec" onClick="{{cancelPublish}}">Voltar</button>
-                <button class="btn sm onink" onClick="{{doPublish}}">Aprovar publicação</button>
+                <button class="btn sm onink" onClick="{{doPublish}}">{{gateBtn}}</button>
               </div>
             </sc-if>
           </section>
@@ -270,13 +271,13 @@
           <section style="display: flex; flex-direction: column; gap: 14px; animation: slideup 260ms var(--ease) both">
             <div class="ink" style="padding: 22px 24px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap">
               <div style="width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; background: #B7F34A; color: #25360a; animation: stamp 420ms var(--ease) both; flex: none"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></div>
-              <div class="grow"><span class="eyebrow">Publicado · {{pubWhen}}</span><h3 style="font-size: 20px; font-weight: 600; margin-top: 4px">{{pc.title}} está no ar</h3><p class="muted" style="font-size: 13px; margin-top: 4px">{{pubNote}}</p></div>
+              <div class="grow"><span class="eyebrow">{{pubEyebrow}}</span><h3 style="font-size: 20px; font-weight: 600; margin-top: 4px">{{pubTitle}}</h3><p class="muted" style="font-size: 13px; margin-top: 4px">{{pubNote}}</p></div>
               <sc-if value="{{isLive}}" hint-placeholder-val="{{false}}"><span class="badge flow"><i class="live-dot" style="width: 6px; height: 6px"></i>ao vivo</span></sc-if>
             </div>
             <div class="g4">
               <sc-for list="{{metrics}}" as="m" hint-placeholder-count="4"><div class="metric"><span class="eyebrow">{{m.k}}</span><strong>{{m.v}}</strong><small>{{m.n}}</small></div></sc-for>
             </div>
-            <div class="card" style="padding: 14px 16px; display: flex; gap: 12px; align-items: center"><span class="sec grow" style="font-size: 13px">—</span><button class="btn sm secondary" onClick="{{newProd}}">Nova produção</button></div>
+            <div class="card" style="padding: 14px 16px; display: flex; gap: 12px; align-items: center"><span class="sec grow" style="font-size: 13px">{{pubFoot}}</span><sc-if value="{{isFlowFmt}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{refreshFlow}}">Atualizar estado</button></sc-if><button class="btn sm secondary" onClick="{{newProd}}">Nova produção</button></div>
           </section>
         </sc-if>
       </section>
@@ -478,6 +479,11 @@ const FORMATS = [
 const STAGE_IDS = ['pauta', 'angulo', 'roteiro', 'arte', 'audio', 'revisao', 'pacote', 'publicado'];
 const STAGE_LABEL = { pauta: 'Pauta', angulo: 'Ângulo', roteiro: 'Roteiro', arte: 'Arte', audio: 'Áudio', revisao: 'Revisão', pacote: 'Pacote', publicado: 'Publicado' };
 const GATES = { angulo: 1, revisao: 1, pacote: 1 };
+// Formatos que vão para o Flow (DarkFlow). Depois do gate do pacote a peça está «No Flow»: só fica publicada quando o Flow publicar (GOAL_FLOW, D2).
+const FLOW_FORMATS = { 'ig-reels-9x16': 1 };
+const FLOW_LABEL = { fora: 'ainda não foi para o Flow', na_biblioteca: 'na biblioteca', rascunho: 'agenda em rascunho', agendada: 'agendada', pausada: 'agenda pausada', publicada: 'publicada', atencao: 'precisa de atenção', falhou: 'a publicação falhou', sem_conexao: 'DarkFlow fora do ar' };
+function stageLabel(id, formato) { return id === 'publicado' && FLOW_FORMATS[formato] ? 'No Flow' : STAGE_LABEL[id]; }
+function flowWhen(iso) { if (!iso) return '—'; var d = new Date(iso); return isNaN(d.getTime()) ? iso : d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' }); }
 const GOALS = ['alcance', 'autoridade', 'conversa'];
 const EMPTY_FORM = { nome: '', iniciais: '', cor: '#1BC5BD', rede: 'instagram', handle: '', formatos: 'ig-carrossel-4x5', posts: '3', publicacao: 'manual', rede2: '', handle2: '', formatos2: '', ink: '#0B1220', accent: '#B7F34A', fonteTitulo: 'Instrument Sans', fonteCorpo: 'Instrument Sans', tom: '', canon: '', imageStyle: '', negatives: '', characters: '', serieNome: '', serieSigla: '', formato: 'ig-carrossel-4x5', titulo: '', tema: '', fonte: '', objetivo: '' };
 
@@ -552,6 +558,15 @@ class Component extends DCLogic {
       }).catch(function () {});
       if (api.sidecars) api.sidecars.list().then(function (rows) { self.setState({ sistemas: rows || [] }); }).catch(function () {});
     }).catch(function (err) { self.setState({ error: err && err.message ? err.message : String(err) }); });
+  }
+  askFlowEstado(id, force) {
+    var self = this;
+    this._flowAsk = this._flowAsk || {};
+    if (this._flowAsk[id] && !force) return;
+    this._flowAsk[id] = true;
+    var api = studioApi();
+    if (!api || !api.flow) return;
+    api.flow.estado(id).then(function (e) { var m = Object.assign({}, self.state.flowEstado || {}); m[id] = e || { situacao: 'sem_conexao' }; self.setState({ flowEstado: m }); });
   }
   after(res) {
     var self = this;
@@ -659,7 +674,7 @@ class Component extends DCLogic {
       var d = new Date(monday); d.setDate(monday.getDate() + i);
       var key = ymd(d);
       var items = mine.filter(function (p) { return (p.agendado_para || '').slice(0, 10) === key; }).map(function (p) {
-        return { h: (p.agendado_para || '').slice(11, 16) || '—', t: p.titulo, s: STAGE_LABEL[p.etapa] || p.etapa, bg: 'transparent', fg: 'var(--text-secondary)', bd: 'var(--line-strong)', pick: function () { self.setState({ tab: 'prod', pecaId: p.id, view: null }); } };
+        return { h: (p.agendado_para || '').slice(11, 16) || '—', t: p.titulo, s: stageLabel(p.etapa, p.formato_id) || p.etapa, bg: 'transparent', fg: 'var(--text-secondary)', bd: 'var(--line-strong)', pick: function () { self.setState({ tab: 'prod', pecaId: p.id, view: null }); } };
       });
       return { w: w, n: String(d.getDate()), color: 'var(--text-muted)', bg: 'var(--surface-0)', bd: 'var(--line)', items: items };
     });
@@ -672,6 +687,20 @@ class Component extends DCLogic {
     var slots = peca && peca.slots ? peca.slots : [];
     var done = slots.filter(function (sl) { return sl.ativo_id; }).length;
     var total = slots.length || slides.length;
+    var isFlowFmt = !!(peca && FLOW_FORMATS[peca.formato_id]);
+    var fe = peca ? (s.flowEstado || {})[peca.id] : null;
+    if (isFlowFmt && peca.etapa === 'publicado' && !fe) this.askFlowEstado(peca.id);
+    var feSit = fe ? fe.situacao : '';
+    var feNote = !fe ? 'Lendo o Flow…'
+      : feSit === 'agendada' ? 'Próxima publicação: ' + flowWhen(fe.quando) + '.'
+      : feSit === 'publicada' ? 'Publicada em ' + flowWhen(fe.quando) + (fe.permalink ? ' · ' + fe.permalink : '') + '.'
+      : feSit === 'rascunho' ? 'A agenda existe, mas ainda falta ativar no Flow.'
+      : feSit === 'na_biblioteca' ? 'Crie a agenda no Flow: data, hora e ativação.'
+      : feSit === 'pausada' ? 'A agenda está pausada no Flow.'
+      : feSit === 'atencao' ? 'O Flow pede revisão: ' + (fe.detalhe || '—') + '.'
+      : feSit === 'falhou' ? 'A publicação falhou' + (fe.detalhe ? ': ' + fe.detalhe : '') + '.'
+      : feSit === 'sem_conexao' ? 'Não consegui ler o DarkFlow' + (fe.detalhe ? ': ' + fe.detalhe : '') + '.'
+      : 'A peça ainda não foi para a biblioteca do Flow.';
     var sv = { s0: viewed === 'pauta', s1: viewed === 'angulo', s2: viewed === 'roteiro', s3: viewed === 'arte', audio: viewed === 'audio', s4: viewed === 'revisao', s5: viewed === 'pacote', s6: viewed === 'publicado' };
     return {
       newProfile: function () { self.setState({ modal: 'perfil', error: '', form: Object.assign({}, EMPTY_FORM) }); },
@@ -716,11 +745,11 @@ class Component extends DCLogic {
       queue: mine.map(function (p) {
         var st = stagesFor(fmtOf(p.formato_id)[3]);
         var at = Math.max(0, st.indexOf(p.etapa));
-        return { fmt: fmtOf(p.formato_id)[2], title: p.titulo, stage: STAGE_LABEL[p.etapa] || p.etapa, due: p.agendado_para || '—', ck: !!GATES[p.etapa], bd: p.id === s.pecaId ? 'var(--flow)' : 'var(--line)', sh: 'none', pick: function () { self.setState({ pecaId: p.id, view: null, pautaDraft: null, selId: p.angulo_escolhido || '' }); }, dots: st.map(function (_, i) { return { bg: i <= at ? 'var(--flow)' : 'var(--line)' }; }) };
+        return { fmt: fmtOf(p.formato_id)[2], title: p.titulo, stage: stageLabel(p.etapa, p.formato_id) || p.etapa, due: p.agendado_para || '—', ck: !!GATES[p.etapa], bd: p.id === s.pecaId ? 'var(--flow)' : 'var(--line)', sh: 'none', pick: function () { self.setState({ pecaId: p.id, view: null, pautaDraft: null, selId: p.angulo_escolhido || '' }); }, dots: st.map(function (_, i) { return { bg: i <= at ? 'var(--flow)' : 'var(--line)' }; }) };
       }),
       pc: { ini: perfil ? perfil.iniciais : '—', fmt: peca ? fmtOf(peca.formato_id)[2] : '—', owner: perfil ? perfil.nome : '—', title: peca ? peca.titulo : 'Nenhuma peça', name: peca ? ('#' + peca.numero) : '—', due: peca && peca.agendado_para ? peca.agendado_para : '—' },
-      steps: stages.map(function (id, i) { return { n: String(i + 1).padStart(2, '0'), label: STAGE_LABEL[id], cls: i < curIndex ? 'done' : i === viewIndex ? 'on' : '', pick: function () { if (i <= curIndex) self.setState({ view: id }); } }; }),
-      past: locked, pastInfo: { t: STAGE_LABEL[viewed] || '', d: 'Etapa já cumprida. Só leitura.' }, backToCurrent: function () { self.setState({ view: null }); }, curStageLabel: STAGE_LABEL[cur] || cur,
+      steps: stages.map(function (id, i) { return { n: String(i + 1).padStart(2, '0'), label: stageLabel(id, peca && peca.formato_id), cls: i < curIndex ? 'done' : i === viewIndex ? 'on' : '', pick: function () { if (i <= curIndex) self.setState({ view: id }); } }; }),
+      past: locked, pastInfo: { t: stageLabel(viewed, peca && peca.formato_id) || '', d: 'Etapa já cumprida. Só leitura.' }, backToCurrent: function () { self.setState({ view: null }); }, curStageLabel: stageLabel(cur, peca && peca.formato_id) || cur,
       sv: sv, locked: locked, custo: s.custo, error: s.error || '', loadingAngles: s.loading,
       needsChrome: !!s.needsChrome, chromeNote: s.chromeNote || '',
       motionStatus: s.motionJob ? (s.motionJob.preset + ' · ' + s.motionJob.status) : 'Nenhum kit pedido',
@@ -816,31 +845,34 @@ class Component extends DCLogic {
       buildPack: function () { var api = studioApi(); if (!api || !api.pacote || !peca) return; self.flushDrafts().then(function () { return api.pacote.build(peca.id); }).then(function (res) { self.after(res); }); },
       openPack: function () { var api = studioApi(); if (!api || !api.pacote || !peca) return; api.pacote.open(peca.id); },
       cancelPublish: function () { self.setState({ confirm: false }); },
-      askPublish: function () {
-        if (peca && peca.formato_id === 'ig-reels-9x16') {
-          var flow = studioApi();
-          if (!flow || !flow.darkflow) return;
-          flow.darkflow.prepare(peca.id).then(function (res) {
-            if (!res || res.ok === false) { self.setState({ error: (res && res.error) || 'não agendou' }); return; }
-            self.setState({ confirm: true, error: '' });
-          });
-          return;
-        }
-        self.setState({ confirm: true });
-      },
+      askPublish: function () { self.setState({ confirm: true, error: '' }); },
       doPublish: function () {
         if (locked) return;
-        if (peca && peca.formato_id === 'ig-reels-9x16') {
+        if (isFlowFmt) {
           var api = studioApi();
-          if (!api || !api.darkflow) return;
-          api.darkflow.activate(peca.id).then(function (res) {
-            if (!res || res.ok === false) { self.setState({ error: (res && res.error) || 'não ativou', confirm: false }); return; }
+          if (!api || !api.flow) return;
+          self.setState({ loading: true, error: '' });
+          self.flushDrafts().then(function () { return api.flow.enviar(peca.id); }).then(function (res) {
+            if (!res || res.ok === false) { self.setState({ error: (res && res.error) || 'não foi para o Flow', confirm: false, loading: false }); return; }
+            self.setState({ loading: false });
             self.gate('aprovado');
           });
           return;
         }
         self.gate('aprovado');
       },
+      isFlowFmt: isFlowFmt, whenManual: !isFlowFmt,
+      publishLabel: isFlowFmt ? 'Enviar para o Flow' : 'Enviar para publicação',
+      publishHint: isFlowFmt ? 'Aprovar o pacote é um gate seu; agendar e ativar ficam no Flow.' : 'Publicar passa por um gate seu.',
+      gateTitle: isFlowFmt ? 'Gate do pacote' : 'Gate de publicação',
+      gateText: isFlowFmt
+        ? 'Aprova o conteúdo e manda o Reel para a biblioteca do Flow, no perfil ' + (perfil ? perfil.nome : '—') + '. Nada é agendado nem publicado agora: data, hora e ativação ficam no Flow, com outro clique seu.'
+        : 'Publicar é irreversível. Paulo publica em ' + ((peca && peca.agendado_para) || '—') + ' no perfil ' + (perfil ? perfil.nome : '—') + ' e registra no livro-razão.',
+      gateBtn: isFlowFmt ? 'Aprovar e enviar ao Flow' : 'Aprovar publicação',
+      pubEyebrow: isFlowFmt ? 'No Flow · ' + (fe ? (FLOW_LABEL[feSit] || feSit) : 'lendo') : 'Publicado · ' + ((peca && peca.atualizado_em) || '—'),
+      pubTitle: (peca ? peca.titulo : '—') + (isFlowFmt && feSit !== 'publicada' ? ' está no Flow' : ' está no ar'),
+      pubFoot: isFlowFmt ? 'Agenda, data e ativação ficam no Flow.' : '—',
+      refreshFlow: function () { if (peca) self.askFlowEstado(peca.id, true); },
       sendEdition: function () {
         var api = studioApi();
         if (!api || !api.docuflow || !peca) return;
@@ -850,11 +882,11 @@ class Component extends DCLogic {
       isLong: !!(peca && peca.formato_id === 'yt-longo-16x9'),
       slotLabel: (peca && peca.agendado_para) || '—',
       profName: perfil ? perfil.nome : '—',
-      pubWhen: (peca && peca.atualizado_em) || '—', isLive: false, pubNote: '—',
+      pubWhen: (peca && peca.atualizado_em) || '—', isLive: isFlowFmt && feSit === 'publicada', pubNote: isFlowFmt ? feNote : '—',
       metrics: [['Alcance', '—', ''], ['Curtidas', '—', ''], ['Salvamentos', '—', ''], ['Comentários', '—', '']].map(function (m) { return { k: m[0], v: m[1], n: m[2] }; }),
       prof: { ini: perfil ? perfil.iniciais : '—', handle: rede && rede.handle ? rede.handle : '—' },
       phoneTag: peca ? fmtOf(peca.formato_id)[2] : '—',
-      prevBadge: STAGE_LABEL[viewed] || '—', prevBadgeCls: GATES[viewed] ? 'warn' : '',
+      prevBadge: stageLabel(viewed, peca && peca.formato_id) || '—', prevBadgeCls: GATES[viewed] ? 'warn' : '',
       frameCol: s.realSize ? 430 : 316,
       frameW: s.realSize ? 390 : 300,
       showGrid: !!s.showGrid,

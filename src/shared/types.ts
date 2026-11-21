@@ -642,10 +642,12 @@ export interface TavirApi {
       stop: (id: string) => Promise<{ ok: boolean; error?: string }>;
     };
     darkflow: {
-      prepare: (pecaId: string) => Promise<{ ok: boolean; error?: string; scheduleId?: string }>;
-      activate: (pecaId: string) => Promise<{ ok: boolean; error?: string }>;
       scorecard: () => Promise<Array<{ k: string; v: string }>>;
       board: () => Promise<{ ok: boolean; error?: string; library: unknown[]; schedules: unknown[] }>;
+    };
+    flow: {
+      enviar: (pecaId: string) => Promise<{ ok: true; itemId: string } | { ok: false; error: string }>;
+      estado: (pecaId: string) => Promise<import('./flow').FlowEstado>;
     };
     docuflow: {
       send: (pecaId: string) => Promise<{ ok: boolean; error?: string; slug?: string }>;

@@ -1,10 +1,9 @@
-import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as http from 'node:http';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { activateDarkflowSchedule, editionBoard, prepareDarkflowSchedule, presentScorecard, sendToDocuflow } from '../../src/main/studio/ecosystem';
+import { editionBoard, presentScorecard, sendToDocuflow } from '../../src/main/studio/ecosystem';
 import type { StudioStore } from '../../src/main/studio/store';
 import type { BrandKit, Peca, Perfil } from '../../src/shared/studio';
 
@@ -29,63 +28,6 @@ describe('ecossistema', () => {
   it('mostra travessão quando o scorecard não tem janela', () => {
     expect(presentScorecard({})).toEqual([{ k: 'scorecard', v: '—' }]);
     expect(presentScorecard({ summary_by_window: [{ window_hours: 24, sample_size: 2, medians: { reach: 10 } }] })[0].v).toBe('reach 10');
-  });
-
-  it('grava a agenda em rascunho e só ativa no gate', async () => {
-    const home = fs.mkdtempSync(path.join(os.tmpdir(), 'tavir-eco-'));
-    const project = path.join(home, 'DarkFlow');
-    const output = path.join(project, 'storage', 'output');
-    fs.mkdirSync(output, { recursive: true });
-    const pecaId = '11111111-1111-4111-8111-111111111111';
-    const pacote = path.join(home, 'pecas', pecaId, 'pacote');
-    fs.mkdirSync(pacote, { recursive: true });
-    const video = path.join(pacote, 'final.mp4');
-    fs.writeFileSync(video, 'reel');
-    const sha = createHash('sha256').update('reel').digest('hex');
-    let activated = false;
-    const server = await listen((req, res) => {
-      if (req.url === '/api/publisher/session') { res.end(JSON.stringify({ csrf_token: 'tok' })); return; }
-      if (req.url === '/api/publisher/library/scan') {
-        expect(req.headers['x-csrf-token']).toBe('tok');
-        res.end('{}');
-        return;
-      }
-      if (req.url === '/api/publisher/library') { res.end(JSON.stringify([{ id: 'lib1', sha256: sha }])); return; }
-      if (req.method === 'POST' && req.url === '/api/publisher/schedules') {
-        let raw = '';
-        req.on('data', (chunk) => { raw += chunk; });
-        req.on('end', () => {
-          const body = JSON.parse(raw);
-          expect(body.activate).toBe(false);
-          expect(body.editorial_attested).toBe(false);
-          res.writeHead(201);
-          res.end(JSON.stringify({ id: 'sch1' }));
-        });
-        return;
-      }
-      if (req.method === 'PATCH' && req.url === '/api/publisher/schedules/sch1') {
-        let raw = '';
-        req.on('data', (chunk) => { raw += chunk; });
-        req.on('end', () => {
-          const body = JSON.parse(raw);
-          expect(body.activate).toBe(true);
-          expect(body.editorial_attested).toBe(true);
-          activated = true;
-          res.end('{}');
-        });
-        return;
-      }
-      res.writeHead(404);
-      res.end();
-    });
-    const peca = { id: pecaId, formato_id: 'ig-reels-9x16', titulo: 'Reel', legenda: 'oi', hashtags: ['#tavir'], agendado_para: '2026-12-01T09:30:00', roteiro: null } as Peca;
-    const store = { getPeca: () => peca, tree: { home } } as unknown as StudioStore;
-    const draft = await prepareDarkflowSchedule(store, pecaId, server.base, output, project);
-    expect(draft.ok).toBe(true);
-    const live = await activateDarkflowSchedule(store, pecaId, server.base);
-    expect(live.ok).toBe(true);
-    expect(activated).toBe(true);
-    server.close();
   });
 
   it('cria o canal, o projeto longo e a composição que a tela do Docuflow lista', async () => {

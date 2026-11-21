@@ -78,9 +78,11 @@ O DarkFlow só importa um mp4 cujo manifesto mora em `storage/output` do própri
 
 Essa pasta é ignorada pelo git do DarkFlow, menos o `.gitkeep`. O Escritório não edita código de lá.
 
-O agendamento, em `prepareDarkflowSchedule`, só aceita o formato `ig-reels-9x16` e uma data com hora. A ordem é: copiar o manifesto, `GET /api/publisher/session` para o CSRF, `POST /api/publisher/library/scan`, achar o item pelo sha256 e `POST /api/publisher/schedules` com `activate: false` e `editorial_attested: false`. O id fica em `pacote/darkflow.json`.
+O Studio cria e o Flow posta (`docs/planning/GOAL_FLOW.md`). No Reel, o gate do pacote é «Aprovar e enviar ao Flow»: `enviarParaBiblioteca` (`src/main/flow/biblioteca.ts`) monta o pacote aprovado (`src/main/flow/pacote.ts`), copia o manifesto, faz `GET /api/publisher/session` para o CSRF, `POST /api/publisher/library/scan` e acha o item pelo sha256. O item fica em `pacote/flow.json`. **O Studio não cria agenda nem ativa**: data, hora e ativação ficam no Flow, com outro clique do Carlos. Se o pacote não está montado ou o DarkFlow não importou, nada é gravado e o gate não passa.
 
-«Aprovar publicação» chama `activateDarkflowSchedule`: `PATCH` com `editorial_attested: true` e `activate: true`. Sem esse clique, a agenda continua rascunho. O Escritório nunca passa `--enable-meta-publish`. Se a sessão do DarkFlow está em simulação, `real_publish_capable` fica falso e o worker não publica de verdade.
+Depois do gate, a etapa da peça aparece como «No Flow», e o card lê a situação nas agendas e ocorrências do item (`estadoNoFlow`): na biblioteca, rascunho, agendada, pausada, publicada (com permalink), atenção, falhou ou DarkFlow fora do ar. A peça só aparece como publicada quando o Flow publicou. Os outros formatos seguem com publicação manual e o campo «Quando publicar».
+
+O Escritório nunca passa `--enable-meta-publish`. Se a sessão do DarkFlow está em simulação, `real_publish_capable` fica falso e o worker não publica de verdade.
 
 O scorecard vem de `GET /api/publisher/telemetry/scorecard`. Sem mediana, a tela mostra «—». Não inventa zero.
 

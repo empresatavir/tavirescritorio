@@ -319,10 +319,12 @@ const api: TavirApi = {
       stop: (id) => ipcRenderer.invoke('studio:sidecars:stop', id),
     },
     darkflow: {
-      prepare: (pecaId) => ipcRenderer.invoke('studio:darkflow:prepare', pecaId),
-      activate: (pecaId) => ipcRenderer.invoke('studio:darkflow:activate', pecaId),
       scorecard: () => ipcRenderer.invoke('studio:darkflow:scorecard'),
       board: () => ipcRenderer.invoke('studio:darkflow:board'),
+    },
+    flow: {
+      enviar: (pecaId) => ipcRenderer.invoke('studio:flow:enviar', pecaId),
+      estado: (pecaId) => ipcRenderer.invoke('studio:flow:estado', pecaId),
     },
     docuflow: {
       send: (pecaId) => ipcRenderer.invoke('studio:docuflow:send', pecaId),

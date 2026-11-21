@@ -18,7 +18,8 @@ import { installWhisper, transcribePeca } from './whisper';
 import { getStudioStore } from './store';
 import { suggestForPiece, type SuggestAlvo } from './suggest';
 import { createSidecarManager, loadSidecars, sidecarConfigPath } from '../sidecars';
-import { activateDarkflowSchedule, darkflowBoard, editionBoard, prepareDarkflowSchedule, readScorecard, sendToDocuflow } from './ecosystem';
+import { darkflowBoard, editionBoard, readScorecard, sendToDocuflow } from './ecosystem';
+import { enviarParaBiblioteca, estadoNoFlow } from '../flow/biblioteca';
 
 type Handle = (channel: string, listener: (...args: any[]) => any) => void;
 
@@ -198,20 +199,21 @@ export function registerStudioIpc(handle: Handle): void {
   handle('studio:sidecars:list', () => sidecars.status());
   handle('studio:sidecars:start', (_e, id: string) => sidecars.start(id));
   handle('studio:sidecars:stop', (_e, id: string) => sidecars.stop(id));
-  handle('studio:darkflow:prepare', async (_e, pecaId: string) => {
+  // Studio entrega à biblioteca do Flow; agenda e ativação são do Flow (GOAL_FLOW, F1).
+  handle('studio:flow:enviar', async (_e, pecaId: string) => {
     try {
       const darkflow = loadSidecars(sidecarConfigPath()).find((item) => item.id === 'darkflow');
       if (!darkflow) return { ok: false, error: 'DarkFlow não está configurado' };
-      return await prepareDarkflowSchedule(getStudioStore(), pecaId, 'http://127.0.0.1:8765', path.join(darkflow.pasta, 'storage', 'output'), darkflow.pasta);
+      return await enviarParaBiblioteca(getStudioStore(), pecaId, 'http://127.0.0.1:8765', path.join(darkflow.pasta, 'storage', 'output'), darkflow.pasta);
     } catch (err) {
       return { ok: false, error: message(err) };
     }
   });
-  handle('studio:darkflow:activate', async (_e, pecaId: string) => {
+  handle('studio:flow:estado', async (_e, pecaId: string) => {
     try {
-      return await activateDarkflowSchedule(getStudioStore(), pecaId, 'http://127.0.0.1:8765');
+      return await estadoNoFlow(getStudioStore(), pecaId, 'http://127.0.0.1:8765');
     } catch (err) {
-      return { ok: false, error: message(err) };
+      return { situacao: 'sem_conexao', detalhe: message(err) };
     }
   });
   handle('studio:darkflow:scorecard', () => readScorecard('http://127.0.0.1:8765'));
