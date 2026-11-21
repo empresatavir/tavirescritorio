@@ -114,6 +114,28 @@ do CP-10 (R5).
   quando a página de privacidade (controle 2) ganhar o texto do advogado: trocar nos dois lugares
   (o teste acusa se ficarem diferentes).
 
+### Controle 2 — Aviso de privacidade versionado (minuta concluída em 2026-11-21)
+
+- **Página:** `raiox/web/public/privacidade/2026-11-21.html`, sem token e sem script, com as nove
+  partes do controle: controlador, canal de privacidade, finalidades, dados, fornecedores,
+  transferência internacional, retenção, direitos e revisão humana. Os fornecedores batem com
+  `raiox/fornecedores.json`.
+- **Versão:** cada versão é um arquivo que não muda depois de publicado. `/privacidade` aponta
+  para a vigente e `/privacidade/<versão>` abre qualquer versão antiga (`vercel.json`). A caixa
+  "Li o aviso" do formulário leva para a mesma versão que é gravada com o aceite
+  (`AVISO_VERSAO`), e o opt-in do Escritório (controle 1) exige essa versão.
+- **Minuta:** a página se declara minuta (faixa vermelha e `raiox-aviso-status = minuta`)
+  enquanto tiver `[A PREENCHER]`. Lacunas:
+  - Carlos: razão social, CNPJ e endereço do controlador; e-mail do canal de privacidade;
+  - advogado: base legal de cada finalidade; países e mecanismo de transferência de cada
+    fornecedor (depende do Carlos confirmar região no controle 6); prazo e marco de retenção
+    (hoje 90 dias depois da entrega); revisão do texto inteiro.
+  Texto final do advogado = **versão nova** (arquivo novo, `AVISO_VERSAO` e
+  `RAIOX_AVISO_VERSAO` trocados juntos); a minuta de hoje não é editada depois de publicada.
+- **Testes:** `raiox/web/test/raiox-form.test.mjs` (nove partes, todos os fornecedores, sem
+  script/estilo/token, marca de minuta enquanto houver lacuna, rotas da Vercel e caixa do
+  formulário com a mesma versão). Conferida no navegador em desktop e 375 px, sem rolagem lateral.
+
 ### Controle 6 — Fornecedores por caso (código concluído em 2026-11-21)
 
 - **Catálogo:** `raiox/fornecedores.json` com Vercel, Supabase, Telegram, Resend, RapidAPI e os

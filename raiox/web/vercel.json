@@ -20,6 +20,14 @@
     {
       "source": "/confirmar/:token",
       "destination": "/confirmar.html"
+    },
+    {
+      "source": "/privacidade",
+      "destination": "/privacidade/2026-11-21.html"
+    },
+    {
+      "source": "/privacidade/:versao",
+      "destination": "/privacidade/:versao.html"
     }
   ],
   "headers": [

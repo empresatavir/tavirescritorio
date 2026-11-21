@@ -172,3 +172,31 @@ test("G-PR1 controle 4: token opaco, e-mail só sai com a chave ligada", async (
   assert.equal(await confirmEmail(newVerificationToken(), { supabase: async () => ({ verified: false }) }), false);
   assert.equal(await confirmEmail(newVerificationToken(), { supabase: async () => ({ verified: true }) }), true);
 });
+
+test("G-PR1 controle 2: aviso permanente, versionado e sem token", async () => {
+  const { AVISO_VERSAO } = await import("../api/_raiox.mjs");
+  const page = await readFile(new URL(`../public/privacidade/${AVISO_VERSAO}.html`, import.meta.url), "utf8");
+  assert.match(page, new RegExp(`<meta name="raiox-aviso-versao" content="${AVISO_VERSAO}">`));
+  for (const id of ["controlador", "canal", "finalidades", "dados", "fornecedores", "transferencia", "retencao", "direitos", "revisao-humana"]) {
+    assert.match(page, new RegExp(`<section id="${id}">`), `falta a seção ${id}`);
+  }
+  for (const nome of ["Vercel", "Supabase", "Resend", "Telegram", "RapidAPI", "Anthropic", "OpenAI", "Google", "Cursor"]) {
+    assert.ok(page.includes(nome), `fornecedor ${nome} fora do aviso`);
+  }
+  assert.doesNotMatch(page, /<script|style=|token|\{\{/i, "aviso não pode ter script, estilo inline, token ou modelo aberto");
+  // Enquanto houver lacuna, a página se declara minuta (não liberar o piloto assim).
+  if (page.includes("[A PREENCHER")) {
+    assert.match(page, /name="raiox-aviso-status" content="minuta"/);
+    assert.match(page, /data-minuta/);
+  }
+
+  const vercel = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
+  const current = vercel.rewrites.find((r) => r.source === "/privacidade");
+  assert.equal(current?.destination, `/privacidade/${AVISO_VERSAO}.html`);
+  assert.ok(vercel.rewrites.some((r) => r.source === "/privacidade/:versao" && r.destination === "/privacidade/:versao.html"));
+
+  const form = await readFile(new URL("../public/form.html", import.meta.url), "utf8");
+  const aviso = form.match(/<label><input name="consentimento_aviso"[^\n]*<\/label>/)?.[0] || "";
+  assert.ok(aviso.includes(`href="/privacidade/${AVISO_VERSAO}"`), "caixa do aviso aponta para a versão gravada");
+  assert.ok(aviso.includes(`versão ${AVISO_VERSAO}`), "texto da caixa mostra a versão gravada");
+});
