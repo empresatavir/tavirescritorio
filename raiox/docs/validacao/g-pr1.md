@@ -60,6 +60,34 @@ do CP-10 (R5).
   texto livre não têm detecção automática; ficam na revisão do Carlos ao abrir o caso. O
   formulário recusa sem dizer qual campo causou a recusa (ajuste junto do T10.4).
 
+### Controles 3 e 4 — Três decisões e e-mail confirmado (código concluído em 2026-11-21)
+
+- **Migração nova** `raiox/web/supabase/migrations/20261121120000_raiox_gpr1_decisoes_email.sql`
+  (não aplicada; R5 até o CP-10):
+  - escopo `privacy_notice` em `raiox_consents`;
+  - `submit_raiox_intake` exige as três decisões e grava cada uma com a versão do aviso
+    (`AVISO_VERSAO`, enviada pelo servidor, formato `AAAA-MM-DD`) e o horário;
+  - `raiox_cases.email_verified_at`, tabela `raiox_email_verifications` (só o hash do token),
+    `issue_raiox_email_verification` (validade de 48 h, invalida tokens anteriores) e
+    `verify_raiox_email` (uso único, dentro da validade e só se o e-mail do caso não mudou);
+  - gatilho que apaga a confirmação quando o e-mail do caso muda.
+- **Formulário:** terceira caixa "Li o aviso de privacidade (versão 2026-11-21)"; as três são
+  obrigatórias e nenhuma vem marcada (teste lê o HTML).
+- **Confirmação:** depois do envio, a rota emite o token (32 bytes aleatórios) e manda o link
+  `/confirmar/<token>` pelo Resend **só com `RAIOX_EMAIL_ENABLED=1`** (R6). A página de
+  confirmação só consome o token por POST no botão: leitor de e-mail que abre o link não gasta o
+  token.
+- **Bloqueios:** `continue-case` (análise) e `delivery-case` (entrega) respondem
+  `email_not_verified` sem `email_verified_at`. O sync manda `email_verificado` ao Escritório e a
+  análise local de caso vindo do formulário recusa sem ele. Hoje são 10 casos locais vindos do
+  formulário: ficam bloqueados para análise até um sync com e-mail confirmado.
+- **Testes:** `raiox/web/test/raiox-form.test.mjs` (três decisões, nada pré-marcado, token opaco,
+  banco só recebe hash, e-mail desligado não sai, token malformado nem chega ao banco) e
+  `tests/unit/raioxBridge.spec.ts` (sync traz a confirmação; análise espera por ela).
+- **Pendente:** aplicar a migração e publicar as funções no CP-10; configurar `RESEND_API_KEY`,
+  `RAIOX_EMAIL_FROM` e `RAIOX_APP_URL` na Vercel; o formulário antigo em duas etapas
+  (`submit_raiox_form`) continua sem a terceira decisão e não deve ser usado no piloto real.
+
 ### Controle 6 — Fornecedores por caso (código concluído em 2026-11-21)
 
 - **Catálogo:** `raiox/fornecedores.json` com Vercel, Supabase, Telegram, Resend, RapidAPI e os

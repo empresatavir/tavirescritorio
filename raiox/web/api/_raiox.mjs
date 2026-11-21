@@ -145,7 +145,7 @@ export function parseAnswers(body, stage) {
     empresa_nome: 140, contato_nome: 120, cargo_contato: 80, cidade_uf: 120, email: 254,
     nicho: 120, atuacao_atual: 40, atuacao_desejada: 40, objetivo_principal: 100,
     horizonte_prioridade: 60, decisao_diagnostico: 800, links: 3000, objetivo: 1800,
-    consentimento_publico: 8, consentimento_email: 8, website: 200,
+    consentimento_aviso: 8, consentimento_publico: 8, consentimento_email: 8, website: 200,
   } : {
     oferta_prioritaria: 600, diferencial: 600, ticket_faixa: 80, margem_status: 80,
     capacidade_status: 80, capacidade_semanal: 80, origem_pedidos: 700,
@@ -155,7 +155,7 @@ export function parseAnswers(body, stage) {
     equipe_operacao: 100, investimento_faixa: 80, possui_loja_fisica: 8, endereco: 600,
     google_perfil_status: 100, area_atendida: 300, horarios_funcionamento: 400,
     pico_atendimento: 200, avaliacoes_processo: 100, acesso_local: 300,
-    tentativas: 1600, limitacoes: 1200, consentimento_publico: 8,
+    tentativas: 1600, limitacoes: 1200, consentimento_aviso: 8, consentimento_publico: 8,
     consentimento_email: 8, website: 200,
   };
   const answers = {};
@@ -168,7 +168,7 @@ export function parseAnswers(body, stage) {
     : ["oferta_prioritaria", "capacidade_status", "origem_pedidos", "pedidos_atual",
       "tempo_resposta", "canal_fechamento", "mensuracao_status", "frequencia_conteudo",
       "disponibilidade_conteudo", "possui_loja_fisica"];
-  if (required.some((key) => !answers[key]) || answers.website || answers.consentimento_publico !== "on" || answers.consentimento_email !== "on"
+  if (required.some((key) => !answers[key]) || answers.website || answers.consentimento_aviso !== "on" || answers.consentimento_publico !== "on" || answers.consentimento_email !== "on"
       || !validateStructuredAnswers(answers) || !answersAreSafe(answers)) return null;
   if (stage === 1 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answers.email)) return null;
   if (stage === 2 && answers.possui_loja_fisica === "Sim" && (!answers.endereco || !answers.google_perfil_status)) return null;
@@ -205,11 +205,70 @@ export async function submit(token, exp, sig, body) {
     method: "POST",
     body: JSON.stringify(combined
       ? { p_token_hash: hash(token), p_answers: answers,
-          p_consents: { public_sources: true, email_delivery: true } }
+          p_consents: { privacy_notice: true, public_sources: true, email_delivery: true, policy_version: AVISO_VERSAO } }
       : { p_token_hash: hash(token), p_stage: session.stage, p_answers: answers,
           p_consents: { public_sources: true, email_delivery: true } }),
   });
-  return Boolean(result?.accepted);
+  if (!result?.accepted) return false;
+  if (combined && result.case_id) {
+    // A confirmação do e-mail é um reforço do envio: se falhar, o caso fica sem e-mail confirmado
+    // e a análise segue bloqueada até o Carlos reenviar.
+    try { await sendEmailVerification(result.case_id); } catch (error) {
+      console.error("raiox_email_verification_failed", error instanceof Error ? error.message : "unknown_error");
+    }
+  }
+  return true;
+}
+
+// ── G-PR1 controle 4: e-mail confirmado ─────────────────────────────────────
+/** Versão do aviso de privacidade que o formulário mostra. Muda junto com o texto do aviso. */
+export const AVISO_VERSAO = "2026-11-21";
+
+/** Token opaco (32 bytes) para o link de confirmação; o banco guarda só o hash. */
+export function newVerificationToken() {
+  return crypto.randomBytes(32).toString("base64url");
+}
+
+export function verificationTokenIsWellFormed(token) {
+  return typeof token === "string" && /^[A-Za-z0-9_-]{43}$/.test(token);
+}
+
+/**
+ * Emite o token e manda o e-mail de confirmação. O envio só acontece com RAIOX_EMAIL_ENABLED=1
+ * (R6: nenhum e-mail externo antes do CP-12); sem isso, o token fica emitido e nada sai.
+ */
+export async function sendEmailVerification(caseId, deps = {}) {
+  const call = deps.supabase ?? supabase;
+  const send = deps.fetch ?? fetch;
+  const token = deps.token ?? newVerificationToken();
+  const issued = await call("/rpc/issue_raiox_email_verification", {
+    method: "POST", body: JSON.stringify({ p_case_id: caseId, p_token_hash: hash(token) }),
+  });
+  if (!issued?.issued || !issued.email) return { sent: false, reason: "not_issued" };
+  if ((deps.env ?? process.env).RAIOX_EMAIL_ENABLED !== "1") return { sent: false, reason: "email_disabled" };
+  const origin = normalizeOrigin((deps.env ?? process.env).RAIOX_APP_URL);
+  if (!origin) return { sent: false, reason: "no_app_url" };
+  const link = `${origin}/confirmar/${token}`;
+  const env = deps.env ?? process.env;
+  const response = await send("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json",
+      "Idempotency-Key": `raiox-verify:${hash(token).slice(0, 32)}` },
+    body: JSON.stringify({
+      from: env.RAIOX_EMAIL_FROM, to: [issued.email],
+      subject: "Confirme seu e-mail para o Raio X TAVIR",
+      text: `Recebemos suas respostas do Raio X TAVIR. Para a análise começar e o resultado chegar a este e-mail, confirme que ele é seu:\n\n${link}\n\nO link vale por 48 horas e funciona uma vez. Se não foi você, ignore esta mensagem.`,
+    }),
+  });
+  return response.ok ? { sent: true } : { sent: false, reason: `resend_${response.status}` };
+}
+
+/** Consome o token (uso único, com validade). */
+export async function confirmEmail(token, deps = {}) {
+  if (!verificationTokenIsWellFormed(token)) return false;
+  const call = deps.supabase ?? supabase;
+  const result = await call("/rpc/verify_raiox_email", { method: "POST", body: JSON.stringify({ p_token_hash: hash(token) }) });
+  return Boolean(result?.verified);
 }
 
 function normalizeOrigin(value) {

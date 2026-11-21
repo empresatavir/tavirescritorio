@@ -8,8 +8,8 @@ Deno.serve(async (request) => {
   const expected = Deno.env.get("RAIOX_OFFICE_SYNC_SECRET") || "";
   if (request.method !== "GET" || expected.length < 32 || !safeEqual(supplied, expected)) return response({ error: "unauthorized" }, 401);
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-  const { data, error } = await supabase.from("raiox_cases").select("id,status,company_name,created_at,updated_at").order("updated_at", { ascending: false }).limit(MAX_CASES);
+  const { data, error } = await supabase.from("raiox_cases").select("id,status,company_name,created_at,updated_at,email_verified_at").order("updated_at", { ascending: false }).limit(MAX_CASES);
   if (error) return response({ error: "sync_unavailable" }, 500);
-  const cases = (data || []).map((row) => ({ id: row.id, status: row.status, cliente: row.company_name || "", etapa: row.status, criado_em: row.created_at, atualizado_em: row.updated_at }));
+  const cases = (data || []).map((row) => ({ id: row.id, status: row.status, cliente: row.company_name || "", etapa: row.status, criado_em: row.created_at, atualizado_em: row.updated_at, email_verificado: Boolean(row.email_verified_at) }));
   return response({ ok: true, cases, source: "supabase-raiox", truncated: cases.length === MAX_CASES });
 });

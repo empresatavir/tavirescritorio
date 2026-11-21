@@ -174,8 +174,20 @@ describe('ponte de leitura do Raio-X', () => {
     expect(cases).toHaveLength(2);
     const updated = cases.find((item) => item.id === 'RX-E7C28036');
     expect(updated?.company).toBe('Padaria Dois Irmãos');
-    expect(updated?.remote).toEqual({ supabaseId: REMOTE_ID, status: 'sent', syncedAt: LATER });
+    expect(updated?.remote).toEqual({ supabaseId: REMOTE_ID, status: 'sent', syncedAt: LATER, emailVerified: false });
     expect(cases.find((item) => item.id === local.id)?.company).toBe('Casa local');
+  });
+
+  it('G-PR1 controle 4: traz a confirmação do e-mail e a análise espera por ela', async () => {
+    const root = tempRoot();
+    await run(root, fetchOf(jsonResponse(200, { ok: true, cases: [remoteCase()], truncated: false })));
+    const pending = listCases(root).find((item) => item.id === 'RX-E7C28036')!;
+    expect(pending.remote?.emailVerified).toBe(false);
+    const { analyse } = await import('../../src/main/raiox/raioxAnalyse');
+    await expect(analyse(root, pending.id, [], { run: async () => { throw new Error('não roda'); }, gitStatus: () => '' }))
+      .rejects.toThrow(/e-mail deste convidado ainda não foi confirmado/);
+    await run(root, fetchOf(jsonResponse(200, { ok: true, cases: [remoteCase({ email_verificado: true })], truncated: false })), LATER);
+    expect(listCases(root).find((item) => item.id === 'RX-E7C28036')?.remote?.emailVerified).toBe(true);
   });
 
   it('declara a escrita e recusa chamá-la', () => {

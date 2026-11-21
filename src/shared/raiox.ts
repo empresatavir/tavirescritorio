@@ -981,7 +981,7 @@ export interface RaioxDebrief {
 export interface RaioxMetric { key: string; label: string; value: number; unit: string; at: string; moment: 'd0' | 'd30'; source: string; }
 export interface RaioxStepCheck { step: number; doneAt: string; proof: { kind: 'arquivo' | 'link' | 'nota'; value: string; sha256?: string }; }
 export interface RaioxExecution { gapId: string; playbookVersion: string; startedAt: string; steps: RaioxStepCheck[]; metrics: RaioxMetric[]; fabricaProjectId?: string; closedAt?: string; }
-export interface RaioxRemote { supabaseId: string; status: RaioxRemoteStatus; syncedAt: string; formUrl?: string; }
+export interface RaioxRemote { supabaseId: string; status: RaioxRemoteStatus; syncedAt: string; formUrl?: string; emailVerified?: boolean; }
 export interface RaioxCase {
   id: string; uuid: string; legacy: boolean;
   company: string; contact?: string; objective: string; decisionNeeded: string; frontier?: string;

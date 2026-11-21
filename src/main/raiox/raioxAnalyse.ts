@@ -83,6 +83,10 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     throw new RaioxError('Frente de varredura inválida.');
   }
   let current = readCase(root, id);
+  // G-PR1 controle 4: caso que veio do formulário só é analisado com o e-mail do titular confirmado.
+  if (current.remote && current.origin === 'formulario' && !current.remote.emailVerified) {
+    throw new RaioxError('A análise não começou: o e-mail deste convidado ainda não foi confirmado. Sincronize de novo depois que ele clicar no link de confirmação.');
+  }
   const input = path.join(caseDir(root, id), 'analise', 'analysis-input.json');
   if (!fs.existsSync(input) && (blank(current.frontier) || blank(current.publicLink))) {
     throw new RaioxError('Preencha a fronteira e o link público antes da análise.');

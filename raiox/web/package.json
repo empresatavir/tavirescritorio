@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "check": "node --check api/_raiox.mjs && node --check api/forms/[token]/status.mjs && node --check api/forms/[token]/submit.mjs && node --check api/cron/supabase-health.mjs",
+    "check": "node --check api/_raiox.mjs && node --check api/forms/[token]/status.mjs && node --check api/forms/[token]/submit.mjs && node --check api/cron/supabase-health.mjs && node --check api/confirm/index.mjs && node --check public/confirmar.js",
     "test": "node --test test/*.test.mjs",
     "build": "npm run check && npm test"
   }

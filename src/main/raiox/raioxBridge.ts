@@ -41,6 +41,7 @@ interface RemoteCase {
   etapa: string;
   criado_em: string;
   atualizado_em: string;
+  emailVerified: boolean;
 }
 
 function causeCode(err: unknown): string {
@@ -182,6 +183,8 @@ function parseCases(payload: unknown): RemoteCase[] {
       etapa: textField(item, 'etapa'),
       criado_em: textField(item, 'criado_em'),
       atualizado_em: textField(item, 'atualizado_em'),
+      // G-PR1 controle 4. Função antiga (sem o campo) conta como não confirmado.
+      emailVerified: item.email_verificado === true,
     };
   });
 }
@@ -219,7 +222,7 @@ export async function syncCases(deps: SyncDeps = {}): Promise<{ ok: true; create
     if (existing) {
       const next: RaioxCase = {
         ...existing,
-        remote: { ...existing.remote!, status: item.status, syncedAt: now },
+        remote: { ...existing.remote!, status: item.status, syncedAt: now, emailVerified: item.emailVerified },
         updatedAt: now,
       };
       writeCase(root, next);
@@ -235,7 +238,7 @@ export async function syncCases(deps: SyncDeps = {}): Promise<{ ok: true; create
       origin: 'formulario',
       consent: { kind: 'formulario', at: now, note: '' },
     }, now, localUuid);
-    createdCase.remote = { supabaseId: item.id, status: item.status, syncedAt: now };
+    createdCase.remote = { supabaseId: item.id, status: item.status, syncedAt: now, emailVerified: item.emailVerified };
     // G-PR1 controle 6: caso que veio do formulário já passou por Vercel, Supabase e o aviso do Telegram.
     let withVendors: RaioxCase = createdCase;
     for (const [vendor, use] of [['vercel', 'formulário'], ['supabase', 'caso remoto'], ['telegram', 'aviso de formulário recebido']] as const) {
