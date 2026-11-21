@@ -174,7 +174,7 @@ describe('ponte de leitura do Raio-X', () => {
     expect(cases).toHaveLength(2);
     const updated = cases.find((item) => item.id === 'RX-E7C28036');
     expect(updated?.company).toBe('Padaria Dois Irmãos');
-    expect(updated?.remote).toEqual({ supabaseId: REMOTE_ID, status: 'sent', syncedAt: LATER, emailVerified: false });
+    expect(updated?.remote).toEqual({ supabaseId: REMOTE_ID, status: 'sent', syncedAt: LATER, emailVerified: false, revoked: false });
     expect(cases.find((item) => item.id === local.id)?.company).toBe('Casa local');
   });
 
@@ -188,6 +188,18 @@ describe('ponte de leitura do Raio-X', () => {
       .rejects.toThrow(/e-mail deste convidado ainda não foi confirmado/);
     await run(root, fetchOf(jsonResponse(200, { ok: true, cases: [remoteCase({ email_verificado: true })], truncated: false })), LATER);
     expect(listCases(root).find((item) => item.id === 'RX-E7C28036')?.remote?.emailVerified).toBe(true);
+  });
+
+  it('G-PR1 controle 8: sync traz a revogação e ela não volta atrás', async () => {
+    const root = tempRoot();
+    await run(root, fetchOf(jsonResponse(200, { ok: true, cases: [remoteCase({ revogado: true })], truncated: false })));
+    const revoked = listCases(root).find((item) => item.id === 'RX-E7C28036')!;
+    expect(revoked.remote?.revoked).toBe(true);
+    const { analyse } = await import('../../src/main/raiox/raioxAnalyse');
+    await expect(analyse(root, revoked.id, [], { run: async () => { throw new Error('não roda'); }, gitStatus: () => '' }))
+      .rejects.toThrow(/revogou/);
+    await run(root, fetchOf(jsonResponse(200, { ok: true, cases: [remoteCase()], truncated: false })), LATER);
+    expect(listCases(root).find((item) => item.id === 'RX-E7C28036')?.remote?.revoked).toBe(true);
   });
 
   it('declara a escrita e recusa chamá-la', () => {

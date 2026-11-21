@@ -88,7 +88,7 @@ Deno.serve(async (request) => {
 
   const [{ data: caseRow, error: caseError }, { data: stageOne, error: stageError },
     { data: consent, error: consentError }, { data: review, error: reviewError }] = await Promise.all([
-    supabase.from("raiox_cases").select("id,status,company_name,contact_name,contact_email,email_verified_at").eq("id", caseId).maybeSingle(),
+    supabase.from("raiox_cases").select("id,status,company_name,contact_name,contact_email,email_verified_at,revoked_at").eq("id", caseId).maybeSingle(),
     supabase.from("raiox_form_submissions").select("answers").eq("case_id", caseId).eq("stage", 1).maybeSingle(),
     supabase.from("raiox_consents").select("accepted").eq("case_id", caseId).eq("scope", "email_delivery")
       .eq("accepted", true).limit(1).maybeSingle(),
@@ -108,6 +108,8 @@ Deno.serve(async (request) => {
   }
   // G-PR1 controle 4: entrega só para e-mail confirmado pelo titular.
   if (!caseRow.email_verified_at) return response({ error: "email_not_verified" }, 403);
+  // G-PR1 controle 8: titular revogou; nada novo é preparado para envio.
+  if (caseRow.revoked_at) return response({ error: "case_revoked" }, 403);
 
   const fingerprint = documents.map((doc) => `${doc.kind}:${doc.sha256}`).join("|");
   const idempotencyKey = `raiox:${caseId}:${round}:${fingerprint}`;

@@ -7,9 +7,9 @@ import { findMotorBinary, runMotor, type MotorCall, type MotorId, type MotorResu
 import { startRun, type RunHandle } from '../runLedger';
 import { buildContext, repoRoot } from './raioxContext';
 import { lintDocument } from './raioxDocLint';
-import { RaioxError, attachDocuments } from './raioxRules';
+import { RaioxError, assertActive, attachDocuments } from './raioxRules';
 import { caseDir, readCase, writeCase } from './raioxStore';
-import type { RaioxDocument } from '../../shared/raiox';
+import type { RaioxCase, RaioxDocument } from '../../shared/raiox';
 import { motorVendor, readVendorCatalog, recordVendor } from './vendors';
 
 const TIMEOUT_MS = 45 * 60 * 1000;
@@ -72,6 +72,7 @@ export async function writeDocuments(root: string, id: string, deps: DocsDeps = 
 
 async function writeDocumentsOnce(root: string, id: string, deps: DocsDeps): Promise<{ ok: true; version: number; problems: string[] }> {
   const current = readCase(root, id);
+  assertActive(current);
   if (!current.debrief) throw new RaioxError('Registre a devolutiva antes de gerar os documentos.');
   const version = nextVersion(caseDir(root, id));
   const repo = deps.repo || repoRoot();
@@ -124,7 +125,18 @@ async function writeDocumentsOnce(root: string, id: string, deps: DocsDeps): Pro
       createdAt: now,
     });
   }
-  writeCase(root, attachDocuments(withVendor, docs, now));
+  // G-PR1 controle 8: relê o caso; revogação registrada durante a redação não é sobrescrita.
+  let attached: RaioxCase;
+  try {
+    const fresh = readCase(root, id);
+    assertActive(fresh);
+    attached = attachDocuments(withVendor, docs, now);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Caso revogado.';
+    await handle.finish({ ok: false, error: message, reply: result.text || '' });
+    throw new RaioxError(message);
+  }
+  writeCase(root, attached);
   await handle.finish({ ok: true, reply: result.text || '' });
   return { ok: true, version, problems: docs.flatMap((doc) => doc.lint) };
 }
@@ -153,6 +165,7 @@ export async function renderPdfs(root: string, id: string, version: number, deps
 
 async function renderPdfsOnce(root: string, id: string, version: number, deps: DocsDeps): Promise<{ ok: true }> {
   const current = readCase(root, id);
+  assertActive(current);
   const docs = current.debrief?.documents?.filter((doc) => doc.version === version) || [];
   if (docs.length !== 2) throw new RaioxError('Gere os documentos antes do PDF.');
   const repo = deps.repo || repoRoot();
@@ -179,6 +192,7 @@ async function renderPdfsOnce(root: string, id: string, version: number, deps: D
   const nextDocs = (current.debrief?.documents || []).map((doc) => doc.version === version
     ? { ...doc, pdf: path.posix.join('documentos', `v${version}`, doc.kind === 'relatorio' ? 'relatorio-raio-x.pdf' : 'plano-crescimento.pdf') }
     : doc);
+  assertActive(readCase(root, id));
   writeCase(root, { ...current, debrief: { ...current.debrief!, documents: nextDocs } });
   return { ok: true };
 }

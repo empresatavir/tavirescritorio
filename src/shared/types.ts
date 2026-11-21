@@ -688,6 +688,7 @@ export interface TavirApi {
     exportPdfs: (id: string) => Promise<{ ok: boolean; error?: string }>;
     recordDelivery: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     close: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    revoke: (id: string, input: { channel: string; requestedAt?: string; note?: string }) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => () => void;
     playbooks: () => Promise<
       | { ok: true; playbooks: Array<{ id: string; title: string; stage: string; wave: number; status: string; version: string; problems: string[] }> }

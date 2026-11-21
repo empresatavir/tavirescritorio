@@ -168,10 +168,18 @@
       <button class="btn secondary" onClick="{{runAnalyse}}">Rodar análise</button>
       <button class="btn secondary" onClick="{{openEvidence}}">Registrar evidência</button>
       <button class="btn secondary" onClick="{{openEdit}}">Editar caso</button>
+      <sc-if value="{{canRevoke}}" hint-placeholder-val="{{true}}"><button class="btn ghost" onClick="{{openRevoke}}" title="O titular pediu para retirar a autorização">Registrar revogação</button></sc-if>
       <button class="btn ghost" onClick="{{removeCase}}">Excluir</button>
       <button class="btn primary" onClick="{{openFolder}}">Abrir pasta</button>
     </div>
   </div>
+  <sc-if value="{{isRevoked}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="padding: 14px 16px; border-color: var(--danger); display: flex; flex-direction: column; gap: 4px">
+      <b style="color: var(--danger)">Autorização revogada pelo titular</b>
+      <span class="muted" style="font-size: 13px">{{revokedText}}</span>
+      <span class="muted" style="font-size: 13px">Nenhuma etapa nova roda: análise, redação, PDF, entrega e execução ficam travadas. O caso pode ser lido e expurgado.</span>
+    </section>
+  </sc-if>
   <section class="card rx-live {{live.cls}}">
     <div class="rx-live-head">
       <span class="rx-dot {{live.cls}}"></span>
@@ -511,6 +519,19 @@
   </div></div>
 </sc-if>
 
+<sc-if value="{{modalRevoke}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Registrar revogação" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Registrar revogação</h2><p>O titular pediu para retirar a autorização. Depois de registrada, o caso para e não volta: uma nova autorização vira caso novo.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <label class="field"><span>Por onde o pedido chegou *</span><select class="input" value="{{revForm.channel}}" onChange="{{onRevokeChannel}}"><option value="">Escolha</option><sc-for list="{{revokeChannels}}" as="o" hint-placeholder-count="5"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></label>
+      <label class="field"><span>Quando o titular pediu</span><input class="input" type="datetime-local" value="{{revForm.requestedAt}}" onChange="{{onRevokeWhen}}"><small class="muted">Em branco: agora.</small></label>
+      <label class="field"><span>Nota</span><input class="input" value="{{revForm.note}}" onChange="{{onRevokeNote}}" placeholder="Ex.: respondeu o e-mail de entrega pedindo para parar"></label>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{submitRevoke}}">Registrar e parar o caso</button></div>
+  </div></div>
+</sc-if>
+
 <sc-if value="{{modalEdit}}" hint-placeholder-val="{{false}}">
   <div class="back" onClick="{{modalBg}}"><div class="modal lg" role="dialog" aria-modal="true" aria-label="Editar caso" onClick="{{modalStop}}">
     <div class="mhead"><div class="grow"><h2>Editar caso</h2><p>{{editLead}}</p></div></div>
@@ -594,6 +615,8 @@ const STATUS_NOTE = {
 };
 const REMOTE_LABEL = { draft: 'Rascunho', form_1_sent: 'Convite enviado', form_1_received: 'Formulário 1 recebido', form_2_sent: 'Formulário 2 enviado', form_2_received: 'Formulário recebido', awaiting_approval: 'Aguardando autorizar análise', analysing: 'Em análise', review: 'Documentos em revisão', ready: 'Pronto para entregar', sent: 'Entregue', closed: 'Encerrado' };
 const ORIGIN_LABEL = { amigo: 'Amigo', rua: 'Rua', formulario: 'Formulário', indicacao: 'Indicação' };
+// Mesmos canais de RAIOX_OPTIN_CHANNELS (src/shared/raiox.ts).
+const REVOKE_CHANNELS = [{ id: 'whatsapp', label: 'WhatsApp' }, { id: 'telefone', label: 'Telefone' }, { id: 'presencial', label: 'Presencial' }, { id: 'videochamada', label: 'Videochamada' }, { id: 'email', label: 'E-mail' }];
 const MODE_DAYS = { estudo_rapido: '1 dia', diagnostico: '3 dias', completo: '7 dias' };
 const CLASS_META = { observado: ['Observado', 'flow', 'var(--flow)'], informado: ['Informado', '', 'var(--text-muted)'], inferido: ['Inferido', 'warn', 'var(--warning)'], indisponivel: ['Indisponível', 'danger', 'var(--danger)'] };
 const CONF_LABEL = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
@@ -1558,6 +1581,25 @@ class Component extends DCLogic {
       modalPri: s.modal === 'priority',
       modalDeb: s.modal === 'debrief',
       modalDel: s.modal === 'delivery',
+      modalRevoke: s.modal === 'revoke',
+      isRevoked: Boolean(current && (current.revocation || (current.remote && current.remote.revoked))),
+      canRevoke: Boolean(current && !current.revocation && !(current.remote && current.remote.revoked) && !current.legacy),
+      revokedText: current && current.revocation
+        ? ('Pedido em ' + new Date(current.revocation.requestedAt).toLocaleString('pt-BR') + ' por ' + (REVOKE_CHANNELS.find(function (o) { return o.id === current.revocation.channel; }) || { label: current.revocation.channel }).label + '; registrado em ' + new Date(current.revocation.at).toLocaleString('pt-BR') + '.' + (current.revocation.note ? ' ' + current.revocation.note : ''))
+        : (current && current.remote && current.remote.revoked ? 'Revogação registrada no Supabase e trazida pela sincronização.' : ''),
+      revokeChannels: REVOKE_CHANNELS,
+      revForm: s.revForm || { channel: '', requestedAt: '', note: '' },
+      openRevoke: function () { self.setState({ modal: 'revoke', error: '', revForm: { channel: '', requestedAt: '', note: '' } }); },
+      onRevokeChannel: function (event) { self.setState({ revForm: Object.assign({}, s.revForm, { channel: event.target.value }) }); },
+      onRevokeWhen: function (event) { self.setState({ revForm: Object.assign({}, s.revForm, { requestedAt: event.target.value }) }); },
+      onRevokeNote: function (event) { self.setState({ revForm: Object.assign({}, s.revForm, { note: event.target.value }) }); },
+      submitRevoke: function () {
+        const api = tavirApi();
+        const form = s.revForm || {};
+        if (!api || !current || !api.raiox.revoke) return;
+        const when = form.requestedAt ? new Date(form.requestedAt).toISOString() : '';
+        api.raiox.revoke(current.id, { channel: form.channel || '', requestedAt: when, note: form.note || '' }).then(refreshOpen).catch(function () { fail(); });
+      },
       modalRm: s.modal === 'remove',
       modalBg: function (event) { if (event && event.target !== event.currentTarget) return; self.setState({ modal: null, error: '', removeId: null }); },
       modalStop: function (event) { if (event && event.stopPropagation) event.stopPropagation(); },

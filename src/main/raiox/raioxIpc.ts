@@ -15,7 +15,10 @@ import {
   addEvidence,
   caseIdFromUuid,
   approveDocuments,
+  assertActive,
   closeCase,
+  revokeCase,
+  type RaioxRevocationInput,
   closeExecution,
   createCase,
   linkFabrica,
@@ -120,6 +123,7 @@ export function registerRaioxIpc(handle: Handle): void {
 
   handle('raiox:pickFile', async (_e, id: string, sub: 'evidencias' | 'execucao') => {
     try {
+      assertActive(readCase(raioxRoot(), id));
       const picked = await dialog.showOpenDialog({ properties: ['openFile'] });
       if (picked.canceled || !picked.filePaths[0]) return { ok: false, error: 'Nenhum arquivo selecionado.' };
       const artifact = storeFile(raioxRoot(), id, sub, picked.filePaths[0]);
@@ -259,9 +263,10 @@ export function registerRaioxIpc(handle: Handle): void {
 
   handle('raiox:attach', (_e, id: string, src: string, field?: string) => {
     try {
+      assertActive(readCase(raioxRoot(), id));
       const artifact = storeFile(raioxRoot(), id, 'evidencias', String(src || ''));
       return mutate(id, (c) => {
-        if (c.legacy) throw new RaioxError('Caso legado é somente leitura.');
+        assertActive(c);
         const next = { ...c, anexos: [...(c.anexos || []), { ...artifact, field: field || '' }] };
         next.updatedAt = new Date().toISOString();
         return next;
@@ -355,6 +360,7 @@ export function registerRaioxIpc(handle: Handle): void {
 
   handle('raiox:exportPdfs', async (_e, id: string) => {
     try {
+      assertActive(readCase(raioxRoot(), id));
       const picked = await dialog.showOpenDialog({ properties: ['openDirectory'] });
       if (picked.canceled || !picked.filePaths[0]) return { ok: false, error: 'Nenhuma pasta selecionada.' };
       const current = readCase(raioxRoot(), id);
@@ -381,6 +387,20 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:close', (_e, id: string) => {
     try {
       return mutate(id, (c) => closeCase(c, new Date().toISOString()));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:revoke', (_e, id: string, input: RaioxRevocationInput) => {
+    try {
+      const root = raioxRoot();
+      const next = revokeCase(readCase(root, id), input || { channel: '' }, new Date().toISOString());
+      writeCase(root, next);
+      // Para o que estiver rodando neste caso; a gravação final deles também confere a revogação.
+      stopAnalyse(id);
+      stopDocuments(id);
+      return saved(next);
     } catch (err) {
       return fail(err);
     }
@@ -415,6 +435,7 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:checkStep', (_e, id: string, step: number, proof: { kind: 'arquivo' | 'link' | 'nota'; value: string; sha256?: string }) => {
     try {
       const current = readCase(raioxRoot(), id);
+      assertActive(current);
       const book = requirePlaybook(current.priority?.gapId || current.execution?.gapId || '');
       const kind = proof?.kind === 'arquivo' || proof?.kind === 'link' ? proof.kind : 'nota';
       let value = String(proof?.value || '');
@@ -453,6 +474,7 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:openFabrica', (_e, id: string) => {
     try {
       const current = readCase(raioxRoot(), id);
+      assertActive(current);
       const offer = current.debrief?.offerId;
       if (offer !== 'pagina_vendas' && offer !== 'criacao_oferta') throw new RaioxError('Esta oferta não abre projeto na Fábrica.');
       const created = createOrAbsorbProjectRecord({

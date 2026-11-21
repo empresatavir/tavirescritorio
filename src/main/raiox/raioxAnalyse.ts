@@ -8,7 +8,7 @@ import { startRun, type RunHandle } from '../runLedger';
 import { writeCheckpoint } from '../officeRuns';
 import { buildContext, repoRoot } from './raioxContext';
 import { suggestionShape } from './raioxDocLint';
-import { RaioxError, addEvidence, addHypotheses } from './raioxRules';
+import { RaioxError, addEvidence, addHypotheses, assertActive } from './raioxRules';
 import { caseDir, readCase, writeCase } from './raioxStore';
 import { ensureLocal, readTarget, saveTarget, wantsLocal, type LocalResult } from './localBusiness';
 import { shapeProblem, verifyCaseLinks, type LinkReport } from './linkGuard';
@@ -48,6 +48,7 @@ export function rapidKeys(): string[] {
 }
 
 export function collectLocalFor(root: string, c: RaioxCase, force = false, mapsUrl = ''): Promise<LocalResult> {
+  assertActive(c);
   if (mapsUrl.trim()) {
     const problem = /^https?:/i.test(mapsUrl.trim()) ? shapeProblem(mapsUrl.trim()) : null;
     if (problem) throw new RaioxError(`Link do Maps não aceito (${problem}).`);
@@ -83,6 +84,7 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     throw new RaioxError('Frente de varredura inválida.');
   }
   let current = readCase(root, id);
+  assertActive(current);
   // G-PR1 controle 4: caso que veio do formulário só é analisado com o e-mail do titular confirmado.
   if (current.remote && current.origin === 'formulario' && !current.remote.emailVerified) {
     throw new RaioxError('A análise não começou: o e-mail deste convidado ainda não foi confirmado. Sincronize de novo depois que ele clicar no link de confirmação.');
@@ -183,6 +185,16 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     throw new RaioxError(message);
   }
   kills.delete(id);
+  // G-PR1 controle 8: revogação registrada enquanto o motor rodava descarta o resultado.
+  try {
+    assertActive(readCase(root, id));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Caso revogado.';
+    await handle.finish({ ok: false, status: 'failed', error: message, reply: '' });
+    live.set(id, { running: false, speech: '', activity: '' });
+    writeCheckpoint(workspace, { at: now, label: current.status, reason: message.slice(0, 400), partial: '' });
+    throw new RaioxError(message);
+  }
   if (!result.ok && result.error?.kind === 'paused') {
     const message = 'Pausado por Carlos. A retomada continua deste ponto.';
     await handle.finish({ ok: false, status: 'paused', error: message, reply: result.text || '', exitCode: result.exitCode });

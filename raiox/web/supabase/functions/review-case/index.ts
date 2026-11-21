@@ -46,8 +46,10 @@ Deno.serve(async (request) => {
 
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: caseRow, error: caseError } = await supabase.from("raiox_cases")
-    .select("id,status").eq("id", caseId).maybeSingle();
+    .select("id,status,revoked_at").eq("id", caseId).maybeSingle();
   if (caseError) return response({ error: "review_not_recorded" }, 500);
+  // G-PR1 controle 8: caso revogado não recebe aprovação nova.
+  if (caseRow?.revoked_at) return response({ error: "case_revoked" }, 403);
   if (!caseRow || !["awaiting_approval", "analysing", "review"].includes(caseRow.status)) {
     return response({ error: "case_not_reviewable" }, 409);
   }

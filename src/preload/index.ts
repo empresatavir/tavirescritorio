@@ -362,6 +362,7 @@ const api: TavirApi = {
     exportPdfs: (id: string) => ipcRenderer.invoke('raiox:exportPdfs', id),
     recordDelivery: (id: string, input: unknown) => ipcRenderer.invoke('raiox:recordDelivery', id, input),
     close: (id: string) => ipcRenderer.invoke('raiox:close', id),
+    revoke: (id: string, input: { channel: string; requestedAt?: string; note?: string }) => ipcRenderer.invoke('raiox:revoke', id, input),
     onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => {
       const handler = (_e: Electron.IpcRendererEvent, progress: { id: string; speech: string; activity: string; running: boolean }) => callback(progress);
       ipcRenderer.on('raiox:progress', handler);

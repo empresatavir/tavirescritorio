@@ -42,6 +42,7 @@ interface RemoteCase {
   criado_em: string;
   atualizado_em: string;
   emailVerified: boolean;
+  revoked: boolean;
 }
 
 function causeCode(err: unknown): string {
@@ -185,6 +186,8 @@ function parseCases(payload: unknown): RemoteCase[] {
       atualizado_em: textField(item, 'atualizado_em'),
       // G-PR1 controle 4. Função antiga (sem o campo) conta como não confirmado.
       emailVerified: item.email_verificado === true,
+      // G-PR1 controle 8. Revogação registrada no Supabase trava o caso local também.
+      revoked: item.revogado === true,
     };
   });
 }
@@ -222,7 +225,8 @@ export async function syncCases(deps: SyncDeps = {}): Promise<{ ok: true; create
     if (existing) {
       const next: RaioxCase = {
         ...existing,
-        remote: { ...existing.remote!, status: item.status, syncedAt: now, emailVerified: item.emailVerified },
+        // Revogação não volta atrás por sync: uma vez revogado, continua revogado.
+        remote: { ...existing.remote!, status: item.status, syncedAt: now, emailVerified: item.emailVerified, revoked: item.revoked || existing.remote!.revoked === true },
         updatedAt: now,
       };
       writeCase(root, next);
@@ -238,7 +242,7 @@ export async function syncCases(deps: SyncDeps = {}): Promise<{ ok: true; create
       origin: 'formulario',
       consent: { kind: 'formulario', at: now, note: '' },
     }, now, localUuid);
-    createdCase.remote = { supabaseId: item.id, status: item.status, syncedAt: now, emailVerified: item.emailVerified };
+    createdCase.remote = { supabaseId: item.id, status: item.status, syncedAt: now, emailVerified: item.emailVerified, revoked: item.revoked };
     // G-PR1 controle 6: caso que veio do formulário já passou por Vercel, Supabase e o aviso do Telegram.
     let withVendors: RaioxCase = createdCase;
     for (const [vendor, use] of [['vercel', 'formulário'], ['supabase', 'caso remoto'], ['telegram', 'aviso de formulário recebido']] as const) {

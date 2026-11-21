@@ -991,7 +991,9 @@ export const RAIOX_OPTIN_LABEL: Record<RaioxOptinChannel, string> = {
 };
 /** Como o contato aceitou receber o convite. Registrado pelo Carlos antes de criar o caso remoto. */
 export interface RaioxOptin { channel: RaioxOptinChannel; obtainedAt: string; policyVersion: string; operator: string; }
-export interface RaioxRemote { supabaseId: string; status: RaioxRemoteStatus; syncedAt: string; formUrl?: string; emailVerified?: boolean; }
+/** G-PR1 controle 8: o titular retirou a autorização. Depois disto o caso só é lido ou expurgado. */
+export interface RaioxRevocation { at: string; requestedAt: string; channel: RaioxOptinChannel; note: string; }
+export interface RaioxRemote { supabaseId: string; status: RaioxRemoteStatus; syncedAt: string; formUrl?: string; emailVerified?: boolean; revoked?: boolean; }
 export interface RaioxCase {
   id: string; uuid: string; legacy: boolean;
   company: string; contact?: string; objective: string; decisionNeeded: string; frontier?: string;
@@ -1005,6 +1007,7 @@ export interface RaioxCase {
   vendors?: RaioxVendor[];
   /** G-PR1 controle 1: opt-in que autorizou o convite deste caso. */
   optin?: RaioxOptin;
+  revocation?: RaioxRevocation;
   createdAt: string; updatedAt: string; closedAt?: string;
 }
 export interface RaioxVendor {

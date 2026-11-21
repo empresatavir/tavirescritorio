@@ -136,6 +136,33 @@ do CP-10 (R5).
   script/estilo/token, marca de minuta enquanto houver lacuna, rotas da Vercel e caixa do
   formulário com a mesma versão). Conferida no navegador em desktop e 375 px, sem rolagem lateral.
 
+### Controle 8 — Direitos do titular e revogação (código e rascunho concluídos em 2026-11-21)
+
+- **Escritório:** botão **Registrar revogação** no caso (canal, quando o titular pediu, nota).
+  O registro fica em `caso.json` (`revocation`) e não tem volta: nova autorização é caso novo.
+  - trava central (`assertActive`): toda regra do caso, análise, consulta ao Google, redação,
+    PDF, anexos, exportação, entrega, execução e abertura de projeto na Fábrica recusam com o
+    motivo na tela. Ler, abrir a pasta e excluir continuam;
+  - análise ou redação em andamento é parada e, ao terminar, relê o caso: se houve revogação, o
+    resultado é descartado e a revogação não é sobrescrita;
+  - faixa vermelha "Autorização revogada pelo titular" no caso e "Revogado: só leitura ou
+    expurgo" na lista.
+- **Supabase** (migração nova `20261121140000_raiox_gpr1_revogacao.sql`, não aplicada; R5):
+  `revoked_at`, `revoked_requested_at` e `revoked_channel` no caso; `revoke_raiox_case` fecha o
+  link do formulário e a confirmação de e-mail em aberto; `verify_raiox_email` não confirma caso
+  revogado; `continue-case`, `review-case` e o preparo de entrega respondem `case_revoked`. O
+  registro de entrega já enviada continua aceito (registra o que aconteceu). O sync traz
+  `revogado` e o caso local trava do mesmo jeito; sync posterior não desfaz.
+- **Procedimento:** `raiox/docs/validacao/direitos-titular.md` (canal, conferência de quem pede,
+  acesso, correção, revogação, exclusão).
+- **Testes:** `tests/unit/raioxRevogacao.spec.ts` (registro e recusas, nenhuma regra muda o
+  caso, revogação do Supabase, análise/Google/redação/PDF sem chamar o motor, revogação durante
+  a análise descarta o resultado, funções e migração) e `tests/unit/raioxBridge.spec.ts` (sync
+  traz a revogação e não volta atrás). Suíte: 546 testes.
+- **Pendente:** levar a revogação do Escritório para o Supabase é escrita (F8); até lá a função
+  `revoke_raiox_case` roda junto do Carlos. Canal de privacidade (Carlos) e prazos e textos de
+  resposta (advogado). Tela não conferida com o app aberto.
+
 ### Controle 6 — Fornecedores por caso (código concluído em 2026-11-21)
 
 - **Catálogo:** `raiox/fornecedores.json` com Vercel, Supabase, Telegram, Resend, RapidAPI e os
