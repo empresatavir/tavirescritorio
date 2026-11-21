@@ -7,9 +7,9 @@
 
 ## COMO EXECUTAR ESTE DOCUMENTO (leia primeiro, obedeça sempre)
 
-1. Execute as fases **na ordem**: F0 → F1 → F2 → F3 → F4 → F5 → F6 → F7 → F8 → F9.
-   F8 só roda se o Carlos responder "sim" para P2 no CP-9. Em 2026-11-10 a resposta foi não:
-   F8 não roda. T9.2 e T9.3 também não rodam: o Telegram saiu do plano (app mobile no lugar).
+1. F0 a F7 estão feitas. A partir de 2026-11-20 vale a ordem da seção **RETOMADA** no fim deste
+   documento: CP-8 → F10 → F8 → F11 → CP-10 → F9 → CP-12. Em 2026-11-20 o Carlos mudou a P2 para
+   **sim** (ir até o piloto real assistido), então F8 roda. T9.1, T9.2 e T9.3 continuam fora.
 2. Dentro de cada fase, execute as tarefas **na ordem dos IDs** (ex.: T2.1, T2.2…).
 3. Cada tarefa tem: **Arquivos**, **Fazer**, **Pronto quando**. Só passe para a próxima quando
    todos os itens de "Pronto quando" forem verdadeiros.
@@ -48,9 +48,10 @@ R4. NUNCA marcar evidência como aprovada, prioridade como fechada, documento co
     entrega como feita ou passo de execução como provado a partir de resposta de motor.
     Só por clique do Carlos na tela (handler IPC chamado pela UI).
 R5. NUNCA chamar Edge Function que escreve no Supabase (`create-case`, `continue-case`,
-    `review-case`, `delivery-case`, `invite-case`) antes do CP-9. Até lá, só leitura
-    (`office-raiox-sync`).
-R6. NUNCA enviar e-mail. Envio pela Resend só depois do CP-9 **e** de P2 resolvido.
+    `review-case`, `delivery-case`, `invite-case`) fora de teste com `fetch` simulado antes do
+    CP-10. A primeira chamada real é o smoke do CP-10, com caso fictício.
+R6. NUNCA enviar e-mail para pessoa de fora da TAVIR antes do CP-12 (G-PR1 com evidência e
+    liberação escrita do Carlos). Até lá, só o e-mail interno da TAVIR no smoke.
 R7. NUNCA alterar: `.claude/launch.json`, seção 7 do `CLAUDE.md`, `backend/`, `frontend/`,
     `src/shared/esteiras.ts`, lógica existente da Fábrica (só acrescentar).
 R8. NUNCA salvar SVG com `<metadata>` ou `c2pa`. Ícones via `TvIcon` / SVG inline limpo.
@@ -929,6 +930,124 @@ para `tavirescritorio/raiox/` e `docs/planning/PLANO_RAIOX.md`. Commit no Agenci
 
 ### 🛑 CP-11 — Encerramento
 Relatar o checklist do critério de sucesso (seção 8 do PLANO) item a item, com evidência.
+
+---
+
+# RETOMADA (2026-11-20) — até o piloto real assistido
+
+Decisões do Carlos em 2026-11-20:
+- **Alcance:** ir até o piloto real assistido (sem cobrança). P2 passa a **sim**. Venda (preço,
+  contrato, cobrança) fica para depois do piloto.
+- **Convite:** o Escritório cria o caso remoto e manda o convite; o APK também pode pedir, pela
+  fila do Supabase. O `office.py` deixa de ser caminho.
+- **Motor (P3):** não há motor padrão do Raio-X. A análise e a redação usam o motor escolhido no
+  Escritório e têm de passar nas mesmas checagens em todos os motores ligados (F11).
+- **Caso do CP-8:** `RX-854A8212` (consentimento verbal registrado, já em Coleta). Os PDFs desse
+  caso só podem sair para o cliente depois do CP-12; no CP-8 a entrega manual é registrada para o
+  próprio Carlos.
+
+Estado em 2026-11-20: F0–F7 commitadas (branch `Raio-x` e `fabrica/absorcao-chamados`, fora da
+`master`); 16 playbooks em `rascunho`; 13 casos locais, nenhum além de Coleta.
+
+Ordem: **CP-8 → F10 → F8 → F11 → CP-10 → F9 → CP-12**.
+
+### 🛑 CP-8 (refeito) — `RX-854A8212` de ponta a ponta
+Mesmo roteiro do CP-8 original, com o caso acima e o motor que estiver como padrão no Escritório.
+Coleta → revisão de evidências → prioridade → devolutiva → redação → checagem → PDF → aprovação
+por hash → entrega manual registrada (destinatário: Carlos) → encerrar. Anotar cada falha de tela
+ou de checagem como tarefa `T8.0.n` e corrigir antes de seguir. Relatar tempo de cada rodada,
+`git status` limpo e `npm run raiox:scan` limpo.
+
+**Resultado (2026-11-20): passou.** Caso `fechado` às 23:54 UTC. Documentos v1 com checagem limpa,
+PDFs gerados (relatório 215 KB, plano 199 KB, anexo interno cortado), aprovação por hash pelo
+clique do Carlos (hashes conferidos contra os `.md`), entrega `manual` registrada para o Carlos.
+Rodadas: análise no Cursor (`auto-smart`) 1,6–2,6 min nas que deram certo (duas falharam antes, em
+2026-11-10); redação no Antigravity (`gemini-3.8-flash`) 6–7 min. `raiox:scan` limpo; nenhum dado
+do caso no repositório (só o id neste plano). Correções feitas durante o CP-8:
+- T8.0.1 Reanálise duplicava evidências e hipóteses → deduplicação por etapa+fonte+afirmação.
+- T8.0.2 "Gerar documentos" sem retorno na tela e com clique duplo abrindo duas redações → trava
+  por caso no processo principal, mensagem de andamento e releitura do caso.
+- T8.0.3 Aba Devolutiva virou fluxo de 8 passos (prioridade → encerrar) com estado rodando/feito,
+  botão Parar, bloco ao vivo e botões travados enquanto algo roda.
+- T8.0.4 PDF falhava: logo e fontes da marca não estavam no repositório → `tools/marca/` (fontes
+  OFL com licença) e o motivo real do erro aparece na tela.
+- Pendente (entra na F10): botões de aprovar/rejeitar evidência ignoram `ok:false` em silêncio.
+- Observação para F11: a análise e a redação deste caso rodaram em motores diferentes; a
+  conformidade entre motores ainda não foi medida.
+
+# F10 — Controles do piloto real (G-PR1)
+Fonte: `raiox/docs/plano/piloto-real-assistido.md`. Cada controle termina com evidência em
+`raiox/docs/validacao/g-pr1.md` (sem dado de cliente).
+
+### T10.1 Levantamento
+Para cada um dos 9 controles: o que já existe (migração, função, formulário, tela), o que falta e
+quem faz (código, Carlos, advogado). Entregar a tabela antes de codar.
+
+### T10.2 Opt-in antes do caso (controle 1)
+`create-case` falha fechado sem registro de opt-in (canal, horário, versão do aviso, operador).
+Migração nova; não alterar migração já aplicada.
+
+### T10.3 Aviso de privacidade versionado (controle 2)
+Página `raiox/web/public/privacidade.html` sem token, com os itens do controle 2. Texto é minuta:
+o Carlos leva ao advogado. Versão gravada junto do consentimento.
+
+### T10.4 Três decisões separadas e e-mail confirmado (controles 3 e 4)
+Formulário com três caixas sem pré-marcação; token de confirmação opaco, de uso único e com
+validade; análise e entrega bloqueadas sem `email_verified_at`.
+
+### T10.5 Entrada segura e minimização (controle 5)
+Validar protocolo, destino, DNS/IP e redirects de todo link antes de acessar. Bloquear campos
+proibidos. Testes com URLs internas, IP privado e redirect.
+
+### T10.6 Fornecedores por caso e expurgo (controles 6 e 7)
+`caso.json` registra fornecedor, finalidade, região e retenção de cada serviço usado (inclusive o
+motor de IA). Botão "Expurgar caso" no Escritório: Supabase, pasta privada, PDFs, Resend e
+temporários, com relatório de ausência sem PII.
+
+### T10.7 Direitos do titular e runbook (controles 8 e 9)
+`raiox/docs/validacao/runbook-incidentes.md` e procedimento de acesso/correção/revogação/exclusão.
+Revogação na tela interrompe as etapas seguintes do caso.
+
+# F8 (ajustada) — Escrita, convite e entrega
+T8.1 e T8.2 como escritas acima, com R5/R6 novas. Acréscimos:
+
+### T8.3 Convite pelo Escritório
+Botão "Enviar convite" na lista do Raio-X: empresa, contato, e-mail e registro de opt-in (T10.2).
+Chama `create-case` + `invite-case`. Sem opt-in, o botão não habilita.
+
+### T8.4 Convite pelo APK
+Novo tipo de job `raiox_convite` em `src/main/officeCloud.ts` (campos `empresa`, `contato`,
+`email`, `optin`). O job não envia nada sozinho: cria um pedido pendente que aparece no Raio-X e
+só vira convite com o clique do Carlos (R4). O app mobile ganha o formulário correspondente
+(repositório `tavir-interno/novo-app-2dad16`, tarefa separada).
+
+# F11 — Mesma qualidade em qualquer motor
+### T11.1 Caso fictício de referência
+Fixture em `tests/fixtures/raiox/` com intake e evidências fictícias (sem rede).
+
+### T11.2 Conformidade
+Estender `scripts/conformidade_motores.js` com o Raio-X: análise e redação do caso fictício em cada
+motor ligado. Passa quando: `sugestoes.json` válido, nenhuma escrita fora da pasta do caso,
+documentos aprovados pela checagem (seções, termos proibidos, corte público), nenhum número
+inventado. Relatório em `relatorios/motores/`.
+
+### T11.3 Ajuste de prompt
+Motor que reprovar: ajustar `raiox/prompts/*.md` (não criar prompt por motor), rodar de novo nos
+quatro. Regra 8 do `CLAUDE.md`: `npm run test:motores` nos quatro antes do commit.
+
+### 🛑 CP-10 — Smoke com caso fictício
+Como descrito acima, agora com convite pelo Escritório e pelo APK, e expurgo pelo botão da T10.6.
+
+# F9 (ajustada) — Publicação
+T9.4 (Vercel, Carlos executa) e T9.5 (Supabase link, Carlos). Antes: PR da branch com F0–F11 para
+a `master` (o Carlos aprova o merge). Publicar as migrações e funções novas com o Carlos
+acompanhando. T9.6 só se ele pedir.
+
+### 🛑 CP-12 — Liberação do piloto real
+Relatar o critério de sucesso do PLANO (seção 8) e a tabela G-PR1 com evidência. Pendências do
+Carlos: parecer do advogado sobre aviso e termo; ler e marcar como `validado` ao menos os
+playbooks da Onda 1 usados no piloto (R3). Só com "liberado piloto" escrito por ele os PDFs do
+`RX-854A8212` e de novos convidados podem sair.
 
 ---
 

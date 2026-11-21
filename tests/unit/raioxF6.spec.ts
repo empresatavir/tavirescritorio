@@ -4,6 +4,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import type { MotorResult } from '../../src/main/motors';
 import { analyse } from '../../src/main/raiox/raioxAnalyse';
+import { writeDocuments } from '../../src/main/raiox/raioxDocs';
 import { lintDocument } from '../../src/main/raiox/raioxDocLint';
 import { approveDocuments, closeCase, createCase, recordDelivery, setDebrief, setPriority, addEvidence } from '../../src/main/raiox/raioxRules';
 import { readCase, writeCase } from '../../src/main/raiox/raioxStore';
@@ -79,6 +80,41 @@ describe('análise do Raio-X', () => {
     const saved = readCase(root, 'RX-E7C28036');
     expect(saved.evidence[0]).toMatchObject({ author: 'dora', review: 'pendente', claim: 'A página não tem pedido.' });
     expect(saved.hypotheses).toHaveLength(1);
+  });
+
+  it('reanálise com as mesmas sugestões não duplica e mantém a revisão', async () => {
+    const root = temp();
+    const repo = repoOf();
+    await run(root, repo, valid, () => '');
+    const reviewed = readCase(root, 'RX-E7C28036');
+    reviewed.evidence[0].review = 'aprovada';
+    writeCase(root, reviewed);
+    const novo = { evidencias: [...valid.evidencias, { stage: 'medir', source: 'Maps', claim: 'Sem avaliações.', classification: 'observado', gapIds: ['reputacao-fraca'] }], hipoteses: valid.hipoteses };
+    const again = await analyse(root, 'RX-E7C28036', [], { repo, run: okMotor(novo), gitStatus: () => '', now: () => NOW, uuid: (() => { let n = 10; return () => `ev-${++n}`; })(), ledger: ledger as never });
+    expect(again).toEqual({ ok: true, created: 1 });
+    const saved = readCase(root, 'RX-E7C28036');
+    expect(saved.evidence).toHaveLength(2);
+    expect(saved.evidence[0].review).toBe('aprovada');
+    expect(saved.hypotheses).toHaveLength(1);
+  });
+
+  it('segundo clique em Gerar documentos não abre outra redação no mesmo caso', async () => {
+    const root = temp();
+    const repo = repoOf();
+    fs.writeFileSync(path.join(repo, 'raiox', 'prompts', 'redacao.md'), 'Redija {{CASE_ID}}', 'utf8');
+    const c = baseCase(root);
+    writeCase(root, { ...c, debrief: { decision: 'proposta_emitida' } as never });
+    let release: () => void = () => {};
+    const gate = new Promise<void>((resolve) => { release = resolve; });
+    const slow = async (call: { workspace: string; motor: string; model?: string }): Promise<MotorResult> => {
+      await gate;
+      return { motor: call.motor, binary: '', args: [], model: call.model, stdout: '', stderr: '', exitCode: 1, ok: false, text: '', error: { kind: 'failed', message: 'parou' } } as never;
+    };
+    const first = writeDocuments(root, c.id, { repo, run: slow as never, ledger: ledger as never, now: () => NOW });
+    await expect(writeDocuments(root, c.id, { repo, run: slow as never, ledger: ledger as never, now: () => NOW })).rejects.toThrow('A redação deste caso já está rodando.');
+    release();
+    await expect(first).rejects.toThrow('parou');
+    await expect(writeDocuments(root, c.id, { repo, run: (async (call: never) => { void call; throw new Error('liberou'); }) as never, ledger: ledger as never, now: () => NOW })).rejects.toThrow('liberou');
   });
 
   it.each([

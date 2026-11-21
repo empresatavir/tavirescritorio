@@ -37,7 +37,7 @@ import {
 import { createOrAbsorbProjectRecord } from '../project-fs';
 import { syncCases } from './raioxBridge';
 import { analyse, analysisLive, collectLocalFor, stopAnalyse } from './raioxAnalyse';
-import { documentPath, renderPdfs, writeDocuments } from './raioxDocs';
+import { documentPath, documentsBusy, renderPdfs, stopDocuments, writeDocuments } from './raioxDocs';
 import { listRuns, readRun } from '../runLedger';
 import { listCases, raioxRoot, readCase, storeFile, writeCase, caseDir, deleteCase } from './raioxStore';
 import { analysisReportHtml, documentHtml, openReader } from './raioxView';
@@ -214,6 +214,7 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:stopAnalyse', (_e, id: string) => {
     try {
       stopAnalyse(id);
+      stopDocuments(id);
       return { ok: true };
     } catch (err) {
       return fail(err);
@@ -223,7 +224,7 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:runs', (_e, id: string) => {
     try {
       const dir = caseDir(raioxRoot(), id);
-      return { ok: true, live: analysisLive(id), runs: listRuns(dir).filter((item) => item.kind === 'raiox') };
+      return { ok: true, live: analysisLive(id), busy: documentsBusy(id), runs: listRuns(dir).filter((item) => item.kind === 'raiox') };
     } catch (err) {
       return fail(err);
     }

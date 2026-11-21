@@ -1,6 +1,6 @@
 # Raio-X — mapa de arquivos
 
-Tabela da seção 3 de `docs/planning/PLANO_RAIOX.md`, com o destino e o papel.
+Tabela da seção 3 de `docs/planning/PLANO_RAIOX.md`, com o destino e o papel. Situação e próximos passos: seção RETOMADA de `docs/planning/GOAL_RAIOX.md`.
 
 | Arquivo | Papel |
 |---|---|
@@ -19,10 +19,17 @@ Tabela da seção 3 de `docs/planning/PLANO_RAIOX.md`, com o destino e o papel.
 | `agentes/escopo/agentes/analista-web.md` | Analista web, adaptado aos caminhos novos. |
 | `agentes/escopo/skills/funil-vendas/` | Skill de funil que o prompt usa. |
 | `raiox/web/supabase/functions/office-raiox-sync/index.ts` | Fonte publicada da leitura. Contrato abaixo. |
-| `src/main/raiox/raioxBridge.ts` | Leitura do Supabase (`syncCases`). Escrita bloqueada até o corte. |
-| `src/main/raiox/raioxDelivery.ts`, `src/main/raiox/raioxAnalyse.ts` | Porta do `office.py` ainda não existe. |
-| `raiox/prompts/analise.md`, `raiox/prompts/redacao.md` | Prompt de análise e de redação, versionado. Ainda não existe. |
-| `src/shared/raiox.ts`, `src/main/raiox/raioxRules.ts` | Regras portadas de `backend/app/modules/raiox/`. Ainda não existe. |
+| `src/main/raiox/raioxBridge.ts` | Leitura do Supabase (`syncCases`). As funções de escrita (`continueCase`, `reviewCase`, `deliveryCase`, `inviteCase`) ainda recusam: entram na F8 do GOAL. |
+| `src/main/raiox/raioxAnalyse.ts`, `raioxContext.ts`, `localBusiness.ts` | Análise pelo motor escolhido no Escritório, com contexto copiado para a pasta do caso e consulta do Google Maps (RapidAPI Local Business). |
+| `src/main/raiox/raioxDocs.ts`, `raioxDocLint.ts` | Redação dos dois documentos, checagem (seções, termos proibidos, formato de `sugestoes.json`) e PDF por `tools/publicar.py`. |
+| `src/main/raiox/raioxView.ts` | Leitura interna do caso para a tela. |
+| `src/main/raiox/raioxStore.ts`, `raioxIpc.ts` | Pasta privada do caso e canais IPC (inclui execução da F7). |
+| `src/main/raiox/playbooks.ts` | Leitor e lint dos playbooks; `playbookStatusFor` diz se o gap tem playbook `validado`. |
+| `raiox/prompts/analise.md`, `raiox/prompts/redacao.md` | Prompt de análise e de redação, versionado. |
+| `src/shared/raiox.ts`, `src/main/raiox/raioxRules.ts` | Domínio, taxonomia e regras puras do caso. |
+| `src/renderer/raiox-ref/RaioX.dc.html` | Tela do Raio-X, injetada no build. |
+| `tests/unit/raiox*.spec.ts` | Regras, pasta privada, ponte, F6, playbooks, Local Business e leitura do caso. |
+| — | Entrega por e-mail (Resend) ainda não existe: F8 do GOAL. |
 | `%APPDATA%/<app>/raiox/casos/RX-XXXXXXXX/legado/` | Casos antigos com dado de cliente. Fora do git. Cópia só com aprovação no checkpoint. |
 | Cofre (`src/main/credentials.ts`) | Segredos `RAIOX_*` e `RESEND_*`. O Carlos digita na tela. Nada em arquivo de texto. |
 | — | `TELEGRAM_*` sai do Raio-X. |

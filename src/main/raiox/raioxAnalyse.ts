@@ -192,7 +192,13 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
   let next = current;
   const ids: string[] = [];
   try {
+    // Reanálise não duplica: a sugestão igual a uma que já está no caso reaproveita a existente
+    // (e a revisão que o Carlos já fez nela).
+    const sameEv = (a: { stage: string; source: string; claim: string }, b: { stage: string; source: string; claim: string }) =>
+      a.stage === b.stage && a.source.trim() === b.source.trim() && a.claim.trim() === b.claim.trim();
     parsed.evidencias.forEach((item, index) => {
+      const existing = next.evidence.find((ev) => sameEv(ev, item));
+      if (existing) { ids.push(existing.id); return; }
       const evId = deps.uuid ? deps.uuid() : `ev-${index + 1}-${now}`;
       ids.push(evId);
       next = addEvidence(next, {
@@ -201,8 +207,9 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
         artifact: item.url ? { file: item.arquivo || 'analise/sugestoes.json', sha256: '', url: item.url, collectedAt: now } : undefined,
       }, now, evId);
     });
-    if (parsed.hipoteses.length) {
-      next = addHypotheses(next, parsed.hipoteses.map((item, index) => ({
+    const freshHyp = parsed.hipoteses.filter((item) => !next.hypotheses.some((h) => h.gapId === item.gapId && h.text.trim() === item.texto.trim()));
+    if (freshHyp.length) {
+      next = addHypotheses(next, freshHyp.map((item, index) => ({
         id: `H-${next.hypotheses.length + index + 1}`,
         gapId: item.gapId,
         text: item.texto,
@@ -221,5 +228,5 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     await handle.finish({ ok: true, reply: result.text || '', exitCode: result.exitCode });
     live.set(id, { running: false, speech: '', activity: '' });
     deps.onProgress?.({ id, speech: '', activity: '', running: false });
-    return { ok: true, created: parsed.evidencias.length };
+    return { ok: true, created: next.evidence.length - current.evidence.length };
   }

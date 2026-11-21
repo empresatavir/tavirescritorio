@@ -14,6 +14,13 @@
 .rx-live{padding:16px 18px;display:flex;flex-direction:column;gap:12px;border-left:4px solid var(--line-strong)}
 .rx-live.run{border-left-color:var(--flow)}.rx-live.ok{border-left-color:var(--flow)}.rx-live.warn{border-left-color:var(--warning)}.rx-live.bad{border-left-color:var(--danger)}
 .rx-live-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.rx-flow{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rx-fstep{display:flex;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
+.rx-fstep:first-child{border-top:0}
+.rx-fstep.run{background:var(--flow-subtle)}
+.rx-fstep .n{font-size:11px;color:var(--text-muted,var(--muted));width:18px;text-align:right;flex:none}
+.rx-fstep small{display:block;font-size:12px;margin-top:2px;color:var(--text-secondary,inherit)}
+.rx-fstep.bad small{color:var(--danger)}
 .rx-live-head small{display:block;font-size:12px;margin-top:2px}
 .rx-dot{width:10px;height:10px;border-radius:50%;background:var(--line-strong);flex:none}
 .rx-dot.run{background:var(--flow);animation:rxpulse 1.2s ease-in-out infinite}.rx-dot.ok{background:var(--flow)}.rx-dot.warn{background:var(--warning)}.rx-dot.bad{background:var(--danger)}
@@ -269,7 +276,7 @@
 
   <sc-if value="{{tDev}}" hint-placeholder-val="{{false}}">
     <section class="card pad" style="display: flex; flex-direction: column; gap: 14px; max-width: 760px">
-      <div style="display: flex; align-items: center"><span class="eyebrow">Prioridade</span><div class="grow"></div><button class="btn primary" onClick="{{openPriority}}">Escolher prioridade</button></div>
+      <div style="display: flex; align-items: center"><span class="eyebrow">Prioridade</span></div>
       <sc-if value="{{hasPriority}}" hint-placeholder-val="{{false}}">
         <h3 style="font-size: 18px; font-weight: 600">{{priorityTitle}}</h3>
         <p class="sec">{{priorityWhy}}</p>
@@ -278,13 +285,31 @@
       <sc-if value="{{noPriority}}" hint-placeholder-val="{{true}}">
         <p class="muted">A prioridade ainda não foi escolhida.</p>
       </sc-if>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap">
-        <button class="btn secondary" onClick="{{openDebrief}}">Devolutiva</button>
-        <button class="btn secondary" onClick="{{writeDocs}}">Gerar documentos</button>
-        <button class="btn secondary" onClick="{{renderDocs}}">Gerar PDF</button>
-        <button class="btn secondary" onClick="{{viewReport}}">Relatório da análise</button>
+      <div style="display: flex; align-items: center; gap: 8px"><span class="eyebrow">Fluxo até a entrega</span><div class="grow"></div><button class="btn ghost sm" onClick="{{viewReport}}">Relatório da análise</button></div>
+      <div class="rx-flow">
+        <sc-for list="{{flow}}" as="f" hint-placeholder-count="8">
+          <div class="rx-fstep {{f.cls}}">
+            <span class="n">{{f.n}}</span><span class="rx-dot {{f.dot}}"></span>
+            <div class="grow" style="min-width: 0"><b>{{f.label}}</b><small>{{f.detail}}</small></div>
+            <sc-if value="{{f.hasAlt}}" hint-placeholder-val="{{false}}"><button class="btn ghost sm" disabled="{{f.altOff}}" onClick="{{f.alt}}">{{f.altLabel}}</button></sc-if>
+            <sc-if value="{{f.hasAct}}" hint-placeholder-val="{{true}}"><button class="btn {{f.btn}} sm" disabled="{{f.off}}" onClick="{{f.act}}">{{f.actLabel}}</button></sc-if>
+          </div>
+        </sc-for>
       </div>
-      <sc-for list="{{hypotheses}}" as="h" hint-placeholder-count="0"><p class="sec">{{h.text}}</p></sc-for>
+      <sc-if value="{{flowLive}}" hint-placeholder-val="{{false}}">
+        <section class="card rx-live run">
+          <div class="rx-live-head">
+            <span class="rx-dot run"></span>
+            <div class="grow" style="min-width: 220px"><b>{{live.title}}</b><small class="muted">{{live.sub}}</small></div>
+            <sc-if value="{{live.hasRun}}" hint-placeholder-val="{{true}}"><button class="btn secondary sm" onClick="{{live.openLog}}">{{live.logLabel}}</button></sc-if>
+          </div>
+          <sc-if value="{{live.hasTail}}" hint-placeholder-val="{{false}}">
+            <div class="rx-tail"><sc-for list="{{live.tail}}" as="t" hint-placeholder-count="3"><div class="t {{t.cls}}"><span>{{t.ic}}</span><span>{{t.text}}</span></div></sc-for></div>
+          </sc-if>
+        </section>
+      </sc-if>
+      <sc-if value="{{hasDocsMsg}}" hint-placeholder-val="{{false}}"><p style="{{docsMsgStyle}}">{{docsMsg}}</p></sc-if>
+      <sc-if value="{{hasFlowError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{flowError}}</p></sc-if>
       <sc-for list="{{docs}}" as="d" hint-placeholder-count="0">
         <div class="card" style="padding: 12px 14px">
           <b>{{d.title}}</b>
@@ -293,17 +318,11 @@
           <div style="display: flex; gap: 8px">
             <button class="btn primary" onClick="{{d.viewMd}}">Ler no app</button>
             <button class="btn secondary" onClick="{{d.openMd}}">Abrir .md</button>
-            <button class="btn secondary" onClick="{{d.openPdf}}">Abrir PDF</button>
+            <sc-if value="{{d.hasPdf}}" hint-placeholder-val="{{false}}"><button class="btn secondary" onClick="{{d.openPdf}}">Abrir PDF</button></sc-if>
           </div>
         </div>
       </sc-for>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap">
-        <button class="btn secondary" onClick="{{rewriteDocs}}">Gerar de novo</button>
-        <button class="btn primary" disabled="{{approveOff}}" onClick="{{approveDocs}}">Aprovar documentos</button>
-        <button class="btn secondary" onClick="{{exportPdfs}}">Exportar PDFs</button>
-        <button class="btn secondary" onClick="{{openDelivery}}">Registrar entrega</button>
-        <button class="btn secondary" onClick="{{closeCase}}">Encerrar caso</button>
-      </div>
+      <sc-for list="{{hypotheses}}" as="h" hint-placeholder-count="0"><p class="sec">{{h.text}}</p></sc-for>
     </section>
   </sc-if>
 
@@ -551,6 +570,7 @@
 const STATUS = ['fronteira', 'coleta', 'jornada', 'prioridade', 'devolutiva', 'fechado'];
 const STATUS_LABEL = { fronteira: 'Fronteira', coleta: 'Coleta', jornada: 'Jornada', prioridade: 'Prioridade', devolutiva: 'Devolutiva', fechado: 'Fechado' };
 const STAGES = ['encontrar', 'conversar', 'atender', 'vender', 'medir'];
+const DEPTH_NAME = { guiado: 'Guiado', piloto: 'Piloto', junto: 'Junto', para_voce: 'Para você' };
 const STAGE_LABEL = { encontrar: 'Encontrar', conversar: 'Conversar', atender: 'Atender', vender: 'Vender', medir: 'Medir' };
 const STATUS_NOTE = {
   fronteira: 'Empresa, o que ela quer conseguir, e a decisão que esta leitura tem de destravar.',
@@ -730,7 +750,7 @@ class Component extends DCLogic {
         const runs = res.runs || [];
         const d = new Date();
         const stamp = 'atualizado às ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
-        self.setState({ caseRuns: runs, live: res.live || null, runsAt: stamp });
+        self.setState({ caseRuns: runs, live: res.live || null, busy: res.busy || null, runsAt: stamp });
         const running = runs.filter(function (r) { return r.status === 'running'; })[0];
         if (running) self.pullTail(id, running.id);
         else if ((self.state.tail || []).length) self.setState({ tail: [] });
@@ -769,7 +789,9 @@ class Component extends DCLogic {
       if (!self._alive || !self.state.caseId) return;
       const live = self.state.live && self.state.live.running;
       const anyRunning = (self.state.caseRuns || []).some(function (r) { return r.status === 'running'; });
-      if (live || anyRunning) self.pullRuns(self.state.caseId);
+      const busy = self.state.busy && (self.state.busy.writing || self.state.busy.rendering);
+      const msgBusy = self.state.docsMsg && self.state.docsMsg.busy;
+      if (live || anyRunning || busy || msgBusy) self.pullRuns(self.state.caseId);
       else if (self.state.modal === 'log' && self.state.log && self.state.log.live && self.state.logRunId) {
         const api = tavirApi();
         const id = self.state.caseId;
@@ -880,6 +902,102 @@ class Component extends DCLogic {
       self.setState({ openCase: res.case, modal: null, error: '', removeId: null });
       if (self.reload) self.reload();
     };
+    // Redação e PDF devolvem só o resultado, não o caso: avisa enquanto roda, mostra o erro e relê o caso na mesma aba.
+    const docsJob = function (kind) {
+      const api = tavirApi();
+      if (!api || !current) return;
+      const id = current.id;
+      const msg = self.state.docsMsg;
+      if (msg && msg.id === id && msg.busy) return;
+      const say = function (text, bad, busy) { if (self._alive) self.setState({ docsMsg: { id: id, kind: kind, text: text, bad: !!bad, busy: !!busy }, error: '' }); };
+      say(kind === 'pdf' ? 'Gerando os PDFs…' : 'Redação iniciada. O motor escreve o relatório e o plano; leva alguns minutos. Acompanhe no passo 3.', false, true);
+      [800, 2500, 6000].forEach(function (ms) { setTimeout(function () { if (self.pullRuns) self.pullRuns(id); }, ms); });
+      const call = kind === 'pdf' ? api.raiox.renderPdfs(id, current.debrief.documents[0].version) : api.raiox.writeDocuments(id);
+      call.then(function (res) {
+        if (!res || !res.ok) { say((res && res.error) || 'Não foi possível concluir. Nada foi gravado.', true, false); return; }
+        const problems = (res.problems || []).length;
+        say(kind === 'pdf' ? 'PDFs gerados.' : problems ? 'Documentos gerados com ' + problems + ' problema(s) na checagem. Veja abaixo.' : 'Documentos gerados. A checagem não achou problema.', problems > 0, false);
+        api.raiox.get(id).then(function (r) { if (self._alive && r && r.ok && self.state.caseId === id) self.setState({ openCase: r.case }); }).catch(function () {});
+        if (self.pullRuns) self.pullRuns(id);
+      }).catch(function () { say('Não foi possível concluir. Nada foi gravado.', true, false); });
+    };
+    // Fluxo da aba Devolutiva: cada passo com estado (feito, rodando, falhou, próximo) e um botão,
+    // travado enquanto qualquer coisa do caso estiver rodando.
+    const runsNow = s.caseRuns || [];
+    const runNow = runsNow.filter(function (r) { return r.status === 'running'; })[0];
+    const msgNow = s.docsMsg && current && s.docsMsg.id === current.id ? s.docsMsg : null;
+    const writingNow = !!((s.busy && s.busy.writing) || (msgNow && msgNow.busy && msgNow.kind === 'write') || (runNow && /reda/i.test(runNow.label || '')));
+    const renderingNow = !!((s.busy && s.busy.rendering) || (msgNow && msgNow.busy && msgNow.kind === 'pdf'));
+    const analysingNow = !!((s.live && s.live.running) || (runNow && !/reda/i.test(runNow.label || '')));
+    const anyBusy = writingNow || renderingNow || analysingNow;
+    const flowLive = writingNow || analysingNow;
+    const flowSteps = (function () {
+      if (!current) return [];
+      const deb = current.debrief;
+      const docsArr = (deb && deb.documents) || [];
+      const lintN = docsArr.reduce(function (n, doc) { return n + (doc.lint || []).length; }, 0);
+      const hasDocs = docsArr.length > 0;
+      const hasPdf = hasDocs && docsArr.every(function (doc) { return !!doc.pdf; });
+      const approved = !!(deb && deb.approval && hasDocs && docsArr.every(function (doc) { return deb.approval.hashes.indexOf(doc.sha256) >= 0; }));
+      const delivered = !!(deb && deb.delivery);
+      const closed = current.status === 'fechado';
+      const lastDocRun = runsNow.filter(function (r) { return /reda/i.test(r.label || ''); })[0];
+      const docFailed = !writingNow && lastDocRun && lastDocRun.status !== 'ok' && lastDocRun.status !== 'running' && (!hasDocs || new Date(lastDocRun.startedAt) > new Date(docsArr[0].createdAt));
+      const elapsed = runNow ? fmtDur(Date.now() - new Date(runNow.startedAt).getTime()) : '';
+      const busyNote = writingNow ? 'Aguarde a redação terminar.' : renderingNow ? 'Aguarde o PDF.' : 'Aguarde a análise terminar.';
+      const list = [
+        { label: 'Prioridade', done: !!current.priority, detail: current.priority ? (STAGE_LABEL[current.priority.stage] + ' · ' + gapLabel(current.priority.gapId)) : 'Escolha a etapa e o gap que vêm primeiro.', actLabel: current.priority ? 'Mudar' : 'Escolher prioridade', act: function () { self.setState({ modal: 'priority', error: '', priForm: blankPri() }); }, off: false },
+        { label: 'Devolutiva', done: !!deb, detail: deb ? (deb.decision === 'nao_emitir' ? 'Não emitir proposta' : 'Proposta emitida' + (deb.depth ? ' · ' + (DEPTH_NAME[deb.depth] || deb.depth) : '')) : 'Decida a proposta e o plano 30/60/90.', actLabel: deb ? 'Mudar' : 'Fazer devolutiva', act: function () { openDebriefFn(); }, off: !current.priority },
+        { label: 'Documentos', done: hasDocs && !writingNow, run: writingNow, bad: !!docFailed,
+          detail: writingNow ? ('Redação rodando' + (elapsed ? ' há ' + elapsed : '') + (runNow ? ' · ' + engineName(runNow.engine) : '') + '. Acompanhe abaixo.') : docFailed ? ('A última redação falhou: ' + oneLine(lastDocRun.error || 'sem detalhe', 140)) : hasDocs ? ('Versão ' + docsArr[0].version + ' · relatório e plano · ' + fmtWhen(docsArr[0].createdAt)) : 'O motor escreve o relatório e o plano a partir da devolutiva.',
+          actLabel: writingNow ? 'Rodando…' : hasDocs ? 'Gerar de novo' : 'Gerar documentos', act: function () { docsJob('write'); }, off: !deb,
+          hasAlt: writingNow, altLabel: 'Parar', alt: function () { const api = tavirApi(); if (!api || !api.raiox.stopAnalyse) return; if (window.confirm && !window.confirm('Parar a redação agora? Nada é gravado.')) return; api.raiox.stopAnalyse(current.id).then(function () { self.pullRuns(current.id); }).catch(function () {}); } },
+        { label: 'Checagem', done: hasDocs && !writingNow && lintN === 0, bad: hasDocs && !writingNow && lintN > 0, detail: !hasDocs || writingNow ? 'Roda sozinha quando os documentos ficam prontos.' : lintN ? (lintN + (lintN === 1 ? ' problema' : ' problemas') + ' nos documentos. Veja abaixo e gere de novo.') : 'Seções, termos proibidos e corte público conferidos. Nenhum problema.' },
+        { label: 'PDF', done: hasPdf && !renderingNow, run: renderingNow, detail: renderingNow ? 'Gerando os PDFs…' : hasPdf ? 'Relatório e plano em PDF.' : 'Gera o PDF dos dois documentos com a marca TAVIR.', actLabel: renderingNow ? 'Gerando…' : hasPdf ? 'Gerar de novo' : 'Gerar PDF', act: function () { docsJob('pdf'); }, off: !hasDocs || lintN > 0 || approved },
+        { label: 'Aprovação', done: approved, detail: approved ? ('Aprovados por hash em ' + fmtWhen(deb.approval.at) + '.') : 'Leia os dois documentos e aprove. Qualquer mudança depois invalida.', actLabel: 'Aprovar documentos', btn: 'primary', act: function () { approveDocsFn(); }, off: !hasPdf || lintN > 0 || approved },
+        { label: 'Entrega', done: delivered, detail: delivered ? ('Entrega ' + (deb.delivery.channel === 'manual' ? 'manual' : 'por e-mail') + ' para ' + deb.delivery.to + ' em ' + fmtWhen(deb.delivery.at) + '.') : 'Exporte os PDFs e registre para quem foram entregues.', actLabel: 'Registrar entrega', act: function () { self.setState({ modal: 'delivery', error: '', debForm: Object.assign({}, blankDeb(), { reason: '' }) }); }, off: !approved || delivered,
+          hasAlt: hasPdf, altLabel: 'Exportar PDFs', alt: function () { const api = tavirApi(); if (api) api.raiox.exportPdfs(current.id).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); } },
+        { label: 'Encerrar caso', done: closed, detail: closed ? 'Caso encerrado.' : 'Fecha o diagnóstico. Com proposta aceita, abre a aba Execução.', actLabel: 'Encerrar caso', act: function () { const api = tavirApi(); if (api) api.raiox.close(current.id).then(refreshOpen).catch(function () { fail(); }); }, off: closed || (!delivered && !(deb && deb.decision === 'nao_emitir')) },
+      ];
+      let nextMarked = false;
+      return list.map(function (step, index) {
+        const isNext = !step.done && !step.run && !step.bad && !nextMarked;
+        if (isNext) nextMarked = true;
+        const dot = step.run ? 'run' : step.bad ? 'bad' : step.done ? 'ok' : isNext ? 'warn' : '';
+        return {
+          n: index + 1, label: step.label, detail: anyBusy && !step.run && !step.done && isNext ? step.detail + ' ' + busyNote : step.detail,
+          cls: step.run ? 'run' : step.bad ? 'bad' : '', dot: dot,
+          hasAct: !!step.act, actLabel: step.actLabel || '', act: step.act || function () {}, btn: step.btn || 'secondary',
+          off: !!(step.off || anyBusy),
+          hasAlt: !!step.hasAlt, altLabel: step.altLabel || '', alt: step.alt || function () {}, altOff: step.altLabel === 'Parar' ? false : anyBusy,
+        };
+      });
+    })();
+    const openDebriefFn = function () {
+        const api = tavirApi();
+        const gapId = current && current.priority ? current.priority.gapId : '';
+        const offer = gapLabel(gapId);
+        const form = blankDeb();
+        const gap = gaps.filter(function (item) { return item.id === gapId; })[0];
+        if (gap) form.offerId = gap.offerId;
+        if (!api || !api.raiox.playbook || !gapId) { self.setState({ modal: 'debrief', error: '', debForm: form }); return; }
+        api.raiox.playbook(gapId).then(function (res) {
+          if (res && res.ok && res.playbook) {
+            form.guided = (res.playbook.guided || []).join('\n');
+            form.playbookStatus = res.playbook.status || 'rascunho';
+          }
+          self.setState({ modal: 'debrief', error: '', debForm: form });
+        }).catch(function () { self.setState({ modal: 'debrief', error: '', debForm: form }); });
+      };
+    const approveDocsFn = function () {
+        const api = tavirApi();
+        if (!api || !current || !current.debrief || !current.debrief.documents) return;
+        if (current.debrief.documents.some(function (doc) { return (doc.lint || []).length; })) return;
+        const hashes = current.debrief.documents.map(function (doc) { return doc.sha256; });
+        const shown = current.debrief.documents.map(function (doc) { return (doc.kind === 'relatorio' ? 'Relatório ' : 'Plano ') + (doc.sha256 || '').slice(0, 12); }).join('\n');
+        if (typeof window !== 'undefined' && window.confirm && !window.confirm('Aprovar estes documentos?\n' + shown)) return;
+        api.raiox.approveDocuments(current.id, hashes).then(refreshOpen).catch(function () { fail(); });
+      };
     const coverage = (current && current.coverage) || [];
     const maxUsable = coverage.reduce(function (max, item) { return Math.max(max, item.usable || 0); }, 0);
     const evidence = (current && current.evidence) || [];
@@ -1084,18 +1202,20 @@ class Component extends DCLogic {
         });
         const base = { hasRun: !!last, openLog: function () { if (last) self.openLog(last.id); }, logLabel: isLive ? 'Ver pensamento ao vivo' : 'Ver pensamento', tail: tail, hasTail: isLive && tail.length > 0, canStop: isLive };
         if (isLive) {
-          const activity = (s.live && (s.live.activity || s.live.speech)) || 'Rodando análise';
+          const activity = (s.live && (s.live.activity || s.live.speech)) || (runningRun && /reda/i.test(runningRun.label || '') ? 'Escrevendo o relatório e o plano' : 'Rodando análise');
           const elapsed = runningRun ? fmtDur(Date.now() - new Date(runningRun.startedAt).getTime()) : '';
-          return Object.assign(base, { cls: 'run', title: oneLine(activity, 140), sub: ['Análise rodando', elapsed, runningRun ? engineName(runningRun.engine) : ''].filter(Boolean).join(' · ') });
+          return Object.assign(base, { cls: 'run', title: oneLine(activity, 140), sub: [runningRun && runningRun.label ? runningRun.label.replace(/^Raio-X · /, '') + ' rodando' : 'Análise rodando', elapsed, runningRun ? engineName(runningRun.engine) : ''].filter(Boolean).join(' · ') });
         }
         if (s.analysis && s.analysisBad) return Object.assign(base, { cls: 'bad', title: s.analysis, sub: last ? 'Última execução: ' + runState(last).st.toLowerCase() + ' em ' + fmtWhen(last.startedAt) : '' });
         if (s.analysis) return Object.assign(base, { cls: '', title: s.analysis, sub: last ? last.label + ' · ' + fmtWhen(last.startedAt) : '' });
         if (!last) return Object.assign(base, { cls: '', title: s.analysis || 'Nenhuma análise rodou neste caso ainda.', sub: 'Rodar análise abre o navegador nas fontes públicas do caso e sugere evidências para você revisar.' });
         const stt = runState(last);
+        const isDocRun = /reda/i.test(last.label || '');
         const when = fmtWhen(last.startedAt) + (last.durationMs ? ' · ' + fmtDur(last.durationMs) : '');
+        if (stt.key === 'ok' && isDocRun) return Object.assign(base, { cls: 'ok', title: 'Redação concluída. Confira a checagem dos documentos na aba Devolutiva.', sub: last.label + ' · ' + when });
         if (stt.key === 'ok') return Object.assign(base, { cls: 'ok', title: pending ? ('Análise concluída. ' + pending + (pending === 1 ? ' evidência espera' : ' evidências esperam') + ' a sua revisão.') : 'Análise concluída. Nenhuma evidência pendente.', sub: last.label + ' · ' + when });
         if (stt.key === 'paused') return Object.assign(base, { cls: 'warn', title: 'Análise pausada por você. Rodar análise retoma deste ponto.', sub: last.label + ' · ' + when });
-        return Object.assign(base, { cls: 'bad', title: 'A última execução falhou: ' + oneLine(last.error || 'sem detalhe', 180), sub: last.label + ' · ' + when + ' · abra o pensamento para ver onde parou' });
+        return Object.assign(base, { cls: 'bad', title: (isDocRun ? 'A redação falhou: ' : 'A última execução falhou: ') + oneLine(last.error || 'sem detalhe', 180), sub: last.label + ' · ' + when + ' · abra o pensamento para ver onde parou' });
       })(),
       modalLog: s.modal === 'log',
       log: (function () {
@@ -1286,50 +1406,29 @@ class Component extends DCLogic {
           problems: doc.lint || [],
           openMd: function () { const api = tavirApi(); if (api && current) api.raiox.openDocument(current.id, doc.md); },
           viewMd: function () { const api = tavirApi(); if (api && current && api.raiox.viewDocument) api.raiox.viewDocument(current.id, doc.md).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); },
+          hasPdf: !!doc.pdf,
           openPdf: function () { const api = tavirApi(); if (api && current && doc.pdf) api.raiox.openDocument(current.id, doc.pdf); },
         };
       }),
       approveOff: !current || !current.debrief || !current.debrief.documents || current.debrief.documents.some(function (doc) { return (doc.lint || []).length; }),
-      openDebrief: function () {
-        const api = tavirApi();
-        const gapId = current && current.priority ? current.priority.gapId : '';
-        const offer = gapLabel(gapId);
-        const form = blankDeb();
-        const gap = gaps.filter(function (item) { return item.id === gapId; })[0];
-        if (gap) form.offerId = gap.offerId;
-        if (!api || !api.raiox.playbook || !gapId) { self.setState({ modal: 'debrief', error: '', debForm: form }); return; }
-        api.raiox.playbook(gapId).then(function (res) {
-          if (res && res.ok && res.playbook) {
-            form.guided = (res.playbook.guided || []).join('\n');
-            form.playbookStatus = res.playbook.status || 'rascunho';
-          }
-          self.setState({ modal: 'debrief', error: '', debForm: form });
-        }).catch(function () { self.setState({ modal: 'debrief', error: '', debForm: form }); });
-      },
-      writeDocs: function () {
-        const api = tavirApi();
-        if (!api || !current) return;
-        api.raiox.writeDocuments(current.id).then(refreshOpen).catch(function () { fail(); });
-      },
-      rewriteDocs: function () {
-        const api = tavirApi();
-        if (!api || !current) return;
-        api.raiox.writeDocuments(current.id).then(refreshOpen).catch(function () { fail(); });
-      },
+      openDebrief: function () { openDebriefFn(); },
+      flow: flowSteps,
+      flowLive: flowLive,
+      hasFlowError: !s.modal && !!s.error,
+      flowError: !s.modal ? (s.error || '') : '',
+      hasDocsMsg: !!(s.docsMsg && s.docsMsg.id === (current && current.id)),
+      docsMsg: s.docsMsg ? s.docsMsg.text : '',
+      docsMsgStyle: s.docsMsg && s.docsMsg.bad ? 'color: var(--danger); font-size: 13px' : 'font-size: 13px',
+      writeDocs: function () { docsJob('write'); },
+      rewriteDocs: function () { docsJob('write'); },
       renderDocs: function () {
-        const api = tavirApi();
-        if (!api || !current || !current.debrief || !current.debrief.documents || !current.debrief.documents.length) return;
-        api.raiox.renderPdfs(current.id, current.debrief.documents[0].version).then(refreshOpen).catch(function () { fail(); });
+        if (!current || !current.debrief || !current.debrief.documents || !current.debrief.documents.length) {
+          self.setState({ docsMsg: { id: current && current.id, bad: true, text: 'Gere os documentos antes do PDF.' } });
+          return;
+        }
+        docsJob('pdf');
       },
-      approveDocs: function () {
-        const api = tavirApi();
-        if (!api || !current || !current.debrief || !current.debrief.documents) return;
-        if (current.debrief.documents.some(function (doc) { return (doc.lint || []).length; })) return;
-        const hashes = current.debrief.documents.map(function (doc) { return doc.sha256; });
-        const shown = current.debrief.documents.map(function (doc) { return (doc.kind === 'relatorio' ? 'Relatório ' : 'Plano ') + (doc.sha256 || '').slice(0, 12); }).join('\n');
-        if (typeof window !== 'undefined' && window.confirm && !window.confirm('Aprovar estes documentos?\n' + shown)) return;
-        api.raiox.approveDocuments(current.id, hashes).then(refreshOpen).catch(function () { fail(); });
-      },
+      approveDocs: function () { approveDocsFn(); },
       exportPdfs: function () { const api = tavirApi(); if (api && current) api.raiox.exportPdfs(current.id).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); },
       openDelivery: function () { self.setState({ modal: 'delivery', error: '', debForm: Object.assign({}, blankDeb(), { reason: '' }) }); },
       closeCase: function () { const api = tavirApi(); if (api && current) api.raiox.close(current.id).then(refreshOpen).catch(function () { fail(); }); },

@@ -41,7 +41,35 @@ function nextVersion(dir: string): number {
   return (nums.length ? Math.max(...nums) : 0) + 1;
 }
 
+/** Casos com redação em andamento: um segundo clique não abre outra rodada no mesmo caso. */
+const writing = new Set<string>();
+const rendering = new Set<string>();
+const docKills = new Map<string, () => void>();
+
+/** O que está rodando agora nos documentos do caso (a tela usa para travar botões e mostrar o passo). */
+export function documentsBusy(id: string): { writing: boolean; rendering: boolean } {
+  return { writing: writing.has(id), rendering: rendering.has(id) };
+}
+
+export function stopDocuments(id: string): boolean {
+  const kill = docKills.get(id);
+  if (!kill) return false;
+  kill();
+  return true;
+}
+
 export async function writeDocuments(root: string, id: string, deps: DocsDeps = {}): Promise<{ ok: true; version: number; problems: string[] }> {
+  if (writing.has(id)) throw new RaioxError('A redação deste caso já está rodando. Aguarde terminar.');
+  writing.add(id);
+  try {
+    return await writeDocumentsOnce(root, id, deps);
+  } finally {
+    writing.delete(id);
+    docKills.delete(id);
+  }
+}
+
+async function writeDocumentsOnce(root: string, id: string, deps: DocsDeps): Promise<{ ok: true; version: number; problems: string[] }> {
   const current = readCase(root, id);
   if (!current.debrief) throw new RaioxError('Registre a devolutiva antes de gerar os documentos.');
   const version = nextVersion(caseDir(root, id));
@@ -63,9 +91,10 @@ export async function writeDocuments(root: string, id: string, deps: DocsDeps = 
     motor, workspace, prompt, model: settings.defaultModel, effort: settings.defaultEffort,
     access: 'write', timeoutMs: TIMEOUT_MS,
     onRaw: (stream, text) => handle.raw(stream, text),
+    registerKill: (kill) => docKills.set(id, kill),
   });
   if (!result.ok) {
-    const message = result.error?.message || 'A redação não terminou.';
+    const message = result.error?.kind === 'paused' ? 'Redação parada por Carlos. Nada foi gravado.' : (result.error?.message || 'A redação não terminou.');
     await handle.finish({ ok: false, status: result.error?.kind === 'paused' ? 'paused' : undefined, error: message, reply: result.text || '' });
     throw new RaioxError(message);
   }
@@ -99,14 +128,26 @@ export async function writeDocuments(root: string, id: string, deps: DocsDeps = 
 function runPython(repo: string, args: string[], exec: typeof execFile): Promise<void> {
   const script = path.join(repo, 'tools', 'publicar.py');
   return new Promise((resolve, reject) => {
-    exec('python', ['-I', script, ...args], { timeout: PDF_TIMEOUT_MS }, (err) => {
-      if (err) reject(err);
-      else resolve();
+    exec('python', ['-I', script, ...args], { timeout: PDF_TIMEOUT_MS, env: { ...process.env, PYTHONIOENCODING: 'utf-8' } }, (err, _stdout, stderr) => {
+      if (!err) return resolve();
+      const line = String(stderr || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean).pop();
+      reject(new Error(line ? line.slice(0, 240) : (err as Error).message));
     });
   });
 }
 
 export async function renderPdfs(root: string, id: string, version: number, deps: DocsDeps = {}): Promise<{ ok: true }> {
+  if (rendering.has(id)) throw new RaioxError('O PDF deste caso já está sendo gerado. Aguarde terminar.');
+  if (writing.has(id)) throw new RaioxError('A redação deste caso ainda está rodando. Gere o PDF depois que ela terminar.');
+  rendering.add(id);
+  try {
+    return await renderPdfsOnce(root, id, version, deps);
+  } finally {
+    rendering.delete(id);
+  }
+}
+
+async function renderPdfsOnce(root: string, id: string, version: number, deps: DocsDeps): Promise<{ ok: true }> {
   const current = readCase(root, id);
   const docs = current.debrief?.documents?.filter((doc) => doc.version === version) || [];
   if (docs.length !== 2) throw new RaioxError('Gere os documentos antes do PDF.');
@@ -127,8 +168,9 @@ export async function renderPdfs(root: string, id: string, version: number, deps
       const size = fs.statSync(pdf).size;
       if (size <= 0 || size > PDF_MAX) throw new Error('tamanho');
     }
-  } catch {
-    throw new RaioxError('O PDF não foi gerado. Confira Python e Edge/Chrome.');
+  } catch (err) {
+    const detail = err instanceof Error && err.message && err.message !== 'ausente' && err.message !== 'tamanho' ? ` Motivo: ${err.message}` : '';
+    throw new RaioxError(`O PDF não foi gerado. Confira Python e Edge/Chrome.${detail}`);
   }
   const nextDocs = (current.debrief?.documents || []).map((doc) => doc.version === version
     ? { ...doc, pdf: path.posix.join('documentos', `v${version}`, doc.kind === 'relatorio' ? 'relatorio-raio-x.pdf' : 'plano-crescimento.pdf') }
