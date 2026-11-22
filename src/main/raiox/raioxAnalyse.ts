@@ -8,9 +8,11 @@ import { startRun, type RunHandle } from '../runLedger';
 import { writeCheckpoint } from '../officeRuns';
 import { buildContext, repoRoot } from './raioxContext';
 import { suggestionShape } from './raioxDocLint';
-import { RaioxError, addEvidence, addHypotheses } from './raioxRules';
+import { RaioxError, addEvidence, addHypotheses, assertActive } from './raioxRules';
 import { caseDir, readCase, writeCase } from './raioxStore';
-import { ensureLocal, saveTarget, wantsLocal, type LocalResult } from './localBusiness';
+import { ensureLocal, readTarget, saveTarget, wantsLocal, type LocalResult } from './localBusiness';
+import { shapeProblem, verifyCaseLinks, type LinkReport } from './linkGuard';
+import { motorVendor, readVendorCatalog, recordVendor } from './vendors';
 import { getBundle } from '../credentials';
 import type { RaioxCase } from '../../shared/raiox';
 
@@ -36,6 +38,12 @@ export interface AnalyseDeps {
   note?: string;
   /** Consulta da ficha do Google antes do motor. Nos testes, só roda se for injetada. */
   local?: (c: RaioxCase) => Promise<LocalResult>;
+  /** Checagem dos links antes do motor (G-PR1 controle 5). Nos testes, só roda se for injetada. */
+  links?: (c: RaioxCase) => Promise<LinkReport>;
+  /** F11: motor, modelo e esforço desta rodada (conformidade). Sem valor = configuração do Escritório. */
+  engine?: { motor: MotorId; model: string; effort: string };
+  /** F11: instrução extra no fim do prompt (rodada de conformidade sem rede). */
+  extra?: string;
 }
 
 export function rapidKeys(): string[] {
@@ -44,7 +52,12 @@ export function rapidKeys(): string[] {
 }
 
 export function collectLocalFor(root: string, c: RaioxCase, force = false, mapsUrl = ''): Promise<LocalResult> {
-  if (mapsUrl.trim()) saveTarget(caseDir(root, c.id), mapsUrl);
+  assertActive(c);
+  if (mapsUrl.trim()) {
+    const problem = /^https?:/i.test(mapsUrl.trim()) ? shapeProblem(mapsUrl.trim()) : null;
+    if (problem) throw new RaioxError(`Link do Maps não aceito (${problem}).`);
+    saveTarget(caseDir(root, c.id), mapsUrl);
+  }
   return ensureLocal(root, c, { keys: rapidKeys, force });
 }
 
@@ -74,25 +87,50 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
   if (fronts.some((front) => !RAIOX_FRONTS.some((item) => item.id === front))) {
     throw new RaioxError('Frente de varredura inválida.');
   }
-  const current = readCase(root, id);
+  let current = readCase(root, id);
+  assertActive(current);
+  // G-PR1 controle 4: caso que veio do formulário só é analisado com o e-mail do titular confirmado.
+  if (current.remote && current.origin === 'formulario' && !current.remote.emailVerified) {
+    throw new RaioxError('A análise não começou: o e-mail deste convidado ainda não foi confirmado. Sincronize de novo depois que ele clicar no link de confirmação.');
+  }
   const input = path.join(caseDir(root, id), 'analise', 'analysis-input.json');
   if (!fs.existsSync(input) && (blank(current.frontier) || blank(current.publicLink))) {
     throw new RaioxError('Preencha a fronteira e o link público antes da análise.');
   }
   if (live.get(id)?.running) throw new RaioxError('Já existe uma análise em andamento neste caso.');
 
+  const verify = deps.links ?? (deps.run ? null : (c: RaioxCase) => {
+    const target = readTarget(caseDir(root, id));
+    return verifyCaseLinks(caseDir(root, id), c, target ? [target.mapsUrl] : []);
+  });
+  if (verify) {
+    live.set(id, { running: true, speech: '', activity: 'Conferindo os links do caso' });
+    deps.onProgress?.({ id, speech: '', activity: 'Conferindo os links do caso', running: true });
+    let report: LinkReport;
+    try {
+      report = await verify(current);
+    } finally {
+      live.delete(id);
+    }
+    if (report.blocked.length) {
+      const lines = report.blocked.map((item) => `${item.url} (${item.reason})`).join('; ');
+      throw new RaioxError(`A análise não começou: link bloqueado pela checagem de segurança. ${lines}. Corrija o link no caso e tente de novo.`);
+    }
+  }
+
   const repo = deps.repo || repoRoot();
   const before = (deps.gitStatus ?? (() => porcelain(repo)))();
   buildContext(root, current, 'analise', { fronts, repo });
   const basePrompt = fs.readFileSync(path.join(caseDir(root, id), '_contexto', 'prompt.md'), 'utf8');
   const note = (deps.note || '').trim();
-  const prompt = note
+  const corrected = note
     ? `${basePrompt}\n\nCORREÇÃO DO CARLOS. Continue do ponto em que parou e não refaça o que já está válido:\n${note}`
     : basePrompt;
-  const settings = engineHub.getSettings();
-  const motor = officeMotor(settings.defaultEngine);
-  const model = settings.defaultModel;
-  const effort = settings.defaultEffort;
+  const prompt = deps.extra ? `${corrected}\n\n${deps.extra}` : corrected;
+  const settings = deps.engine ? null : engineHub.getSettings();
+  const motor = deps.engine ? deps.engine.motor : officeMotor(settings!.defaultEngine);
+  const model = deps.engine ? deps.engine.model : settings!.defaultModel;
+  const effort = deps.engine ? deps.engine.effort : settings!.defaultEffort;
   const workspace = caseDir(root, id);
   const binary = findMotorBinary(motor) || '';
   const now = (deps.now ?? (() => new Date().toISOString()))();
@@ -112,6 +150,7 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
   } catch (err) {
     throw new RaioxError(err instanceof Error ? err.message : 'Não foi possível abrir o livro de execuções.');
   }
+  const catalog = readVendorCatalog(repo);
   const local = deps.local ?? (deps.run ? null : (c: RaioxCase) => collectLocalFor(root, c));
   if (local && wantsLocal(current, fronts)) {
     live.set(id, { running: true, speech: '', activity: 'Consultando a ficha do Google Maps' });
@@ -120,10 +159,14 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
       const got = await local(current);
       handle.raw('stdout', `Ficha do Google Maps (Local Business Data): ${got.status} · ${got.message} · ${got.requests.total} consultas
 `);
+      if (got.requests.total > 0) current = recordVendor(current, catalog, 'rapidapi', 'ficha do Google Maps', now);
     } catch {
       // A consulta é um reforço: se falhar, o motor segue com o que estiver público.
     }
   }
+  // O motor recebe a pasta do caso a partir daqui: registra antes, mesmo que a rodada falhe.
+  current = recordVendor(current, catalog, motorVendor(motor), `análise · ${model || 'modelo padrão'}`, now);
+  writeCase(root, current);
   live.set(id, { running: true, speech: '', activity: 'Preparando a análise' });
   deps.onProgress?.({ id, speech: '', activity: 'Preparando a análise', running: true });
   const runner = deps.run ?? runMotor;
@@ -147,6 +190,16 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     throw new RaioxError(message);
   }
   kills.delete(id);
+  // G-PR1 controle 8: revogação registrada enquanto o motor rodava descarta o resultado.
+  try {
+    assertActive(readCase(root, id));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Caso revogado.';
+    await handle.finish({ ok: false, status: 'failed', error: message, reply: '' });
+    live.set(id, { running: false, speech: '', activity: '' });
+    writeCheckpoint(workspace, { at: now, label: current.status, reason: message.slice(0, 400), partial: '' });
+    throw new RaioxError(message);
+  }
   if (!result.ok && result.error?.kind === 'paused') {
     const message = 'Pausado por Carlos. A retomada continua deste ponto.';
     await handle.finish({ ok: false, status: 'paused', error: message, reply: result.text || '', exitCode: result.exitCode });
@@ -192,7 +245,13 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
   let next = current;
   const ids: string[] = [];
   try {
+    // Reanálise não duplica: a sugestão igual a uma que já está no caso reaproveita a existente
+    // (e a revisão que o Carlos já fez nela).
+    const sameEv = (a: { stage: string; source: string; claim: string }, b: { stage: string; source: string; claim: string }) =>
+      a.stage === b.stage && a.source.trim() === b.source.trim() && a.claim.trim() === b.claim.trim();
     parsed.evidencias.forEach((item, index) => {
+      const existing = next.evidence.find((ev) => sameEv(ev, item));
+      if (existing) { ids.push(existing.id); return; }
       const evId = deps.uuid ? deps.uuid() : `ev-${index + 1}-${now}`;
       ids.push(evId);
       next = addEvidence(next, {
@@ -201,8 +260,9 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
         artifact: item.url ? { file: item.arquivo || 'analise/sugestoes.json', sha256: '', url: item.url, collectedAt: now } : undefined,
       }, now, evId);
     });
-    if (parsed.hipoteses.length) {
-      next = addHypotheses(next, parsed.hipoteses.map((item, index) => ({
+    const freshHyp = parsed.hipoteses.filter((item) => !next.hypotheses.some((h) => h.gapId === item.gapId && h.text.trim() === item.texto.trim()));
+    if (freshHyp.length) {
+      next = addHypotheses(next, freshHyp.map((item, index) => ({
         id: `H-${next.hypotheses.length + index + 1}`,
         gapId: item.gapId,
         text: item.texto,
@@ -221,5 +281,5 @@ export async function analyse(root: string, id: string, fronts: string[], deps: 
     await handle.finish({ ok: true, reply: result.text || '', exitCode: result.exitCode });
     live.set(id, { running: false, speech: '', activity: '' });
     deps.onProgress?.({ id, speech: '', activity: '', running: false });
-    return { ok: true, created: parsed.evidencias.length };
+    return { ok: true, created: next.evidence.length - current.evidence.length };
   }

@@ -6,6 +6,8 @@ import * as crypto from 'node:crypto';
 import { execFile, execFileSync, spawn } from 'node:child_process';
 import { fitCall } from '../shared/engineCatalog';
 import { esteiraTemplate, LEGACY_STAGE_NAMES, stageContract, type EsteiraCode, type EsteiraStage } from '../shared/esteiras';
+import { brandChoiceOf, designFamily, designMode, isMaintenance, stageDesignRole, textDesignMode, trackDesignRole, BRAND_BOARDS_DIR, DESIGN_FILES, DIRECTIONS_MIN, STAGE_ESCOLHA_MARCA, STAGE_MARCA, type DesignMode } from '../shared/design';
+import { adoptBrandBoard, latestQaPrints, prepareBrandKit, prepareDesignKit, projectBrandBoardsGaps, projectBrandGaps, projectContractGaps, projectDirections, readContract } from './design/kit';
 import { commitStep, type StepCommitResult } from './stepCommit';
 import { annotateRun, type RunChanges } from './runLedger';
 import { listQaRuns, qaSummary, runQa, type QaRun } from './qa/qaRunner';
@@ -2546,7 +2548,7 @@ export async function executeAltTrackStep(
   const resume = sameCheckpoint(storedCheckpoint, focus.id) ? storedCheckpoint : null;
   const role =
     focus.kind === 'plan'
-      ? 'Você é a Paula PM, e só você conduz este planejamento. A única fonte é o mapeamento de gaps da Íris, colado abaixo. Transforme cada gap em trabalho: tarefa, agente responsável e pronto quando. Não invente gap que não esteja nesse mapeamento e não deixe gap sem dono. Não edite código. Feche a resposta com o bloco TRILHOS:, um trilho de trabalho por linha, no formato "- Título | Nome do agente | entrega". Cada linha nasce de um gap. Sem esse bloco o ajuste não começa. Mantenha o validar por último.'
+      ? 'Você é a Paula PM, e só você conduz este planejamento. A única fonte é o mapeamento de gaps da Íris, colado abaixo. Transforme cada gap em trabalho: tarefa, agente responsável e pronto quando. Não invente gap que não esteja nesse mapeamento e não deixe gap sem dono. Não edite código. Feche a resposta com o bloco TRILHOS:, um trilho de trabalho por linha, no formato "- Título | Nome do agente | entrega". Cada linha nasce de um gap. Sem esse bloco o ajuste não começa. Mantenha o validar por último. Gap que muda layout, identidade, marca ou a aparência de tela ganha antes um trilho de direção de design para Marina Marca (marca e tokens) ou Yuri UX (interface), que atualiza design/DESIGN.md; o trilho de construção desse gap vem depois e segue o contrato.'
       : focus.kind === 'work'
         ? `Você é ${focus.owner}. A Paula PM designou você para este trecho a partir dos gaps da Íris. Execute só o que está no seu trilho e no plano dela, no workspace. A esteira original não reabre.`
         : 'Você é o QA do trilho. Os gaps e o plano estão abaixo. Valide o que foi pedido ali e, se for app mobile, rode o build do APK. Resuma o artefato gerado.';
@@ -2565,6 +2567,13 @@ export async function executeAltTrackStep(
         ? `O que já estava feito quando parou:\n${resume.partial.trim()}\n\n`
         : 'A tentativa anterior caiu antes de registrar texto. Confira o workspace e siga o item a partir do que já existir nele.\n\n')
     : '';
+  const trackCode = projectStages(ctrl.rootPath).code;
+  const trackRole = focus.kind === 'work' ? trackDesignRole(focus, !!readContract(ctrl.rootPath).trim()) : null;
+  // O pedido de manutenção pode trocar o modo só para este item («modo conceito»); sem isso vale o do projeto.
+  const trackMode = textDesignMode(`${focus.label} ${String(track.notes.map || '')}`) || readEsteira(ctrl.rootPath).designMode;
+  const trackDesign = trackRole
+    ? prepareDesignKit(ctrl.rootPath, { role: trackRole, family: designFamily(trackCode), maint: true, mode: trackMode, prints: trackRole === 'revisao' ? latestQaPrints(ctrl.rootPath) : undefined }).block
+    : '';
   const pedido =
     `${role}\n` +
     `Foco: ${focus.label} (${focus.owner}). ${focus.skill}\n` +
@@ -2573,7 +2582,8 @@ export async function executeAltTrackStep(
     resumeBlock +
     (mapText ? `MAPEAMENTO DE GAPS (Íris) — fonte de todas as etapas seguintes:\n${mapText}\n\n` : '') +
     (earlier ? `O QUE AS ETAPAS ANTERIORES JÁ ENTREGARAM:\n${earlier}\n\n` : '') +
-    (ownNote ? `O QUE JÁ ESTÁ REGISTRADO NESTE ITEM (inclui as decisões do Carlos — siga-as):\n${ownNote.slice(-4000)}\n` : '');
+    (ownNote ? `O QUE JÁ ESTÁ REGISTRADO NESTE ITEM (inclui as decisões do Carlos — siga-as):\n${ownNote.slice(-4000)}\n` : '') +
+    (trackDesign ? `\n${trackDesign}\n` : '');
   const question = previousProof
     ? `PROVA INTEGRAL DA EXECUÇÃO ANTERIOR — leia do começo ao fim. O mesmo texto está em .tavir/provas/ e a última ficou em ultima.md antes desta etapa:\n${previousProof}\n\n${pedido}`
     : pedido;
@@ -3151,7 +3161,7 @@ type EsteiraStageRecord = {
   /** Varreduras do portão de segurança (qa/seguranca/<id>). */
   seg?: string[];
 };
-type EsteiraDesk = { auto: boolean; template: string; stages: EsteiraStageRecord[]; names?: string[] };
+type EsteiraDesk = { auto: boolean; template: string; stages: EsteiraStageRecord[]; names?: string[]; /** Modo de design escolhido pelo Carlos. */ designMode?: DesignMode; /** Letra da prancha de marca escolhida no gate «Escolha da marca» (a, b ou c). */ brandChoice?: string };
 
 const ESTEIRA_STATUS: EsteiraStatus[] = ['idle', 'running', 'paused', 'done', 'stopped', 'awaiting'];
 
@@ -3217,10 +3227,18 @@ function readEsteira(rootPath: string): EsteiraDesk {
   }
   // Molde mudou (etapa nova no meio): remapeia os registros pelo nome da etapa, não pela posição.
   const want = defs.map((d) => d.name);
-  const legacy = LEGACY_STAGE_NAMES[code as EsteiraCode];
-  const had: string[] | null = Array.isArray(raw.names) ? raw.names.map(String) : !fresh && legacy && saved.length === legacy.length ? legacy : null;
+  const legacy = (LEGACY_STAGE_NAMES[code as EsteiraCode] || []).find((list) => list.length === saved.length);
+  const had: string[] | null = Array.isArray(raw.names) ? raw.names.map(String) : !fresh && legacy ? legacy : null;
   const remapped = !!had && had.join('|') !== want.join('|');
-  if (remapped) saved = want.map((n) => { const j = had!.indexOf(n); return j >= 0 ? saved[j] : {}; });
+  if (remapped) {
+    saved = want.map((n) => { const j = had!.indexOf(n); return j >= 0 ? saved[j] : null; });
+    // Etapa criada depois que o projeto já passou daquele ponto: não reabre o que estava entregue.
+    let lastDone = -1;
+    saved.forEach((row: any, i: number) => { if (row && row.status === 'done') lastDone = i; });
+    saved = saved.map((row: any, i: number) =>
+      row || (i < lastDone ? { status: 'done', note: 'Etapa criada no molde depois que este projeto já tinha passado deste ponto. Não foi executada.' } : {}),
+    );
+  }
   const live = liveAgents.get(`${rootPath}:esteira`);
   const stages: EsteiraStageRecord[] = defs.map((_def, i) => {
     const row = saved[i] && typeof saved[i] === 'object' ? saved[i] : {};
@@ -3239,7 +3257,7 @@ function readEsteira(rootPath: string): EsteiraDesk {
       seg: Array.isArray(row.seg) ? row.seg.map((x: unknown) => String(x)).slice(-30) : [],
     };
   });
-  const desk: EsteiraDesk = { auto: Boolean(raw.auto), template: code, stages, names: want };
+  const desk: EsteiraDesk = { auto: Boolean(raw.auto), template: code, stages, names: want, designMode: designMode(raw.designMode), brandChoice: /^[abc]$/.test(String(raw.brandChoice || '')) ? String(raw.brandChoice) : '' };
   if (remapped) writeEsteira(rootPath, desk);
   return desk;
 }
@@ -3304,6 +3322,15 @@ export function saveEsteiraInstruction(idOrPath: string, index: number, text: st
   return esteiraPayload(info.rootPath, desk);
 }
 
+/** Modo de design do projeto (Padrão ou Conceito). Vale para as próximas etapas de design. */
+export function setEsteiraDesignMode(idOrPath: string, mode: string): any {
+  const info = inspectProjectFolder(idOrPath);
+  const desk = readEsteira(info.rootPath);
+  desk.designMode = designMode(mode);
+  writeEsteira(info.rootPath, desk);
+  return esteiraPayload(info.rootPath, desk);
+}
+
 export function setEsteiraAuto(idOrPath: string, auto: boolean): any {
   const info = inspectProjectFolder(idOrPath);
   const desk = readEsteira(info.rootPath);
@@ -3357,6 +3384,13 @@ export function decideEsteiraGate(idOrPath: string, index: number, decision: 'ap
     return { ...esteiraPayload(info.rootPath, desk), ok: false, error: 'O gate ainda não tem resumo para decidir. Execute a etapa antes.' };
   }
   const verdict = decision === 'reprovado' ? 'reprovado' : 'aprovado';
+  if (def.name === STAGE_ESCOLHA_MARCA && verdict === 'aprovado') {
+    // Aprovar aqui é escolher: sem a letra não há o que adotar. Quem copia a prancha escolhida é o Escritório.
+    const choice = brandChoiceOf(note);
+    const adopted = choice ? adoptBrandBoard(info.rootPath, choice) : { ok: false, error: 'Diga qual prancha você escolheu: A, B ou C.' };
+    if (!adopted.ok) return { ...esteiraPayload(info.rootPath, desk), ok: false, error: adopted.error };
+    desk.brandChoice = choice;
+  }
   const entry = logDecision(info.rootPath, {
     kind: 'esteira',
     stage: def.name,
@@ -3442,7 +3476,17 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
   const prior = stage.note.trim();
   const contract = stageContract(def.name);
   const instruction = stage.instruction.trim();
-  const digest = earlierStagesDigest(desk, defs, at);
+  const tplCode = projectStages(info.rootPath).code;
+  const designRole = stageDesignRole(def);
+  // O revisor de design julga o que está na pasta: não recebe o histórico das etapas anteriores.
+  const digest = designRole === 'revisao' ? '' : earlierStagesDigest(desk, defs, at);
+  // «Marca · três pranchas»: a Marina entrega três marcas para o Carlos escolher antes de qualquer página.
+  const brandStage = def.name === STAGE_MARCA;
+  const design = brandStage
+    ? prepareBrandKit(info.rootPath, { family: designFamily(tplCode), maint: isMaintenance(tplCode) })
+    : designRole
+      ? prepareDesignKit(info.rootPath, { role: designRole, family: designFamily(tplCode), maint: isMaintenance(tplCode), mode: desk.designMode, brandChosen: desk.brandChoice, prints: designRole === 'revisao' ? latestQaPrints(info.rootPath) : undefined }).block
+      : '';
   // A Talita só conduz as etapas de QA; Loop Linter e Completion Guard têm portão de QA, mas são do compilador.
   const qaTalita = def.qa && /^QA\b/i.test(def.name);
   const question =
@@ -3453,6 +3497,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     (instruction ? `INSTRUÇÃO DO CARLOS PARA ESTA ETAPA (vale sobre o contrato acima):\n${instruction}\n\n` : '') +
     'Comece pelo que a entrega pede. Leia só os arquivos de que precisa para isso; não releia o projeto inteiro nem refaça o que as etapas anteriores entregaram.\n\n' +
     (digest ? `O QUE AS ETAPAS ANTERIORES ENTREGARAM (use como base, não refaça):\n${digest}\n\n` : '') +
+    (design ? `${design}\n\n` : '') +
     (prior ? `CHECKPOINT — a etapa já tem este levantamento. Não recomece do zero. Continue ou revise a partir dele:\n${prior.slice(-5000)}\n\n` : '') +
     (qaTalita
       ? 'Esta etapa é o QA desta aplicação, com a Talita. Leia o que o app faz e monte o plano de testes em qa/plano.md: o que precisa passar antes de entregar, quais comandos a pasta já tem e o que ainda falta. Se não houver node_modules, instale as dependências do gerenciador do projeto. Deixe os testes no lugar que esse gerenciador espera. Não declare a etapa concluída: o portão automático roda em seguida, instala o que ainda faltar e grava vídeo, prints e o relatório em qa/evidencias/.\n\n'
@@ -3482,6 +3527,8 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
       asChangeRequest: !def.gate,
       recent: [],
       timeoutMs: 1800000,
+      // Direção e construção de interface gravam arquivos grandes: há motor que escreve tudo calado por mais de 5 min.
+      ...(brandStage || designRole === 'direcao' || designRole === 'construcao' ? { idleMs: 15 * 60 * 1000 } : {}),
       runKind: 'esteira',
       runLabel: def.name,
       onProgress: (line) => {
@@ -3504,6 +3551,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
   const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
   const exec = agentRes.runId ? ` · execução ${agentRes.runId}` : '';
   let commit: StepCommitResult | null = null;
+  let designError = '';
   if (paused) {
     current.status = current.status === 'stopped' ? 'stopped' : 'paused';
     if (agentRes.text && agentRes.text !== 'Pausado por Carlos.') current.note = (current.note ? current.note + '\n' : '') + agentRes.text.trim();
@@ -3522,6 +3570,40 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
       (facts.length ? `\n_${facts.join(' · ')}_\n` : '');
     current.status = def.gate ? 'awaiting' : 'done';
     if (commit?.sha) current.commits = (current.commits || []).concat(commit.sha).slice(-30);
+    if (brandStage) {
+      // Quem fecha as pranchas é a conferência do Escritório: três pastas completas e dentro das regras de cor.
+      const gaps = projectBrandBoardsGaps(info.rootPath);
+      if (gaps.length) designError = `As pranchas de marca não fecharam. Falta: ${gaps.join('; ')}.`;
+      current.note +=
+        `\n### ${stamp} · Conferência das pranchas de marca\n` +
+        (designError || `Três pranchas completas em ${BRAND_BOARDS_DIR}/a, b e c, de famílias de cor diferentes e dentro das regras de cor.`) +
+        '\n';
+      if (designError) current.status = 'idle';
+    }
+    if (designRole === 'direcao') {
+      // Quem fecha a direção é a conferência do contrato, não a resposta do motor.
+      const gaps = projectContractGaps(info.rootPath, desk.designMode, process.cwd());
+      if (gaps === null && !isMaintenance(tplCode)) designError = `A direção de design não gravou ${DESIGN_FILES.contract}.`;
+      else if (gaps && gaps.length) designError = `${DESIGN_FILES.contract} está incompleto. Falta: ${gaps.join('; ')}.`;
+      const directions = projectDirections(info.rootPath);
+      if (!designError && !isMaintenance(tplCode) && directions.length < DIRECTIONS_MIN) {
+        designError = `A direção de design entregou ${directions.length} de ${DIRECTIONS_MIN} direções em ${DESIGN_FILES.directions}/ (cada uma numa pasta com index.html).`;
+      }
+      // Marca em tokens e prancha: em projeto novo são obrigatórias; em manutenção, só se foram entregues.
+      if (!designError && gaps !== null) {
+        const brand = projectBrandGaps(info.rootPath);
+        const delivered = fs.existsSync(path.join(info.rootPath, ...DESIGN_FILES.theme.split('/'))) || fs.existsSync(path.join(info.rootPath, ...DESIGN_FILES.board.split('/')));
+        if (brand.length && (!isMaintenance(tplCode) || delivered)) designError = `A marca não fechou. Falta: ${brand.join('; ')}.`;
+      }
+      current.note +=
+        `\n### ${stamp} · Conferência do contrato de design\n` +
+        (designError ||
+          (gaps === null
+            ? 'Sem contrato de design neste projeto (manutenção sem mudança visual).'
+            : `${DESIGN_FILES.contract} tem todas as seções e o bloco de tokens.${directions.length ? ` Direções para escolher: ${directions.map((d) => `${DESIGN_FILES.directions}/${d}/index.html`).join(', ')}.` : ''}`)) +
+        '\n';
+      if (designError) current.status = 'idle';
+    }
   } else {
     current.status = 'idle';
     current.note = (current.note ? current.note + '\n' : '') + `### ${stamp} · falhou${exec}\n${String(agentRes.text || '').slice(0, 500)}\n`;
@@ -3595,7 +3677,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
   const qaOk = !qaGate || !!qa?.ok;
   const segOk = !segGate || !!seg?.ok;
   const held = paused || pausedQa;
-  const ok = Boolean(agentRes.ok) && !held && qaOk && segOk;
+  const ok = Boolean(agentRes.ok) && !held && qaOk && segOk && !designError;
   return {
     ...esteiraPayload(info.rootPath, fresh),
     ok,
@@ -3609,6 +3691,8 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     reply: agentRes.text,
     error: ok || held
       ? undefined
+      : designError
+        ? designError
       : !qaOk
         ? qa ? `QA reprovou «${def.name}»: ${qa.empty ? 'nenhum teste rodou' : `${qa.fail} de ${qa.total} testes falharam`}.` : `QA não rodou: ${qaError}`
         : !segOk

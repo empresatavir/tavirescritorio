@@ -31,9 +31,13 @@ Deno.serve(async (request) => {
   const action = String(body.action || "");
   if (!/^[0-9a-f-]{36}$/i.test(String(caseId)) || !["form2", "analyse"].includes(action)) return response({ error: "invalid_request" }, 400);
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  // G-PR1 controle 8: caso revogado não avança (nem formulário 2, nem análise).
+  const { data: revokedRow, error: revokedError } = await supabase.from("raiox_cases").select("revoked_at").eq("id", caseId).maybeSingle();
+  if (revokedError) return response({ error: "case_unavailable" }, 500);
+  if (revokedRow?.revoked_at) return response({ error: "case_revoked" }, 403);
   if (action === "analyse") {
     const [{ data: caseRow }, { data: submissions }, { data: consents }] = await Promise.all([
-      supabase.from("raiox_cases").select("id,status,company_name").eq("id", caseId).maybeSingle(),
+      supabase.from("raiox_cases").select("id,status,company_name,email_verified_at").eq("id", caseId).maybeSingle(),
       supabase.from("raiox_form_submissions").select("stage,answers,submitted_at").eq("case_id", caseId).order("stage"),
       supabase.from("raiox_consents").select("scope,accepted,accepted_at").eq("case_id", caseId).eq("scope", "public_sources").order("accepted_at", { ascending: false }),
     ]);
@@ -43,6 +47,8 @@ Deno.serve(async (request) => {
     if (!consents?.some((item) => item.accepted === true)) {
       return response({ error: "public_sources_not_authorized" }, 403);
     }
+    // G-PR1 controle 4: sem e-mail confirmado, a análise não começa.
+    if (!caseRow.email_verified_at) return response({ error: "email_not_verified" }, 403);
     const stage1 = submissions?.find((item) => item.stage === 1)?.answers as Record<string, unknown> | undefined;
     const stage2 = submissions?.find((item) => item.stage === 2)?.answers as Record<string, unknown> | undefined;
     if (!stage1) return response({ error: "submission_not_found" }, 409);

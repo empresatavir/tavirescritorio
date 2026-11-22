@@ -43,9 +43,14 @@ export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {
     ['Entender', 'Paula PM', 'Orquestradora', 1],
     ['Refinar', 'Arquiteto de Nicho', 'Arquitetura de soluções', 1],
     ['Dossiê', 'Dora Descoberta', 'Intake e descoberta', 1],
+    ['Marca · três pranchas', 'Marina Marca', 'brand-identity', 1],
+    ['Escolha da marca', 'Carlos Henrique', 'aprovação humana', 1],
+    ['Direção de design', 'Marina + Yuri', 'design-taste-frontend', 1],
+    ['Aprovação do design', 'Carlos Henrique', 'aprovação humana', 1],
     ['Arquitetura', 'Théo Tech Lead', 'Liderança técnica', 1],
     ['Construção', 'Vitor Construtor', 'Dev frontend sênior', 2],
     ['QA', 'Edna E2E', 'QA end-to-end', 1],
+    ['Gate · Revisão de design', 'Revisor de Design', 'rubrica de design', 1],
     ['Security', 'Auditor Seg/LGPD', 'Segurança e LGPD', 2],
     ['SEO', 'Nina SEO', 'SEO técnico', 2],
     ['Handoff', 'Paulo Publicador', 'Publicação e release', 2],
@@ -55,9 +60,10 @@ export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {
     ['Auditoria de conversão', 'Bianca Estrategista', 'cro-audit', 1],
     ['Requisitos da evolução', 'Marina + Yuri', 'requirements', 1],
     ['Aprovação dos requisitos', 'Comercial TAVIR', 'aprovação humana', 1],
-    ['Prova visual', 'Yuri UX', 'visual-proof', 1],
+    ['Prova visual', 'Marina + Yuri', 'design-taste-frontend', 1],
     ['Construção incremental', 'Diego Desenvolvedor', 'frontend-excelencia-tavir', 3],
     ['QA E2E Playwright', 'Talita QA', 'playwright', 1],
+    ['Gate · Revisão de design', 'Revisor de Design', 'rubrica de design', 1],
     ['Segurança & LGPD', 'Sérgio Seg/LGPD', 'web-security', 1],
     ['Auditoria SEO', 'Nina SEO', 'seo-audit', 1],
     ['Documentação & runbook', 'Dante Doc', 'documentacao-sistema', 1],
@@ -69,8 +75,13 @@ export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {
     ['Validação de viabilidade', 'Bianca Estrategista', 'viability-check', 2],
     ['Precificação', 'Comercial TAVIR', 'pricing', 1],
     ['Claims e compliance', 'Sérgio Seg/LGPD', 'claims-check', 1],
+    ['Marca · três pranchas', 'Marina Marca', 'brand-identity', 1],
+    ['Escolha da marca', 'Carlos Henrique', 'aprovação humana', 1],
+    ['Direção de design', 'Marina + Yuri', 'design-taste-frontend', 1],
+    ['Aprovação do design', 'Carlos Henrique', 'aprovação humana', 1],
     ['Página da oferta', 'Diego Desenvolvedor', 'frontend-excelencia-tavir', 2],
     ['QA de copy e oferta', 'Talita QA', 'copy-qa', 1],
+    ['Gate · Revisão de design', 'Revisor de Design', 'rubrica de design', 1],
     ['Gate Final CEO', 'Carlos Henrique', 'aprovação humana', 1],
   ]),
   'OF-M0': build('OF-M0', 'Ofertas · Manutenção', [
@@ -78,12 +89,18 @@ export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {
     ['Evidência atualizada', 'Bianca Estrategista', 'audience-research', 1],
     ['Claims e compliance', 'Sérgio Seg/LGPD', 'claims-check', 1],
     ['Ajuste de preço', 'Comercial TAVIR', 'pricing', 1],
+    ['Direção de design', 'Marina + Yuri', 'design-taste-frontend', 1],
     ['Página revisada', 'Diego Desenvolvedor', 'frontend-excelencia-tavir', 1],
+    ['Gate · Revisão de design', 'Revisor de Design', 'rubrica de design', 1],
     ['Gate Final CEO', 'Carlos Henrique', 'aprovação humana', 1],
   ]),
   'SY-C1': build('SY-C1', 'Sistemas · Criação', [
     ['Gate 0 · Demanda e briefing', 'Dora Descoberta', 'brand-context', 1],
     ['Requisitos verificáveis', 'Ari Arquiteto', 'requirements', 2],
+    ['Marca · três pranchas', 'Marina Marca', 'brand-identity', 1],
+    ['Escolha da marca', 'Carlos Henrique', 'aprovação humana', 1],
+    ['Direção de design', 'Marina + Yuri', 'ui-ux-pro-max · ui-styling', 1],
+    ['Aprovação do design', 'Carlos Henrique', 'aprovação humana', 1],
     ['Arquitetura & modelagem', 'Ari Arquiteto', 'archify · sql-queries', 2],
     ['Planejamento ágil', 'Paula PM', 'agile-planning', 1],
     ['Scaffold físico oficial', 'Diego Dev Front & Back', 'flutter create · pnpm create vite', 1],
@@ -92,6 +109,7 @@ export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {
     ['Loop Linter & Compiler', 'Compiler TAVIR', 'dart analyze · tsc --noEmit', 1],
     ['QA E2E Playwright', 'Talita QA', 'playwright', 2],
     ['QA Mobile · emulador tavir_qa', 'Talita QA', 'mobile-mcp', 1],
+    ['Gate · Revisão de design', 'Revisor de Design', 'rubrica de design', 1],
     ['Segurança & LGPD', 'Sérgio Seg/LGPD', 'web-security', 1],
     ['Completion Guard · 8 regras físicas', 'Compiler TAVIR', 'completion-guard', 1],
     ['Documentação & runbook', 'Dante Doc', 'documentacao-sistema', 1],
@@ -103,9 +121,11 @@ export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {
     ['Refinar', 'Arquiteto de Nicho', 'refino', 1],
     ['Dossiê', 'Dora Descoberta', 'brand-context', 1],
     ['Diagnóstico técnico', 'Théo Tech Lead', 'code-review', 1],
+    ['Direção de design', 'Marina + Yuri', 'ui-ux-pro-max · ui-styling', 1],
     ['Correção e migração', 'Diego Dev Front & Back', 'test-driven-development', 3],
     ['Loop Linter & Compiler', 'Compiler TAVIR', 'tsc --noEmit · dart analyze', 1],
     ['QA E2E Playwright', 'Talita QA', 'playwright', 1],
+    ['Gate · Revisão de design', 'Revisor de Design', 'rubrica de design', 1],
     ['Segurança & LGPD', 'Sérgio Seg/LGPD', 'web-security', 1],
     ['Handoff', 'Paulo Publicador', 'pacote-entrega', 1],
   ]),
@@ -143,6 +163,12 @@ const SEGURANCA = C(
   'A varredura automática roda em seguida e decide; crítico ou alto aberto reprova.',
 );
 
+const DIRECAO_DESIGN = C(
+  'Decidir como a entrega vai parecer e funcionar antes de qualquer código de interface.',
+  'design/marca.md (marca, tom de voz, paleta e tipografia), design/DESIGN.md com todas as seções do modelo do kit e, em criação, três direções diferentes em design/direcoes/. Em manutenção sem mudança visual, diga isso em uma linha e não altere os arquivos de design.',
+  'O Escritório confere as seções, o bloco de tokens e as três direções; faltando algo, a etapa não fecha.',
+);
+
 export const STAGE_CONTRACTS: Record<string, StageContract> = {
   // Sistemas
   'Gate 0 · Demanda e briefing': DESCOBERTA,
@@ -168,7 +194,7 @@ export const STAGE_CONTRACTS: Record<string, StageContract> = {
   ),
   'Construção Front': C(
     'Implementar no código as telas e comportamentos de front que ainda faltam.',
-    'Código de interface e testes de componente ou jornada para cada item de Front de A fazer no kanban (ou requisito sem implementação).',
+    'Código de interface seguindo design/DESIGN.md (tokens, componentes e estados) e testes de componente ou jornada para cada item de Front de A fazer no kanban (ou requisito sem implementação).',
     'Cada item implementado tem teste que passa. Se nada falta, diga quais itens conferiu e não mude arquivos.',
   ),
   'Construção Back': C(
@@ -223,15 +249,37 @@ export const STAGE_CONTRACTS: Record<string, StageContract> = {
   ),
   // LPs
   'Arquitetura': C('Decidir estrutura e tecnologia da página.', 'Decisões curtas com o motivo de cada uma.', 'A construção consegue seguir sem perguntar.'),
-  'Construção': C('Construir a página.', 'Código da página no design system do projeto.', 'O build passa e a página abre.'),
-  'Construção incremental': C('Aplicar na página as mudanças aprovadas.', 'Código alterado só no que os requisitos aprovados pedem.', 'O build passa e cada mudança aparece na página.'),
+  'Construção': C('Construir a página.', 'Código da página seguindo design/DESIGN.md: tokens, componentes, estados e a ordem das seções.', 'O build passa, a página abre e nenhuma cor ou fonte foge dos tokens do contrato.'),
+  'Construção incremental': C('Aplicar na página as mudanças aprovadas.', 'Código alterado só no que os requisitos aprovados e design/DESIGN.md pedem.', 'O build passa e cada mudança aparece na página, dentro dos tokens do contrato.'),
   'QA': QA_JORNADA,
   'Security': SEGURANCA,
   'SEO': C('Deixar a página correta para busca.', 'Título, descrição, cabeçalhos, dados estruturados e sitemap corrigidos.', 'Cada item conferido no HTML gerado.'),
   'Auditoria SEO': C('Apontar e corrigir problemas técnicos de SEO.', 'Correções técnicas e a lista do que depende de conteúdo.', 'Cada item conferido no HTML gerado.'),
   'Auditoria de conversão': C('Apontar o que atrapalha a conversão da página.', 'Lista com o trecho da página, o problema e a mudança proposta. Não altere código.', 'Cada item aponta um trecho real.'),
   'Requisitos da evolução': C('Escrever o que a nova versão da página precisa ter.', 'Requisitos com critério verificável e a seção afetada.', 'Todo requisito tem critério conferível.'),
-  'Prova visual': C('Mostrar a mudança visual antes de construir.', 'Descrição ou protótipo de cada tela que muda.', 'Cada mudança tem a tela e o motivo.'),
+  'Prova visual': DIRECAO_DESIGN,
+  // Design (todas as esteiras)
+  'Marca · três pranchas': C(
+    'Dar ao Carlos três marcas para escolher, antes de qualquer página.',
+    'design/marca.md (contexto, posicionamento e tom de voz) e três pranchas em design/pranchas/a, b e c, cada uma com tema.css e prancha.html, de famílias de cor diferentes, mais design/pranchas/LEIA.md com a recomendação.',
+    'O Escritório confere as três pastas, a escala e os papéis de cada tema e as regras de cor (cor principal viva, fundo que não é neutro quente, famílias diferentes); faltando algo, a etapa não fecha.',
+  ),
+  'Escolha da marca': C(
+    'Levar as três pranchas de marca à escolha do Carlos.',
+    'Resumo de design/pranchas/LEIA.md: o caminho de cada prancha.html, a ideia de cada marca em uma linha, o que muda entre elas e qual é a recomendada. Não edite arquivos.',
+    'O Carlos abre as três pranchas e aprova dizendo qual escolheu (A, B ou C). O Escritório copia o tema e a prancha escolhidos para design/.',
+  ),
+  'Direção de design': DIRECAO_DESIGN,
+  'Aprovação do design': C(
+    'Levar a direção de design à decisão do Carlos.',
+    'Resumo de design/marca.md e design/DESIGN.md (conceito, tokens, telas, referências) e as direções em design/direcoes/, com o caminho de cada index.html, o que muda entre elas e qual é a recomendada.',
+    'O Carlos abre as direções, escolhe uma e aprova, ou devolve dizendo qual quer.',
+  ),
+  'Gate · Revisão de design': C(
+    'Julgar a interface construída contra o contrato de design, sem ter participado da construção.',
+    'Nota de 0 a 10 por critério da rubrica, com o arquivo, a tela ou o print que sustenta cada nota, e a lista do que corrigir, do mais grave ao menos grave.',
+    'Cada nota aponta onde está. A etapa só fecha com a decisão do Carlos.',
+  ),
   // Ofertas
   'Evidência de público': C('Reunir evidência de que o público existe e quer a oferta.', 'Lista de evidências com a fonte de cada uma.', 'Nenhuma afirmação sem fonte.'),
   'Evidência atualizada': C('Atualizar a evidência de público.', 'Evidências novas com fonte; as antigas que caíram, marcadas.', 'Nenhuma afirmação sem fonte.'),
@@ -239,8 +287,8 @@ export const STAGE_CONTRACTS: Record<string, StageContract> = {
   'Precificação': C('Definir o preço.', 'Preço proposto e a conta que o sustenta.', 'A conta fecha com os números da pasta.'),
   'Ajuste de preço': C('Revisar o preço.', 'Preço revisado e o motivo.', 'A conta fecha com os números da pasta.'),
   'Claims e compliance': C('Garantir que a oferta não promete o que não pode.', 'Lista de afirmações com risco e a versão segura.', 'Nenhuma afirmação sem base.'),
-  'Página da oferta': C('Construir a página da oferta.', 'Código da página.', 'O build passa e a página abre.'),
-  'Página revisada': C('Aplicar na página as mudanças da revisão.', 'Código alterado só no que a revisão pede.', 'O build passa.'),
+  'Página da oferta': C('Construir a página da oferta.', 'Código da página seguindo design/DESIGN.md: tokens, componentes, estados e a ordem das seções.', 'O build passa, a página abre e nenhuma cor ou fonte foge dos tokens do contrato.'),
+  'Página revisada': C('Aplicar na página as mudanças da revisão.', 'Código alterado só no que a revisão e design/DESIGN.md pedem.', 'O build passa e a página segue os tokens do contrato.'),
   'QA de copy e oferta': C('Conferir texto e oferta na página.', 'Lista de erros de texto, preço ou promessa, com a correção.', 'Cada item aponta o trecho da página.'),
   'Revisão da oferta': C('Revisar a oferta atual.', 'O que manter, o que mudar e por quê.', 'Cada ponto aponta a fonte.'),
 };
@@ -254,8 +302,22 @@ export function stageContract(name: string | undefined | null): StageContract | 
  * Nomes das etapas de moldes que mudaram depois de haver projetos gravados. Esteiras antigas
  * guardavam só a posição; com isto o main remapeia pelo nome em vez de deslocar os registros.
  */
-export const LEGACY_STAGE_NAMES: Partial<Record<EsteiraCode, string[]>> = {
-  'SY-M1': ['Entender', 'Refinar', 'Dossiê', 'Diagnóstico técnico', 'Correção e migração', 'Loop Linter & Compiler', 'QA E2E Playwright', 'Handoff'],
+export const LEGACY_STAGE_NAMES: Partial<Record<EsteiraCode, string[][]>> = {
+  'LP-C1': [
+    ['Entender', 'Refinar', 'Dossiê', 'Arquitetura', 'Construção', 'QA', 'Security', 'SEO', 'Handoff'],
+    ['Entender', 'Refinar', 'Dossiê', 'Direção de design', 'Aprovação do design', 'Arquitetura', 'Construção', 'QA', 'Gate · Revisão de design', 'Security', 'SEO', 'Handoff'],
+  ],
+  'LP-M1': [['Gate 0 · Diagnóstico da LP atual', 'Auditoria de conversão', 'Requisitos da evolução', 'Aprovação dos requisitos', 'Prova visual', 'Construção incremental', 'QA E2E Playwright', 'Segurança & LGPD', 'Auditoria SEO', 'Documentação & runbook', 'Gate Final CEO · Completion Guard']],
+  'OF-C1': [
+    ['Gate 0 · Problema e público', 'Evidência de público', 'Validação de viabilidade', 'Precificação', 'Claims e compliance', 'Página da oferta', 'QA de copy e oferta', 'Gate Final CEO'],
+    ['Gate 0 · Problema e público', 'Evidência de público', 'Validação de viabilidade', 'Precificação', 'Claims e compliance', 'Direção de design', 'Aprovação do design', 'Página da oferta', 'QA de copy e oferta', 'Gate · Revisão de design', 'Gate Final CEO'],
+  ],
+  'OF-M0': [['Revisão da oferta', 'Evidência atualizada', 'Claims e compliance', 'Ajuste de preço', 'Página revisada', 'Gate Final CEO']],
+  'SY-C1': [['Gate 0 · Demanda e briefing', 'Requisitos verificáveis', 'Arquitetura & modelagem', 'Planejamento ágil', 'Scaffold físico oficial', 'Construção Front', 'Construção Back', 'Loop Linter & Compiler', 'QA E2E Playwright', 'QA Mobile · emulador tavir_qa', 'Segurança & LGPD', 'Completion Guard · 8 regras físicas', 'Documentação & runbook', 'Gate Final CEO · Completion Guard', 'Handoff'], ['Gate 0 · Demanda e briefing', 'Requisitos verificáveis', 'Direção de design', 'Aprovação do design', 'Arquitetura & modelagem', 'Planejamento ágil', 'Scaffold físico oficial', 'Construção Front', 'Construção Back', 'Loop Linter & Compiler', 'QA E2E Playwright', 'QA Mobile · emulador tavir_qa', 'Gate · Revisão de design', 'Segurança & LGPD', 'Completion Guard · 8 regras físicas', 'Documentação & runbook', 'Gate Final CEO · Completion Guard', 'Handoff']],
+  'SY-M1': [
+    ['Entender', 'Refinar', 'Dossiê', 'Diagnóstico técnico', 'Correção e migração', 'Loop Linter & Compiler', 'QA E2E Playwright', 'Handoff'],
+    ['Entender', 'Refinar', 'Dossiê', 'Diagnóstico técnico', 'Correção e migração', 'Loop Linter & Compiler', 'QA E2E Playwright', 'Segurança & LGPD', 'Handoff'],
+  ],
 };
 
 /** `sy-c`, `SY_M1`, `of-m`… → código do molde. Mesma regra que o painel usava. */

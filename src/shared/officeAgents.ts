@@ -38,6 +38,27 @@ export const ACTION_STUDY = 'estudo-video';
 export const YURI_YOUTUBE = 'Yuri YouTube';
 /** Quem pode estudar vídeo: o Maicon olha ferramenta e absorção; o Yuri olha negócio e aprendizado. */
 export const STUDY_OWNERS = [MAICON, YURI_YOUTUBE];
+/** Copiador de sites: o Escritório mede o site no navegador e o Kakashi redige o dossiê de reprodução. */
+export const KAKASHI = 'Kakashi';
+export const ACTION_ABSORB = 'absorver-site';
+
+/** Primeiro endereço de site no texto (http/https ou domínio solto). */
+export function firstSiteLink(text: string | null | undefined): string {
+  const t = String(text || '');
+  const full = /https?:\/\/[^\s<>"')]+/i.exec(t);
+  if (full) return full[0].replace(/[.,;]+$/, '');
+  const bare = /\b((?:[a-z0-9-]+\.)+(?:com\.br|com|br|io|app|dev|co|net|org|design|studio|ai|so|me|xyz))(\/[^\s<>"')]*)?/i.exec(t);
+  return bare ? `https://${bare[0].replace(/[.,;]+$/, '')}` : '';
+}
+
+/** Família, nicho e modo ditos no pedido de absorção («sistema», «nicho: clínica», «modo conceito»). */
+export function absorbHints(text: string | null | undefined): { family: 'marketing' | 'produto'; niche: string; mode: string } {
+  const t = String(text || '');
+  const family = /\b(sistema|produto|painel|dashboard|app|aplicativo|saas|crm|erp)\b/i.test(t) ? 'produto' : 'marketing';
+  const niche = (/\bnicho\s*[:=]?\s*([^\n.;,]{2,40})/i.exec(t)?.[1] || '').trim();
+  const mode = /\bconceit/i.test(t) ? 'conceito' : /\bpadr[aã]o\b/i.test(t) ? 'padrao' : '';
+  return { family, niche, mode };
+}
 
 /** Agentes com comportamento próprio no Escritório (opções, escopo canônico) e os ajudantes genéricos. */
 const CURATED: OfficeAgent[] = [
@@ -63,6 +84,13 @@ const CURATED: OfficeAgent[] = [
     ],
   },
   {
+    name: KAKASHI,
+    role: 'Copiador de sites: absorve estrutura, componentes, animações, interações e tempos de um site de referência',
+    brief: 'Você transforma um site de referência num dossiê com o qual outro agente refaz a experiência do zero: medidas com fonte, cada animação com gatilho, duração e curva, e a receita para aplicar a marca do cliente. Copia a técnica, nunca imagem, texto ou código.',
+    scope: 'kakashi.md',
+    actions: [{ id: ACTION_ABSORB, label: 'Absorver site', hint: 'Cole o endereço. Se quiser, diga o nicho, se é LP ou sistema e se serve para Padrão ou Conceito' }],
+  },
+  {
     name: YURI_YOUTUBE,
     role: 'Inteligência de negócios em vídeos: aulas, podcasts e entrevistas do YouTube ou do Instagram',
     brief: 'Você transforma um vídeo em inteligência rastreável: tese, modelo de negócio, operação, oportunidades e experimentos para a TAVIR, com o instante de cada ponto.',
@@ -84,6 +112,17 @@ const CURATED: OfficeAgent[] = [
     brief: 'Você transforma uma demanda crua em requisitos claros. Sem entrevista ao vivo: entregue o que já dá para afirmar e a lista de perguntas que faltam.',
     scope: 'dora-descoberta.md',
     actions: [{ id: 'requisitos', label: 'Levantar requisitos', hint: 'Descreva a demanda do cliente' }],
+  },
+  {
+    name: 'Marina Marca',
+    role: 'Marca: posicionamento, tom de voz, paleta e tipografia',
+    brief: 'Você decide quem a marca é e entrega isso em tokens que a interface usa: posicionamento, tom de voz com exemplos, paleta com contraste conferido e tipografia. Cada escolha tem motivo ligado ao público.',
+    scope: 'marina-marca.md',
+    actions: [
+      { id: 'marca', label: 'Definir a marca', hint: 'Diga o projeto, o público e o que ele promete' },
+      { id: 'revisar', label: 'Revisar a marca atual', hint: 'Informe o projeto ou a URL' },
+      { id: 'voz', label: 'Escrever o tom de voz', hint: 'Diga para quem a marca fala' },
+    ],
   },
   {
     name: 'Yuri UX',

@@ -2,10 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { formatById, type Peca, type Perfil } from '../../shared/studio';
 import { darkflowRequest } from './darkflow';
-import { exportReelForDarkFlow } from './darkflowExport';
 import { docuflowChannel } from './docuflow';
-import { probe } from './mediaChecks';
-import { ensureStudioTree } from './paths';
 import type { StudioStore } from './store';
 
 export interface ScoreLine {
@@ -24,80 +21,6 @@ export function presentScorecard(raw: unknown): ScoreLine[] {
     const value = shown.length ? shown.map(([name, number]) => `${name} ${number}`).join(' · ') : '—';
     return { k: row.window_hours == null ? 'janela' : `${row.window_hours} h · n ${row.sample_size ?? '—'}`, v: value };
   });
-}
-
-function whenOf(value: string | null): { start_date: string; times: string[] } | null {
-  if (!value) return null;
-  const match = value.match(/^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})/);
-  if (!match) return null;
-  return { start_date: match[1], times: [match[2]] };
-}
-
-function draftPath(home: string, pecaId: string): string {
-  return path.join(ensureStudioTree(home).pecaDirs(pecaId).pacote, 'darkflow.json');
-}
-
-export async function prepareDarkflowSchedule(store: StudioStore, pecaId: string, base: string, outputRoot: string, projectRoot: string): Promise<{ ok: boolean; error?: string; scheduleId?: string }> {
-  const peca = store.getPeca(pecaId);
-  if (!peca) return { ok: false, error: 'peça não encontrada' };
-  if (peca.formato_id !== 'ig-reels-9x16') return { ok: false, error: 'o DarkFlow só recebe Reel do Instagram' };
-  const format = formatById(peca.formato_id);
-  const when = whenOf(peca.agendado_para);
-  if (!when) return { ok: false, error: 'informe quando publicar, com data e hora' };
-  const video = path.join(ensureStudioTree(store.tree.home).pecaDirs(pecaId).pacote, 'final.mp4');
-  if (!fs.existsSync(video)) return { ok: false, error: 'falta o pacote do reel' };
-  const info = probe(video);
-  const exported = exportReelForDarkFlow({
-    video,
-    outputRoot,
-    projectRoot,
-    width: info?.width ?? format?.width ?? 1080,
-    height: info?.height ?? format?.height ?? 1920,
-    duration: info?.duration ?? 0,
-  });
-  const session = await darkflowRequest(base, '/api/publisher/session');
-  const csrf = String(session.csrf_token ?? '');
-  if (!csrf) return { ok: false, error: 'o DarkFlow não devolveu o CSRF' };
-  await darkflowRequest(base, '/api/publisher/library/scan', { method: 'POST', csrf, body: {} });
-  const library = await darkflowRequest(base, '/api/publisher/library');
-  const items = Array.isArray(library) ? library : [];
-  const manifest = JSON.parse(fs.readFileSync(exported.manifest, 'utf8')) as { sha256: string };
-  const item = items.find((row) => row && typeof row === 'object' && (row as { sha256?: string }).sha256 === manifest.sha256) as { id?: string } | undefined;
-  if (!item?.id) return { ok: false, error: 'o DarkFlow não importou o reel' };
-  const body = {
-    item_id: item.id,
-    name: peca.titulo || 'Reel',
-    recurrence: 'once',
-    timezone: 'America/Sao_Paulo',
-    start_date: when.start_date,
-    times: when.times,
-    weekdays: [],
-    caption: peca.legenda || '',
-    hashtags: (peca.hashtags || []).join(' '),
-    share_to_feed: true,
-    is_ai_generated: false,
-    editorial_attested: false,
-    activate: false,
-  };
-  const created = await darkflowRequest(base, '/api/publisher/schedules', { method: 'POST', csrf, body });
-  const scheduleId = String(created.id ?? '');
-  if (!scheduleId) return { ok: false, error: 'o DarkFlow não devolveu a agenda' };
-  fs.writeFileSync(draftPath(store.tree.home, pecaId), JSON.stringify({ scheduleId, body }, null, 2));
-  return { ok: true, scheduleId };
-}
-
-export async function activateDarkflowSchedule(store: StudioStore, pecaId: string, base: string): Promise<{ ok: boolean; error?: string }> {
-  const file = draftPath(store.tree.home, pecaId);
-  if (!fs.existsSync(file)) return { ok: false, error: 'ainda não há agenda em rascunho' };
-  const saved = JSON.parse(fs.readFileSync(file, 'utf8')) as { scheduleId: string; body: Record<string, unknown> };
-  const session = await darkflowRequest(base, '/api/publisher/session');
-  const csrf = String(session.csrf_token ?? '');
-  await darkflowRequest(base, `/api/publisher/schedules/${saved.scheduleId}`, {
-    method: 'PATCH',
-    csrf,
-    body: { ...saved.body, editorial_attested: true, activate: true },
-  });
-  return { ok: true };
 }
 
 export async function darkflowBoard(base: string): Promise<{ ok: boolean; error?: string; library: unknown[]; schedules: unknown[]; occurrences: unknown[] }> {

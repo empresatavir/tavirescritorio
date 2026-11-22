@@ -7,8 +7,24 @@
       "comando": "Iniciar-DarkFlow.bat",
       "healthUrl": "http://127.0.0.1:8765/api/health",
       "portas": [
-        8765
-      ]
+        8765,
+        5174
+      ],
+      "processos": [
+        {
+          "comando": "powershell.exe",
+          "args": [
+            "-NoLogo",
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            "start.ps1"
+          ]
+        }
+      ],
+      "nota": "Sobe pelo start.ps1 do DarkFlow sem -OpenBrowser (o Flow já é a tela) e sem -EnableMetaPublish. -NonInteractive faz o script falhar em vez de esperar resposta escondida quando as portas estão ocupadas."
     },
     {
       "id": "docuflow",

@@ -1,0 +1,113 @@
+# Untitled UI React — índice das peças
+
+104 peças. Abra só as que servem ao trabalho; não leia a pasta inteira.
+
+## aplicação
+- `pecas/app-navigation-base-components-mobile-header.tsx` · aplicação, app-navigation · 59 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/app-navigation-base-components-nav-account-card.tsx` · aplicação, app-navigation · 229 linhas · usa @untitledui/icons, react-aria, react-aria-components
+- `pecas/app-navigation-base-components-nav-button.tsx` · aplicação, app-navigation · 71 linhas · usa react-aria-components
+- `pecas/app-navigation-base-components-nav-item.tsx` · aplicação, app-navigation · 132 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/app-navigation-base-components-nav-list.tsx` · aplicação, app-navigation · 68 linhas
+- `pecas/app-navigation-header-navigation.tsx` · aplicação, app-navigation · 227 linhas · usa @untitledui/icons
+- `pecas/app-navigation-sidebar-navigation-sidebar-dual-tier.tsx` · aplicação, app-navigation · 169 linhas · usa @untitledui/icons, motion
+- `pecas/app-navigation-sidebar-navigation-sidebar-section-dividers.tsx` · aplicação, app-navigation · 66 linhas · usa @untitledui/icons
+- `pecas/app-navigation-sidebar-navigation-sidebar-sections-subheadings.tsx` · aplicação, app-navigation · 78 linhas · usa @untitledui/icons
+- `pecas/app-navigation-sidebar-navigation-sidebar-simple.tsx` · aplicação, app-navigation · 107 linhas · usa @untitledui/icons
+- `pecas/app-navigation-sidebar-navigation-sidebar-slim.tsx` · aplicação, app-navigation · 214 linhas · usa @untitledui/icons, motion, react-aria-components
+- `pecas/app-navigation-sidebar-navigation-base.tsx` · aplicação, app-navigation · 7 linhas
+- `pecas/carousel-carousel-base.tsx` · aplicação, carousel · 321 linhas · usa embla-carousel-react
+- `pecas/charts-charts-base.tsx` · aplicação, charts · 157 linhas · usa recharts
+- `pecas/date-picker-calendar.tsx` · aplicação, date-picker · 103 linhas · usa @internationalized/date, @untitledui/icons, react-aria-components
+- `pecas/date-picker-cell.tsx` · aplicação, date-picker · 111 linhas · usa @internationalized/date, react-aria-components
+- `pecas/date-picker.tsx` · aplicação, date-picker · 91 linhas · usa @internationalized/date, @react-stately/utils, @untitledui/icons, react-aria, react-aria-components
+- `pecas/date-picker-date-range-picker.tsx` · aplicação, date-picker · 167 linhas · usa @internationalized/date, @react-stately/utils, @untitledui/icons, react-aria, react-aria-components
+- `pecas/date-picker-range-calendar.tsx` · aplicação, date-picker · 198 linhas · usa @internationalized/date, @untitledui/icons, react-aria, react-aria-components
+- `pecas/empty-state.tsx` · aplicação, empty-state · 357 linhas · usa @untitledui/file-icons, @untitledui/icons
+- `pecas/file-upload-draggable.tsx` · aplicação, file-upload · 155 linhas · usa @untitledui/file-icons, motion
+- `pecas/file-upload-file-upload-base.tsx` · aplicação, file-upload · 395 linhas · usa @untitledui/file-icons, @untitledui/icons, motion
+- `pecas/loading-indicator.tsx` · aplicação, loading-indicator · 124 linhas
+- `pecas/modals-modal.tsx` · aplicação, modals · 48 linhas · usa react-aria-components
+- `pecas/pagination-pagination-base.tsx` · aplicação, pagination · 380 linhas
+- `pecas/pagination-pagination-dot.tsx` · aplicação, pagination · 55 linhas
+- `pecas/pagination-pagination-line.tsx` · aplicação, pagination · 51 linhas
+- `pecas/pagination.tsx` · aplicação, pagination · 494 linhas · usa @untitledui/icons
+- `pecas/slideout-menus-slideout-menu.tsx` · aplicação, slideout-menus · 127 linhas · usa react-aria-components
+- `pecas/table.tsx` · aplicação, table · 327 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/tabs.tsx` · aplicação, tabs · 230 linhas · usa react-aria-components
+
+## base
+- `pecas/avatar-avatar-label-group.tsx` · base, avatar · 37 linhas
+- `pecas/avatar-avatar-profile-photo.tsx` · base, avatar · 136 linhas · usa @untitledui/icons
+- `pecas/avatar.tsx` · base, avatar · 174 linhas · usa @untitledui/icons
+- `pecas/avatar-base-components-avatar-add-button.tsx` · base, avatar · 35 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/avatar-base-components-avatar-company-icon.tsx` · base, avatar · 24 linhas
+- `pecas/avatar-base-components-avatar-count.tsx` · base, avatar · 25 linhas
+- `pecas/avatar-base-components-avatar-online-indicator.tsx` · base, avatar · 47 linhas
+- `pecas/avatar-base-components-index.tsx` · base, avatar · 7 linhas
+- `pecas/avatar-base-components-verified-tick.tsx` · base, avatar · 30 linhas
+- `pecas/badges-badge-groups.tsx` · base, badges · 184 linhas · usa @untitledui/icons
+- `pecas/badges.tsx` · base, badges · 455 linhas · usa @untitledui/icons
+- `pecas/button-group.tsx` · base, button-group · 113 linhas · usa react-aria-components
+- `pecas/buttons-app-store-buttons-outline.tsx` · base, buttons · 403 linhas
+- `pecas/buttons-app-store-buttons.tsx` · base, buttons · 598 linhas
+- `pecas/buttons-button-utility.tsx` · base, buttons · 107 linhas · usa react-aria, react-aria-components
+- `pecas/buttons-button.tsx` · base, buttons · 262 linhas · usa react-aria-components
+- `pecas/buttons-close-button.tsx` · base, buttons · 55 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/buttons-social-button.tsx` · base, buttons · 159 linhas · usa react-aria-components
+- `pecas/buttons-social-logos.tsx` · base, buttons · 116 linhas
+- `pecas/checkbox.tsx` · base, checkbox · 130 linhas · usa react-aria-components
+- `pecas/dropdown-dropdown-account-breadcrumb.tsx` · base, dropdown · 92 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-account-button.tsx` · base, dropdown · 75 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-account-card-md.tsx` · base, dropdown · 100 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-account-card-sm.tsx` · base, dropdown · 102 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-account-card-xs.tsx` · base, dropdown · 79 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-avatar.tsx` · base, dropdown · 81 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-button-advanced.tsx` · base, dropdown · 118 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-button-link.tsx` · base, dropdown · 54 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-button-simple.tsx` · base, dropdown · 44 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-context-menu-advanced.tsx` · base, dropdown · 103 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-context-menu-simple.tsx` · base, dropdown · 45 linhas · usa react-aria-components
+- `pecas/dropdown-dropdown-icon-advanced.tsx` · base, dropdown · 99 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-icon-simple.tsx` · base, dropdown · 40 linhas · usa react-aria-components
+- `pecas/dropdown-dropdown-integration.tsx` · base, dropdown · 62 linhas · usa @untitledui/icons
+- `pecas/dropdown-dropdown-search-advanced.tsx` · base, dropdown · 96 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown-dropdown-search-simple.tsx` · base, dropdown · 65 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/dropdown.tsx` · base, dropdown · 195 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/file-upload-trigger.tsx` · base, file-upload-trigger · 78 linhas · usa @react-aria/utils
+- `pecas/form.tsx` · base, form · 11 linhas · usa react-aria-components
+- `pecas/form-hook-form.tsx` · base, form · 76 linhas · usa react-aria-components, react-hook-form
+- `pecas/input-hint-text.tsx` · base, input · 42 linhas · usa react-aria-components
+- `pecas/input-input-date.tsx` · base, input · 270 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/input-input-file.tsx` · base, input · 148 linhas
+- `pecas/input-input-group.tsx` · base, input · 158 linhas
+- `pecas/input-input-number.tsx` · base, input · 202 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/input-input-payment.tsx` · base, input · 165 linhas · usa @react-stately/utils
+- `pecas/input-input-tags-outer.tsx` · base, input · 187 linhas
+- `pecas/input-input-tags.tsx` · base, input · 294 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/input.tsx` · base, input · 309 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/input-label.tsx` · base, input · 73 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/input-pin-input.tsx` · base, input · 171 linhas · usa input-otp
+- `pecas/progress-indicators-progress-circles.tsx` · base, progress-indicators · 183 linhas
+- `pecas/progress-indicators.tsx` · base, progress-indicators · 124 linhas
+- `pecas/progress-indicators-simple-circle.tsx` · base, progress-indicators · 43 linhas
+- `pecas/radio-buttons.tsx` · base, radio-buttons · 136 linhas · usa react-aria-components
+- `pecas/select-combobox.tsx` · base, select · 204 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/select-multi-select.tsx` · base, select · 372 linhas · usa @untitledui/icons, react-aria, react-aria-components
+- `pecas/select-popover.tsx` · base, select · 39 linhas · usa react-aria-components
+- `pecas/select-select-footer.tsx` · base, select · 31 linhas · usa react-aria-components
+- `pecas/select-select-item.tsx` · base, select · 136 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/select-select-native.tsx` · base, select · 103 linhas · usa @untitledui/icons
+- `pecas/select-select-shared.tsx` · base, select · 64 linhas · usa react-aria-components
+- `pecas/select.tsx` · base, select · 175 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/select-tag-select.tsx` · base, select · 472 linhas · usa @untitledui/icons, react-aria, react-aria-components
+- `pecas/slider.tsx` · base, slider · 78 linhas · usa react-aria-components
+- `pecas/tags-base-components-tag-checkbox.tsx` · base, tags · 46 linhas
+- `pecas/tags-base-components-tag-close-x.tsx` · base, tags · 35 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/tags.tsx` · base, tags · 205 linhas · usa @untitledui/icons, react-aria-components
+- `pecas/textarea.tsx` · base, textarea · 125 linhas · usa react-aria-components
+- `pecas/toggle.tsx` · base, toggle · 151 linhas · usa react-aria-components
+- `pecas/tooltip.tsx` · base, tooltip · 110 linhas · usa react-aria-components
+
+## tokens
+- `pecas/theme.css` — folha de tema: cores, raios, sombras e animações · 835 linhas
+- `pecas/typography.css` — escala tipográfica · 431 linhas

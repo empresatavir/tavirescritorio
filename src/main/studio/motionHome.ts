@@ -24,17 +24,29 @@ function copyTree(from: string, to: string): void {
   }
 }
 
+/**
+ * Dentro do Electron, `process.execPath` é o electron.exe: sem ELECTRON_RUN_AS_NODE ele tenta abrir
+ * outro app e fica parado para sempre, sem erro. Com a variável, roda como Node.
+ */
+export function nodeEnvFor(command: string): NodeJS.ProcessEnv {
+  return command === process.execPath ? { ...process.env, ELECTRON_RUN_AS_NODE: '1' } : process.env;
+}
+
 function run(command: string, args: string[], cwd: string): Promise<{ code: number; output: string }> {
   return new Promise((resolve) => {
     const child = spawn(command, args, {
       cwd,
       windowsHide: true,
       shell: process.platform === 'win32' && command === 'npm',
+      env: nodeEnvFor(command),
     });
     let output = '';
+    let settled = false;
+    const finish = (code: number) => { if (!settled) { settled = true; resolve({ code, output }); } };
     child.stdout?.on('data', (chunk) => { output += chunk.toString('utf8'); });
     child.stderr?.on('data', (chunk) => { output += chunk.toString('utf8'); });
-    child.on('close', (code) => resolve({ code: code ?? 1, output }));
+    child.on('error', (err) => { output += err.message; finish(1); });
+    child.on('close', (code) => finish(code ?? 1));
   });
 }
 

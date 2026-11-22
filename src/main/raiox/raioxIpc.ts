@@ -15,7 +15,10 @@ import {
   addEvidence,
   caseIdFromUuid,
   approveDocuments,
+  assertActive,
   closeCase,
+  revokeCase,
+  type RaioxRevocationInput,
   closeExecution,
   createCase,
   linkFabrica,
@@ -35,13 +38,17 @@ import {
   checkStep,
 } from './raioxRules';
 import { createOrAbsorbProjectRecord } from '../project-fs';
-import { syncCases } from './raioxBridge';
+import { continueRemote, purgeRemote, revokeRemote, syncCases, writeAnalysisInput } from './raioxBridge';
+import { grantRelease, isReleased, readReleases, revokeRelease, type RaioxReleaseKind } from './releases';
+import { prepareDelivery, sendInvite, sendPreparedDelivery, type InviteRequest } from './raioxSend';
+import { dropInviteRequest, listInviteRequests } from './inviteRequests';
 import { analyse, analysisLive, collectLocalFor, stopAnalyse } from './raioxAnalyse';
-import { documentPath, renderPdfs, writeDocuments } from './raioxDocs';
+import { documentPath, documentsBusy, renderPdfs, stopDocuments, writeDocuments } from './raioxDocs';
 import { listRuns, readRun } from '../runLedger';
-import { listCases, raioxRoot, readCase, storeFile, writeCase, caseDir, deleteCase } from './raioxStore';
+import { listCases, raioxRoot, readCase, storeFile, writeCase, caseDir, deleteCase, sha256File } from './raioxStore';
 import { analysisReportHtml, documentHtml, openReader } from './raioxView';
 import { LocalBusinessError, readTarget, targetFromAnalysis } from './localBusiness';
+import { previewPurge, purgeCase, type PurgeInput } from './purge';
 import { playbookStatusFor, lintPlaybook, loadPlaybooks, requirePlaybook } from './playbooks';
 
 type Handle = (channel: string, listener: (...args: any[]) => any) => void;
@@ -54,6 +61,22 @@ function fail(err: unknown): { ok: false; error: string } {
 
 function saved(c: RaioxCase) {
   return { ok: true as const, case: present(c) };
+}
+
+/** F8: revogação local levada ao Supabase; falha volta como aviso, sem desfazer a local. */
+async function pushRevocation(root: string, id: string) {
+  const c = readCase(root, id);
+  if (!c.revocation) throw new RaioxError('Registre a revogação antes.');
+  if (!c.remote?.supabaseId) throw new RaioxError('Este caso não tem formulário no Supabase.');
+  try {
+    await revokeRemote(c.remote.supabaseId, c.revocation.channel, c.revocation.requestedAt, { root });
+  } catch (err) {
+    const msg = err instanceof RaioxError ? err.message : 'sem detalhe.';
+    return { ...saved(c), warning: `Revogação registrada aqui, mas o Supabase não confirmou. ${msg}` };
+  }
+  const next = { ...c, revocation: { ...c.revocation, remoteAt: new Date().toISOString() } };
+  writeCase(root, next);
+  return saved(next);
 }
 
 function mutate(id: string, fn: (c: RaioxCase) => RaioxCase) {
@@ -120,6 +143,7 @@ export function registerRaioxIpc(handle: Handle): void {
 
   handle('raiox:pickFile', async (_e, id: string, sub: 'evidencias' | 'execucao') => {
     try {
+      assertActive(readCase(raioxRoot(), id));
       const picked = await dialog.showOpenDialog({ properties: ['openFile'] });
       if (picked.canceled || !picked.filePaths[0]) return { ok: false, error: 'Nenhum arquivo selecionado.' };
       const artifact = storeFile(raioxRoot(), id, sub, picked.filePaths[0]);
@@ -198,6 +222,111 @@ export function registerRaioxIpc(handle: Handle): void {
     }
   });
 
+  // F8 T8.1 — liberações (só por clique do Carlos com a frase) e escrita no Supabase.
+  handle('raiox:releases', () => {
+    try {
+      return { ok: true, releases: readReleases(raioxRoot()) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:grantRelease', (_e, kind: RaioxReleaseKind, phrase: string) => {
+    try {
+      return { ok: true, releases: grantRelease(raioxRoot(), kind, String(phrase || ''), new Date().toISOString()) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:revokeRelease', (_e, kind: RaioxReleaseKind) => {
+    try {
+      if (kind !== 'escritaSupabase' && kind !== 'emailExterno') throw new RaioxError('Liberação desconhecida.');
+      return { ok: true, releases: revokeRelease(raioxRoot(), kind) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  // F8 T8.2 — entrega em dois atos do Carlos; T8.3 — convite com opt-in.
+  handle('raiox:prepareDelivery', async (_e, id: string) => {
+    try {
+      return saved(await prepareDelivery(id, { root: raioxRoot() }));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:sendDelivery', async (_e, id: string, email: string) => {
+    try {
+      return saved(await sendPreparedDelivery(id, String(email || ''), { root: raioxRoot() }));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:sendInvite', async (_e, input: InviteRequest, requestId?: string) => {
+    try {
+      const root = raioxRoot();
+      const created = await sendInvite(input || ({} as InviteRequest), { root });
+      // T8.4: pedido do APK que virou convite sai da lista de pendentes.
+      if (requestId) dropInviteRequest(root, String(requestId));
+      return saved(created);
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:inviteRequests', () => {
+    try {
+      return { ok: true, requests: listInviteRequests(raioxRoot()) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:dropInviteRequest', (_e, id: string) => {
+    try {
+      dropInviteRequest(raioxRoot(), String(id || ''));
+      return { ok: true };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:remoteForm2', async (_e, id: string) => {
+    try {
+      const root = raioxRoot();
+      const current = readCase(root, id);
+      assertActive(current);
+      if (!current.remote?.supabaseId) throw new RaioxError('Este caso não veio do formulário.');
+      const out = await continueRemote(current.remote.supabaseId, 'form2', { root });
+      if (out.action !== 'form2') throw new RaioxError('Resposta inesperada do Supabase.');
+      const latest = readCase(root, id);
+      assertActive(latest);
+      return mutate(id, (c) => ({ ...c, remote: { ...c.remote!, formUrl: out.formUrl }, updatedAt: new Date().toISOString() }));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:remoteAnalyse', async (_e, id: string) => {
+    try {
+      const root = raioxRoot();
+      const current = readCase(root, id);
+      assertActive(current);
+      if (!current.remote?.supabaseId) throw new RaioxError('Este caso não veio do formulário.');
+      const out = await continueRemote(current.remote.supabaseId, 'analyse', { root });
+      if (out.action !== 'analyse') throw new RaioxError('Resposta inesperada do Supabase.');
+      // Revogação registrada enquanto a função respondia: o pacote não entra.
+      assertActive(readCase(root, id));
+      writeAnalysisInput(root, id, out.packet);
+      return saved(readCase(root, id));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
   handle('raiox:analyse', async (_e, id: string, fronts: string[], note?: string) => {
     try {
       return await analyse(raioxRoot(), id, Array.isArray(fronts) ? fronts : [], {
@@ -214,6 +343,7 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:stopAnalyse', (_e, id: string) => {
     try {
       stopAnalyse(id);
+      stopDocuments(id);
       return { ok: true };
     } catch (err) {
       return fail(err);
@@ -223,7 +353,7 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:runs', (_e, id: string) => {
     try {
       const dir = caseDir(raioxRoot(), id);
-      return { ok: true, live: analysisLive(id), runs: listRuns(dir).filter((item) => item.kind === 'raiox') };
+      return { ok: true, live: analysisLive(id), busy: documentsBusy(id), runs: listRuns(dir).filter((item) => item.kind === 'raiox') };
     } catch (err) {
       return fail(err);
     }
@@ -258,9 +388,10 @@ export function registerRaioxIpc(handle: Handle): void {
 
   handle('raiox:attach', (_e, id: string, src: string, field?: string) => {
     try {
+      assertActive(readCase(raioxRoot(), id));
       const artifact = storeFile(raioxRoot(), id, 'evidencias', String(src || ''));
       return mutate(id, (c) => {
-        if (c.legacy) throw new RaioxError('Caso legado é somente leitura.');
+        assertActive(c);
         const next = { ...c, anexos: [...(c.anexos || []), { ...artifact, field: field || '' }] };
         next.updatedAt = new Date().toISOString();
         return next;
@@ -354,15 +485,21 @@ export function registerRaioxIpc(handle: Handle): void {
 
   handle('raiox:exportPdfs', async (_e, id: string) => {
     try {
+      assertActive(readCase(raioxRoot(), id));
       const picked = await dialog.showOpenDialog({ properties: ['openDirectory'] });
       if (picked.canceled || !picked.filePaths[0]) return { ok: false, error: 'Nenhuma pasta selecionada.' };
       const current = readCase(raioxRoot(), id);
       const pdfs = (current.debrief?.documents || []).map((doc) => doc.pdf).filter((item): item is string => !!item);
       if (!pdfs.length) return { ok: false, error: 'Gere os PDFs antes de exportar.' };
+      const files: { name: string; sha256: string }[] = [];
       for (const relative of pdfs) {
         const src = documentPath(raioxRoot(), id, relative);
         fs.copyFileSync(src, path.join(picked.filePaths[0], path.basename(src)));
+        files.push({ name: path.basename(src), sha256: sha256File(src) });
       }
+      // G-PR1 controle 7: o expurgo precisa saber para onde as cópias foram.
+      const latest = readCase(raioxRoot(), id);
+      writeCase(raioxRoot(), { ...latest, exports: [...(latest.exports || []), { at: new Date().toISOString(), dir: picked.filePaths[0], files }] });
       return { ok: true };
     } catch (err) {
       return fail(err);
@@ -380,6 +517,53 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:close', (_e, id: string) => {
     try {
       return mutate(id, (c) => closeCase(c, new Date().toISOString()));
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:pushRevocation', async (_e, id: string) => {
+    try {
+      return await pushRevocation(raioxRoot(), id);
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:revoke', async (_e, id: string, input: RaioxRevocationInput) => {
+    try {
+      const root = raioxRoot();
+      const next = revokeCase(readCase(root, id), input || { channel: '' }, new Date().toISOString());
+      writeCase(root, next);
+      // Para o que estiver rodando neste caso; a gravação final deles também confere a revogação.
+      stopAnalyse(id);
+      stopDocuments(id);
+      // F8: leva a revogação ao Supabase. A local já vale; falha no Supabase fica visível na tela.
+      if (next.remote?.supabaseId && isReleased(root, 'escritaSupabase')) return await pushRevocation(root, id);
+      return saved(next);
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:purgePreview', (_e, id: string) => {
+    try {
+      return { ok: true, preview: previewPurge(raioxRoot(), id) };
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+  handle('raiox:purge', async (_e, id: string, input: PurgeInput) => {
+    try {
+      // Rodada em andamento grava no fim (livro de execuções, caso): recriaria a pasta apagada.
+      const docs = documentsBusy(id);
+      if (analysisLive(id).running || docs.writing || docs.rendering) {
+        throw new RaioxError('Há análise ou redação rodando neste caso. Pare e espere terminar antes de expurgar.');
+      }
+      const root = raioxRoot();
+      const remote = isReleased(root, 'escritaSupabase') ? (supabaseId: string) => purgeRemote(supabaseId, { root }) : undefined;
+      return { ok: true, report: await purgeCase(root, id, input || { reason: '', confirm: '' }, { remote }) };
     } catch (err) {
       return fail(err);
     }
@@ -414,6 +598,7 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:checkStep', (_e, id: string, step: number, proof: { kind: 'arquivo' | 'link' | 'nota'; value: string; sha256?: string }) => {
     try {
       const current = readCase(raioxRoot(), id);
+      assertActive(current);
       const book = requirePlaybook(current.priority?.gapId || current.execution?.gapId || '');
       const kind = proof?.kind === 'arquivo' || proof?.kind === 'link' ? proof.kind : 'nota';
       let value = String(proof?.value || '');
@@ -452,6 +637,7 @@ export function registerRaioxIpc(handle: Handle): void {
   handle('raiox:openFabrica', (_e, id: string) => {
     try {
       const current = readCase(raioxRoot(), id);
+      assertActive(current);
       const offer = current.debrief?.offerId;
       if (offer !== 'pagina_vendas' && offer !== 'criacao_oferta') throw new RaioxError('Esta oferta não abre projeto na Fábrica.');
       const created = createOrAbsorbProjectRecord({

@@ -109,3 +109,10 @@ analise-web/projetos/*
 tools/scrapling-lab/data/
 tools/scrapling-lab/.venv/
 **/raiox-cases/
+
+# Telas de sites de terceiros (referência de design): consulta local
+conhecimento/design/referencias/**/*.jpg
+conhecimento/design/referencias/**/*.png
+
+# Peças de bibliotecas de terceiros (MIT): refeitas por `npm run acervo:catalogar`
+conhecimento/design/acervo/*/pecas/

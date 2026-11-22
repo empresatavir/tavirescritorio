@@ -177,6 +177,11 @@ const api: TavirApi = {
     saveEsteiraInstruction: (idOrPath: string, index: number, text: string) =>
       ipcRenderer.invoke('projects:saveEsteiraInstruction', idOrPath, index, text),
     setEsteiraAuto: (idOrPath: string, auto: boolean) => ipcRenderer.invoke('projects:setEsteiraAuto', idOrPath, auto),
+    setEsteiraDesignMode: (idOrPath: string, mode: string) => ipcRenderer.invoke('projects:setEsteiraDesignMode', idOrPath, mode),
+    openBrandBoard: (idOrPath: string, letter: string) => ipcRenderer.invoke('projects:openBrandBoard', idOrPath, letter),
+    refLogin: (url?: string) => ipcRenderer.invoke('design:refLogin', url),
+    refSites: () => ipcRenderer.invoke('design:refSites'),
+    refClear: () => ipcRenderer.invoke('design:refClear'),
     controlEsteira: (idOrPath: string, index: number, action: string) =>
       ipcRenderer.invoke('projects:controlEsteira', idOrPath, index, action),
     runEsteira: (idOrPath: string, index: number, stageName?: string, stageOwner?: string) =>
@@ -322,10 +327,19 @@ const api: TavirApi = {
       stop: (id) => ipcRenderer.invoke('studio:sidecars:stop', id),
     },
     darkflow: {
-      prepare: (pecaId) => ipcRenderer.invoke('studio:darkflow:prepare', pecaId),
-      activate: (pecaId) => ipcRenderer.invoke('studio:darkflow:activate', pecaId),
       scorecard: () => ipcRenderer.invoke('studio:darkflow:scorecard'),
       board: () => ipcRenderer.invoke('studio:darkflow:board'),
+    },
+    flow: {
+      enviar: (pecaId) => ipcRenderer.invoke('studio:flow:enviar', pecaId),
+      estado: (pecaId) => ipcRenderer.invoke('studio:flow:estado', pecaId),
+      board: () => ipcRenderer.invoke('flow:board'),
+      criar: (input) => ipcRenderer.invoke('flow:criar', input),
+      ativar: (id, atestado) => ipcRenderer.invoke('flow:ativar', id, atestado),
+      cancelar: (id) => ipcRenderer.invoke('flow:cancelar', id),
+      simular: () => ipcRenderer.invoke('flow:simular'),
+      abrirDarkflow: () => ipcRenderer.invoke('flow:abrirDarkflow'),
+      ligar: () => ipcRenderer.invoke('flow:ligar'),
     },
     docuflow: {
       send: (pecaId) => ipcRenderer.invoke('studio:docuflow:send', pecaId),
@@ -365,6 +379,20 @@ const api: TavirApi = {
     exportPdfs: (id: string) => ipcRenderer.invoke('raiox:exportPdfs', id),
     recordDelivery: (id: string, input: unknown) => ipcRenderer.invoke('raiox:recordDelivery', id, input),
     close: (id: string) => ipcRenderer.invoke('raiox:close', id),
+    revoke: (id: string, input: { channel: string; requestedAt?: string; note?: string }) => ipcRenderer.invoke('raiox:revoke', id, input),
+    purgePreview: (id: string) => ipcRenderer.invoke('raiox:purgePreview', id),
+    purge: (id: string, input: { reason: string; confirm: string }) => ipcRenderer.invoke('raiox:purge', id, input),
+    releases: () => ipcRenderer.invoke('raiox:releases'),
+    grantRelease: (kind: string, phrase: string) => ipcRenderer.invoke('raiox:grantRelease', kind, phrase),
+    revokeRelease: (kind: string) => ipcRenderer.invoke('raiox:revokeRelease', kind),
+    remoteForm2: (id: string) => ipcRenderer.invoke('raiox:remoteForm2', id),
+    remoteAnalyse: (id: string) => ipcRenderer.invoke('raiox:remoteAnalyse', id),
+    prepareDelivery: (id: string) => ipcRenderer.invoke('raiox:prepareDelivery', id),
+    sendDelivery: (id: string, email: string) => ipcRenderer.invoke('raiox:sendDelivery', id, email),
+    sendInvite: (input: { company: string; contact: string; email: string; optin: { channel: string; obtainedAt: string; policyVersion: string; operator: string } }, requestId?: string) => ipcRenderer.invoke('raiox:sendInvite', input, requestId),
+    inviteRequests: () => ipcRenderer.invoke('raiox:inviteRequests'),
+    dropInviteRequest: (id: string) => ipcRenderer.invoke('raiox:dropInviteRequest', id),
+    pushRevocation: (id: string) => ipcRenderer.invoke('raiox:pushRevocation', id),
     onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => {
       const handler = (_e: Electron.IpcRendererEvent, progress: { id: string; speech: string; activity: string; running: boolean }) => callback(progress);
       ipcRenderer.on('raiox:progress', handler);

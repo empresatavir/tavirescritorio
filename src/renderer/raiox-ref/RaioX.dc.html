@@ -14,6 +14,13 @@
 .rx-live{padding:16px 18px;display:flex;flex-direction:column;gap:12px;border-left:4px solid var(--line-strong)}
 .rx-live.run{border-left-color:var(--flow)}.rx-live.ok{border-left-color:var(--flow)}.rx-live.warn{border-left-color:var(--warning)}.rx-live.bad{border-left-color:var(--danger)}
 .rx-live-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.rx-flow{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rx-fstep{display:flex;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
+.rx-fstep:first-child{border-top:0}
+.rx-fstep.run{background:var(--flow-subtle)}
+.rx-fstep .n{font-size:11px;color:var(--text-muted,var(--muted));width:18px;text-align:right;flex:none}
+.rx-fstep small{display:block;font-size:12px;margin-top:2px;color:var(--text-secondary,inherit)}
+.rx-fstep.bad small{color:var(--danger)}
 .rx-live-head small{display:block;font-size:12px;margin-top:2px}
 .rx-dot{width:10px;height:10px;border-radius:50%;background:var(--line-strong);flex:none}
 .rx-dot.run{background:var(--flow);animation:rxpulse 1.2s ease-in-out infinite}.rx-dot.ok{background:var(--flow)}.rx-dot.warn{background:var(--warning)}.rx-dot.bad{background:var(--danger)}
@@ -76,12 +83,27 @@
       <p>Leitura de presença, atendimento e oferta antes de vender. Nenhuma proposta sai sem caso aberto e evidência classificada.</p>
     </div>
     <div class="actions">
+      <button class="btn ghost" onClick="{{openReleases}}" title="Escrita no Supabase (CP-10) e e-mail externo (CP-12)">Liberações</button>
       <button class="btn secondary" onClick="{{syncForms}}">Sincronizar formulários</button>
+      <button class="btn secondary" onClick="{{openInvite}}">Enviar convite</button>
       <button class="btn primary" onClick="{{newCase}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Novo caso</button>
     </div>
   </div>
   <sc-if value="{{hasSyncError}}" hint-placeholder-val="{{false}}">
     <p style="color: var(--danger); font-size: 13px; margin: 0">{{syncError}}</p>
+  </sc-if>
+  <sc-if value="{{hasInviteRequests}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+      <b>Convites pedidos pelo app</b>
+      <small class="muted">Nada foi enviado. Confira os dados e o aceite antes de mandar.</small>
+      <sc-for list="{{inviteRequests}}" as="r" hint-placeholder-count="1">
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px">
+          <div class="grow"><b>{{r.company}}</b> · {{r.contact}} · {{r.email}}<br><span class="muted">{{r.optin}}</span></div>
+          <button class="btn secondary sm" onClick="{{r.review}}">Revisar e enviar</button>
+          <button class="btn ghost sm" onClick="{{r.drop}}">Descartar</button>
+        </div>
+      </sc-for>
+    </section>
   </sc-if>
 
   <section class="card rx-pub">
@@ -161,10 +183,37 @@
       <button class="btn secondary" onClick="{{runAnalyse}}">Rodar análise</button>
       <button class="btn secondary" onClick="{{openEvidence}}">Registrar evidência</button>
       <button class="btn secondary" onClick="{{openEdit}}">Editar caso</button>
+      <sc-if value="{{canRevoke}}" hint-placeholder-val="{{true}}"><button class="btn ghost" onClick="{{openRevoke}}" title="O titular pediu para retirar a autorização">Registrar revogação</button></sc-if>
+      <button class="btn ghost" onClick="{{openPurge}}" title="Apaga o caso aqui, nos motores e nas cópias exportadas, com relatório de ausência">Expurgar caso</button>
       <button class="btn ghost" onClick="{{removeCase}}">Excluir</button>
       <button class="btn primary" onClick="{{openFolder}}">Abrir pasta</button>
     </div>
   </div>
+  <sc-if value="{{isRevoked}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="padding: 14px 16px; border-color: var(--danger); display: flex; flex-direction: column; gap: 4px">
+      <b style="color: var(--danger)">Autorização revogada pelo titular</b>
+      <span class="muted" style="font-size: 13px">{{revokedText}}</span>
+      <span class="muted" style="font-size: 13px">Nenhuma etapa nova roda: análise, redação, PDF, entrega e execução ficam travadas. O caso pode ser lido e expurgado.</span>
+      <sc-if value="{{revokeRemotePending}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 8px; align-items: center"><span class="muted" style="font-size: 13px">O Supabase ainda não recebeu a revogação.</span><button class="btn secondary sm" onClick="{{pushRevocation}}">Levar ao Supabase</button></div></sc-if>
+      <sc-if value="{{hasNotice}}" hint-placeholder-val="{{false}}"><span style="color: var(--danger); font-size: 13px">{{notice}}</span></sc-if>
+    </section>
+  </sc-if>
+  <sc-if value="{{hasRemoteCase}}" hint-placeholder-val="{{false}}">
+    <section class="card" style="padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+        <b>Formulário no Supabase</b><span class="badge">{{remoteStatus}}</span>
+        <span class="muted" style="font-size: 13px">{{remoteEmail}}</span>
+        <div class="grow"></div>
+        <button class="btn secondary" onClick="{{remoteForm2}}">Gerar formulário 2</button>
+        <button class="btn secondary" onClick="{{remoteAnalyse}}">Autorizar análise</button>
+      </div>
+      <sc-if value="{{hasRemoteForm}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; gap: 8px; align-items: center"><input class="input" readonly value="{{remoteFormUrl}}" style="flex: 1; font-size: 12px"><button class="btn ghost" onClick="{{copyRemoteForm}}">Copiar link</button></div>
+        <small class="muted">Link pessoal do formulário 2. Mande só para o e-mail confirmado do caso.</small>
+      </sc-if>
+      <sc-if value="{{hasRemoteNote}}" hint-placeholder-val="{{false}}"><small class="muted">{{remoteNote}}</small></sc-if>
+    </section>
+  </sc-if>
   <section class="card rx-live {{live.cls}}">
     <div class="rx-live-head">
       <span class="rx-dot {{live.cls}}"></span>
@@ -269,7 +318,7 @@
 
   <sc-if value="{{tDev}}" hint-placeholder-val="{{false}}">
     <section class="card pad" style="display: flex; flex-direction: column; gap: 14px; max-width: 760px">
-      <div style="display: flex; align-items: center"><span class="eyebrow">Prioridade</span><div class="grow"></div><button class="btn primary" onClick="{{openPriority}}">Escolher prioridade</button></div>
+      <div style="display: flex; align-items: center"><span class="eyebrow">Prioridade</span></div>
       <sc-if value="{{hasPriority}}" hint-placeholder-val="{{false}}">
         <h3 style="font-size: 18px; font-weight: 600">{{priorityTitle}}</h3>
         <p class="sec">{{priorityWhy}}</p>
@@ -278,13 +327,31 @@
       <sc-if value="{{noPriority}}" hint-placeholder-val="{{true}}">
         <p class="muted">A prioridade ainda não foi escolhida.</p>
       </sc-if>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap">
-        <button class="btn secondary" onClick="{{openDebrief}}">Devolutiva</button>
-        <button class="btn secondary" onClick="{{writeDocs}}">Gerar documentos</button>
-        <button class="btn secondary" onClick="{{renderDocs}}">Gerar PDF</button>
-        <button class="btn secondary" onClick="{{viewReport}}">Relatório da análise</button>
+      <div style="display: flex; align-items: center; gap: 8px"><span class="eyebrow">Fluxo até a entrega</span><div class="grow"></div><button class="btn ghost sm" onClick="{{viewReport}}">Relatório da análise</button></div>
+      <div class="rx-flow">
+        <sc-for list="{{flow}}" as="f" hint-placeholder-count="8">
+          <div class="rx-fstep {{f.cls}}">
+            <span class="n">{{f.n}}</span><span class="rx-dot {{f.dot}}"></span>
+            <div class="grow" style="min-width: 0"><b>{{f.label}}</b><small>{{f.detail}}</small></div>
+            <sc-if value="{{f.hasAlt}}" hint-placeholder-val="{{false}}"><button class="btn ghost sm" disabled="{{f.altOff}}" onClick="{{f.alt}}">{{f.altLabel}}</button></sc-if>
+            <sc-if value="{{f.hasAct}}" hint-placeholder-val="{{true}}"><button class="btn {{f.btn}} sm" disabled="{{f.off}}" onClick="{{f.act}}">{{f.actLabel}}</button></sc-if>
+          </div>
+        </sc-for>
       </div>
-      <sc-for list="{{hypotheses}}" as="h" hint-placeholder-count="0"><p class="sec">{{h.text}}</p></sc-for>
+      <sc-if value="{{flowLive}}" hint-placeholder-val="{{false}}">
+        <section class="card rx-live run">
+          <div class="rx-live-head">
+            <span class="rx-dot run"></span>
+            <div class="grow" style="min-width: 220px"><b>{{live.title}}</b><small class="muted">{{live.sub}}</small></div>
+            <sc-if value="{{live.hasRun}}" hint-placeholder-val="{{true}}"><button class="btn secondary sm" onClick="{{live.openLog}}">{{live.logLabel}}</button></sc-if>
+          </div>
+          <sc-if value="{{live.hasTail}}" hint-placeholder-val="{{false}}">
+            <div class="rx-tail"><sc-for list="{{live.tail}}" as="t" hint-placeholder-count="3"><div class="t {{t.cls}}"><span>{{t.ic}}</span><span>{{t.text}}</span></div></sc-for></div>
+          </sc-if>
+        </section>
+      </sc-if>
+      <sc-if value="{{hasDocsMsg}}" hint-placeholder-val="{{false}}"><p style="{{docsMsgStyle}}">{{docsMsg}}</p></sc-if>
+      <sc-if value="{{hasFlowError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{flowError}}</p></sc-if>
       <sc-for list="{{docs}}" as="d" hint-placeholder-count="0">
         <div class="card" style="padding: 12px 14px">
           <b>{{d.title}}</b>
@@ -293,17 +360,23 @@
           <div style="display: flex; gap: 8px">
             <button class="btn primary" onClick="{{d.viewMd}}">Ler no app</button>
             <button class="btn secondary" onClick="{{d.openMd}}">Abrir .md</button>
-            <button class="btn secondary" onClick="{{d.openPdf}}">Abrir PDF</button>
+            <sc-if value="{{d.hasPdf}}" hint-placeholder-val="{{false}}"><button class="btn secondary" onClick="{{d.openPdf}}">Abrir PDF</button></sc-if>
           </div>
         </div>
       </sc-for>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap">
-        <button class="btn secondary" onClick="{{rewriteDocs}}">Gerar de novo</button>
-        <button class="btn primary" disabled="{{approveOff}}" onClick="{{approveDocs}}">Aprovar documentos</button>
-        <button class="btn secondary" onClick="{{exportPdfs}}">Exportar PDFs</button>
-        <button class="btn secondary" onClick="{{openDelivery}}">Registrar entrega</button>
-        <button class="btn secondary" onClick="{{closeCase}}">Encerrar caso</button>
-      </div>
+      <sc-for list="{{hypotheses}}" as="h" hint-placeholder-count="0"><p class="sec">{{h.text}}</p></sc-for>
+      <sc-if value="{{hasVendors}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; align-items: center; gap: 8px"><span class="eyebrow">Serviços que tocaram este caso</span><div class="grow"></div><sc-if value="{{vendorsPending}}" hint-placeholder-val="{{false}}"><small style="color: var(--warning, #c98a00)">{{vendorsPendingText}}</small></sc-if></div>
+          <sc-for list="{{vendors}}" as="v" hint-placeholder-count="0">
+            <div style="display: flex; flex-direction: column; gap: 2px; font-size: 13px">
+              <b>{{v.nome}}</b>
+              <span class="muted">{{v.usos}}</span>
+              <span class="muted">Região: {{v.regiao}} · Retenção: {{v.retencao}} · Exclusão: {{v.exclusao}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
     </section>
   </sc-if>
 
@@ -480,6 +553,84 @@
   </div></div>
 </sc-if>
 
+<sc-if value="{{modalRevoke}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Registrar revogação" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Registrar revogação</h2><p>O titular pediu para retirar a autorização. Depois de registrada, o caso para e não volta: uma nova autorização vira caso novo.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <label class="field"><span>Por onde o pedido chegou *</span><select class="input" value="{{revForm.channel}}" onChange="{{onRevokeChannel}}"><option value="">Escolha</option><sc-for list="{{revokeChannels}}" as="o" hint-placeholder-count="5"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></label>
+      <label class="field"><span>Quando o titular pediu</span><input class="input" type="datetime-local" value="{{revForm.requestedAt}}" onChange="{{onRevokeWhen}}"><small class="muted">Em branco: agora.</small></label>
+      <label class="field"><span>Nota</span><input class="input" value="{{revForm.note}}" onChange="{{onRevokeNote}}" placeholder="Ex.: respondeu o e-mail de entrega pedindo para parar"></label>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{submitRevoke}}">Registrar e parar o caso</button></div>
+  </div></div>
+</sc-if>
+
+<sc-if value="{{modalInvite}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Enviar convite" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Enviar convite</h2><p>Cria o caso no Supabase e manda o link do formulário por e-mail. Só com o aceite do contato registrado.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <label class="field"><span>Empresa *</span><input class="input" value="{{invForm.company}}" onChange="{{onInvCompany}}"></label>
+      <label class="field"><span>Contato *</span><input class="input" value="{{invForm.contact}}" onChange="{{onInvContact}}"></label>
+      <label class="field"><span>E-mail *</span><input class="input" type="email" value="{{invForm.email}}" onChange="{{onInvEmail}}"></label>
+      <div style="border-top: 1px solid var(--line, rgba(127,127,127,.25)); padding-top: 10px; display: flex; flex-direction: column; gap: 10px">
+        <b style="font-size: 13px">Aceite do contato (opt-in)</b>
+        <label class="field"><span>Por onde aceitou *</span><select class="input" value="{{invForm.channel}}" onChange="{{onInvChannel}}"><option value="">Escolha</option><sc-for list="{{revokeChannels}}" as="o" hint-placeholder-count="5"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></label>
+        <label class="field"><span>Quando aceitou *</span><input class="input" type="datetime-local" value="{{invForm.when}}" onChange="{{onInvWhen}}"></label>
+        <label class="field"><span>Quem registrou *</span><input class="input" value="{{invForm.operator}}" onChange="{{onInvOperator}}"></label>
+        <label style="display: flex; gap: 8px; align-items: flex-start; font-size: 13px"><input type="checkbox" checked="{{invForm.notice}}" onChange="{{onInvNotice}}"><span>O contato aceitou depois de receber o aviso de privacidade (versão {{avisoVersao}}).</span></label>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" disabled="{{invOff}}" onClick="{{submitInvite}}">Criar caso e enviar convite</button></div>
+  </div></div>
+</sc-if>
+
+<sc-if value="{{modalReleases}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Liberações" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Liberações do Raio-X</h2><p>Escrita no Supabase e e-mail para fora da TAVIR ficam desligados até você liberar, com a mesma frase do checkpoint.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 14px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <sc-for list="{{releaseRows}}" as="r" hint-placeholder-count="2">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div style="display: flex; gap: 8px; align-items: center"><b>{{r.title}}</b><span class="badge">{{r.state}}</span></div>
+          <small class="muted">{{r.help}}</small>
+          <div style="display: flex; gap: 8px">
+            <input class="input" style="flex: 1" placeholder="{{r.phrase}}" value="{{r.typed}}" onChange="{{r.onType}}" autocomplete="off">
+            <button class="btn primary" onClick="{{r.grant}}">Liberar</button>
+            <button class="btn ghost" onClick="{{r.revoke}}">Desligar</button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div class="mfoot"><button class="btn secondary" onClick="{{closeModal}}">Fechar</button></div>
+  </div></div>
+</sc-if>
+
+<sc-if value="{{modalPurge}}" hint-placeholder-val="{{false}}">
+  <div class="back" onClick="{{modalBg}}"><div class="modal" role="dialog" aria-modal="true" aria-label="Expurgar caso" onClick="{{modalStop}}">
+    <div class="mhead"><div class="grow"><h2>Expurgar caso</h2><p>Apaga o caso deste computador, as conversas dos motores sobre ele e as cópias exportadas, confere de novo e guarda um relatório sem dado pessoal. Não tem volta.</p></div></div>
+    <div class="mbody" style="display: flex; flex-direction: column; gap: 12px">
+      <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><p style="color: var(--danger); font-size: 13px">{{error}}</p></sc-if>
+      <sc-if value="{{purgeLoading}}" hint-placeholder-val="{{false}}"><p class="muted" style="font-size: 13px">Procurando o que o caso deixou…</p></sc-if>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <sc-for list="{{purgeAreas}}" as="a" hint-placeholder-count="4">
+          <div style="display: flex; gap: 10px; align-items: baseline; font-size: 13px"><strong style="min-width: 76px; color: {{a.color}}">{{a.tag}}</strong><div class="grow"><div>{{a.area}} <span class="muted">{{a.count}}</span></div><small class="muted">{{a.note}}</small></div></div>
+        </sc-for>
+      </div>
+      <sc-if value="{{purgeAsking}}" hint-placeholder-val="{{true}}">
+        <label class="field"><span>Motivo *</span><select class="input" value="{{purgeForm.reason}}" onChange="{{onPurgeReason}}"><option value="">Escolha</option><sc-for list="{{purgeReasons}}" as="o" hint-placeholder-count="3"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></label>
+        <label class="field"><span>Digite {{purgeCaseId}} para confirmar *</span><input class="input" value="{{purgeForm.confirm}}" onChange="{{onPurgeConfirm}}" autocomplete="off"></label>
+      </sc-if>
+      <sc-if value="{{purgeDone}}" hint-placeholder-val="{{false}}"><p style="font-size: 13px">{{purgeDoneText}}</p></sc-if>
+    </div>
+    <div class="mfoot">
+      <sc-if value="{{purgeAsking}}" hint-placeholder-val="{{true}}"><button class="btn secondary" onClick="{{closeModal}}">Cancelar</button><button class="btn primary" onClick="{{submitPurge}}">Expurgar</button></sc-if>
+      <sc-if value="{{purgeDone}}" hint-placeholder-val="{{false}}"><button class="btn primary" onClick="{{finishPurge}}">Fechar</button></sc-if>
+    </div>
+  </div></div>
+</sc-if>
+
 <sc-if value="{{modalEdit}}" hint-placeholder-val="{{false}}">
   <div class="back" onClick="{{modalBg}}"><div class="modal lg" role="dialog" aria-modal="true" aria-label="Editar caso" onClick="{{modalStop}}">
     <div class="mhead"><div class="grow"><h2>Editar caso</h2><p>{{editLead}}</p></div></div>
@@ -551,6 +702,7 @@
 const STATUS = ['fronteira', 'coleta', 'jornada', 'prioridade', 'devolutiva', 'fechado'];
 const STATUS_LABEL = { fronteira: 'Fronteira', coleta: 'Coleta', jornada: 'Jornada', prioridade: 'Prioridade', devolutiva: 'Devolutiva', fechado: 'Fechado' };
 const STAGES = ['encontrar', 'conversar', 'atender', 'vender', 'medir'];
+const DEPTH_NAME = { guiado: 'Guiado', piloto: 'Piloto', junto: 'Junto', para_voce: 'Para você' };
 const STAGE_LABEL = { encontrar: 'Encontrar', conversar: 'Conversar', atender: 'Atender', vender: 'Vender', medir: 'Medir' };
 const STATUS_NOTE = {
   fronteira: 'Empresa, o que ela quer conseguir, e a decisão que esta leitura tem de destravar.',
@@ -562,6 +714,17 @@ const STATUS_NOTE = {
 };
 const REMOTE_LABEL = { draft: 'Rascunho', form_1_sent: 'Convite enviado', form_1_received: 'Formulário 1 recebido', form_2_sent: 'Formulário 2 enviado', form_2_received: 'Formulário recebido', awaiting_approval: 'Aguardando autorizar análise', analysing: 'Em análise', review: 'Documentos em revisão', ready: 'Pronto para entregar', sent: 'Entregue', closed: 'Encerrado' };
 const ORIGIN_LABEL = { amigo: 'Amigo', rua: 'Rua', formulario: 'Formulário', indicacao: 'Indicação' };
+// Mesmos canais de RAIOX_OPTIN_CHANNELS (src/shared/raiox.ts).
+const AVISO_VERSAO = '2026-11-21';
+const blankInvite = function () { return { company: '', contact: '', email: '', channel: '', when: '', operator: 'Carlos', notice: false }; };
+const RELEASES = [
+  { id: 'escritaSupabase', title: 'Escrita no Supabase', phrase: 'liberado CP-10', help: 'Convite, formulário 2, análise, aprovação e entrega passam a gravar no Supabase. Libere só no smoke do CP-10.' },
+  { id: 'emailExterno', title: 'E-mail para fora da TAVIR', phrase: 'liberado piloto', help: 'Antes disso, convite e entrega só vão para o domínio do remetente. Libere só no CP-12.' },
+];
+const REMOTE_HINT = { form_1_received: 'Formulário 1 respondido.', form_2_sent: 'Formulário 2 enviado.', form_2_received: 'Formulário 2 respondido: pode autorizar a análise.' };
+const PURGE_REASONS = [{ id: 'pedido_titular', label: 'Pedido do titular' }, { id: 'retencao', label: 'Fim do prazo de retenção' }, { id: 'ensaio', label: 'Ensaio com caso fictício' }];
+const PURGE_TAG = { limpo: ['Apagado', 'var(--success, #2f7d4f)'], pendente: ['Pendente', 'var(--warning, #a86b00)'], manual: ['Conferir', 'var(--danger)'] };
+const REVOKE_CHANNELS = [{ id: 'whatsapp', label: 'WhatsApp' }, { id: 'telefone', label: 'Telefone' }, { id: 'presencial', label: 'Presencial' }, { id: 'videochamada', label: 'Videochamada' }, { id: 'email', label: 'E-mail' }];
 const MODE_DAYS = { estudo_rapido: '1 dia', diagnostico: '3 dias', completo: '7 dias' };
 const CLASS_META = { observado: ['Observado', 'flow', 'var(--flow)'], informado: ['Informado', '', 'var(--text-muted)'], inferido: ['Inferido', 'warn', 'var(--warning)'], indisponivel: ['Indisponível', 'danger', 'var(--danger)'] };
 const CONF_LABEL = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
@@ -704,6 +867,11 @@ class Component extends DCLogic {
           self.setState({ playbooks: res.playbooks || [] });
         }).catch(function () {});
       }
+      if (api.raiox.inviteRequests) {
+        api.raiox.inviteRequests().then(function (res) {
+          if (self._alive && res && res.ok) self.setState({ inviteRequests: res.requests || [] });
+        }).catch(function () {});
+      }
       api.raiox.catalog().then(function (res) {
         if (!self._alive) return;
         if (res && res.ok) self.setState({ catalog: res.catalog || [], gaps: res.gaps || [] });
@@ -730,7 +898,7 @@ class Component extends DCLogic {
         const runs = res.runs || [];
         const d = new Date();
         const stamp = 'atualizado às ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
-        self.setState({ caseRuns: runs, live: res.live || null, runsAt: stamp });
+        self.setState({ caseRuns: runs, live: res.live || null, busy: res.busy || null, runsAt: stamp });
         const running = runs.filter(function (r) { return r.status === 'running'; })[0];
         if (running) self.pullTail(id, running.id);
         else if ((self.state.tail || []).length) self.setState({ tail: [] });
@@ -769,7 +937,9 @@ class Component extends DCLogic {
       if (!self._alive || !self.state.caseId) return;
       const live = self.state.live && self.state.live.running;
       const anyRunning = (self.state.caseRuns || []).some(function (r) { return r.status === 'running'; });
-      if (live || anyRunning) self.pullRuns(self.state.caseId);
+      const busy = self.state.busy && (self.state.busy.writing || self.state.busy.rendering);
+      const msgBusy = self.state.docsMsg && self.state.docsMsg.busy;
+      if (live || anyRunning || busy || msgBusy) self.pullRuns(self.state.caseId);
       else if (self.state.modal === 'log' && self.state.log && self.state.log.live && self.state.logRunId) {
         const api = tavirApi();
         const id = self.state.caseId;
@@ -877,9 +1047,125 @@ class Component extends DCLogic {
     const fail = function (res) { self.setState({ error: (res && res.error) || 'Não foi possível concluir. Nada foi gravado.' }); };
     const refreshOpen = function (res) {
       if (!res || !res.ok) return fail(res);
-      self.setState({ openCase: res.case, modal: null, error: '', removeId: null });
+      self.setState({ openCase: res.case, modal: null, error: '', removeId: null, notice: res.warning || '' });
       if (self.reload) self.reload();
     };
+    // Redação e PDF devolvem só o resultado, não o caso: avisa enquanto roda, mostra o erro e relê o caso na mesma aba.
+    const docsJob = function (kind) {
+      const api = tavirApi();
+      if (!api || !current) return;
+      const id = current.id;
+      const msg = self.state.docsMsg;
+      if (msg && msg.id === id && msg.busy) return;
+      const say = function (text, bad, busy) { if (self._alive) self.setState({ docsMsg: { id: id, kind: kind, text: text, bad: !!bad, busy: !!busy }, error: '' }); };
+      say(kind === 'pdf' ? 'Gerando os PDFs…' : 'Redação iniciada. O motor escreve o relatório e o plano; leva alguns minutos. Acompanhe no passo 3.', false, true);
+      [800, 2500, 6000].forEach(function (ms) { setTimeout(function () { if (self.pullRuns) self.pullRuns(id); }, ms); });
+      const call = kind === 'pdf' ? api.raiox.renderPdfs(id, current.debrief.documents[0].version) : api.raiox.writeDocuments(id);
+      call.then(function (res) {
+        if (!res || !res.ok) { say((res && res.error) || 'Não foi possível concluir. Nada foi gravado.', true, false); return; }
+        const problems = (res.problems || []).length;
+        say(kind === 'pdf' ? 'PDFs gerados.' : problems ? 'Documentos gerados com ' + problems + ' problema(s) na checagem. Veja abaixo.' : 'Documentos gerados. A checagem não achou problema.', problems > 0, false);
+        api.raiox.get(id).then(function (r) { if (self._alive && r && r.ok && self.state.caseId === id) self.setState({ openCase: r.case }); }).catch(function () {});
+        if (self.pullRuns) self.pullRuns(id);
+      }).catch(function () { say('Não foi possível concluir. Nada foi gravado.', true, false); });
+    };
+    // Fluxo da aba Devolutiva: cada passo com estado (feito, rodando, falhou, próximo) e um botão,
+    // travado enquanto qualquer coisa do caso estiver rodando.
+    const runsNow = s.caseRuns || [];
+    const runNow = runsNow.filter(function (r) { return r.status === 'running'; })[0];
+    const msgNow = s.docsMsg && current && s.docsMsg.id === current.id ? s.docsMsg : null;
+    const writingNow = !!((s.busy && s.busy.writing) || (msgNow && msgNow.busy && msgNow.kind === 'write') || (runNow && /reda/i.test(runNow.label || '')));
+    const renderingNow = !!((s.busy && s.busy.rendering) || (msgNow && msgNow.busy && msgNow.kind === 'pdf'));
+    const analysingNow = !!((s.live && s.live.running) || (runNow && !/reda/i.test(runNow.label || '')));
+    const anyBusy = writingNow || renderingNow || analysingNow;
+    const flowLive = writingNow || analysingNow;
+    const flowSteps = (function () {
+      if (!current) return [];
+      const deb = current.debrief;
+      const docsArr = (deb && deb.documents) || [];
+      const lintN = docsArr.reduce(function (n, doc) { return n + (doc.lint || []).length; }, 0);
+      const hasDocs = docsArr.length > 0;
+      const hasPdf = hasDocs && docsArr.every(function (doc) { return !!doc.pdf; });
+      const approved = !!(deb && deb.approval && hasDocs && docsArr.every(function (doc) { return deb.approval.hashes.indexOf(doc.sha256) >= 0; }));
+      const delivered = !!(deb && deb.delivery);
+      const remoteDelivery = !!(current.remote && current.remote.supabaseId);
+      const pendingDel = deb && deb.pendingDelivery;
+      const closed = current.status === 'fechado';
+      const lastDocRun = runsNow.filter(function (r) { return /reda/i.test(r.label || ''); })[0];
+      const docFailed = !writingNow && lastDocRun && lastDocRun.status !== 'ok' && lastDocRun.status !== 'running' && (!hasDocs || new Date(lastDocRun.startedAt) > new Date(docsArr[0].createdAt));
+      const elapsed = runNow ? fmtDur(Date.now() - new Date(runNow.startedAt).getTime()) : '';
+      const busyNote = writingNow ? 'Aguarde a redação terminar.' : renderingNow ? 'Aguarde o PDF.' : 'Aguarde a análise terminar.';
+      const list = [
+        { label: 'Prioridade', done: !!current.priority, detail: current.priority ? (STAGE_LABEL[current.priority.stage] + ' · ' + gapLabel(current.priority.gapId)) : 'Escolha a etapa e o gap que vêm primeiro.', actLabel: current.priority ? 'Mudar' : 'Escolher prioridade', act: function () { self.setState({ modal: 'priority', error: '', priForm: blankPri() }); }, off: false },
+        { label: 'Devolutiva', done: !!deb, detail: deb ? (deb.decision === 'nao_emitir' ? 'Não emitir proposta' : 'Proposta emitida' + (deb.depth ? ' · ' + (DEPTH_NAME[deb.depth] || deb.depth) : '')) : 'Decida a proposta e o plano 30/60/90.', actLabel: deb ? 'Mudar' : 'Fazer devolutiva', act: function () { openDebriefFn(); }, off: !current.priority },
+        { label: 'Documentos', done: hasDocs && !writingNow, run: writingNow, bad: !!docFailed,
+          detail: writingNow ? ('Redação rodando' + (elapsed ? ' há ' + elapsed : '') + (runNow ? ' · ' + engineName(runNow.engine) : '') + '. Acompanhe abaixo.') : docFailed ? ('A última redação falhou: ' + oneLine(lastDocRun.error || 'sem detalhe', 140)) : hasDocs ? ('Versão ' + docsArr[0].version + ' · relatório e plano · ' + fmtWhen(docsArr[0].createdAt)) : 'O motor escreve o relatório e o plano a partir da devolutiva.',
+          actLabel: writingNow ? 'Rodando…' : hasDocs ? 'Gerar de novo' : 'Gerar documentos', act: function () { docsJob('write'); }, off: !deb,
+          hasAlt: writingNow, altLabel: 'Parar', alt: function () { const api = tavirApi(); if (!api || !api.raiox.stopAnalyse) return; if (window.confirm && !window.confirm('Parar a redação agora? Nada é gravado.')) return; api.raiox.stopAnalyse(current.id).then(function () { self.pullRuns(current.id); }).catch(function () {}); } },
+        { label: 'Checagem', done: hasDocs && !writingNow && lintN === 0, bad: hasDocs && !writingNow && lintN > 0, detail: !hasDocs || writingNow ? 'Roda sozinha quando os documentos ficam prontos.' : lintN ? (lintN + (lintN === 1 ? ' problema' : ' problemas') + ' nos documentos. Veja abaixo e gere de novo.') : 'Seções, termos proibidos e corte público conferidos. Nenhum problema.' },
+        { label: 'PDF', done: hasPdf && !renderingNow, run: renderingNow, detail: renderingNow ? 'Gerando os PDFs…' : hasPdf ? 'Relatório e plano em PDF.' : 'Gera o PDF dos dois documentos com a marca TAVIR.', actLabel: renderingNow ? 'Gerando…' : hasPdf ? 'Gerar de novo' : 'Gerar PDF', act: function () { docsJob('pdf'); }, off: !hasDocs || lintN > 0 || approved },
+        { label: 'Aprovação', done: approved, detail: approved ? ('Aprovados por hash em ' + fmtWhen(deb.approval.at) + '.') : 'Leia os dois documentos e aprove. Qualquer mudança depois invalida.', actLabel: 'Aprovar documentos', btn: 'primary', act: function () { approveDocsFn(); }, off: !hasPdf || lintN > 0 || approved },
+        remoteDelivery ? {
+          label: 'Entrega', done: delivered,
+          detail: delivered ? ('Entrega por e-mail para ' + deb.delivery.to + ' em ' + fmtWhen(deb.delivery.at) + '.')
+            : pendingDel ? ('Preparada no Supabase para ' + pendingDel.email + '. O envio só sai com a sua autorização.')
+            : 'Registra a aprovação no Supabase e prepara o e-mail. O envio é um segundo clique.',
+          actLabel: pendingDel ? ('Autorizar envio para ' + pendingDel.email) : 'Preparar entrega por e-mail', btn: pendingDel ? 'primary' : 'secondary',
+          act: function () {
+            const api = tavirApi();
+            if (!api) return;
+            if (pendingDel) {
+              if (window.confirm && !window.confirm('Enviar o relatório e o plano para ' + pendingDel.email + '? Não tem volta.')) return;
+              api.raiox.sendDelivery(current.id, pendingDel.email).then(refreshOpen).catch(function () { fail(); });
+            } else {
+              api.raiox.prepareDelivery(current.id).then(refreshOpen).catch(function () { fail(); });
+            }
+          },
+          off: !approved || delivered || !hasPdf,
+          hasAlt: hasPdf, altLabel: 'Exportar PDFs', alt: function () { const api = tavirApi(); if (api) api.raiox.exportPdfs(current.id).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); } } :
+        { label: 'Entrega', done: delivered, detail: delivered ? ('Entrega ' + (deb.delivery.channel === 'manual' ? 'manual' : 'por e-mail') + ' para ' + deb.delivery.to + ' em ' + fmtWhen(deb.delivery.at) + '.') : 'Exporte os PDFs e registre para quem foram entregues.', actLabel: 'Registrar entrega', act: function () { self.setState({ modal: 'delivery', error: '', debForm: Object.assign({}, blankDeb(), { reason: '' }) }); }, off: !approved || delivered,
+          hasAlt: hasPdf, altLabel: 'Exportar PDFs', alt: function () { const api = tavirApi(); if (api) api.raiox.exportPdfs(current.id).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); } },
+        { label: 'Encerrar caso', done: closed, detail: closed ? 'Caso encerrado.' : 'Fecha o diagnóstico. Com proposta aceita, abre a aba Execução.', actLabel: 'Encerrar caso', act: function () { const api = tavirApi(); if (api) api.raiox.close(current.id).then(refreshOpen).catch(function () { fail(); }); }, off: closed || (!delivered && !(deb && deb.decision === 'nao_emitir')) },
+      ];
+      let nextMarked = false;
+      return list.map(function (step, index) {
+        const isNext = !step.done && !step.run && !step.bad && !nextMarked;
+        if (isNext) nextMarked = true;
+        const dot = step.run ? 'run' : step.bad ? 'bad' : step.done ? 'ok' : isNext ? 'warn' : '';
+        return {
+          n: index + 1, label: step.label, detail: anyBusy && !step.run && !step.done && isNext ? step.detail + ' ' + busyNote : step.detail,
+          cls: step.run ? 'run' : step.bad ? 'bad' : '', dot: dot,
+          hasAct: !!step.act, actLabel: step.actLabel || '', act: step.act || function () {}, btn: step.btn || 'secondary',
+          off: !!(step.off || anyBusy),
+          hasAlt: !!step.hasAlt, altLabel: step.altLabel || '', alt: step.alt || function () {}, altOff: step.altLabel === 'Parar' ? false : anyBusy,
+        };
+      });
+    })();
+    const openDebriefFn = function () {
+        const api = tavirApi();
+        const gapId = current && current.priority ? current.priority.gapId : '';
+        const offer = gapLabel(gapId);
+        const form = blankDeb();
+        const gap = gaps.filter(function (item) { return item.id === gapId; })[0];
+        if (gap) form.offerId = gap.offerId;
+        if (!api || !api.raiox.playbook || !gapId) { self.setState({ modal: 'debrief', error: '', debForm: form }); return; }
+        api.raiox.playbook(gapId).then(function (res) {
+          if (res && res.ok && res.playbook) {
+            form.guided = (res.playbook.guided || []).join('\n');
+            form.playbookStatus = res.playbook.status || 'rascunho';
+          }
+          self.setState({ modal: 'debrief', error: '', debForm: form });
+        }).catch(function () { self.setState({ modal: 'debrief', error: '', debForm: form }); });
+      };
+    const approveDocsFn = function () {
+        const api = tavirApi();
+        if (!api || !current || !current.debrief || !current.debrief.documents) return;
+        if (current.debrief.documents.some(function (doc) { return (doc.lint || []).length; })) return;
+        const hashes = current.debrief.documents.map(function (doc) { return doc.sha256; });
+        const shown = current.debrief.documents.map(function (doc) { return (doc.kind === 'relatorio' ? 'Relatório ' : 'Plano ') + (doc.sha256 || '').slice(0, 12); }).join('\n');
+        if (typeof window !== 'undefined' && window.confirm && !window.confirm('Aprovar estes documentos?\n' + shown)) return;
+        api.raiox.approveDocuments(current.id, hashes).then(refreshOpen).catch(function () { fail(); });
+      };
     const coverage = (current && current.coverage) || [];
     const maxUsable = coverage.reduce(function (max, item) { return Math.max(max, item.usable || 0); }, 0);
     const evidence = (current && current.evidence) || [];
@@ -1084,18 +1370,20 @@ class Component extends DCLogic {
         });
         const base = { hasRun: !!last, openLog: function () { if (last) self.openLog(last.id); }, logLabel: isLive ? 'Ver pensamento ao vivo' : 'Ver pensamento', tail: tail, hasTail: isLive && tail.length > 0, canStop: isLive };
         if (isLive) {
-          const activity = (s.live && (s.live.activity || s.live.speech)) || 'Rodando análise';
+          const activity = (s.live && (s.live.activity || s.live.speech)) || (runningRun && /reda/i.test(runningRun.label || '') ? 'Escrevendo o relatório e o plano' : 'Rodando análise');
           const elapsed = runningRun ? fmtDur(Date.now() - new Date(runningRun.startedAt).getTime()) : '';
-          return Object.assign(base, { cls: 'run', title: oneLine(activity, 140), sub: ['Análise rodando', elapsed, runningRun ? engineName(runningRun.engine) : ''].filter(Boolean).join(' · ') });
+          return Object.assign(base, { cls: 'run', title: oneLine(activity, 140), sub: [runningRun && runningRun.label ? runningRun.label.replace(/^Raio-X · /, '') + ' rodando' : 'Análise rodando', elapsed, runningRun ? engineName(runningRun.engine) : ''].filter(Boolean).join(' · ') });
         }
         if (s.analysis && s.analysisBad) return Object.assign(base, { cls: 'bad', title: s.analysis, sub: last ? 'Última execução: ' + runState(last).st.toLowerCase() + ' em ' + fmtWhen(last.startedAt) : '' });
         if (s.analysis) return Object.assign(base, { cls: '', title: s.analysis, sub: last ? last.label + ' · ' + fmtWhen(last.startedAt) : '' });
         if (!last) return Object.assign(base, { cls: '', title: s.analysis || 'Nenhuma análise rodou neste caso ainda.', sub: 'Rodar análise abre o navegador nas fontes públicas do caso e sugere evidências para você revisar.' });
         const stt = runState(last);
+        const isDocRun = /reda/i.test(last.label || '');
         const when = fmtWhen(last.startedAt) + (last.durationMs ? ' · ' + fmtDur(last.durationMs) : '');
+        if (stt.key === 'ok' && isDocRun) return Object.assign(base, { cls: 'ok', title: 'Redação concluída. Confira a checagem dos documentos na aba Devolutiva.', sub: last.label + ' · ' + when });
         if (stt.key === 'ok') return Object.assign(base, { cls: 'ok', title: pending ? ('Análise concluída. ' + pending + (pending === 1 ? ' evidência espera' : ' evidências esperam') + ' a sua revisão.') : 'Análise concluída. Nenhuma evidência pendente.', sub: last.label + ' · ' + when });
         if (stt.key === 'paused') return Object.assign(base, { cls: 'warn', title: 'Análise pausada por você. Rodar análise retoma deste ponto.', sub: last.label + ' · ' + when });
-        return Object.assign(base, { cls: 'bad', title: 'A última execução falhou: ' + oneLine(last.error || 'sem detalhe', 180), sub: last.label + ' · ' + when + ' · abra o pensamento para ver onde parou' });
+        return Object.assign(base, { cls: 'bad', title: (isDocRun ? 'A redação falhou: ' : 'A última execução falhou: ') + oneLine(last.error || 'sem detalhe', 180), sub: last.label + ' · ' + when + ' · abra o pensamento para ver onde parou' });
       })(),
       modalLog: s.modal === 'log',
       log: (function () {
@@ -1237,6 +1525,15 @@ class Component extends DCLogic {
         return { label: item[0], n: item[1], on: s.tab === index ? 'on' : '', pick: function () { self.setState({ tab: index }); } };
       }),
       tEv: s.tab === 0, tDev: s.tab === 1, tCon: s.tab === 2, tExec: canExec && s.tab === 3,
+      hasVendors: Boolean(current && current.vendors && current.vendors.length),
+      vendors: ((current && current.vendors) || []).map(function (v) {
+        return { nome: v.nome, usos: (v.usos || []).join(' · '), regiao: v.regiao, retencao: v.retencao, exclusao: v.exclusao };
+      }),
+      vendorsPending: ((current && current.vendors) || []).some(function (v) { return !v.confirmado; }),
+      vendorsPendingText: (function () {
+        var n = ((current && current.vendors) || []).filter(function (v) { return !v.confirmado; }).length;
+        return n === 1 ? '1 serviço com termos a confirmar' : n + ' serviços com termos a confirmar';
+      })(),
       evFilters: [['all', 'Todas'], ['observado', 'Observado'], ['informado', 'Informado'], ['inferido', 'Inferido'], ['indisponivel', 'Indisponível'], ['pendente', 'Pendentes']].map(function (item) {
         const n = evidence.filter(function (ev) { return item[0] === 'all' ? true : item[0] === 'pendente' ? ev.review === 'pendente' : ev.classification === item[0]; }).length;
         return { label: item[1], n: n, on: s.evFilter === item[0] ? 'on' : '', pick: function () { self.setState({ evFilter: item[0] }); } };
@@ -1286,50 +1583,29 @@ class Component extends DCLogic {
           problems: doc.lint || [],
           openMd: function () { const api = tavirApi(); if (api && current) api.raiox.openDocument(current.id, doc.md); },
           viewMd: function () { const api = tavirApi(); if (api && current && api.raiox.viewDocument) api.raiox.viewDocument(current.id, doc.md).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); },
+          hasPdf: !!doc.pdf,
           openPdf: function () { const api = tavirApi(); if (api && current && doc.pdf) api.raiox.openDocument(current.id, doc.pdf); },
         };
       }),
       approveOff: !current || !current.debrief || !current.debrief.documents || current.debrief.documents.some(function (doc) { return (doc.lint || []).length; }),
-      openDebrief: function () {
-        const api = tavirApi();
-        const gapId = current && current.priority ? current.priority.gapId : '';
-        const offer = gapLabel(gapId);
-        const form = blankDeb();
-        const gap = gaps.filter(function (item) { return item.id === gapId; })[0];
-        if (gap) form.offerId = gap.offerId;
-        if (!api || !api.raiox.playbook || !gapId) { self.setState({ modal: 'debrief', error: '', debForm: form }); return; }
-        api.raiox.playbook(gapId).then(function (res) {
-          if (res && res.ok && res.playbook) {
-            form.guided = (res.playbook.guided || []).join('\n');
-            form.playbookStatus = res.playbook.status || 'rascunho';
-          }
-          self.setState({ modal: 'debrief', error: '', debForm: form });
-        }).catch(function () { self.setState({ modal: 'debrief', error: '', debForm: form }); });
-      },
-      writeDocs: function () {
-        const api = tavirApi();
-        if (!api || !current) return;
-        api.raiox.writeDocuments(current.id).then(refreshOpen).catch(function () { fail(); });
-      },
-      rewriteDocs: function () {
-        const api = tavirApi();
-        if (!api || !current) return;
-        api.raiox.writeDocuments(current.id).then(refreshOpen).catch(function () { fail(); });
-      },
+      openDebrief: function () { openDebriefFn(); },
+      flow: flowSteps,
+      flowLive: flowLive,
+      hasFlowError: !s.modal && !!s.error,
+      flowError: !s.modal ? (s.error || '') : '',
+      hasDocsMsg: !!(s.docsMsg && s.docsMsg.id === (current && current.id)),
+      docsMsg: s.docsMsg ? s.docsMsg.text : '',
+      docsMsgStyle: s.docsMsg && s.docsMsg.bad ? 'color: var(--danger); font-size: 13px' : 'font-size: 13px',
+      writeDocs: function () { docsJob('write'); },
+      rewriteDocs: function () { docsJob('write'); },
       renderDocs: function () {
-        const api = tavirApi();
-        if (!api || !current || !current.debrief || !current.debrief.documents || !current.debrief.documents.length) return;
-        api.raiox.renderPdfs(current.id, current.debrief.documents[0].version).then(refreshOpen).catch(function () { fail(); });
+        if (!current || !current.debrief || !current.debrief.documents || !current.debrief.documents.length) {
+          self.setState({ docsMsg: { id: current && current.id, bad: true, text: 'Gere os documentos antes do PDF.' } });
+          return;
+        }
+        docsJob('pdf');
       },
-      approveDocs: function () {
-        const api = tavirApi();
-        if (!api || !current || !current.debrief || !current.debrief.documents) return;
-        if (current.debrief.documents.some(function (doc) { return (doc.lint || []).length; })) return;
-        const hashes = current.debrief.documents.map(function (doc) { return doc.sha256; });
-        const shown = current.debrief.documents.map(function (doc) { return (doc.kind === 'relatorio' ? 'Relatório ' : 'Plano ') + (doc.sha256 || '').slice(0, 12); }).join('\n');
-        if (typeof window !== 'undefined' && window.confirm && !window.confirm('Aprovar estes documentos?\n' + shown)) return;
-        api.raiox.approveDocuments(current.id, hashes).then(refreshOpen).catch(function () { fail(); });
-      },
+      approveDocs: function () { approveDocsFn(); },
       exportPdfs: function () { const api = tavirApi(); if (api && current) api.raiox.exportPdfs(current.id).then(function (res) { if (!res || !res.ok) fail(res); }).catch(function () { fail(); }); },
       openDelivery: function () { self.setState({ modal: 'delivery', error: '', debForm: Object.assign({}, blankDeb(), { reason: '' }) }); },
       closeCase: function () { const api = tavirApi(); if (api && current) api.raiox.close(current.id).then(refreshOpen).catch(function () { fail(); }); },
@@ -1438,6 +1714,154 @@ class Component extends DCLogic {
       modalPri: s.modal === 'priority',
       modalDeb: s.modal === 'debrief',
       modalDel: s.modal === 'delivery',
+      modalRevoke: s.modal === 'revoke',
+      isRevoked: Boolean(current && (current.revocation || (current.remote && current.remote.revoked))),
+      canRevoke: Boolean(current && !current.revocation && !(current.remote && current.remote.revoked) && !current.legacy),
+      revokedText: current && current.revocation
+        ? ('Pedido em ' + new Date(current.revocation.requestedAt).toLocaleString('pt-BR') + ' por ' + (REVOKE_CHANNELS.find(function (o) { return o.id === current.revocation.channel; }) || { label: current.revocation.channel }).label + '; registrado em ' + new Date(current.revocation.at).toLocaleString('pt-BR') + '.' + (current.revocation.note ? ' ' + current.revocation.note : ''))
+        : (current && current.remote && current.remote.revoked ? 'Revogação registrada no Supabase e trazida pela sincronização.' : ''),
+      revokeChannels: REVOKE_CHANNELS,
+      revForm: s.revForm || { channel: '', requestedAt: '', note: '' },
+      openRevoke: function () { self.setState({ modal: 'revoke', error: '', revForm: { channel: '', requestedAt: '', note: '' } }); },
+      onRevokeChannel: function (event) { self.setState({ revForm: Object.assign({}, s.revForm, { channel: event.target.value }) }); },
+      onRevokeWhen: function (event) { self.setState({ revForm: Object.assign({}, s.revForm, { requestedAt: event.target.value }) }); },
+      onRevokeNote: function (event) { self.setState({ revForm: Object.assign({}, s.revForm, { note: event.target.value }) }); },
+      submitRevoke: function () {
+        const api = tavirApi();
+        const form = s.revForm || {};
+        if (!api || !current || !api.raiox.revoke) return;
+        const when = form.requestedAt ? new Date(form.requestedAt).toISOString() : '';
+        api.raiox.revoke(current.id, { channel: form.channel || '', requestedAt: when, note: form.note || '' }).then(refreshOpen).catch(function () { fail(); });
+      },
+      modalInvite: s.modal === 'invite',
+      hasNotice: !!s.notice,
+      notice: s.notice || '',
+      revokeRemotePending: Boolean(current && current.revocation && !current.revocation.remoteAt && current.remote && current.remote.supabaseId && !current.remote.revoked),
+      pushRevocation: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.pushRevocation) return;
+        api.raiox.pushRevocation(current.id).then(refreshOpen).catch(function () { fail(); });
+      },
+      avisoVersao: AVISO_VERSAO,
+      invForm: s.invForm || blankInvite(),
+      invOff: (function () { const f = s.invForm || blankInvite(); return !(f.company && f.contact && f.email && f.channel && f.when && f.operator && f.notice); })(),
+      openInvite: function () { self.setState({ modal: 'invite', error: '', invForm: blankInvite(), invRequestId: null }); },
+      hasInviteRequests: (s.inviteRequests || []).length > 0,
+      inviteRequests: (s.inviteRequests || []).map(function (r) {
+        const chan = (REVOKE_CHANNELS.find(function (o) { return o.id === r.optin.channel; }) || { label: r.optin.channel }).label;
+        const pad = function (n) { return String(n).padStart(2, '0'); };
+        const d = new Date(r.optin.obtainedAt);
+        const local = isNaN(d.getTime()) ? '' : d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+        return {
+          company: r.company, contact: r.contact, email: r.email,
+          optin: 'Aceite por ' + chan + (local ? ' em ' + d.toLocaleString('pt-BR') : '') + ' · aviso ' + r.optin.policyVersion + ' · registrado por ' + r.optin.operator,
+          // O aviso fica desmarcado: o Carlos confirma de novo antes de mandar.
+          review: function () { self.setState({ modal: 'invite', error: '', invRequestId: r.id, invForm: { company: r.company, contact: r.contact, email: r.email, channel: r.optin.channel, when: local, operator: r.optin.operator, notice: false } }); },
+          drop: function () {
+            const api = tavirApi();
+            if (!api || !api.raiox.dropInviteRequest) return;
+            if (window.confirm && !window.confirm('Descartar o pedido de convite de ' + r.company + '? Nada foi enviado.')) return;
+            api.raiox.dropInviteRequest(r.id).then(function (res) { if (!res || !res.ok) return fail(res); if (self.reload) self.reload(); }).catch(function () { fail(); });
+          },
+        };
+      }),
+      onInvCompany: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { company: event.target.value }) }); },
+      onInvContact: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { contact: event.target.value }) }); },
+      onInvEmail: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { email: event.target.value }) }); },
+      onInvChannel: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { channel: event.target.value }) }); },
+      onInvWhen: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { when: event.target.value }) }); },
+      onInvOperator: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { operator: event.target.value }) }); },
+      onInvNotice: function (event) { self.setState({ invForm: Object.assign({}, s.invForm, { notice: !!event.target.checked }) }); },
+      submitInvite: function () {
+        const api = tavirApi();
+        const f = s.invForm || blankInvite();
+        if (!api || !api.raiox.sendInvite || !f.notice) return;
+        const optin = { channel: f.channel, obtainedAt: f.when ? new Date(f.when).toISOString() : '', policyVersion: AVISO_VERSAO, operator: f.operator };
+        api.raiox.sendInvite({ company: f.company, contact: f.contact, email: f.email, optin: optin }, s.invRequestId || undefined).then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          self.setState({ modal: null, error: '', invForm: null, caseId: res.case.id, openCase: res.case });
+          if (self.reload) self.reload();
+        }).catch(function () { fail(); });
+      },
+      modalReleases: s.modal === 'releases',
+      openReleases: function () {
+        const api = tavirApi();
+        if (!api || !api.raiox.releases) return;
+        self.setState({ modal: 'releases', error: '', releaseTyped: {} });
+        api.raiox.releases().then(function (res) { if (res && res.ok) self.setState({ releases: res.releases }); else fail(res); }).catch(function () { fail(); });
+      },
+      releaseRows: RELEASES.map(function (r) {
+        const on = s.releases && s.releases[r.id];
+        const typed = (s.releaseTyped || {})[r.id] || '';
+        const done = function (res) { if (!res || !res.ok) return fail(res); self.setState({ releases: res.releases, error: '', releaseTyped: {} }); };
+        return {
+          title: r.title, help: r.help, phrase: 'Digite: ' + r.phrase, typed: typed,
+          state: on ? 'Liberado em ' + new Date(on.at).toLocaleString('pt-BR') : 'Desligado',
+          onType: function (event) { const next = Object.assign({}, s.releaseTyped || {}); next[r.id] = event.target.value; self.setState({ releaseTyped: next }); },
+          grant: function () { const api = tavirApi(); if (api && api.raiox.grantRelease) api.raiox.grantRelease(r.id, typed).then(done).catch(function () { fail(); }); },
+          revoke: function () { const api = tavirApi(); if (api && api.raiox.revokeRelease) api.raiox.revokeRelease(r.id).then(done).catch(function () { fail(); }); },
+        };
+      }),
+      hasRemoteCase: Boolean(current && current.remote && current.remote.supabaseId),
+      remoteStatus: current && current.remote ? (REMOTE_LABEL[current.remote.status] || current.remote.status) : '',
+      remoteEmail: current && current.remote ? (current.remote.emailVerified ? 'E-mail confirmado' : 'E-mail ainda não confirmado') : '',
+      hasRemoteForm: Boolean(current && current.remote && current.remote.formUrl),
+      remoteFormUrl: current && current.remote ? (current.remote.formUrl || '') : '',
+      hasRemoteNote: Boolean(current && current.remote && REMOTE_HINT[current.remote.status]),
+      remoteNote: current && current.remote ? (REMOTE_HINT[current.remote.status] || '') : '',
+      copyRemoteForm: function () {
+        const url = current && current.remote && current.remote.formUrl;
+        if (url && typeof navigator !== 'undefined' && navigator.clipboard) navigator.clipboard.writeText(url).catch(function () {});
+      },
+      remoteForm2: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.remoteForm2) return;
+        api.raiox.remoteForm2(current.id).then(refreshOpen).catch(function () { fail(); });
+      },
+      remoteAnalyse: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.remoteAnalyse) return;
+        api.raiox.remoteAnalyse(current.id).then(refreshOpen).catch(function () { fail(); });
+      },
+      modalPurge: s.modal === 'purge',
+      purgeLoading: s.modal === 'purge' && !s.purgeAreas && !s.purgeReport,
+      purgeAsking: s.modal === 'purge' && !s.purgeReport,
+      purgeDone: Boolean(s.purgeReport),
+      purgeCaseId: current ? current.id : '',
+      purgeReasons: PURGE_REASONS,
+      purgeForm: s.purgeForm || { reason: '', confirm: '' },
+      purgeAreas: ((s.purgeReport && s.purgeReport.areas) || s.purgeAreas || []).map(function (a) {
+        const tag = s.purgeReport ? (PURGE_TAG[a.status] || PURGE_TAG.manual) : (a.status === 'limpo' ? ['Vai apagar', 'inherit'] : (PURGE_TAG[a.status] || PURGE_TAG.manual));
+        const count = s.purgeReport ? (a.found ? '· ' + a.removed + ' de ' + a.found + ' apagado(s)' : '') : (a.found ? '· ' + a.found + ' item(ns)' : '· nada encontrado');
+        return { area: a.area, note: a.note, tag: tag[0], color: tag[1], count: count };
+      }),
+      purgeDoneText: s.purgeReport
+        ? (s.purgeReport.complete ? 'Expurgo completo: tudo apagado e conferido. Relatório guardado em expurgos/.' : 'Expurgo local feito e conferido. Os itens marcados como Pendente ou Conferir ficam com o Carlos; o relatório guardado em expurgos/ registra cada um.')
+        : '',
+      openPurge: function () {
+        const api = tavirApi();
+        if (!api || !current || !api.raiox.purgePreview) return;
+        self.setState({ modal: 'purge', error: '', purgeAreas: null, purgeReport: null, purgeForm: { reason: '', confirm: '' } });
+        api.raiox.purgePreview(current.id).then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          self.setState({ purgeAreas: res.preview.areas });
+        }).catch(function () { fail(); });
+      },
+      onPurgeReason: function (event) { self.setState({ purgeForm: Object.assign({}, s.purgeForm, { reason: event.target.value }) }); },
+      onPurgeConfirm: function (event) { self.setState({ purgeForm: Object.assign({}, s.purgeForm, { confirm: event.target.value }) }); },
+      submitPurge: function () {
+        const api = tavirApi();
+        const form = s.purgeForm || {};
+        if (!api || !current || !api.raiox.purge) return;
+        api.raiox.purge(current.id, { reason: form.reason || '', confirm: form.confirm || '' }).then(function (res) {
+          if (!res || !res.ok) return fail(res);
+          self.setState({ purgeReport: res.report, error: '' });
+        }).catch(function () { fail(); });
+      },
+      finishPurge: function () {
+        self.setState({ caseId: null, openCase: null, modal: null, purgeReport: null, purgeAreas: null });
+        if (self.reload) self.reload();
+      },
       modalRm: s.modal === 'remove',
       modalBg: function (event) { if (event && event.target !== event.currentTarget) return; self.setState({ modal: null, error: '', removeId: null }); },
       modalStop: function (event) { if (event && event.stopPropagation) event.stopPropagation(); },

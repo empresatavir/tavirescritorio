@@ -16,7 +16,7 @@
    `20260823213000_raiox_rpc_least_privilege.sql`.
 3. Configure os segredos listados em `supabase/functions/.env.example` com valores aleatórios e
    diferentes para assinatura, webhook e gate interno.
-4. Publique `create-case`, `invite-case`, `continue-case`, `notify-dora`, `review-case` e `delivery-case` com JWT desabilitado;
+4. Publique `create-case`, `invite-case`, `continue-case`, `notify-dora`, `review-case`, `delivery-case`, `office-raiox-sync` e `titular-case` com JWT desabilitado (`titular-case` revoga e expurga caso pelo Escritório, com o segredo interno);
    as funções fazem autenticação própria pelo segredo interno ou do webhook.
 5. Mantenha o Database Webhook de `raiox_events` apontando para `notify-dora`.
 6. Na Vercel, mantenha o Root Directory do projeto Git em

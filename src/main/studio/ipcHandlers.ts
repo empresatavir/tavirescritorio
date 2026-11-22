@@ -17,8 +17,11 @@ import { polishPrompt } from './promptPolish';
 import { installWhisper, transcribePeca } from './whisper';
 import { getStudioStore } from './store';
 import { suggestForPiece, type SuggestAlvo } from './suggest';
-import { createSidecarManager, loadSidecars, sidecarConfigPath } from '../sidecars';
-import { activateDarkflowSchedule, darkflowBoard, editionBoard, prepareDarkflowSchedule, readScorecard, sendToDocuflow } from './ecosystem';
+import { createSidecarManager, defaultHealth, loadSidecars, sidecarConfigPath } from '../sidecars';
+import { garantirDarkflow } from '../flow/ligar';
+import { darkflowBoard, editionBoard, readScorecard, sendToDocuflow } from './ecosystem';
+import { enviarParaBiblioteca, estadoNoFlow } from '../flow/biblioteca';
+import { ativarAgenda, cancelarAgenda, criarAgenda, flowBoard, rodarSimulacao, type NovaAgenda } from '../flow/cliente';
 
 type Handle = (channel: string, listener: (...args: any[]) => any) => void;
 
@@ -198,21 +201,36 @@ export function registerStudioIpc(handle: Handle): void {
   handle('studio:sidecars:list', () => sidecars.status());
   handle('studio:sidecars:start', (_e, id: string) => sidecars.start(id));
   handle('studio:sidecars:stop', (_e, id: string) => sidecars.stop(id));
-  handle('studio:darkflow:prepare', async (_e, pecaId: string) => {
+  // Studio entrega à biblioteca do Flow; agenda e ativação são do Flow (GOAL_FLOW, F1).
+  handle('studio:flow:enviar', async (_e, pecaId: string) => {
     try {
       const darkflow = loadSidecars(sidecarConfigPath()).find((item) => item.id === 'darkflow');
       if (!darkflow) return { ok: false, error: 'DarkFlow não está configurado' };
-      return await prepareDarkflowSchedule(getStudioStore(), pecaId, 'http://127.0.0.1:8765', path.join(darkflow.pasta, 'storage', 'output'), darkflow.pasta);
+      return await enviarParaBiblioteca(getStudioStore(), pecaId, 'http://127.0.0.1:8765', path.join(darkflow.pasta, 'storage', 'output'), darkflow.pasta);
     } catch (err) {
       return { ok: false, error: message(err) };
     }
   });
-  handle('studio:darkflow:activate', async (_e, pecaId: string) => {
+  handle('studio:flow:estado', async (_e, pecaId: string) => {
     try {
-      return await activateDarkflowSchedule(getStudioStore(), pecaId, 'http://127.0.0.1:8765');
+      return await estadoNoFlow(getStudioStore(), pecaId, 'http://127.0.0.1:8765');
     } catch (err) {
-      return { ok: false, error: message(err) };
+      return { situacao: 'sem_conexao', detalhe: message(err) };
     }
+  });
+  // Flow (GOAL_FLOW, F2): agenda nasce em rascunho; ativar é gate do Carlos com ateste.
+  const DF = 'http://127.0.0.1:8765';
+  handle('flow:board', () => flowBoard(DF, (() => { try { return getStudioStore(); } catch { return null; } })()));
+  handle('flow:criar', (_e, input: NovaAgenda) => criarAgenda(DF, input));
+  handle('flow:ativar', (_e, id: string, atestado: boolean) => ativarAgenda(DF, id, atestado));
+  handle('flow:cancelar', (_e, id: string) => cancelarAgenda(DF, id));
+  handle('flow:simular', () => rodarSimulacao(DF));
+  // F3: abrir o Flow sobe o DarkFlow pelo sidecar, com as mesmas travas do botão de Configurações.
+  handle('flow:ligar', () => garantirDarkflow(`${DF}/api/health`, { health: defaultHealth, start: (id) => sidecars.start(id) }));
+  handle('flow:abrirDarkflow', () => {
+    const win = new BrowserWindow({ width: 1280, height: 820, webPreferences: { nodeIntegration: false, contextIsolation: true } });
+    void win.loadURL('http://127.0.0.1:5174/');
+    return { ok: true };
   });
   handle('studio:darkflow:scorecard', () => readScorecard('http://127.0.0.1:8765'));
   handle('studio:darkflow:board', () => darkflowBoard('http://127.0.0.1:8765'));

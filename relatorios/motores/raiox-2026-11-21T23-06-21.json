@@ -1,0 +1,50 @@
+[
+  {
+    "motor": "cursor",
+    "label": "Cursor",
+    "model": "auto-smart",
+    "effort": "medium",
+    "available": true,
+    "ok": true,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": true,
+        "ms": 157630,
+        "detail": "ok"
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": true,
+        "ms": 229036,
+        "detail": "ok"
+      }
+    ]
+  },
+  {
+    "motor": "antigravity",
+    "label": "Antigravity",
+    "model": "gemini-4-argon",
+    "effort": "medium",
+    "available": true,
+    "ok": false,
+    "checks": [
+      {
+        "id": "analise",
+        "title": "Análise",
+        "ok": false,
+        "ms": 139071,
+        "detail": "A análise não devolveu sugestões válidas: gap inválido"
+      },
+      {
+        "id": "redacao",
+        "title": "Redação",
+        "ok": true,
+        "ms": 235635,
+        "detail": "ok"
+      }
+    ]
+  }
+]

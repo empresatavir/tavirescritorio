@@ -279,8 +279,9 @@ const BUNDLE_FIELDS: Record<BundleProvider, BundleField[]> = {
   resend: [
     { key: 'apiKey', label: 'Chave da API', secret: true },
     { key: 'from', label: 'Remetente', secret: false },
-    { key: 'replyTo', label: 'Resposta para', secret: false },
-    { key: 'templateId', label: 'Modelo', secret: false },
+    { key: 'replyTo', label: 'Resposta para', secret: false, optional: true },
+    // O Raio-X monta o e-mail com os modelos de raiox/modelos/; o modelo do Resend é opcional.
+    { key: 'templateId', label: 'Modelo', secret: false, optional: true },
   ],
 };
 

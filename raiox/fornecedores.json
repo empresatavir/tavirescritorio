@@ -1,0 +1,95 @@
+{
+  "_leia": "G-PR1 controle 6. Catálogo dos serviços que podem tocar dados de um caso do Raio-X. Cada caso copia a entrada no momento do uso. Região, retenção e exclusão ficam 'a confirmar' até o Carlos conferir no contrato ou painel do serviço; 'confirmado: true' só o Carlos escreve.",
+  "fornecedores": [
+    {
+      "id": "vercel",
+      "nome": "Vercel",
+      "finalidade": "Hospedar o formulário do convite e receber o envio.",
+      "dados": "Respostas do formulário em trânsito; logs de acesso (IP e horário).",
+      "regiao": "a confirmar",
+      "retencao": "a confirmar",
+      "exclusao": "a confirmar",
+      "confirmado": false
+    },
+    {
+      "id": "supabase",
+      "nome": "Supabase",
+      "finalidade": "Guardar caso remoto, sessões do formulário, respostas e consentimentos.",
+      "dados": "Empresa, contato, e-mail, respostas do formulário, consentimentos.",
+      "regiao": "a confirmar",
+      "retencao": "a confirmar",
+      "exclusao": "a confirmar",
+      "confirmado": false
+    },
+    {
+      "id": "telegram",
+      "nome": "Telegram",
+      "finalidade": "Avisar o Carlos que um formulário chegou.",
+      "dados": "Só o código do caso.",
+      "regiao": "a confirmar",
+      "retencao": "a confirmar",
+      "exclusao": "a confirmar",
+      "confirmado": false
+    },
+    {
+      "id": "resend",
+      "nome": "Resend",
+      "finalidade": "Enviar convite e entrega por e-mail.",
+      "dados": "Nome e e-mail do contato; PDFs na entrega.",
+      "regiao": "a confirmar",
+      "retencao": "a confirmar",
+      "exclusao": "a confirmar",
+      "confirmado": false
+    },
+    {
+      "id": "rapidapi",
+      "nome": "RapidAPI (Local Business Data)",
+      "finalidade": "Consultar a ficha pública do Google Maps da empresa.",
+      "dados": "Nome da empresa, cidade ou link do Maps.",
+      "regiao": "a confirmar",
+      "retencao": "a confirmar",
+      "exclusao": "a confirmar",
+      "confirmado": false
+    },
+    {
+      "id": "anthropic",
+      "nome": "Anthropic (motor Claude)",
+      "finalidade": "Análise e redação do caso.",
+      "dados": "Pasta do caso: dados da empresa, evidências públicas, decisões e documentos.",
+      "regiao": "a confirmar",
+      "retencao": "a confirmar",
+      "exclusao": "a confirmar",
+      "confirmado": false
+    },
+    {
+      "id": "openai",
+      "nome": "OpenAI (motor Codex)",
+      "finalidade": "Análise e redação do caso.",
+      "dados": "Pasta do caso: dados da empresa, evidências públicas, decisões e documentos.",
+      "regiao": "a confirmar",
+      "retencao": "a confirmar",
+      "exclusao": "a confirmar",
+      "confirmado": false
+    },
+    {
+      "id": "google",
+      "nome": "Google (motor Antigravity / Gemini)",
+      "finalidade": "Análise e redação do caso.",
+      "dados": "Pasta do caso: dados da empresa, evidências públicas, decisões e documentos.",
+      "regiao": "a confirmar",
+      "retencao": "a confirmar",
+      "exclusao": "a confirmar",
+      "confirmado": false
+    },
+    {
+      "id": "cursor",
+      "nome": "Cursor (Anysphere) e o provedor do modelo escolhido",
+      "finalidade": "Análise e redação do caso.",
+      "dados": "Pasta do caso: dados da empresa, evidências públicas, decisões e documentos.",
+      "regiao": "a confirmar",
+      "retencao": "a confirmar",
+      "exclusao": "a confirmar",
+      "confirmado": false
+    }
+  ]
+}

@@ -1,0 +1,1902 @@
+{
+ "titulo": "FISIO 1 - Clínica Fisioterapia e Pilates - Barra da Tijuca e Itanhangá, RJ",
+ "idioma": "pt-BR",
+ "descricao": "Fisioterapia com resultados. Nossa infra-estrutura está apta a oferecer serviços fisioterápicos para lesões Traumato-Ortopédicas/desportiva, Pilates, Baropodometria (teste da pisada) com confecção de ",
+ "gerador": "WordPress 7.1.5",
+ "janela": {
+  "largura": 1440,
+  "altura": 900,
+  "alturaPagina": 6025,
+  "rolagemHorizontal": false
+ },
+ "variaveisCss": {
+  "--wp-block-synced-color": "#7a00df",
+  "--wp-block-synced-color--rgb": "122,0,223",
+  "--wp-bound-block-color": "var(--wp-block-synced-color)",
+  "--wp-editor-canvas-background": "#ddd",
+  "--wp-admin-theme-color": "#007cba",
+  "--wp-admin-theme-color--rgb": "0,124,186",
+  "--wp-admin-theme-color-darker-10": "#006ba1",
+  "--wp-admin-theme-color-darker-10--rgb": "0,107,160.5",
+  "--wp-admin-theme-color-darker-20": "#005a87",
+  "--wp-admin-theme-color-darker-20--rgb": "0,90,135",
+  "--wp-admin-border-width-focus": "1.5px",
+  "--wp--preset--font-size--normal": "16px",
+  "--wp--preset--font-size--huge": "42px",
+  "--wp--preset--aspect-ratio--square": "1",
+  "--wp--preset--aspect-ratio--4-3": "4/3",
+  "--wp--preset--aspect-ratio--3-4": "3/4",
+  "--wp--preset--aspect-ratio--3-2": "3/2",
+  "--wp--preset--aspect-ratio--2-3": "2/3",
+  "--wp--preset--aspect-ratio--16-9": "16/9",
+  "--wp--preset--aspect-ratio--9-16": "9/16",
+  "--wp--preset--color--black": "#000000",
+  "--wp--preset--color--cyan-bluish-gray": "#abb8c3",
+  "--wp--preset--color--white": "#ffffff",
+  "--wp--preset--color--pale-pink": "#f78da7",
+  "--wp--preset--color--vivid-red": "#cf2e2e",
+  "--wp--preset--color--luminous-vivid-orange": "#ff6900",
+  "--wp--preset--color--luminous-vivid-amber": "#fcb900",
+  "--wp--preset--color--light-green-cyan": "#7bdcb5",
+  "--wp--preset--color--vivid-green-cyan": "#00d084",
+  "--wp--preset--color--pale-cyan-blue": "#8ed1fc",
+  "--wp--preset--color--vivid-cyan-blue": "#0693e3",
+  "--wp--preset--color--vivid-purple": "#9b51e0",
+  "--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple": "linear-gradient(135deg,rgb(6,147,227) 0%,rgb(155,81,224) 100%)",
+  "--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan": "linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%)",
+  "--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange": "linear-gradient(135deg,rgb(252,185,0) 0%,rgb(255,105,0) 100%)",
+  "--wp--preset--gradient--luminous-vivid-orange-to-vivid-red": "linear-gradient(135deg,rgb(255,105,0) 0%,rgb(207,46,46) 100%)",
+  "--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray": "linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%)",
+  "--wp--preset--gradient--cool-to-warm-spectrum": "linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 4",
+  "--wp--preset--gradient--blush-light-purple": "linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%)",
+  "--wp--preset--gradient--blush-bordeaux": "linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%",
+  "--wp--preset--gradient--luminous-dusk": "linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 10",
+  "--wp--preset--gradient--pale-ocean": "linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) ",
+  "--wp--preset--gradient--electric-grass": "linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%)",
+  "--wp--preset--gradient--midnight": "linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%)",
+  "--wp--preset--font-size--small": "13px",
+  "--wp--preset--font-size--medium": "20px",
+  "--wp--preset--font-size--large": "36px",
+  "--wp--preset--font-size--x-large": "42px",
+  "--wp--preset--spacing--20": "0.44rem",
+  "--wp--preset--spacing--30": "0.67rem",
+  "--wp--preset--spacing--40": "1rem",
+  "--wp--preset--spacing--50": "1.5rem",
+  "--wp--preset--spacing--60": "2.25rem",
+  "--wp--preset--spacing--70": "3.38rem",
+  "--wp--preset--spacing--80": "5.06rem",
+  "--wp--preset--shadow--natural": "6px 6px 9px rgba(0, 0, 0, 0.2)",
+  "--wp--preset--shadow--deep": "12px 12px 50px rgba(0, 0, 0, 0.4)",
+  "--wp--preset--shadow--sharp": "6px 6px 0px rgba(0, 0, 0, 0.2)",
+  "--wp--preset--shadow--outlined": "6px 6px 0px -3px rgb(255, 255, 255), 6px 6px rgb(0, 0, 0)",
+  "--wp--preset--shadow--crisp": "6px 6px 0px rgb(0, 0, 0)"
+ },
+ "cores": {
+  "texto": [
+   {
+    "value": "#4c5f6a",
+    "n": 1230,
+    "sample": "O paciente/atleta primeirament"
+   },
+   {
+    "value": "#ffffff",
+    "n": 1045,
+    "sample": "Tratamentos"
+   },
+   {
+    "value": "#3e4e58",
+    "n": 148,
+    "sample": "Na você encontra tratamento e "
+   },
+   {
+    "value": "#333333",
+    "n": 103,
+    "sample": "reabilite-se para novos desafi"
+   },
+   {
+    "value": "#263036",
+    "n": 20,
+    "sample": "IR PARA PROFISSIONAL"
+   },
+   {
+    "value": "#39464e",
+    "n": 14,
+    "sample": "Como funciona?"
+   }
+  ],
+  "fundo": [
+   {
+    "value": "#00afec",
+    "n": 2278368,
+    "sample": "div.collapsed.btn-burguer"
+   },
+   {
+    "value": "#002431",
+    "n": 596565,
+    "sample": "footer"
+   },
+   {
+    "value": "#001922",
+    "n": 92565,
+    "sample": "div.cop"
+   },
+   {
+    "value": "#ffffff",
+    "n": 50910,
+    "sample": "a.agenda.anchorBtn"
+   },
+   {
+    "value": "#e1146b @70%",
+    "n": 18240,
+    "sample": "div.tl2.circle"
+   },
+   {
+    "value": "#3d4e59",
+    "n": 10481,
+    "sample": "a.btn-gray"
+   },
+   {
+    "value": "#263036",
+    "n": 10481,
+    "sample": "a.btn-grayBlack"
+   }
+  ],
+  "borda": [
+   {
+    "value": "1px solid #ffffff",
+    "n": 1,
+    "sample": "a.estrutura"
+   },
+   {
+    "value": "1px solid #335059",
+    "n": 1,
+    "sample": "input#field_v37rv"
+   }
+  ],
+  "degrades": [
+   {
+    "value": "linear-gradient(to right, rgb(102, 105, 107) 0%, rgb(156, 164, 169) 39%, rgb(136, 141, 145) 70%, rgb(172, 176, 179) 100%)",
+    "n": 3,
+    "sample": "h2.tx-gradientSubtitle"
+   }
+  ]
+ },
+ "fontes": {
+  "uso": [
+   {
+    "value": "Calibri 400",
+    "n": 1230,
+    "sample": "",
+    "parte": "48%"
+   },
+   {
+    "value": "Open Sans 400",
+    "n": 720,
+    "sample": "",
+    "parte": "28%"
+   },
+   {
+    "value": "Open Sans 600",
+    "n": 314,
+    "sample": "",
+    "parte": "12%"
+   },
+   {
+    "value": "Open Sans 800",
+    "n": 135,
+    "sample": "",
+    "parte": "5%"
+   },
+   {
+    "value": "GothamMedium 400",
+    "n": 47,
+    "sample": "",
+    "parte": "2%"
+   },
+   {
+    "value": "GothamMedium 300",
+    "n": 46,
+    "sample": "",
+    "parte": "2%"
+   },
+   {
+    "value": "Open Sans 300",
+    "n": 36,
+    "sample": "",
+    "parte": "1%"
+   },
+   {
+    "value": "Open Sans 700",
+    "n": 18,
+    "sample": "",
+    "parte": "1%"
+   },
+   {
+    "value": "GothamLight 300",
+    "n": 14,
+    "sample": "",
+    "parte": "1%"
+   }
+  ],
+  "arquivos": [
+   {
+    "family": "GothamMedium",
+    "weight": "500",
+    "style": "normal",
+    "arquivo": "GothamMedium.woff",
+    "display": ""
+   },
+   {
+    "family": "Calibri",
+    "weight": "normal",
+    "style": "normal",
+    "arquivo": "Calibri.woff",
+    "display": ""
+   },
+   {
+    "family": "GothamLight",
+    "weight": "300",
+    "style": "normal",
+    "arquivo": "GothamLight.woff",
+    "display": ""
+   },
+   {
+    "family": "Glyphicons Halflings",
+    "weight": "",
+    "style": "",
+    "arquivo": "glyphicons-halflings-regular.woff2",
+    "display": ""
+   },
+   {
+    "family": "Genericons",
+    "weight": "normal",
+    "style": "normal",
+    "arquivo": "Genericons.eot",
+    "display": ""
+   },
+   {
+    "family": "Genericons",
+    "weight": "normal",
+    "style": "normal",
+    "arquivo": "8AAnjaY2BgYGQAgosrjpwF0ZcUq9bCaABTzgdAAAA=",
+    "display": ""
+   },
+   {
+    "family": "Genericons",
+    "weight": "",
+    "style": "",
+    "arquivo": "",
+    "display": ""
+   }
+  ]
+ },
+ "escalaTipografica": [
+  {
+   "value": "Open Sans · 14px · peso 400 · linha 21px · espaço 0",
+   "n": 10,
+   "sample": "a: Fisio1"
+  },
+  {
+   "value": "Open Sans · 15px · peso 600 · linha 24px · espaço 0 · uppercase",
+   "n": 7,
+   "sample": "a: conheça todos os tratamentos"
+  },
+  {
+   "value": "GothamMedium · 15px · peso 400 · linha 21px · espaço 0 · uppercase",
+   "n": 6,
+   "sample": "a: Tratamentos"
+  },
+  {
+   "value": "Open Sans · 14px · peso 400 · linha 20px · espaço 0",
+   "n": 4,
+   "sample": "a: IR PARA PROFISSIONAL"
+  },
+  {
+   "value": "Open Sans · 54px · peso 800 · linha 54px · espaço 0 · uppercase",
+   "n": 3,
+   "sample": "h2: técnicas e tratamentos"
+  },
+  {
+   "value": "Calibri · 17px · peso 400 · linha 32px · espaço 0",
+   "n": 3,
+   "sample": "p: O paciente/atleta primeiramente é submet"
+  },
+  {
+   "value": "GothamMedium · 12px · peso 300 · linha 17px · espaço 0 · uppercase",
+   "n": 2,
+   "sample": "a: Saiba Mais Sobre a FISIO1"
+  },
+  {
+   "value": "Open Sans · 16px · peso 600 · linha 24px · espaço 0 · uppercase",
+   "n": 2,
+   "sample": "span: 99900-0068 / 2484-1858 - Barra Square"
+  },
+  {
+   "value": "Open Sans · 56px · peso 800 · linha 45px · espaço 0 · uppercase",
+   "n": 1,
+   "sample": "p: reabilite-se para novos desafios"
+  },
+  {
+   "value": "Open Sans · 16px · peso 400 · linha 27px · espaço 0",
+   "n": 1,
+   "sample": "p: Na você encontra tratamento e metodologi"
+  },
+  {
+   "value": "Open Sans · 16px · peso 700 · linha 27px · espaço 0",
+   "n": 1,
+   "sample": "strong: FISIO1"
+  },
+  {
+   "value": "Open Sans · 40px · peso 300 · linha 46px · espaço 0",
+   "n": 1,
+   "sample": "div: TRATAMENTO EXCLUSIVO COM METODOLOGIA"
+  },
+  {
+   "value": "Open Sans · 80px · peso 800 · linha 114px · espaço 0",
+   "n": 1,
+   "sample": "div: ALTAMENTE EFICAZ"
+  },
+  {
+   "value": "Open Sans · 18px · peso 400 · linha 35px · espaço 0",
+   "n": 1,
+   "sample": "div: Conheça nossas técnicas e procedimentos "
+  },
+  {
+   "value": "Open Sans · 16px · peso 600 · linha 57px · espaço 0 · uppercase",
+   "n": 1,
+   "sample": "a: Saiba Mais Sobre a FISIO1"
+  },
+  {
+   "value": "GothamLight · 28px · peso 300 · linha 40px · espaço 0",
+   "n": 1,
+   "sample": "span: Como funciona?"
+  },
+  {
+   "value": "Open Sans · 83px · peso 800 · linha 66px · espaço 0 · uppercase",
+   "n": 1,
+   "sample": "h3: Fale com a gente"
+  },
+  {
+   "value": "Open Sans · 14px · peso 400 · linha 20px · espaço 0 · uppercase",
+   "n": 1,
+   "sample": "span: NAS REDES SOCIAIS"
+  },
+  {
+   "value": "Open Sans · 14px · peso 700 · linha 20px · espaço 0 · uppercase",
+   "n": 1,
+   "sample": "strong: FISIO1"
+  },
+  {
+   "value": "Open Sans · 10px · peso 400 · linha 14px · espaço 0",
+   "n": 1,
+   "sample": "p: | Fisioterapia Personalizada  | CREFITO "
+  },
+  {
+   "value": "Open Sans · 10px · peso 700 · linha 14px · espaço 0",
+   "n": 1,
+   "sample": "strong: Fisio1"
+  }
+ ],
+ "espacamento": {
+  "valores": [
+   {
+    "value": "10px",
+    "n": 25,
+    "sample": ""
+   },
+   {
+    "value": "20px",
+    "n": 13,
+    "sample": ""
+   },
+   {
+    "value": "1px",
+    "n": 10,
+    "sample": ""
+   },
+   {
+    "value": "15px",
+    "n": 8,
+    "sample": ""
+   },
+   {
+    "value": "2px",
+    "n": 8,
+    "sample": ""
+   },
+   {
+    "value": "30px",
+    "n": 7,
+    "sample": ""
+   },
+   {
+    "value": "45px",
+    "n": 6,
+    "sample": ""
+   },
+   {
+    "value": "13px",
+    "n": 5,
+    "sample": ""
+   },
+   {
+    "value": "40px",
+    "n": 5,
+    "sample": ""
+   },
+   {
+    "value": "22px",
+    "n": 4,
+    "sample": ""
+   },
+   {
+    "value": "6px",
+    "n": 4,
+    "sample": ""
+   },
+   {
+    "value": "25px",
+    "n": 4,
+    "sample": ""
+   },
+   {
+    "value": "100px",
+    "n": 3,
+    "sample": ""
+   },
+   {
+    "value": "60px",
+    "n": 3,
+    "sample": ""
+   },
+   {
+    "value": "28px",
+    "n": 3,
+    "sample": ""
+   },
+   {
+    "value": "130px",
+    "n": 2,
+    "sample": ""
+   },
+   {
+    "value": "8px",
+    "n": 2,
+    "sample": ""
+   },
+   {
+    "value": "42px",
+    "n": 1,
+    "sample": ""
+   }
+  ],
+  "gaps": []
+ },
+ "raios": [
+  {
+   "value": "50%",
+   "n": 8,
+   "sample": "div.tl2.circle"
+  },
+  {
+   "value": "5px",
+   "n": 6,
+   "sample": "a.agenda.anchorBtn"
+  },
+  {
+   "value": "3px",
+   "n": 2,
+   "sample": "a.btn-gray"
+  },
+  {
+   "value": "4px",
+   "n": 1,
+   "sample": "input.wpcf7-form-control.wpcf7-submit"
+  }
+ ],
+ "sombras": [],
+ "camadas": [
+  999,
+  9999,
+  99999,
+  999999
+ ],
+ "secoes": [
+  {
+   "n": 1,
+   "alvo": "header",
+   "titulo": "h1: ",
+   "y": 0,
+   "altura": 99,
+   "fundo": "",
+   "padding": "0 0 0 0",
+   "larguraConteudo": 1440,
+   "layout": "block · 0 filho(s) em 0 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [
+     "h1: "
+    ],
+    "paragrafos": 0,
+    "botoes": [],
+    "links": 10,
+    "imagens": 2,
+    "videos": 0,
+    "campos": 0,
+    "caracteres": 73
+   }
+  },
+  {
+   "n": 2,
+   "alvo": "div.home",
+   "titulo": "h2: TÉCNICAS E TRATAMENTOS",
+   "y": 0,
+   "altura": 4996,
+   "fundo": "",
+   "padding": "0 0 0 0",
+   "larguraConteudo": 1440,
+   "layout": "block · 3 filho(s) em 1 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [
+     "h2: TÉCNICAS E TRATAMENTOS",
+     "h2: O QUE É AVALIAÇÃO BAROPODO MÉTRICA?",
+     "h2: MÉTODO PILATES"
+    ],
+    "paragrafos": 21,
+    "botoes": [
+     "SAIBA MAIS SOBRE A FISIO1",
+     "VER LESÕES FREQUENTES",
+     "CONHEÇA TODOS OS TRATAMENTOS",
+     "MARQUE SUA AVALIAÇÃO 99900-006",
+     "MARQUE SUA 1º AULA EXPERIMENTA"
+    ],
+    "links": 15,
+    "imagens": 4,
+    "videos": 0,
+    "campos": 0,
+    "caracteres": 1975
+   }
+  },
+  {
+   "n": 3,
+   "alvo": "div#contato.faleConosco.bg_blue",
+   "titulo": "h3: FALE COM A GENTE",
+   "y": 4995,
+   "altura": 616,
+   "fundo": "#00afec",
+   "padding": "30 0 30 0",
+   "larguraConteudo": 992,
+   "layout": "table · 2 filho(s) em 2 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [
+     "h3: FALE COM A GENTE"
+    ],
+    "paragrafos": 10,
+    "botoes": [],
+    "links": 0,
+    "imagens": 2,
+    "videos": 0,
+    "campos": 14,
+    "caracteres": 124
+   }
+  },
+  {
+   "n": 4,
+   "alvo": "footer",
+   "titulo": "",
+   "y": 5611,
+   "altura": 414,
+   "fundo": "#002431",
+   "padding": "0 0 0 0",
+   "larguraConteudo": 1296,
+   "layout": "block · 2 filho(s) em 2 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [],
+    "paragrafos": 2,
+    "botoes": [],
+    "links": 10,
+    "imagens": 1,
+    "videos": 0,
+    "campos": 14,
+    "caracteres": 536
+   }
+  }
+ ],
+ "componentes": [
+  {
+   "tipo": "link de rodapé",
+   "id": "11",
+   "alvo": "a",
+   "texto": "Fisio1",
+   "quantidade": 8,
+   "tamanho": "37x19",
+   "estilo": {
+    "fonte": "Open Sans 14px/400",
+    "cor": "#ffffff",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "link de navegação",
+   "id": "4",
+   "alvo": "a",
+   "texto": "TRATAMENTOS",
+   "quantidade": 6,
+   "tamanho": "121x16",
+   "estilo": {
+    "fonte": "GothamMedium 15px/400",
+    "cor": "#ffffff",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "uppercase",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "color": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "borderColor": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineColor": "rgb(255, 255, 255) → rgb(35, 82, 124)"
+   },
+   "foco": {
+    "color": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "borderColor": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "campo",
+   "id": "13",
+   "alvo": "input.wpcf7-form-control.wpcf7-text",
+   "texto": "",
+   "quantidade": 4,
+   "tamanho": "452x41",
+   "estilo": {
+    "fonte": "Open Sans 18px/400",
+    "cor": "#ffffff",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "1 2 13 2",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "text",
+   "foco": {
+    "outlineWidth": "3px → 0px"
+   }
+  },
+  {
+   "tipo": "botão (link)",
+   "id": "10",
+   "alvo": "a.btn-trat.bg_blue",
+   "texto": "MARQUE SUA AVALIAÇÃO 99900-0068 / 2484-1",
+   "quantidade": 2,
+   "tamanho": "342x92",
+   "estilo": {
+    "fonte": "Open Sans 15px/600",
+    "cor": "#ffffff",
+    "fundo": "#00afec",
+    "borda": "",
+    "raio": "5px",
+    "padding": "10 0 10 0",
+    "sombra": "",
+    "caixa": "uppercase",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "link de rodapé",
+   "id": "12",
+   "alvo": "a",
+   "texto": "",
+   "quantidade": 2,
+   "tamanho": "9x22",
+   "estilo": {
+    "fonte": "Open Sans 16px/400",
+    "cor": "#ffffff",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "botão",
+   "id": "0",
+   "alvo": "input.wpcf7-form-control.wpcf7-submit",
+   "texto": "",
+   "quantidade": 1,
+   "tamanho": "212x65",
+   "estilo": {
+    "fonte": "Open Sans 15px/600",
+    "cor": "#3e4e58",
+    "fundo": "#ffffff",
+    "borda": "",
+    "raio": "4px",
+    "padding": "1 6 1 6",
+    "sombra": "",
+    "caixa": "uppercase",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineWidth": "3px → 0px"
+   }
+  },
+  {
+   "tipo": "botão",
+   "id": "1",
+   "alvo": "input",
+   "texto": "",
+   "quantidade": 1,
+   "tamanho": "52x46",
+   "estilo": {
+    "fonte": "Helvetica Neue 14px/400",
+    "cor": "#333333",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "1 6 1 6",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineWidth": "3px → 0px"
+   }
+  },
+  {
+   "tipo": "link de navegação",
+   "id": "2",
+   "alvo": "a",
+   "texto": "",
+   "quantidade": 1,
+   "tamanho": "151x41",
+   "estilo": {
+    "fonte": "Helvetica Neue 36px/500",
+    "cor": "#337ab7",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "color": "rgb(51, 122, 183) → rgb(35, 82, 124)",
+    "borderColor": "rgb(51, 122, 183) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineColor": "rgb(51, 122, 183) → rgb(35, 82, 124)"
+   },
+   "foco": {
+    "color": "rgb(51, 122, 183) → rgb(35, 82, 124)",
+    "borderColor": "rgb(51, 122, 183) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(51, 122, 183) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "link de navegação",
+   "id": "3",
+   "alvo": "a.ch_site",
+   "texto": "IR PARA PROFISSIONAL",
+   "quantidade": 1,
+   "tamanho": "151x20",
+   "estilo": {
+    "fonte": "Open Sans 14px/400",
+    "cor": "#263036",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(38, 48, 54) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "botão (link)",
+   "id": "5",
+   "alvo": "a.btn-gray",
+   "texto": "SAIBA MAIS SOBRE A FISIO1",
+   "quantidade": 1,
+   "tamanho": "223x47",
+   "estilo": {
+    "fonte": "GothamMedium 12px/300",
+    "cor": "#ffffff",
+    "fundo": "#3d4e59",
+    "borda": "",
+    "raio": "3px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "uppercase",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "color": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "borderColor": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "botão (link)",
+   "id": "6",
+   "alvo": "a.btn-grayBlack",
+   "texto": "VER LESÕES FREQUENTES",
+   "quantidade": 1,
+   "tamanho": "223x47",
+   "estilo": {
+    "fonte": "GothamMedium 12px/300",
+    "cor": "#ffffff",
+    "fundo": "#263036",
+    "borda": "",
+    "raio": "3px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "uppercase",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "color": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "borderColor": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "botão (link)",
+   "id": "7",
+   "alvo": "a.agenda.anchorBtn",
+   "texto": "99900-0068 / 2484-1858 - BARRA SQUARE 99",
+   "quantidade": 1,
+   "tamanho": "470x79",
+   "estilo": {
+    "fonte": "Open Sans 16px/600",
+    "cor": "#3e4e58",
+    "fundo": "#ffffff",
+    "borda": "",
+    "raio": "5px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "uppercase",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(62, 78, 88) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "botão (link)",
+   "id": "8",
+   "alvo": "a.estrutura",
+   "texto": "SAIBA MAIS SOBRE A FISIO1",
+   "quantidade": 1,
+   "tamanho": "470x79",
+   "estilo": {
+    "fonte": "Open Sans 16px/600",
+    "cor": "#ffffff",
+    "fundo": "",
+    "borda": "1px solid #ffffff",
+    "raio": "5px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "uppercase",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "botão (link)",
+   "id": "9",
+   "alvo": "a.btn-trat.bg_blue",
+   "texto": "CONHEÇA TODOS OS TRATAMENTOS",
+   "quantidade": 1,
+   "tamanho": "342x66",
+   "estilo": {
+    "fonte": "Open Sans 15px/600",
+    "cor": "#ffffff",
+    "fundo": "#00afec",
+    "borda": "",
+    "raio": "5px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "uppercase",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "tipo": "campo",
+   "id": "14",
+   "alvo": "select.wpcf7-form-control.wpcf7-select",
+   "texto": "Selecione o assunto Fisioterapia Pilates",
+   "quantidade": 1,
+   "tamanho": "452x40",
+   "estilo": {
+    "fonte": "Open Sans 18px/400",
+    "cor": "#ffffff",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 13 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "default",
+   "foco": {
+    "outlineWidth": "3px → 0px"
+   }
+  },
+  {
+   "tipo": "campo",
+   "id": "15",
+   "alvo": "input#field_v37rv",
+   "texto": "",
+   "quantidade": 1,
+   "tamanho": "200x43",
+   "estilo": {
+    "fonte": "Open Sans 13px/400",
+    "cor": "#ffffff",
+    "fundo": "",
+    "borda": "1px solid #335059",
+    "raio": "5px",
+    "padding": "1 40 1 16",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "text",
+   "foco": {
+    "outlineWidth": "3px → 0px"
+   }
+  }
+ ],
+ "navegacao": {
+  "alvo": "header",
+  "posicao": "absolute",
+  "altura": 99,
+  "fundo": "",
+  "links": [
+   "IR PARA PROFISSIONAL",
+   "TRATAMENTOS",
+   "LESÕES",
+   "CURSOS",
+   "SOBRE NÓS",
+   "NOTÍCIAS",
+   "CONTATO"
+  ],
+  "botoes": []
+ },
+ "fixos": [],
+ "formularios": [
+  {
+   "alvo": "form.wpcf7-form.init",
+   "campos": [
+    {
+     "tipo": "text",
+     "rotulo": "",
+     "placeholder": "Seu nome completo",
+     "obrigatorio": false
+    },
+    {
+     "tipo": "text",
+     "rotulo": "",
+     "placeholder": "Digite o seu email de contato",
+     "obrigatorio": false
+    },
+    {
+     "tipo": "text",
+     "rotulo": "",
+     "placeholder": "Qual seu telefone para retornamos?",
+     "obrigatorio": false
+    },
+    {
+     "tipo": "select-one",
+     "rotulo": "",
+     "placeholder": "",
+     "obrigatorio": false
+    },
+    {
+     "tipo": "text",
+     "rotulo": "",
+     "placeholder": "Escreva aqui sua mensagem",
+     "obrigatorio": false
+    },
+    {
+     "tipo": "submit",
+     "rotulo": "",
+     "placeholder": "",
+     "obrigatorio": false
+    },
+    {
+     "tipo": "textarea",
+     "rotulo": "Δ",
+     "placeholder": "",
+     "obrigatorio": false
+    }
+   ],
+   "enviar": [
+    "Enviar"
+   ]
+  },
+  {
+   "alvo": "form#form_65mkz.frm-show-form",
+   "campos": [
+    {
+     "tipo": "text",
+     "rotulo": "Email *",
+     "placeholder": "Cadastre seu e-mail",
+     "obrigatorio": false
+    },
+    {
+     "tipo": "text",
+     "rotulo": "Se você é humano, deixe este campo em br",
+     "placeholder": "",
+     "obrigatorio": false
+    },
+    {
+     "tipo": "submit",
+     "rotulo": "",
+     "placeholder": "",
+     "obrigatorio": false
+    },
+    {
+     "tipo": "textarea",
+     "rotulo": "Δ",
+     "placeholder": "",
+     "obrigatorio": false
+    }
+   ],
+   "enviar": []
+  }
+ ],
+ "movimento": {
+  "keyframes": [
+   {
+    "name": "progress-bar-stripes",
+    "css": "@-webkit-keyframes progress-bar-stripes { 0% { background-position: 40px 0px; } 100% { background-position: 0px 0px; } }"
+   },
+   {
+    "name": "progress-bar-stripes",
+    "css": "@keyframes progress-bar-stripes { 0% { background-position: 40px 0px; } 100% { background-position: 0px 0px; } }"
+   },
+   {
+    "name": "fadeOut",
+    "css": "@keyframes fadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }"
+   },
+   {
+    "name": "spin",
+    "css": "@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }"
+   },
+   {
+    "name": "fadeIn",
+    "css": "@keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }"
+   },
+   {
+    "name": "show-content-image",
+    "css": "@keyframes show-content-image { 0% { visibility: hidden; } 99% { visibility: hidden; } 100% { visibility: visible; } }"
+   },
+   {
+    "name": "turn-on-visibility",
+    "css": "@keyframes turn-on-visibility { 0% { opacity: 0; } 100% { opacity: 1; } }"
+   },
+   {
+    "name": "turn-off-visibility",
+    "css": "@keyframes turn-off-visibility { 0% { opacity: 1; visibility: visible; } 99% { opacity: 0; visibility: visible; } 100% { opacity: 0; visibility: hidden; } }"
+   },
+   {
+    "name": "lightbox-zoom-in",
+    "css": "@keyframes lightbox-zoom-in { 0% { transform: translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale)); } 100% { transform: translate(-50%, -50%) scale(1); } }"
+   },
+   {
+    "name": "lightbox-zoom-out",
+    "css": "@keyframes lightbox-zoom-out { 0% { transform: translate(-50%, -50%) scale(1); visibility: visible; } 99% { visibility: visible; } 100% { transform: translate(calc((-100vw + var(--wp--lightbox-scrollbar-width))/2 + var(--wp--lightbox-initial-left-position)),calc(-50vh + var(--wp--lightbox-initial-top-position))) scale(var(--wp--lightbox-scale)); visibility: hidden; } }"
+   },
+   {
+    "name": "overlay-menu__fade-in-animation",
+    "css": "@keyframes overlay-menu__fade-in-animation { 0% { opacity: 0; transform: translateY(0.5em); } 100% { opacity: 1; transform: translateY(0px); } }"
+   },
+   {
+    "name": "spin",
+    "css": "@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }"
+   },
+   {
+    "name": "blink",
+    "css": "@keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }"
+   }
+  ],
+  "animadosAgora": [],
+  "animacoesVivas": [
+   {
+    "tipo": "CSSAnimation",
+    "nome": "spin",
+    "alvo": "span.wpcf7-spinner",
+    "duracao": 1000,
+    "atraso": 0,
+    "curva": "linear",
+    "repeticoes": "infinito",
+    "estado": "running",
+    "propriedades": [
+     "transform"
+    ],
+    "quadros": [
+     "0% transform: rotate(0deg)",
+     "100% transform: rotate(360deg)"
+    ]
+   }
+  ],
+  "transicoes": [
+   {
+    "value": "all · 0.3s · ease · atraso 0s",
+    "n": 3,
+    "sample": "span.icon-bar.top-bar"
+   }
+  ],
+  "aoCarregar": [
+   {
+    "alvo": "span.wpcf7-spinner",
+    "tipo": "animação",
+    "nome": "spin",
+    "inicioMs": 1072,
+    "duracaoMs": null,
+    "vezes": 1
+   }
+  ],
+  "aoRolar": [],
+  "sozinho": [
+   {
+    "alvo": "span.wpcf7-spinner",
+    "o_que": "spin",
+    "vezes": 8,
+    "intervaloMs": 1000
+   }
+  ],
+  "semTocar": [],
+  "aoPassarMouse": []
+ },
+ "gatilhos": [
+  {
+   "id": "t0",
+   "alvo": "div.collapsed.btn-burguer",
+   "texto": "",
+   "papel": "div",
+   "expandido": "false",
+   "popup": "",
+   "controla": "navbar",
+   "naNavegacao": true
+  }
+ ],
+ "mediaQueries": [
+  "(min-width: 950px)",
+  "(max-width: 850px)",
+  "(max-width: 559px)",
+  "only screen and (min-width: 768px)",
+  "print",
+  "(min-width: 768px)",
+  "(min-width: 992px)",
+  "(min-width: 1200px)",
+  "screen and (max-width: 767px)",
+  "screen and (-webkit-min-device-pixel-ratio: 0)",
+  "(max-device-width: 480px) and (orientation: landscape)",
+  "(max-width: 767px)",
+  "screen and (min-width: 768px)",
+  "(transform-3d), (-webkit-transform-3d)",
+  "(min-width: 768px) and (max-width: 991px)",
+  "(min-width: 992px) and (max-width: 1199px)",
+  "(max-width: 1200px)",
+  "(max-width: 1024px)",
+  "(max-width: 992px)",
+  "(max-width: 800px)",
+  "(max-width: 768px)",
+  "(max-width: 667px)",
+  "(min-width: 590px)",
+  "(min-width: 1024px)",
+  "(min-width: 1600px)",
+  "(min-width: 1441px)",
+  "(max-width: 1440px) and (min-width: 992px)",
+  "only screen and (max-width: 750px)",
+  "only screen and (max-width: 600px)",
+  "only screen and (max-width: 500px)",
+  "(prefers-reduced-motion: no-preference)",
+  "(min-width: 782px)",
+  "(max-width: 781px)",
+  "(prefers-reduced-motion: reduce)",
+  "(min-width: 600px)",
+  "(hover: none)",
+  "not (prefers-reduced-motion)",
+  "(min-width: 960px)",
+  "(max-width: 600px)",
+  "(hover: hover)",
+  "(max-width: 480px)",
+  "(min-resolution: 192dpi)",
+  "screen and (max-width: 600px)",
+  "screen and (max-height: 1024px)",
+  "screen and (max-height: 640px)"
+ ],
+ "midia": {
+  "imagens": 9,
+  "formatos": {
+   "svg": 3,
+   "png": 4,
+   "jpg": 1,
+   "outro": 1
+  },
+  "preguicosas": 0,
+  "videos": [],
+  "svgsEmLinha": 0,
+  "canvas": 0,
+  "iframes": [
+   "www.google.com"
+  ]
+ },
+ "bibliotecas": [
+  "jQuery",
+  "WordPress",
+  "Elementor"
+ ],
+ "naoLidos": {
+  "folhasBloqueadas": [
+   "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",
+   "https://use.fontawesome.com/44ec8ffe69.css",
+   "https://fonts.googleapis.com/css?family=Merriweather%3A400%2C700%2C900%2C400italic%2C700italic%2C900italic%7CMontserrat%3A400%2C700%7CInconsolata%3A400&subset=latin%2Clatin-ext"
+  ],
+  "shadowRoots": 0,
+  "canvas": 0
+ },
+ "quebras": [
+  480,
+  500,
+  559,
+  590,
+  600,
+  667,
+  750,
+  767,
+  768,
+  781,
+  782,
+  800,
+  850,
+  950,
+  960,
+  991,
+  992,
+  1024,
+  1199,
+  1200,
+  1440,
+  1441,
+  1600
+ ],
+ "comSessao": false,
+ "url": "https://fisio1.com.br/",
+ "urlFinal": "https://fisio1.com.br/",
+ "resposta": 200,
+ "capturadoEm": "2026-11-22T11:35:35.189Z",
+ "cabecalhoAoRolar": {},
+ "estados": [
+  {
+   "alvo": "a",
+   "texto": "Fisio1",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "alvo": "a",
+   "texto": "TRATAMENTOS",
+   "hover": {
+    "color": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "borderColor": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineColor": "rgb(255, 255, 255) → rgb(35, 82, 124)"
+   },
+   "foco": {
+    "color": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "borderColor": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "alvo": "a.btn-trat.bg_blue",
+   "texto": "MARQUE SUA AVALIAÇÃO 99900-0068 / 2484-1",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "alvo": "a",
+   "texto": "",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "alvo": "input.wpcf7-form-control.wpcf7-submit",
+   "texto": "",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineWidth": "3px → 0px"
+   }
+  },
+  {
+   "alvo": "input",
+   "texto": "",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineWidth": "3px → 0px"
+   }
+  },
+  {
+   "alvo": "a",
+   "texto": "",
+   "hover": {
+    "color": "rgb(51, 122, 183) → rgb(35, 82, 124)",
+    "borderColor": "rgb(51, 122, 183) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineColor": "rgb(51, 122, 183) → rgb(35, 82, 124)"
+   },
+   "foco": {
+    "color": "rgb(51, 122, 183) → rgb(35, 82, 124)",
+    "borderColor": "rgb(51, 122, 183) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(51, 122, 183) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "alvo": "a.ch_site",
+   "texto": "IR PARA PROFISSIONAL",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(38, 48, 54) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "alvo": "a.btn-gray",
+   "texto": "SAIBA MAIS SOBRE A FISIO1",
+   "hover": "sem mudança medida",
+   "foco": {
+    "color": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "borderColor": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "alvo": "a.btn-grayBlack",
+   "texto": "VER LESÕES FREQUENTES",
+   "hover": "sem mudança medida",
+   "foco": {
+    "color": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "borderColor": "rgb(255, 255, 255) → rgb(35, 82, 124)",
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "alvo": "a.agenda.anchorBtn",
+   "texto": "99900-0068 / 2484-1858 - BARRA SQUARE 99",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(62, 78, 88) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "alvo": "a.estrutura",
+   "texto": "SAIBA MAIS SOBRE A FISIO1",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  },
+  {
+   "alvo": "a.btn-trat.bg_blue",
+   "texto": "CONHEÇA TODOS OS TRATAMENTOS",
+   "hover": {
+    "textDecorationLine": "none → underline"
+   },
+   "foco": {
+    "textDecorationLine": "none → underline",
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(255, 255, 255) → rgb(16, 16, 16)",
+    "outlineWidth": "0px → 5px",
+    "outlineOffset": "0px → -2px"
+   }
+  }
+ ],
+ "interacoes": [
+  {
+   "gatilho": "div.collapsed.btn-burguer",
+   "alvo": "div.collapsed.btn-burguer",
+   "papel": "div",
+   "expandidoDepois": "false",
+   "abriu": [
+    {
+     "alvo": "nav.active",
+     "papel": "",
+     "posicao": "absolute",
+     "caixa": "0,0 1440x99",
+     "cobreTela": false,
+     "fundo": "rgb(0, 175, 236)",
+     "raio": "0px",
+     "sombra": "",
+     "desfoque": "",
+     "transicao": "all · 0.6s · ease",
+     "animacao": "",
+     "z": "auto",
+     "itens": 7,
+     "texto": "TRATAMENTOS LESÕES CURSOS SOBRE NÓS NOTÍCIAS CONTATO"
+    }
+   ],
+   "apareceu": [],
+   "movimento": [
+    {
+     "alvo": "ul#menu-menu-paciente.tlm",
+     "tipo": "transição",
+     "nome": "margin-right",
+     "inicioMs": 96,
+     "duracaoMs": 800,
+     "vezes": 1
+    },
+    {
+     "alvo": "ul#menu-menu-paciente.tlm",
+     "tipo": "transição",
+     "nome": "margin-bottom",
+     "inicioMs": 96,
+     "duracaoMs": 800,
+     "vezes": 1
+    },
+    {
+     "alvo": "ul#menu-menu-paciente.tlm",
+     "tipo": "transição",
+     "nome": "opacity",
+     "inicioMs": 96,
+     "duracaoMs": 800,
+     "vezes": 1
+    },
+    {
+     "alvo": "nav.active",
+     "tipo": "transição",
+     "nome": "left",
+     "inicioMs": 96,
+     "duracaoMs": 600,
+     "vezes": 1
+    },
+    {
+     "alvo": "nav.active",
+     "tipo": "transição",
+     "nome": "background-color",
+     "inicioMs": 96,
+     "duracaoMs": 600,
+     "vezes": 1
+    },
+    {
+     "alvo": "nav.active",
+     "tipo": "transição",
+     "nome": "opacity",
+     "inicioMs": 96,
+     "duracaoMs": 600,
+     "vezes": 1
+    },
+    {
+     "alvo": "span.icon-bar.bottom-bar",
+     "tipo": "transição",
+     "nome": "top",
+     "inicioMs": 96,
+     "duracaoMs": 300,
+     "vezes": 1
+    },
+    {
+     "alvo": "span.icon-bar.bottom-bar",
+     "tipo": "transição",
+     "nome": "transform",
+     "inicioMs": 96,
+     "duracaoMs": 300,
+     "vezes": 1
+    },
+    {
+     "alvo": "span.icon-bar.middle-bar",
+     "tipo": "transição",
+     "nome": "background-color",
+     "inicioMs": 96,
+     "duracaoMs": 300,
+     "vezes": 1
+    },
+    {
+     "alvo": "span.icon-bar.top-bar",
+     "tipo": "transição",
+     "nome": "transform",
+     "inicioMs": 96,
+     "duracaoMs": 300,
+     "vezes": 1
+    }
+   ],
+   "print": "telas/interacao-01.jpg",
+   "fechaComEsc": false
+  }
+ ],
+ "responsivo": [
+  {
+   "nome": "desktop",
+   "largura": 1440,
+   "alturaPagina": 6025,
+   "rolagemHorizontal": false,
+   "h1": "36px/500 linha 39.6px",
+   "h2": "54px/800 linha 54px",
+   "corpo": "56px/800 linha 45px",
+   "navegacao": {
+    "linksVisiveis": 8,
+    "botaoDeMenu": false,
+    "altura": 99
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 99,
+     "colunas": 0,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 4996,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 616,
+     "colunas": 2,
+     "padding": "30 0 30 0"
+    },
+    {
+     "n": 4,
+     "visivel": true,
+     "altura": 414,
+     "colunas": 2,
+     "padding": "0 0 0 0"
+    }
+   ]
+  },
+  {
+   "nome": "notebook",
+   "largura": 1024,
+   "alturaPagina": 6240,
+   "rolagemHorizontal": false,
+   "h1": "36px/500 linha 39.6px",
+   "h2": "44px/800 linha 54px",
+   "corpo": "56px/800 linha 45px",
+   "navegacao": {
+    "linksVisiveis": 9,
+    "botaoDeMenu": false,
+    "altura": 99
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 99,
+     "colunas": 0,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 4864,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 616,
+     "colunas": 2,
+     "padding": "30 0 30 0"
+    },
+    {
+     "n": 4,
+     "visivel": true,
+     "altura": 761,
+     "colunas": 2,
+     "padding": "0 0 0 0"
+    }
+   ]
+  },
+  {
+   "nome": "tablet",
+   "largura": 768,
+   "alturaPagina": 4924,
+   "rolagemHorizontal": false,
+   "h1": "36px/500 linha 39.6px",
+   "h2": "32px/800 linha 36px",
+   "corpo": "32px/800 linha 38px",
+   "navegacao": {
+    "linksVisiveis": 9,
+    "botaoDeMenu": false,
+    "altura": 99
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 99,
+     "colunas": 0,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 3054,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 616,
+     "colunas": 2,
+     "padding": "30 0 30 0"
+    },
+    {
+     "n": 4,
+     "visivel": true,
+     "altura": 1106,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    }
+   ]
+  },
+  {
+   "nome": "celular",
+   "largura": 390,
+   "alturaPagina": 6574,
+   "rolagemHorizontal": false,
+   "h1": "36px/500 linha 39.6px",
+   "h2": "32px/800 linha 36px",
+   "corpo": "32px/800 linha 38px",
+   "navegacao": {
+    "linksVisiveis": 8,
+    "botaoDeMenu": false,
+    "altura": 99
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 99,
+     "colunas": 0,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 4511,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 778,
+     "colunas": 1,
+     "padding": "30 0 30 0"
+    },
+    {
+     "n": 4,
+     "visivel": true,
+     "altura": 1137,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    }
+   ]
+  }
+ ],
+ "arquivos": {
+  "prints": [
+   "celular-dobra.jpg",
+   "celular-inteira.jpg",
+   "desktop-dobra.jpg",
+   "desktop-inteira.jpg",
+   "interacao-01.jpg",
+   "notebook-dobra.jpg",
+   "notebook-inteira.jpg",
+   "rolagem-01.jpg",
+   "rolagem-02.jpg",
+   "rolagem-03.jpg",
+   "rolagem-04.jpg",
+   "rolagem-05.jpg",
+   "rolagem-06.jpg",
+   "rolagem-07.jpg",
+   "rolagem-08.jpg",
+   "rolagem-09.jpg",
+   "rolagem-10.jpg",
+   "tablet-dobra.jpg",
+   "tablet-inteira.jpg"
+  ],
+  "video": "video/sessao.webm"
+ },
+ "lacunas": [
+  "Conteúdo em iframe (www.google.com) não foi medido.",
+  "Só a página do endereço informado foi lida: páginas internas, área logada e fluxo depois de enviar formulário ficaram de fora.",
+  "Aviso de cookies, se havia, não foi fechado: pode aparecer nos prints."
+ ]
+}

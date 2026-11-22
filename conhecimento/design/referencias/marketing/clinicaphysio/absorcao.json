@@ -1,0 +1,2337 @@
+{
+ "titulo": "Home - PHYSIO SAÚDE",
+ "idioma": "pt-BR",
+ "descricao": "ATENDIMENTO EXCLUSIVO E PERSONALIZADOFISIOTERAPIA DE RESULTADOSREFERÊNCIA EM REABILITAÇÃO NEUROLÓGICA INFANTILESTUDO, INOVAÇÃO E EXCELÊNCIA TERAPÊUTICA ESPECIALIDADES FISIOTERAPIAA fisioterapia trata ",
+ "gerador": "All in One SEO (AIOSEO) 4.2.4 ",
+ "janela": {
+  "largura": 1440,
+  "altura": 900,
+  "alturaPagina": 6403,
+  "rolagemHorizontal": false
+ },
+ "variaveisCss": {
+  "--wp--preset--font-size--normal": "16px",
+  "--wp--preset--font-size--huge": "42px",
+  "--wp--preset--color--black": "#000000",
+  "--wp--preset--color--cyan-bluish-gray": "#abb8c3",
+  "--wp--preset--color--white": "#ffffff",
+  "--wp--preset--color--pale-pink": "#f78da7",
+  "--wp--preset--color--vivid-red": "#cf2e2e",
+  "--wp--preset--color--luminous-vivid-orange": "#ff6900",
+  "--wp--preset--color--luminous-vivid-amber": "#fcb900",
+  "--wp--preset--color--light-green-cyan": "#7bdcb5",
+  "--wp--preset--color--vivid-green-cyan": "#00d084",
+  "--wp--preset--color--pale-cyan-blue": "#8ed1fc",
+  "--wp--preset--color--vivid-cyan-blue": "#0693e3",
+  "--wp--preset--color--vivid-purple": "#9b51e0",
+  "--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple": "linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%)",
+  "--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan": "linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%)",
+  "--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange": "linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%)",
+  "--wp--preset--gradient--luminous-vivid-orange-to-vivid-red": "linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%)",
+  "--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray": "linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%)",
+  "--wp--preset--gradient--cool-to-warm-spectrum": "linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 4",
+  "--wp--preset--gradient--blush-light-purple": "linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%)",
+  "--wp--preset--gradient--blush-bordeaux": "linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%",
+  "--wp--preset--gradient--luminous-dusk": "linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 10",
+  "--wp--preset--gradient--pale-ocean": "linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) ",
+  "--wp--preset--gradient--electric-grass": "linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%)",
+  "--wp--preset--gradient--midnight": "linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%)",
+  "--wp--preset--duotone--dark-grayscale": "url('#wp-duotone-dark-grayscale')",
+  "--wp--preset--duotone--grayscale": "url('#wp-duotone-grayscale')",
+  "--wp--preset--duotone--purple-yellow": "url('#wp-duotone-purple-yellow')",
+  "--wp--preset--duotone--blue-red": "url('#wp-duotone-blue-red')",
+  "--wp--preset--duotone--midnight": "url('#wp-duotone-midnight')",
+  "--wp--preset--duotone--magenta-yellow": "url('#wp-duotone-magenta-yellow')",
+  "--wp--preset--duotone--purple-green": "url('#wp-duotone-purple-green')",
+  "--wp--preset--duotone--blue-orange": "url('#wp-duotone-blue-orange')",
+  "--wp--preset--font-size--small": "13px",
+  "--wp--preset--font-size--medium": "20px",
+  "--wp--preset--font-size--large": "36px",
+  "--wp--preset--font-size--x-large": "42px",
+  "--page-title-display": "block",
+  "--joinchat-ico": "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' ",
+  "--joinchat-font": "-apple-system,blinkmacsystemfont,\"Segoe UI\",roboto,oxygen-sans,ubuntu,cantarell,"
+ },
+ "cores": {
+  "texto": [
+   {
+    "value": "#ffffff",
+    "n": 1018,
+    "sample": "(47) 98870 3007"
+   },
+   {
+    "value": "#666666",
+    "n": 923,
+    "sample": "A fisioterapia trata e previne"
+   },
+   {
+    "value": "#333333",
+    "n": 314,
+    "sample": "Nós usamos cookies para entreg"
+   },
+   {
+    "value": "#253b59",
+    "n": 212,
+    "sample": "ESPECIALIDADES"
+   },
+   {
+    "value": "#cc3366",
+    "n": 23,
+    "sample": "POLÍTICA DE PRIVACIDADE"
+   },
+   {
+    "value": "#139900",
+    "n": 23,
+    "sample": "política de privacidade"
+   },
+   {
+    "value": "#218197",
+    "n": 18,
+    "sample": "VEJA MAIS"
+   },
+   {
+    "value": "#253f5d",
+    "n": 4,
+    "sample": "HOME"
+   }
+  ],
+  "fundo": [
+   {
+    "value": "#000000 @27%",
+    "n": 10609920,
+    "sample": "div.elementor-background-overlay"
+   },
+   {
+    "value": "#7c8c87 @55%",
+    "n": 5304960,
+    "sample": "div.swiper-slide-bg"
+   },
+   {
+    "value": "#253b59",
+    "n": 2818676,
+    "sample": "div.swiper-slide-bg"
+   },
+   {
+    "value": "#833ca3",
+    "n": 2652480,
+    "sample": "div.swiper-slide-bg"
+   },
+   {
+    "value": "#d3e6eb",
+    "n": 2329200,
+    "sample": "section.elementor-section.elementor-top-section"
+   },
+   {
+    "value": "#000000",
+    "n": 1296000,
+    "sample": "div.cli-modal-backdrop.cli-fade"
+   },
+   {
+    "value": "#238ca4",
+    "n": 651690,
+    "sample": "section.elementor-section.elementor-top-section"
+   },
+   {
+    "value": "#7b8c86",
+    "n": 459955,
+    "sample": "mark"
+   },
+   {
+    "value": "#218197",
+    "n": 200348,
+    "sample": "section.elementor-section.elementor-inner-section"
+   },
+   {
+    "value": "#ffffff",
+    "n": 110500,
+    "sample": "div#cookie-law-info-bar.cli-bar-popup.cli-modal-content"
+   }
+  ],
+  "borda": [
+   {
+    "value": "1px solid #218197",
+    "n": 2,
+    "sample": "a.elementor-button-link.elementor-button"
+   }
+  ],
+  "degrades": []
+ },
+ "fontes": {
+  "uso": [
+   {
+    "value": "Montserrat 400",
+    "n": 1251,
+    "sample": "",
+    "parte": "49%"
+   },
+   {
+    "value": "Montserrat 600",
+    "n": 441,
+    "sample": "",
+    "parte": "17%"
+   },
+   {
+    "value": "-apple-system 400",
+    "n": 350,
+    "sample": "",
+    "parte": "14%"
+   },
+   {
+    "value": "Montserrat 700",
+    "n": 234,
+    "sample": "",
+    "parte": "9%"
+   },
+   {
+    "value": "Montserrat 500",
+    "n": 201,
+    "sample": "",
+    "parte": "8%"
+   },
+   {
+    "value": "Montserrat 300",
+    "n": 30,
+    "sample": "",
+    "parte": "1%"
+   },
+   {
+    "value": "Montserrat 100",
+    "n": 28,
+    "sample": "",
+    "parte": "1%"
+   }
+  ],
+  "arquivos": [
+   {
+    "family": "eicons",
+    "weight": "400",
+    "style": "normal",
+    "arquivo": "eicons.woff2",
+    "display": ""
+   },
+   {
+    "family": "Font Awesome 5 Brands",
+    "weight": "400",
+    "style": "normal",
+    "arquivo": "fa-brands-400.woff2",
+    "display": "block"
+   },
+   {
+    "family": "Font Awesome 5 Free",
+    "weight": "900",
+    "style": "normal",
+    "arquivo": "fa-solid-900.woff2",
+    "display": "block"
+   }
+  ]
+ },
+ "escalaTipografica": [
+  {
+   "value": "Montserrat · 40px · peso 600 · linha 66px · espaço 0",
+   "n": 24,
+   "sample": "div: ATENDIMENTO"
+  },
+  {
+   "value": "Montserrat · 16px · peso 700 · linha 24px · espaço 0",
+   "n": 13,
+   "sample": "p: FISIOTERAPIA"
+  },
+  {
+   "value": "Montserrat · 15px · peso 500 · linha 15px · espaço 0",
+   "n": 11,
+   "sample": "span: SAIBA MAIS"
+  },
+  {
+   "value": "Montserrat · 12px · peso 500 · linha 20px · espaço 0",
+   "n": 5,
+   "sample": "a: HOME"
+  },
+  {
+   "value": "Montserrat · 16px · peso 400 · linha 20px · espaço 0",
+   "n": 5,
+   "sample": "p: A Podoposturologia é uma área da ciência"
+  },
+  {
+   "value": "Montserrat · 16px · peso 400 · linha 24px · espaço 0",
+   "n": 4,
+   "sample": "p: A fisioterapia trata e previne doenças e"
+  },
+  {
+   "value": "Montserrat · 14px · peso 400 · linha 16px · espaço 0",
+   "n": 3,
+   "sample": "p: Estamos nas redes socias. Nos acompanhe "
+  },
+  {
+   "value": "Montserrat · 14px · peso 500 · linha 21px · espaço 0",
+   "n": 2,
+   "sample": "span: (47) 98870 3007"
+  },
+  {
+   "value": "Montserrat · 27px · peso 500 · linha 41px · espaço 0",
+   "n": 2,
+   "sample": "p: ESPECIALIDADES"
+  },
+  {
+   "value": "Montserrat · 15px · peso 300 · linha 7px · espaço 0",
+   "n": 2,
+   "sample": "p: (47) 3525 4471"
+  },
+  {
+   "value": "Montserrat · 14px · peso 700 · linha 16px · espaço 0",
+   "n": 2,
+   "sample": "strong: Segunda a Quinta"
+  },
+  {
+   "value": "-apple-system · 15px · peso 400 · linha 18px · espaço 0",
+   "n": 2,
+   "sample": "div: Nós usamos cookies para entregar a melho"
+  },
+  {
+   "value": "-apple-system · 13px · peso 400 · linha 13px · espaço 0",
+   "n": 2,
+   "sample": "a: Configurações de cookies"
+  },
+  {
+   "value": "Montserrat · 14px · peso 400 · linha 21px · espaço 0",
+   "n": 1,
+   "sample": "p: Rua Duque de Caxias| 54 | Jardim América"
+  },
+  {
+   "value": "Montserrat · 15px · peso 100 · linha 23px · espaço 0",
+   "n": 1,
+   "sample": "p: contato@clinicaphysio.com.br"
+  },
+  {
+   "value": "Montserrat · 11px · peso 400 · linha 17px · espaço 0",
+   "n": 1,
+   "sample": "p: Desenvolvimento por"
+  },
+  {
+   "value": "Montserrat · 10px · peso 400 · linha 15px · espaço 0",
+   "n": 1,
+   "sample": "p: © Physio 2022. todos os direitos reserva"
+  }
+ ],
+ "espacamento": {
+  "valores": [
+   {
+    "value": "10px",
+    "n": 62,
+    "sample": ""
+   },
+   {
+    "value": "20px",
+    "n": 57,
+    "sample": ""
+   },
+   {
+    "value": "50px",
+    "n": 48,
+    "sample": ""
+   },
+   {
+    "value": "8px",
+    "n": 37,
+    "sample": ""
+   },
+   {
+    "value": "14px",
+    "n": 28,
+    "sample": ""
+   },
+   {
+    "value": "13px",
+    "n": 11,
+    "sample": ""
+   },
+   {
+    "value": "30px",
+    "n": 9,
+    "sample": ""
+   },
+   {
+    "value": "5px",
+    "n": 8,
+    "sample": ""
+   },
+   {
+    "value": "40px",
+    "n": 6,
+    "sample": ""
+   },
+   {
+    "value": "6px",
+    "n": 4,
+    "sample": ""
+   },
+   {
+    "value": "15px",
+    "n": 4,
+    "sample": ""
+   },
+   {
+    "value": "80px",
+    "n": 4,
+    "sample": ""
+   },
+   {
+    "value": "9px",
+    "n": 4,
+    "sample": ""
+   },
+   {
+    "value": "12px",
+    "n": 4,
+    "sample": ""
+   },
+   {
+    "value": "32px",
+    "n": 2,
+    "sample": ""
+   },
+   {
+    "value": "45px",
+    "n": 2,
+    "sample": ""
+   },
+   {
+    "value": "11px",
+    "n": 1,
+    "sample": ""
+   },
+   {
+    "value": "100px",
+    "n": 1,
+    "sample": ""
+   }
+  ],
+  "gaps": []
+ },
+ "raios": [
+  {
+   "value": "40px",
+   "n": 11,
+   "sample": "a.elementor-button-link.elementor-button"
+  },
+  {
+   "value": "3.2px",
+   "n": 1,
+   "sample": "div#cookie-law-info-bar.cli-bar-popup.cli-modal-content"
+  },
+  {
+   "value": "30px",
+   "n": 1,
+   "sample": "div.joinchat__button"
+  },
+  {
+   "value": "50%",
+   "n": 1,
+   "sample": "div.joinchat__button__open"
+  }
+ ],
+ "sombras": [
+  {
+   "value": "rgba(172, 171, 171, 0.3) 0px -1px 10px 0px",
+   "n": 1,
+   "sample": "div#cookie-law-info-bar.cli-bar-popup.cli-modal-content"
+  },
+  {
+   "value": "rgba(7, 94, 84, 0.24) 1px 6px 24px 0px",
+   "n": 1,
+   "sample": "div.joinchat__button"
+  }
+ ],
+ "camadas": [
+  -1,
+  1,
+  2,
+  10,
+  1040,
+  9999
+ ],
+ "secoes": [
+  {
+   "n": 1,
+   "alvo": "div.elementor.elementor-11",
+   "titulo": "",
+   "y": 0,
+   "altura": 151,
+   "fundo": "",
+   "padding": "0 0 0 0",
+   "larguraConteudo": 1440,
+   "layout": "flex · row · 2 filho(s) em 1 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [],
+    "paragrafos": 0,
+    "botoes": [],
+    "links": 57,
+    "imagens": 1,
+    "videos": 0,
+    "campos": 0,
+    "caracteres": 77
+   }
+  },
+  {
+   "n": 2,
+   "alvo": "div.elementor.elementor-8",
+   "titulo": "h3: Home",
+   "y": 151,
+   "altura": 5736,
+   "fundo": "",
+   "padding": "0 0 0 0",
+   "larguraConteudo": 1440,
+   "layout": "block · 3 filho(s) em 1 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [],
+    "paragrafos": 33,
+    "botoes": [
+     "",
+     "",
+     "",
+     "",
+     "SAIBA MAIS",
+     "SAIBA MAIS"
+    ],
+    "links": 27,
+    "imagens": 19,
+    "videos": 0,
+    "campos": 0,
+    "caracteres": 1685
+   }
+  },
+  {
+   "n": 3,
+   "alvo": "div.elementor.elementor-29",
+   "titulo": "",
+   "y": 5888,
+   "altura": 515,
+   "fundo": "",
+   "padding": "0 0 0 0",
+   "larguraConteudo": 1440,
+   "layout": "block · 2 filho(s) em 1 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [],
+    "paragrafos": 13,
+    "botoes": [],
+    "links": 3,
+    "imagens": 2,
+    "videos": 0,
+    "campos": 0,
+    "caracteres": 497
+   }
+  },
+  {
+   "n": 4,
+   "alvo": "div.cli-modal-backdrop.cli-fade",
+   "titulo": "",
+   "y": 0,
+   "altura": 900,
+   "fundo": "#000000",
+   "padding": "0 0 0 0",
+   "larguraConteudo": 1440,
+   "layout": "block · 0 filho(s) em 0 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [],
+    "paragrafos": 0,
+    "botoes": [],
+    "links": 0,
+    "imagens": 0,
+    "videos": 0,
+    "campos": 0,
+    "caracteres": 0
+   }
+  }
+ ],
+ "componentes": [
+  {
+   "tipo": "botão",
+   "id": "2",
+   "alvo": "a.elementor-button-link.elementor-button",
+   "texto": "SAIBA MAIS",
+   "quantidade": 9,
+   "tamanho": "107x31",
+   "estilo": {
+    "fonte": "Montserrat 15px/500",
+    "cor": "#ffffff",
+    "fundo": "#218197",
+    "borda": "",
+    "raio": "40px",
+    "padding": "8 8 8 8",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "all · 0.3s · ease",
+   "cursor": "pointer",
+   "hover": "não deu para alcançar"
+  },
+  {
+   "tipo": "botão (link)",
+   "id": "11",
+   "alvo": "a.elementor-button-link.elementor-button",
+   "texto": "SAIBA MAIS",
+   "quantidade": 9,
+   "tamanho": "107x31",
+   "estilo": {
+    "fonte": "Montserrat 15px/500",
+    "cor": "#ffffff",
+    "fundo": "#218197",
+    "borda": "",
+    "raio": "40px",
+    "padding": "8 8 8 8",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "all · 0.3s · ease",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "tipo": "link de navegação",
+   "id": "9",
+   "alvo": "a.elementor-item",
+   "texto": "SOBRE NÓS",
+   "quantidade": 4,
+   "tamanho": "114x46",
+   "estilo": {
+    "fonte": "Montserrat 12px/500",
+    "cor": "#ffffff",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "13 20 13 20",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "all · 0.4s · ease",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "tipo": "link",
+   "id": "10",
+   "alvo": "a",
+   "texto": "",
+   "quantidade": 4,
+   "tamanho": "25x20",
+   "estilo": {
+    "fonte": "Montserrat 16px/400",
+    "cor": "#cc3366",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(204, 51, 102) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px",
+    "outlineOffset": "0px → 1px"
+   }
+  },
+  {
+   "tipo": "botão",
+   "id": "1",
+   "alvo": "span.swiper-pagination-bullet",
+   "texto": "",
+   "quantidade": 3,
+   "tamanho": "8x8",
+   "estilo": {
+    "fonte": "-apple-system 16px/400",
+    "cor": "#333333",
+    "fundo": "#666666",
+    "borda": "",
+    "raio": "50%",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(51, 51, 51) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px"
+   }
+  },
+  {
+   "tipo": "botão",
+   "id": "3",
+   "alvo": "a.elementor-button-link.elementor-button",
+   "texto": "VEJA MAIS",
+   "quantidade": 2,
+   "tamanho": "144x37",
+   "estilo": {
+    "fonte": "Montserrat 15px/500",
+    "cor": "#218197",
+    "fundo": "",
+    "borda": "1px solid #218197",
+    "raio": "40px",
+    "padding": "10 30 10 30",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "all · 0.3s · ease",
+   "cursor": "pointer",
+   "hover": "não deu para alcançar"
+  },
+  {
+   "tipo": "link",
+   "id": "6",
+   "alvo": "a",
+   "texto": "(47) 98870 3007",
+   "quantidade": 2,
+   "tamanho": "135x21",
+   "estilo": {
+    "fonte": "Montserrat 14px/500",
+    "cor": "#cc3366",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(204, 51, 102) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px",
+    "outlineOffset": "0px → 1px"
+   }
+  },
+  {
+   "tipo": "botão (link)",
+   "id": "12",
+   "alvo": "a.elementor-button-link.elementor-button",
+   "texto": "VEJA MAIS",
+   "quantidade": 2,
+   "tamanho": "144x37",
+   "estilo": {
+    "fonte": "Montserrat 15px/500",
+    "cor": "#218197",
+    "fundo": "",
+    "borda": "1px solid #218197",
+    "raio": "40px",
+    "padding": "10 30 10 30",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "all · 0.3s · ease",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "tipo": "botão",
+   "id": "0",
+   "alvo": "span.swiper-pagination-bullet.swiper-pagination-bullet-active",
+   "texto": "",
+   "quantidade": 1,
+   "tamanho": "8x8",
+   "estilo": {
+    "fonte": "-apple-system 16px/400",
+    "cor": "#333333",
+    "fundo": "#253b59",
+    "borda": "",
+    "raio": "50%",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(51, 51, 51) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px"
+   }
+  },
+  {
+   "tipo": "botão",
+   "id": "4",
+   "alvo": "a.medium.cli-plugin-button",
+   "texto": "Configurações de cookies",
+   "quantidade": 1,
+   "tamanho": "171x31",
+   "estilo": {
+    "fonte": "-apple-system 13px/400",
+    "cor": "#333333",
+    "fundo": "#dedfe0",
+    "borda": "",
+    "raio": "0px",
+    "padding": "9 12 9 12",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "backgroundColor": "rgb(222, 223, 224) → rgb(178, 178, 179)"
+   },
+   "foco": "sem mudança medida"
+  },
+  {
+   "tipo": "botão",
+   "id": "5",
+   "alvo": "a#wt-cli-accept-all-btn.wt-cli-element.medium",
+   "texto": "Aceitar Todos",
+   "quantidade": 1,
+   "tamanho": "101x31",
+   "estilo": {
+    "fonte": "-apple-system 13px/400",
+    "cor": "#ffffff",
+    "fundo": "#61a229",
+    "borda": "",
+    "raio": "0px",
+    "padding": "9 12 9 12",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": {
+    "backgroundColor": "rgb(97, 162, 41) → rgb(78, 130, 33)"
+   },
+   "foco": "sem mudança medida"
+  },
+  {
+   "tipo": "link",
+   "id": "7",
+   "alvo": "a",
+   "texto": "",
+   "quantidade": 1,
+   "tamanho": "83x98",
+   "estilo": {
+    "fonte": "-apple-system 16px/400",
+    "cor": "#cc3366",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(204, 51, 102) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px",
+    "outlineOffset": "0px → 1px"
+   }
+  },
+  {
+   "tipo": "link de navegação",
+   "id": "8",
+   "alvo": "a.elementor-item.elementor-item-active",
+   "texto": "HOME",
+   "quantidade": 1,
+   "tamanho": "79x46",
+   "estilo": {
+    "fonte": "Montserrat 12px/500",
+    "cor": "#253f5d",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "13 20 13 20",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "all · 0.4s · ease",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "tipo": "link",
+   "id": "13",
+   "alvo": "a",
+   "texto": "POLÍTICA DE PRIVACIDADE",
+   "quantidade": 1,
+   "tamanho": "230x19",
+   "estilo": {
+    "fonte": "Montserrat 16px/700",
+    "cor": "#cc3366",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(204, 51, 102) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px",
+    "outlineOffset": "0px → 1px"
+   }
+  },
+  {
+   "tipo": "link",
+   "id": "14",
+   "alvo": "a",
+   "texto": "política de privacidade",
+   "quantidade": 1,
+   "tamanho": "146x20",
+   "estilo": {
+    "fonte": "-apple-system 15px/400",
+    "cor": "#139900",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "",
+   "cursor": "pointer",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(19, 153, 0) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px",
+    "outlineOffset": "0px → 1px"
+   }
+  }
+ ],
+ "navegacao": {
+  "alvo": "nav.elementor-nav-menu--main.elementor-nav-menu__container",
+  "posicao": "static",
+  "altura": 46,
+  "fundo": "",
+  "links": [
+   "HOME",
+   "SOBRE NÓS",
+   "ESPECIALIDADES",
+   "SERVIÇOS",
+   "CONTATO"
+  ],
+  "botoes": []
+ },
+ "fixos": [
+  {
+   "alvo": "div#cookie-law-info-bar.cli-bar-popup.cli-modal-content",
+   "posicao": "fixed",
+   "topo": "450px",
+   "base": "337.5px",
+   "altura": 221,
+   "largura": 500,
+   "z": "9999",
+   "fundo": "#ffffff",
+   "desfoque": ""
+  },
+  {
+   "alvo": "div.cli-modal-backdrop.cli-fade",
+   "posicao": "fixed",
+   "topo": "0px",
+   "base": "0px",
+   "altura": 900,
+   "largura": 1440,
+   "z": "1040",
+   "fundo": "#000000",
+   "desfoque": ""
+  }
+ ],
+ "formularios": [],
+ "movimento": {
+  "keyframes": [
+   {
+    "name": "blowUpContent",
+    "css": "@keyframes blowUpContent { 0% { transform: scale(1); opacity: 1; } 99.9% { transform: scale(2); opacity: 0; } 100% { transform: scale(0); } }"
+   },
+   {
+    "name": "blowUpContentTwo",
+    "css": "@keyframes blowUpContentTwo { 0% { transform: scale(2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }"
+   },
+   {
+    "name": "blowUpModal",
+    "css": "@keyframes blowUpModal { 0% { transform: scale(0); } 100% { transform: scale(1); } }"
+   },
+   {
+    "name": "blowUpModalTwo",
+    "css": "@keyframes blowUpModalTwo { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(0); opacity: 0; } }"
+   },
+   {
+    "name": "eicon-spin",
+    "css": "@-webkit-keyframes eicon-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(359deg); } }"
+   },
+   {
+    "name": "eicon-spin",
+    "css": "@keyframes eicon-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(359deg); } }"
+   },
+   {
+    "name": "dnd-placeholder-widget-vertical",
+    "css": "@-webkit-keyframes dnd-placeholder-widget-vertical { 0% { transform-origin: 0px 50%; transform: translateX(50%) scaleX(0); opacity: 0; } 100% { transform-origin: 0px 50%; transform: translateX(50%) scaleX(1); opacity: 0.9; } }"
+   },
+   {
+    "name": "dnd-placeholder-widget-vertical",
+    "css": "@keyframes dnd-placeholder-widget-vertical { 0% { transform-origin: 0px 50%; transform: translateX(50%) scaleX(0); opacity: 0; } 100% { transform-origin: 0px 50%; transform: translateX(50%) scaleX(1); opacity: 0.9; } }"
+   },
+   {
+    "name": "dnd-placeholder-widget-horizontal",
+    "css": "@-webkit-keyframes dnd-placeholder-widget-horizontal { 0% { transform-origin: 50% 0px; transform: scaleY(0); opacity: 0; } 100% { transform-origin: 50% 0px; transform: scaleY(1); opacity: 0.9; } }"
+   },
+   {
+    "name": "dnd-placeholder-widget-horizontal",
+    "css": "@keyframes dnd-placeholder-widget-horizontal { 0% { transform-origin: 50% 0px; transform: scaleY(0); opacity: 0; } 100% { transform-origin: 50% 0px; transform: scaleY(1); opacity: 0.9; } }"
+   },
+   {
+    "name": "swiper-preloader-spin",
+    "css": "@-webkit-keyframes swiper-preloader-spin { 100% { transform: rotate(1turn); } }"
+   },
+   {
+    "name": "swiper-preloader-spin",
+    "css": "@keyframes swiper-preloader-spin { 100% { transform: rotate(1turn); } }"
+   },
+   {
+    "name": "a",
+    "css": "@keyframes a { 0% { transform: rotate(0deg); } 100% { transform: rotate(359deg); } }"
+   },
+   {
+    "name": "joinchat_show",
+    "css": "@keyframes joinchat_show { 0% { transform: scale3d(0, 0, 0); } 100% { transform: scaleX(1); } }"
+   },
+   {
+    "name": "joinchat_badge_in",
+    "css": "@keyframes joinchat_badge_in { 0% { opacity: 0; transform: translate3d(0px, 50px, 0px); } 100% { opacity: 1; transform: translateZ(0px); } }"
+   },
+   {
+    "name": "joinchat_image_loop",
+    "css": "@keyframes joinchat_image_loop { 0% { opacity: 0; } 3%, 20% { opacity: 1; } 25%, 100% { opacity: 0; } }"
+   },
+   {
+    "name": "joinchat_tootlip",
+    "css": "@keyframes joinchat_tootlip { 0% { opacity: 0; transform: scaleY(0); } 1%, 20% { opacity: 1; transform: scaleX(1); } 25%, 100% { opacity: 0; transform: scaleX(1); } }"
+   },
+   {
+    "name": "fa-spin",
+    "css": "@-webkit-keyframes fa-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(1turn); } }"
+   },
+   {
+    "name": "fa-spin",
+    "css": "@keyframes fa-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(1turn); } }"
+   },
+   {
+    "name": "bounce",
+    "css": "@keyframes bounce { 20%, 53%, 80%, 0%, 100% { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); transform: translate3d(0px, 0px, 0px); } 40%, 43% { animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06); transform: translate3d(0px, -30px, 0px); } 70% { animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06); transform: translate3d(0px, -15px, 0px); } 90% { transform: translate3d(0px, -4px, 0px); } }"
+   },
+   {
+    "name": "flash",
+    "css": "@keyframes flash { 50%, 0%, 100% { opacity: 1; } 25%, 75% { opacity: 0; } }"
+   },
+   {
+    "name": "pulse",
+    "css": "@keyframes pulse { 0%, 100% { transform: scale3d(1, 1, 1); } 50% { transform: scale3d(1.05, 1.05, 1.05); } }"
+   },
+   {
+    "name": "rubberBand",
+    "css": "@keyframes rubberBand { 0%, 100% { transform: scale3d(1, 1, 1); } 30% { transform: scale3d(1.25, 0.75, 1); } 40% { transform: scale3d(0.75, 1.25, 1); } 50% { transform: scale3d(1.15, 0.85, 1); } 65% { transform: scale3d(0.95, 1.05, 1); } 75% { transform: scale3d(1.05, 0.95, 1); } }"
+   },
+   {
+    "name": "shake",
+    "css": "@keyframes shake { 0%, 100% { transform: translate3d(0px, 0px, 0px); } 10%, 30%, 50%, 70%, 90% { transform: translate3d(-10px, 0px, 0px); } 20%, 40%, 60%, 80% { transform: translate3d(10px, 0px, 0px); } }"
+   },
+   {
+    "name": "headShake",
+    "css": "@keyframes headShake { 0% { transform: translateX(0px); } 6.5% { transform: translateX(-6px) rotateY(-9deg); } 18.5% { transform: translateX(5px) rotateY(7deg); } 31.5% { transform: translateX(-3px) rotateY(-5deg); } 43.5% { transform: translateX(2px) rotateY(3deg); } 50% { transform: translateX(0px); } }"
+   },
+   {
+    "name": "swing",
+    "css": "@keyframes swing { 20% { transform: rotate3d(0, 0, 1, 15deg); } 40% { transform: rotate3d(0, 0, 1, -10deg); } 60% { transform: rotate3d(0, 0, 1, 5deg); } 80% { transform: rotate3d(0, 0, 1, -5deg); } 100% { transform: rotate3d(0, 0, 1, 0deg); } }"
+   },
+   {
+    "name": "tada",
+    "css": "@keyframes tada { 0%, 100% { transform: scale3d(1, 1, 1); } 10%, 20% { transform: scale3d(0.9, 0.9, 0.9) rotate3d(0, 0, 1, -3deg); } 30%, 50%, 70%, 90% { transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg); } 40%, 60%, 80% { transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg); } }"
+   },
+   {
+    "name": "wobble",
+    "css": "@keyframes wobble { 0%, 100% { transform: none; } 15% { transform: translate3d(-25%, 0px, 0px) rotate3d(0, 0, 1, -5deg); } 30% { transform: translate3d(20%, 0px, 0px) rotate3d(0, 0, 1, 3deg); } 45% { transform: translate3d(-15%, 0px, 0px) rotate3d(0, 0, 1, -3deg); } 60% { transform: translate3d(10%, 0px, 0px) rotate3d(0, 0, 1, 2deg); } 75% { transform: translate3d(-5%, 0px, 0px) rotate3d(0, 0, 1, -1deg); } }"
+   },
+   {
+    "name": "jello",
+    "css": "@keyframes jello { 11.1%, 0%, 100% { transform: none; } 22.2% { transform: skewX(-12.5deg) skewY(-12.5deg); } 33.3% { transform: skewX(6.25deg) skewY(6.25deg); } 44.4% { transform: skewX(-3.125deg) skewY(-3.125deg); } 55.5% { transform: skewX(1.5625deg) skewY(1.5625deg); } 66.6% { transform: skewX(-0.78125deg) skewY(-0.78125deg); } 77.7% { transform: skewX(0.390625deg) skewY(0.390625deg); } 88.8% { transform: skewX(-0.195312deg) skewY(-0.195312deg); } }"
+   },
+   {
+    "name": "bounceIn",
+    "css": "@keyframes bounceIn { 20%, 40%, 60%, 80%, 0%, 100% { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); } 0% { opacity: 0; transform: scale3d(0.3, 0.3, 0.3); } 20% { transform: scale3d(1.1, 1.1, 1.1); } 40% { transform: scale3d(0.9, 0.9, 0.9); } 60% { opacity: 1; transform: scale3d(1.03, 1.03, 1.03); } 80% { transform: scale3d(0.97, 0.97, 0.97); } 100% { opacity: 1; transform: scale3d(1, 1, 1); } }"
+   },
+   {
+    "name": "bounceInDown",
+    "css": "@keyframes bounceInDown { 60%, 75%, 90%, 0%, 100% { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); } 0% { opacity: 0; transform: translate3d(0px, -3000px, 0px); } 60% { opacity: 1; transform: translate3d(0px, 25px, 0px); } 75% { transform: translate3d(0px, -10px, 0px); } 90% { transform: translate3d(0px, 5px, 0px); } 100% { transform: none; } }"
+   },
+   {
+    "name": "bounceInLeft",
+    "css": "@keyframes bounceInLeft { 60%, 75%, 90%, 0%, 100% { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); } 0% { opacity: 0; transform: translate3d(-3000px, 0px, 0px); } 60% { opacity: 1; transform: translate3d(25px, 0px, 0px); } 75% { transform: translate3d(-10px, 0px, 0px); } 90% { transform: translate3d(5px, 0px, 0px); } 100% { transform: none; } }"
+   },
+   {
+    "name": "bounceInRight",
+    "css": "@keyframes bounceInRight { 60%, 75%, 90%, 0%, 100% { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); } 0% { opacity: 0; transform: translate3d(3000px, 0px, 0px); } 60% { opacity: 1; transform: translate3d(-25px, 0px, 0px); } 75% { transform: translate3d(10px, 0px, 0px); } 90% { transform: translate3d(-5px, 0px, 0px); } 100% { transform: none; } }"
+   },
+   {
+    "name": "bounceInUp",
+    "css": "@keyframes bounceInUp { 60%, 75%, 90%, 0%, 100% { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); } 0% { opacity: 0; transform: translate3d(0px, 3000px, 0px); } 60% { opacity: 1; transform: translate3d(0px, -20px, 0px); } 75% { transform: translate3d(0px, 10px, 0px); } 90% { transform: translate3d(0px, -5px, 0px); } 100% { transform: translate3d(0px, 0px, 0px); } }"
+   },
+   {
+    "name": "fadeIn",
+    "css": "@keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }"
+   },
+   {
+    "name": "fadeInDown",
+    "css": "@keyframes fadeInDown { 0% { opacity: 0; transform: translate3d(0px, -100%, 0px); } 100% { opacity: 1; transform: none; } }"
+   },
+   {
+    "name": "fadeInLeft",
+    "css": "@keyframes fadeInLeft { 0% { opacity: 0; transform: translate3d(-100%, 0px, 0px); } 100% { opacity: 1; transform: none; } }"
+   },
+   {
+    "name": "fadeInRight",
+    "css": "@keyframes fadeInRight { 0% { opacity: 0; transform: translate3d(100%, 0px, 0px); } 100% { opacity: 1; transform: none; } }"
+   },
+   {
+    "name": "fadeInUp",
+    "css": "@keyframes fadeInUp { 0% { opacity: 0; transform: translate3d(0px, 100%, 0px); } 100% { opacity: 1; transform: none; } }"
+   },
+   {
+    "name": "lightSpeedIn",
+    "css": "@keyframes lightSpeedIn { 0% { transform: translate3d(100%, 0px, 0px) skewX(-30deg); opacity: 0; } 60% { transform: skewX(20deg); opacity: 1; } 80% { transform: skewX(-5deg); opacity: 1; } 100% { transform: none; opacity: 1; } }"
+   },
+   {
+    "name": "rotateIn",
+    "css": "@keyframes rotateIn { 0% { transform-origin: center center; transform: rotate3d(0, 0, 1, -200deg); opacity: 0; } 100% { transform-origin: center center; transform: none; opacity: 1; } }"
+   },
+   {
+    "name": "rotateInDownLeft",
+    "css": "@keyframes rotateInDownLeft { 0% { transform-origin: left bottom; transform: rotate3d(0, 0, 1, -45deg); opacity: 0; } 100% { transform-origin: left bottom; transform: none; opacity: 1; } }"
+   },
+   {
+    "name": "rotateInDownRight",
+    "css": "@keyframes rotateInDownRight { 0% { transform-origin: right bottom; transform: rotate3d(0, 0, 1, 45deg); opacity: 0; } 100% { transform-origin: right bottom; transform: none; opacity: 1; } }"
+   },
+   {
+    "name": "rotateInUpLeft",
+    "css": "@keyframes rotateInUpLeft { 0% { transform-origin: left bottom; transform: rotate3d(0, 0, 1, 45deg); opacity: 0; } 100% { transform-origin: left bottom; transform: none; opacity: 1; } }"
+   },
+   {
+    "name": "rotateInUpRight",
+    "css": "@keyframes rotateInUpRight { 0% { transform-origin: right bottom; transform: rotate3d(0, 0, 1, -90deg); opacity: 0; } 100% { transform-origin: right bottom; transform: none; opacity: 1; } }"
+   },
+   {
+    "name": "rollIn",
+    "css": "@keyframes rollIn { 0% { opacity: 0; transform: translate3d(-100%, 0px, 0px) rotate3d(0, 0, 1, -120deg); } 100% { opacity: 1; transform: none; } }"
+   },
+   {
+    "name": "zoomIn",
+    "css": "@keyframes zoomIn { 0% { opacity: 0; transform: scale3d(0.3, 0.3, 0.3); } 50% { opacity: 1; } }"
+   },
+   {
+    "name": "zoomInDown",
+    "css": "@keyframes zoomInDown { 0% { opacity: 0; transform: scale3d(0.1, 0.1, 0.1) translate3d(0px, -1000px, 0px); animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19); } 60% { opacity: 1; transform: scale3d(0.475, 0.475, 0.475) translate3d(0px, 60px, 0px); animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1); } }"
+   },
+   {
+    "name": "zoomInLeft",
+    "css": "@keyframes zoomInLeft { 0% { opacity: 0; transform: scale3d(0.1, 0.1, 0.1) translate3d(-1000px, 0px, 0px); animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19); } 60% { opacity: 1; transform: scale3d(0.475, 0.475, 0.475) translate3d(10px, 0px, 0px); animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1); } }"
+   },
+   {
+    "name": "zoomInRight",
+    "css": "@keyframes zoomInRight { 0% { opacity: 0; transform: scale3d(0.1, 0.1, 0.1) translate3d(1000px, 0px, 0px); animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19); } 60% { opacity: 1; transform: scale3d(0.475, 0.475, 0.475) translate3d(-10px, 0px, 0px); animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1); } }"
+   },
+   {
+    "name": "zoomInUp",
+    "css": "@keyframes zoomInUp { 0% { opacity: 0; transform: scale3d(0.1, 0.1, 0.1) translate3d(0px, 1000px, 0px); animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19); } 60% { opacity: 1; transform: scale3d(0.475, 0.475, 0.475) translate3d(0px, -60px, 0px); animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1); } }"
+   },
+   {
+    "name": "slideInDown",
+    "css": "@keyframes slideInDown { 0% { transform: translate3d(0px, -100%, 0px); visibility: visible; } 100% { transform: translate3d(0px, 0px, 0px); } }"
+   },
+   {
+    "name": "slideInLeft",
+    "css": "@keyframes slideInLeft { 0% { transform: translate3d(-100%, 0px, 0px); visibility: visible; } 100% { transform: translate3d(0px, 0px, 0px); } }"
+   },
+   {
+    "name": "slideInRight",
+    "css": "@keyframes slideInRight { 0% { transform: translate3d(100%, 0px, 0px); visibility: visible; } 100% { transform: translate3d(0px, 0px, 0px); } }"
+   },
+   {
+    "name": "slideInUp",
+    "css": "@keyframes slideInUp { 0% { transform: translate3d(0px, 100%, 0px); visibility: visible; } 100% { transform: translate3d(0px, 0px, 0px); } }"
+   },
+   {
+    "name": "elementor-animation-pulse",
+    "css": "@keyframes elementor-animation-pulse { 25% { transform: scale(1.1); } 75% { transform: scale(0.9); } }"
+   },
+   {
+    "name": "elementor-animation-pulse-grow",
+    "css": "@keyframes elementor-animation-pulse-grow { 100% { transform: scale(1.1); } }"
+   },
+   {
+    "name": "elementor-animation-pulse-shrink",
+    "css": "@keyframes elementor-animation-pulse-shrink { 100% { transform: scale(0.9); } }"
+   },
+   {
+    "name": "elementor-animation-push",
+    "css": "@keyframes elementor-animation-push { 50% { transform: scale(0.8); } 100% { transform: scale(1); } }"
+   },
+   {
+    "name": "elementor-animation-pop",
+    "css": "@keyframes elementor-animation-pop { 50% { transform: scale(1.2); } }"
+   },
+   {
+    "name": "elementor-animation-bob",
+    "css": "@keyframes elementor-animation-bob { 0% { transform: translateY(-8px); } 50% { transform: translateY(-4px); } 100% { transform: translateY(-8px); } }"
+   },
+   {
+    "name": "elementor-animation-bob-float",
+    "css": "@keyframes elementor-animation-bob-float { 100% { transform: translateY(-8px); } }"
+   },
+   {
+    "name": "elementor-animation-hang",
+    "css": "@keyframes elementor-animation-hang { 0% { transform: translateY(8px); } 50% { transform: translateY(4px); } 100% { transform: translateY(8px); } }"
+   },
+   {
+    "name": "elementor-animation-hang-sink",
+    "css": "@keyframes elementor-animation-hang-sink { 100% { transform: translateY(8px); } }"
+   },
+   {
+    "name": "elementor-animation-wobble-vertical",
+    "css": "@keyframes elementor-animation-wobble-vertical { 16.65% { transform: translateY(8px); } 33.3% { transform: translateY(-6px); } 49.95% { transform: translateY(4px); } 66.6% { transform: translateY(-2px); } 83.25% { transform: translateY(1px); } 100% { transform: translateY(0px); } }"
+   },
+   {
+    "name": "elementor-animation-wobble-horizontal",
+    "css": "@keyframes elementor-animation-wobble-horizontal { 16.65% { transform: translateX(8px); } 33.3% { transform: translateX(-6px); } 49.95% { transform: translateX(4px); } 66.6% { transform: translateX(-2px); } 83.25% { transform: translateX(1px); } 100% { transform: translateX(0px); } }"
+   },
+   {
+    "name": "elementor-animation-wobble-to-bottom-right",
+    "css": "@keyframes elementor-animation-wobble-to-bottom-right { 16.65% { transform: translate(8px, 8px); } 33.3% { transform: translate(-6px, -6px); } 49.95% { transform: translate(4px, 4px); } 66.6% { transform: translate(-2px, -2px); } 83.25% { transform: translate(1px, 1px); } 100% { transform: translate(0px, 0px); } }"
+   },
+   {
+    "name": "elementor-animation-wobble-to-top-right",
+    "css": "@keyframes elementor-animation-wobble-to-top-right { 16.65% { transform: translate(8px, -8px); } 33.3% { transform: translate(-6px, 6px); } 49.95% { transform: translate(4px, -4px); } 66.6% { transform: translate(-2px, 2px); } 83.25% { transform: translate(1px, -1px); } 100% { transform: translate(0px, 0px); } }"
+   },
+   {
+    "name": "elementor-animation-wobble-top",
+    "css": "@keyframes elementor-animation-wobble-top { 16.65% { transform: skew(-12deg); } 33.3% { transform: skew(10deg); } 49.95% { transform: skew(-6deg); } 66.6% { transform: skew(4deg); } 83.25% { transform: skew(-2deg); } 100% { transform: skew(0deg); } }"
+   },
+   {
+    "name": "elementor-animation-wobble-bottom",
+    "css": "@keyframes elementor-animation-wobble-bottom { 16.65% { transform: skew(-12deg); } 33.3% { transform: skew(10deg); } 49.95% { transform: skew(-6deg); } 66.6% { transform: skew(4deg); } 83.25% { transform: skew(-2deg); } 100% { transform: skew(0deg); } }"
+   },
+   {
+    "name": "elementor-animation-wobble-skew",
+    "css": "@keyframes elementor-animation-wobble-skew { 16.65% { transform: skew(-12deg); } 33.3% { transform: skew(10deg); } 49.95% { transform: skew(-6deg); } 66.6% { transform: skew(4deg); } 83.25% { transform: skew(-2deg); } 100% { transform: skew(0deg); } }"
+   },
+   {
+    "name": "elementor-animation-buzz",
+    "css": "@keyframes elementor-animation-buzz { 50% { transform: translateX(3px) rotate(2deg); } 100% { transform: translateX(-3px) rotate(-2deg); } }"
+   },
+   {
+    "name": "elementor-animation-buzz-out",
+    "css": "@keyframes elementor-animation-buzz-out { 10% { transform: translateX(3px) rotate(2deg); } 20% { transform: translateX(-3px) rotate(-2deg); } 30% { transform: translateX(3px) rotate(2deg); } 40% { transform: translateX(-3px) rotate(-2deg); } 50% { transform: translateX(2px) rotate(1deg); } 60% { transform: translateX(-2px) rotate(-1deg); } 70% { transform: translateX(2px) rotate(1deg); } 80% { transform: translateX(-2px) rotate(-1deg); } 90% { transform: translateX(1px) rotate(0deg); } 100% { transform: translateX(-1px) rotate(0deg); } }"
+   }
+  ],
+  "animadosAgora": [
+   {
+    "alvo": "section.elementor-section.elementor-top-section",
+    "texto": "ESPECIALIDADES FISIOTERAPIA A ",
+    "nome": "fadeIn",
+    "duracao": "1.25s",
+    "atraso": "0s",
+    "curva": "ease",
+    "repeticoes": "1",
+    "direcao": "normal",
+    "preenchimento": "none",
+    "estado": "running"
+   }
+  ],
+  "animacoesVivas": [
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-66e7e92.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-a3fa065.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-fa2599d.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-1f82751.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-66e7e92.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-a3fa065.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-fa2599d.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-1f82751.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-66e7e92.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-a3fa065.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-fa2599d.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSTransition",
+    "nome": "width",
+    "alvo": "div.elementor-repeater-item-1f82751.swiper-slide",
+    "duracao": 6000,
+    "atraso": 0,
+    "curva": "ease",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "width"
+    ],
+    "quadros": [
+     "0% width: 100%",
+     "100% width: 1440px"
+    ]
+   },
+   {
+    "tipo": "CSSAnimation",
+    "nome": "joinchat_show",
+    "alvo": "div.joinchat.joinchat--right",
+    "duracao": 500,
+    "atraso": 10,
+    "curva": "linear",
+    "repeticoes": 1,
+    "estado": "finished",
+    "propriedades": [
+     "transform"
+    ],
+    "quadros": [
+     "0% transform: scale3d(0, 0, 0) (cubic-bezier(0.18, 0.89, 0.32, 1.28))",
+     "100% transform: scaleX(1) (cubic-bezier(0.18, 0.89, 0.32, 1.28))"
+    ]
+   },
+   {
+    "tipo": "CSSAnimation",
+    "nome": "joinchat_tootlip",
+    "alvo": "div.joinchat__tooltip",
+    "duracao": 20000,
+    "atraso": 5000,
+    "curva": "linear",
+    "repeticoes": 1,
+    "estado": "running",
+    "propriedades": [
+     "transform",
+     "opacity"
+    ],
+    "quadros": [
+     "0% transform: scaleY(0); opacity: 0",
+     "1% transform: scaleX(1); opacity: 1",
+     "20% transform: scaleX(1); opacity: 1",
+     "25% transform: scaleX(1); opacity: 0",
+     "100% transform: scaleX(1); opacity: 0"
+    ]
+   }
+  ],
+  "transicoes": [
+   {
+    "value": "background, border, border-radius, box-shadow, -webkit-box-shadow · 0.3s, 0.3s, 0.3s, 0.3s, 0.3s · ease, ease, ease, ease, ease · atraso 0s, 0s, 0s, 0s, 0s",
+    "n": 64,
+    "sample": "div.elementor-widget-container"
+   },
+   {
+    "value": "all · 6s · ease · atraso 0s",
+    "n": 12,
+    "sample": "div.elementor-repeater-item-66e7e92.swiper-slide"
+   },
+   {
+    "value": "all · 0.3s · ease · atraso 0s",
+    "n": 12,
+    "sample": "div.swiper-pagination.swiper-pagination-clickable"
+   },
+   {
+    "value": "background, border, border-radius, box-shadow · 0.3s, 0.3s, 0.3s, 0.3s · ease, ease, ease, ease · atraso 0s, 0s, 0s, 0s",
+    "n": 8,
+    "sample": "section.elementor-section.elementor-inner-section"
+   },
+   {
+    "value": "all · 0.4s · ease · atraso 0s",
+    "n": 5,
+    "sample": "a.elementor-item.elementor-item-active"
+   },
+   {
+    "value": "background, border-radius, opacity · 0.3s, 0.3s, 0.3s · ease, ease, ease · atraso 0s, 0s, 0s",
+    "n": 2,
+    "sample": "div.elementor-background-overlay"
+   },
+   {
+    "value": "all · 20s · ease · atraso 0s",
+    "n": 1,
+    "sample": "div.swiper-slide-bg.elementor-ken-burns--active"
+   },
+   {
+    "value": "opacity · 0.5s · ease-in-out · atraso 0s",
+    "n": 1,
+    "sample": "div.cli-modal-backdrop.cli-fade"
+   },
+   {
+    "value": "background-color · 0.2s · linear · atraso 0s",
+    "n": 1,
+    "sample": "div.joinchat__button"
+   }
+  ],
+  "aoCarregar": [
+   {
+    "alvo": "a.elementor-button-link.elementor-button",
+    "tipo": "transição",
+    "nome": "visibility",
+    "inicioMs": 828,
+    "duracaoMs": 300,
+    "vezes": 10
+   },
+   {
+    "alvo": "div.elementor-repeater-item-66e7e92.swiper-slide",
+    "tipo": "transição",
+    "nome": "width",
+    "inicioMs": 925,
+    "duracaoMs": null,
+    "vezes": 3
+   },
+   {
+    "alvo": "div.elementor-repeater-item-a3fa065.swiper-slide",
+    "tipo": "transição",
+    "nome": "width",
+    "inicioMs": 925,
+    "duracaoMs": null,
+    "vezes": 3
+   },
+   {
+    "alvo": "div.elementor-repeater-item-fa2599d.swiper-slide",
+    "tipo": "transição",
+    "nome": "width",
+    "inicioMs": 925,
+    "duracaoMs": null,
+    "vezes": 3
+   },
+   {
+    "alvo": "div.elementor-repeater-item-1f82751.swiper-slide",
+    "tipo": "transição",
+    "nome": "width",
+    "inicioMs": 925,
+    "duracaoMs": null,
+    "vezes": 3
+   },
+   {
+    "alvo": "section.elementor-section.elementor-top-section",
+    "tipo": "animação",
+    "nome": "fadeIn",
+    "inicioMs": 925,
+    "duracaoMs": 1250,
+    "vezes": 1
+   },
+   {
+    "alvo": "div.joinchat.joinchat--right",
+    "tipo": "animação",
+    "nome": "joinchat_show",
+    "inicioMs": 3624,
+    "duracaoMs": 500,
+    "vezes": 1
+   }
+  ],
+  "aoRolar": [
+   {
+    "alvo": "div.swiper-wrapper.elementor-slides",
+    "tipo": "transição",
+    "nome": "transform",
+    "inicioMs": 4022,
+    "duracaoMs": 500,
+    "vezes": 1
+   },
+   {
+    "alvo": "div.swiper-slide-contents.animated",
+    "tipo": "animação",
+    "nome": "fadeInUp",
+    "inicioMs": 4542,
+    "duracaoMs": 1250,
+    "vezes": 12
+   }
+  ],
+  "sozinho": [
+   {
+    "alvo": "div.swiper-wrapper.elementor-slides",
+    "o_que": "muda style",
+    "vezes": 4,
+    "intervaloMs": 520
+   }
+  ],
+  "semTocar": [
+   {
+    "alvo": "div.swiper-wrapper.elementor-slides",
+    "tipo": "transição",
+    "nome": "transform",
+    "inicioMs": 1003,
+    "duracaoMs": 500,
+    "vezes": 2
+   },
+   {
+    "alvo": "div.swiper-slide-contents.animated",
+    "tipo": "animação",
+    "nome": "fadeInUp",
+    "inicioMs": 1508,
+    "duracaoMs": 1250,
+    "vezes": 12
+   },
+   {
+    "alvo": "div.joinchat__tooltip",
+    "tipo": "animação",
+    "nome": "joinchat_tootlip",
+    "inicioMs": 3657,
+    "duracaoMs": null,
+    "vezes": 1
+   },
+   {
+    "alvo": "div.elementor-repeater-item-66e7e92.swiper-slide",
+    "tipo": "transição",
+    "nome": "width",
+    "inicioMs": null,
+    "duracaoMs": 6000,
+    "vezes": 0
+   },
+   {
+    "alvo": "div.elementor-repeater-item-a3fa065.swiper-slide",
+    "tipo": "transição",
+    "nome": "width",
+    "inicioMs": null,
+    "duracaoMs": 6000,
+    "vezes": 0
+   },
+   {
+    "alvo": "div.elementor-repeater-item-fa2599d.swiper-slide",
+    "tipo": "transição",
+    "nome": "width",
+    "inicioMs": null,
+    "duracaoMs": 6000,
+    "vezes": 0
+   },
+   {
+    "alvo": "div.elementor-repeater-item-1f82751.swiper-slide",
+    "tipo": "transição",
+    "nome": "width",
+    "inicioMs": null,
+    "duracaoMs": 6000,
+    "vezes": 0
+   }
+  ],
+  "aoPassarMouse": [
+   {
+    "alvo": "div.swiper-slide-contents.animated",
+    "tipo": "animação",
+    "nome": "fadeInUp",
+    "inicioMs": 506,
+    "duracaoMs": 1250,
+    "vezes": 12
+   },
+   {
+    "alvo": "a.elementor-button-link.elementor-button",
+    "tipo": "transição",
+    "nome": "outline-color",
+    "inicioMs": 2904,
+    "duracaoMs": null,
+    "vezes": 4
+   },
+   {
+    "alvo": "a.elementor-button-link.elementor-button",
+    "tipo": "transição",
+    "nome": "outline-offset",
+    "inicioMs": 2904,
+    "duracaoMs": null,
+    "vezes": 2
+   },
+   {
+    "alvo": "a.elementor-button-link.elementor-button",
+    "tipo": "transição",
+    "nome": "outline-width",
+    "inicioMs": 2904,
+    "duracaoMs": null,
+    "vezes": 2
+   },
+   {
+    "alvo": "a.elementor-item",
+    "tipo": "transição",
+    "nome": "outline-color",
+    "inicioMs": 3838,
+    "duracaoMs": null,
+    "vezes": 2
+   },
+   {
+    "alvo": "a.elementor-item",
+    "tipo": "transição",
+    "nome": "outline-offset",
+    "inicioMs": 3838,
+    "duracaoMs": null,
+    "vezes": 1
+   },
+   {
+    "alvo": "a.elementor-item",
+    "tipo": "transição",
+    "nome": "outline-width",
+    "inicioMs": 3838,
+    "duracaoMs": null,
+    "vezes": 1
+   },
+   {
+    "alvo": "a.elementor-item",
+    "tipo": "transição",
+    "nome": "fill",
+    "inicioMs": 3838,
+    "duracaoMs": null,
+    "vezes": 2
+   },
+   {
+    "alvo": "a.elementor-item",
+    "tipo": "transição",
+    "nome": "color",
+    "inicioMs": 3838,
+    "duracaoMs": null,
+    "vezes": 2
+   },
+   {
+    "alvo": "a.elementor-item",
+    "tipo": "transição",
+    "nome": "transform",
+    "inicioMs": 3838,
+    "duracaoMs": null,
+    "vezes": 2
+   },
+   {
+    "alvo": "a.elementor-item",
+    "tipo": "transição",
+    "nome": "opacity",
+    "inicioMs": 3838,
+    "duracaoMs": null,
+    "vezes": 1
+   },
+   {
+    "alvo": "div.swiper-wrapper.elementor-slides",
+    "tipo": "transição",
+    "nome": "transform",
+    "inicioMs": 5515,
+    "duracaoMs": 500,
+    "vezes": 2
+   },
+   {
+    "alvo": "a.elementor-button-link.elementor-button",
+    "tipo": "transição",
+    "nome": "visibility",
+    "inicioMs": 8605,
+    "duracaoMs": 300,
+    "vezes": 2
+   },
+   {
+    "alvo": "section.elementor-section.elementor-inner-section",
+    "tipo": "animação",
+    "nome": "fadeInLeft",
+    "inicioMs": 8605,
+    "duracaoMs": 1250,
+    "vezes": 1
+   },
+   {
+    "alvo": "a.elementor-item.elementor-item-active",
+    "tipo": "transição",
+    "nome": "outline-color",
+    "inicioMs": 13874,
+    "duracaoMs": null,
+    "vezes": 2
+   },
+   {
+    "alvo": "a.elementor-item.elementor-item-active",
+    "tipo": "transição",
+    "nome": "outline-offset",
+    "inicioMs": 13874,
+    "duracaoMs": null,
+    "vezes": 1
+   },
+   {
+    "alvo": "a.elementor-item.elementor-item-active",
+    "tipo": "transição",
+    "nome": "outline-width",
+    "inicioMs": 13874,
+    "duracaoMs": null,
+    "vezes": 1
+   },
+   {
+    "alvo": "section.elementor-section.elementor-inner-section",
+    "tipo": "animação",
+    "nome": "fadeInRight",
+    "inicioMs": 14034,
+    "duracaoMs": 1250,
+    "vezes": 1
+   },
+   {
+    "alvo": "div.joinchat__tooltip",
+    "tipo": "animação",
+    "nome": "joinchat_tootlip",
+    "inicioMs": null,
+    "duracaoMs": 20000,
+    "vezes": 0
+   }
+  ]
+ },
+ "gatilhos": [
+  {
+   "id": "",
+   "alvo": "a#sm-17953161519301572-1.elementor-item.has-submenu",
+   "texto": "ESPECIALIDADES",
+   "papel": "a",
+   "expandido": "false",
+   "popup": "true",
+   "controla": "sm-17953161519301572-2",
+   "naNavegacao": true
+  },
+  {
+   "id": "",
+   "alvo": "a#sm-17953161519301572-3.elementor-item.has-submenu",
+   "texto": "SERVIÇOS",
+   "papel": "a",
+   "expandido": "false",
+   "popup": "true",
+   "controla": "sm-17953161519301572-4",
+   "naNavegacao": true
+  }
+ ],
+ "mediaQueries": [
+  "(min-width: 782px)",
+  "(max-width: 781px)",
+  "(prefers-reduced-motion: reduce)",
+  "(min-width: 600px)",
+  "(max-width: 600px)",
+  "only screen and (max-width: 600px)",
+  "(orientation: landscape) and (min-height: 481px), (orientation: portrait) and (min-width: 481px)",
+  "(max-width: 480px), (orientation: landscape) and (max-height: 480px)",
+  "(min-width: 576px)",
+  "(min-width: 992px)",
+  "(max-width: 767px)",
+  "(max-width: 985px)",
+  "only screen and (max-width: 479px) and (min-width: 320px)",
+  "print",
+  "(max-width: 576px)",
+  "(max-width: 991px)",
+  "(max-width: 575px)",
+  "(min-width: 768px)",
+  "(min-width: 576px) and (max-width: 767px)",
+  "(max-width: 992px)",
+  "(min-width: 1200px)",
+  "(min-width: 1024px)",
+  "(max-width: 1024px)",
+  "(max-width: 1439px)",
+  "(min-width: 1440px)",
+  "(min-width: -1px)",
+  "(max-width: -1px)",
+  "(max-width: 479px)",
+  "(min-width: 768px) and (max-width: 1024px)",
+  "(min-width: 1025px) and (max-width: -1px)",
+  "(min-width: -1px) and (max-width: -1px)",
+  "(min-width: -1px) and (max-width: 1024px)",
+  "(min-width: 768px) and (max-width: -1px)",
+  "(min-width: 1025px)",
+  "screen and (max-width: 1024px)",
+  "screen and (max-width: 767px)",
+  "(min-width: 1025px) and (max-width: 99999px)",
+  "(hover: hover)",
+  "(prefers-reduced-motion)",
+  "(max-width: 800px)"
+ ],
+ "midia": {
+  "imagens": 22,
+  "formatos": {
+   "png": 5,
+   "jpg": 16,
+   "webp": 1
+  },
+  "preguicosas": 20,
+  "videos": [],
+  "svgsEmLinha": 14,
+  "canvas": 1,
+  "iframes": []
+ },
+ "bibliotecas": [
+  "Swiper",
+  "jQuery",
+  "WordPress",
+  "Elementor"
+ ],
+ "naoLidos": {
+  "folhasBloqueadas": [
+   "https://fonts.googleapis.com/css?family=Montserrat%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&display=auto&ver=6.0"
+  ],
+  "shadowRoots": 0,
+  "canvas": 1
+ },
+ "quebras": [
+  320,
+  479,
+  480,
+  481,
+  575,
+  576,
+  600,
+  767,
+  768,
+  781,
+  782,
+  800,
+  985,
+  991,
+  992,
+  1024,
+  1025,
+  1200,
+  1439,
+  1440,
+  99999
+ ],
+ "comSessao": false,
+ "url": "https://clinicaphysio.com.br/",
+ "urlFinal": "https://clinicaphysio.com.br/",
+ "resposta": 200,
+ "capturadoEm": "2026-11-22T02:56:45.682Z",
+ "cabecalhoAoRolar": {},
+ "estados": [
+  {
+   "alvo": "a.elementor-button-link.elementor-button",
+   "texto": "SAIBA MAIS",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "alvo": "a.elementor-item",
+   "texto": "SOBRE NÓS",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "alvo": "a",
+   "texto": "",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(204, 51, 102) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px",
+    "outlineOffset": "0px → 1px"
+   }
+  },
+  {
+   "alvo": "span.swiper-pagination-bullet",
+   "texto": "",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(51, 51, 51) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px"
+   }
+  },
+  {
+   "alvo": "a",
+   "texto": "(47) 98870 3007",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(204, 51, 102) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px",
+    "outlineOffset": "0px → 1px"
+   }
+  },
+  {
+   "alvo": "a.elementor-button-link.elementor-button",
+   "texto": "VEJA MAIS",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "alvo": "span.swiper-pagination-bullet.swiper-pagination-bullet-active",
+   "texto": "",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(51, 51, 51) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px"
+   }
+  },
+  {
+   "alvo": "a.medium.cli-plugin-button",
+   "texto": "Configurações de cookies",
+   "hover": {
+    "backgroundColor": "rgb(222, 223, 224) → rgb(178, 178, 179)"
+   },
+   "foco": "sem mudança medida"
+  },
+  {
+   "alvo": "a#wt-cli-accept-all-btn.wt-cli-element.medium",
+   "texto": "Aceitar Todos",
+   "hover": {
+    "backgroundColor": "rgb(97, 162, 41) → rgb(78, 130, 33)"
+   },
+   "foco": "sem mudança medida"
+  },
+  {
+   "alvo": "a",
+   "texto": "",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(204, 51, 102) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px",
+    "outlineOffset": "0px → 1px"
+   }
+  },
+  {
+   "alvo": "a.elementor-item.elementor-item-active",
+   "texto": "HOME",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "alvo": "a",
+   "texto": "POLÍTICA DE PRIVACIDADE",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(204, 51, 102) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px",
+    "outlineOffset": "0px → 1px"
+   }
+  },
+  {
+   "alvo": "a",
+   "texto": "política de privacidade",
+   "hover": "sem mudança medida",
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(19, 153, 0) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px",
+    "outlineOffset": "0px → 1px"
+   }
+  }
+ ],
+ "interacoes": [],
+ "responsivo": [
+  {
+   "nome": "desktop",
+   "largura": 1440,
+   "alturaPagina": 6403,
+   "rolagemHorizontal": false,
+   "h1": "",
+   "h2": "",
+   "corpo": "27px/500 linha 40.5px",
+   "navegacao": {
+    "linksVisiveis": 5,
+    "botaoDeMenu": false,
+    "altura": 46
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 151,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 5736,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 515,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 4,
+     "visivel": true,
+     "altura": 900,
+     "colunas": 0,
+     "padding": "0 0 0 0"
+    }
+   ]
+  },
+  {
+   "nome": "notebook",
+   "largura": 1024,
+   "alturaPagina": 6197,
+   "rolagemHorizontal": false,
+   "h1": "",
+   "h2": "",
+   "corpo": "27px/500 linha 40.5px",
+   "navegacao": {
+    "linksVisiveis": 0,
+    "botaoDeMenu": false,
+    "altura": 0
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 109,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 5491,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 596,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 4,
+     "visivel": true,
+     "altura": 768,
+     "colunas": 0,
+     "padding": "0 0 0 0"
+    }
+   ]
+  },
+  {
+   "nome": "tablet",
+   "largura": 768,
+   "alturaPagina": 6866,
+   "rolagemHorizontal": false,
+   "h1": "",
+   "h2": "",
+   "corpo": "27px/500 linha 40.5px",
+   "navegacao": {
+    "linksVisiveis": 0,
+    "botaoDeMenu": false,
+    "altura": 0
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 86,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 6091,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 689,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 4,
+     "visivel": true,
+     "altura": 189,
+     "colunas": 1,
+     "padding": "25 25 25 25"
+    },
+    {
+     "n": 5,
+     "visivel": true,
+     "altura": 1024,
+     "colunas": 0,
+     "padding": "0 0 0 0"
+    }
+   ]
+  },
+  {
+   "nome": "celular",
+   "largura": 390,
+   "alturaPagina": 11991,
+   "rolagemHorizontal": false,
+   "h1": "",
+   "h2": "",
+   "corpo": "27px/500 linha 40.5px",
+   "navegacao": {
+    "linksVisiveis": 0,
+    "botaoDeMenu": false,
+    "altura": 0
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 99,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 10527,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 1365,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 4,
+     "visivel": true,
+     "altura": 225,
+     "colunas": 1,
+     "padding": "25 25 25 25"
+    },
+    {
+     "n": 5,
+     "visivel": true,
+     "altura": 844,
+     "colunas": 0,
+     "padding": "0 0 0 0"
+    }
+   ]
+  }
+ ],
+ "arquivos": {
+  "prints": [
+   "celular-dobra.jpg",
+   "celular-inteira.jpg",
+   "desktop-dobra.jpg",
+   "desktop-inteira.jpg",
+   "notebook-dobra.jpg",
+   "notebook-inteira.jpg",
+   "rolagem-01.jpg",
+   "rolagem-02.jpg",
+   "rolagem-03.jpg",
+   "rolagem-04.jpg",
+   "rolagem-05.jpg",
+   "rolagem-06.jpg",
+   "rolagem-07.jpg",
+   "rolagem-08.jpg",
+   "rolagem-09.jpg",
+   "rolagem-10.jpg",
+   "rolagem-11.jpg",
+   "tablet-dobra.jpg",
+   "tablet-inteira.jpg"
+  ],
+  "video": "video/sessao.webm"
+ },
+ "lacunas": [
+  "1 canvas na página: o que é desenhado dentro dele (3D, partículas, WebGL) não foi medido, só aparece nos prints e no vídeo.",
+  "Só a página do endereço informado foi lida: páginas internas, área logada e fluxo depois de enviar formulário ficaram de fora.",
+  "Aviso de cookies, se havia, não foi fechado: pode aparecer nos prints."
+ ]
+}

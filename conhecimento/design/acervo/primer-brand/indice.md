@@ -1,0 +1,287 @@
+# Primer Brand (GitHub) — índice das peças
+
+278 peças. Abra só as que servem ao trabalho; não leia a pasta inteira.
+
+## base
+- `pecas/Accordion.css` · base, Accordion · 404 linhas
+- `pecas/Accordion.tsx` · base, Accordion · 295 linhas · usa @primer/octicons-react, clsx
+- `pecas/ActionMenu.css` · base, ActionMenu · 304 linhas
+- `pecas/ActionMenu.tsx` · base, ActionMenu · 791 linhas · usa @primer/behaviors, @primer/octicons-react, clsx
+- `pecas/ActionMenu-ActionMenuContext.tsx` · base, ActionMenu · 50 linhas
+- `pecas/animation-Animate.tsx` · base, animation · 38 linhas · usa clsx
+- `pecas/animation.css` · base, animation · 220 linhas
+- `pecas/animation-AnimationProvider.tsx` · base, animation · 222 linhas
+- `pecas/animation-TextRevealAnimation.css` · base, animation · 54 linhas
+- `pecas/animation-TextRevealAnimation.tsx` · base, animation · 88 linhas · usa clsx
+- `pecas/Avatar.css` · base, Avatar · 116 linhas
+- `pecas/Avatar.tsx` · base, Avatar · 64 linhas · usa clsx
+- `pecas/Box-Box.features.css` · base, Box · 49 linhas
+- `pecas/Box.css` · base, Box · 3248 linhas
+- `pecas/Box.tsx` · base, Box · 274 linhas · usa clsx
+- `pecas/Breadcrumbs.css` · base, Breadcrumbs · 82 linhas
+- `pecas/Breadcrumbs.tsx` · base, Breadcrumbs · 75 linhas · usa clsx
+- `pecas/Button.css` · base, Button · 239 linhas
+- `pecas/Button.tsx` · base, Button · 244 linhas · usa @primer/octicons-react, clsx
+- `pecas/ButtonGroup.css` · base, ButtonGroup · 44 linhas
+- `pecas/ButtonGroup.tsx` · base, ButtonGroup · 133 linhas · usa clsx
+- `pecas/CarouselPagination.css` · base, CarouselPagination · 118 linhas
+- `pecas/CarouselPagination.tsx` · base, CarouselPagination · 212 linhas · usa @primer/octicons-react, clsx
+- `pecas/component-helpers-shared.css` · base, component-helpers · 32 linhas
+- `pecas/ExpandableArrow.css` · base, ExpandableArrow · 30 linhas
+- `pecas/ExpandableArrow.tsx` · base, ExpandableArrow · 44 linhas · usa clsx
+- `pecas/EyebrowText.css` · base, EyebrowText · 9 linhas
+- `pecas/EyebrowText.tsx` · base, EyebrowText · 64 linhas · usa clsx
+- `pecas/forms-Checkbox.css` · base, forms · 139 linhas
+- `pecas/forms-Checkbox.tsx` · base, forms · 123 linhas · usa clsx
+- `pecas/forms-CheckboxGroup.tsx` · base, forms · 15 linhas
+- `pecas/forms-ControlGroup.css` · base, forms · 59 linhas
+- `pecas/forms-ControlGroup.tsx` · base, forms · 121 linhas · usa @primer/octicons-react, clsx
+- `pecas/forms-FormControl.css` · base, forms · 195 linhas
+- `pecas/forms-FormControl.tsx` · base, forms · 346 linhas · usa @primer/octicons-react, clsx
+- `pecas/forms-Radio.css` · base, forms · 157 linhas
+- `pecas/forms-Radio.tsx` · base, forms · 65 linhas · usa clsx
+- `pecas/forms-RadioGroup.tsx` · base, forms · 15 linhas
+- `pecas/forms-Select.css` · base, forms · 156 linhas
+- `pecas/forms-Select.tsx` · base, forms · 121 linhas · usa clsx
+- `pecas/forms-Textarea.css` · base, forms · 143 linhas
+- `pecas/forms-Textarea.tsx` · base, forms · 112 linhas · usa clsx
+- `pecas/forms-TextInput.css` · base, forms · 320 linhas
+- `pecas/forms-TextInput.tsx` · base, forms · 229 linhas · usa @primer/octicons-react, clsx
+- `pecas/forms-ToggleSwitch.css` · base, forms · 213 linhas
+- `pecas/forms-ToggleSwitch.tsx` · base, forms · 263 linhas · usa clsx
+- `pecas/FrostedGlassVFX.css` · base, FrostedGlassVFX · 45 linhas
+- `pecas/FrostedGlassVFX.tsx` · base, FrostedGlassVFX · 55 linhas · usa clsx
+- `pecas/Grid.css` · base, Grid · 759 linhas
+- `pecas/Grid.tsx` · base, Grid · 172 linhas · usa clsx
+- `pecas/Heading.css` · base, Heading · 300 linhas
+- `pecas/Heading.tsx` · base, Heading · 142 linhas · usa clsx
+- `pecas/Icon.css` · base, Icon · 161 linhas
+- `pecas/Icon.tsx` · base, Icon · 84 linhas · usa @primer/octicons-react, clsx
+- `pecas/IconButton.css` · base, IconButton · 128 linhas
+- `pecas/IconButton.tsx` · base, IconButton · 179 linhas · usa @primer/octicons-react, clsx
+- `pecas/IDE.css` · base, IDE · 440 linhas
+- `pecas/IDE.tsx` · base, IDE · 876 linhas · usa @primer/octicons-react, clsx
+- `pecas/Image.css` · base, Image · 54 linhas
+- `pecas/Image.tsx` · base, Image · 133 linhas · usa clsx
+- `pecas/InlineCode.css` · base, InlineCode · 39 linhas
+- `pecas/InlineCode.tsx` · base, InlineCode · 38 linhas · usa clsx
+- `pecas/InlineLink.css` · base, InlineLink · 50 linhas
+- `pecas/InlineLink.tsx` · base, InlineLink · 38 linhas · usa clsx
+- `pecas/Label.css` · base, Label · 207 linhas
+- `pecas/Label.tsx` · base, Label · 113 linhas · usa @primer/octicons-react, clsx
+- `pecas/Link.css` · base, Link · 110 linhas
+- `pecas/Link.tsx` · base, Link · 134 linhas · usa @primer/octicons-react, clsx
+- `pecas/list-list-shared.css` · base, list · 11 linhas
+- `pecas/list-ListItem.css` · base, list · 30 linhas
+- `pecas/list-ListItem.tsx` · base, list · 114 linhas · usa @primer/octicons-react, clsx
+- `pecas/list-OrderedList.css` · base, list · 4 linhas
+- `pecas/list-OrderedList.tsx` · base, list · 21 linhas · usa clsx
+- `pecas/list-UnorderedList.tsx` · base, list · 25 linhas · usa clsx
+- `pecas/MinimalVideoPlayer.css` · base, MinimalVideoPlayer · 53 linhas
+- `pecas/MinimalVideoPlayer.tsx` · base, MinimalVideoPlayer · 121 linhas · usa @primer/octicons-react, clsx
+- `pecas/NavList.css` · base, NavList · 478 linhas
+- `pecas/NavList.tsx` · base, NavList · 610 linhas · usa @primer/octicons-react, clsx
+- `pecas/Pagination.css` · base, Pagination · 81 linhas
+- `pecas/Pagination.tsx` · base, Pagination · 280 linhas · usa clsx
+- `pecas/Prose.css` · base, Prose · 521 linhas
+- `pecas/Prose.tsx` · base, Prose · 42 linhas · usa clsx
+- `pecas/Spinner.css` · base, Spinner · 42 linhas
+- `pecas/Spinner.tsx` · base, Spinner · 58 linhas · usa clsx
+- `pecas/Stack.css` · base, Stack · 842 linhas
+- `pecas/Stack.tsx` · base, Stack · 217 linhas · usa clsx
+- `pecas/Tabs.css` · base, Tabs · 189 linhas
+- `pecas/Tabs.tsx` · base, Tabs · 408 linhas · usa clsx
+- `pecas/Text.css` · base, Text · 231 linhas
+- `pecas/Text.tsx` · base, Text · 171 linhas · usa clsx
+- `pecas/TextCursorAnimation.css` · base, TextCursorAnimation · 85 linhas
+- `pecas/TextCursorAnimation.tsx` · base, TextCursorAnimation · 133 linhas · usa clsx
+- `pecas/ThemeProvider.tsx` · base, ThemeProvider · 79 linhas
+- `pecas/Token.css` · base, Token · 132 linhas
+- `pecas/Token.tsx` · base, Token · 137 linhas · usa clsx
+- `pecas/Tooltip.css` · base, Tooltip · 189 linhas
+- `pecas/Tooltip.tsx` · base, Tooltip · 303 linhas · usa @oddbird/popover-polyfill, @primer/behaviors, clsx
+- `pecas/VideoPlayer-components-Captions.css` · base, VideoPlayer · 15 linhas
+- `pecas/VideoPlayer-components-Captions.tsx` · base, VideoPlayer · 54 linhas · usa clsx
+- `pecas/VideoPlayer-components-CCButton.tsx` · base, VideoPlayer · 30 linhas · usa clsx
+- `pecas/VideoPlayer-components-ControlsBar.tsx` · base, VideoPlayer · 11 linhas · usa clsx
+- `pecas/VideoPlayer-components-FullScreenButton.tsx` · base, VideoPlayer · 15 linhas · usa @primer/octicons-react
+- `pecas/VideoPlayer-components-IconControl.tsx` · base, VideoPlayer · 17 linhas · usa clsx
+- `pecas/VideoPlayer-components-MuteButton.tsx` · base, VideoPlayer · 15 linhas · usa @primer/octicons-react
+- `pecas/VideoPlayer-components-PauseIcon.tsx` · base, VideoPlayer · 9 linhas
+- `pecas/VideoPlayer-components-PlayIcon.tsx` · base, VideoPlayer · 11 linhas
+- `pecas/VideoPlayer-components-PlayPauseButton.tsx` · base, VideoPlayer · 15 linhas
+- `pecas/VideoPlayer-components-Range.tsx` · base, VideoPlayer · 110 linhas · usa clsx
+- `pecas/VideoPlayer-components-SeekControl.tsx` · base, VideoPlayer · 89 linhas · usa clsx
+- `pecas/VideoPlayer-components-VideoTooltip.tsx` · base, VideoPlayer · 99 linhas · usa clsx
+- `pecas/VideoPlayer-components-VolumeControl.css` · base, VideoPlayer · 4 linhas
+- `pecas/VideoPlayer-components-VolumeControl.tsx` · base, VideoPlayer · 25 linhas
+- `pecas/VideoPlayer-hooks-useVideo.tsx` · base, VideoPlayer · 219 linhas
+- `pecas/VideoPlayer.css` · base, VideoPlayer · 464 linhas
+- `pecas/VideoPlayer.tsx` · base, VideoPlayer · 183 linhas · usa @primer/octicons-react, clsx
+
+## seção de página
+- `pecas/AnchorNav.css` · seção de página, AnchorNav · 426 linhas
+- `pecas/AnchorNav.tsx` · seção de página, AnchorNav · 442 linhas · usa @primer/octicons-react, clsx
+- `pecas/Bento.css` · seção de página, Bento · 2156 linhas
+- `pecas/Bento.tsx` · seção de página, Bento · 380 linhas · usa clsx
+- `pecas/BreakoutBanner.css` · seção de página, BreakoutBanner · 114 linhas
+- `pecas/BreakoutBanner.tsx` · seção de página, BreakoutBanner · 241 linhas · usa @primer/octicons-react, clsx
+- `pecas/Card.css` · seção de página, Card · 558 linhas
+- `pecas/Card.tsx` · seção de página, Card · 420 linhas · usa clsx
+- `pecas/ComparisonTable.css` · seção de página, ComparisonTable · 291 linhas
+- `pecas/ComparisonTable.tsx` · seção de página, ComparisonTable · 227 linhas · usa clsx
+- `pecas/CTABanner.css` · seção de página, CTABanner · 305 linhas
+- `pecas/CTABanner.tsx` · seção de página, CTABanner · 376 linhas · usa clsx
+- `pecas/CTAForm.css` · seção de página, CTAForm · 49 linhas
+- `pecas/CTAForm.tsx` · seção de página, CTAForm · 74 linhas · usa clsx
+- `pecas/EyebrowBanner.css` · seção de página, EyebrowBanner · 338 linhas
+- `pecas/EyebrowBanner.tsx` · seção de página, EyebrowBanner · 251 linhas · usa @primer/octicons-react, clsx
+- `pecas/FAQ.css` · seção de página, FAQ · 95 linhas
+- `pecas/FAQ.tsx` · seção de página, FAQ · 150 linhas · usa clsx
+- `pecas/FAQ-FAQGroup.css` · seção de página, FAQ · 176 linhas
+- `pecas/FAQ-FAQGroup.tsx` · seção de página, FAQ · 267 linhas · usa clsx
+- `pecas/FeatureComparisonTable.css` · seção de página, FeatureComparisonTable · 511 linhas
+- `pecas/FeatureComparisonTable.tsx` · seção de página, FeatureComparisonTable · 294 linhas · usa clsx
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableCell.tsx` · seção de página, FeatureComparisonTable · 70 linhas · usa @primer/octicons-react, clsx
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableDescription.tsx` · seção de página, FeatureComparisonTable · 26 linhas · usa clsx
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableGroup.tsx` · seção de página, FeatureComparisonTable · 150 linhas · usa @primer/octicons-react, clsx
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableGroupHeading.tsx` · seção de página, FeatureComparisonTable · 18 linhas
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableHeading.tsx` · seção de página, FeatureComparisonTable · 17 linhas
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableItem.tsx` · seção de página, FeatureComparisonTable · 63 linhas · usa clsx
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableItemHeading.tsx` · seção de página, FeatureComparisonTable · 21 linhas
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableLabel.tsx` · seção de página, FeatureComparisonTable · 19 linhas · usa clsx
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTablePrice.tsx` · seção de página, FeatureComparisonTable · 28 linhas · usa clsx
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTablePrimaryAction.tsx` · seção de página, FeatureComparisonTable · 26 linhas
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableRow.tsx` · seção de página, FeatureComparisonTable · 98 linhas · usa clsx
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableRowDescription.tsx` · seção de página, FeatureComparisonTable · 27 linhas · usa clsx
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableRowHeading.tsx` · seção de página, FeatureComparisonTable · 24 linhas · usa clsx
+- `pecas/FeatureComparisonTable-sub-components-FeatureComparisonTableSecondaryAction.tsx` · seção de página, FeatureComparisonTable · 9 linhas
+- `pecas/Footnotes.css` · seção de página, Footnotes · 36 linhas
+- `pecas/Footnotes.tsx` · seção de página, Footnotes · 110 linhas · usa @primer/octicons-react, clsx
+- `pecas/Hero.css` · seção de página, Hero · 517 linhas
+- `pecas/Hero.tsx` · seção de página, Hero · 386 linhas · usa clsx
+- `pecas/Hero-sub-components-HeroButtonGroup.tsx` · seção de página, Hero · 37 linhas · usa clsx
+- `pecas/Hero-sub-components-HeroDescription.tsx` · seção de página, Hero · 46 linhas · usa clsx
+- `pecas/Hero-sub-components-HeroEyebrow.tsx` · seção de página, Hero · 18 linhas · usa clsx
+- `pecas/Hero-sub-components-HeroHeading.tsx` · seção de página, Hero · 40 linhas · usa clsx
+- `pecas/Hero-sub-components-HeroImage.tsx` · seção de página, Hero · 46 linhas · usa clsx
+- `pecas/Hero-sub-components-HeroLabel.tsx` · seção de página, Hero · 50 linhas · usa clsx
+- `pecas/Hero-sub-components-HeroPrimaryAction.tsx` · seção de página, Hero · 44 linhas
+- `pecas/Hero-sub-components-HeroSecondaryAction.tsx` · seção de página, Hero · 43 linhas
+- `pecas/Hero-sub-components-HeroVideo.tsx` · seção de página, Hero · 107 linhas · usa @primer/octicons-react, clsx
+- `pecas/LogoSuite-LogoSuite.fixtures.tsx` · seção de página, LogoSuite · 165 linhas
+- `pecas/LogoSuite.css` · seção de página, LogoSuite · 405 linhas
+- `pecas/LogoSuite.tsx` · seção de página, LogoSuite · 385 linhas · usa @primer/octicons-react, clsx
+- `pecas/MediaPlaylist.css` · seção de página, MediaPlaylist · 367 linhas
+- `pecas/MediaPlaylist.tsx` · seção de página, MediaPlaylist · 297 linhas · usa clsx
+- `pecas/MinimalFooter.css` · seção de página, MinimalFooter · 301 linhas
+- `pecas/MinimalFooter.tsx` · seção de página, MinimalFooter · 394 linhas · usa @primer/octicons-react, clsx
+- `pecas/Pillar.css` · seção de página, Pillar · 63 linhas
+- `pecas/Pillar.tsx` · seção de página, Pillar · 202 linhas · usa clsx
+- `pecas/PricingOptions.css` · seção de página, PricingOptions · 742 linhas
+- `pecas/PricingOptions.tsx` · seção de página, PricingOptions · 793 linhas · usa @primer/octicons-react, clsx
+- `pecas/river.tsx` · seção de página, river · 363 linhas · usa clsx
+- `pecas/river-river-shared.css` · seção de página, river · 683 linhas
+- `pecas/river-RiverAccordion.css` · seção de página, river · 355 linhas
+- `pecas/river-RiverAccordion.tsx` · seção de página, river · 326 linhas · usa @primer/octicons-react, clsx
+- `pecas/river-RiverBreakout.tsx` · seção de página, river · 71 linhas · usa clsx
+- `pecas/river-RiverBreakoutTabs.css` · seção de página, river · 349 linhas
+- `pecas/river-RiverBreakoutTabs.tsx` · seção de página, river · 544 linhas · usa clsx
+- `pecas/river-RiverStoryScroll.css` · seção de página, river · 484 linhas
+- `pecas/river-RiverStoryScroll.tsx` · seção de página, river · 152 linhas · usa clsx
+- `pecas/river-RiverStoryScroll-RiverStoryScrollProvider.tsx` · seção de página, river · 67 linhas
+- `pecas/river-RiverStoryScroll-RiverStoryScrollResponder.tsx` · seção de página, river · 52 linhas · usa clsx
+- `pecas/river-RiverStoryScroll-RiverStoryScrollTracker.tsx` · seção de página, river · 80 linhas · usa clsx
+- `pecas/Section-Section.features.css` · seção de página, Section · 34 linhas
+- `pecas/Section.css` · seção de página, Section · 194 linhas
+- `pecas/Section.tsx` · seção de página, Section · 209 linhas · usa clsx
+- `pecas/SectionIntro.css` · seção de página, SectionIntro · 54 linhas
+- `pecas/SectionIntro.tsx` · seção de página, SectionIntro · 172 linhas · usa clsx
+- `pecas/SectionIntroStacked.css` · seção de página, SectionIntroStacked · 176 linhas
+- `pecas/SectionIntroStacked.tsx` · seção de página, SectionIntroStacked · 285 linhas · usa clsx
+- `pecas/Statistic.css` · seção de página, Statistic · 129 linhas
+- `pecas/Statistic.tsx` · seção de página, Statistic · 228 linhas · usa clsx
+- `pecas/SubdomainNavBar-NavigationVisbilityObserver.tsx` · seção de página, SubdomainNavBar · 246 linhas · usa @primer/octicons-react, clsx
+- `pecas/SubdomainNavBar.css` · seção de página, SubdomainNavBar · 1784 linhas
+- `pecas/SubdomainNavBar.tsx` · seção de página, SubdomainNavBar · 1152 linhas · usa @primer/octicons-react, clsx
+- `pecas/SubNav.css` · seção de página, SubNav · 954 linhas
+- `pecas/SubNav.tsx` · seção de página, SubNav · 865 linhas · usa @primer/octicons-react, clsx
+- `pecas/Testimonial.css` · seção de página, Testimonial · 443 linhas
+- `pecas/Testimonial.tsx` · seção de página, Testimonial · 279 linhas · usa clsx
+- `pecas/TestimonialGroup.css` · seção de página, TestimonialGroup · 103 linhas
+- `pecas/TestimonialGroup.tsx` · seção de página, TestimonialGroup · 349 linhas · usa clsx
+- `pecas/Tiles-Tiles.fixtures.tsx` · seção de página, Tiles · 51 linhas · usa @primer/octicons-react
+- `pecas/Tiles.css` · seção de página, Tiles · 177 linhas
+- `pecas/Tiles.tsx` · seção de página, Tiles · 176 linhas · usa @primer/octicons-react, clsx
+- `pecas/Timeline.css` · seção de página, Timeline · 97 linhas
+- `pecas/Timeline.tsx` · seção de página, Timeline · 66 linhas · usa clsx
+
+## tokens
+- `pecas/tokens-base-colors-dark.json` · 438 linhas
+- `pecas/tokens-base-colors-light.json` · 438 linhas
+- `pecas/tokens-base-size.json` · 217 linhas
+- `pecas/tokens-base-typography.json` · 36 linhas
+- `pecas/tokens-functional-animation-base.json` · 119 linhas
+- `pecas/tokens-functional-colors-global.json` · 171 linhas
+- `pecas/tokens-functional-components-bento-base.json` · 42 linhas
+- `pecas/tokens-functional-components-button-base.json` · 31 linhas
+- `pecas/tokens-functional-components-card-base.json` · 25 linhas
+- `pecas/tokens-functional-components-card-colors.json` · 15 linhas
+- `pecas/tokens-functional-components-carousel-pagination-colors.json` · 37 linhas
+- `pecas/tokens-functional-components-comparison-table.json` · 21 linhas
+- `pecas/tokens-functional-components-eyebrow-banner.json` · 60 linhas
+- `pecas/tokens-functional-components-faq-base.json` · 11 linhas
+- `pecas/tokens-functional-components-faq-colors.json` · 33 linhas
+- `pecas/tokens-functional-components-faq.json` · 21 linhas
+- `pecas/tokens-functional-components-feature-comparison-table-base.json` · 15 linhas
+- `pecas/tokens-functional-components-footer-base.json` · 10 linhas
+- `pecas/tokens-functional-components-footer-colors.json` · 55 linhas
+- `pecas/tokens-functional-components-frosted-glass-vfx-base.json` · 16 linhas
+- `pecas/tokens-functional-components-grid-colors.json` · 13 linhas
+- `pecas/tokens-functional-components-grid.json` · 42 linhas
+- `pecas/tokens-functional-components-hero-base.json` · 15 linhas
+- `pecas/tokens-functional-components-icon-colors.json` · 121 linhas
+- `pecas/tokens-functional-components-icon-button-base.json` · 47 linhas
+- `pecas/tokens-functional-components-icon-button-colors.json` · 93 linhas
+- `pecas/tokens-functional-components-ide-base.json` · 9 linhas
+- `pecas/tokens-functional-components-image-base.json` · 8 linhas
+- `pecas/tokens-functional-components-inline-code-colors.json` · 21 linhas
+- `pecas/tokens-functional-components-inline-link-base.json` · 10 linhas
+- `pecas/tokens-functional-components-inline-link-colors.json` · 15 linhas
+- `pecas/tokens-functional-components-label-colors.json` · 128 linhas
+- `pecas/tokens-functional-components-link-colors.json` · 15 linhas
+- `pecas/tokens-functional-components-logosuite-base.json` · 34 linhas
+- `pecas/tokens-functional-components-logosuite-colors.json` · 37 linhas
+- `pecas/tokens-functional-components-media-playlist-colors.json` · 9 linhas
+- `pecas/tokens-functional-components-pricing-options-colors.json` · 51 linhas
+- `pecas/tokens-functional-components-pricing-options.json` · 53 linhas
+- `pecas/tokens-functional-components-prose-base.json` · 18 linhas
+- `pecas/tokens-functional-components-river-base.json` · 20 linhas
+- `pecas/tokens-functional-components-river.json` · 169 linhas
+- `pecas/tokens-functional-components-section.json` · 61 linhas
+- `pecas/tokens-functional-components-spinner-base.json` · 24 linhas
+- `pecas/tokens-functional-components-spinner-colors.json` · 9 linhas
+- `pecas/tokens-functional-components-statistic-base.json` · 19 linhas
+- `pecas/tokens-functional-components-sub-nav-base.json` · 35 linhas
+- `pecas/tokens-functional-components-tabs-base.json` · 10 linhas
+- `pecas/tokens-functional-components-tabs-colors.json` · 49 linhas
+- `pecas/tokens-functional-components-testimonial-base.json` · 109 linhas
+- `pecas/tokens-functional-components-testimonial-colors.json` · 143 linhas
+- `pecas/tokens-functional-components-testimonial-group-base.json` · 11 linhas
+- `pecas/tokens-functional-components-text-cursor-animation-base.json` · 10 linhas
+- `pecas/tokens-functional-components-text-cursor-animation-colors.json` · 19 linhas
+- `pecas/tokens-functional-components-tiles-base.json` · 11 linhas
+- `pecas/tokens-functional-components-timeline-base.json` · 27 linhas
+- `pecas/tokens-functional-components-timeline-colors.json` · 11 linhas
+- `pecas/tokens-functional-components-toggle-switch-base.json` · 36 linhas
+- `pecas/tokens-functional-components-toggle-switch-colors.json` · 57 linhas
+- `pecas/tokens-functional-components-token-colors.json` · 65 linhas
+- `pecas/tokens-functional-components-tooltip-colors.json` · 11 linhas
+- `pecas/tokens-functional-components-video-player-base.json` · 59 linhas
+- `pecas/tokens-functional-size-border.json` · 44 linhas
+- `pecas/tokens-functional-size-breakpoints.json` · 65 linhas
+- `pecas/tokens-functional-size-size-coarse.json` · 29 linhas
+- `pecas/tokens-functional-size-size-fine.json` · 29 linhas
+- `pecas/tokens-functional-size.json` · 180 linhas
+- `pecas/tokens-functional-size-viewport.json` · 29 linhas
+- `pecas/tokens-functional-typography-typography-responsive.json` · 534 linhas

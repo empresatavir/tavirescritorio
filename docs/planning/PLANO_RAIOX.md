@@ -115,8 +115,9 @@ Cliente ──► raiox.tavir.com.br (raiox/web) ──► Supabase (casos, form
 | # | Decisão | Trava |
 |---|---|---|
 | P1 | Preços de partida (Estudo rápido, Diagnóstico, ofertas da Onda 1). | Venda. |
-| P2 | **Não** (2026-11-10). Sem piloto agora. F8 (escrita no Supabase e e-mail) não roda. | Primeiro cliente real e entrega por e-mail. |
-| P3 | Motor e modelo padrão da análise e da redação. | GOAL F6. |
+| P2 | **Sim** (2026-11-20; era não em 2026-11-10). Ir até o piloto real assistido, sem cobrança. F8 roda; G-PR1 vira a F10 do GOAL. | Primeiro cliente real e entrega por e-mail. |
+| P3 | **Sem motor padrão** (2026-11-20). Análise e redação usam o motor escolhido no Escritório e precisam passar nas mesmas checagens em todos os motores (GOAL F11). | GOAL F6. |
+| P6 | **Escritório + APK** (2026-11-20). O Escritório cria caso remoto e convite; o APK pede pela fila e o Carlos confirma na tela. `office.py` sai do caminho. | GOAL T8.3, T8.4. |
 | P4 | **Sim** (2026-11-10). Reconectar a Vercel ao repositório `empresatavir/tavirescritorio` (Root Directory `raiox/web`). O roteiro é do Carlos; o motor não executa. | GOAL T9.4. |
 | P5 | **Não** (2026-11-10). Os cinco casos legados não serão copiados. T9.1 não roda. | GOAL F9. |
 

@@ -7,9 +7,10 @@ import { findMotorBinary, runMotor, type MotorCall, type MotorId, type MotorResu
 import { startRun, type RunHandle } from '../runLedger';
 import { buildContext, repoRoot } from './raioxContext';
 import { lintDocument } from './raioxDocLint';
-import { RaioxError, attachDocuments } from './raioxRules';
+import { RaioxError, assertActive, attachDocuments } from './raioxRules';
 import { caseDir, readCase, writeCase } from './raioxStore';
-import type { RaioxDocument } from '../../shared/raiox';
+import type { RaioxCase, RaioxDocument } from '../../shared/raiox';
+import { motorVendor, readVendorCatalog, recordVendor } from './vendors';
 
 const TIMEOUT_MS = 45 * 60 * 1000;
 const PDF_TIMEOUT_MS = 90_000;
@@ -28,6 +29,10 @@ export interface DocsDeps {
   repo?: string;
   execFile?: typeof execFile;
   ledger?: { start: typeof startRun };
+  /** F11: motor, modelo e esforço desta rodada (conformidade). Sem valor = configuração do Escritório. */
+  engine?: { motor: MotorId; model: string; effort: string };
+  /** F11: instrução extra no fim do prompt. */
+  extra?: string;
 }
 
 function sha256(file: string): string {
@@ -41,15 +46,47 @@ function nextVersion(dir: string): number {
   return (nums.length ? Math.max(...nums) : 0) + 1;
 }
 
+/** Casos com redação em andamento: um segundo clique não abre outra rodada no mesmo caso. */
+const writing = new Set<string>();
+const rendering = new Set<string>();
+const docKills = new Map<string, () => void>();
+
+/** O que está rodando agora nos documentos do caso (a tela usa para travar botões e mostrar o passo). */
+export function documentsBusy(id: string): { writing: boolean; rendering: boolean } {
+  return { writing: writing.has(id), rendering: rendering.has(id) };
+}
+
+export function stopDocuments(id: string): boolean {
+  const kill = docKills.get(id);
+  if (!kill) return false;
+  kill();
+  return true;
+}
+
 export async function writeDocuments(root: string, id: string, deps: DocsDeps = {}): Promise<{ ok: true; version: number; problems: string[] }> {
+  if (writing.has(id)) throw new RaioxError('A redação deste caso já está rodando. Aguarde terminar.');
+  writing.add(id);
+  try {
+    return await writeDocumentsOnce(root, id, deps);
+  } finally {
+    writing.delete(id);
+    docKills.delete(id);
+  }
+}
+
+async function writeDocumentsOnce(root: string, id: string, deps: DocsDeps): Promise<{ ok: true; version: number; problems: string[] }> {
   const current = readCase(root, id);
+  assertActive(current);
   if (!current.debrief) throw new RaioxError('Registre a devolutiva antes de gerar os documentos.');
   const version = nextVersion(caseDir(root, id));
   const repo = deps.repo || repoRoot();
   buildContext(root, current, 'redacao', { version, repo });
-  const prompt = fs.readFileSync(path.join(caseDir(root, id), '_contexto', 'prompt.md'), 'utf8');
-  const settings = engineHub.getSettings();
-  const motor = officeMotor(settings.defaultEngine);
+  const basePrompt = fs.readFileSync(path.join(caseDir(root, id), '_contexto', 'prompt.md'), 'utf8');
+  const prompt = deps.extra ? `${basePrompt}\n\n${deps.extra}` : basePrompt;
+  const settings = deps.engine
+    ? { defaultEngine: deps.engine.motor, defaultModel: deps.engine.model, defaultEffort: deps.engine.effort }
+    : engineHub.getSettings();
+  const motor = deps.engine ? deps.engine.motor : officeMotor(settings.defaultEngine);
   const workspace = caseDir(root, id);
   const runner = deps.run ?? runMotor;
   const now = (deps.now ?? (() => new Date().toISOString()))();
@@ -59,13 +96,17 @@ export async function writeDocuments(root: string, id: string, deps: DocsDeps = 
     projectName: current.id, engine: motor, binary: findMotorBinary(motor) || '',
     model: settings.defaultModel, effort: settings.defaultEffort, mode: 'write', args: [], timeoutMs: TIMEOUT_MS, prompt,
   });
+  // G-PR1 controle 6: o motor recebe a pasta do caso; registra antes, mesmo que a redação falhe.
+  const withVendor = recordVendor(current, readVendorCatalog(repo), motorVendor(motor), `redação · ${settings.defaultModel || 'modelo padrão'}`, now);
+  writeCase(root, withVendor);
   const result = await runner({
     motor, workspace, prompt, model: settings.defaultModel, effort: settings.defaultEffort,
     access: 'write', timeoutMs: TIMEOUT_MS,
     onRaw: (stream, text) => handle.raw(stream, text),
+    registerKill: (kill) => docKills.set(id, kill),
   });
   if (!result.ok) {
-    const message = result.error?.message || 'A redação não terminou.';
+    const message = result.error?.kind === 'paused' ? 'Redação parada por Carlos. Nada foi gravado.' : (result.error?.message || 'A redação não terminou.');
     await handle.finish({ ok: false, status: result.error?.kind === 'paused' ? 'paused' : undefined, error: message, reply: result.text || '' });
     throw new RaioxError(message);
   }
@@ -91,7 +132,18 @@ export async function writeDocuments(root: string, id: string, deps: DocsDeps = 
       createdAt: now,
     });
   }
-  writeCase(root, attachDocuments(current, docs, now));
+  // G-PR1 controle 8: relê o caso; revogação registrada durante a redação não é sobrescrita.
+  let attached: RaioxCase;
+  try {
+    const fresh = readCase(root, id);
+    assertActive(fresh);
+    attached = attachDocuments(withVendor, docs, now);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Caso revogado.';
+    await handle.finish({ ok: false, error: message, reply: result.text || '' });
+    throw new RaioxError(message);
+  }
+  writeCase(root, attached);
   await handle.finish({ ok: true, reply: result.text || '' });
   return { ok: true, version, problems: docs.flatMap((doc) => doc.lint) };
 }
@@ -99,15 +151,28 @@ export async function writeDocuments(root: string, id: string, deps: DocsDeps = 
 function runPython(repo: string, args: string[], exec: typeof execFile): Promise<void> {
   const script = path.join(repo, 'tools', 'publicar.py');
   return new Promise((resolve, reject) => {
-    exec('python', ['-I', script, ...args], { timeout: PDF_TIMEOUT_MS }, (err) => {
-      if (err) reject(err);
-      else resolve();
+    exec('python', ['-I', script, ...args], { timeout: PDF_TIMEOUT_MS, env: { ...process.env, PYTHONIOENCODING: 'utf-8' } }, (err, _stdout, stderr) => {
+      if (!err) return resolve();
+      const line = String(stderr || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean).pop();
+      reject(new Error(line ? line.slice(0, 240) : (err as Error).message));
     });
   });
 }
 
 export async function renderPdfs(root: string, id: string, version: number, deps: DocsDeps = {}): Promise<{ ok: true }> {
+  if (rendering.has(id)) throw new RaioxError('O PDF deste caso já está sendo gerado. Aguarde terminar.');
+  if (writing.has(id)) throw new RaioxError('A redação deste caso ainda está rodando. Gere o PDF depois que ela terminar.');
+  rendering.add(id);
+  try {
+    return await renderPdfsOnce(root, id, version, deps);
+  } finally {
+    rendering.delete(id);
+  }
+}
+
+async function renderPdfsOnce(root: string, id: string, version: number, deps: DocsDeps): Promise<{ ok: true }> {
   const current = readCase(root, id);
+  assertActive(current);
   const docs = current.debrief?.documents?.filter((doc) => doc.version === version) || [];
   if (docs.length !== 2) throw new RaioxError('Gere os documentos antes do PDF.');
   const repo = deps.repo || repoRoot();
@@ -127,12 +192,14 @@ export async function renderPdfs(root: string, id: string, version: number, deps
       const size = fs.statSync(pdf).size;
       if (size <= 0 || size > PDF_MAX) throw new Error('tamanho');
     }
-  } catch {
-    throw new RaioxError('O PDF não foi gerado. Confira Python e Edge/Chrome.');
+  } catch (err) {
+    const detail = err instanceof Error && err.message && err.message !== 'ausente' && err.message !== 'tamanho' ? ` Motivo: ${err.message}` : '';
+    throw new RaioxError(`O PDF não foi gerado. Confira Python e Edge/Chrome.${detail}`);
   }
   const nextDocs = (current.debrief?.documents || []).map((doc) => doc.version === version
     ? { ...doc, pdf: path.posix.join('documentos', `v${version}`, doc.kind === 'relatorio' ? 'relatorio-raio-x.pdf' : 'plano-crescimento.pdf') }
     : doc);
+  assertActive(readCase(root, id));
   writeCase(root, { ...current, debrief: { ...current.debrief!, documents: nextDocs } });
   return { ok: true };
 }

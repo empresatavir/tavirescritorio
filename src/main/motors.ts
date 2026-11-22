@@ -477,6 +477,9 @@ export function classifyMotorError(motor: MotorId, text: string): { kind: MotorE
 
 // ---------------------------------------------------------------- execução
 
+/** Silêncio tolerado na saída depois que o processo do motor termina, antes de dar a rodada por encerrada. */
+const EXIT_GRACE_MS = 20000;
+
 export async function runMotor(call: MotorCall): Promise<MotorResult> {
   const binary = findMotorBinary(call.motor);
   const base = { motor: call.motor, binary: binary || '', args: [] as string[], model: cliModel(call.motor, call.model, call.effort), stdout: '', stderr: '', exitCode: null };
@@ -537,6 +540,9 @@ export async function runMotor(call: MotorCall): Promise<MotorResult> {
       kill();
     }, call.timeoutMs);
     armIdle();
+    // Depois que o processo do motor termina, vira o relógio de silêncio da saída (ver «exit» abaixo).
+    let exitTimer: NodeJS.Timeout | undefined;
+    let armExit: () => void = () => {};
 
     // No máximo ~3 atualizações por segundo, sem perder a última (envio no fim do intervalo).
     let trailing: NodeJS.Timeout | null = null;
@@ -558,6 +564,7 @@ export async function runMotor(call: MotorCall): Promise<MotorResult> {
       stdout += text;
       call.onRaw?.('stdout', text);
       armIdle();
+      armExit();
       pending += text;
       const lines = pending.split(/\r?\n/);
       pending = lines.pop() || '';
@@ -570,6 +577,7 @@ export async function runMotor(call: MotorCall): Promise<MotorResult> {
       stderr += text;
       call.onRaw?.('stderr', text);
       armIdle();
+      armExit();
     });
     child.stdin.on('error', () => {});
     child.stdin.end(inv.stdin, 'utf8');
@@ -579,6 +587,7 @@ export async function runMotor(call: MotorCall): Promise<MotorResult> {
       finished = true;
       clearTimeout(idleTimer);
       clearTimeout(hardTimer);
+      clearTimeout(exitTimer);
       if (pending.trim()) stream.feed(pending);
       stream.settle();
       emit(true);
@@ -603,5 +612,20 @@ export async function runMotor(call: MotorCall): Promise<MotorResult> {
     };
     child.on('error', (err) => done(null, String(err?.message || err)));
     child.on('close', (code) => done(code));
+    // O agente às vezes deixa um processo ligado (servidor de teste) que herda a saída do motor:
+    // o motor termina, mas «close» nunca chega e a etapa ficaria presa até o limite de tempo.
+    // Só encerra depois de EXIT_GRACE_MS de silêncio: enquanto ainda chega saída, a rodada continua.
+    child.on('exit', (code) => {
+      armExit = () => {
+        clearTimeout(exitTimer);
+        exitTimer = setTimeout(() => {
+          if (finished) return;
+          try { child.stdout.destroy(); child.stderr.destroy(); } catch {}
+          done(code);
+        }, EXIT_GRACE_MS);
+        exitTimer.unref?.();
+      };
+      armExit();
+    });
   });
 }

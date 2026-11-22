@@ -39,6 +39,8 @@ export interface IrisAgentRequest {
   /** A5: resumo do retrato do projeto (context/RETRATO.md). Entra com teto fixo e nunca no histórico. */
   retrato?: string;
   timeoutMs?: number;
+  /** Limite de silêncio do motor; sem valor, vale o padrão de motors.ts. */
+  idleMs?: number;
   onProgress?: (line: string) => void;
   registerKill?: (kill: () => void) => void;
   /** Tipo da execução no livro de execuções (.tavir/runs). Padrão: chat. */
@@ -296,6 +298,7 @@ export async function converseWithIrisAgent(req: IrisAgentRequest): Promise<Iris
     effort: req.effort,
     access,
     timeoutMs,
+    ...(req.idleMs ? { idleMs: req.idleMs } : {}),
     onRaw: run ? run.raw : undefined,
     registerKill: req.registerKill,
     onProgress: (p) => {

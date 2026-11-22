@@ -17,7 +17,10 @@ Trabalha em dupla com **Marina Marca** (tokens de cor/fonte antes de qualquer UI
 | Momento | Skill |
 |---------|--------|
 | Sempre (UI/UX) | `ui-ux-pro-max` |
-| Landing / portfolio / anti-slop | `design-taste-frontend` |
+| Landing / oferta / portfolio | `tastemaker` + `elaya-landing` |
+| Sempre, contra escolha por reflexo | `no-ai-design-slop` |
+| Estética nomeada ou efeito | `mengto-receitas` (uma por trabalho) |
+| Acabamento e movimento | `jakub-interface`, `emil-motion` |
 | Prova Nível 2 / brief visual / "Dribbble" | `visual-reference-absorb` |
 | Product UI com componentes | `ui-styling` + `frontend-engineering-canon` (leitura) |
 | Hero animado (item 5, com custo) | `scroll-world` |

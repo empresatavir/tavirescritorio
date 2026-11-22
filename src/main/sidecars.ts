@@ -158,7 +158,7 @@ function defaultPortOwner(port: number): PortOwner | null {
   return { pid, nome };
 }
 
-async function defaultHealth(url: string): Promise<boolean> {
+export async function defaultHealth(url: string): Promise<boolean> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 1500);
   try {
@@ -224,7 +224,8 @@ function defaultSpawn(spec: SidecarSpec): { pid: number; kill: () => void } {
 
 function assertNoPublishFlag(spec: SidecarSpec): void {
   const text = `${describeCommand(spec)} ${spec.pasta}`;
-  if (/enable-meta-publish/i.test(text)) {
+  // Pega o --enable-meta-publish do .bat e o -EnableMetaPublish do start.ps1.
+  if (/enable-?meta-?publish/i.test(text)) {
     throw new Error('O Escritório não liga --enable-meta-publish. Isso fica no DarkFlow.');
   }
 }

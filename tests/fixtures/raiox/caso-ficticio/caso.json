@@ -1,0 +1,11 @@
+{
+  "company": "Café Lumen (fictício)",
+  "contact": "Marta Ficticia",
+  "objective": "Entender por que pedidos de encomenda de bolo chegam pouco pelo Instagram.",
+  "decisionNeeded": "Decidir se a primeira frente é o caminho do Instagram até o pedido ou o atendimento no WhatsApp.",
+  "frontier": "Somente as páginas públicas copiadas em analise/fontes/ e o intake do formulário. Nenhum acesso à internet nesta rodada.",
+  "segment": "confeitaria",
+  "mode": "diagnostico",
+  "origin": "formulario",
+  "physicalStore": false
+}

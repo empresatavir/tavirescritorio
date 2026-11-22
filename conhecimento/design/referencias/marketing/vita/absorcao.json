@@ -1,0 +1,837 @@
+{
+ "titulo": "vita.org.br | 504: Gateway time-out",
+ "idioma": "en-US",
+ "descricao": "",
+ "gerador": "",
+ "janela": {
+  "largura": 1440,
+  "altura": 900,
+  "alturaPagina": 900,
+  "rolagemHorizontal": false
+ },
+ "variaveisCss": {
+  "--text-opacity": "1"
+ },
+ "cores": {
+  "texto": [
+   {
+    "value": "#404040",
+    "n": 272,
+    "sample": "Gateway time-out"
+   },
+   {
+    "value": "#2f7bbf",
+    "n": 34,
+    "sample": "cloudflare.com"
+   },
+   {
+    "value": "#0051c3",
+    "n": 15,
+    "sample": "Click to reveal"
+   },
+   {
+    "value": "#313131",
+    "n": 14,
+    "sample": "Error code 504"
+   },
+   {
+    "value": "#9bca3e",
+    "n": 14,
+    "sample": "Working"
+   },
+   {
+    "value": "#999999",
+    "n": 11,
+    "sample": "Browser"
+   },
+   {
+    "value": "#bd2426",
+    "n": 5,
+    "sample": "Error"
+   }
+  ],
+  "fundo": [
+   {
+    "value": "#d9d9d9",
+    "n": 2301,
+    "sample": "span.code-label"
+   }
+  ],
+  "borda": [
+   {
+    "value": "1px solid #ebebeb",
+    "n": 1,
+    "sample": "div.cf-error-footer.cf-wrapper"
+   }
+  ],
+  "degrades": [
+   {
+    "value": "-webkit-linear-gradient(top, rgb(222, 222, 222), rgb(235, 235, 235) 3%, rgb(235, 235, 235) 97%, rgb(222, 222, 222))",
+    "n": 1,
+    "sample": "div.my-8.bg-gradient-gray"
+   }
+  ]
+ },
+ "fontes": {
+  "uso": [
+   {
+    "value": "system-ui 400",
+    "n": 298,
+    "sample": "",
+    "parte": "82%"
+   },
+   {
+    "value": "system-ui 300",
+    "n": 37,
+    "sample": "",
+    "parte": "10%"
+   },
+   {
+    "value": "system-ui 600",
+    "n": 16,
+    "sample": "",
+    "parte": "4%"
+   },
+   {
+    "value": "system-ui 500",
+    "n": 14,
+    "sample": "",
+    "parte": "4%"
+   }
+  ],
+  "arquivos": []
+ },
+ "escalaTipografica": [
+  {
+   "value": "system-ui · 16px · peso 400 · linha normal · espaço 0",
+   "n": 6,
+   "sample": "div: Visit for more information."
+  },
+  {
+   "value": "system-ui · 13px · peso 400 · linha normal · espaço 0",
+   "n": 5,
+   "sample": "span: Cloudflare Ray ID:"
+  },
+  {
+   "value": "system-ui · 24px · peso 300 · linha 31px · espaço 0",
+   "n": 3,
+   "sample": "h3: Browser"
+  },
+  {
+   "value": "system-ui · 24px · peso 400 · linha 31px · espaço 0",
+   "n": 3,
+   "sample": "span: Working"
+  },
+  {
+   "value": "system-ui · 30px · peso 400 · linha 39px · espaço 0",
+   "n": 2,
+   "sample": "h2: What happened?"
+  },
+  {
+   "value": "system-ui · 16px · peso 400 · linha 26px · espaço 0",
+   "n": 2,
+   "sample": "p: The web server reported a gateway time-o"
+  },
+  {
+   "value": "system-ui · 60px · peso 300 · linha 75px · espaço 0",
+   "n": 1,
+   "sample": "span: Gateway time-out"
+  },
+  {
+   "value": "system-ui · 12px · peso 500 · linha 72px · espaço 0",
+   "n": 1,
+   "sample": "span: Error code 504"
+  },
+  {
+   "value": "system-ui · 13px · peso 600 · linha normal · espaço 0",
+   "n": 1,
+   "sample": "strong: a5e7784c7d206d39"
+  }
+ ],
+ "espacamento": {
+  "valores": [
+   {
+    "value": "40px",
+    "n": 6,
+    "sample": ""
+   },
+   {
+    "value": "60px",
+    "n": 6,
+    "sample": ""
+   },
+   {
+    "value": "32px",
+    "n": 4,
+    "sample": ""
+   },
+   {
+    "value": "12px",
+    "n": 4,
+    "sample": ""
+   },
+   {
+    "value": "4px",
+    "n": 2,
+    "sample": ""
+   },
+   {
+    "value": "8px",
+    "n": 2,
+    "sample": ""
+   },
+   {
+    "value": "24px",
+    "n": 2,
+    "sample": ""
+   },
+   {
+    "value": "16px",
+    "n": 2,
+    "sample": ""
+   }
+  ],
+  "gaps": []
+ },
+ "raios": [
+  {
+   "value": "20px",
+   "n": 1,
+   "sample": "span.code-label"
+  }
+ ],
+ "sombras": [],
+ "camadas": [],
+ "secoes": [
+  {
+   "n": 1,
+   "alvo": "header.mx-auto.pt-10",
+   "titulo": "h1: Gateway time-out Error code 504",
+   "y": 0,
+   "altura": 177,
+   "fundo": "",
+   "padding": "40 0 0 0",
+   "larguraConteudo": 960,
+   "layout": "block · 3 filho(s) em 1 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [
+     "h1: Gateway time-out Error code 504"
+    ],
+    "paragrafos": 0,
+    "botoes": [],
+    "links": 1,
+    "imagens": 0,
+    "videos": 0,
+    "campos": 0,
+    "caracteres": 98
+   }
+  },
+  {
+   "n": 2,
+   "alvo": "div.my-8.bg-gradient-gray",
+   "titulo": "h3: Browser",
+   "y": 209,
+   "altura": 335,
+   "fundo": "-webkit-linear-gradient(top, rgb(222, 222, 222), rgb(235, 235, 235) 3%, rgb(235,",
+   "padding": "0 0 0 0",
+   "larguraConteudo": 960,
+   "layout": "block · 3 filho(s) em 3 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [
+     "h3: Browser",
+     "h3: Cloudflare",
+     "h3: Host"
+    ],
+    "paragrafos": 0,
+    "botoes": [],
+    "links": 2,
+    "imagens": 0,
+    "videos": 0,
+    "campos": 0,
+    "caracteres": 76
+   }
+  },
+  {
+   "n": 3,
+   "alvo": "div.w-240.lg:w-full",
+   "titulo": "h2: What happened?",
+   "y": 576,
+   "altura": 105,
+   "fundo": "",
+   "padding": "0 0 0 0",
+   "larguraConteudo": 960,
+   "layout": "block · 2 filho(s) em 2 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [
+     "h2: What happened?",
+     "h2: What can I do?"
+    ],
+    "paragrafos": 2,
+    "botoes": [],
+    "links": 0,
+    "imagens": 0,
+    "videos": 0,
+    "campos": 0,
+    "caracteres": 114
+   }
+  },
+  {
+   "n": 4,
+   "alvo": "div.cf-error-footer.cf-wrapper",
+   "titulo": "",
+   "y": 713,
+   "altura": 98,
+   "fundo": "",
+   "padding": "40 0 40 0",
+   "larguraConteudo": 960,
+   "layout": "block · 4 filho(s) em 4 coluna(s) · gap 0/0",
+   "conteudo": {
+    "titulos": [],
+    "paragrafos": 1,
+    "botoes": [
+     "Click to reveal"
+    ],
+    "links": 1,
+    "imagens": 0,
+    "videos": 0,
+    "campos": 0,
+    "caracteres": 101
+   }
+  }
+ ],
+ "componentes": [
+  {
+   "tipo": "botão",
+   "id": "0",
+   "alvo": "button#cf-footer-ip-reveal.cf-footer-ip-reveal-btn",
+   "texto": "Click to reveal",
+   "quantidade": 1,
+   "tamanho": "80x17",
+   "estilo": {
+    "fonte": "system-ui 13px/400",
+    "cor": "#0051c3",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "color · 0.15s · ease",
+   "cursor": "pointer",
+   "hover": {
+    "color": "rgb(0, 81, 195) → rgb(238, 115, 10)",
+    "borderColor": "rgb(0, 81, 195) → rgb(238, 115, 10)",
+    "outlineColor": "rgb(0, 81, 195) → rgb(238, 115, 10)"
+   },
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(0, 81, 195) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px"
+   }
+  },
+  {
+   "tipo": "link de navegação",
+   "id": "1",
+   "alvo": "a",
+   "texto": "cloudflare.com",
+   "quantidade": 1,
+   "tamanho": "104x21",
+   "estilo": {
+    "fonte": "system-ui 16px/400",
+    "cor": "#2f7bbf",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "all · 0.15s · cubic-bezier(0, 0, 0.2, 1)",
+   "cursor": "pointer",
+   "hover": {
+    "color": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "borderColor": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "outlineColor": "rgb(47, 123, 191) → rgb(246, 139, 31)"
+   },
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineWidth": "3px → 2px",
+    "outlineOffset": "0px → 1px"
+   }
+  },
+  {
+   "tipo": "link",
+   "id": "2",
+   "alvo": "a",
+   "texto": "",
+   "quantidade": 1,
+   "tamanho": "320x80",
+   "estilo": {
+    "fonte": "system-ui 16px/400",
+    "cor": "#2f7bbf",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "all · 0.15s · cubic-bezier(0, 0, 0.2, 1)",
+   "cursor": "pointer",
+   "hover": {
+    "color": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "borderColor": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "outlineColor": "rgb(47, 123, 191) → rgb(246, 139, 31)"
+   },
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "tipo": "link",
+   "id": "3",
+   "alvo": "a",
+   "texto": "Cloudflare",
+   "quantidade": 1,
+   "tamanho": "103x32",
+   "estilo": {
+    "fonte": "system-ui 24px/300",
+    "cor": "#2f7bbf",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "all · 0.15s · cubic-bezier(0, 0, 0.2, 1)",
+   "cursor": "pointer",
+   "hover": {
+    "color": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "borderColor": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "outlineColor": "rgb(47, 123, 191) → rgb(246, 139, 31)"
+   },
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "tipo": "link",
+   "id": "4",
+   "alvo": "a#brand_link",
+   "texto": "Cloudflare",
+   "quantidade": 1,
+   "tamanho": "59x17",
+   "estilo": {
+    "fonte": "system-ui 13px/400",
+    "cor": "#2f7bbf",
+    "fundo": "",
+    "borda": "",
+    "raio": "0px",
+    "padding": "0 0 0 0",
+    "sombra": "",
+    "caixa": "",
+    "espacoLetra": ""
+   },
+   "transicao": "all · 0.15s · cubic-bezier(0, 0, 0.2, 1)",
+   "cursor": "pointer",
+   "hover": {
+    "color": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "borderColor": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "outlineColor": "rgb(47, 123, 191) → rgb(246, 139, 31)"
+   },
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  }
+ ],
+ "navegacao": {
+  "alvo": "header.mx-auto.pt-10",
+  "posicao": "static",
+  "altura": 177,
+  "fundo": "",
+  "links": [
+   "cloudflare.com"
+  ],
+  "botoes": []
+ },
+ "fixos": [],
+ "formularios": [],
+ "movimento": {
+  "keyframes": [],
+  "animadosAgora": [],
+  "animacoesVivas": [],
+  "transicoes": [
+   {
+    "value": "all · 0.15s · cubic-bezier(0, 0, 0.2, 1) · atraso 0s",
+    "n": 4,
+    "sample": "a"
+   },
+   {
+    "value": "color · 0.15s · ease · atraso 0s",
+    "n": 1,
+    "sample": "button#cf-footer-ip-reveal.cf-footer-ip-reveal-btn"
+   }
+  ],
+  "aoCarregar": [],
+  "aoRolar": [],
+  "sozinho": [],
+  "semTocar": [],
+  "aoPassarMouse": [
+   {
+    "alvo": "button#cf-footer-ip-reveal.cf-footer-ip-reveal-btn",
+    "tipo": "transição",
+    "nome": "color",
+    "inicioMs": 114,
+    "duracaoMs": 150,
+    "vezes": 2
+   },
+   {
+    "alvo": "a",
+    "tipo": "transição",
+    "nome": "color",
+    "inicioMs": 1005,
+    "duracaoMs": 150,
+    "vezes": 6
+   },
+   {
+    "alvo": "a",
+    "tipo": "transição",
+    "nome": "outline-color",
+    "inicioMs": 1825,
+    "duracaoMs": 49,
+    "vezes": 6
+   },
+   {
+    "alvo": "a",
+    "tipo": "transição",
+    "nome": "outline-offset",
+    "inicioMs": 1826,
+    "duracaoMs": 49,
+    "vezes": 5
+   },
+   {
+    "alvo": "a",
+    "tipo": "transição",
+    "nome": "outline-width",
+    "inicioMs": 1826,
+    "duracaoMs": 49,
+    "vezes": 5
+   },
+   {
+    "alvo": "a#brand_link",
+    "tipo": "transição",
+    "nome": "color",
+    "inicioMs": 3692,
+    "duracaoMs": 150,
+    "vezes": 2
+   },
+   {
+    "alvo": "a#brand_link",
+    "tipo": "transição",
+    "nome": "outline-color",
+    "inicioMs": 4510,
+    "duracaoMs": null,
+    "vezes": 1
+   },
+   {
+    "alvo": "a#brand_link",
+    "tipo": "transição",
+    "nome": "outline-offset",
+    "inicioMs": 4510,
+    "duracaoMs": null,
+    "vezes": 1
+   },
+   {
+    "alvo": "a#brand_link",
+    "tipo": "transição",
+    "nome": "outline-width",
+    "inicioMs": 4510,
+    "duracaoMs": null,
+    "vezes": 1
+   }
+  ]
+ },
+ "gatilhos": [],
+ "mediaQueries": [
+  "screen and (max-width: 720px)",
+  "(max-width: 639px)",
+  "(max-width: 720px)",
+  "(max-width: 1023px)"
+ ],
+ "midia": {
+  "imagens": 0,
+  "formatos": {},
+  "preguicosas": 0,
+  "videos": [],
+  "svgsEmLinha": 0,
+  "canvas": 0,
+  "iframes": []
+ },
+ "bibliotecas": [
+  "Tailwind (classes utilitárias)"
+ ],
+ "naoLidos": {
+  "folhasBloqueadas": [],
+  "shadowRoots": 0,
+  "canvas": 0
+ },
+ "quebras": [
+  639,
+  720,
+  1023
+ ],
+ "comSessao": false,
+ "url": "https://vita.org.br/",
+ "urlFinal": "https://vita.org.br/",
+ "resposta": 504,
+ "capturadoEm": "2026-11-22T11:09:17.365Z",
+ "cabecalhoAoRolar": {},
+ "estados": [
+  {
+   "alvo": "button#cf-footer-ip-reveal.cf-footer-ip-reveal-btn",
+   "texto": "Click to reveal",
+   "hover": {
+    "color": "rgb(0, 81, 195) → rgb(238, 115, 10)",
+    "borderColor": "rgb(0, 81, 195) → rgb(238, 115, 10)",
+    "outlineColor": "rgb(0, 81, 195) → rgb(238, 115, 10)"
+   },
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineColor": "rgb(0, 81, 195) → rgb(16, 16, 16)",
+    "outlineWidth": "3px → 1px"
+   }
+  },
+  {
+   "alvo": "a",
+   "texto": "cloudflare.com",
+   "hover": {
+    "color": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "borderColor": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "outlineColor": "rgb(47, 123, 191) → rgb(246, 139, 31)"
+   },
+   "foco": {
+    "outlineStyle": "none → auto",
+    "outlineWidth": "3px → 2px",
+    "outlineOffset": "0px → 1px"
+   }
+  },
+  {
+   "alvo": "a",
+   "texto": "",
+   "hover": {
+    "color": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "borderColor": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "outlineColor": "rgb(47, 123, 191) → rgb(246, 139, 31)"
+   },
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "alvo": "a",
+   "texto": "Cloudflare",
+   "hover": {
+    "color": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "borderColor": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "outlineColor": "rgb(47, 123, 191) → rgb(246, 139, 31)"
+   },
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  },
+  {
+   "alvo": "a#brand_link",
+   "texto": "Cloudflare",
+   "hover": {
+    "color": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "borderColor": "rgb(47, 123, 191) → rgb(246, 139, 31)",
+    "outlineColor": "rgb(47, 123, 191) → rgb(246, 139, 31)"
+   },
+   "foco": {
+    "outlineStyle": "none → auto"
+   }
+  }
+ ],
+ "interacoes": [],
+ "responsivo": [
+  {
+   "nome": "desktop",
+   "largura": 1440,
+   "alturaPagina": 4383,
+   "rolagemHorizontal": false,
+   "h1": "48px/700 linha 57.6px",
+   "h2": "36px/700 linha 43.2px",
+   "corpo": "18px/400 linha 27px",
+   "navegacao": {
+    "linksVisiveis": 11,
+    "botaoDeMenu": false,
+    "altura": 148
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 148,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 3842,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 393,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    }
+   ]
+  },
+  {
+   "nome": "notebook",
+   "largura": 1024,
+   "alturaPagina": 4186,
+   "rolagemHorizontal": false,
+   "h1": "48px/700 linha 57.6px",
+   "h2": "36px/700 linha 43.2px",
+   "corpo": "18px/400 linha 27px",
+   "navegacao": {
+    "linksVisiveis": 11,
+    "botaoDeMenu": false,
+    "altura": 148
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 148,
+     "colunas": 1,
+     "padding": "0 16 0 16"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 3645,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 393,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    }
+   ]
+  },
+  {
+   "nome": "tablet",
+   "largura": 768,
+   "alturaPagina": 4885,
+   "rolagemHorizontal": false,
+   "h1": "48px/700 linha 57.6px",
+   "h2": "32px/700 linha 38.4px",
+   "corpo": "18px/400 linha 27px",
+   "navegacao": {
+    "linksVisiveis": 11,
+    "botaoDeMenu": false,
+    "altura": 148
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 148,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 4300,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 437,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    }
+   ]
+  },
+  {
+   "nome": "celular",
+   "largura": 390,
+   "alturaPagina": 999,
+   "rolagemHorizontal": false,
+   "h1": "36px/300 linha 45px",
+   "h2": "30px/400 linha 39px",
+   "corpo": "16px/400 linha 26px",
+   "navegacao": {
+    "linksVisiveis": 1,
+    "botaoDeMenu": false,
+    "altura": 203
+   },
+   "secoes": [
+    {
+     "n": 1,
+     "visivel": true,
+     "altura": 203,
+     "colunas": 1,
+     "padding": "24 32 0 32"
+    },
+    {
+     "n": 2,
+     "visivel": true,
+     "altura": 352,
+     "colunas": 1,
+     "padding": "0 0 0 0"
+    },
+    {
+     "n": 3,
+     "visivel": true,
+     "altura": 252,
+     "colunas": 1,
+     "padding": "0 32 0 32"
+    },
+    {
+     "n": 4,
+     "visivel": true,
+     "altura": 96,
+     "colunas": 1,
+     "padding": "16 32 16 32"
+    }
+   ]
+  }
+ ],
+ "arquivos": {
+  "prints": [
+   "celular-dobra.jpg",
+   "celular-inteira.jpg",
+   "desktop-dobra.jpg",
+   "desktop-inteira.jpg",
+   "notebook-dobra.jpg",
+   "notebook-inteira.jpg",
+   "tablet-dobra.jpg",
+   "tablet-inteira.jpg"
+  ],
+  "video": "video/sessao.webm"
+ },
+ "lacunas": [
+  "O site respondeu 504: pode ter barrado a leitura automática; confira os prints antes de confiar nas medidas.",
+  "Só a página do endereço informado foi lida: páginas internas, área logada e fluxo depois de enviar formulário ficaram de fora.",
+  "Aviso de cookies, se havia, não foi fechado: pode aparecer nos prints."
+ ]
+}

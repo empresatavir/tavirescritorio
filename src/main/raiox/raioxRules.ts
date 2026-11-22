@@ -7,6 +7,7 @@ import {
   RAIOX_FRONTS,
   RAIOX_GAPS,
   RAIOX_MODES,
+  RAIOX_OPTIN_CHANNELS,
   RAIOX_ORIGINS,
   RAIOX_SELL_OFFERS,
   RAIOX_STAGES,
@@ -21,9 +22,11 @@ import {
   type RaioxMetric,
   type RaioxMode,
   type RaioxOrigin,
+  type RaioxRevocation,
   type RaioxStage,
   type RaioxStepCheck,
 } from '../../shared/raiox';
+import { extractLinks, forbiddenContent, shapeProblem } from './linkGuard';
 
 export class RaioxError extends Error {
   constructor(message: string) {
@@ -107,9 +110,69 @@ function optional(value: string | undefined | null): string | undefined {
   return text ? text : undefined;
 }
 
-function writable(c: RaioxCase): RaioxCase {
+/**
+ * G-PR1 controle 8: caso revogado não avança. Vale para toda regra (via writable) e para as
+ * ações que rodam motor, rede ou arquivo (análise, redação, PDF, Google, anexo, exportação).
+ * Continua permitido: ler, abrir a pasta e excluir/expurgar.
+ */
+export function assertActive(c: RaioxCase): void {
   if (c.legacy) throw new RaioxError('Caso legado é somente leitura.');
+  if (c.revocation) {
+    const day = c.revocation.at.slice(0, 10);
+    throw new RaioxError(`O titular revogou a autorização deste caso (registrado em ${day}). Nenhuma etapa nova roda; o caso só pode ser lido ou expurgado.`);
+  }
+  if (c.remote?.revoked) {
+    throw new RaioxError('O titular revogou a autorização deste caso no Supabase. Nenhuma etapa nova roda; o caso só pode ser lido ou expurgado.');
+  }
+}
+
+function writable(c: RaioxCase): RaioxCase {
+  assertActive(c);
   return structuredClone(c);
+}
+
+export interface RaioxRevocationInput { channel: string; requestedAt?: string; note?: string; }
+
+/** Registra a revogação pedida pelo titular. Não tem volta: nova autorização é caso novo. */
+export function revokeCase(c: RaioxCase, input: RaioxRevocationInput, now: string): RaioxCase {
+  if (c.legacy) throw new RaioxError('Caso legado é somente leitura.');
+  if (c.revocation) throw new RaioxError('A revogação deste caso já está registrada.');
+  if (!(RAIOX_OPTIN_CHANNELS as readonly string[]).includes(String(input?.channel))) {
+    throw new RaioxError('Informe por qual canal o titular pediu a revogação.');
+  }
+  const requested = String(input.requestedAt || '').trim() || now;
+  const requestedMs = Date.parse(requested);
+  if (Number.isNaN(requestedMs)) throw new RaioxError('Data do pedido inválida.');
+  if (requestedMs > Date.parse(now) + 5 * 60 * 1000) throw new RaioxError('O pedido não pode estar no futuro.');
+  const note = String(input.note || '').trim().slice(0, 400);
+  const found = forbiddenContent(note);
+  if (found) throw new RaioxError(`A nota tem ${found}. Esse dado não entra no Raio-X.`);
+  const next = structuredClone(c);
+  next.revocation = {
+    at: now,
+    requestedAt: new Date(requestedMs).toISOString(),
+    channel: input.channel as RaioxRevocation['channel'],
+    note,
+  };
+  next.updatedAt = now;
+  return next;
+}
+
+/** G-PR1 controle 5: o caso não guarda CPF, cartão ou credencial, e o link público tem de ser aceitável. */
+function assertSafeCase(c: RaioxCase): void {
+  const fields: [string, string | undefined][] = [
+    ['empresa', c.company], ['contato', c.contact], ['objetivo', c.objective],
+    ['decisão', c.decisionNeeded], ['fronteira', c.frontier], ['segmento', c.segment],
+    ['link público', c.publicLink], ['nota do consentimento', c.consent?.note],
+  ];
+  for (const [label, value] of fields) {
+    const found = forbiddenContent(value || '');
+    if (found) throw new RaioxError(`O campo ${label} tem ${found}. Esse dado não entra no Raio-X: apague antes de salvar.`);
+  }
+  for (const link of extractLinks([c.publicLink, c.frontier, c.objective, c.decisionNeeded].join('\n'))) {
+    const problem = shapeProblem(link);
+    if (problem) throw new RaioxError(`Link não aceito (${problem}): ${link}`);
+  }
 }
 
 function finish(c: RaioxCase, now: string): RaioxCase {
@@ -221,6 +284,7 @@ export function createCase(input: RaioxCaseInput, now: string, uuid: string): Ra
     createdAt: now,
     updatedAt: now,
   };
+  assertSafeCase(c);
   return finish(c, now);
 }
 
@@ -248,6 +312,7 @@ export function updateFrontier(c: RaioxCase, patch: Partial<RaioxCaseInput>, now
   if (patch.segment !== undefined) next.segment = optional(patch.segment);
   if (patch.publicLink !== undefined) next.publicLink = optional(patch.publicLink);
   if (patch.consent !== undefined) next.consent = patch.consent;
+  assertSafeCase(next);
   return finish(next, now);
 }
 
@@ -587,8 +652,9 @@ export function raioxView(c: RaioxCase, opts: { methodTitle?: (path: string) => 
     if (!seen.includes(methodPath)) seen.push(methodPath);
   }
   const methodPages = seen.map((methodPath) => ({ path: methodPath, title: pageTitle(methodPath, opts.methodTitle) }));
-  const next =
-    c.status === 'fronteira'
+  const next = c.revocation || c.remote?.revoked
+    ? 'Revogado: só leitura ou expurgo'
+    : c.status === 'fronteira'
       ? 'Registrar evidência'
       : c.status === 'coleta'
         ? 'Cobrir mais uma etapa'

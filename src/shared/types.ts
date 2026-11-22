@@ -506,6 +506,11 @@ export interface TavirApi {
     getEsteira: (idOrPath: string, count?: number) => Promise<any>;
     saveEsteiraInstruction: (idOrPath: string, index: number, text: string) => Promise<any>;
     setEsteiraAuto: (idOrPath: string, auto: boolean) => Promise<any>;
+    setEsteiraDesignMode: (idOrPath: string, mode: string) => Promise<any>;
+    openBrandBoard: (idOrPath: string, letter: string) => Promise<{ ok: boolean; error?: string }>;
+    refLogin: (url?: string) => Promise<{ ok: boolean; error?: string }>;
+    refSites: () => Promise<{ ok: boolean; sites: string[] }>;
+    refClear: () => Promise<{ ok: boolean; error?: string }>;
     controlEsteira: (idOrPath: string, index: number, action: string) => Promise<any>;
     runEsteira: (idOrPath: string, index: number, stageName?: string, stageOwner?: string) => Promise<any>;
     decideEsteira: (idOrPath: string, index: number, decision: 'aprovado' | 'reprovado', note?: string) => Promise<any>;
@@ -645,10 +650,19 @@ export interface TavirApi {
       stop: (id: string) => Promise<{ ok: boolean; error?: string }>;
     };
     darkflow: {
-      prepare: (pecaId: string) => Promise<{ ok: boolean; error?: string; scheduleId?: string }>;
-      activate: (pecaId: string) => Promise<{ ok: boolean; error?: string }>;
       scorecard: () => Promise<Array<{ k: string; v: string }>>;
       board: () => Promise<{ ok: boolean; error?: string; library: unknown[]; schedules: unknown[] }>;
+    };
+    flow: {
+      enviar: (pecaId: string) => Promise<{ ok: true; itemId: string } | { ok: false; error: string }>;
+      estado: (pecaId: string) => Promise<import('./flow').FlowEstado>;
+      board: () => Promise<import('./flow').FlowBoard>;
+      criar: (input: import('./flow').NovaAgenda) => Promise<{ ok: true; id: string } | { ok: false; error: string }>;
+      ativar: (id: string, atestado: boolean) => Promise<{ ok: true } | { ok: false; error: string }>;
+      cancelar: (id: string) => Promise<{ ok: true; cancelled: number } | { ok: false; error: string }>;
+      simular: () => Promise<{ ok: true; resultado: Record<string, unknown> } | { ok: false; error: string }>;
+      abrirDarkflow: () => Promise<{ ok: boolean }>;
+      ligar: () => Promise<{ ok: true; jaEstava: boolean } | { ok: false; error: string; aviso?: string }>;
     };
     docuflow: {
       send: (pecaId: string) => Promise<{ ok: boolean; error?: string; slug?: string }>;
@@ -691,6 +705,20 @@ export interface TavirApi {
     exportPdfs: (id: string) => Promise<{ ok: boolean; error?: string }>;
     recordDelivery: (id: string, input: unknown) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
     close: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    revoke: (id: string, input: { channel: string; requestedAt?: string; note?: string }) => Promise<{ ok: true; case: RaioxScreenCase; warning?: string } | { ok: false; error: string }>;
+    purgePreview: (id: string) => Promise<{ ok: true; preview: { caseId: string; areas: import('./raiox').RaioxPurgeArea[] } } | { ok: false; error: string }>;
+    purge: (id: string, input: { reason: string; confirm: string }) => Promise<{ ok: true; report: import('./raiox').RaioxPurgeReport } | { ok: false; error: string }>;
+    releases: () => Promise<{ ok: true; releases: { escritaSupabase?: { at: string }; emailExterno?: { at: string } } } | { ok: false; error: string }>;
+    grantRelease: (kind: 'escritaSupabase' | 'emailExterno', phrase: string) => Promise<{ ok: true; releases: { escritaSupabase?: { at: string }; emailExterno?: { at: string } } } | { ok: false; error: string }>;
+    revokeRelease: (kind: 'escritaSupabase' | 'emailExterno') => Promise<{ ok: true; releases: { escritaSupabase?: { at: string }; emailExterno?: { at: string } } } | { ok: false; error: string }>;
+    remoteForm2: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    remoteAnalyse: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    prepareDelivery: (id: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    sendDelivery: (id: string, email: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    sendInvite: (input: { company: string; contact: string; email: string; optin: { channel: string; obtainedAt: string; policyVersion: string; operator: string } }, requestId?: string) => Promise<{ ok: true; case: RaioxScreenCase } | { ok: false; error: string }>;
+    inviteRequests: () => Promise<{ ok: true; requests: { id: string; at: string; origin: 'apk'; company: string; contact: string; email: string; optin: { channel: string; obtainedAt: string; policyVersion: string; operator: string } }[] } | { ok: false; error: string }>;
+    dropInviteRequest: (id: string) => Promise<{ ok: true } | { ok: false; error: string }>;
+    pushRevocation: (id: string) => Promise<{ ok: true; case: RaioxScreenCase; warning?: string } | { ok: false; error: string }>;
     onProgress: (callback: (progress: { id: string; speech: string; activity: string; running: boolean }) => void) => () => void;
     playbooks: () => Promise<
       | { ok: true; playbooks: Array<{ id: string; title: string; stage: string; wave: number; status: string; version: string; problems: string[] }> }

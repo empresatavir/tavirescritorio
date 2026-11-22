@@ -11,6 +11,8 @@ export interface JornadaConfig {
   outDir: string;
   maxPages: number;
   navTimeoutMs: number;
+  /** Portão de design: só roda em projeto com contrato (design/DESIGN.md). Fontes vêm do bloco tokens. */
+  design?: { fonts: string[] } | null;
 }
 
 export interface JornadaTest {
@@ -55,6 +57,21 @@ async function paintMark(page: import('playwright-core').Page, t0: number): Prom
   const at = (Date.now() - t0) / 1000;
   await page.waitForTimeout(400);
   return at;
+}
+
+/** Rola a página até o fim e volta: o que entra na tela ao rolar aparece no print inteiro. */
+async function settle(page: import('playwright-core').Page): Promise<void> {
+  await page
+    .evaluate(async () => {
+      const step = Math.max(200, window.innerHeight - 80);
+      for (let y = 0, i = 0; y < document.documentElement.scrollHeight && i < 40; y += step, i++) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 110));
+      }
+      window.scrollTo(0, 0);
+      await new Promise((r) => setTimeout(r, 250));
+    })
+    .catch(() => {});
 }
 
 async function main(): Promise<void> {
@@ -124,6 +141,7 @@ async function main(): Promise<void> {
     badResponses.length = 0;
     const resp = await page.goto(url, { waitUntil: 'load', timeout: cfg.navTimeoutMs });
     await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {});
+    await settle(page);
     const file = `prints/desktop-${slug(url)}.png`;
     await page.screenshot({ path: path.join(out, file), fullPage: true });
     shots.push(file);
@@ -222,6 +240,281 @@ async function main(): Promise<void> {
       return { msg: `Página ${miss.join(' e ')}`, exp: '<title> preenchido e <html lang="pt-BR"> (ou o idioma do site)', rec: `title="${a11y.title}" lang="${a11y.lang}"`, at: pathOf(url), code: "await expect(page).toHaveTitle(/.+/);\nexpect(await page.getAttribute('html', 'lang')).toBeTruthy();" };
     });
   }
+
+  // ---------------- portão de design (só com contrato de design no projeto) ----------------
+  if (cfg.design) {
+    const SUITE = 'Design';
+    const fonts = cfg.design.fonts || [];
+    const shoot = async (shots: string[], tag: string, url: string) => {
+      await page.addStyleTag({ content: '[data-tavir-qa]{outline:3px solid #e5484d!important;outline-offset:2px!important}' }).catch(() => {});
+      const file = `prints/design-${tag}-${slug(url)}.png`;
+      await page.screenshot({ path: path.join(out, file), fullPage: true });
+      shots.push(file);
+    };
+    const open = async (url: string) => {
+      await page.goto(url, { waitUntil: 'load', timeout: cfg.navTimeoutMs }).catch(() => {});
+      await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {});
+    };
+    for (const url of healthy.slice(0, 3)) {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await open(url);
+      const probe = await page.evaluate((allowed: string[]) => {
+        const cv = document.createElement('canvas');
+        cv.width = cv.height = 1;
+        const ctx = cv.getContext('2d', { willReadFrequently: true })!;
+        const rgba = (c: string): number[] => {
+          ctx.clearRect(0, 0, 1, 1);
+          ctx.fillStyle = '#000';
+          ctx.fillStyle = c;
+          ctx.fillRect(0, 0, 1, 1);
+          const d = ctx.getImageData(0, 0, 1, 1).data;
+          return [d[0], d[1], d[2], d[3] / 255];
+        };
+        const lum = (c: number[]) => {
+          const f = (v: number) => { const x = v / 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); };
+          return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]);
+        };
+        const over = (top: number[], bot: number[]) => [0, 1, 2].map((i) => top[i] * top[3] + bot[i] * (1 - top[3])).concat(1);
+        const visible = (el: Element) => {
+          const r = el.getBoundingClientRect();
+          const st = getComputedStyle(el);
+          return r.width > 0 && r.height > 0 && st.visibility !== 'hidden' && st.display !== 'none' && Number(st.opacity) > 0.05;
+        };
+        // Fundo efetivo; null quando há imagem ou degradê no caminho (não dá para medir com segurança).
+        const bgOf = (el: Element): number[] | null => {
+          const stack: number[][] = [];
+          for (let n: Element | null = el; n; n = n.parentElement) {
+            const st = getComputedStyle(n);
+            if (st.backgroundImage && st.backgroundImage !== 'none') return null;
+            const c = rgba(st.backgroundColor);
+            if (c[3] > 0) stack.push(c);
+            if (c[3] >= 0.99) break;
+          }
+          let base = [255, 255, 255, 1];
+          for (let i = stack.length - 1; i >= 0; i--) base = over(stack[i], base);
+          return base;
+        };
+        const label = (el: Element) => el.outerHTML.replace(/\s+/g, ' ').slice(0, 130);
+        const generic = /^(serif|sans-serif|monospace|system-ui|ui-sans-serif|ui-serif|ui-monospace|ui-rounded|cursive|fantasy|inherit|-apple-system|blinkmacsystemfont|segoe ui|arial|helvetica|helvetica neue|roboto|times new roman|times|georgia|courier new|menlo|consolas)$/;
+        const want = allowed.map((f) => f.toLowerCase().trim());
+        const low: Element[] = [];
+        const lowNote: string[] = [];
+        const offFont = new Map<string, Element>();
+        const seen = new Set<Element>();
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        let node: Node | null;
+        let count = 0;
+        while ((node = walker.nextNode()) && count < 2000) {
+          if (!node.nodeValue || node.nodeValue.trim().length < 2) continue;
+          const el = node.parentElement;
+          if (!el || seen.has(el)) continue;
+          seen.add(el);
+          if (['SCRIPT', 'STYLE', 'NOSCRIPT', 'OPTION'].includes(el.tagName) || !visible(el)) continue;
+          if (el.closest('[disabled],[aria-disabled="true"]')) continue;
+          count += 1;
+          const st = getComputedStyle(el);
+          const family = (st.fontFamily.split(',')[0] || '').replace(/["']/g, '').trim().toLowerCase();
+          if (want.length && family && !generic.test(family) && !/icon|symbol|awesome/.test(family) && !want.includes(family) && !offFont.has(family)) offFont.set(family, el);
+          const bg = bgOf(el);
+          if (!bg) continue;
+          const fg = over(rgba(st.color), bg);
+          const l1 = lum(fg);
+          const l2 = lum(bg);
+          const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+          const size = parseFloat(st.fontSize);
+          const need = size >= 24 || (size >= 18.66 && Number(st.fontWeight) >= 700) ? 3 : 4.5;
+          if (ratio + 0.05 < need) {
+            low.push(el);
+            if (lowNote.length < 6) lowNote.push(`${ratio.toFixed(2)}:1 (mínimo ${need}:1) · ${label(el)}`);
+          }
+        }
+        const emoji = Array.from(document.querySelectorAll('button, a[href], [role="button"], h1, h2, h3, label')).filter(
+          (el) => visible(el) && /\p{Emoji_Presentation}/u.test((el as HTMLElement).innerText || ''),
+        );
+        const heads = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6')).filter(visible);
+        const h1 = heads.filter((h) => h.tagName === 'H1').length;
+        const skips: string[] = [];
+        let prev = 0;
+        for (const h of heads) {
+          const lv = Number(h.tagName[1]);
+          if (prev && lv > prev + 1) skips.push(`h${prev} → h${lv}: ${((h as HTMLElement).innerText || '').trim().slice(0, 60)}`);
+          prev = lv;
+        }
+        return {
+          lowN: low.length,
+          lowNote,
+          emojiN: emoji.length,
+          emojiNote: emoji.slice(0, 6).map(label),
+          h1,
+          skips: skips.slice(0, 6),
+          fontNote: Array.from(offFont.entries()).slice(0, 6).map(([f, el]) => `${f} · ${label(el)}`),
+          _: (() => {
+            (window as any).__tvDesign = { low, emoji, font: Array.from(offFont.values()) };
+            return 0;
+          })(),
+        };
+      }, fonts);
+      const mark = (kind: 'low' | 'emoji' | 'font') =>
+        page.evaluate((k) => {
+          document.querySelectorAll('[data-tavir-qa]').forEach((el) => el.removeAttribute('data-tavir-qa'));
+          (((window as any).__tvDesign || {})[k] || []).slice(0, 20).forEach((el: Element) => el.setAttribute('data-tavir-qa', '1'));
+        }, kind);
+      await record('desktop', t0d, SUITE, `Conteúdo aparece depois de rolar · ${pathOf(url)}`, url, async (shots) => {
+        await settle(page);
+        const hidden = await page.evaluate(() => {
+          let total = 0;
+          let gone = 0;
+          const items: string[] = [];
+          const seen = new Set<Element>();
+          const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+          let node: Node | null;
+          while ((node = walker.nextNode())) {
+            const len = (node.nodeValue || '').trim().length;
+            const el = node.parentElement;
+            if (len < 2 || !el || ['SCRIPT', 'STYLE', 'NOSCRIPT', 'OPTION', 'TITLE'].includes(el.tagName)) continue;
+            const r = el.getBoundingClientRect();
+            if (!(r.width > 0 && r.height > 0)) continue;
+            // Menu, diálogo e conteúdo fechado de propósito não contam.
+            if (el.closest('[hidden], [aria-hidden="true"], dialog:not([open]), details:not([open]), .sr-only, .visually-hidden')) continue;
+            let opacity = 1;
+            let top: Element = el;
+            for (let n: Element | null = el; n; n = n.parentElement) {
+              const o = Number(getComputedStyle(n).opacity);
+              if (o < 1) { opacity *= o; top = n; }
+            }
+            total += len;
+            if (opacity < 0.1) {
+              gone += len;
+              if (!seen.has(top)) {
+                seen.add(top);
+                top.setAttribute('data-tavir-qa', '1');
+                if (items.length < 6) items.push(top.outerHTML.replace(/\s+/g, ' ').slice(0, 130));
+              }
+            }
+          }
+          return { total, gone, items };
+        });
+        if (!hidden.total || hidden.gone / hidden.total < 0.05) return null;
+        await shoot(shots, 'invisivel', url);
+        return { msg: `${Math.round((hidden.gone / hidden.total) * 100)}% do texto continua invisível depois de rolar a página`, exp: 'Todo conteúdo fica visível ao passar pela tela; animação de entrada não pode deixar seção em branco', rec: hidden.items.join('\n'), at: pathOf(url), code: '' };
+      });
+      await record('desktop', t0d, SUITE, `Contraste de texto AA · ${pathOf(url)}`, url, async (shots) => {
+        if (!probe.lowN) return null;
+        await mark('low');
+        await shoot(shots, 'contraste', url);
+        return { msg: `${probe.lowN} texto(s) com contraste abaixo do mínimo`, exp: 'Texto com 4,5:1 contra o fundo (3:1 em texto grande)', rec: probe.lowNote.join('\n'), at: pathOf(url), code: '// contraste medido no navegador, texto contra o fundo efetivo' };
+      });
+      await record('desktop', t0d, SUITE, `Sem clichês de modelo pronto · ${pathOf(url)}`, url, async (shots) => {
+        const tells = await page.evaluate(() => {
+          document.querySelectorAll('[data-tavir-qa]').forEach((el) => el.removeAttribute('data-tavir-qa'));
+          const visible = (el: Element) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+          const notes: string[] = [];
+          // Título com texto em degradê.
+          const gradText = Array.from(document.querySelectorAll('h1, h2, h3, span, p, a')).filter((el) => {
+            const st = getComputedStyle(el) as CSSStyleDeclaration & { webkitBackgroundClip?: string };
+            return visible(el) && /gradient/.test(st.backgroundImage) && (st.backgroundClip === 'text' || st.webkitBackgroundClip === 'text');
+          });
+          if (gradText.length) notes.push(`${gradText.length} texto(s) em degradê`);
+          // Selo pequeno em caixa alta logo acima de título, repetido pela página.
+          const eyebrows = Array.from(document.querySelectorAll('h1, h2, h3'))
+            .map((h) => h.previousElementSibling)
+            .filter((el): el is Element => {
+              if (!el || !visible(el) || el.children.length > 1) return false;
+              const text = ((el as HTMLElement).innerText || '').trim();
+              if (text.length < 2 || text.length > 40) return false;
+              const st = getComputedStyle(el);
+              const caps = st.textTransform === 'uppercase' || (text === text.toUpperCase() && /[A-ZÀ-Ú]/.test(text));
+              return caps && parseFloat(st.fontSize) <= 14;
+            });
+          if (eyebrows.length >= 3) notes.push(`${eyebrows.length} selos em caixa alta acima de título`);
+          const marked = [...gradText, ...(eyebrows.length >= 3 ? eyebrows : [])];
+          marked.slice(0, 20).forEach((el) => el.setAttribute('data-tavir-qa', '1'));
+          return { notes, items: marked.slice(0, 6).map((el) => el.outerHTML.replace(/\s+/g, ' ').slice(0, 130)) };
+        });
+        if (!tells.notes.length) return null;
+        await shoot(shots, 'cliches', url);
+        return { msg: `Padrão de modelo pronto: ${tells.notes.join('; ')}`, exp: 'Hierarquia feita por tamanho, peso e posição; sem texto em degradê e sem selo em caixa alta repetido acima dos títulos', rec: tells.items.join('\n'), at: pathOf(url), code: '' };
+      });
+      await record('desktop', t0d, SUITE, `Sem emoji como ícone · ${pathOf(url)}`, url, async (shots) => {
+        if (!probe.emojiN) return null;
+        await mark('emoji');
+        await shoot(shots, 'emoji', url);
+        return { msg: `${probe.emojiN} botão(ões), link(s) ou título(s) com emoji`, exp: 'Ícone em SVG; emoji muda de desenho em cada sistema', rec: probe.emojiNote.join('\n'), at: pathOf(url), code: '' };
+      });
+      await record('desktop', t0d, SUITE, `Hierarquia de títulos · ${pathOf(url)}`, url, async () => {
+        const miss = [probe.h1 === 1 ? '' : `${probe.h1} h1 visível(is)`, ...probe.skips].filter(Boolean);
+        if (!miss.length) return null;
+        return { msg: probe.h1 === 1 ? 'Títulos pulam nível' : `A página tem ${probe.h1} h1`, exp: 'Um só h1 e níveis em sequência (h1, h2, h3)', rec: miss.join('\n'), at: pathOf(url), code: "await expect(page.locator('h1')).toHaveCount(1);" };
+      });
+      if (fonts.length) {
+        await record('desktop', t0d, SUITE, `Fontes dentro dos tokens · ${pathOf(url)}`, url, async (shots) => {
+          if (!probe.fontNote.length) return null;
+          await mark('font');
+          await shoot(shots, 'fontes', url);
+          return { msg: `${probe.fontNote.length} fonte(s) fora do contrato de design`, exp: `Só as fontes dos tokens: ${fonts.join(', ')}`, rec: probe.fontNote.join('\n'), at: pathOf(url), code: '' };
+        });
+      }
+      await record('desktop', t0d, SUITE, `Foco visível no teclado · ${pathOf(url)}`, url, async (shots) => {
+        await page.evaluate(() => {
+          document.querySelectorAll('[data-tavir-qa]').forEach((el) => el.removeAttribute('data-tavir-qa'));
+          const sig = (el: Element) => {
+            const st = getComputedStyle(el);
+            return [st.outlineStyle, st.outlineWidth, st.outlineColor, st.boxShadow, st.backgroundColor, st.borderColor, st.textDecorationLine, st.color].join('|');
+          };
+          const els = Array.from(document.querySelectorAll('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])')).slice(0, 60);
+          (window as any).__tvFocus = new Map(els.map((el) => [el, sig(el)]));
+          (window as any).__tvSig = sig;
+        });
+        const same: string[] = [];
+        for (let i = 0; i < 8; i++) {
+          await page.keyboard.press('Tab');
+          await page.waitForTimeout(220);
+          const hit = await page.evaluate(() => {
+            const el = document.activeElement;
+            const before = (window as any).__tvFocus as Map<Element, string>;
+            if (!el || el === document.body || !before.has(el)) return '';
+            if (before.get(el) !== (window as any).__tvSig(el)) return '';
+            el.setAttribute('data-tavir-qa', '1');
+            return el.outerHTML.replace(/\s+/g, ' ').slice(0, 130);
+          });
+          if (hit && !same.includes(hit)) same.push(hit);
+        }
+        if (!same.length) return null;
+        await shoot(shots, 'foco', url);
+        return { msg: `${same.length} controle(s) sem foco visível`, exp: 'Ao navegar com Tab, o controle em foco muda de aparência (contorno, sombra ou cor)', rec: same.join('\n'), at: pathOf(url), code: "await page.keyboard.press('Tab');" };
+      });
+      for (const width of [768, 1024]) {
+        await record('desktop', t0d, SUITE, `Sem rolagem horizontal em ${width} px · ${pathOf(url)}`, url, async (shots) => {
+          await page.setViewportSize({ width, height: 900 });
+          await page.waitForTimeout(350);
+          const over = await page.evaluate(() => ({ w: document.documentElement.clientWidth, sw: document.documentElement.scrollWidth }));
+          if (over.sw <= over.w + 1) return null;
+          const file = `prints/design-${width}-${slug(url)}.png`;
+          await page.screenshot({ path: path.join(out, file), fullPage: true });
+          shots.push(file);
+          return { msg: `A página rola na horizontal em ${width} px (${over.sw} px de largura)`, exp: `Conteúdo cabe em ${over.w} px`, rec: `scrollWidth=${over.sw}`, at: pathOf(url), code: `await page.setViewportSize({ width: ${width}, height: 900 });` };
+        });
+      }
+      await page.setViewportSize({ width: 1440, height: 900 });
+    }
+    const first = healthy[0];
+    if (first) {
+      await record('desktop', t0d, SUITE, `Respeita movimento reduzido · ${pathOf(first)}`, first, async () => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await open(first);
+        await page.waitForTimeout(700);
+        const moving = await page.evaluate(() =>
+          document.getAnimations().filter((a) => {
+            const t = a.effect?.getComputedTiming();
+            return a.playState === 'running' && !!t && (t.iterations === Infinity || Number(t.duration) > 400);
+          }).length,
+        );
+        await page.emulateMedia({ reducedMotion: null });
+        if (!moving) return null;
+        return { msg: `${moving} animação(ões) seguem rodando com movimento reduzido`, exp: 'Com prefers-reduced-motion: reduce, animação longa ou em laço fica desligada', rec: `${moving} animação(ões) em execução`, at: pathOf(first), code: "await page.emulateMedia({ reducedMotion: 'reduce' });" };
+      });
+    }
+  }
   await desk.tracing.stop({ path: path.join(out, 'traces', 'desktop.zip') });
   result.traces.push('traces/desktop.zip');
   const deskVideo = page.video();
@@ -257,12 +550,41 @@ async function main(): Promise<void> {
         return { w, sw, items: leaves.slice(0, 6).map((el) => el.outerHTML.replace(/\s+/g, ' ').slice(0, 120)) };
       });
       if (over.sw > over.w + 1) await mpage.addStyleTag({ content: '[data-tavir-qa]{outline:3px solid #e5484d!important;outline-offset:-3px!important}' });
+      await settle(mpage);
       const file = `prints/celular-${slug(url)}.png`;
       await mpage.screenshot({ path: path.join(out, file), fullPage: true });
       shots.push(file);
       if (over.sw <= over.w + 1) return null;
       return { msg: `A página rola na horizontal em 390 px (${over.sw} px de largura)`, exp: `Conteúdo cabe em ${over.w} px`, rec: over.items.join('\n') || `scrollWidth=${over.sw}`, at: pathOf(url), code: "await page.setViewportSize({ width: 390, height: 844 });\nexpect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);" };
     });
+  }
+  if (cfg.design) {
+    for (const url of healthy.slice(0, 2)) {
+      await record('mobile', t0m, 'Design', `Alvo de toque de 44 px · ${pathOf(url)}`, url, async (shots) => {
+        await mpage.goto(url, { waitUntil: 'load', timeout: cfg.navTimeoutMs });
+        await mpage.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {});
+        const small = await mpage.evaluate(() => {
+          const els = Array.from(document.querySelectorAll('button, [role="button"], a[href], select, textarea, input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])')).filter((el) => {
+            const r = el.getBoundingClientRect();
+            const st = getComputedStyle(el);
+            if (!(r.width > 0 && r.height > 0) || st.visibility === 'hidden') return false;
+            // Link no meio de um parágrafo não é alvo isolado.
+            const own = ((el as HTMLElement).innerText || '').trim().length;
+            const around = ((el.parentElement as HTMLElement | null)?.innerText || '').trim().length;
+            if (el.tagName === 'A' && st.display.startsWith('inline') && around > own + 20) return false;
+            return r.width < 43 || r.height < 43;
+          });
+          els.slice(0, 20).forEach((el) => el.setAttribute('data-tavir-qa', '1'));
+          return { n: els.length, items: els.slice(0, 6).map((el) => { const r = el.getBoundingClientRect(); return `${Math.round(r.width)}×${Math.round(r.height)} px · ${el.outerHTML.replace(/\s+/g, ' ').slice(0, 110)}`; }) };
+        });
+        if (!small.n) return null;
+        await mpage.addStyleTag({ content: '[data-tavir-qa]{outline:3px solid #e5484d!important;outline-offset:2px!important}' });
+        const file = `prints/design-toque-${slug(url)}.png`;
+        await mpage.screenshot({ path: path.join(out, file), fullPage: true });
+        shots.push(file);
+        return { msg: `${small.n} controle(s) menores que 44 px no celular`, exp: 'Botão, campo e link isolado com pelo menos 44 × 44 px de área de toque', rec: small.items.join('\n'), at: pathOf(url), code: '' };
+      });
+    }
   }
   await mob.tracing.stop({ path: path.join(out, 'traces', 'celular.zip') });
   result.traces.push('traces/celular.zip');

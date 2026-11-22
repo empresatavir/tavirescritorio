@@ -4,10 +4,7 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import { RAIOX_CATALOG } from '../../src/shared/raiox';
 import {
-  continueCase,
-  deliveryCase,
-  inviteCase,
-  reviewCase,
+  continueRemote,
   syncCases,
   type RaioxSyncConfig,
 } from '../../src/main/raiox/raioxBridge';
@@ -19,7 +16,6 @@ const SECRET = 'a'.repeat(32);
 const NOW = '2026-11-09T18:00:00.000Z';
 const LATER = '2026-11-09T19:00:00.000Z';
 const REMOTE_ID = 'e7c28036-77da-43da-bfd4-5c51eb908253';
-const LOCKED = 'Escrita no Supabase liberada só após o corte (CP-9).';
 
 const dirs: string[] = [];
 
@@ -174,14 +170,38 @@ describe('ponte de leitura do Raio-X', () => {
     expect(cases).toHaveLength(2);
     const updated = cases.find((item) => item.id === 'RX-E7C28036');
     expect(updated?.company).toBe('Padaria Dois Irmãos');
-    expect(updated?.remote).toEqual({ supabaseId: REMOTE_ID, status: 'sent', syncedAt: LATER });
+    expect(updated?.remote).toEqual({ supabaseId: REMOTE_ID, status: 'sent', syncedAt: LATER, emailVerified: false, revoked: false });
     expect(cases.find((item) => item.id === local.id)?.company).toBe('Casa local');
   });
 
-  it('declara a escrita e recusa chamá-la', () => {
-    expect(() => continueCase()).toThrow(new RaioxError(LOCKED));
-    expect(() => reviewCase()).toThrow(LOCKED);
-    expect(() => deliveryCase()).toThrow(LOCKED);
-    expect(() => inviteCase()).toThrow(LOCKED);
+  it('G-PR1 controle 4: traz a confirmação do e-mail e a análise espera por ela', async () => {
+    const root = tempRoot();
+    await run(root, fetchOf(jsonResponse(200, { ok: true, cases: [remoteCase()], truncated: false })));
+    const pending = listCases(root).find((item) => item.id === 'RX-E7C28036')!;
+    expect(pending.remote?.emailVerified).toBe(false);
+    const { analyse } = await import('../../src/main/raiox/raioxAnalyse');
+    await expect(analyse(root, pending.id, [], { run: async () => { throw new Error('não roda'); }, gitStatus: () => '' }))
+      .rejects.toThrow(/e-mail deste convidado ainda não foi confirmado/);
+    await run(root, fetchOf(jsonResponse(200, { ok: true, cases: [remoteCase({ email_verificado: true })], truncated: false })), LATER);
+    expect(listCases(root).find((item) => item.id === 'RX-E7C28036')?.remote?.emailVerified).toBe(true);
+  });
+
+  it('G-PR1 controle 8: sync traz a revogação e ela não volta atrás', async () => {
+    const root = tempRoot();
+    await run(root, fetchOf(jsonResponse(200, { ok: true, cases: [remoteCase({ revogado: true })], truncated: false })));
+    const revoked = listCases(root).find((item) => item.id === 'RX-E7C28036')!;
+    expect(revoked.remote?.revoked).toBe(true);
+    const { analyse } = await import('../../src/main/raiox/raioxAnalyse');
+    await expect(analyse(root, revoked.id, [], { run: async () => { throw new Error('não roda'); }, gitStatus: () => '' }))
+      .rejects.toThrow(/revogou/);
+    await run(root, fetchOf(jsonResponse(200, { ok: true, cases: [remoteCase()], truncated: false })), LATER);
+    expect(listCases(root).find((item) => item.id === 'RX-E7C28036')?.remote?.revoked).toBe(true);
+  });
+
+  it('escrita sem a liberação do CP-10 recusa sem chamar a rede', async () => {
+    const root = tempRoot();
+    const fetchImpl = (async () => { throw new Error('não deveria chamar'); }) as typeof fetch;
+    await expect(continueRemote(REMOTE_ID, 'form2', { root, fetchImpl })).rejects.toThrow(RaioxError);
+    await expect(continueRemote(REMOTE_ID, 'form2', { root, fetchImpl })).rejects.toThrow(/liberado CP-10/);
   });
 });

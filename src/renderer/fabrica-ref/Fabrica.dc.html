@@ -1346,7 +1346,9 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
     <div class="mhead"><div class="grow"><div class="eyebrow">Etapa {{stageModal.n}} · {{stageModal.status}} · {{stageModal.owner}}</div><h2>{{stageModal.title}}</h2><p>{{stageModal.skill}}. {{stageModal.gateTxt}}</p></div></div>
     <div class="mbody" style="display: flex; flex-direction: column; gap: 14px">
       <div><div class="eyebrow" style="margin-bottom: 6px">O que foi levantado</div><pre class="mono" style="margin: 0; padding: 12px; max-height: 160px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: var(--surface-0); border: 1px solid var(--line); border-radius: 10px; color: var(--text-secondary)">{{stageModal.note}}</pre></div>
+      <sc-if value="{{stageModal.designStage}}" hint-placeholder-val="{{false}}"><div style="padding: 12px 14px; border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px"><div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><b style="font-size: 13.5px" class="grow">Modo de design</b><button type="button" class="{{stageModal.modePadraoCls}}" aria-pressed="{{stageModal.modePadraoOn}}" onClick="{{stageModal.setPadrao}}">Padrão</button><button type="button" class="{{stageModal.modeConceitoCls}}" aria-pressed="{{stageModal.modeConceitoOn}}" onClick="{{stageModal.setConceito}}">Conceito</button></div><p class="muted" style="margin: 0; font-size: 12.5px; line-height: 1.45">{{stageModal.modeTxt}}</p><div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 8px"><span class="muted grow" style="font-size: 12.5px; line-height: 1.45">Sessão de referências: entre com a sua conta em sites que pedem login (Refero, Mobbin). O Kakashi lê por essa sessão.</span><button type="button" class="btn sm secondary" onClick="{{stageModal.refLogin}}">Entrar num site</button></div></div></sc-if>
       <label class="field"><span>Instrução desta etapa</span><textarea class="input" rows="6" value="{{stageModal.draft}}" onChange="{{stageModal.onDraft}}" placeholder="O que o agente deve levantar ou alterar nesta etapa" style="resize: vertical; min-height: 120px; border-radius: 12px; line-height: 1.45"></textarea></label>
+      <sc-if value="{{stageModal.brandGate}}" hint-placeholder-val="{{false}}"><div style="padding: 12px 14px; border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px"><b style="font-size: 13.5px">Escolha a marca pela prancha</b><p class="muted" style="margin: 0; font-size: 12.5px; line-height: 1.45">Abra as três pranchas no navegador, compare e escolha uma. O tema e a prancha escolhidos viram a marca do projeto, e as páginas são desenhadas com ela.</p><div style="display: flex; gap: 8px; flex-wrap: wrap"><button type="button" class="btn sm secondary" onClick="{{stageModal.openBoardA}}">Abrir prancha A</button><button type="button" class="btn sm secondary" onClick="{{stageModal.openBoardB}}">Abrir prancha B</button><button type="button" class="btn sm secondary" onClick="{{stageModal.openBoardC}}">Abrir prancha C</button></div><div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end"><button type="button" class="btn sm primary" onClick="{{stageModal.chooseA}}">Escolher A</button><button type="button" class="btn sm primary" onClick="{{stageModal.chooseB}}">Escolher B</button><button type="button" class="btn sm primary" onClick="{{stageModal.chooseC}}">Escolher C</button></div><p class="muted" style="margin: 0; font-size: 12.5px">Nenhuma serve? Escreva abaixo o que mudar e reprove: a Marina refaz as três.</p></div></sc-if>
       <sc-if value="{{stageModal.awaiting}}" hint-placeholder-val="{{false}}"><div style="padding: 12px 14px; border-radius: 10px; background: var(--warning-subtle); border: 1px solid var(--warning); display: flex; flex-direction: column; gap: 8px"><b style="font-size: 13.5px">Este gate espera a sua decisão.</b><textarea class="input" rows="3" value="{{stageModal.gateNote}}" onChange="{{stageModal.onGateNote}}" placeholder="Orientação para a equipe (obrigatória para reprovar)" style="resize: vertical; border-radius: 10px; line-height: 1.45"></textarea><div style="display: flex; gap: 8px; justify-content: flex-end"><button type="button" class="btn sm secondary" onClick="{{stageModal.reject}}">Reprovar</button><button type="button" class="btn sm primary" onClick="{{stageModal.approve}}">Aprovar e seguir</button></div></div></sc-if>
       <sc-if value="{{stageModal.hasDecision}}" hint-placeholder-val="{{false}}"><p class="muted" style="margin: 0; font-size: 12.5px">{{stageModal.decisionTxt}}</p></sc-if>
       <sc-if value="{{stageModal.hasRuns}}" hint-placeholder-val="{{false}}"><p class="muted" style="margin: 0; font-size: 12.5px">{{stageModal.runsN}}</p></sc-if>
@@ -4104,11 +4106,12 @@ class Component extends DCLogic {
         const awaiting = saved.status === 'awaiting';
         const dec = saved.decision || null;
         const statusTxt = { idle: 'a fazer', running: 'em execução', paused: 'pausada', stopped: 'parada', done: 'concluída', awaiting: 'aguarda sua decisão' }[saved.status || 'idle'] || saved.status;
-        const decide = (verdict) => {
+        const decide = (verdict, choice) => {
           const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
           const app = self.props.app || NOOP;
           if (!tavir || !tavir.projects || !tavir.projects.decideEsteira) return;
-          const note = String(self.state.gateNote || '').trim();
+          const typed = String(self.state.gateNote || '').trim();
+          const note = choice ? ('Prancha ' + choice + (typed ? '. ' + typed : '')) : typed;
           if (verdict === 'reprovado' && !note) { app.toast('Gate', 'Escreva o que precisa mudar antes de reprovar.'); return; }
           tavir.projects.decideEsteira(target, index, verdict, note).then(function (res) {
             refresh(res);
@@ -4119,10 +4122,26 @@ class Component extends DCLogic {
             if (res && res.continued) { self.setState({ stageModal: null }); self._runEsteira(index + 1); }
           }).catch(function (err) { app.toast('Gate', String(err && err.message || err)); });
         };
+        const openBoard = (letter) => {
+          const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+          if (!tavir || !tavir.projects || !tavir.projects.openBrandBoard) return;
+          tavir.projects.openBrandBoard(target, letter).then(function (res) {
+            if (res && res.ok === false) (self.props.app || NOOP).toast('Prancha de marca', res.error || 'Não abriu a prancha.');
+          }).catch(function (err) { (self.props.app || NOOP).toast('Prancha de marca', String(err && err.message || err)); });
+        };
         const control = (action) => {
           const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
           if (!tavir || !tavir.projects || !tavir.projects.controlEsteira) return;
           tavir.projects.controlEsteira(target, index, action).then(refresh).catch(function (err) { (self.props.app || NOOP).toast('Esteira', String(err && err.message || err)); });
+        };
+        const setMode = (mode) => {
+          const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+          if (!tavir || !tavir.projects || !tavir.projects.setEsteiraDesignMode) return;
+          tavir.projects.setEsteiraDesignMode(target, mode).then(function (res) {
+            refresh(res);
+            if (res && res.ok === false) { (self.props.app || NOOP).toast('Modo de design', res.error || 'Não gravou o modo.'); return; }
+            (self.props.app || NOOP).toast('Modo de design', mode === 'conceito' ? 'Conceito. Vale para as próximas etapas de design.' : 'Padrão. Vale para as próximas etapas de design.');
+          }).catch(function (err) { (self.props.app || NOOP).toast('Modo de design', String(err && err.message || err)); });
         };
         return {
           open: open,
@@ -4137,6 +4156,13 @@ class Component extends DCLogic {
           gateNote: s.gateNote || '',
           onGateNote: (e) => self.setState({ gateNote: e.target.value }),
           approve: () => decide('aprovado'),
+          brandGate: awaiting && String(st[0] || '') === 'Escolha da marca',
+          chooseA: () => decide('aprovado', 'A'),
+          chooseB: () => decide('aprovado', 'B'),
+          chooseC: () => decide('aprovado', 'C'),
+          openBoardA: () => openBoard('a'),
+          openBoardB: () => openBoard('b'),
+          openBoardC: () => openBoard('c'),
           reject: () => decide('reprovado'),
           hasDecision: !!dec,
           decisionTxt: dec ? ('Última decisão: ' + dec.decision + ' em ' + String(dec.at || '').slice(0, 16).replace('T', ' ') + (dec.note ? ' · ' + dec.note : '')) : '',
@@ -4144,6 +4170,23 @@ class Component extends DCLogic {
           hasRuns: (saved.runs || []).length > 0,
           draft: s.stageDraft != null ? s.stageDraft : (saved.instruction || ''),
           onDraft: (e) => self.setState({ stageDraft: e.target.value }),
+          designStage: /^(direção de design|prova visual)$/i.test(String(st[0] || '')),
+          modePadraoOn: desk.designMode !== 'conceito',
+          modeConceitoOn: desk.designMode === 'conceito',
+          modePadraoCls: 'btn sm ' + (desk.designMode !== 'conceito' ? 'primary' : 'secondary'),
+          modeConceitoCls: 'btn sm ' + (desk.designMode === 'conceito' ? 'primary' : 'secondary'),
+          modeTxt: desk.designMode === 'conceito'
+            ? 'Conceito: parte de uma ideia central e quebra convenções da categoria de propósito. A tarefa de quem usa e o portão automático valem igual.'
+            : 'Padrão: segue as convenções da categoria e ganha no acabamento. Para algo fora da caixa, escolha Conceito antes de executar a etapa.',
+          setPadrao: () => setMode('padrao'),
+          setConceito: () => setMode('conceito'),
+          refLogin: () => {
+            const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+            if (!tavir || !tavir.projects || !tavir.projects.refLogin) return;
+            tavir.projects.refLogin().then(function (res) {
+              if (res && res.ok === false) (self.props.app || NOOP).toast('Sessão de referências', res.error || 'Não abriu a janela.');
+            }).catch(function (err) { (self.props.app || NOOP).toast('Sessão de referências', String(err && err.message || err)); });
+          },
           note: saved.note || 'Ainda não há levantamento desta etapa.',
           hasFiles: files.length > 0,
           emptyFiles: files.length === 0,

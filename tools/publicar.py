@@ -45,10 +45,12 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-TAVIR_LOGO = ROOT / "TAVIR" / "brand-kit" / "logo" / "tavir-primary-transparent.png"
-TAVIR_FONT_REGULAR = ROOT / ".agents" / "skills" / "ui-styling" / "canvas-fonts" / "InstrumentSans-Regular.ttf"
-TAVIR_FONT_BOLD = ROOT / ".agents" / "skills" / "ui-styling" / "canvas-fonts" / "InstrumentSans-Bold.ttf"
-TAVIR_MONO = ROOT / ".agents" / "skills" / "ui-styling" / "canvas-fonts" / "IBMPlexMono-Regular.ttf"
+# Marca e fontes ficam versionadas ao lado do script (fontes sob OFL, licença junto).
+MARCA = Path(__file__).resolve().parent / "marca"
+TAVIR_LOGO = MARCA / "tavir-primary-transparent.png"
+TAVIR_FONT_REGULAR = MARCA / "fontes" / "InstrumentSans-Regular.ttf"
+TAVIR_FONT_BOLD = MARCA / "fontes" / "InstrumentSans-Bold.ttf"
+TAVIR_MONO = MARCA / "fontes" / "IBMPlexMono-Regular.ttf"
 
 # ── Temas por tipo de documento (cor de destaque + rótulo) ───────────────────
 TEMAS = {

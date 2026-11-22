@@ -977,11 +977,25 @@ export interface RaioxDebrief {
   documents?: RaioxDocument[];
   approval?: { hashes: string[]; at: string };
   delivery?: { channel: 'manual' | 'resend'; to: string; at: string; note?: string };
+  /** F8 T8.2: entrega preparada no Supabase, esperando o "Autorizar envio" do Carlos. */
+  pendingDelivery?: { deliveryId: string; idempotencyKey: string; email: string; contactName: string; companyName: string; round: number; preparedAt: string };
 }
 export interface RaioxMetric { key: string; label: string; value: number; unit: string; at: string; moment: 'd0' | 'd30'; source: string; }
 export interface RaioxStepCheck { step: number; doneAt: string; proof: { kind: 'arquivo' | 'link' | 'nota'; value: string; sha256?: string }; }
 export interface RaioxExecution { gapId: string; playbookVersion: string; startedAt: string; steps: RaioxStepCheck[]; metrics: RaioxMetric[]; fabricaProjectId?: string; closedAt?: string; }
-export interface RaioxRemote { supabaseId: string; status: RaioxRemoteStatus; syncedAt: string; formUrl?: string; }
+/** Versão do aviso de privacidade em vigor. Igual a AVISO_VERSAO em raiox/web/api/_raiox.mjs. */
+export const RAIOX_AVISO_VERSAO = '2026-11-21';
+/** G-PR1 controle 1: canais aceitos para o opt-in. Igual à migração 20261121130000. */
+export const RAIOX_OPTIN_CHANNELS = ['whatsapp', 'telefone', 'presencial', 'videochamada', 'email'] as const;
+export type RaioxOptinChannel = typeof RAIOX_OPTIN_CHANNELS[number];
+export const RAIOX_OPTIN_LABEL: Record<RaioxOptinChannel, string> = {
+  whatsapp: 'WhatsApp', telefone: 'Telefone', presencial: 'Presencial', videochamada: 'Videochamada', email: 'E-mail',
+};
+/** Como o contato aceitou receber o convite. Registrado pelo Carlos antes de criar o caso remoto. */
+export interface RaioxOptin { channel: RaioxOptinChannel; obtainedAt: string; policyVersion: string; operator: string; }
+/** G-PR1 controle 8: o titular retirou a autorização. Depois disto o caso só é lido ou expurgado. */
+export interface RaioxRevocation { at: string; requestedAt: string; channel: RaioxOptinChannel; note: string; /** F8: quando o Supabase confirmou a revogação. */ remoteAt?: string; }
+export interface RaioxRemote { supabaseId: string; status: RaioxRemoteStatus; syncedAt: string; formUrl?: string; emailVerified?: boolean; revoked?: boolean; }
 export interface RaioxCase {
   id: string; uuid: string; legacy: boolean;
   company: string; contact?: string; objective: string; decisionNeeded: string; frontier?: string;
@@ -991,5 +1005,37 @@ export interface RaioxCase {
   priority?: RaioxPriority; debrief?: RaioxDebrief; execution?: RaioxExecution; remote?: RaioxRemote;
   consent?: { kind: 'termo_assinado' | 'verbal_registrado' | 'interno' | 'formulario'; at: string; note: string };
   anexos?: RaioxAnexo[];
+  /** G-PR1 controle 6: serviços que tocaram dados deste caso (cópia do catálogo no momento do uso). */
+  vendors?: RaioxVendor[];
+  /** G-PR1 controle 1: opt-in que autorizou o convite deste caso. */
+  optin?: RaioxOptin;
+  revocation?: RaioxRevocation;
+  /** G-PR1 controle 7: cópias de PDF levadas para fora da pasta do caso (o expurgo apaga). */
+  exports?: RaioxExport[];
   createdAt: string; updatedAt: string; closedAt?: string;
+}
+export interface RaioxExport { at: string; dir: string; files: { name: string; sha256: string }[] }
+
+/** G-PR1 controle 7: motivo do expurgo. */
+export const RAIOX_PURGE_REASONS = ['pedido_titular', 'retencao', 'ensaio'] as const;
+export type RaioxPurgeReason = (typeof RAIOX_PURGE_REASONS)[number];
+export const RAIOX_PURGE_REASON_LABEL: Record<RaioxPurgeReason, string> = {
+  pedido_titular: 'Pedido do titular',
+  retencao: 'Fim do prazo de retenção',
+  ensaio: 'Ensaio com caso fictício',
+};
+/** limpo: apagado e conferido; pendente: depende de etapa futura; manual: o Carlos confere fora do app. */
+export type RaioxPurgeStatus = 'limpo' | 'pendente' | 'manual';
+export interface RaioxPurgeArea { area: string; found: number; removed: number; remaining: number; status: RaioxPurgeStatus; note: string }
+/** Relatório de ausência: sem nome, contato, e-mail ou conteúdo do caso. */
+export interface RaioxPurgeReport {
+  caseId: string; supabaseId?: string; reason: RaioxPurgeReason; purgedAt: string;
+  areas: RaioxPurgeArea[]; complete: boolean;
+}
+export interface RaioxVendor {
+  id: string; nome: string; finalidade: string; dados: string;
+  regiao: string; retencao: string; exclusao: string; confirmado: boolean;
+  primeiroUso: string; ultimoUso: string;
+  /** Usos registrados (ex.: "análise · gemini-3.8-flash"), sem repetição. */
+  usos: string[];
 }
