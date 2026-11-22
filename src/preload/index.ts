@@ -325,6 +325,13 @@ const api: TavirApi = {
     flow: {
       enviar: (pecaId) => ipcRenderer.invoke('studio:flow:enviar', pecaId),
       estado: (pecaId) => ipcRenderer.invoke('studio:flow:estado', pecaId),
+      board: () => ipcRenderer.invoke('flow:board'),
+      criar: (input) => ipcRenderer.invoke('flow:criar', input),
+      ativar: (id, atestado) => ipcRenderer.invoke('flow:ativar', id, atestado),
+      cancelar: (id) => ipcRenderer.invoke('flow:cancelar', id),
+      simular: () => ipcRenderer.invoke('flow:simular'),
+      abrirDarkflow: () => ipcRenderer.invoke('flow:abrirDarkflow'),
+      ligar: () => ipcRenderer.invoke('flow:ligar'),
     },
     docuflow: {
       send: (pecaId) => ipcRenderer.invoke('studio:docuflow:send', pecaId),

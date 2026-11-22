@@ -28,6 +28,7 @@ import {
   type Peca,
   type PecaCreateInput,
   type PecaFiltro,
+  type PecaOrigem,
   type PecaRow,
   type PecaUpdate,
   type Perfil,
@@ -354,6 +355,8 @@ export class StudioStore {
       criado_em: row.criado_em,
       atualizado_em: row.atualizado_em,
     };
+    const origem = this.readOrigem(row.id);
+    if (origem) peca.origem = origem;
     if (!hydrated) return peca;
     const slots = this.listSlots(row.id).map((s) => ({ id: s.id, ativo_id: s.ativo_id, codigo: s.codigo }));
     const finais = this.listRenders(row.id).filter((r) => r.tipo === 'final');
@@ -363,6 +366,16 @@ export class StudioStore {
     peca.render_final = ultimo ? { status: ultimo.status, checks: ultimo.checks ?? [] } : null;
     peca.pacote_montado = fs.existsSync(path.join(pacote, 'manifest.json'));
     return peca;
+  }
+
+  /** Origem de peça vinda do APK ou de agente (F4 do GOAL_FLOW). Sem arquivo, a peça nasceu no Studio. */
+  readOrigem(pecaId: string): PecaOrigem | null {
+    try {
+      const raw = JSON.parse(fs.readFileSync(path.join(this.tree.pecaDirs(pecaId).root, 'origem.json'), 'utf8')) as Partial<PecaOrigem>;
+      return (raw.origem === 'apk' || raw.origem === 'agente') && raw.autor ? (raw as PecaOrigem) : null;
+    } catch {
+      return null;
+    }
   }
 
   private readPecaRow(id: string): PecaRow | undefined {

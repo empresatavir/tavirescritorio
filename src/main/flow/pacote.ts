@@ -69,7 +69,7 @@ export function pacoteDaPeca(store: StudioStore, pecaId: string, deps: { probe?:
   }
   const pacote: PacoteAprovado = {
     versao: 1,
-    origem: 'studio',
+    origem: peca.origem?.origem ?? 'studio',
     peca_id: peca.id,
     titulo: peca.titulo || '',
     perfil: store.getPerfil(peca.perfil_id)?.nome ?? '',

@@ -15,6 +15,8 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { OFFICE_AGENTS, officeAgent } from '../shared/officeAgents';
+import { INSTRUCAO_PECA, agentePropoePeca, aplicarPecasDoAgente } from './flow/entrada';
+import { getStudioStore } from './studio/store';
 
 export type RunMode = 'plan' | 'exec';
 export type TaskRunStatus = 'queued' | 'running' | 'review' | 'done' | 'approved' | 'failed' | 'canceled';
@@ -352,6 +354,8 @@ export function buildPrompt(opts: { mode: RunMode; agent: string; task: ExecTask
     opts.note ? `Ajuste pedido pelo Carlos nesta tentativa:\n${opts.note}` : '',
     opts.previous ? `Resultado da tentativa anterior:\n${opts.previous.slice(-4000)}` : '',
     `Trabalhe só nesta pasta (${opts.workspace}). Grave os entregáveis como arquivos aqui.`,
+    // GOAL_FLOW F4: Íris, Redator e Social podem propor peça do Studio; nunca agenda.
+    agentePropoePeca(opts.agent) ? INSTRUCAO_PECA : '',
     'Não publique, não envie mensagens e não gaste dinheiro. Se precisar de algo que não tem, diga o que falta.',
     'Termine com um resumo curto: o que fez, onde estão os arquivos e o que ficou pendente.',
   ].filter(Boolean).join('\n\n');
@@ -531,7 +535,8 @@ export class ExecQueue {
         this.store.update(next.id, { run_id: res.runId || null, result: res.reply || now.result || '' });
       } else if (res.ok) {
         const status: TaskRunStatus = next.mode === 'plan' ? 'done' : 'review';
-        this.store.update(next.id, { status, finished_at: this.now(), run_id: res.runId || null, result: res.reply || '', error: '' });
+        const reply = next.mode === 'exec' ? aplicarPecasDoAgente(next.agent, res.reply || '', next.id, getStudioStore) : res.reply || '';
+        this.store.update(next.id, { status, finished_at: this.now(), run_id: res.runId || null, result: reply, error: '' });
         if (next.mode === 'plan' && task.status === 'to_plan') this.tasks.setStatus(task.id, 'planned');
       } else {
         this.store.update(next.id, {

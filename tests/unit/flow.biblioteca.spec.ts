@@ -107,3 +107,19 @@ describe('Studio entrega à biblioteca do Flow (F1)', () => {
     expect(derivarEstado('lib1', [s('cancelado')], [o('cancelado', '2026-12-01T12:00:00Z')])).toEqual({ situacao: 'na_biblioteca' });
   });
 });
+
+describe('publicada em simulação (F2)', () => {
+  it('marca simulado quando o DarkFlow não está em modo real', async () => {
+    const mk = (mode: string) => listen((req, res) => {
+      res.setHeader('Content-Type', 'application/json');
+      if (req.url === '/api/publisher/session') return void res.end(JSON.stringify({ csrf_token: 't', mode }));
+      if (req.url === '/api/publisher/schedules') return void res.end(JSON.stringify([{ id: 's1', item_id: 'lib1', status: 'agendado' }]));
+      if (req.url === '/api/publisher/occurrences') return void res.end(JSON.stringify([{ schedule_id: 's1', state: 'publicado', scheduled_at_utc: '2026-12-01T12:00:00Z' }]));
+      res.statusCode = 404; res.end('{}');
+    });
+    const { store, home } = reel();
+    fs.writeFileSync(path.join(home, 'pecas', ID, 'pacote', 'flow.json'), JSON.stringify({ item_id: 'lib1', sha256: sha('reel') }));
+    expect(await estadoNoFlow(store, ID, await mk('simulation'))).toMatchObject({ situacao: 'publicada', simulado: true });
+    expect((await estadoNoFlow(store, ID, await mk('real'))).simulado).toBeUndefined();
+  });
+});

@@ -91,11 +91,15 @@ export async function estadoNoFlow(store: StudioStore, pecaId: string, base: str
   const entrega = lerEntrega(store, pecaId);
   if (!entrega) return { situacao: 'fora' };
   try {
-    const [schedules, occurrences] = await Promise.all([
+    const [schedules, occurrences, session] = await Promise.all([
       darkflowRequest(base, '/api/publisher/schedules'),
       darkflowRequest(base, '/api/publisher/occurrences'),
+      darkflowRequest(base, '/api/publisher/session').catch(() => ({})),
     ]);
-    return derivarEstado(entrega.item_id, Array.isArray(schedules) ? schedules : [], Array.isArray(occurrences) ? occurrences : []);
+    const estado = derivarEstado(entrega.item_id, Array.isArray(schedules) ? schedules : [], Array.isArray(occurrences) ? occurrences : []);
+    // Em simulação o worker usa o adaptador falso: «publicada» ali não foi ao Instagram.
+    if (estado.situacao === 'publicada' && session?.mode !== 'real') return { ...estado, simulado: true };
+    return estado;
   } catch (err) {
     return { situacao: 'sem_conexao', detalhe: err instanceof Error ? err.message : 'DarkFlow indisponível' };
   }

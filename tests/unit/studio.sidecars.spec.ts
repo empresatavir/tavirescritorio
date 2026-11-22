@@ -37,6 +37,15 @@ describe('sidecars', () => {
     expect(JSON.stringify(systems)).not.toContain('enable-meta-publish');
   });
 
+  it('sobe o DarkFlow pelo start.ps1 sem abrir navegador nem esperar resposta', () => {
+    const darkflow = loadSidecars(path.resolve('db/sidecars.example.json'))[0];
+    const linha = describeCommand(darkflow);
+    expect(linha).toContain('-File start.ps1');
+    expect(linha).toContain('-NonInteractive');
+    expect(linha).not.toMatch(/OpenBrowser|EnableMetaPublish/i);
+    expect(darkflow.portas).toEqual([8765, 5174]);
+  });
+
   it('sobe a API e o Studio do Docuflow direto, sem o menu do iniciar.bat', () => {
     const docuflow = loadSidecars(path.resolve('db/sidecars.example.json'))[1];
     const linha = describeCommand(docuflow);
@@ -53,6 +62,14 @@ describe('sidecars', () => {
     const manager = createSidecarManager(file, { health: async () => false, portOwner: () => null, spawn: () => { spawned = true; return { pid: 1, kill: () => undefined }; } });
     const res = await manager.start('x');
     expect(res.ok).toBe(false);
+    expect(spawned).toBe(false);
+  });
+
+  it('a trava também pega o -EnableMetaPublish do start.ps1', async () => {
+    let spawned = false;
+    const file = writeConfig([{ id: 'darkflow', nome: 'DarkFlow', pasta: os.tmpdir(), comando: 'x.bat', healthUrl: 'http://127.0.0.1:1/', portas: [], processos: [{ comando: 'powershell.exe', args: ['-File', 'start.ps1', '-EnableMetaPublish'] }] }]);
+    const manager = createSidecarManager(file, { health: async () => false, portOwner: () => null, spawn: () => { spawned = true; return { pid: 1, kill: () => undefined }; } });
+    expect((await manager.start('darkflow')).ok).toBe(false);
     expect(spawned).toBe(false);
   });
 

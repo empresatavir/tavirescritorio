@@ -17,9 +17,11 @@ import { polishPrompt } from './promptPolish';
 import { installWhisper, transcribePeca } from './whisper';
 import { getStudioStore } from './store';
 import { suggestForPiece, type SuggestAlvo } from './suggest';
-import { createSidecarManager, loadSidecars, sidecarConfigPath } from '../sidecars';
+import { createSidecarManager, defaultHealth, loadSidecars, sidecarConfigPath } from '../sidecars';
+import { garantirDarkflow } from '../flow/ligar';
 import { darkflowBoard, editionBoard, readScorecard, sendToDocuflow } from './ecosystem';
 import { enviarParaBiblioteca, estadoNoFlow } from '../flow/biblioteca';
+import { ativarAgenda, cancelarAgenda, criarAgenda, flowBoard, rodarSimulacao, type NovaAgenda } from '../flow/cliente';
 
 type Handle = (channel: string, listener: (...args: any[]) => any) => void;
 
@@ -215,6 +217,20 @@ export function registerStudioIpc(handle: Handle): void {
     } catch (err) {
       return { situacao: 'sem_conexao', detalhe: message(err) };
     }
+  });
+  // Flow (GOAL_FLOW, F2): agenda nasce em rascunho; ativar é gate do Carlos com ateste.
+  const DF = 'http://127.0.0.1:8765';
+  handle('flow:board', () => flowBoard(DF, (() => { try { return getStudioStore(); } catch { return null; } })()));
+  handle('flow:criar', (_e, input: NovaAgenda) => criarAgenda(DF, input));
+  handle('flow:ativar', (_e, id: string, atestado: boolean) => ativarAgenda(DF, id, atestado));
+  handle('flow:cancelar', (_e, id: string) => cancelarAgenda(DF, id));
+  handle('flow:simular', () => rodarSimulacao(DF));
+  // F3: abrir o Flow sobe o DarkFlow pelo sidecar, com as mesmas travas do botão de Configurações.
+  handle('flow:ligar', () => garantirDarkflow(`${DF}/api/health`, { health: defaultHealth, start: (id) => sidecars.start(id) }));
+  handle('flow:abrirDarkflow', () => {
+    const win = new BrowserWindow({ width: 1280, height: 820, webPreferences: { nodeIntegration: false, contextIsolation: true } });
+    void win.loadURL('http://127.0.0.1:5174/');
+    return { ok: true };
   });
   handle('studio:darkflow:scorecard', () => readScorecard('http://127.0.0.1:8765'));
   handle('studio:darkflow:board', () => darkflowBoard('http://127.0.0.1:8765'));

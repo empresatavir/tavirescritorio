@@ -50,6 +50,8 @@ export interface FlowEstado {
   quando?: string;
   permalink?: string;
   detalhe?: string;
+  /** Publicada pelo adaptador falso do DarkFlow (modo simulação): nada foi ao Instagram. */
+  simulado?: boolean;
 }
 
 export const FLOW_SITUACAO_LABEL: Record<FlowSituacao, string> = {
@@ -93,4 +95,39 @@ export function problemasDoPacote(p: PacoteAprovado): string[] {
   if ((p.hashtags || []).length > TEXT_LIMITS.hashtagsMax) out.push(`mais de ${TEXT_LIMITS.hashtagsMax} hashtags`);
   if (textoDoPost(p).length > TEXT_LIMITS.legendaMaxChars) out.push(`legenda com hashtags passa de ${TEXT_LIMITS.legendaMaxChars} caracteres`);
   return out;
+}
+
+/* ---- Flow (F2): quadro e agenda nova ---- */
+
+export interface PecaDoItem {
+  peca_id: string;
+  titulo: string;
+  legenda: string;
+  hashtags: string[];
+  ia: boolean;
+}
+
+export interface FlowBoard {
+  online: boolean;
+  error?: string;
+  status: Record<string, any> | null;
+  library: Array<Record<string, any>>;
+  schedules: Array<Record<string, any>>;
+  occurrences: Array<Record<string, any>>;
+  /** item_id da biblioteca → peça do Studio que o entregou. */
+  pecas: Record<string, PecaDoItem>;
+}
+
+export interface NovaAgenda {
+  item_id: string;
+  name: string;
+  recurrence: 'once' | 'daily' | 'weekly';
+  start_date: string;
+  end_date?: string | null;
+  times: string[];
+  weekdays?: number[];
+  caption?: string;
+  hashtags?: string;
+  share_to_feed?: boolean;
+  is_ai_generated?: boolean;
 }

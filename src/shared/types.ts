@@ -648,6 +648,13 @@ export interface TavirApi {
     flow: {
       enviar: (pecaId: string) => Promise<{ ok: true; itemId: string } | { ok: false; error: string }>;
       estado: (pecaId: string) => Promise<import('./flow').FlowEstado>;
+      board: () => Promise<import('./flow').FlowBoard>;
+      criar: (input: import('./flow').NovaAgenda) => Promise<{ ok: true; id: string } | { ok: false; error: string }>;
+      ativar: (id: string, atestado: boolean) => Promise<{ ok: true } | { ok: false; error: string }>;
+      cancelar: (id: string) => Promise<{ ok: true; cancelled: number } | { ok: false; error: string }>;
+      simular: () => Promise<{ ok: true; resultado: Record<string, unknown> } | { ok: false; error: string }>;
+      abrirDarkflow: () => Promise<{ ok: boolean }>;
+      ligar: () => Promise<{ ok: true; jaEstava: boolean } | { ok: false; error: string; aviso?: string }>;
     };
     docuflow: {
       send: (pecaId: string) => Promise<{ ok: boolean; error?: string; slug?: string }>;

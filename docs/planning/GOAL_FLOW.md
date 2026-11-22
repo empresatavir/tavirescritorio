@@ -1,7 +1,7 @@
 # GOAL — Flow: o DarkFlow como módulo de postagem do Escritório
 
 > Data: 2026-11-21 · Dono: Carlos (CEO) · Executor: qualquer motor da TAVIR, por checkpoint.
-> Status: **aprovado pelo Carlos em 2026-11-21, com as recomendações de D1 a D7.** F0 entregue (`src/shared/flow.ts`, `src/main/flow/pacote.ts`, `tests/unit/flow.pacote.spec.ts`). F1 entregue (`src/main/flow/biblioteca.ts`, IPC `studio:flow:*`, tela do Studio; prints em `relatorios/flow/F1/`). Entre a F1 e a F2, a agenda se cria na tela do próprio DarkFlow.
+> Status: **aprovado pelo Carlos em 2026-11-21, com as recomendações de D1 a D7.** F0 entregue (`src/shared/flow.ts`, `src/main/flow/pacote.ts`, `tests/unit/flow.pacote.spec.ts`). F1 entregue (`src/main/flow/biblioteca.ts`, IPC `studio:flow:*`, tela do Studio; prints em `relatorios/flow/F1/`). F2 entregue (`src/main/flow/cliente.ts`, IPC `flow:*`, `Flow.dc.html` com biblioteca, agendas, gate de ativação, calendário, publicações e conexão só leitura; prints em `relatorios/flow/F2/`). Publicação feita em simulação aparece no Studio como «publicada (simulação)». F3 entregue (`src/main/flow/ligar.ts`, IPC `flow:ligar`, DarkFlow pelo `start.ps1` sem abrir navegador; prints em `relatorios/flow/F3/`). F4 entregue (`src/main/flow/entrada.ts`: «Preparar post» do APK com `kind: 'studio_post'` e bloco `PECA:` de Íris, Redator e Social viram peça na etapa pauta com a origem gravada; APK com o comando novo e testes Flutter; prints em `relatorios/flow/F4/`).
 
 ## 0. Em uma frase
 

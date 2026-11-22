@@ -22,6 +22,8 @@ import { ACTION_STUDY, ACTION_VIDEO, IRIS, MAICON, OFFICE_AGENTS, STUDY_OWNERS, 
 import { firstStudyLink, studyCode, studySource } from './officeStudy';
 import { inviteRequestFromApk } from './raiox/inviteRequests';
 import { raioxRoot } from './raiox/raioxStore';
+import { postDoApk } from './flow/entrada';
+import { getStudioStore } from './studio/store';
 
 export const DESK_KINDS = [
   'task.create', 'task.update', 'task.move', 'task.delete',
@@ -87,7 +89,12 @@ export interface DeskStore {
   ledgerPut(id: string, kind: string, outcome: Outcome): void;
   /** Fila de execução. Sem ela, os pedidos task.run/plan/approve/revise/stop são recusados. */
   exec?: DeskExec;
+  /** «Preparar post» (GOAL_FLOW F4). Sem valor, usa o banco do Studio desta máquina. */
+  studioPost?: StudioPost;
 }
+
+export type StudioPost = (cmdId: string, fields: Record<string, unknown>) => { ok: true; body: Record<string, unknown>; ref: string } | { ok: false; error: string };
+const defaultStudioPost: StudioPost = (cmdId, fields) => postDoApk(getStudioStore(), cmdId, fields);
 
 export type ExecOutcome = { ok: true } | { ok: false; code: number; error: string };
 export interface DeskExec {
@@ -458,6 +465,11 @@ function applyFresh(store: DeskStore, cmd: Command): Outcome {
     // F8 T8.4: convite do Raio-X pedido pelo APK vira pedido pendente no Raio-X; nada é enviado aqui (R4).
     if (text(p.kind) === 'raiox_convite') {
       const r = inviteRequestFromApk(raioxRoot(), cmd.id, p.fields, new Date().toISOString());
+      return r.ok ? { status: 'applied', code: 201, body: r.body, ref: r.ref } : reject(400, r.error);
+    }
+    // GOAL_FLOW F4: «Preparar post» vira peça do Studio na etapa pauta; nunca cria agenda.
+    if (text(p.kind) === 'studio_post') {
+      const r = (store.studioPost ?? defaultStudioPost)(cmd.id, p.fields && typeof p.fields === 'object' ? (p.fields as Record<string, unknown>) : {});
       return r.ok ? { status: 'applied', code: 201, body: r.body, ref: r.ref } : reject(400, r.error);
     }
     if (!store.exec) return reject(503, 'A fila de execução não está ligada neste Escritório');

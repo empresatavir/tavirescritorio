@@ -10,11 +10,149 @@
 <x-dc>
 <helmet><style>body{margin:0}</style></helmet>
 <div class="tv" style="min-height: 100%">
-<div class="page" data-tavir-page="Flow.dc.html" style="max-width: 1100px">
-  <div class="phead"><div class="grow"><div class="eyebrow">Flow</div><h1 style="margin-top: 8px">DarkFlow</h1><p>Agenda do Reel. A publicação real continua no DarkFlow, e este escritório não liga a Meta.</p></div></div>
-  <p class="muted">{{error}}</p>
-  <section class="card"><div class="card-h"><h3>Biblioteca</h3></div><div class="rows"><sc-for list="{{library}}" as="item" hint-placeholder-count="0"><div class="row" style="cursor: default"><span class="grow">{{item.nome}}</span><span class="muted">{{item.medida}}</span></div></sc-for></div></section>
-  <section class="card"><div class="card-h"><h3>Agendas</h3></div><div class="rows"><sc-for list="{{schedules}}" as="item" hint-placeholder-count="0"><div class="row" style="cursor: default"><span class="grow">{{item.nome}}</span><span class="muted">{{item.estado}}</span></div></sc-for></div></section>
+<div class="page" data-tavir-page="Flow.dc.html" style="max-width: 1100px; display: flex; flex-direction: column; gap: 14px">
+  <div class="phead">
+    <div class="grow"><div class="eyebrow">Flow</div><h1 style="margin-top: 8px">Postagem</h1><p>O Studio cria, o Flow posta. Agenda nasce em rascunho e só ativa com um clique seu. Quem publica é o DarkFlow.</p></div>
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+      <span class="badge {{modeCls}}">{{modeLabel}}</span>
+      <span class="badge {{onlineCls}}">{{onlineLabel}}</span>
+      <sc-if value="{{canLigar}}" hint-placeholder-val="{{false}}"><button class="btn sm" onClick="{{ligar}}">Subir DarkFlow</button></sc-if>
+      <button class="btn sm secondary" onClick="{{reload}}">Atualizar</button>
+    </div>
+  </div>
+
+  <sc-if value="{{ligando}}" hint-placeholder-val="{{false}}"><div class="card pad" style="border-color: var(--warning)"><b>Subindo o DarkFlow</b><p class="muted" style="font-size: 13px; margin-top: 4px">O Escritório está iniciando o DarkFlow em segundo plano, sem abrir outra janela e sem publicação real. Leva alguns segundos.</p></div></sc-if>
+  <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}"><div class="card pad" style="border-color: var(--warning)"><b>{{errorTitle}}</b><p class="muted" style="font-size: 13px; margin-top: 4px">{{error}}</p><sc-if value="{{hasAviso}}" hint-placeholder-val="{{false}}"><p style="font-size: 13px; margin-top: 6px">{{aviso}}</p></sc-if></div></sc-if>
+  <sc-if value="{{hasNotice}}" hint-placeholder-val="{{false}}"><div class="card pad" style="border-color: var(--flow)"><p style="font-size: 13px">{{notice}}</p></div></sc-if>
+
+  <div class="g4">
+    <sc-for list="{{kpis}}" as="m" hint-placeholder-count="4"><div class="metric"><span class="eyebrow">{{m.k}}</span><strong>{{m.v}}</strong><small>{{m.n}}</small></div></sc-for>
+  </div>
+
+  <div class="tabs"><sc-for list="{{tabs}}" as="t" hint-placeholder-count="5"><button class="tab {{t.on}}" onClick="{{t.pick}}">{{t.label}}<sc-if value="{{t.hasN}}" hint-placeholder-val="{{false}}"><span class="n">{{t.n}}</span></sc-if></button></sc-for></div>
+
+  <!-- BIBLIOTECA -->
+  <sc-if value="{{tabLib}}" hint-placeholder-val="{{true}}">
+    <section class="card">
+      <div class="card-h"><h3>Biblioteca</h3><div class="grow"></div><span class="muted" style="font-size: 12px">Peças aprovadas no Studio e vídeos do lote do DarkFlow</span></div>
+      <div class="rows">
+        <sc-for list="{{library}}" as="it" hint-placeholder-count="2">
+          <div class="row" style="cursor: default">
+            <div class="grow"><div class="t" style="font-size: 14px">{{it.nome}}</div><div class="m">{{it.medida}} · {{it.origem}}</div></div>
+            <span class="badge {{it.agCls}}">{{it.agLabel}}</span>
+            <button class="btn sm secondary" onClick="{{it.agendar}}">Nova agenda</button>
+          </div>
+        </sc-for>
+        <sc-if value="{{libEmpty}}" hint-placeholder-val="{{false}}"><div class="row" style="cursor: default"><span class="muted">Nada na biblioteca. Aprove o pacote de um Reel no Studio e ele aparece aqui.</span></div></sc-if>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- AGENDAS -->
+  <sc-if value="{{tabAg}}" hint-placeholder-val="{{false}}">
+    <section class="card">
+      <div class="card-h"><h3>Agendas</h3></div>
+      <div class="rows">
+        <sc-for list="{{schedules}}" as="sc" hint-placeholder-count="2">
+          <div class="row" style="cursor: default">
+            <div class="grow"><div class="t" style="font-size: 14px">{{sc.nome}}</div><div class="m">{{sc.video}} · {{sc.regra}} · próxima: {{sc.proxima}}</div></div>
+            <span class="badge {{sc.cls}}">{{sc.estado}}</span>
+            <sc-if value="{{sc.podeAtivar}}" hint-placeholder-val="{{false}}"><button class="btn sm primary" onClick="{{sc.ativar}}">Ativar agenda</button></sc-if>
+            <sc-if value="{{sc.podeCancelar}}" hint-placeholder-val="{{false}}"><button class="btn sm ghost" onClick="{{sc.cancelar}}">Cancelar</button></sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{agEmpty}}" hint-placeholder-val="{{false}}"><div class="row" style="cursor: default"><span class="muted">Nenhuma agenda. Crie uma a partir de um vídeo da biblioteca.</span></div></sc-if>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- CALENDÁRIO -->
+  <sc-if value="{{tabCal}}" hint-placeholder-val="{{false}}">
+    <section class="card pad" style="display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; gap: 8px"><button class="btn sm secondary" onClick="{{calPrev}}">‹</button><b>{{calLabel}}</b><button class="btn sm secondary" onClick="{{calNext}}">›</button><div class="grow"></div><span class="muted" style="font-size: 12px">Teto do DarkFlow: {{perDay}} por dia e {{perWeek}} por semana · semana: {{weekCount}} / {{perWeek}}</span></div>
+      <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{calDays}}" as="d" hint-placeholder-count="7">
+          <div style="border: 1px solid {{d.bd}}; border-radius: 12px; padding: 10px; min-height: 120px; display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; align-items: baseline"><span class="eyebrow">{{d.dia}}</span><div class="grow"></div><span class="mono muted" style="font-size: 11px">{{d.n}} / {{perDay}}</span></div>
+            <sc-for list="{{d.items}}" as="i" hint-placeholder-count="1"><div style="font-size: 12px; border-left: 3px solid {{i.cor}}; padding-left: 6px"><b>{{i.h}}</b> {{i.t}}<div class="muted" style="font-size: 11px">{{i.s}}</div></div></sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- PUBLICAÇÕES -->
+  <sc-if value="{{tabPub}}" hint-placeholder-val="{{false}}">
+    <section class="card">
+      <div class="card-h"><h3>Publicações</h3><div class="grow"></div><sc-if value="{{canSimulate}}" hint-placeholder-val="{{false}}"><button class="btn sm secondary" onClick="{{simulate}}">Rodar o worker uma vez (simulação)</button></sc-if></div>
+      <div class="rows">
+        <sc-for list="{{occurrences}}" as="o" hint-placeholder-count="2">
+          <div class="row" style="cursor: default">
+            <div class="grow"><div class="t" style="font-size: 14px">{{o.quando}} · {{o.nome}}</div><div class="m">{{o.video}} · tentativas {{o.tentativas}}{{o.extra}}</div></div>
+            <span class="badge {{o.cls}}">{{o.estado}}</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{occEmpty}}" hint-placeholder-val="{{false}}"><div class="row" style="cursor: default"><span class="muted">Nenhuma ocorrência ainda.</span></div></sc-if>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- CONEXÃO -->
+  <sc-if value="{{tabCon}}" hint-placeholder-val="{{false}}">
+    <section class="card">
+      <div class="card-h"><h3>Conexão com o Instagram</h3><div class="grow"></div><button class="btn sm secondary" onClick="{{openDarkflow}}">Abrir no DarkFlow</button></div>
+      <div class="rows">
+        <sc-for list="{{conexao}}" as="c" hint-placeholder-count="4"><div class="row" style="cursor: default"><span class="grow">{{c.k}}</span><span class="muted">{{c.v}}</span></div></sc-for>
+      </div>
+      <p class="muted" style="font-size: 12px; padding: 12px 16px">Só leitura. Conectar, renovar e revogar continuam na tela do DarkFlow. O Escritório nunca liga a publicação real.</p>
+    </section>
+  </sc-if>
+
+  <!-- NOVA AGENDA -->
+  <sc-if value="{{formOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: fixed; inset: 0; background: rgba(7,13,24,.55); display: flex; align-items: center; justify-content: center; z-index: 30; padding: 24px">
+      <div class="card pad" role="dialog" aria-label="Nova agenda" style="width: min(600px, 100%); display: flex; flex-direction: column; gap: 10px; max-height: 90vh; overflow: auto">
+        <h3>Nova agenda · rascunho</h3>
+        <p class="muted" style="font-size: 12px">Vídeo: {{form.video}}. A agenda nasce em rascunho; ativar é outro clique seu.</p>
+        <label class="field"><span>Nome</span><input class="input" value="{{form.name}}" onChange="{{f.name}}" aria-label="Nome"></label>
+        <label class="field"><span>Recorrência</span><select class="input" value="{{form.recurrence}}" onChange="{{f.recurrence}}" aria-label="Recorrência"><option value="once" selected="{{form.rOnce}}">Uma vez</option><option value="daily" selected="{{form.rDaily}}">Todo dia</option><option value="weekly" selected="{{form.rWeekly}}">Dias da semana</option></select></label>
+        <div style="display: flex; gap: 10px">
+          <label class="field" style="flex: 1"><span>Data inicial (AAAA-MM-DD)</span><input class="input" value="{{form.start}}" onChange="{{f.start}}" aria-label="Data inicial"></label>
+          <sc-if value="{{form.repeats}}" hint-placeholder-val="{{false}}"><label class="field" style="flex: 1"><span>Data final (opcional)</span><input class="input" value="{{form.end}}" onChange="{{f.end}}" aria-label="Data final"></label></sc-if>
+        </div>
+        <label class="field"><span>Horários (até 3, ex.: 09:30, 18:00) · fuso de São Paulo</span><input class="input" value="{{form.times}}" onChange="{{f.times}}" aria-label="Horários"></label>
+        <sc-if value="{{form.rWeekly}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{form.days}}" as="d" hint-placeholder-count="7"><button class="btn sm {{d.cls}}" onClick="{{d.pick}}">{{d.label}}</button></sc-for></div>
+        </sc-if>
+        <label class="field"><span>Legenda · {{form.capLen}} / 2.200</span><textarea class="input" rows="4" value="{{form.caption}}" onChange="{{f.caption}}" aria-label="Legenda"></textarea></label>
+        <label class="field"><span>Hashtags</span><input class="input" value="{{form.hashtags}}" onChange="{{f.hashtags}}" aria-label="Hashtags"></label>
+        <label style="display: flex; gap: 8px; align-items: center; font-size: 13px"><input type="checkbox" checked="{{form.ia}}" onChange="{{f.ia}}"> Conteúdo com geração por IA</label>
+        <label style="display: flex; gap: 8px; align-items: center; font-size: 13px"><input type="checkbox" checked="{{form.feed}}" onChange="{{f.feed}}"> Mostrar também no feed</label>
+        <sc-if value="{{form.hasErr}}" hint-placeholder-val="{{false}}"><p style="font-size: 13px; color: var(--danger)">{{form.err}}</p></sc-if>
+        <div class="actions"><button class="btn primary" onClick="{{saveForm}}">Criar rascunho</button><button class="btn ghost" onClick="{{closeForm}}">Voltar</button></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- GATE DE ATIVAÇÃO -->
+  <sc-if value="{{gateOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position: fixed; inset: 0; background: rgba(7,13,24,.55); display: flex; align-items: center; justify-content: center; z-index: 30; padding: 24px">
+      <div class="ink" role="dialog" aria-label="Ativar agenda" style="width: min(600px, 100%); padding: 22px; border-radius: 16px; display: flex; flex-direction: column; gap: 12px; max-height: 90vh; overflow: auto">
+        <b style="font-size: 16px">Gate · ativar agenda</b>
+        <span class="badge {{gate.modeCls}}" style="align-self: flex-start">{{gate.modeLabel}}</span>
+        <p style="font-size: 13px">{{gate.texto}}</p>
+        <div style="font-size: 13px; display: flex; flex-direction: column; gap: 4px">
+          <div><span class="muted">Agenda:</span> {{gate.nome}}</div>
+          <div><span class="muted">Vídeo:</span> {{gate.video}}</div>
+          <div><span class="muted">Quando:</span> {{gate.regra}}</div>
+          <div><span class="muted">IA declarada:</span> {{gate.ia}}</div>
+          <div><span class="muted">Legenda:</span> {{gate.legenda}}</div>
+        </div>
+        <label style="display: flex; gap: 8px; align-items: center; font-size: 13px"><input type="checkbox" checked="{{gate.atestado}}" onChange="{{gate.toggle}}"> Revisei o vídeo e a legenda e atesto o conteúdo.</label>
+        <div class="actions"><button class="btn sm onink-sec" onClick="{{gate.voltar}}">Voltar</button><button class="btn sm onink" onClick="{{gate.ativar}}" disabled="{{gate.bloqueado}}">Ativar agenda</button></div>
+      </div>
+    </div>
+  </sc-if>
 </div>
 </div>
 </x-dc>
@@ -24,28 +162,155 @@ function studioApi() {
   var t = w && w.tavir ? w.tavir : (w && w.parent && w.parent.tavir ? w.parent.tavir : null);
   return t && t.studio ? t.studio : null;
 }
+var TZ = 'America/Sao_Paulo';
+var DIAS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+var SCHED = { rascunho: ['rascunho', 'warn'], agendado: ['ativa', 'flow'], pausado: ['pausada', 'warn'], cancelado: ['cancelada', ''], concluido: ['concluída', ''] };
+var OCC = { agendado: ['agendada', 'action', 'var(--action)'], preflight: ['conferindo', 'flow', 'var(--flow)'], enviando: ['enviando', 'flow', 'var(--flow)'], processando: ['processando', 'flow', 'var(--flow)'], publicado: ['publicada', 'flow', 'var(--flow)'], falhou: ['falhou', 'danger', 'var(--danger)'], reconciliacao: ['reconciliação', 'warn', 'var(--warning)'], reconciliado: ['reconciliada', '', 'var(--line-strong)'], revisao_atraso: ['atraso: revisar', 'warn', 'var(--warning)'], cancelado: ['cancelada', '', 'var(--line-strong)'], pausado: ['pausada', 'warn', 'var(--warning)'] };
+function pad(n) { return String(n).padStart(2, '0'); }
+function spDate(iso) { var d = new Date(iso); if (isNaN(d.getTime())) return null; var p = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(d); var o = {}; p.forEach(function (x) { o[x.type] = x.value; }); return { day: o.year + '-' + o.month + '-' + o.day, hm: o.hour + ':' + o.minute }; }
+function when(iso) { var s = spDate(iso); return s ? s.day.split('-').reverse().join('/') + ' ' + s.hm : '—'; }
+function today() { var s = spDate(new Date().toISOString()); return s ? s.day : ''; }
+function addDays(day, n) { var d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+function monday(day) { var d = new Date(day + 'T12:00:00Z'); var wd = (d.getUTCDay() + 6) % 7; return addDays(day, -wd); }
+function regra(s) { var t = (s.times || []).join(', '); if (s.recurrence === 'once') return 'uma vez em ' + (s.start_date || '—').split('-').reverse().join('/') + ' às ' + t; var base = s.recurrence === 'daily' ? 'todo dia' : (s.weekdays || []).map(function (w) { return DIAS[w]; }).join(', '); return base + ' às ' + t + ' · de ' + (s.start_date || '—').split('-').reverse().join('/') + (s.end_date ? ' até ' + s.end_date.split('-').reverse().join('/') : ''); }
+
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { error: '', library: [], schedules: [] };
+    this.state = { tab: 'lib', board: null, loading: true, error: '', aviso: '', notice: '', form: null, formErr: '', gate: null, calStart: monday(today()), ligando: false, tentou: false };
     var self = this;
-    setTimeout(function () { self.reload(); }, 0);
+    setTimeout(function () { self.reload(true); }, 0);
   }
-  reload() {
-    var api = studioApi();
-    var self = this;
-    if (!api || !api.darkflow || !api.darkflow.board) { this.setState({ error: 'DarkFlow indisponível neste modo.' }); return; }
-    api.darkflow.board().then(function (res) {
-      if (!res || res.ok === false) { self.setState({ error: (res && res.error) || 'DarkFlow indisponível', library: [], schedules: [] }); return; }
-      self.setState({ error: '', library: res.library || [], schedules: res.schedules || [] });
-    }).catch(function () { self.setState({ error: 'DarkFlow indisponível' }); });
+  api() { var a = studioApi(); return a && a.flow && a.flow.board ? a.flow : null; }
+  reload(subir) {
+    var api = this.api(); var self = this;
+    if (!api) { this.setState({ loading: false, error: 'O Flow só funciona dentro do app do Escritório.' }); return; }
+    api.board().then(function (b) {
+      // F3: abrir o Flow sobe o DarkFlow uma vez, se ele estiver fora do ar.
+      if (subir && !(b && b.online) && !self.state.tentou && api.ligar) { self.setState({ board: b, tentou: true }); self.ligar(); return; }
+      self.setState({ board: b, loading: false, error: b && b.online ? '' : ((b && b.error) || 'DarkFlow indisponível'), aviso: b && b.online ? '' : self.state.aviso });
+    }).catch(function (e) { self.setState({ loading: false, error: String(e && e.message || e) }); });
+  }
+  ligar() {
+    var api = this.api(); var self = this;
+    if (!api || !api.ligar || this.state.ligando) return;
+    this.setState({ ligando: true, loading: false, error: '', aviso: '', notice: '' });
+    api.ligar().then(function (res) {
+      if (!res || res.ok === false) { self.setState({ ligando: false, error: (res && res.error) || 'o DarkFlow não subiu', aviso: (res && res.aviso) || '' }); return; }
+      self.setState({ ligando: false, notice: res.jaEstava ? '' : 'DarkFlow iniciado pelo Escritório. O modo dele está no cabeçalho.' });
+      self.reload();
+    }).catch(function (e) { self.setState({ ligando: false, error: String(e && e.message || e) }); });
+  }
+  done(res, notice) {
+    if (!res || res.ok === false) { this.setState({ error: (res && res.error) || 'não foi possível', notice: '' }); return false; }
+    this.setState({ error: '', notice: notice || '' });
+    this.reload();
+    return true;
+  }
+  openForm(item) {
+    var b = this.state.board || {}; var peca = (b.pecas || {})[item.id] || null;
+    this.setState({ formErr: '', form: { item_id: item.id, video: item.display_name || item.id, name: peca ? peca.titulo : (item.display_name || ''), recurrence: 'once', start: today(), end: '', times: '09:30', weekdays: [], caption: peca ? peca.legenda : '', hashtags: peca ? (peca.hashtags || []).join(' ') : '', ia: peca ? !!peca.ia : false, feed: true } });
+  }
+  setForm(k, v) { var f = Object.assign({}, this.state.form); f[k] = v; this.setState({ form: f, formErr: '' }); }
+  saveForm() {
+    var f = this.state.form; var api = this.api(); var self = this;
+    if (!f || !api) return;
+    var input = { item_id: f.item_id, name: f.name, recurrence: f.recurrence, start_date: f.start, end_date: f.recurrence === 'once' ? null : (f.end || null), times: String(f.times || '').split(/[,\s]+/).filter(Boolean), weekdays: f.weekdays, caption: f.caption, hashtags: f.hashtags, share_to_feed: f.feed, is_ai_generated: f.ia };
+    api.criar(input).then(function (res) {
+      if (!res || res.ok === false) { self.setState({ formErr: (res && res.error) || 'não criou' }); return; }
+      self.setState({ form: null, tab: 'ag' });
+      self.done(res, 'Agenda criada em rascunho. Ative quando quiser, em Agendas.');
+    });
   }
   renderVals() {
-    var s = this.state;
+    var s = this.state; var self = this;
+    var b = s.board || { online: false, status: null, library: [], schedules: [], occurrences: [], pecas: {} };
+    var st = b.status || {};
+    var sim = st.mode !== 'real';
+    var lim = st.limits || { per_day: 3, per_week: 15 };
+    var itemName = {}; (b.library || []).forEach(function (it) { itemName[it.id] = it.display_name || it.id; });
+    var schedById = {}; (b.schedules || []).forEach(function (sc) { schedById[sc.id] = sc; });
+    var occ = (b.occurrences || []).slice().sort(function (x, y) { return String(x.scheduled_at_utc).localeCompare(String(y.scheduled_at_utc)); });
+    var nextOf = function (id) { var n = occ.find(function (o) { return o.schedule_id === id && o.state === 'agendado'; }); return n ? when(n.scheduled_at_utc) : '—'; };
+    var ativos = occ.filter(function (o) { return ['agendado', 'preflight', 'enviando', 'processando'].indexOf(o.state) >= 0; });
+    var tabs = [['lib', 'Biblioteca', (b.library || []).length], ['ag', 'Agendas', (b.schedules || []).filter(function (x) { return x.status === 'rascunho'; }).length], ['cal', 'Calendário', 0], ['pub', 'Publicações', 0], ['con', 'Conexão', 0]];
+    var weekDays = []; for (var i = 0; i < 7; i++) weekDays.push(addDays(s.calStart, i));
+    var calOcc = occ.filter(function (o) { return o.state !== 'cancelado'; });
+    var countDay = function (day) { return calOcc.filter(function (o) { var d = spDate(o.scheduled_at_utc); return d && d.day === day; }).length; };
+    var weekCount = weekDays.reduce(function (acc, d) { return acc + countDay(d); }, 0);
+    var f = s.form; var g = s.gate; var gs = g ? schedById[g.id] : null;
     return {
-      error: s.error || '',
-      library: (s.library || []).map(function (item) { return { nome: item.display_name || item.nome || '—', medida: item.width ? item.width + '×' + item.height : '—' }; }),
-      schedules: (s.schedules || []).map(function (item) { return { nome: item.name || '—', estado: item.status || '—' }; }),
+      reload: function () { self.setState({ notice: '' }); self.reload(); },
+      modeLabel: !b.online ? 'modo —' : sim ? 'Simulação: nada vai para o Instagram' : 'Modo real no DarkFlow', modeCls: !b.online ? '' : sim ? 'warn' : 'danger',
+      onlineLabel: s.ligando ? 'subindo o DarkFlow…' : s.loading ? 'lendo…' : b.online ? 'DarkFlow no ar' : 'DarkFlow fora do ar', onlineCls: s.ligando ? 'warn' : b.online ? 'flow' : 'danger',
+      canLigar: !s.ligando && !s.loading && !b.online, ligar: function () { self.ligar(); },
+      ligando: s.ligando,
+      hasError: !s.ligando && !!s.error, error: s.error || '', errorTitle: b.online ? 'O DarkFlow recusou' : 'Não consegui falar com o DarkFlow',
+      hasAviso: !!s.aviso, aviso: s.aviso || '',
+      hasNotice: !!s.notice, notice: s.notice || '',
+      kpis: [
+        { k: 'Na biblioteca', v: String((b.library || []).length), n: 'vídeos prontos' },
+        { k: 'Rascunhos', v: String((b.schedules || []).filter(function (x) { return x.status === 'rascunho'; }).length), n: 'aguardando você' },
+        { k: 'Na fila', v: String(ativos.length), n: 'ocorrências ativas' },
+        { k: 'Publicadas', v: String(occ.filter(function (o) { return o.state === 'publicado'; }).length), n: sim ? 'em simulação' : 'no Instagram' },
+      ],
+      tabs: tabs.map(function (t) { return { label: t[1], on: s.tab === t[0] ? 'on' : '', hasN: t[2] > 0, n: String(t[2]), pick: function () { self.setState({ tab: t[0] }); } }; }),
+      tabLib: s.tab === 'lib', tabAg: s.tab === 'ag', tabCal: s.tab === 'cal', tabPub: s.tab === 'pub', tabCon: s.tab === 'con',
+      library: (b.library || []).map(function (it) {
+        var peca = (b.pecas || {})[it.id];
+        var mine = (b.schedules || []).filter(function (sc) { return sc.item_id === it.id && sc.status !== 'cancelado'; });
+        var ag = mine.find(function (sc) { return sc.status === 'agendado'; }) ? ['agenda ativa', 'flow'] : mine.length ? ['em rascunho', 'warn'] : ['sem agenda', ''];
+        return { nome: peca ? peca.titulo : (it.display_name || '—'), medida: (it.width ? it.width + '×' + it.height : '—') + (it.duration_seconds ? ' · ' + Math.round(it.duration_seconds) + ' s' : ''), origem: peca ? 'Studio' : it.source_batch_id ? 'lote do DarkFlow' : 'pasta do DarkFlow', agLabel: ag[0], agCls: ag[1], agendar: function () { self.openForm(it); } };
+      }),
+      libEmpty: !(b.library || []).length,
+      schedules: (b.schedules || []).map(function (sc) {
+        var e = SCHED[sc.status] || [sc.status, ''];
+        return { nome: sc.name || '—', video: itemName[sc.item_id] || '—', regra: regra(sc), proxima: nextOf(sc.id), estado: e[0], cls: e[1], podeAtivar: sc.status === 'rascunho', podeCancelar: sc.status === 'rascunho' || sc.status === 'agendado',
+          ativar: function () { self.setState({ gate: { id: sc.id, atestado: false } }); },
+          cancelar: function () { var api = self.api(); if (api) api.cancelar(sc.id).then(function (res) { self.done(res, 'Agenda cancelada. As próximas ocorrências saíram da fila.'); }); } };
+      }),
+      agEmpty: !(b.schedules || []).length,
+      calLabel: 'Semana de ' + s.calStart.split('-').reverse().join('/'),
+      calPrev: function () { self.setState({ calStart: addDays(s.calStart, -7) }); },
+      calNext: function () { self.setState({ calStart: addDays(s.calStart, 7) }); },
+      perDay: String(lim.per_day), perWeek: String(lim.per_week), weekCount: String(weekCount),
+      calDays: weekDays.map(function (day, idx) {
+        var items = calOcc.filter(function (o) { var d = spDate(o.scheduled_at_utc); return d && d.day === day; }).map(function (o) { var e = OCC[o.state] || [o.state, '', 'var(--line-strong)']; var sc = schedById[o.schedule_id] || {}; return { h: spDate(o.scheduled_at_utc).hm, t: sc.name || o.schedule_name || '—', s: e[0], cor: e[2] }; });
+        return { dia: DIAS[idx] + ' ' + day.slice(8, 10), n: String(items.length), items: items, bd: day === today() ? 'var(--flow)' : items.length > Number(lim.per_day) ? 'var(--danger)' : 'var(--line)' };
+      }),
+      occurrences: occ.slice().reverse().map(function (o) { var e = OCC[o.state] || [o.state, '']; return { quando: when(o.scheduled_at_utc), nome: o.schedule_name || '—', video: o.display_name || '—', tentativas: String(o.attempts || 0), extra: (o.permalink ? ' · ' + o.permalink : '') + (o.error_message ? ' · ' + o.error_message : ''), estado: e[0], cls: e[1] }; }),
+      occEmpty: !occ.length,
+      canSimulate: b.online && sim,
+      simulate: function () { var api = self.api(); if (api) api.simular().then(function (res) { var r = res && res.resultado; self.done(res, r && r.state === 'idle' ? 'Simulação: nenhuma ocorrência vencida para rodar agora.' : 'Simulação rodou uma ocorrência (adaptador falso, nada foi ao Instagram).'); }); },
+      conexao: [
+        ['Modo', st.mode === 'real' ? 'real (ligado no DarkFlow)' : 'simulação'],
+        ['Adaptador', st.adapter || '—'],
+        ['Conexão', st.connection || '—'],
+        ['Credenciais prontas', st.credentials_ready ? 'sim' : 'não'],
+        ['Token vence em', st.token_expires_at_utc ? when(st.token_expires_at_utc) : '—'],
+        ['Renovação disponível', st.refresh_available ? 'sim' : 'não'],
+        ['Telemetria', st.telemetry ? (st.telemetry.ready ? 'pronta' : (st.telemetry.reason || 'não pronta')) : '—'],
+        ['Teto', lim.per_day + ' por dia · ' + lim.per_week + ' por semana'],
+      ].map(function (r) { return { k: r[0], v: r[1] }; }),
+      openDarkflow: function () { var api = self.api(); if (api && api.abrirDarkflow) api.abrirDarkflow(); },
+      formOpen: !!f,
+      form: f ? { video: f.video, name: f.name, recurrence: f.recurrence, rOnce: f.recurrence === 'once', rDaily: f.recurrence === 'daily', rWeekly: f.recurrence === 'weekly', repeats: f.recurrence !== 'once', start: f.start, end: f.end, times: f.times, caption: f.caption, capLen: String((f.caption || '').length), hashtags: f.hashtags, ia: !!f.ia, feed: !!f.feed, hasErr: !!s.formErr, err: s.formErr || '',
+        days: DIAS.map(function (lbl, idx) { var on = f.weekdays.indexOf(idx) >= 0; return { label: lbl, cls: on ? 'primary' : 'secondary', pick: function () { var w = f.weekdays.slice(); var k = w.indexOf(idx); if (k >= 0) w.splice(k, 1); else w.push(idx); self.setForm('weekdays', w.sort()); } }; }) } : {},
+      f: {
+        name: function (e) { self.setForm('name', e.target.value); }, recurrence: function (e) { self.setForm('recurrence', e.target.value); }, start: function (e) { self.setForm('start', e.target.value); }, end: function (e) { self.setForm('end', e.target.value); }, times: function (e) { self.setForm('times', e.target.value); }, caption: function (e) { self.setForm('caption', e.target.value); }, hashtags: function (e) { self.setForm('hashtags', e.target.value); }, ia: function (e) { self.setForm('ia', !!e.target.checked); }, feed: function (e) { self.setForm('feed', !!e.target.checked); },
+      },
+      saveForm: function () { self.saveForm(); },
+      closeForm: function () { self.setState({ form: null, formErr: '' }); },
+      gateOpen: !!(g && gs),
+      gate: g && gs ? {
+        modeLabel: sim ? 'Simulação: o worker usa o adaptador falso' : 'Modo real: o DarkFlow publica no Instagram', modeCls: sim ? 'warn' : 'danger',
+        texto: sim ? 'Ativar coloca as ocorrências na fila do DarkFlow. Em simulação, nada vai para o Instagram.' : 'Ativar coloca as ocorrências na fila do DarkFlow, que está em modo real: no horário, o post vai para o Instagram.',
+        nome: gs.name || '—', video: itemName[gs.item_id] || '—', regra: regra(gs), ia: gs.is_ai_generated ? 'sim' : 'não', legenda: (gs.caption || '—') + (gs.hashtags ? ' ' + gs.hashtags : ''),
+        atestado: !!g.atestado, bloqueado: !g.atestado,
+        toggle: function (e) { self.setState({ gate: { id: g.id, atestado: !!e.target.checked } }); },
+        voltar: function () { self.setState({ gate: null }); },
+        ativar: function () { var api = self.api(); if (!api || !g.atestado) return; api.ativar(g.id, true).then(function (res) { if (self.done(res, 'Agenda ativada. As ocorrências entraram na fila do DarkFlow.')) self.setState({ gate: null }); else self.setState({ gate: null }); }); },
+      } : {},
     };
   }
 }

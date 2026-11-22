@@ -63,6 +63,7 @@
           <button class="lift" onClick="{{q.pick}}" style="text-align: left; color: inherit; padding: 12px 14px; border-radius: 14px; border: 1px solid {{q.bd}}; background: var(--surface-2); box-shadow: {{q.sh}}; display: flex; flex-direction: column; gap: 8px; width: 100%">
             <div style="display: flex; align-items: center; gap: 8px"><span class="mono" style="font-size: 10.5px; color: var(--text-muted)">{{q.fmt}}</span><div class="grow"></div><sc-if value="{{q.ck}}" hint-placeholder-val="{{false}}"><span class="badge warn">você</span></sc-if></div>
             <b style="font-size: 14px">{{q.title}}</b>
+            <sc-if value="{{q.hasOrig}}" hint-placeholder-val="{{false}}"><span style="font-size: 11.5px; color: var(--flow)">{{q.orig}}</span></sc-if>
             <div style="display: flex; gap: 3px"><sc-for list="{{q.dots}}" as="d" hint-placeholder-count="7"><i style="flex: 1; height: 4px; border-radius: 2px; background: {{d.bg}}"></i></sc-for></div>
             <span class="muted" style="font-size: 12px">{{q.stage}} · {{q.due}}</span>
           </button>
@@ -87,7 +88,7 @@
         <div class="card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 16px">
           <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
             <span class="av">{{pc.ini}}</span>
-            <div class="grow"><div class="eyebrow" style="font-size: 10px">{{pc.fmt}} · {{pc.owner}}</div><h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.02em; margin-top: 2px">{{pc.title}} — {{pc.name}}</h2></div>
+            <div class="grow"><div class="eyebrow" style="font-size: 10px">{{pc.fmt}} · {{pc.owner}}<sc-if value="{{pc.hasOrig}}" hint-placeholder-val="{{false}}"> · {{pc.orig}}</sc-if></div><h2 style="font-size: 20px; font-weight: 600; letter-spacing: -.02em; margin-top: 2px">{{pc.title}} — {{pc.name}}</h2></div>
             <div style="text-align: right"><div class="eyebrow" style="font-size: 10px">Publica</div><div class="num" style="font-size: 13px; margin-top: 2px">{{pc.due}}</div></div>
           </div>
           <div class="stepper">
@@ -482,6 +483,8 @@ const GATES = { angulo: 1, revisao: 1, pacote: 1 };
 // Formatos que vão para o Flow (DarkFlow). Depois do gate do pacote a peça está «No Flow»: só fica publicada quando o Flow publicar (GOAL_FLOW, D2).
 const FLOW_FORMATS = { 'ig-reels-9x16': 1 };
 const FLOW_LABEL = { fora: 'ainda não foi para o Flow', na_biblioteca: 'na biblioteca', rascunho: 'agenda em rascunho', agendada: 'agendada', pausada: 'agenda pausada', publicada: 'publicada', atencao: 'precisa de atenção', falhou: 'a publicação falhou', sem_conexao: 'DarkFlow fora do ar' };
+// GOAL_FLOW F4: peça que veio do APK ou de um agente mostra de onde veio.
+function origemLabel(o) { if (!o) return ''; return o.origem === 'apk' ? 'pedido pelo APK' : 'proposta de ' + (o.autor || 'agente'); }
 function stageLabel(id, formato) { return id === 'publicado' && FLOW_FORMATS[formato] ? 'No Flow' : STAGE_LABEL[id]; }
 function flowWhen(iso) { if (!iso) return '—'; var d = new Date(iso); return isNaN(d.getTime()) ? iso : d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' }); }
 const GOALS = ['alcance', 'autoridade', 'conversa'];
@@ -693,6 +696,7 @@ class Component extends DCLogic {
     var feSit = fe ? fe.situacao : '';
     var feNote = !fe ? 'Lendo o Flow…'
       : feSit === 'agendada' ? 'Próxima publicação: ' + flowWhen(fe.quando) + '.'
+      : feSit === 'publicada' && fe.simulado ? 'Publicada em simulação em ' + flowWhen(fe.quando) + ': nada foi ao Instagram.'
       : feSit === 'publicada' ? 'Publicada em ' + flowWhen(fe.quando) + (fe.permalink ? ' · ' + fe.permalink : '') + '.'
       : feSit === 'rascunho' ? 'A agenda existe, mas ainda falta ativar no Flow.'
       : feSit === 'na_biblioteca' ? 'Crie a agenda no Flow: data, hora e ativação.'
@@ -745,9 +749,9 @@ class Component extends DCLogic {
       queue: mine.map(function (p) {
         var st = stagesFor(fmtOf(p.formato_id)[3]);
         var at = Math.max(0, st.indexOf(p.etapa));
-        return { fmt: fmtOf(p.formato_id)[2], title: p.titulo, stage: stageLabel(p.etapa, p.formato_id) || p.etapa, due: p.agendado_para || '—', ck: !!GATES[p.etapa], bd: p.id === s.pecaId ? 'var(--flow)' : 'var(--line)', sh: 'none', pick: function () { self.setState({ pecaId: p.id, view: null, pautaDraft: null, selId: p.angulo_escolhido || '' }); }, dots: st.map(function (_, i) { return { bg: i <= at ? 'var(--flow)' : 'var(--line)' }; }) };
+        return { fmt: fmtOf(p.formato_id)[2], hasOrig: !!p.origem, orig: origemLabel(p.origem), title: p.titulo, stage: stageLabel(p.etapa, p.formato_id) || p.etapa, due: p.agendado_para || '—', ck: !!GATES[p.etapa], bd: p.id === s.pecaId ? 'var(--flow)' : 'var(--line)', sh: 'none', pick: function () { self.setState({ pecaId: p.id, view: null, pautaDraft: null, selId: p.angulo_escolhido || '' }); }, dots: st.map(function (_, i) { return { bg: i <= at ? 'var(--flow)' : 'var(--line)' }; }) };
       }),
-      pc: { ini: perfil ? perfil.iniciais : '—', fmt: peca ? fmtOf(peca.formato_id)[2] : '—', owner: perfil ? perfil.nome : '—', title: peca ? peca.titulo : 'Nenhuma peça', name: peca ? ('#' + peca.numero) : '—', due: peca && peca.agendado_para ? peca.agendado_para : '—' },
+      pc: { ini: perfil ? perfil.iniciais : '—', fmt: peca ? fmtOf(peca.formato_id)[2] : '—', owner: perfil ? perfil.nome : '—', title: peca ? peca.titulo : 'Nenhuma peça', name: peca ? ('#' + peca.numero) : '—', hasOrig: !!(peca && peca.origem), orig: peca ? origemLabel(peca.origem) : '', due: peca && peca.agendado_para ? peca.agendado_para : '—' },
       steps: stages.map(function (id, i) { return { n: String(i + 1).padStart(2, '0'), label: stageLabel(id, peca && peca.formato_id), cls: i < curIndex ? 'done' : i === viewIndex ? 'on' : '', pick: function () { if (i <= curIndex) self.setState({ view: id }); } }; }),
       past: locked, pastInfo: { t: stageLabel(viewed, peca && peca.formato_id) || '', d: 'Etapa já cumprida. Só leitura.' }, backToCurrent: function () { self.setState({ view: null }); }, curStageLabel: stageLabel(cur, peca && peca.formato_id) || cur,
       sv: sv, locked: locked, custo: s.custo, error: s.error || '', loadingAngles: s.loading,
@@ -869,8 +873,8 @@ class Component extends DCLogic {
         ? 'Aprova o conteúdo e manda o Reel para a biblioteca do Flow, no perfil ' + (perfil ? perfil.nome : '—') + '. Nada é agendado nem publicado agora: data, hora e ativação ficam no Flow, com outro clique seu.'
         : 'Publicar é irreversível. Paulo publica em ' + ((peca && peca.agendado_para) || '—') + ' no perfil ' + (perfil ? perfil.nome : '—') + ' e registra no livro-razão.',
       gateBtn: isFlowFmt ? 'Aprovar e enviar ao Flow' : 'Aprovar publicação',
-      pubEyebrow: isFlowFmt ? 'No Flow · ' + (fe ? (FLOW_LABEL[feSit] || feSit) : 'lendo') : 'Publicado · ' + ((peca && peca.atualizado_em) || '—'),
-      pubTitle: (peca ? peca.titulo : '—') + (isFlowFmt && feSit !== 'publicada' ? ' está no Flow' : ' está no ar'),
+      pubEyebrow: isFlowFmt ? 'No Flow · ' + (fe ? (FLOW_LABEL[feSit] || feSit) + (fe.simulado ? ' (simulação)' : '') : 'lendo') : 'Publicado · ' + ((peca && peca.atualizado_em) || '—'),
+      pubTitle: (peca ? peca.titulo : '—') + (isFlowFmt && (feSit !== 'publicada' || (fe && fe.simulado)) ? ' está no Flow' : ' está no ar'),
       pubFoot: isFlowFmt ? 'Agenda, data e ativação ficam no Flow.' : '—',
       refreshFlow: function () { if (peca) self.askFlowEstado(peca.id, true); },
       sendEdition: function () {
@@ -882,7 +886,7 @@ class Component extends DCLogic {
       isLong: !!(peca && peca.formato_id === 'yt-longo-16x9'),
       slotLabel: (peca && peca.agendado_para) || '—',
       profName: perfil ? perfil.nome : '—',
-      pubWhen: (peca && peca.atualizado_em) || '—', isLive: isFlowFmt && feSit === 'publicada', pubNote: isFlowFmt ? feNote : '—',
+      pubWhen: (peca && peca.atualizado_em) || '—', isLive: isFlowFmt && feSit === 'publicada' && !(fe && fe.simulado), pubNote: isFlowFmt ? feNote : '—',
       metrics: [['Alcance', '—', ''], ['Curtidas', '—', ''], ['Salvamentos', '—', ''], ['Comentários', '—', '']].map(function (m) { return { k: m[0], v: m[1], n: m[2] }; }),
       prof: { ini: perfil ? perfil.iniciais : '—', handle: rede && rede.handle ? rede.handle : '—' },
       phoneTag: peca ? fmtOf(peca.formato_id)[2] : '—',

@@ -414,6 +414,20 @@ export interface Peca {
   slots?: SlotRef[];
   render_final?: { status: string; checks: RenderCheck[] } | null;
   pacote_montado?: boolean;
+  /** Preenchido na leitura quando a peça veio do APK ou de um agente. Não é coluna. */
+  origem?: PecaOrigem | null;
+}
+
+/** De onde veio uma peça que não nasceu na tela do Studio (GOAL_FLOW, F4). Fica em `pecas/<id>/origem.json`. */
+export interface PecaOrigem {
+  origem: 'apk' | 'agente';
+  /** Quem pediu: «Carlos pelo APK» ou o nome do agente. */
+  autor: string;
+  /** Id do pedido (comando do APK ou execução do agente). */
+  ref?: string;
+  /** Texto do pedido, como chegou. */
+  pedido?: string;
+  criado_em: string;
 }
 
 export interface PecaCreateInput {
