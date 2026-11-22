@@ -465,6 +465,9 @@ export interface TavirApi {
     /** B1: chamados do projeto (.tavir/chamados). Mover pela tela é sempre o Carlos. */
     chamados: (idOrPath: string) => Promise<{ ok: boolean; error?: string; chamados: any[]; contagem?: any }>;
     chamado: (idOrPath: string, id: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
+    buildAlvos: (idOrPath: string) => Promise<{ ok: boolean; error?: string; existe?: boolean; erros?: string[]; rodando?: boolean; alvos?: Array<{ id: string; nome: string; comando: string; requisitos: string; ultimo: any }> }>;
+    buildRodar: (idOrPath: string, alvo: string) => Promise<{ ok: boolean; error?: string; resultado?: { ok: boolean; id: string; alvo: string; nome: string; comando: string; ms: number; code: number | null; timedOut: boolean; provas: Array<{ texto: string; achou: boolean }>; artefato: { rel: string; existe: boolean; novo: boolean; mb: number } | null; motivos: string[]; final: string; pasta: string } }>;
+    buildParar: (idOrPath: string) => Promise<{ ok: boolean; error?: string }>;
     chamadoCriar: (idOrPath: string, dados: { tipo?: string; titulo: string; descricao?: { a?: string; b?: string; c?: string }; prioridade?: string; anexos?: Array<{ name: string; type?: string; data: string }>; criterios?: string[]; origem?: 'formulario' | 'conversa'; autorNome?: string; motor?: string; runId?: string }) => Promise<{ ok: boolean; error?: string; chamado?: any; avisos?: string[] }>;
     chamadoEditar: (idOrPath: string, id: string, ed: { tipo?: string; titulo?: string; descricao?: { a?: string; b?: string; c?: string }; prioridade?: string; criterios?: string[]; notas?: string; perguntas?: string[]; resposta?: string }) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
     chamadoMover: (idOrPath: string, id: string, para: string, nota?: string) => Promise<{ ok: boolean; error?: string; chamado?: any }>;
