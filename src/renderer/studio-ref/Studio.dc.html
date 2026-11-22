@@ -750,7 +750,12 @@ class Component extends DCLogic {
       queue: mine.map(function (p) {
         var st = stagesFor(fmtOf(p.formato_id)[3]);
         var at = Math.max(0, st.indexOf(p.etapa));
-        return { fmt: fmtOf(p.formato_id)[2], hasOrig: !!p.origem, orig: origemLabel(p.origem), title: p.titulo, stage: stageLabel(p.etapa, p.formato_id) || p.etapa, due: p.agendado_para || '—', ck: !!GATES[p.etapa], bd: p.id === s.pecaId ? 'var(--flow)' : 'var(--line)', sh: 'none', pick: function () { self.setState({ pecaId: p.id, view: null, pautaDraft: null, selId: p.angulo_escolhido || '' }); }, dots: st.map(function (_, i) { return { bg: i <= at ? 'var(--flow)' : 'var(--line)' }; }) };
+        // F6: peça no Flow não tem data própria (D1); o card mostra a situação lida do Flow.
+        var noFlow = p.etapa === 'publicado' && FLOW_FORMATS[p.formato_id];
+        var pfe = noFlow ? (s.flowEstado || {})[p.id] : null;
+        if (noFlow && !pfe) self.askFlowEstado(p.id);
+        var due = noFlow ? (pfe ? (FLOW_LABEL[pfe.situacao] || pfe.situacao) + (pfe.simulado ? ' (simulação)' : '') : 'lendo…') : (p.agendado_para || '—');
+        return { fmt: fmtOf(p.formato_id)[2], hasOrig: !!p.origem, orig: origemLabel(p.origem), title: p.titulo, stage: stageLabel(p.etapa, p.formato_id) || p.etapa, due: due, ck: !!GATES[p.etapa], bd: p.id === s.pecaId ? 'var(--flow)' : 'var(--line)', sh: 'none', pick: function () { self.setState({ pecaId: p.id, view: null, pautaDraft: null, selId: p.angulo_escolhido || '' }); }, dots: st.map(function (_, i) { return { bg: i <= at ? 'var(--flow)' : 'var(--line)' }; }) };
       }),
       pc: { ini: perfil ? perfil.iniciais : '—', fmt: peca ? fmtOf(peca.formato_id)[2] : '—', owner: perfil ? perfil.nome : '—', title: peca ? peca.titulo : 'Nenhuma peça', name: peca ? ('#' + peca.numero) : '—', hasOrig: !!(peca && peca.origem), orig: peca ? origemLabel(peca.origem) : '', due: peca && peca.agendado_para ? peca.agendado_para : '—' },
       steps: stages.map(function (id, i) { return { n: String(i + 1).padStart(2, '0'), label: stageLabel(id, peca && peca.formato_id), cls: i < curIndex ? 'done' : i === viewIndex ? 'on' : '', pick: function () { if (i <= curIndex) self.setState({ view: id }); } }; }),

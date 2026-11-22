@@ -86,6 +86,8 @@ A tela Flow (`Flow.dc.html`, canais `flow:*`, `src/main/flow/cliente.ts`) cria a
 
 Abrir o Flow com o DarkFlow fora do ar sobe o DarkFlow uma vez, pelo sidecar (`flow:ligar`, `src/main/flow/ligar.ts`): pede `start('darkflow')` e espera `/api/health` por até 60 s. As travas são as do gerenciador de sidecars. Porta 8765 ocupada vira aviso do conflito com o TTS local do Docuflow (D7). Se falhar, o cabeçalho mostra «Subir DarkFlow» para tentar de novo. No exemplo versionado o DarkFlow sobe por `powershell -NonInteractive -File start.ps1`, sem `-OpenBrowser` (o Flow já é a tela) e sem `-EnableMetaPublish`; com `-NonInteractive`, porta ocupada faz o script falhar em vez de esperar uma resposta escondida. O processo continua solto depois que o Escritório fecha, como antes.
 
+O caminho completo depois do pacote (biblioteca, agenda, gate de ativação, publicações) está em `docs/modules/flow.md`. No card da lista, a peça no Flow mostra a situação lida do Flow, já que a data mora na agenda.
+
 ### Carrossel, post e Stories (F5)
 
 Carrossel (`ig-carrossel-4x5`), post (`ig-post-4x5`, `ig-post-1x1`) e Stories (`ig-stories-9x16`) também passam pelo gate «Aprovar e enviar ao Flow». `paraManifestoDarkflow` manda o Reel pelo manifesto v1 e o resto pelo v2 (`exportV2ForDarkFlow` em `darkflowExport.ts`): as lâminas PNG viram JPEG por ffmpeg em `storage/output/studio-<peça>/`, e o hash do topo é o SHA-256 da lista ordenada dos hashes dos itens, um por linha (o `combined_sha256` do DarkFlow). Carrossel acima de 10 lâminas é recusado (limite da Meta, D5). No Flow, o item mostra o tipo, as miniaturas das lâminas (`miniaturasDoPacote`, cache em `pacote/miniaturas/`) e o aviso de que, no DarkFlow, esses formatos só rodam em simulação até a reauditoria Seg/LGPD.
