@@ -621,6 +621,25 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
       return c ? { ok: true, chamado: c } : { ok: false, error: 'Chamado não encontrado.' };
     } catch (err) { return chErr(err); }
   });
+  // Build declarado em tavir.build.json: roda só no clique do Carlos; quem diz se passou é a checagem.
+  handle('projects:buildAlvos', (_e, idOrPath: string) => {
+    try {
+      const b = require('./buildProjeto');
+      const root = chRoot(idOrPath);
+      const spec = b.lerSpec(root);
+      return { ok: true, existe: spec.existe, erros: spec.erros, rodando: b.buildRodando(root), alvos: spec.alvos.map((a: any) => ({ id: a.id, nome: a.nome, comando: b.comandoTexto(a), requisitos: a.requisitos || '', ultimo: b.ultimoBuild(root, a.id) })) };
+    } catch (err) { return chErr(err); }
+  });
+  handle('projects:buildRodar', async (_e, idOrPath: string, alvo: string) => {
+    try {
+      const root = chRoot(idOrPath);
+      require('./runLedger').excludeFromProjectGit(root);
+      return { ok: true, resultado: await require('./buildProjeto').rodarBuild(root, String(alvo || '')) };
+    } catch (err) { return chErr(err); }
+  });
+  handle('projects:buildParar', (_e, idOrPath: string) => {
+    try { return { ok: require('./buildProjeto').pararBuild(chRoot(idOrPath)) }; } catch (err) { return chErr(err); }
+  });
   handle('projects:chamadoCriar', (_e, idOrPath: string, dados: any) => {
     try {
       const d = dados || {};

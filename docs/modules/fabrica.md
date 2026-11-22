@@ -69,6 +69,14 @@ Fila de defeitos, melhorias e dúvidas por projeto, em `.tavir/chamados/CH-0001/
 - **Dúvida:** «Perguntar à Íris» responde em só leitura; a resposta fica no chamado e o Carlos conclui.
 - **Íris e agentes:** a Íris termina a resposta com blocos `CHAMADO:` quando a conversa chega a um defeito ou melhoria (`parseChamados`). O texto gravado no histórico vai sem os blocos; as propostas aparecem como cartões com «Abrir chamado», «Editar antes» e «Descartar». «Procurar melhorias» (aba Chamados) é uma varredura: as propostas entram direto como chamados abertos. Os agentes do trilho podem abrir chamado do que acharem fora do escopo, sem parar o ciclo. Título repetido não cria outro: vira linha no histórico do existente.
 
+## Build pedido pela Íris
+
+- **Especificação no projeto:** `tavir.build.json` na raiz, no git do projeto. Cada alvo tem `id`, `nome`, `comando` (lista: executável e argumentos, sem shell), `cwd` (dentro do projeto), `timeoutMin` (até 60), `prova` (trechos que têm de aparecer na saída), `artefato` (arquivo que tem de sair novo) e `requisitos` (texto para o Carlos). Alvo sem prova nem artefato é recusado. Lógica em `src/main/buildProjeto.ts`.
+- **Íris propõe:** com a especificação presente, os fatos do pedido da Íris listam os alvos e pedem o bloco `BUILD:` (`alvo:` e `motivo:`). A resposta vira cartão «Build proposto» com o comando declarado; alvo que não está no arquivo é descartado com aviso. A Íris não roda build.
+- **Carlos roda:** «Gerar build» no cartão chama `projects.buildRodar`. O Escritório roda o comando (um por projeto por vez, «Parar» interrompe) e confere: código 0, todas as provas na saída e artefato novo. Só passa com os três; resposta de motor ou «sucesso» do script não contam.
+- **Evidência:** `qa/builds/BLD-AAAAMMDD-HHMMSS/` com `saida.log` e `resultado.json`, fora do git do projeto e do git sombra. Chaves conhecidas e valores de `password`/`token`/`anon_key` saem mascarados.
+- Primeiro uso: alvo `apk` do Novo App (`tavir-interno/novo-app-2dad16`), que roda `aplicativo/build_apk.ps1` e exige a linha «fila na nuvem conferida dentro do APK».
+
 ## Guarda do estado em `.tavir/`
 
 O agente roda com escrita no projeto inteiro, e `.tavir/` mora dentro dele. `src/main/tavirGuarda.ts` fecha esse caminho: toda rodada de motor (`converseWithIrisAgent`) abre a guarda antes e fecha depois. Ficam protegidos `control.json`, `esteira.json`, `retrato.json`, `decisoes.jsonl`, `absorcao.json`, `acessos.json`, `credentials.json` e os `.json` de cada chamado (anexos não).
@@ -158,11 +166,12 @@ Sem as ferramentas externas a varredura roda do mesmo jeito; o relatório marca 
 - `creds.list / save / remove / test / openTokenPage`
 - `projects.retrato / absorbPrepare / absorbStart / absorbResume / absorbStop / absorbDecide / absorbPending / retratoAtualizar`
 - `projects.acessos / acessoSalvar / acessoSituacao / acessoRemover / acessoAbrirGuia`
+- `projects.buildAlvos / buildRodar / buildParar`
 - `projects.chamados / chamado / chamadoCriar / chamadoEditar / chamadoMover / chamadoAnexar / chamadoAnexo / chamadosContagem / chamadoRefinar / chamadoSugestao / chamadoResponder / chamadoExecutar / chamadoDecidir / chamadoConcluirDuvida`
 
 O progresso ao vivo chega por `run:event`, com `meta.qa` ou `meta.seg`.
 
 ## Testes
 
-- `npm test`: unitários (`tests/unit`), incluindo moldes, commit por passo, plano e relatório de QA, regras e varredura de segurança, branch por ciclo e contas no cofre (`cicloBranch.spec.ts`), absorção (`absorcao*.spec.ts`, `retratoAtualizar.spec.ts`), acessos, chamados (`chamados*.spec.ts`) e isolamento entre projetos (`isolamentoProjeto.spec.ts`).
+- `npm test`: unitários (`tests/unit`), incluindo moldes, commit por passo, plano e relatório de QA, regras e varredura de segurança, branch por ciclo e contas no cofre (`cicloBranch.spec.ts`), absorção (`absorcao*.spec.ts`, `retratoAtualizar.spec.ts`), acessos, build pela Íris (`buildProjeto.spec.ts`), chamados (`chamados*.spec.ts`) e isolamento entre projetos (`isolamentoProjeto.spec.ts`).
 - `npm run test:motores`: conformidade dos quatro motores.
