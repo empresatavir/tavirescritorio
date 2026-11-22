@@ -34,12 +34,30 @@ export interface PacoteAprovado {
   ia: boolean;
 }
 
-/** Formatos que o DarkFlow aceita hoje (manifesto v1: um mp4 Reel). Carrossel, imagem e Stories são a F5. */
-export const FORMATOS_DARKFLOW = ['ig-reels-9x16'];
+/**
+ * Formatos que o DarkFlow recebe. Reel vai pelo manifesto v1; carrossel, post e Stories pelo
+ * manifesto v2 (F5), que no DarkFlow só roda em simulação até a reauditoria Seg/LGPD.
+ */
+export const FORMATOS_DARKFLOW = ['ig-reels-9x16', 'ig-carrossel-4x5', 'ig-post-4x5', 'ig-post-1x1', 'ig-stories-9x16'];
 
 export function aceitoPeloDarkflow(formato: string): boolean {
   return FORMATOS_DARKFLOW.includes(formato);
 }
+
+export type MediaTypeDarkflow = 'REELS' | 'CAROUSEL' | 'IMAGE' | 'STORIES';
+
+/** Tipo do DarkFlow para o formato do Studio. `null` se o DarkFlow não recebe o formato. */
+export function mediaTypeDarkflow(formato: string): MediaTypeDarkflow | null {
+  if (!aceitoPeloDarkflow(formato)) return null;
+  if (formato === 'ig-reels-9x16') return 'REELS';
+  if (formato === 'ig-stories-9x16') return 'STORIES';
+  return formatById(formato)?.kind === 'carousel' ? 'CAROUSEL' : 'IMAGE';
+}
+
+/** Limite da API da Meta para carrossel (D5, documentação oficial consultada em 2026-11-21). O Studio aceita 20. */
+export const CARROSSEL_MAX_DARKFLOW = 10;
+
+export const MEDIA_TYPE_LABEL: Record<MediaTypeDarkflow, string> = { REELS: 'Reel', CAROUSEL: 'Carrossel', IMAGE: 'Imagem', STORIES: 'Stories' };
 
 /** Onde a peça está no Flow, lido das agendas e ocorrências do DarkFlow (D2: «publicada» só quando publicou). */
 export type FlowSituacao = 'fora' | 'na_biblioteca' | 'rascunho' | 'agendada' | 'pausada' | 'publicada' | 'atencao' | 'falhou' | 'sem_conexao';
@@ -105,6 +123,8 @@ export interface PecaDoItem {
   legenda: string;
   hashtags: string[];
   ia: boolean;
+  /** Miniaturas das lâminas (data URL JPEG pequeno), para a prévia de carrossel no Flow (F5). */
+  miniaturas?: string[];
 }
 
 export interface FlowBoard {

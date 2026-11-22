@@ -5,7 +5,7 @@ import * as path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { pacoteDaPeca, paraManifestoDarkflow } from '../../src/main/flow/pacote';
 import type { StudioStore } from '../../src/main/studio/store';
-import { aceitoPeloDarkflow, problemasDoPacote, type PacoteAprovado } from '../../src/shared/flow';
+import { aceitoPeloDarkflow, mediaTypeDarkflow, problemasDoPacote, type PacoteAprovado } from '../../src/shared/flow';
 import type { Ativo, Peca } from '../../src/shared/studio';
 
 const ID = '22222222-2222-4222-8222-222222222222';
@@ -96,7 +96,10 @@ describe('pacote aprovado (F0)', () => {
     expect(problemasDoPacote({ ...base, legenda: 'x'.repeat(2201) })[0]).toContain('2200');
     expect(problemasDoPacote({ ...base, formato: 'ig-carrossel-4x5' })).toContain('carrossel precisa de 2 a 20 lâminas');
     expect(aceitoPeloDarkflow('ig-reels-9x16')).toBe(true);
-    expect(aceitoPeloDarkflow('ig-carrossel-4x5')).toBe(false);
+    expect(aceitoPeloDarkflow('ig-carrossel-4x5')).toBe(true);
+    expect(aceitoPeloDarkflow('tt-video-9x16')).toBe(false);
+    expect(mediaTypeDarkflow('ig-post-1x1')).toBe('IMAGE');
+    expect(mediaTypeDarkflow('ig-stories-9x16')).toBe('STORIES');
   });
 
   it('converte o Reel para o manifesto v1 do DarkFlow e recusa formato que ele ainda não recebe', () => {
@@ -115,10 +118,44 @@ describe('pacote aprovado (F0)', () => {
     expect(manifest).toMatchObject({ schema_version: 1, relative_path: 'storage/output/final.mp4', sha256: sha('reel'), editorial: { state: 'approved' } });
     expect(manifest.media).toMatchObject({ width: 1080, height: 1920, duration_seconds: 12 });
 
-    const carrossel = { ...built.pacote, formato: 'ig-carrossel-4x5' };
-    const refused = paraManifestoDarkflow(carrossel, output, project);
+    const tiktok = { ...built.pacote, formato: 'tt-video-9x16' };
+    const refused = paraManifestoDarkflow(tiktok, output, project);
     expect(refused.ok).toBe(false);
-    expect(!refused.ok && refused.error).toContain('hoje só Reel');
+    expect(!refused.ok && refused.error).toContain('não recebe');
+  });
+
+  it('carrossel vai pelo manifesto v2: lâminas em JPEG, hash do topo pela lista e limite de 10 da Meta (F5)', () => {
+    const { store, pacote } = fake({ formato_id: 'ig-carrossel-4x5' });
+    const arquivos = ['01.png', '02.png', '03.png'].map((nome, i) => {
+      fs.writeFileSync(path.join(pacote, nome), `lamina-${i}`);
+      return { arquivo: nome, sha256: sha(`lamina-${i}`), largura: 1080, altura: 1350 };
+    });
+    fs.writeFileSync(path.join(pacote, 'manifest.json'), JSON.stringify({ arquivos }));
+    const built = pacoteDaPeca(store, ID);
+    if (!built.ok) throw new Error(built.error);
+    const project = tmp();
+    const output = path.join(project, 'storage', 'output');
+    const convertidos: string[] = [];
+    const toJpeg = (src: string, dest: string) => { convertidos.push(path.basename(src)); fs.writeFileSync(dest, `jpeg:${fs.readFileSync(src, 'utf8')}`); };
+    const out = paraManifestoDarkflow(built.pacote, output, project, { toJpeg });
+    expect(out.ok).toBe(true);
+    if (!out.ok) return;
+    expect(convertidos).toEqual(['01.png', '02.png', '03.png']);
+    const m = JSON.parse(fs.readFileSync(out.manifest, 'utf8'));
+    expect(m).toMatchObject({ schema_version: 2, media_type: 'CAROUSEL', editorial: { state: 'approved' } });
+    expect(m.items.map((i: { relative_path: string }) => i.relative_path)).toEqual([1, 2, 3].map((n) => `storage/output/studio-${ID}/0${n}.jpg`));
+    const hashes = [0, 1, 2].map((i) => sha(`jpeg:lamina-${i}`));
+    expect(m.items.map((i: { sha256: string }) => i.sha256)).toEqual(hashes);
+    expect(out.sha256).toBe(createHash('sha256').update(hashes.join(String.fromCharCode(10))).digest('hex'));
+    expect(m.items[0].media).toMatchObject({ container: 'jpeg', width: 1080, height: 1350 });
+
+    const onze = { ...built.pacote, midias: Array.from({ length: 11 }, () => built.pacote.midias[0]) };
+    const recusa = paraManifestoDarkflow(onze, output, project, { toJpeg });
+    expect(!recusa.ok && recusa.error).toContain('até 10');
+
+    fs.writeFileSync(path.join(pacote, '02.png'), 'trocada');
+    const mudou = paraManifestoDarkflow(built.pacote, output, project, { toJpeg });
+    expect(!mudou.ok && mudou.error).toContain('02.png mudou');
   });
 
   it('vídeo trocado depois do pacote não vai para o DarkFlow', () => {

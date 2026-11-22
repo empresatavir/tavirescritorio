@@ -96,3 +96,28 @@ describe('cliente do Flow (F2)', () => {
     expect(off.error).toBeTruthy();
   });
 });
+
+describe('prévia de carrossel no Flow (F5)', () => {
+  it('faz miniatura de cada lâmina uma vez, pula a capa e devolve data URL', async () => {
+    const { miniaturasDoPacote } = await import('../../src/main/flow/cliente');
+    const fsm = await import('node:fs');
+    const osm = await import('node:os');
+    const pm = await import('node:path');
+    const dir = fsm.mkdtempSync(pm.join(osm.tmpdir(), 'tavir-mini-'));
+    try {
+      for (const n of ['01.png', '02.png', 'capa.png']) fsm.writeFileSync(pm.join(dir, n), n);
+      fsm.writeFileSync(pm.join(dir, 'manifest.json'), JSON.stringify({ arquivos: [{ arquivo: '01.png' }, { arquivo: '02.png' }, { arquivo: 'capa.png' }, { arquivo: '../fora.png' }] }));
+      const feitas: string[] = [];
+      const fazer = (src: string, dest: string) => { feitas.push(pm.basename(src)); fsm.writeFileSync(dest, 'mini'); };
+      const a = miniaturasDoPacote(dir, fazer);
+      expect(a).toHaveLength(2);
+      expect(a[0]).toBe(`data:image/jpeg;base64,${Buffer.from('mini').toString('base64')}`);
+      expect(feitas).toEqual(['01.png', '02.png']);
+      miniaturasDoPacote(dir, fazer);
+      expect(feitas).toHaveLength(2);
+      expect(miniaturasDoPacote(pm.join(dir, 'nada'), fazer)).toEqual([]);
+    } finally {
+      fsm.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});

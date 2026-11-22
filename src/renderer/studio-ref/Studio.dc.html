@@ -481,7 +481,8 @@ const STAGE_IDS = ['pauta', 'angulo', 'roteiro', 'arte', 'audio', 'revisao', 'pa
 const STAGE_LABEL = { pauta: 'Pauta', angulo: 'Ângulo', roteiro: 'Roteiro', arte: 'Arte', audio: 'Áudio', revisao: 'Revisão', pacote: 'Pacote', publicado: 'Publicado' };
 const GATES = { angulo: 1, revisao: 1, pacote: 1 };
 // Formatos que vão para o Flow (DarkFlow). Depois do gate do pacote a peça está «No Flow»: só fica publicada quando o Flow publicar (GOAL_FLOW, D2).
-const FLOW_FORMATS = { 'ig-reels-9x16': 1 };
+// F5: carrossel, post e Stories também vão ao Flow (no DarkFlow, só simulação até a reauditoria).
+const FLOW_FORMATS = { 'ig-reels-9x16': 1, 'ig-carrossel-4x5': 1, 'ig-post-4x5': 1, 'ig-post-1x1': 1, 'ig-stories-9x16': 1 };
 const FLOW_LABEL = { fora: 'ainda não foi para o Flow', na_biblioteca: 'na biblioteca', rascunho: 'agenda em rascunho', agendada: 'agendada', pausada: 'agenda pausada', publicada: 'publicada', atencao: 'precisa de atenção', falhou: 'a publicação falhou', sem_conexao: 'DarkFlow fora do ar' };
 // GOAL_FLOW F4: peça que veio do APK ou de um agente mostra de onde veio.
 function origemLabel(o) { if (!o) return ''; return o.origem === 'apk' ? 'pedido pelo APK' : 'proposta de ' + (o.autor || 'agente'); }

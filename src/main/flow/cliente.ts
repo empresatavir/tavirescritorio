@@ -3,6 +3,9 @@
  * Cria agenda sempre em rascunho; ativar exige o ateste do Carlos (gate) e nunca liga a publicação real:
  * isso continua sendo o `--enable-meta-publish` do próprio DarkFlow, que o Escritório não passa.
  */
+import { execFileSync } from 'node:child_process';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import type { StudioStore } from '../studio/store';
 import { darkflowRequest } from '../studio/darkflow';
 import { lerEntrega } from './biblioteca';
@@ -24,14 +27,60 @@ async function csrf(base: string): Promise<{ token: string; mode: string }> {
   return { token, mode: String(s.mode ?? 'simulation') };
 }
 
+export type Miniatura = (src: string, dest: string) => void;
+
+/** Miniatura JPEG pequena (largura 144) para a prévia; o arquivo grande nunca vai para a tela. */
+const ffmpegMiniatura: Miniatura = (src, dest) => {
+  execFileSync('ffmpeg', ['-y', '-v', 'error', '-i', src, '-vf', 'scale=144:-2', '-q:v', '5', dest], { windowsHide: true, timeout: 15000, stdio: 'pipe' });
+};
+
+/**
+ * Prévia de carrossel e post no Flow (F5): miniaturas das lâminas do pacote, feitas uma vez e
+ * guardadas em `pacote/miniaturas/`. Sem lâmina, ou sem ffmpeg, volta lista vazia.
+ */
+export function miniaturasDoPacote(pacoteDir: string, fazer: Miniatura = ffmpegMiniatura): string[] {
+  const file = path.join(pacoteDir, 'manifest.json');
+  if (!fs.existsSync(file)) return [];
+  let arquivos: Array<{ arquivo?: string }> = [];
+  try {
+    arquivos = (JSON.parse(fs.readFileSync(file, 'utf8')) as { arquivos?: Array<{ arquivo?: string }> }).arquivos ?? [];
+  } catch {
+    return [];
+  }
+  const dir = path.join(pacoteDir, 'miniaturas');
+  const out: string[] = [];
+  for (const a of arquivos.slice(0, 20)) {
+    const nome = String(a.arquivo || '');
+    if (!/^[\w.-]+\.(png|jpe?g)$/i.test(nome) || nome === 'capa.png') continue;
+    const src = path.join(pacoteDir, nome);
+    if (!fs.existsSync(src)) continue;
+    const dest = path.join(dir, nome.replace(/\.[^.]+$/, '.jpg'));
+    try {
+      if (!fs.existsSync(dest) || fs.statSync(dest).mtimeMs < fs.statSync(src).mtimeMs) {
+        fs.mkdirSync(dir, { recursive: true });
+        fazer(src, dest);
+      }
+      out.push(`data:image/jpeg;base64,${fs.readFileSync(dest).toString('base64')}`);
+    } catch {
+      return out;
+    }
+  }
+  return out;
+}
+
 /** Peças do Studio que já foram para a biblioteca, indexadas pelo item. */
-export function pecasPorItem(store: StudioStore | null): Record<string, PecaDoItem> {
+export function pecasPorItem(store: StudioStore | null, fazer?: Miniatura): Record<string, PecaDoItem> {
   const out: Record<string, PecaDoItem> = {};
   if (!store) return out;
   for (const p of store.listPecas()) {
     const e = lerEntrega(store, p.id);
     if (!e) continue;
-    out[e.item_id] = { peca_id: p.id, titulo: p.titulo || '', legenda: p.legenda || '', hashtags: p.hashtags || [], ia: !!e.ia };
+    const item: PecaDoItem = { peca_id: p.id, titulo: p.titulo || '', legenda: p.legenda || '', hashtags: p.hashtags || [], ia: !!e.ia };
+    if (p.formato_id !== 'ig-reels-9x16' && p.formato_id !== 'ig-stories-9x16') {
+      const mini = miniaturasDoPacote(store.tree.pecaDirs(p.id).pacote, fazer);
+      if (mini.length) item.miniaturas = mini;
+    }
+    out[e.item_id] = item;
   }
   return out;
 }

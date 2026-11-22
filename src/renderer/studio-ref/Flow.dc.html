@@ -38,12 +38,15 @@
       <div class="rows">
         <sc-for list="{{library}}" as="it" hint-placeholder-count="2">
           <div class="row" style="cursor: default">
-            <div class="grow"><div class="t" style="font-size: 14px">{{it.nome}}</div><div class="m">{{it.medida}} · {{it.origem}}</div></div>
+            <div class="grow"><div class="t" style="font-size: 14px">{{it.nome}}</div><div class="m">{{it.tipo}} · {{it.medida}} · {{it.origem}}</div>
+              <sc-if value="{{it.hasMini}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 6px; margin-top: 8px; overflow-x: auto"><sc-for list="{{it.mini}}" as="mi" hint-placeholder-count="3"><img src="{{mi.src}}" alt="{{mi.alt}}" style="height: 72px; border-radius: 6px; border: 1px solid var(--line); flex: none"></sc-for></div></sc-if>
+              <sc-if value="{{it.soSim}}" hint-placeholder-val="{{false}}"><div class="m" style="color: var(--warning); margin-top: 4px">No DarkFlow, carrossel, imagem e Stories só rodam em simulação até a reauditoria.</div></sc-if>
+            </div>
             <span class="badge {{it.agCls}}">{{it.agLabel}}</span>
             <button class="btn sm secondary" onClick="{{it.agendar}}">Nova agenda</button>
           </div>
         </sc-for>
-        <sc-if value="{{libEmpty}}" hint-placeholder-val="{{false}}"><div class="row" style="cursor: default"><span class="muted">Nada na biblioteca. Aprove o pacote de um Reel no Studio e ele aparece aqui.</span></div></sc-if>
+        <sc-if value="{{libEmpty}}" hint-placeholder-val="{{false}}"><div class="row" style="cursor: default"><span class="muted">Nada na biblioteca. Aprove o pacote de uma peça no Studio e ela aparece aqui.</span></div></sc-if>
       </div>
     </section>
   </sc-if>
@@ -143,12 +146,13 @@
         <p style="font-size: 13px">{{gate.texto}}</p>
         <div style="font-size: 13px; display: flex; flex-direction: column; gap: 4px">
           <div><span class="muted">Agenda:</span> {{gate.nome}}</div>
-          <div><span class="muted">Vídeo:</span> {{gate.video}}</div>
+          <div><span class="muted">{{gate.tipoLabel}}:</span> {{gate.video}}</div>
+          <sc-if value="{{gate.hasMini}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 6px; overflow-x: auto"><sc-for list="{{gate.mini}}" as="mi" hint-placeholder-count="3"><img src="{{mi.src}}" alt="{{mi.alt}}" style="height: 64px; border-radius: 6px; border: 1px solid rgba(244,246,242,.25); flex: none"></sc-for></div></sc-if>
           <div><span class="muted">Quando:</span> {{gate.regra}}</div>
           <div><span class="muted">IA declarada:</span> {{gate.ia}}</div>
           <div><span class="muted">Legenda:</span> {{gate.legenda}}</div>
         </div>
-        <label style="display: flex; gap: 8px; align-items: center; font-size: 13px"><input type="checkbox" checked="{{gate.atestado}}" onChange="{{gate.toggle}}"> Revisei o vídeo e a legenda e atesto o conteúdo.</label>
+        <label style="display: flex; gap: 8px; align-items: center; font-size: 13px"><input type="checkbox" checked="{{gate.atestado}}" onChange="{{gate.toggle}}"> Revisei a peça e a legenda e atesto o conteúdo.</label>
         <div class="actions"><button class="btn sm onink-sec" onClick="{{gate.voltar}}">Voltar</button><button class="btn sm onink" onClick="{{gate.ativar}}" disabled="{{gate.bloqueado}}">Ativar agenda</button></div>
       </div>
     </div>
@@ -169,6 +173,8 @@ var OCC = { agendado: ['agendada', 'action', 'var(--action)'], preflight: ['conf
 function pad(n) { return String(n).padStart(2, '0'); }
 function spDate(iso) { var d = new Date(iso); if (isNaN(d.getTime())) return null; var p = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(d); var o = {}; p.forEach(function (x) { o[x.type] = x.value; }); return { day: o.year + '-' + o.month + '-' + o.day, hm: o.hour + ':' + o.minute }; }
 function when(iso) { var s = spDate(iso); return s ? s.day.split('-').reverse().join('/') + ' ' + s.hm : '—'; }
+// F5: tipo da peça na biblioteca do DarkFlow (manifesto v2). Reel é o padrão do v1.
+function tipoLabel(it) { var k = (it && it.media_type) || 'REELS'; var l = { REELS: 'Reel', CAROUSEL: 'Carrossel', IMAGE: 'Imagem', STORIES: 'Stories' }[k] || k; return k === 'CAROUSEL' ? l + ' · ' + (it.item_count || 0) + ' lâminas' : l; }
 function today() { var s = spDate(new Date().toISOString()); return s ? s.day : ''; }
 function addDays(day, n) { var d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
 function monday(day) { var d = new Date(day + 'T12:00:00Z'); var wd = (d.getUTCDay() + 6) % 7; return addDays(day, -wd); }
@@ -239,6 +245,9 @@ class Component extends DCLogic {
     var countDay = function (day) { return calOcc.filter(function (o) { var d = spDate(o.scheduled_at_utc); return d && d.day === day; }).length; };
     var weekCount = weekDays.reduce(function (acc, d) { return acc + countDay(d); }, 0);
     var f = s.form; var g = s.gate; var gs = g ? schedById[g.id] : null;
+    var itemById = {}; (b.library || []).forEach(function (it) { itemById[it.id] = it; });
+    var gatePeca = gs ? (b.pecas || {})[gs.item_id] : null;
+    var gateMini = ((gatePeca && gatePeca.miniaturas) || []).map(function (src, i) { return { src: src, alt: 'Lâmina ' + (i + 1) }; });
     return {
       reload: function () { self.setState({ notice: '' }); self.reload(); },
       modeLabel: !b.online ? 'modo —' : sim ? 'Simulação: nada vai para o Instagram' : 'Modo real no DarkFlow', modeCls: !b.online ? '' : sim ? 'warn' : 'danger',
@@ -249,7 +258,7 @@ class Component extends DCLogic {
       hasAviso: !!s.aviso, aviso: s.aviso || '',
       hasNotice: !!s.notice, notice: s.notice || '',
       kpis: [
-        { k: 'Na biblioteca', v: String((b.library || []).length), n: 'vídeos prontos' },
+        { k: 'Na biblioteca', v: String((b.library || []).length), n: 'peças prontas' },
         { k: 'Rascunhos', v: String((b.schedules || []).filter(function (x) { return x.status === 'rascunho'; }).length), n: 'aguardando você' },
         { k: 'Na fila', v: String(ativos.length), n: 'ocorrências ativas' },
         { k: 'Publicadas', v: String(occ.filter(function (o) { return o.state === 'publicado'; }).length), n: sim ? 'em simulação' : 'no Instagram' },
@@ -260,7 +269,8 @@ class Component extends DCLogic {
         var peca = (b.pecas || {})[it.id];
         var mine = (b.schedules || []).filter(function (sc) { return sc.item_id === it.id && sc.status !== 'cancelado'; });
         var ag = mine.find(function (sc) { return sc.status === 'agendado'; }) ? ['agenda ativa', 'flow'] : mine.length ? ['em rascunho', 'warn'] : ['sem agenda', ''];
-        return { nome: peca ? peca.titulo : (it.display_name || '—'), medida: (it.width ? it.width + '×' + it.height : '—') + (it.duration_seconds ? ' · ' + Math.round(it.duration_seconds) + ' s' : ''), origem: peca ? 'Studio' : it.source_batch_id ? 'lote do DarkFlow' : 'pasta do DarkFlow', agLabel: ag[0], agCls: ag[1], agendar: function () { self.openForm(it); } };
+        var mini = ((peca && peca.miniaturas) || []).map(function (src, i) { return { src: src, alt: 'Lâmina ' + (i + 1) }; });
+        return { tipo: tipoLabel(it), hasMini: mini.length > 0, mini: mini, soSim: (it.media_type || 'REELS') !== 'REELS', nome: peca ? peca.titulo : (it.display_name || '—'), medida: (it.width ? it.width + '×' + it.height : '—') + (it.duration_seconds ? ' · ' + Math.round(it.duration_seconds) + ' s' : ''), origem: peca ? 'Studio' : it.source_batch_id ? 'lote do DarkFlow' : 'pasta do DarkFlow', agLabel: ag[0], agCls: ag[1], agendar: function () { self.openForm(it); } };
       }),
       libEmpty: !(b.library || []).length,
       schedules: (b.schedules || []).map(function (sc) {
@@ -305,7 +315,7 @@ class Component extends DCLogic {
       gate: g && gs ? {
         modeLabel: sim ? 'Simulação: o worker usa o adaptador falso' : 'Modo real: o DarkFlow publica no Instagram', modeCls: sim ? 'warn' : 'danger',
         texto: sim ? 'Ativar coloca as ocorrências na fila do DarkFlow. Em simulação, nada vai para o Instagram.' : 'Ativar coloca as ocorrências na fila do DarkFlow, que está em modo real: no horário, o post vai para o Instagram.',
-        nome: gs.name || '—', video: itemName[gs.item_id] || '—', regra: regra(gs), ia: gs.is_ai_generated ? 'sim' : 'não', legenda: (gs.caption || '—') + (gs.hashtags ? ' ' + gs.hashtags : ''),
+        nome: gs.name || '—', video: itemName[gs.item_id] || '—', tipoLabel: tipoLabel(itemById[gs.item_id]), hasMini: gateMini.length > 0, mini: gateMini, regra: regra(gs), ia: gs.is_ai_generated ? 'sim' : 'não', legenda: (gs.caption || '—') + (gs.hashtags ? ' ' + gs.hashtags : ''),
         atestado: !!g.atestado, bloqueado: !g.atestado,
         toggle: function (e) { self.setState({ gate: { id: g.id, atestado: !!e.target.checked } }); },
         voltar: function () { self.setState({ gate: null }); },

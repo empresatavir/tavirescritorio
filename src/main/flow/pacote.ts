@@ -5,9 +5,9 @@
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { aceitoPeloDarkflow, problemasDoPacote, type PacoteAprovado, type PacoteMidia } from '../../shared/flow';
+import { CARROSSEL_MAX_DARKFLOW, aceitoPeloDarkflow, mediaTypeDarkflow, problemasDoPacote, type PacoteAprovado, type PacoteMidia } from '../../shared/flow';
 import { formatById, type Ativo } from '../../shared/studio';
-import { exportReelForDarkFlow } from '../studio/darkflowExport';
+import { exportReelForDarkFlow, exportV2ForDarkFlow, type ToJpeg } from '../studio/darkflowExport';
 import { probe } from '../studio/mediaChecks';
 import { ensureStudioTree } from '../studio/paths';
 import type { StudioStore } from '../studio/store';
@@ -85,11 +85,16 @@ export function pacoteDaPeca(store: StudioStore, pecaId: string, deps: { probe?:
   return { ok: true, pacote };
 }
 
-/** Converte o pacote no manifesto v1 do DarkFlow (copia o mp4 para storage/output). Confere o sha256 da cópia. */
-export function paraManifestoDarkflow(pacote: PacoteAprovado, outputRoot: string, projectRoot: string): Result<{ video: string; manifest: string; sha256: string }> {
-  if (!aceitoPeloDarkflow(pacote.formato)) return { ok: false, error: `o DarkFlow ainda não recebe ${formatById(pacote.formato)?.label ?? pacote.formato}; hoje só Reel` };
+/**
+ * Converte o pacote no manifesto do DarkFlow e confere o sha256 da cópia. Reel vai pelo manifesto v1
+ * (um mp4); carrossel, post e Stories pelo v2 (F5), com as lâminas em JPEG.
+ */
+export function paraManifestoDarkflow(pacote: PacoteAprovado, outputRoot: string, projectRoot: string, deps: { toJpeg?: ToJpeg } = {}): Result<{ video: string; manifest: string; sha256: string }> {
+  const mediaType = mediaTypeDarkflow(pacote.formato);
+  if (!aceitoPeloDarkflow(pacote.formato) || !mediaType) return { ok: false, error: `o DarkFlow não recebe ${formatById(pacote.formato)?.label ?? pacote.formato}` };
   const problemas = problemasDoPacote(pacote);
   if (problemas.length) return { ok: false, error: problemas.join('; ') };
+  if (mediaType !== 'REELS') return paraManifestoV2(pacote, mediaType, outputRoot, projectRoot, deps.toJpeg);
   const midia = pacote.midias[0];
   if (!fs.existsSync(midia.arquivo) || sha256(midia.arquivo) !== midia.sha256) return { ok: false, error: 'o vídeo mudou depois de montar o pacote' };
   try {
@@ -97,6 +102,22 @@ export function paraManifestoDarkflow(pacote: PacoteAprovado, outputRoot: string
     const copied = sha256(out.video);
     if (copied !== midia.sha256) return { ok: false, error: 'a cópia no DarkFlow não confere com o pacote' };
     return { ok: true, video: out.video, manifest: out.manifest, sha256: copied };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+function paraManifestoV2(pacote: PacoteAprovado, mediaType: 'CAROUSEL' | 'IMAGE' | 'STORIES', outputRoot: string, projectRoot: string, toJpeg?: ToJpeg): Result<{ video: string; manifest: string; sha256: string }> {
+  if (mediaType === 'CAROUSEL' && pacote.midias.length > CARROSSEL_MAX_DARKFLOW) {
+    return { ok: false, error: `carrossel com ${pacote.midias.length} lâminas; a Meta aceita até ${CARROSSEL_MAX_DARKFLOW}` };
+  }
+  for (const m of pacote.midias) {
+    if (!fs.existsSync(m.arquivo) || sha256(m.arquivo) !== m.sha256) return { ok: false, error: `${path.basename(m.arquivo)} mudou depois de montar o pacote` };
+  }
+  try {
+    const pasta = `studio-${(pacote.peca_id || 'peca').replace(/[^\w-]/g, '').slice(0, 36)}`;
+    const out = exportV2ForDarkFlow({ itens: pacote.midias, mediaType, pasta, displayName: pacote.titulo || pasta, outputRoot, projectRoot, toJpeg });
+    return { ok: true, video: out.arquivos[0], manifest: out.manifest, sha256: out.sha256 };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : String(err) };
   }
