@@ -85,6 +85,17 @@ describe('jobs do APK viram execuções reais', () => {
     expect(q.views()[UUID1].status).toBe('review');
   });
 
+  it('estudo pedido ao Yuri YouTube aparece como Yuri no job, no log, na entrega e na tarefa', async () => {
+    const { q, desk } = escritorio();
+    applyDeskCommand(desk, { id: UUID1, kind: 'job.create', payload: { kind: 'agent', fields: { agent: 'Yuri YouTube', action: 'estudo-video', instrucao: 'https://www.instagram.com/reel/Dfw9TPbtLOP/ estudar' } } });
+    await q.tick();
+    const { jobs, deliveries } = jobMirror(desk.list(), q.rows(), (id) => q.liveLog(id), 'm');
+    expect(jobs[0]).toMatchObject({ agent: 'Yuri YouTube' });
+    expect((jobs[0].log as any[]).map((l) => l.m)).toContain('Começou · Yuri YouTube');
+    expect(String(deliveries[0].meta)).toMatch(/^Yuri YouTube · /);
+    expect(desk.list()[0].who).toBe('Yuri YouTube');
+  });
+
   it('Editorial e Chamar agente usam o papel certo; campo vazio é recusado', async () => {
     const { q, desk, prompts, agents } = escritorio();
     applyDeskCommand(desk, { id: UUID1, kind: 'job.create', payload: { kind: 'editorial', fields: { tema: 'Pão de fermentação natural', formato: 'Post' } } });

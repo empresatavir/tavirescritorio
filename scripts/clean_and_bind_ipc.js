@@ -2037,12 +2037,36 @@ templateHtml = templateHtml.split('<span class="num" style="font-size: 12px; wid
 const origEvidenceSpec = `      evidence: { title: 'Evidência', lead: 'Leitura do artefato, sem executar o job de novo.', size: 'lg', primary: 'Fechar', cancel: 'Copiar caminho', fields: [
         { k: 'c', type: 'code', text: 'status: observed\\nsource: workspace/meridian/qa.md\\nchecked_by: Edna E2E · 14:16\\n\\n- [x] Build sem erro\\n- [x] Links internos\\n- [ ] Prova visual em 390 px\\n- [ ] SEO assinado por Nina SEO' },
         { k: 'n', type: 'note', tone: 'info', text: 'Classificação: observado. Fonte local, verificável no workspace.' }] },`;
-const newEvidenceSpec = `      evidence: { title: (d && d.title) || 'Evidência', eyebrow: (d && d.sc) ? (d.sc + ' · ' + (d.dom || 'conhecimento')) : 'Artefato Indexado', lead: (d && d.src) ? ('Fonte: ' + d.src) : 'Leitura do artefato, sem executar o job de novo.', size: 'lg', primary: 'Fechar', cancel: 'Fechar', fields: [
-        { k: 'c', type: 'code', text: (d && d.text) ? ('fonte: ' + (d.src || 'local') + '\\nescopo: ' + (d.sc || 'Biblioteca') + ' | dominio: ' + (d.dom || 'geral') + ' | confianca: ' + (d.conf || 'alta') + '\\n\\n' + d.text) : 'status: observed\\nsource: workspace/meridian/qa.md\\nchecked_by: Edna E2E · 14:16\\n\\n- [x] Build sem erro\\n- [x] Links internos\\n- [ ] Prova visual em 390 px\\n- [ ] SEO assinado por Nina SEO' },
-        { k: 'n', type: 'note', tone: 'info', text: (d && d.src) ? ('Indexado na abertura pelo Sincron Brain · Fonte verificável em ' + d.src) : 'Classificação: observado. Fonte local, verificável no workspace.' }] },`;
+const newEvidenceSpec = `      evidence: (d && d.kind === 'artefato') ? { title: d.title || 'Artefato', eyebrow: 'Artefato da tarefa', lead: d.src ? ('Arquivo: ' + d.src) : 'Resultado entregue pelo agente.', size: 'lg', primary: d.src ? 'Copiar caminho' : 'Fechar', cancel: d.src ? 'Fechar' : false, fields: [
+        { k: 'c', type: 'code', text: d.text || 'O agente terminou sem texto.' }] } : { title: (d && d.title) || 'Evidência', eyebrow: (d && d.sc) ? (d.sc + ' · ' + (d.dom || 'conhecimento')) : 'Artefato Indexado', lead: (d && d.src) ? ('Fonte: ' + d.src) : 'Leitura do artefato, sem executar o job de novo.', size: 'lg', primary: (d && d.src) ? 'Copiar caminho' : 'Fechar', cancel: (d && d.src) ? 'Fechar' : false, fields: [
+        { k: 'c', type: 'code', text: (d && d.text) ? ('fonte: ' + (d.src || 'local') + '\\nescopo: ' + (d.sc || 'Biblioteca') + ' | dominio: ' + (d.dom || 'geral') + ' | confianca: ' + (d.conf || 'alta') + '\\n\\n' + d.text) : 'Nenhum artefato ligado a este item ainda.' },
+        { k: 'n', type: 'note', tone: 'info', text: (d && d.src) ? ('Indexado na abertura pelo Sincron Brain · Fonte verificável em ' + d.src) : 'O artefato aparece aqui quando o agente entrega o resultado.' }] },`;
 if (templateHtml.includes(origEvidenceSpec)) {
   templateHtml = templateHtml.replace(origEvidenceSpec, newEvidenceSpec);
   console.log("Modal 'evidence' enriquecido para leitura de itens indexados na abertura!");
+}
+
+// 2.10b2 Modal de artefato: um só «Fechar», «Copiar caminho» copia de verdade, e Decisões abre o arquivo da tarefa
+{
+  const swaps = [
+    [`        cancel: sp2.cancel || 'Cancelar', hasSecondary:`, `        cancel: sp2.cancel || 'Cancelar', hasCancel: sp2.cancel !== false, hasSecondary:`],
+    [`<button type="button" class="btn secondary" sc-camel-on-click="{{closeModal}}">{{fm.cancel}}</button>`, `<sc-if value="{{fm.hasCancel}}" hint-placeholder-val="{{true}}"><button type="button" class="btn secondary" sc-camel-on-click="{{closeModal}}">{{fm.cancel}}</button></sc-if>`],
+    [`    if (id === 'evidence') { this.close(); return; }`, `    if (id === 'evidence') {
+      const src = s.mdata && s.mdata.src;
+      const viaCampo = () => { try { const ta = document.createElement('textarea'); ta.value = src; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); const ok = document.execCommand('copy'); ta.remove(); return ok; } catch (e) { return false; } };
+      const avisa = (ok) => this.say(ok ? 'Caminho copiado' : 'Não deu para copiar', src);
+      if (src) (navigator.clipboard ? navigator.clipboard.writeText(src).then(() => avisa(true), () => avisa(viaCampo())) : Promise.resolve(avisa(viaCampo())));
+      this.close(); return;
+    }`],
+    [`<button class="link" sc-camel-on-click="{{openEvidence}}">Abrir artefato completo →</button>`, `<button class="link" sc-camel-on-click="{{openDecArtifact}}">Abrir artefato completo →</button>`],
+    [`      openEvidence: () => self.open('evidence'),`, `      openEvidence: () => self.open('evidence'), openDecArtifact: () => self.open('evidence', dcur && dcur.artifact ? Object.assign({ kind: 'artefato' }, dcur.artifact) : null),`],
+  ];
+  let ok = 0;
+  for (const [a, b] of swaps) {
+    if (templateHtml.split(a).length === 2) { templateHtml = templateHtml.replace(a, b); ok++; }
+    else console.warn('AVISO: modal de artefato, trecho não encontrado: ' + a.slice(0, 70));
+  }
+  console.log('Modal de artefato: ' + ok + '/' + swaps.length + ' ajustes (um Fechar, copiar caminho, arquivo da tarefa em Decisões).');
 }
 
 // 2.10c Conectar Paleta Ctrl + K (hits) ao índice de abertura (s.vaultDocs)

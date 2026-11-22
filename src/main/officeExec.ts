@@ -123,6 +123,18 @@ export function agentLabel(agent: string): string {
   return AGENT_LABEL[agent] || 'Agente geral';
 }
 
+/** Execuções que um agente nomeado conduz (estudo de vídeo, absorção): quem aparece é o dono da tarefa, não o tipo da execução. */
+const OWNED_RUNS = new Set(['estudo', 'absorcao']);
+
+export function isOwnedRun(agent: string): boolean {
+  return OWNED_RUNS.has(agent);
+}
+
+export function runOwner(agent: string, who?: string): string {
+  const dono = String(who || '').trim();
+  return isOwnedRun(agent) && dono ? dono : agentLabel(agent);
+}
+
 /** Tipo de entrega (kind do APK) pelo agente da execução. */
 export function kindOfAgent(agent: string): string {
   if (agent === 'social' || agent === 'video') return 'instagram';
@@ -443,7 +455,7 @@ export class ExecQueue {
 
   /** Resultados esperando decisão, para a tela Decisões. */
   approvals(tasks: ExecTask[], now = Date.now()): Array<Record<string, unknown>> {
-    return reviewApprovals(this.store.all(), tasks, now);
+    return reviewApprovals(this.store.all(), tasks, now, (t) => this.workspaceOf(t));
   }
 
   enqueue(taskId: string, mode: RunMode, agent: string, opts: { origin?: string; note?: string; id?: string; fields?: Record<string, string> } = {}): ExecResult {
@@ -549,7 +561,7 @@ export class ExecQueue {
         workspace: this.workspaceOf(task),
         fields: fieldsOf(next),
       });
-      const owner = agentLabel(next.agent);
+      const owner = runOwner(next.agent, task.who);
       const stage = next.mode === 'plan' ? 'Plano da Paula' : next.note ? 'Ajuste' : 'Execução';
       let res: RunnerResult;
       try {
@@ -616,7 +628,21 @@ function ageOf(iso: string, now = Date.now()): { age: string; ageH: number } {
 }
 
 /** Tarefas com resultado esperando o Carlos, no formato da tela Decisões (ApprovalItem). */
-export function reviewApprovals(rows: TaskRunRow[], tasks: ExecTask[], now = Date.now()): Array<Record<string, unknown>> {
+function initialsOf(name: string): string {
+  const parts = String(name || '').split(/\s+/).filter((w) => /^[\p{L}\d]/u.test(w));
+  return (parts.length > 1 ? parts[0][0] + parts[1][0] : (parts[0] || 'AG').slice(0, 2)).toUpperCase();
+}
+
+/** O que o botão «Abrir artefato completo» mostra: o arquivo que o papel grava ou, sem ele, o resumo inteiro. */
+export function reviewArtifact(last: TaskRunRow, workspace: string): { title: string; src: string; text: string } {
+  const files = workspace ? taskFiles(workspace, last.agent) : [];
+  const own = DELIVERABLE[last.agent];
+  const file = files.find((f) => f.name === own) || files[0];
+  if (file) return { title: file.name, src: path.join(workspace, file.name), text: file.body };
+  return { title: 'Resumo do agente', src: workspace, text: String(last.result || '').trim() || 'O agente terminou sem texto de resumo.' };
+}
+
+export function reviewApprovals(rows: TaskRunRow[], tasks: ExecTask[], now = Date.now(), workspaceOf: (task: ExecTask) => string = () => ''): Array<Record<string, unknown>> {
   const out: Array<Record<string, unknown>> = [];
   for (const t of tasks) {
     const last = latestOf(rows, t.id, 'exec');
@@ -627,8 +653,8 @@ export function reviewApprovals(rows: TaskRunRow[], tasks: ExecTask[], now = Dat
       group: 'review',
       kind: 'hardening',
       title: `Resultado da T-${t.seq} · ${t.title}`,
-      who: agentLabel(last.agent),
-      ini: 'AG',
+      who: runOwner(last.agent, t.who),
+      ini: initialsOf(runOwner(last.agent, t.who)),
       type: 'Resultado de tarefa',
       status: 'pending',
       impact: 'baixo',
@@ -644,6 +670,7 @@ export function reviewApprovals(rows: TaskRunRow[], tasks: ExecTask[], now = Dat
       cost: '—',
       time: '—',
       link: ['Abrir tarefas', 'tasks'],
+      artifact: reviewArtifact(last, workspaceOf(t)),
     });
   }
   return out;

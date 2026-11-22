@@ -218,4 +218,21 @@ describe('decisões das tarefas', () => {
     expect(items).toHaveLength(1);
     expect(items[0]).toMatchObject({ id: 'revisao-T-1', group: 'review', status: 'pending', task: '#1', age: 'há 30 min', reason: 'Previsão\nChuva à tarde' });
   });
+
+  it('estudo de vídeo: a decisão mostra o dono da tarefa e abre o arquivo entregue', async () => {
+    const fs = await import('node:fs');
+    const os = await import('node:os');
+    const path = await import('node:path');
+    const { reviewApprovals } = await import('../../src/main/officeExec');
+    const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'estudo-'));
+    fs.writeFileSync(path.join(ws, 'estudo-video.md'), '# Estudo\nParecer completo');
+    fs.writeFileSync(path.join(ws, 'notas.txt'), 'rascunho');
+    const row: TaskRunRow = { id: 'e', task_id: 't1', mode: 'exec', agent: 'estudo', status: 'review', attempt: 1, note: '', origin: 'apk', created_at: '2026-11-16T01:00:00Z', started_at: null, finished_at: '2026-11-16T01:10:00Z', run_id: null, error: '', result: 'Resumo curto' };
+    const [item] = reviewApprovals([row], [{ ...T1, who: 'Yuri YouTube' }], Date.parse('2026-11-16T01:40:00Z'), () => ws);
+    expect(item).toMatchObject({ who: 'Yuri YouTube', ini: 'YY' });
+    expect(item.artifact).toEqual({ title: 'estudo-video.md', src: path.join(ws, 'estudo-video.md'), text: '# Estudo\nParecer completo' });
+    // Sem pasta, o artefato é o resumo inteiro; agente comum continua com o próprio nome.
+    const [geral] = reviewApprovals([{ ...row, agent: 'geral' }], [{ ...T1, who: 'Yuri YouTube' }], Date.parse('2026-11-16T01:40:00Z'));
+    expect(geral).toMatchObject({ who: 'Agente geral', artifact: { title: 'Resumo do agente', text: 'Resumo curto' } });
+  });
 });

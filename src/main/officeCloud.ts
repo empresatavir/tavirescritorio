@@ -17,7 +17,7 @@
 import { createHash } from 'node:crypto';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { deliveryBody } from './officeExec';
+import { deliveryBody, isOwnedRun } from './officeExec';
 import { ACTION_ABSORB, ACTION_STUDY, ACTION_VIDEO, IRIS, KAKASHI, MAICON, OFFICE_AGENTS, STUDY_OWNERS, absorbHints, firstSiteLink, isTriage, officeAction, officeAgent, publishedAgents, videoShortcode, type PublishedEngine } from '../shared/officeAgents';
 import { firstStudyLink, studyCode, studySource } from './officeStudy';
 import { inviteRequestFromApk } from './raiox/inviteRequests';
@@ -195,6 +195,11 @@ function agentName(agent: string): string {
   return ({ social: 'Social', redator: 'Redator', raiox: 'Pesquisador', paula: 'Paula PM', plano: 'Agente do plano', video: IRIS, estudo: MAICON, triagem: 'Triagem' } as Record<string, string>)[agent] || 'Agente geral';
 }
 
+/** Quem conduz a execução: estudo e absorção têm dono nomeado na tarefa (Maicon, Yuri, Kakashi). */
+function runWho(agent: string, who?: string): string {
+  return isOwnedRun(agent) && who ? who : agentName(agent);
+}
+
 function kindOf(agent: string): string {
   if (agent === 'social' || agent === 'video') return 'instagram';
   if (agent === 'redator') return 'editorial';
@@ -360,10 +365,11 @@ export function jobMirror(
     const first = execs[0];
     const kind = kindOf(last.agent);
     const fields = parseFields(first.fields);
+    const nameOf = (agent: string) => runWho(agent, t.who);
     const log: Array<{ t: string; m: string }> = [];
     for (const r of execs) {
       log.push({ t: hhmm(r.created_at), m: r.attempt > 1 ? `Tentativa ${r.attempt} na fila${r.note ? ` · ${r.note.slice(0, 160)}` : ''}` : 'Na fila do Escritório' });
-      if (r.started_at) log.push({ t: hhmm(r.started_at), m: `Começou · ${agentName(r.agent)}` });
+      if (r.started_at) log.push({ t: hhmm(r.started_at), m: `Começou · ${nameOf(r.agent)}` });
       for (const l of liveLog(r.id)) log.push({ t: hhmm(l.at), m: l.m });
       if (r.finished_at && finishLine(r)) log.push({ t: hhmm(r.finished_at), m: finishLine(r) });
     }
@@ -375,7 +381,7 @@ export function jobMirror(
       n: Number(t.seq) || 0,
       queue_seq: qpos || Number(t.seq) || 0,
       title: t.title,
-      agent: agentName(last.agent),
+      agent: nameOf(last.agent),
       model,
       status,
       pct: status === 'done' ? 100 : 0,
@@ -398,7 +404,7 @@ export function jobMirror(
         job_id: `T-${t.seq}`,
         kind,
         title: t.title,
-        meta: `${agentName(delivered.agent)} · tentativa ${delivered.attempt} · ${estado}`,
+        meta: `${nameOf(delivered.agent)} · tentativa ${delivered.attempt} · ${estado}`,
         url: `/reports/entrega-T-${t.seq}`,
         body: deliveryBody(String(delivered.result || ''), filesOf(t, delivered.agent)),
         created_at: delivered.finished_at || delivered.created_at,
@@ -655,8 +661,9 @@ export class DeskWorker {
     const withFiles = (t: DeskTask) => {
       const run = runs[t.id];
       if (!run || run.mode !== 'exec') return run;
-      const files = filesOf(t, String(run.agent || ''));
-      return files.length ? { ...run, files } : run;
+      const agent = String(run.agent || '');
+      const files = filesOf(t, agent);
+      return { ...run, who: runWho(agent, t.who), ...(files.length ? { files } : {}) };
     };
     const out = [{ table: 'office_tasks', key: 'id', rows: tasks.map((t) => toAppTask(t, withFiles(t)) as unknown as Record<string, unknown>) }];
     if (ex && ex.rows) {
