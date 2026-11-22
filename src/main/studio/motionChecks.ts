@@ -3,6 +3,7 @@ import { execFileSync, spawn } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { MOTION_TOKEN_PADRAO, type MotionPreset } from '../../shared/studio';
+import { nodeEnvFor } from './motionHome';
 
 export interface MotionCheckItem {
   id: 'C1' | 'C2' | 'C3' | 'C4' | 'C5' | 'C6' | 'C7' | 'C8' | 'C9';
@@ -140,6 +141,7 @@ function run(command: string, args: string[], cwd: string): Promise<{ code: numb
       cwd,
       windowsHide: true,
       shell: process.platform === 'win32' && (command === 'npm' || command === 'npx'),
+      env: nodeEnvFor(command),
     });
     let output = '';
     let settled = false;

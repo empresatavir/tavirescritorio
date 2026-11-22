@@ -31,7 +31,7 @@
     <section class="card pad" style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
       <div class="grow"><b>Chrome Headless do Remotion</b><p class="muted" style="font-size: 13px; margin-top: 4px">{{chromeNote}}</p></div>
       <button class="btn secondary" onClick="{{updateMotion}}">Atualizar base de motion</button>
-      <button class="btn primary" onClick="{{downloadChrome}}">Baixar o Chrome do Remotion</button>
+      <button class="btn primary" onClick="{{downloadChrome}}" disabled="{{chromeBusy}}">{{chromeBtn}}</button>
     </section>
   </sc-if>
 
@@ -761,7 +761,9 @@ class Component extends DCLogic {
       steps: stages.map(function (id, i) { return { n: String(i + 1).padStart(2, '0'), label: stageLabel(id, peca && peca.formato_id), cls: i < curIndex ? 'done' : i === viewIndex ? 'on' : '', pick: function () { if (i <= curIndex) self.setState({ view: id }); } }; }),
       past: locked, pastInfo: { t: stageLabel(viewed, peca && peca.formato_id) || '', d: 'Etapa já cumprida. Só leitura.' }, backToCurrent: function () { self.setState({ view: null }); }, curStageLabel: stageLabel(cur, peca && peca.formato_id) || cur,
       sv: sv, locked: locked, custo: s.custo, error: s.error || '', loadingAngles: s.loading,
-      needsChrome: !!s.needsChrome, chromeNote: s.chromeNote || '',
+      needsChrome: !!s.needsChrome, chromeBusy: !!s.chromeBusy,
+      chromeBtn: s.chromeBusy ? 'Baixando o Chrome…' : 'Baixar o Chrome do Remotion',
+      chromeNote: s.chromeBusy ? 'Baixando o Chrome Headless do Remotion. Leva alguns minutos; pode continuar usando o Escritório.' : (s.chromeNote || ''),
       motionStatus: s.motionJob ? (s.motionJob.preset + ' · ' + s.motionJob.status) : 'Nenhum kit pedido',
       motionDetail: (function () {
         var items = s.motionJob && s.motionJob.checks && s.motionJob.checks.items ? s.motionJob.checks.items : [];
@@ -792,7 +794,15 @@ class Component extends DCLogic {
         if (!s.motionJob) return;
         studioApi().motion.gate(s.motionJob.id, 'recusado', '').then(function (res) { self.after(res); });
       },
-      downloadChrome: function () { var studio = studioApi(); if (studio && studio.motion) studio.motion.downloadBrowser(true).then(function (res) { self.after(res); }); },
+      downloadChrome: function () {
+        var studio = studioApi();
+        if (!studio || !studio.motion || self.state.chromeBusy) return;
+        self.setState({ chromeBusy: true, error: '' });
+        studio.motion.downloadBrowser(true).then(function (res) {
+          self.setState({ chromeBusy: false });
+          self.after(res);
+        }).catch(function (err) { self.setState({ chromeBusy: false, error: (err && err.message) || 'não foi possível baixar o Chrome do Remotion' }); });
+      },
       downloadWhisper: function () { var studio = studioApi(); if (studio && studio.audio) studio.audio.whisper(true).then(function (res) { self.after(res); }); },
       makeCaptions: function () { var studio = studioApi(); if (studio && studio.audio && peca) studio.audio.captions(peca.id).then(function (res) { self.after(res); }); },
       updateMotion: function () { var studio = studioApi(); if (studio && studio.motion) studio.motion.updateBase().then(function (res) { self.after(res); }); },
