@@ -19,6 +19,7 @@ import * as absRetrato from './absorcao/retrato';
 import * as absFluxo from './absorcao/fluxo';
 import { PASTA_ESCOPO } from './absorcao/entrada';
 import * as chamadosMod from './chamados';
+import * as buildMod from './buildProjeto';
 import * as irisAgentMod from './irisAgent';
 import * as attachmentsMod from './attachments';
 
@@ -2994,6 +2995,7 @@ export async function askProjectIris(params: any): Promise<any> {
   let propostas: Array<chamadosMod.PropostaChamado & { duplicado?: string }> = [];
   let propostaAvisos: string[] = [];
   let chamadosVarredura: { criados: string[]; repetidos: string[] } | null = null;
+  let builds: buildMod.PropostaBuild[] = [];
   const wantsChange =
     forceChange ||
     /\b(alter|muda|ajuste|corrija|corri|implement|adicione|remova|refator)\w*/i.test(question);
@@ -3015,6 +3017,7 @@ export async function askProjectIris(params: any): Promise<any> {
         ? `Trilho de alteração: passo ${Number(track.step) + 1} de ${track.items.length} (${track.items[track.step]?.label || stageName})`
         : '',
       'Documentos do projeto costumam ficar em context/ (levantamento, dossiê), specs/, memory/projeto/ e qa/.',
+      ...buildMod.fatosParaIris(rootPath),
     ].filter(Boolean);
     const agentRes = await converseWithIrisAgent({
       workspace: rootPath,
@@ -3064,6 +3067,15 @@ export async function askProjectIris(params: any): Promise<any> {
         }
       }
     }
+    // Blocos BUILD: viram cartão; quem roda e confere é o Escritório, no clique do Carlos.
+    if (agentOk && !params?.varredura) {
+      const pb = buildMod.parseBuilds(reply, rootPath);
+      if (pb.propostas.length || pb.avisos.length) {
+        reply = pb.texto || (pb.propostas.length ? 'Build proposto abaixo.' : reply);
+        builds = pb.propostas;
+        propostaAvisos = propostaAvisos.concat(pb.avisos);
+      }
+    }
     if (agentOk && control.finished && control.alterations_open) {
       const tracked = recordIrisOnAltTrack(idOrPath, questionWithFiles, reply);
       if (tracked) {
@@ -3105,6 +3117,7 @@ export async function askProjectIris(params: any): Promise<any> {
     ...(propostas.length ? { propostas } : {}),
     ...(propostaAvisos.length ? { propostaAvisos } : {}),
     ...(chamadosVarredura ? { chamadosVarredura } : {}),
+    ...(builds.length ? { builds } : {}),
   };
 
   history.push(userMsg, agentMsg);

@@ -106,6 +106,7 @@ const SHADOW_EXCLUDES = [
   'qa/orders/',
   'qa/evidencias/',
   'qa/seguranca/',
+  'qa/builds/',
   'node_modules/',
   'dist/',
   'build/',
@@ -232,7 +233,7 @@ export function excludeFromProjectGit(workspace: string): void {
   if (!fs.existsSync(path.join(workspace, '.git'))) return;
   try {
     const current = fs.existsSync(excludeFile) ? fs.readFileSync(excludeFile, 'utf8') : '';
-    const want = ['.tavir/runs/', '.tavir/shadow.git/', 'qa/orders/', 'qa/evidencias/', 'qa/seguranca/'];
+    const want = ['.tavir/runs/', '.tavir/shadow.git/', 'qa/orders/', 'qa/evidencias/', 'qa/seguranca/', 'qa/builds/'];
     const missing = want.filter((line) => !current.split(/\r?\n/).includes(line));
     if (!missing.length) return;
     fs.mkdirSync(path.dirname(excludeFile), { recursive: true });
