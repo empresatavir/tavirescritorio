@@ -1037,6 +1037,7 @@ quatro. Regra 8 do `CLAUDE.md`: `npm run test:motores` nos quatro antes do commi
 
 ### 🛑 CP-10 — Smoke com caso fictício
 Como descrito acima, agora com convite pelo Escritório e pelo APK, e expurgo pelo botão da T10.6.
+Roteiro passo a passo: `raiox/docs/validacao/cp-10-roteiro.md`.
 
 # F9 (ajustada) — Publicação
 T9.4 (Vercel, Carlos executa) e T9.5 (Supabase link, Carlos). Antes: PR da branch com F0–F11 para
@@ -1048,6 +1049,16 @@ Relatar o critério de sucesso do PLANO (seção 8) e a tabela G-PR1 com evidên
 Carlos: parecer do advogado sobre aviso e termo; ler e marcar como `validado` ao menos os
 playbooks da Onda 1 usados no piloto (R3). Só com "liberado piloto" escrito por ele os PDFs do
 `RX-854A8212` e de novos convidados podem sair.
+
+# Entrega final — Manual de utilização (pedido do Carlos em 2026-11-22)
+Depois do CP-12, com tudo funcionando de verdade, montar um manual completo de uso do Raio-X para o
+Carlos. Escrever a partir das telas reais (com prints tirados no app, sem dado de cliente) e não
+do plano. Cobrir no mínimo: preparar o ambiente (cofre, liberações "liberado CP-10" e "liberado
+piloto"); convidar cliente pelo Escritório e pelo APK; acompanhar o formulário; rodar análise e
+escolher motor; revisar evidências; prioridade e devolutiva; redigir, conferir e aprovar documentos;
+entrega em dois atos; revogação e expurgo a pedido do titular; o que fazer em incidente (resumo do
+`raiox/docs/validacao/runbook-incidentes.md`); conformidade dos motores; perguntas frequentes e
+mensagens de erro. Linguagem simples, em pt-BR. Publicar como página ou documento para o Carlos.
 
 ---
 
