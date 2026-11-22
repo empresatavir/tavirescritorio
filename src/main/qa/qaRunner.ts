@@ -10,6 +10,7 @@ import * as net from 'node:net';
 import * as path from 'node:path';
 import { planQa, type QaCheck, type QaPlan } from './qaPlan';
 import type { JornadaResult, JornadaTest } from './jornada';
+import { projectDesignTokens } from '../design/kit';
 import { renderQaReport } from './qaReport';
 import { excludeFromProjectGit } from '../runLedger';
 
@@ -475,7 +476,11 @@ export async function runQa(opts: QaRunOptions): Promise<QaRun> {
     if (up && !stopped) {
       say(`App no ar em ${baseUrl} · iniciando a jornada`);
       const cfgFile = path.join(dir, 'jornada-config.json');
-      fs.writeFileSync(cfgFile, JSON.stringify({ baseUrl, outDir: dir, maxPages: opts.maxPages || 6, navTimeoutMs: 45000 }), 'utf8');
+      // Portão de design: só para projeto que já tem contrato de design.
+      const tokens = projectDesignTokens(workspace);
+      const designCfg = tokens ? { fonts: tokens.fonts } : null;
+      if (tokens) say('Contrato de design encontrado · o portão de design entra na jornada');
+      fs.writeFileSync(cfgFile, JSON.stringify({ baseUrl, outDir: dir, maxPages: opts.maxPages || 6, navTimeoutMs: 45000, design: designCfg }), 'utf8');
       const env = { ...process.env, ELECTRON_RUN_AS_NODE: '1' };
       const jr = await new Promise<{ code: number | null; err: string }>((resolve) => {
         const child = spawn(process.execPath, [jornadaScript(), cfgFile], { cwd: process.cwd(), env, windowsHide: true });

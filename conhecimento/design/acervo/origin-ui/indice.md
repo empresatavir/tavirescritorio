@@ -1,0 +1,702 @@
+# Origin UI (coss) — índice das peças
+
+639 peças. Abra só as que servem ao trabalho; não leia a pasta inteira.
+
+## accordion
+- `pecas/comp-334.tsx` · 54 linhas
+- `pecas/comp-335.tsx` · 62 linhas · usa lucide-react, radix-ui
+- `pecas/comp-336.tsx` · 54 linhas
+- `pecas/comp-337.tsx` · 62 linhas · usa lucide-react, radix-ui
+- `pecas/comp-338.tsx` · 66 linhas · usa lucide-react
+- `pecas/comp-339.tsx` · 79 linhas · usa lucide-react, radix-ui
+- `pecas/comp-340.tsx` · 71 linhas · usa lucide-react, radix-ui
+- `pecas/comp-341.tsx` · 71 linhas · usa lucide-react, radix-ui
+- `pecas/comp-342.tsx` · 89 linhas · usa lucide-react, radix-ui
+- `pecas/comp-343.tsx` · 89 linhas · usa lucide-react, radix-ui
+- `pecas/comp-344.tsx` · 63 linhas
+- `pecas/comp-345.tsx` · 71 linhas · usa lucide-react, radix-ui
+- `pecas/comp-346.tsx` · 63 linhas
+- `pecas/comp-347.tsx` · 71 linhas · usa lucide-react, radix-ui
+- `pecas/comp-348.tsx` · 63 linhas
+- `pecas/comp-349.tsx` · 71 linhas · usa lucide-react, radix-ui
+- `pecas/comp-350.tsx` · 63 linhas
+- `pecas/comp-351.tsx` · 71 linhas · usa lucide-react, radix-ui
+- `pecas/comp-352.tsx` · accordion, collapsible · 143 linhas · usa lucide-react
+- `pecas/comp-353.tsx` · accordion, collapsible · 172 linhas · usa lucide-react
+
+## alert
+- `pecas/comp-267.tsx` · alert, warning · 17 linhas · usa lucide-react
+- `pecas/comp-268.tsx` · alert, warning · 17 linhas · usa lucide-react
+- `pecas/comp-269.tsx` · alert, error · 17 linhas · usa lucide-react
+- `pecas/comp-270.tsx` · alert, error · 17 linhas · usa lucide-react
+- `pecas/comp-271.tsx` · alert, success · 17 linhas · usa lucide-react
+- `pecas/comp-272.tsx` · alert, success · 17 linhas · usa lucide-react
+- `pecas/comp-273.tsx` · alert, info · 17 linhas · usa lucide-react
+- `pecas/comp-274.tsx` · alert, info · 17 linhas · usa lucide-react
+- `pecas/comp-275.tsx` · alert, warning · 27 linhas · usa lucide-react
+- `pecas/comp-276.tsx` · alert, warning · 27 linhas · usa lucide-react
+- `pecas/comp-277.tsx` · alert, error, signup, authentication · 25 linhas · usa lucide-react
+- `pecas/comp-278.tsx` · alert, error, signup, authentication · 25 linhas · usa lucide-react
+
+## avatar
+- `pecas/comp-390.tsx` · avatar, user, profile · 15 linhas
+- `pecas/comp-391.tsx` · avatar, user, profile · 10 linhas
+- `pecas/comp-392.tsx` · avatar, user, profile · 13 linhas · usa lucide-react
+- `pecas/comp-393.tsx` · avatar, user, profile · 15 linhas
+- `pecas/comp-394.tsx` · avatar, user, profile, status · 20 linhas
+- `pecas/comp-395.tsx` · avatar, user, profile, status · 20 linhas
+- `pecas/comp-396.tsx` · avatar, user, profile, status · 20 linhas
+- `pecas/comp-397.tsx` · avatar, user, profile, badge, chip · 40 linhas
+- `pecas/comp-398.tsx` · avatar, user, profile, badge, chip · 21 linhas
+- `pecas/comp-399.tsx` · avatar, user, profile, badge, chip · 21 linhas
+- `pecas/comp-400.tsx` · avatar, user, profile · 35 linhas
+- `pecas/comp-401.tsx` · avatar, avatar group · 35 linhas
+- `pecas/comp-402.tsx` · avatar, avatar group · 35 linhas
+- `pecas/comp-403.tsx` · avatar, avatar group · 35 linhas
+- `pecas/comp-404.tsx` · avatar, avatar group · 35 linhas
+- `pecas/comp-405.tsx` · avatar, avatar group · 35 linhas
+- `pecas/comp-406.tsx` · avatar, avatar group · 35 linhas
+- `pecas/comp-407.tsx` · avatar, avatar group · 35 linhas
+- `pecas/comp-408.tsx` · avatar, avatar group · 35 linhas
+- `pecas/comp-409.tsx` · avatar, avatar group · 44 linhas
+- `pecas/comp-410.tsx` · avatar, avatar group · 45 linhas
+- `pecas/comp-411.tsx` · avatar, avatar group · 45 linhas
+- `pecas/comp-412.tsx` · avatar, avatar group · 41 linhas
+
+## badge
+- `pecas/comp-413.tsx` · badge, chip · 6 linhas
+- `pecas/comp-414.tsx` · badge, chip · 6 linhas
+- `pecas/comp-415.tsx` · badge, chip · 12 linhas · usa lucide-react
+- `pecas/comp-416.tsx` · badge, chip, counter · 6 linhas
+- `pecas/comp-417.tsx` · badge, chip · 10 linhas
+- `pecas/comp-418.tsx` · badge, chip, counter · 13 linhas
+- `pecas/comp-419.tsx` · badge, chip, status · 12 linhas · usa lucide-react
+- `pecas/comp-420.tsx` · badge, chip, status · 14 linhas
+- `pecas/comp-421.tsx` · badge, chip, status · 11 linhas
+- `pecas/comp-422.tsx` · badge, chip, status · 11 linhas
+- `pecas/comp-423.tsx` · badge, chip, checkbox · 29 linhas · usa lucide-react
+- `pecas/comp-424.tsx` · badge, chip · 25 linhas · usa lucide-react
+- `pecas/comp-425.tsx` · badge, chip, tag · 26 linhas · usa lucide-react
+
+## banner
+- `pecas/comp-301.tsx` · banner, cookies, gdpr, privacy · 22 linhas
+- `pecas/comp-302.tsx` · 20 linhas · usa lucide-react
+- `pecas/comp-303.tsx` · 21 linhas · usa lucide-react
+- `pecas/comp-304.tsx` · 32 linhas · usa lucide-react
+- `pecas/comp-305.tsx` · 52 linhas · usa lucide-react
+- `pecas/comp-306.tsx` · 52 linhas · usa lucide-react
+- `pecas/comp-307.tsx` · 52 linhas · usa lucide-react
+- `pecas/comp-308.tsx` · 49 linhas · usa lucide-react
+- `pecas/comp-309.tsx` · 55 linhas · usa lucide-react
+- `pecas/comp-310.tsx` · banner, countdown, sale · 132 linhas · usa lucide-react
+- `pecas/comp-311.tsx` · banner, newsletter, subscribe · 15 linhas
+- `pecas/comp-312.tsx` · 53 linhas · usa lucide-react
+
+## base
+- `pecas/accordion.tsx` · 70 linhas · usa lucide-react, radix-ui
+- `pecas/alert-dialog.tsx` · 157 linhas · usa radix-ui
+- `pecas/avatar.tsx` · 53 linhas · usa radix-ui
+- `pecas/badge.tsx` · 46 linhas · usa class-variance-authority, radix-ui
+- `pecas/breadcrumb.tsx` · 110 linhas · usa lucide-react, radix-ui
+- `pecas/button.tsx` · 58 linhas · usa class-variance-authority, radix-ui
+- `pecas/calendar.tsx` · 93 linhas · usa lucide-react, react-day-picker
+- `pecas/calendar-rac.tsx` · 114 linhas · usa @internationalized/date, lucide-react, react-aria-components
+- `pecas/checkbox.tsx` · 59 linhas · usa radix-ui
+- `pecas/checkbox-tree.tsx` · 111 linhas
+- `pecas/collapsible.tsx` · 34 linhas · usa radix-ui
+- `pecas/command.tsx` · 177 linhas · usa cmdk, lucide-react
+- `pecas/cropper.tsx` · 68 linhas · usa @origin-space/image-cropper
+- `pecas/datefield-rac.tsx` · 90 linhas · usa react-aria-components
+- `pecas/dialog.tsx` · 138 linhas · usa lucide-react, radix-ui
+- `pecas/dropdown-menu.tsx` · 309 linhas · usa lucide-react, radix-ui
+- `pecas/hover-card.tsx` · 50 linhas · usa radix-ui
+- `pecas/input.tsx` · 25 linhas
+- `pecas/label.tsx` · 24 linhas · usa radix-ui
+- `pecas/multiselect.tsx` · 620 linhas · usa cmdk, lucide-react
+- `pecas/navigation-menu.tsx` · 168 linhas · usa class-variance-authority, lucide-react, radix-ui
+- `pecas/pagination.tsx` · 127 linhas · usa lucide-react
+- `pecas/popover.tsx` · 56 linhas · usa radix-ui
+- `pecas/progress.tsx` · 31 linhas · usa radix-ui
+- `pecas/radio-group.tsx` · 49 linhas · usa radix-ui
+- `pecas/scroll-area.tsx` · 58 linhas · usa radix-ui
+- `pecas/select-native.tsx` · 35 linhas · usa lucide-react
+- `pecas/select.tsx` · 186 linhas · usa lucide-react, radix-ui
+- `pecas/slider.tsx` · 132 linhas · usa radix-ui
+- `pecas/sonner.tsx` · 31 linhas · usa next-themes, sonner
+- `pecas/stepper.tsx` · 293 linhas · usa lucide-react, radix-ui
+- `pecas/switch.tsx` · 31 linhas · usa radix-ui
+- `pecas/table.tsx` · 107 linhas
+- `pecas/tabs.tsx` · 66 linhas · usa radix-ui
+- `pecas/textarea.tsx` · 19 linhas
+- `pecas/timeline.tsx` · 210 linhas · usa radix-ui
+- `pecas/toggle.tsx` · 47 linhas · usa class-variance-authority, radix-ui
+- `pecas/toggle-group.tsx` · 73 linhas · usa class-variance-authority, radix-ui
+- `pecas/tooltip.tsx` · 66 linhas · usa radix-ui
+
+## breadcrumb
+- `pecas/comp-446.tsx` · 56 linhas
+- `pecas/comp-447.tsx` · breadcrumb, dropdown · 58 linhas · usa lucide-react
+- `pecas/comp-448.tsx` · 33 linhas · usa lucide-react
+- `pecas/comp-449.tsx` · 36 linhas · usa lucide-react
+- `pecas/comp-450.tsx` · 33 linhas · usa lucide-react
+- `pecas/comp-451.tsx` · 33 linhas · usa lucide-react
+- `pecas/comp-452.tsx` · 33 linhas · usa lucide-react
+- `pecas/comp-453.tsx` · breadcrumb, select · 48 linhas · usa lucide-react
+
+## button
+- `pecas/comp-78.tsx` · 6 linhas
+- `pecas/comp-79.tsx` · button, disabled · 6 linhas
+- `pecas/comp-80.tsx` · 6 linhas
+- `pecas/comp-81.tsx` · 12 linhas · usa lucide-react
+- `pecas/comp-82.tsx` · button, delete · 12 linhas · usa lucide-react
+- `pecas/comp-83.tsx` · 12 linhas · usa lucide-react
+- `pecas/comp-84.tsx` · 12 linhas · usa lucide-react
+- `pecas/comp-85.tsx` · button, back · 16 linhas · usa lucide-react
+- `pecas/comp-86.tsx` · button, next · 16 linhas · usa lucide-react
+- `pecas/comp-87.tsx` · 17 linhas · usa lucide-react
+- `pecas/comp-88.tsx` · button, dropdown · 16 linhas · usa lucide-react
+- `pecas/comp-89.tsx` · 11 linhas
+- `pecas/comp-90.tsx` · button, loading · 16 linhas · usa lucide-react
+- `pecas/comp-91.tsx` · button, loading · 38 linhas · usa lucide-react
+- `pecas/comp-92.tsx` · button, counter · 13 linhas
+- `pecas/comp-93.tsx` · button, kbd · 15 linhas · usa lucide-react
+- `pecas/comp-94.tsx` · button, user, avatar, profile · 20 linhas
+- `pecas/comp-95.tsx` · button, user, avatar, profile, dropdown · 20 linhas · usa lucide-react
+- `pecas/comp-96.tsx` · 12 linhas · usa lucide-react
+- `pecas/comp-97.tsx` · 16 linhas · usa lucide-react
+- `pecas/comp-98.tsx` · button, menu · 27 linhas · usa lucide-react
+- `pecas/comp-99.tsx` · button, tooltip · 26 linhas · usa lucide-react
+- `pecas/comp-100.tsx` · button, menu, hamburger · 46 linhas
+- `pecas/comp-101.tsx` · button, toggle · 37 linhas · usa lucide-react
+- `pecas/comp-102.tsx` · button, vote, counter · 29 linhas · usa lucide-react
+- `pecas/comp-103.tsx` · button, vote, counter · 27 linhas · usa lucide-react
+- `pecas/comp-104.tsx` · button, volume, controls · 71 linhas · usa lucide-react
+- `pecas/comp-105.tsx` · button, copy · 68 linhas · usa lucide-react
+- `pecas/comp-106.tsx` · button, toggle group · 26 linhas · usa lucide-react
+- `pecas/comp-107.tsx` · button, toggle group · 58 linhas · usa lucide-react
+- `pecas/comp-108.tsx` · button, toggle group, dropdown · 32 linhas · usa lucide-react
+- `pecas/comp-109.tsx` · button, toggle group · 15 linhas
+- `pecas/comp-110.tsx` · button, toggle group · 33 linhas
+- `pecas/comp-111.tsx` · 20 linhas · usa lucide-react
+- `pecas/comp-112.tsx` · 24 linhas · usa lucide-react
+- `pecas/comp-113.tsx` · button, dropdown · 21 linhas · usa lucide-react
+- `pecas/comp-114.tsx` · button, dropdown, counter · 24 linhas · usa lucide-react
+- `pecas/comp-115.tsx` · button, previous · 14 linhas · usa lucide-react
+- `pecas/comp-116.tsx` · button, next · 14 linhas · usa lucide-react
+- `pecas/comp-117.tsx` · button, like, counter · 15 linhas · usa lucide-react
+- `pecas/comp-118.tsx` · button, like, counter · 15 linhas · usa lucide-react
+- `pecas/comp-119.tsx` · button, social, login, authentication · 27 linhas · usa @remixicon/react
+- `pecas/comp-120.tsx` · button, social, login, authentication · 63 linhas · usa @remixicon/react
+- `pecas/comp-121.tsx` · button, social, login, authentication · 47 linhas · usa @remixicon/react
+- `pecas/comp-122.tsx` · button, social, login, authentication · 39 linhas · usa @remixicon/react
+- `pecas/comp-123.tsx` · button, collapsible · 31 linhas · usa lucide-react
+- `pecas/comp-124.tsx` · button, back · 12 linhas · usa lucide-react
+- `pecas/comp-125.tsx` · button, upload, user, avatar, profile, image · 80 linhas · usa lucide-react
+- `pecas/comp-126.tsx` · button, upload, user, avatar, profile, image · 68 linhas · usa lucide-react
+- `pecas/comp-127.tsx` · 46 linhas · usa lucide-react
+- `pecas/comp-128.tsx` · 21 linhas · usa lucide-react
+- `pecas/comp-129.tsx` · button, dropdown, notification · 32 linhas · usa lucide-react
+- `pecas/comp-130.tsx` · button, toggle, darkmode · 36 linhas · usa lucide-react
+- `pecas/comp-131.tsx` · button, dropdown · 80 linhas · usa lucide-react
+
+## calendar
+- `pecas/comp-487.tsx` · calendar, date · 36 linhas · usa @internationalized/date, react-aria-components
+- `pecas/comp-488.tsx` · calendar, range calendar, date · 40 linhas · usa @internationalized/date, react-aria-components
+- `pecas/comp-489.tsx` · calendar, range calendar, date, disabled · 49 linhas · usa @internationalized/date, react-aria, react-aria-components
+- `pecas/comp-490.tsx` · calendar, date, react daypicker · 35 linhas
+- `pecas/comp-491.tsx` · calendar, range calendar, date, react daypicker · 41 linhas · usa date-fns, react-day-picker
+- `pecas/comp-492.tsx` · calendar, range calendar, date, disabled, react daypicker · 45 linhas · usa date-fns
+- `pecas/comp-493.tsx` · calendar, date, react daypicker · 42 linhas · usa date-fns
+- `pecas/comp-494.tsx` · calendar, date, react daypicker · 38 linhas
+- `pecas/comp-495.tsx` · calendar, range calendar, date, react daypicker · 46 linhas · usa date-fns, react-day-picker
+- `pecas/comp-496.tsx` · calendar, date, react daypicker · 39 linhas
+- `pecas/comp-497.tsx` · calendar, date, react daypicker · 98 linhas · usa react-day-picker
+- `pecas/comp-498.tsx` · calendar, date, react daypicker · 94 linhas · usa react-day-picker
+- `pecas/comp-499.tsx` · calendar, date, week, react daypicker · 49 linhas · usa react-day-picker
+- `pecas/comp-500.tsx` · calendar, date, button, react daypicker · 51 linhas · usa date-fns
+- `pecas/comp-501.tsx` · calendar, date, button, react daypicker · 54 linhas · usa date-fns
+- `pecas/comp-502.tsx` · calendar, date, input, react daypicker · 95 linhas · usa date-fns, lucide-react
+- `pecas/comp-503.tsx` · calendar, date, input, time, react daypicker · 60 linhas · usa lucide-react
+- `pecas/comp-504.tsx` · calendar, date, collapsible, react daypicker · 258 linhas · usa date-fns, lucide-react, react-day-picker
+- `pecas/comp-505.tsx` · calendar, date, time, button, react daypicker · 101 linhas · usa date-fns
+- `pecas/comp-506.tsx` · calendar, date, button, react daypicker · 117 linhas · usa date-fns
+- `pecas/comp-507.tsx` · calendar, range calendar, date, button, react daypicker · 186 linhas · usa date-fns, react-day-picker
+- `pecas/comp-508.tsx` · calendar, range calendar, date, react daypicker · 49 linhas · usa date-fns, react-day-picker
+- `pecas/comp-509.tsx` · calendar, range calendar, date, react daypicker · 49 linhas · usa date-fns, react-day-picker
+- `pecas/comp-510.tsx` · calendar, date, react daypicker · 109 linhas · usa date-fns, react-day-picker
+- `pecas/comp-511.tsx` · calendar, date, button, picker, react daypicker · 66 linhas · usa date-fns, lucide-react
+- `pecas/comp-512.tsx` · calendar, date, button, picker, react daypicker · 78 linhas · usa date-fns, lucide-react, react-day-picker
+- `pecas/comp-542.tsx` · 162 linhas · usa date-fns
+
+## checkbox
+- `pecas/comp-132.tsx` · checkbox, label · 14 linhas
+- `pecas/comp-133.tsx` · checkbox, label · 20 linhas
+- `pecas/comp-134.tsx` · checkbox, label · 14 linhas
+- `pecas/comp-135.tsx` · checkbox, label, disabled · 14 linhas
+- `pecas/comp-136.tsx` · checkbox, label · 16 linhas
+- `pecas/comp-137.tsx` · checkbox, label · 19 linhas
+- `pecas/comp-138.tsx` · checkbox, label, login, authentication · 24 linhas
+- `pecas/comp-139.tsx` · checkbox, label · 24 linhas
+- `pecas/comp-140.tsx` · checkbox, label · 14 linhas
+- `pecas/comp-141.tsx` · checkbox, label · 24 linhas
+- `pecas/comp-142.tsx` · checkbox, label, collapsible · 66 linhas
+- `pecas/comp-143.tsx` · checkbox, label · 28 linhas
+- `pecas/comp-144.tsx` · checkbox, label, card · 28 linhas
+- `pecas/comp-145.tsx` · checkbox, label, card · 52 linhas
+- `pecas/comp-146.tsx` · checkbox, label, card · 81 linhas
+- `pecas/comp-147.tsx` · checkbox, label, card · 38 linhas · usa lucide-react
+- `pecas/comp-148.tsx` · checkbox, label, tree · 55 linhas
+- `pecas/comp-149.tsx` · checkbox, label, week, calendar · 45 linhas
+- `pecas/comp-150.tsx` · checkbox, label, toggle, darkmode · 47 linhas · usa lucide-react
+- `pecas/comp-151.tsx` · checkbox, label · 24 linhas
+
+## dialog
+- `pecas/comp-313.tsx` · dialog, modal, alert, alert dialog · 36 linhas
+- `pecas/comp-314.tsx` · dialog, modal, alert, alert dialog · 45 linhas · usa lucide-react
+- `pecas/comp-315.tsx` · dialog, modal · 159 linhas
+- `pecas/comp-316.tsx` · dialog, modal · 160 linhas
+- `pecas/comp-317.tsx` · dialog, modal · 154 linhas
+- `pecas/comp-318.tsx` · dialog, modal · 159 linhas
+- `pecas/comp-319.tsx` · dialog, modal · 178 linhas
+- `pecas/comp-320.tsx` · dialog, modal, delete · 79 linhas · usa lucide-react
+- `pecas/comp-321.tsx` · dialog, modal, newsletter, subscribe, form · 77 linhas · usa lucide-react
+- `pecas/comp-322.tsx` · dialog, modal, feedback, form · 51 linhas
+- `pecas/comp-323.tsx` · dialog, modal, rating, feedback, form · 73 linhas
+- `pecas/comp-324.tsx` · dialog, modal, otp · 141 linhas · usa input-otp
+- `pecas/comp-325.tsx` · dialog, modal, signup, authentication, form · 100 linhas
+- `pecas/comp-326.tsx` · dialog, modal, login, authentication, form · 96 linhas
+- `pecas/comp-327.tsx` · dialog, modal, form, user, team · 166 linhas · usa lucide-react
+- `pecas/comp-328.tsx` · dialog, modal, checkout, payment, credit card, form · 116 linhas · usa lucide-react, react-payment-inputs
+- `pecas/comp-329.tsx` · dialog, modal, checkout, payment, credit card, form · 166 linhas · usa lucide-react, react-payment-inputs
+- `pecas/comp-330.tsx` · dialog, modal, user · 168 linhas · usa lucide-react
+- `pecas/comp-331.tsx` · dialog, modal, user, profile, image, avatar, form · 265 linhas · usa lucide-react
+- `pecas/comp-332.tsx` · dialog, modal, onboarding · 121 linhas · usa lucide-react
+- `pecas/comp-333.tsx` · dialog, modal, command, combobox, popover, search, autocomplete · 121 linhas · usa lucide-react
+
+## dropdown
+- `pecas/comp-366.tsx` · 32 linhas · usa lucide-react
+- `pecas/comp-367.tsx` · 32 linhas · usa lucide-react
+- `pecas/comp-368.tsx` · 50 linhas · usa lucide-react
+- `pecas/comp-369.tsx` · 62 linhas · usa lucide-react
+- `pecas/comp-370.tsx` · 65 linhas · usa lucide-react
+- `pecas/comp-371.tsx` · dropdown, checkbox · 57 linhas · usa lucide-react
+- `pecas/comp-372.tsx` · dropdown, radio · 42 linhas · usa lucide-react
+- `pecas/comp-373.tsx` · dropdown, kbd, delete · 73 linhas · usa lucide-react
+- `pecas/comp-374.tsx` · dropdown, checkbox, radio, delete · 125 linhas · usa lucide-react
+- `pecas/comp-375.tsx` · dropdown, user, profile · 40 linhas · usa lucide-react
+- `pecas/comp-376.tsx` · dropdown, user, profile, avatar · 82 linhas · usa lucide-react
+- `pecas/comp-377.tsx` · dropdown, user, avatar, profile · 86 linhas · usa lucide-react
+- `pecas/comp-378.tsx` · dropdown, info · 66 linhas · usa lucide-react
+- `pecas/comp-379.tsx` · dropdown, text editor · 105 linhas · usa lucide-react
+- `pecas/comp-380.tsx` · dropdown, darkmode · 53 linhas · usa lucide-react
+
+## image
+- `pecas/comp-555.tsx` · image, crop, zoom · 38 linhas
+- `pecas/comp-556.tsx` · image, crop, zoom · 39 linhas
+- `pecas/comp-557.tsx` · image, crop, zoom · 38 linhas
+- `pecas/comp-558.tsx` · image, crop, zoom · 38 linhas
+- `pecas/comp-559.tsx` · image, crop, zoom · 39 linhas
+- `pecas/comp-560.tsx` · image, crop, zoom · 38 linhas
+- `pecas/comp-561.tsx` · image, crop, zoom, slider · 62 linhas
+- `pecas/comp-562.tsx` · image, crop, zoom · 40 linhas
+- `pecas/comp-563.tsx` · image, crop, zoom · 55 linhas
+- `pecas/comp-564.tsx` · image, crop, zoom · 182 linhas
+
+## input
+- `pecas/comp-01.tsx` · input, label · 14 linhas
+- `pecas/comp-02.tsx` · input, label, required · 16 linhas
+- `pecas/comp-03.tsx` · input, label, helper · 21 linhas
+- `pecas/comp-04.tsx` · input, label, hint · 19 linhas
+- `pecas/comp-05.tsx` · input, label · 14 linhas
+- `pecas/comp-06.tsx` · input, label, error · 28 linhas
+- `pecas/comp-07.tsx` · input, label · 19 linhas
+- `pecas/comp-08.tsx` · input, label, disabled · 14 linhas
+- `pecas/comp-09.tsx` · input, label · 20 linhas · usa lucide-react
+- `pecas/comp-10.tsx` · input, label · 20 linhas · usa lucide-react
+- `pecas/comp-11.tsx` · input, label · 24 linhas
+- `pecas/comp-12.tsx` · input, label · 24 linhas
+- `pecas/comp-13.tsx` · input, label · 27 linhas
+- `pecas/comp-14.tsx` · input, label · 24 linhas
+- `pecas/comp-15.tsx` · input, label · 24 linhas
+- `pecas/comp-16.tsx` · input, label · 27 linhas
+- `pecas/comp-17.tsx` · input, label, select, native select · 30 linhas
+- `pecas/comp-18.tsx` · input, label, select, native select · 27 linhas
+- `pecas/comp-19.tsx` · input, label, button · 24 linhas · usa lucide-react
+- `pecas/comp-20.tsx` · input, label, button · 29 linhas · usa lucide-react
+- `pecas/comp-21.tsx` · input, label, button · 27 linhas
+- `pecas/comp-22.tsx` · input, label, button · 18 linhas
+- `pecas/comp-23.tsx` · input, label, button, password · 42 linhas · usa lucide-react
+- `pecas/comp-24.tsx` · input, label, button · 47 linhas · usa lucide-react
+- `pecas/comp-25.tsx` · input, label, search, kbd · 26 linhas
+- `pecas/comp-26.tsx` · input, label, button, search · 32 linhas · usa lucide-react
+- `pecas/comp-27.tsx` · input, label, button, search · 59 linhas · usa lucide-react
+- `pecas/comp-28.tsx` · input, label, button, number · 53 linhas · usa lucide-react, react-aria-components
+- `pecas/comp-29.tsx` · input, label, button, number · 62 linhas · usa lucide-react, react-aria-components
+- `pecas/comp-30.tsx` · input, label, file · 18 linhas
+- `pecas/comp-31.tsx` · input, label · 18 linhas
+- `pecas/comp-32.tsx` · input, label · 20 linhas
+- `pecas/comp-33.tsx` · input, label · 23 linhas
+- `pecas/comp-34.tsx` · input, label · 43 linhas
+- `pecas/comp-35.tsx` · input, label · 41 linhas
+- `pecas/comp-36.tsx` · input, label, date · 29 linhas · usa react-aria-components
+- `pecas/comp-37.tsx` · input, label, date · 29 linhas · usa react-aria-components
+- `pecas/comp-38.tsx` · input, label, date · 37 linhas · usa lucide-react, react-aria-components
+- `pecas/comp-39.tsx` · input, label, date · 37 linhas · usa lucide-react, react-aria-components
+- `pecas/comp-40.tsx` · input, label, date · 31 linhas · usa react-aria-components
+- `pecas/comp-41.tsx` · input, label, date, calendar, picker · 53 linhas · usa lucide-react, react-aria-components
+- `pecas/comp-42.tsx` · input, label, date, calendar, range calendar, picker · 60 linhas · usa lucide-react, react-aria-components
+- `pecas/comp-43.tsx` · input, label, date, calendar, range calendar, picker · 91 linhas · usa @internationalized/date, lucide-react, react-aria, react-aria-components
+- `pecas/comp-44.tsx` · input, label, otp · 56 linhas · usa input-otp
+- `pecas/comp-45.tsx` · input, label, otp · 69 linhas · usa input-otp, lucide-react
+- `pecas/comp-46.tsx` · input, label, phone · 126 linhas · usa lucide-react, react-phone-number-input
+- `pecas/comp-47.tsx` · input, label, checkout, payment, credit card, form · 44 linhas · usa lucide-react, react-payment-inputs
+- `pecas/comp-48.tsx` · input, label, checkout, payment, credit card, form · 38 linhas · usa react-payment-inputs
+- `pecas/comp-49.tsx` · input, label, checkout, payment, credit card, form · 38 linhas · usa react-payment-inputs
+- `pecas/comp-50.tsx` · input, label, checkout, payment, credit card, form · 80 linhas · usa lucide-react, react-payment-inputs
+- `pecas/comp-51.tsx` · input, label, password · 137 linhas · usa lucide-react
+- `pecas/comp-52.tsx` · input, label, read-only · 21 linhas
+- `pecas/comp-53.tsx` · input, label, copy · 81 linhas · usa lucide-react
+- `pecas/comp-54.tsx` · input, label, mask · 44 linhas · usa use-mask-input
+- `pecas/comp-55.tsx` · input, label, mask, time · 44 linhas · usa use-mask-input
+- `pecas/comp-56.tsx` · input, label, tag, emblor · 72 linhas · usa emblor
+- `pecas/comp-57.tsx` · input, label, tag, emblor · 60 linhas · usa emblor
+- `pecas/comp-58.tsx` · input, label, otp · 56 linhas · usa input-otp
+- `pecas/comp-486.tsx` · input, label, range · 29 linhas
+
+## label
+- `pecas/comp-59.tsx` · label, textarea · 14 linhas
+- `pecas/comp-60.tsx` · label, textarea, required · 16 linhas
+- `pecas/comp-61.tsx` · label, textarea, helper · 21 linhas
+- `pecas/comp-62.tsx` · label, textarea, hint · 19 linhas
+- `pecas/comp-63.tsx` · label, textarea · 14 linhas
+- `pecas/comp-64.tsx` · label, textarea, error · 26 linhas
+- `pecas/comp-65.tsx` · label, textarea · 18 linhas
+- `pecas/comp-66.tsx` · label, textarea · 19 linhas
+- `pecas/comp-67.tsx` · label, textarea, disabled · 14 linhas
+- `pecas/comp-68.tsx` · label, textarea, button · 16 linhas
+- `pecas/comp-69.tsx` · label, textarea, button · 18 linhas
+- `pecas/comp-70.tsx` · label, textarea, button · 18 linhas
+- `pecas/comp-71.tsx` · label, textarea · 19 linhas
+- `pecas/comp-72.tsx` · label, textarea · 20 linhas
+- `pecas/comp-73.tsx` · label, textarea · 20 linhas
+- `pecas/comp-74.tsx` · label, textarea · 40 linhas
+- `pecas/comp-75.tsx` · label, textarea · 18 linhas
+- `pecas/comp-76.tsx` · label, textarea, read-only · 20 linhas
+- `pecas/comp-77.tsx` · label, textarea · 20 linhas
+- `pecas/comp-189.tsx` · label, select, native select · 19 linhas
+- `pecas/comp-190.tsx` · label, select, native select · 21 linhas
+- `pecas/comp-191.tsx` · label, select, native select, time · 25 linhas · usa lucide-react
+- `pecas/comp-192.tsx` · label, select, native select · 26 linhas
+- `pecas/comp-193.tsx` · label, select, native select · 19 linhas
+- `pecas/comp-194.tsx` · label, select, native select, error · 26 linhas
+- `pecas/comp-195.tsx` · label, select, native select · 19 linhas
+- `pecas/comp-196.tsx` · label, select, native select, disabled · 19 linhas
+- `pecas/comp-197.tsx` · label, select, native select · 21 linhas
+- `pecas/comp-198.tsx` · label, select, native select · 21 linhas
+- `pecas/comp-199.tsx` · label, select, native select · 25 linhas
+- `pecas/comp-200.tsx` · label, select, native select, timezone, time · 47 linhas
+- `pecas/comp-201.tsx` · label, select, native select · 26 linhas
+- `pecas/comp-202.tsx` · label, select, native select · 30 linhas
+- `pecas/comp-203.tsx` · label, select · 30 linhas
+- `pecas/comp-204.tsx` · label, select · 30 linhas
+- `pecas/comp-205.tsx` · label, select · 34 linhas · usa lucide-react
+- `pecas/comp-206.tsx` · label, select, helper · 37 linhas
+- `pecas/comp-207.tsx` · label, select · 30 linhas
+- `pecas/comp-208.tsx` · label, select · 37 linhas
+- `pecas/comp-209.tsx` · label, select · 33 linhas
+- `pecas/comp-210.tsx` · label, select, disabled · 30 linhas
+- `pecas/comp-211.tsx` · label, select, required · 32 linhas
+- `pecas/comp-212.tsx` · label, select · 31 linhas
+- `pecas/comp-213.tsx` · label, select · 40 linhas
+- `pecas/comp-214.tsx` · label, select · 42 linhas
+- `pecas/comp-215.tsx` · label, select, disabled · 34 linhas
+- `pecas/comp-216.tsx` · label, select · 34 linhas
+- `pecas/comp-217.tsx` · label, select · 37 linhas
+- `pecas/comp-218.tsx` · label, select, timezone, time · 58 linhas
+- `pecas/comp-219.tsx` · label, select · 30 linhas
+- `pecas/comp-220.tsx` · label, select, status · 75 linhas
+- `pecas/comp-221.tsx` · label, select · 30 linhas
+- `pecas/comp-222.tsx` · label, select · 42 linhas · usa @remixicon/react
+- `pecas/comp-223.tsx` · label, select · 42 linhas · usa @remixicon/react
+- `pecas/comp-224.tsx` · label, select · 53 linhas
+- `pecas/comp-225.tsx` · label, select, flag · 84 linhas
+- `pecas/comp-226.tsx` · label, select, user, avatar, profile · 64 linhas
+- `pecas/comp-227.tsx` · label, select, user, avatar, profile · 66 linhas
+- `pecas/comp-228.tsx` · label, select, user, avatar, profile · 80 linhas
+- `pecas/comp-229.tsx` · label, select, command, combobox, popover, search, autocomplete · 151 linhas · usa lucide-react
+- `pecas/comp-230.tsx` · label, select, command, combobox, popover, search, autocomplete · 111 linhas · usa lucide-react
+- `pecas/comp-231.tsx` · label, select, command, combobox, popover, search, autocomplete, timezone, time · 117 linhas · usa lucide-react
+- `pecas/comp-232.tsx` · label, select, command, combobox, popover, search, autocomplete, flag · 142 linhas · usa lucide-react
+- `pecas/comp-233.tsx` · label, select, command, combobox, popover, search, autocomplete · 177 linhas · usa lucide-react
+- `pecas/comp-234.tsx` · label, select, multiselect, tag, input, search, autocomplete · 110 linhas
+- `pecas/comp-235.tsx` · label, select, multiselect, tag, input, search, autocomplete · 103 linhas
+- `pecas/comp-236.tsx` · label, select, multiselect, native select · 23 linhas
+- `pecas/comp-237.tsx` · label, select, multiselect · 62 linhas · usa react-aria-components
+- `pecas/comp-238.tsx` · label, select, multiselect · 61 linhas · usa react-aria-components
+- `pecas/comp-239.tsx` · label, select, multiselect · 114 linhas · usa react-aria-components
+
+## navbar, navigation
+- `pecas/comp-577.tsx` · 118 linhas
+- `pecas/comp-578.tsx` · 270 linhas · usa lucide-react
+- `pecas/comp-579.tsx` · 119 linhas
+- `pecas/comp-580.tsx` · 165 linhas · usa lucide-react
+- `pecas/comp-581.tsx` · 118 linhas
+- `pecas/comp-582.tsx` · 190 linhas · usa lucide-react
+- `pecas/comp-583.tsx` · 106 linhas · usa lucide-react, radix-ui
+- `pecas/comp-584.tsx` · 146 linhas · usa lucide-react
+- `pecas/comp-585.tsx` · 167 linhas · usa lucide-react
+- `pecas/comp-586.tsx` · 56 linhas · usa lucide-react
+- `pecas/comp-587.tsx` · 143 linhas · usa lucide-react
+- `pecas/comp-588.tsx` · 142 linhas · usa lucide-react
+- `pecas/comp-589.tsx` · 174 linhas · usa lucide-react, radix-ui
+- `pecas/comp-590.tsx` · 139 linhas · usa lucide-react
+- `pecas/comp-591.tsx` · 87 linhas · usa lucide-react
+- `pecas/comp-592.tsx` · 77 linhas · usa lucide-react
+- `pecas/comp-593.tsx` · 57 linhas · usa lucide-react
+- `pecas/comp-594.tsx` · 45 linhas · usa lucide-react
+- `pecas/comp-595.tsx` · 107 linhas · usa lucide-react
+- `pecas/comp-596.tsx` · 156 linhas · usa lucide-react
+
+## notification
+- `pecas/comp-279.tsx` · notification, warning · 32 linhas · usa lucide-react
+- `pecas/comp-280.tsx` · notification, error · 32 linhas · usa lucide-react
+- `pecas/comp-281.tsx` · notification, success · 32 linhas · usa lucide-react
+- `pecas/comp-282.tsx` · notification, info · 32 linhas · usa lucide-react
+- `pecas/comp-283.tsx` · notification, warning · 42 linhas · usa lucide-react
+- `pecas/comp-284.tsx` · notification, error · 42 linhas · usa lucide-react
+- `pecas/comp-285.tsx` · notification, success · 42 linhas · usa lucide-react
+- `pecas/comp-286.tsx` · notification, info · 42 linhas · usa lucide-react
+- `pecas/comp-287.tsx` · notification, button, success · 35 linhas · usa lucide-react
+- `pecas/comp-288.tsx` · notification, success · 49 linhas · usa lucide-react
+- `pecas/comp-289.tsx` · notification, button, warning · 45 linhas · usa lucide-react
+- `pecas/comp-290.tsx` · notification, button, error · 45 linhas · usa lucide-react
+- `pecas/comp-291.tsx` · notification, button, success · 42 linhas · usa lucide-react
+- `pecas/comp-292.tsx` · notification, button, info · 45 linhas · usa lucide-react
+- `pecas/comp-293.tsx` · notification, button, cookies, gdpr, privacy · 39 linhas · usa lucide-react
+- `pecas/comp-294.tsx` · notification, button, info · 45 linhas · usa lucide-react
+- `pecas/comp-295.tsx` · notification, button · 58 linhas · usa lucide-react
+- `pecas/comp-296.tsx` · notification, button · 39 linhas · usa lucide-react
+- `pecas/comp-297.tsx` · notification, toast · 25 linhas
+- `pecas/comp-298.tsx` · notification, toast, success · 188 linhas · usa lucide-react
+- `pecas/comp-299.tsx` · notification, toast, sonner · 24 linhas · usa sonner
+- `pecas/comp-300.tsx` · notification, toast, sonner, success · 62 linhas · usa lucide-react, sonner
+
+## outros
+- `pecas/tree.tsx` · 197 linhas · usa @headless-tree/core, lucide-react, radix-ui
+
+## pagination
+- `pecas/comp-454.tsx` · 69 linhas · usa lucide-react
+- `pecas/comp-455.tsx` · 55 linhas · usa lucide-react
+- `pecas/comp-456.tsx` · 69 linhas · usa lucide-react
+- `pecas/comp-457.tsx` · 57 linhas · usa lucide-react
+- `pecas/comp-458.tsx` · 66 linhas
+- `pecas/comp-459.tsx` · 85 linhas
+- `pecas/comp-460.tsx` · 123 linhas · usa lucide-react
+- `pecas/comp-461.tsx` · 116 linhas · usa lucide-react
+- `pecas/comp-462.tsx` · 131 linhas · usa lucide-react
+- `pecas/comp-463.tsx` · pagination, select · 135 linhas · usa lucide-react
+- `pecas/comp-464.tsx` · pagination, select · 113 linhas · usa lucide-react
+- `pecas/comp-465.tsx` · pagination, input · 115 linhas · usa lucide-react
+
+## popover
+- `pecas/comp-381.tsx` · popover, filter · 75 linhas · usa lucide-react
+- `pecas/comp-382.tsx` · popover, notification · 176 linhas · usa lucide-react
+- `pecas/comp-383.tsx` · popover, notification, user · 189 linhas · usa lucide-react
+- `pecas/comp-384.tsx` · popover, tooltip · 32 linhas
+- `pecas/comp-385.tsx` · popover, tooltip · 70 linhas
+- `pecas/comp-386.tsx` · popover, tooltip · 103 linhas · usa lucide-react
+- `pecas/comp-387.tsx` · popover, share, social, copy · 134 linhas · usa @remixicon/react, lucide-react
+- `pecas/comp-388.tsx` · popover, feedback, form · 33 linhas
+- `pecas/comp-389.tsx` · popover, tour · 131 linhas · usa lucide-react
+
+## radio
+- `pecas/comp-152.tsx` · radio, label · 24 linhas
+- `pecas/comp-153.tsx` · radio, label · 27 linhas
+- `pecas/comp-154.tsx` · radio, label · 24 linhas
+- `pecas/comp-155.tsx` · radio, label · 54 linhas
+- `pecas/comp-156.tsx` · radio, label, collapsible · 90 linhas
+- `pecas/comp-157.tsx` · radio, label, rating · 117 linhas · usa @remixicon/react
+- `pecas/comp-158.tsx` · radio, label, color, picker · 49 linhas
+- `pecas/comp-159.tsx` · radio, label, card · 58 linhas
+- `pecas/comp-160.tsx` · radio, label, card · 118 linhas
+- `pecas/comp-161.tsx` · radio, label, card · 128 linhas
+- `pecas/comp-162.tsx` · radio, label, card · 37 linhas · usa lucide-react
+- `pecas/comp-163.tsx` · radio, label, card, checkout, payment · 45 linhas · usa @remixicon/react
+- `pecas/comp-164.tsx` · radio, label, card, pricing · 42 linhas
+- `pecas/comp-165.tsx` · radio, label, card · 39 linhas
+- `pecas/comp-166.tsx` · radio, label, pricing · 61 linhas
+- `pecas/comp-167.tsx` · radio, label, rating, vote · 38 linhas
+- `pecas/comp-168.tsx` · radio, label, rating, vote · 39 linhas
+- `pecas/comp-169.tsx` · radio, label, darkmode · 52 linhas · usa lucide-react
+- `pecas/comp-170.tsx` · radio, label, pricing, switch · 35 linhas
+- `pecas/comp-171.tsx` · radio, label, rating, vote · 50 linhas · usa @remixicon/react
+
+## slider
+- `pecas/comp-240.tsx` · slider, label · 12 linhas
+- `pecas/comp-241.tsx` · slider, label, disabled · 12 linhas
+- `pecas/comp-242.tsx` · slider, label · 18 linhas
+- `pecas/comp-243.tsx` · slider, label · 16 linhas
+- `pecas/comp-244.tsx` · slider, label · 16 linhas
+- `pecas/comp-245.tsx` · slider, label · 27 linhas
+- `pecas/comp-246.tsx` · slider, label · 40 linhas
+- `pecas/comp-247.tsx` · slider, label · 24 linhas
+- `pecas/comp-248.tsx` · slider, label · 21 linhas
+- `pecas/comp-249.tsx` · slider, label, tooltip · 26 linhas
+- `pecas/comp-250.tsx` · slider, range slider, label, range · 16 linhas
+- `pecas/comp-251.tsx` · slider, range slider, label, range · 26 linhas
+- `pecas/comp-252.tsx` · slider, label, volume, controls · 37 linhas · usa lucide-react
+- `pecas/comp-253.tsx` · slider, range slider, label, range · 19 linhas
+- `pecas/comp-254.tsx` · slider, label, button, input, tooltip, reset · 89 linhas · usa lucide-react
+- `pecas/comp-255.tsx` · slider, label, input · 51 linhas
+- `pecas/comp-256.tsx` · slider, label, vote, rating · 32 linhas
+- `pecas/comp-257.tsx` · slider, label, vote, rating · 31 linhas
+- `pecas/comp-258.tsx` · slider, range slider, label, input, range · 65 linhas
+- `pecas/comp-259.tsx` · slider, label, button, pricing · 61 linhas · usa lucide-react
+- `pecas/comp-260.tsx` · slider, range slider, label, button · 37 linhas
+- `pecas/comp-261.tsx` · slider, vertical slider, label · 19 linhas
+- `pecas/comp-262.tsx` · slider, vertical slider, label, input · 52 linhas
+- `pecas/comp-263.tsx` · slider, vertical slider, range slider, label · 20 linhas
+- `pecas/comp-264.tsx` · slider, label, input, button, reset · 127 linhas · usa lucide-react
+- `pecas/comp-265.tsx` · slider, label, input, button · 284 linhas
+- `pecas/comp-266.tsx` · slider, label, equalizer · 83 linhas
+
+## stepper
+- `pecas/comp-513.tsx` · 34 linhas
+- `pecas/comp-514.tsx` · 34 linhas
+- `pecas/comp-515.tsx` · 34 linhas
+- `pecas/comp-516.tsx` · 58 linhas
+- `pecas/comp-517.tsx` · 72 linhas
+- `pecas/comp-518.tsx` · 53 linhas · usa lucide-react
+- `pecas/comp-519.tsx` · 55 linhas
+- `pecas/comp-520.tsx` · 70 linhas · usa lucide-react
+- `pecas/comp-521.tsx` · 69 linhas
+- `pecas/comp-522.tsx` · 64 linhas
+- `pecas/comp-523.tsx` · 57 linhas
+- `pecas/comp-524.tsx` · 64 linhas
+- `pecas/comp-525.tsx` · 64 linhas
+- `pecas/comp-526.tsx` · stepper, vertical stepper · 34 linhas
+- `pecas/comp-527.tsx` · stepper, vertical stepper · 61 linhas
+- `pecas/comp-528.tsx` · stepper, vertical stepper · 61 linhas
+- `pecas/comp-529.tsx` · stepper, vertical stepper · 62 linhas
+
+## switch
+- `pecas/comp-172.tsx` · 16 linhas
+- `pecas/comp-173.tsx` · 19 linhas
+- `pecas/comp-174.tsx` · 16 linhas
+- `pecas/comp-175.tsx` · 16 linhas
+- `pecas/comp-176.tsx` · 16 linhas
+- `pecas/comp-177.tsx` · 19 linhas
+- `pecas/comp-178.tsx` · 19 linhas
+- `pecas/comp-179.tsx` · switch, label · 25 linhas
+- `pecas/comp-180.tsx` · switch, label · 42 linhas
+- `pecas/comp-181.tsx` · switch, label, darkmode · 31 linhas · usa lucide-react
+- `pecas/comp-182.tsx` · switch, label, darkmode · 44 linhas · usa lucide-react
+- `pecas/comp-183.tsx` · switch, label, darkmode · 34 linhas · usa lucide-react
+- `pecas/comp-184.tsx` · switch, label, darkmode · 34 linhas · usa lucide-react
+- `pecas/comp-185.tsx` · switch, label · 33 linhas
+- `pecas/comp-186.tsx` · switch, label, card · 28 linhas
+- `pecas/comp-187.tsx` · switch, label, card · 52 linhas
+- `pecas/comp-188.tsx` · switch, label, card · 81 linhas
+
+## table
+- `pecas/comp-466.tsx` · 91 linhas
+- `pecas/comp-467.tsx` · table, user, avatar · 104 linhas
+- `pecas/comp-468.tsx` · 95 linhas
+- `pecas/comp-469.tsx` · 98 linhas
+- `pecas/comp-470.tsx` · 87 linhas
+- `pecas/comp-471.tsx` · 109 linhas
+- `pecas/comp-472.tsx` · table, checkbox · 103 linhas
+- `pecas/comp-473.tsx` · table, checkbox, card · 102 linhas
+- `pecas/comp-474.tsx` · table, vertical table · 53 linhas
+- `pecas/comp-475.tsx` · table, sticky · 173 linhas
+- `pecas/comp-476.tsx` · 151 linhas · usa lucide-react
+- `pecas/comp-477.tsx` · table, tanstack, checkbox, badge, chip, flag · 202 linhas · usa @tanstack/react-table
+- `pecas/comp-478.tsx` · table, tanstack, checkbox, search, select, range, input, filter, sort · 565 linhas · usa @tanstack/react-table, lucide-react
+- `pecas/comp-479.tsx` · table, tanstack, flag, sort, resize · 277 linhas · usa @tanstack/react-table, lucide-react
+- `pecas/comp-480.tsx` · table, tanstack, flag, sticky, resize · 342 linhas · usa @tanstack/react-table, lucide-react
+- `pecas/comp-481.tsx` · table, tanstack, flag, sort, drag and drop · 360 linhas · usa @dnd-kit/core, @dnd-kit/modifiers, @dnd-kit/sortable, @dnd-kit/utilities, @tanstack/react-table, lucide-react
+- `pecas/comp-482.tsx` · table, tanstack, checkbox, collapsible, flag, badge, chip · 258 linhas · usa @tanstack/react-table, lucide-react
+- `pecas/comp-483.tsx` · table, tanstack, checkbox, sort, flag, badge, chip, pagination · 417 linhas · usa @tanstack/react-table, lucide-react
+- `pecas/comp-484.tsx` · table, tanstack, checkbox, sort, flag, badge, chip, pagination · 416 linhas · usa @tanstack/react-table, lucide-react
+- `pecas/comp-485.tsx` · table, tanstack, checkbox, sort, flag, badge, chip, pagination, filter, select · 802 linhas · usa @tanstack/react-table, lucide-react
+
+## tabs
+- `pecas/comp-426.tsx` · 34 linhas
+- `pecas/comp-427.tsx` · 49 linhas
+- `pecas/comp-428.tsx` · 49 linhas
+- `pecas/comp-429.tsx` · 49 linhas
+- `pecas/comp-430.tsx` · 49 linhas
+- `pecas/comp-431.tsx` · 49 linhas
+- `pecas/comp-432.tsx` · 49 linhas
+- `pecas/comp-433.tsx` · 70 linhas · usa lucide-react
+- `pecas/comp-434.tsx` · 69 linhas · usa lucide-react
+- `pecas/comp-435.tsx` · 69 linhas · usa lucide-react
+- `pecas/comp-436.tsx` · 69 linhas · usa lucide-react
+- `pecas/comp-437.tsx` · 132 linhas · usa lucide-react
+- `pecas/comp-438.tsx` · 61 linhas · usa lucide-react
+- `pecas/comp-439.tsx` · 59 linhas
+- `pecas/comp-440.tsx` · 86 linhas · usa lucide-react
+- `pecas/comp-441.tsx` · 92 linhas · usa lucide-react
+- `pecas/comp-442.tsx` · tabs, vertical tabs · 46 linhas
+- `pecas/comp-443.tsx` · tabs, vertical tabs · 55 linhas
+- `pecas/comp-444.tsx` · tabs, vertical tabs · 71 linhas · usa lucide-react
+- `pecas/comp-445.tsx` · tabs, vertical tabs · 55 linhas
+
+## timeline
+- `pecas/comp-530.tsx` · timeline, vertical timeline · 56 linhas
+- `pecas/comp-531.tsx` · timeline, vertical timeline · 66 linhas
+- `pecas/comp-532.tsx` · timeline, vertical timeline · 60 linhas
+- `pecas/comp-533.tsx` · timeline, vertical timeline · 61 linhas
+- `pecas/comp-534.tsx` · timeline, vertical timeline · 70 linhas · usa lucide-react
+- `pecas/comp-535.tsx` · timeline, vertical timeline · 72 linhas · usa lucide-react
+- `pecas/comp-536.tsx` · timeline, vertical timeline · 84 linhas
+- `pecas/comp-537.tsx` · timeline, vertical timeline · 64 linhas
+- `pecas/comp-538.tsx` · timeline, vertical timeline · 58 linhas
+- `pecas/comp-539.tsx` · timeline, vertical timeline · 130 linhas · usa lucide-react
+- `pecas/comp-540.tsx` · 56 linhas
+- `pecas/comp-541.tsx` · 60 linhas
+
+## tooltip
+- `pecas/comp-354.tsx` · 25 linhas
+- `pecas/comp-355.tsx` · 25 linhas
+- `pecas/comp-356.tsx` · 25 linhas
+- `pecas/comp-357.tsx` · 33 linhas
+- `pecas/comp-358.tsx` · 41 linhas · usa lucide-react
+- `pecas/comp-359.tsx` · tooltip, image · 42 linhas
+- `pecas/comp-360.tsx` · tooltip, button, kbd · 100 linhas · usa lucide-react
+- `pecas/comp-361.tsx` · 42 linhas
+- `pecas/comp-362.tsx` · tooltip, chart · 75 linhas
+- `pecas/comp-363.tsx` · tooltip, hover card, user, avatar, profile · 47 linhas
+- `pecas/comp-364.tsx` · tooltip, hover card, user, avatar, profile · 82 linhas
+- `pecas/comp-365.tsx` · tooltip, hover card, image · 44 linhas
+
+## tree
+- `pecas/comp-565.tsx` · 90 linhas · usa @headless-tree/core, @headless-tree/react
+- `pecas/comp-566.tsx` · 96 linhas · usa @headless-tree/core, @headless-tree/react
+- `pecas/comp-567.tsx` · 110 linhas · usa @headless-tree/core, @headless-tree/react, lucide-react
+- `pecas/comp-568.tsx` · 110 linhas · usa @headless-tree/core, @headless-tree/react, lucide-react
+- `pecas/comp-569.tsx` · 135 linhas · usa @headless-tree/core, @headless-tree/react, lucide-react
+- `pecas/comp-570.tsx` · 138 linhas · usa @headless-tree/core, @headless-tree/react, lucide-react
+- `pecas/comp-571.tsx` · tree, filter, search · 159 linhas · usa @headless-tree/core, @headless-tree/react, lucide-react
+- `pecas/comp-572.tsx` · tree, filter, search · 324 linhas · usa @headless-tree/core, @headless-tree/react, lucide-react
+- `pecas/comp-573.tsx` · 145 linhas · usa @headless-tree/core, @headless-tree/react, lucide-react
+- `pecas/comp-574.tsx` · tree, button · 142 linhas · usa @headless-tree/core, @headless-tree/react, lucide-react
+- `pecas/comp-575.tsx` · 211 linhas · usa @headless-tree/core, @headless-tree/react, @remixicon/react
+- `pecas/comp-576.tsx` · tree, menu · 133 linhas · usa @headless-tree/core, @headless-tree/react
+- `pecas/comp-597.tsx` · tree, checkbox · 122 linhas · usa @headless-tree/core, @headless-tree/react
+- `pecas/comp-598.tsx` · tree, checkbox · 122 linhas · usa @headless-tree/core, @headless-tree/react
+- `pecas/comp-599.tsx` · tree, checkbox · 143 linhas · usa @headless-tree/core, @headless-tree/react, lucide-react
+
+## upload
+- `pecas/comp-543.tsx` · upload, file, image, drag and drop, avatar · 88 linhas · usa lucide-react
+- `pecas/comp-544.tsx` · upload, file, image, drag and drop · 113 linhas · usa lucide-react
+- `pecas/comp-545.tsx` · upload, file, image, drag and drop · 121 linhas · usa lucide-react
+- `pecas/comp-546.tsx` · upload, file, image, drag and drop · 169 linhas · usa lucide-react
+- `pecas/comp-547.tsx` · upload, file, image, drag and drop · 170 linhas · usa lucide-react
+- `pecas/comp-548.tsx` · upload, file, image, drag and drop · 140 linhas · usa lucide-react
+- `pecas/comp-549.tsx` · upload, file, image, drag and drop · 227 linhas · usa lucide-react
+- `pecas/comp-550.tsx` · upload, file, image, drag and drop · 238 linhas · usa lucide-react
+- `pecas/comp-551.tsx` · upload, file, image, drag and drop · 256 linhas · usa lucide-react
+- `pecas/comp-552.tsx` · upload, file, image, drag and drop · 269 linhas · usa lucide-react
+- `pecas/comp-553.tsx` · upload, file, image, drag and drop · 441 linhas · usa lucide-react
+- `pecas/comp-554.tsx` · upload, file, image, drag and drop, crop, dialog, slider, zoom · 341 linhas · usa lucide-react

@@ -13,6 +13,7 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { ABSORB_FILES, DOSSIER_SECTIONS, absorbSite, dossierGaps, publishAbsorption } from './design/absorcao';
 import { randomUUID } from 'node:crypto';
 import { OFFICE_AGENTS, officeAgent } from '../shared/officeAgents';
 import { INSTRUCAO_PECA, agentePropoePeca, aplicarPecasDoAgente } from './flow/entrada';
@@ -102,6 +103,7 @@ export const AGENT_LABEL: Record<string, string> = {
   raiox: 'Pesquisador · Raio-X',
   video: 'Íris Instagram',
   estudo: 'Estudo de vídeo',
+  absorcao: 'Kakashi · absorção de site',
   triagem: 'Triagem',
 };
 const OPEN: TaskRunStatus[] = ['queued', 'running'];
@@ -126,7 +128,7 @@ export function kindOfAgent(agent: string): string {
   if (agent === 'social' || agent === 'video') return 'instagram';
   if (agent === 'redator') return 'editorial';
   if (agent === 'raiox') return 'raiox';
-  if (agent === 'triagem' || agent === 'estudo' || /^agente:/.test(agent || '')) return 'agent';
+  if (agent === 'triagem' || agent === 'estudo' || agent === 'absorcao' || /^agente:/.test(agent || '')) return 'agent';
   return 'tarefa';
 }
 
@@ -215,6 +217,7 @@ function rolePrompt(agent: string, f: Record<string, string>): string {
     ].filter(Boolean).join('\n');
   }
   if (agent === 'estudo') return studyPrompt(f);
+  if (agent === 'absorcao') return absorbPrompt(f);
   if (agent === 'triagem') {
     return [
       'Você faz a triagem do TAVIR Escritório: o Carlos não escolheu agente.',
@@ -236,6 +239,41 @@ function rolePrompt(agent: string, f: Record<string, string>): string {
     ].filter(Boolean).join('\n');
   }
   return '';
+}
+
+/** Absorção de site: o Escritório já mediu (design/absorcao.absorbSite); o Kakashi lê e redige o dossiê. */
+export function absorbPrompt(f: Record<string, string>): string {
+  return [
+    'Você é o Kakashi, o copiador do TAVIR Escritório. Seu trabalho aqui é transformar um site de referência num dossiê com o qual outro agente refaz a mesma experiência do zero, com a marca de outro cliente.',
+    agentScope('kakashi.md'),
+    `Site: ${f.link || '(endereço na tarefa)'}`,
+    `Tipo: ${f.familia === 'produto' ? 'sistema ou produto' : 'landing page ou oferta'}${f.nicho ? ` · nicho informado: ${f.nicho}` : ''}${f.modo ? ` · o Carlos indicou o modo ${f.modo}` : ''}`,
+    f.pergunta ? `O que o Carlos disse: ${f.pergunta}` : '',
+    'O Escritório já abriu o site num navegador próprio e gravou tudo nesta pasta. Leia nesta ordem, inteiro, antes de escrever:',
+    '1. absorcao.json: tudo o que foi medido. Chaves principais: janela, variaveisCss, cores, fontes, escalaTipografica, espacamento, raios, sombras, camadas, secoes (em ordem, com layout e conteúdo), componentes (com estilo, transicao, hover e foco medidos), navegacao, fixos, cabecalhoAoRolar, formularios, movimento (keyframes, animadosAgora, animacoesVivas com os quadros, transicoes, aoCarregar, aoRolar, sozinho, aoPassarMouse), gatilhos, interacoes (o que abriu em cada clique, com print), mediaQueries, quebras, responsivo (uma linha por largura), midia, bibliotecas e lacunas.',
+    '2. telas/: abra e olhe cada imagem. desktop-dobra e desktop-inteira (1440 px); rolagem-NN (a página em passos de rolagem, é onde se vê o que entra na tela); interacao-NN (o estado depois de cada clique); notebook, tablet e celular (dobra e inteira).',
+    '3. video/sessao.webm: a gravação da sessão inteira. Se o seu ambiente não abre vídeo, diga isso em «Lacunas» e trabalhe com os prints e os eventos de movimento.',
+    'Aviso sobre a medição: (sem avisos)',
+    'Não abra o site, não use navegador e não baixe nada: trabalhe só com o que está na pasta. Não copie para o dossiê frases inteiras do site, só rótulos curtos para identificar a seção.',
+    'Grave o dossiê em dossie.md com estas seções, com estes títulos e nesta ordem. Escreva em partes: crie o arquivo com as três primeiras seções e vá acrescentando as seguintes, duas ou três por vez, em vez de montar tudo de uma vez só. Assim o trabalho não se perde se a execução cair no meio:',
+    DOSSIER_SECTIONS.map((s) => `## ${s}`).join('\n'),
+    'O que cada seção precisa trazer:',
+    '- Resumo: o que é o site, a ideia que organiza a página, por que funciona, para qual modo de design serve (Padrão, Conceito ou os dois) e por quê. Feche com uma linha «Modo sugerido: padrao | conceito | ambos».',
+    '- Estrutura: cada seção em ordem, com altura, fundo, padding, largura do conteúdo, grade (colunas e gap), o que tem dentro e o papel dela na página. Uma tabela por seção se precisar.',
+    '- Tokens: cores por papel (fundo, superfície, texto, texto secundário, acento, borda), raios, sombras, espaçamentos da escala e camadas (z-index). Escreva também como bloco de variáveis com nome de papel, pronto para receber outra marca.',
+    '- Tipografia: famílias, cada degrau da escala (tamanho, peso, altura de linha, espaçamento entre letras, caixa) e onde é usado. Diga a licença se souber; se não, mande conferir.',
+    '- Componentes e estados: cada componente (botões, links, campos, cartões, navegação, rodapé, o que mais houver) com medidas, e os estados normal, hover, foco e ativo: propriedade que muda, de quanto para quanto, duração e curva.',
+    '- Movimento: uma linha por animação ou transição, com gatilho (ao carregar, ao entrar na tela, ao passar o mouse, contínua), alvo, propriedade, valores de partida e chegada, duração em ms, atraso, curva, repetições e ordem em relação às outras (escalonamento). Para keyframes, transcreva os quadros.',
+    '- Interações: cada menu, aba, sanfona, modal ou gaveta: o que abre, de onde sai, tamanho, posição, fundo atrás (cor, opacidade, desfoque), animação de entrada e de saída, como fecha (Esc, clique fora, botão) e o que acontece com o foco.',
+    '- Tempos automáticos: tudo o que acontece sem o usuário tocar (carrossel, letreiro, texto que troca, contador, cursor que pisca), com o intervalo em ms e o que muda a cada ciclo. Sem nada automático, diga que não há.',
+    '- Responsivo: as quebras, e o que muda em 1440, 1024, 768 e 390 px: navegação, colunas de cada seção, tamanhos de título e corpo, o que some e o que empilha.',
+    '- Receita de reprodução: passo a passo para refazer, na ordem em que se constrói (base e tokens, tipografia, estrutura, componentes, movimento, interações, responsivo), com os valores no próprio passo. Indique a técnica (CSS puro, observador de interseção, biblioteca de animação) e a alternativa quando o site usa biblioteca que o projeto não terá.',
+    '- Com a marca do cliente: o que é estrutura e comportamento (fica igual), o que é token (troca), e o que precisa de ajuste quando a marca muda: paleta clara em vez de escura, fonte mais larga ou mais estreita, cliente sem foto ou sem vídeo, texto mais longo em português.',
+    '- Não copiar: os ativos e textos que são do dono do site (logo, fotos, ilustrações, vídeos, fontes pagas, frases) e o que usar no lugar.',
+    '- Lacunas: o que não foi medido ou não deu para ver (use a chave «lacunas» do absorcao.json e o que você mesmo notou), e o que isso impede de reproduzir.',
+    'Regras: toda medida cita a chave do absorcao.json ou o print (ex.: «movimento.aoRolar», «telas/rolagem-03.jpg»). O que você deduzir olhando um print vem marcado como «leitura do print». Não arredonde nem invente duração, curva, cor ou tamanho. Se um valor não existe na pasta, ele vai para «Lacunas».',
+    'Não grave fora desta pasta e não implemente nada. O Escritório leva o dossiê para a biblioteca de referências como rascunho; quem valida é o Carlos.',
+  ].filter(Boolean).join('\n');
 }
 
 /** Estudo de vídeo: o Escritório já preparou a pasta (officeStudy.prepStudy); o Maicon estuda e decide. */
@@ -786,6 +824,26 @@ const realRunner: Runner = async (job, registerKill, say = () => {}) => {
     if (prep.notes.length) job = { ...job, prompt: job.prompt.replace('Não baixe o vídeo de novo', `Aviso sobre a preparação: ${prep.notes.join(' ')} Diga isso em Dados da coleta e não invente o que faltou.
 Não baixe o vídeo de novo`) };
   }
+  const isAbsorb = job.row.agent === 'absorcao' && job.row.mode === 'exec';
+  if (isAbsorb) {
+    // Navegador, medidas, prints e vídeo acontecem aqui, antes do motor. Nova tentativa reaproveita a medição.
+    const dir = taskWorkspace(job.task);
+    let limits: string[] = [];
+    if (fs.existsSync(path.join(dir, ABSORB_FILES.data))) {
+      say('Medição já feita nesta pasta; reaproveitando');
+      try {
+        limits = JSON.parse(fs.readFileSync(path.join(dir, ABSORB_FILES.data), 'utf8')).lacunas || [];
+      } catch {}
+    } else {
+      // Se o Carlos entrou no site pela sessão de referências, a leitura vai logada. Cookie fica só na memória.
+      const { sessionCookies } = require('./design/sessao');
+      const cookies = await sessionCookies(fieldsOf(job.row).link);
+      const prep = await absorbSite({ url: fieldsOf(job.row).link, dir, say, registerKill, cookies });
+      if (!prep.ok) return { ok: false, reply: '', error: prep.error };
+      limits = prep.limits;
+    }
+    if (limits.length) job = { ...job, prompt: job.prompt.replace('Aviso sobre a medição: (sem avisos)', `Aviso sobre a medição: ${limits.join(' ')}`) };
+  }
   const isVideo = job.row.agent === 'video' && job.row.mode === 'exec';
   if (isVideo) {
     // Extração pela RapidAPI, download e transcrição acontecem aqui, antes do motor.
@@ -832,6 +890,8 @@ Não baixe o vídeo de novo`) };
     effort: call.effort,
     access,
     timeoutMs,
+    // O dossiê é leitura longa seguida de escrita longa: motor que não transmite enquanto pensa não pode cair por silêncio.
+    ...(isAbsorb ? { idleMs: 15 * 60 * 1000 } : {}),
     onProgress: (p: { activity?: string }) => p && p.activity && say(p.activity),
     onRaw: (stream: 'stdout' | 'stderr', text: string) => handle.raw(stream, text),
     registerKill: (kill: () => void) => registerKill(() => { stopped = true; kill(); }),
@@ -844,6 +904,26 @@ Não baixe o vídeo de novo`) };
     reply: result.text || '',
     exitCode: result.exitCode,
   });
+  if (isAbsorb && result.ok && !paused) {
+    // Quem fecha a absorção é a conferência do dossiê, não a resposta do motor.
+    const f = fieldsOf(job.row);
+    let dossier = '';
+    try {
+      dossier = fs.readFileSync(path.join(workspace, ABSORB_FILES.dossier), 'utf8');
+    } catch {}
+    const gaps = dossier.trim() ? dossierGaps(dossier) : ['dossie.md não foi gravado'];
+    if (gaps.length) {
+      return { ok: false, reply: result.text || '', error: `O dossiê está incompleto. Falta: ${gaps.join('; ')}.`, runId: handle.id };
+    }
+    const mode = /modo sugerido:\s*(padrao|padrão|conceito|ambos)/i.exec(dossier)?.[1]?.toLowerCase().replace('ã', 'a') || f.modo || 'ambos';
+    const pub = publishAbsorption({ from: workspace, url: f.link, family: f.familia === 'produto' ? 'produto' : 'marketing', niche: f.nicho, mode });
+    const where = pub.ok && pub.dir ? path.relative(process.cwd(), pub.dir).replace(/\\/g, '/') : '';
+    return {
+      ok: true,
+      reply: `${result.text || ''}\n\n${pub.ok ? `Referência gravada como rascunho em ${where}. Confira o dossiê contra os prints e troque status para validado no card.md para liberar aos agentes.` : `O dossiê ficou na pasta da tarefa, mas não foi para a biblioteca: ${pub.error}`}`,
+      runId: handle.id,
+    };
+  }
   if (isVideo && result.ok && !paused) {
     const { renderVideoHtml } = require('./officeVideo');
     await renderVideoHtml(workspace).catch(() => false);
@@ -852,7 +932,7 @@ Não baixe o vídeo de novo`) };
 };
 
 /** Arquivo que cada papel grava (vem primeiro na entrega). */
-export const DELIVERABLE: Record<string, string> = { social: 'analise-instagram.md', redator: 'entrega.md', video: 'analise-video.md', estudo: 'estudo-video.md' };
+export const DELIVERABLE: Record<string, string> = { social: 'analise-instagram.md', redator: 'entrega.md', video: 'analise-video.md', estudo: 'estudo-video.md', absorcao: 'dossie.md' };
 
 export interface TaskFile {
   name: string;

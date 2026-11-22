@@ -78,3 +78,12 @@ Este arquivo é lido automaticamente pelo Claude (Claude Code, Claude Desktop, e
 - Chamado só muda de situação pela tabela de `podeMover`: agente só cria; «aguardando validação» só pelo Escritório depois dos portões; concluir é gate do Carlos. Resposta de motor nunca move chamado.
 - Credencial de serviço fica cifrada em `.tavir/credentials.json` do próprio projeto; a tela só vê a prévia, e o valor nunca vai em pedido a agente nem em log.
 - Projeto de cliente clonado vai para `tavir-externo/` (fora do git do Escritório). Em teste, absorva com `baseline: false` e use `TAVIR_DATA_ROOT` para o banco.
+
+### 12. Design: um pilar para LP, oferta e sistema
+- Mapa em `docs/modules/fabrica.md` (seção Design). Papéis, contrato, rubrica e bloco do pedido só em `src/shared/design.ts`; cópia do kit e biblioteca em `src/main/design/`.
+- Etapa de interface segue `design/DESIGN.md` do projeto. A direção de design fecha pela conferência do contrato (`contractGaps`), o portão de design roda dentro do QA e a revisão é gate do Carlos; resposta de motor não fecha nenhuma das três.
+- Marca é escolha do Carlos: em criação a Marina entrega três pranchas e o gate «Escolha da marca» só fecha com a letra; quem copia a prancha escolhida para `design/` é o Escritório. Bege, creme e areia não são fundo dominante, e foto é do cliente (a página só marca o espaço).
+- Modo de design (Padrão ou Conceito) é escolha do Carlos, gravada na esteira do projeto. O modo muda o pedido e a conferência do contrato; nunca afrouxa a tarefa do usuário nem o portão automático.
+- Material de design chega ao agente por texto no pedido e por arquivo em `.tavir/design/kit/`. Não use recurso de skill de um motor: tem de funcionar nos quatro.
+- Referência só entra no kit com `status: validado`, e quem escreve isso é o Carlos. Telas capturadas ficam fora do git.
+- Absorção de site é do Kakashi: quem mede é o Escritório (`src/main/design/absorcao.ts`), o agente só lê a pasta e redige o dossiê, e a tarefa fecha pela conferência (`dossierGaps`). Medida sem fonte não entra; o que não foi medido vai para «Lacunas». Nunca baixe imagem, texto, fonte ou código do site absorvido.

@@ -18,7 +18,7 @@ import { createHash } from 'node:crypto';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { deliveryBody } from './officeExec';
-import { ACTION_STUDY, ACTION_VIDEO, IRIS, MAICON, OFFICE_AGENTS, STUDY_OWNERS, isTriage, officeAction, officeAgent, publishedAgents, videoShortcode, type PublishedEngine } from '../shared/officeAgents';
+import { ACTION_ABSORB, ACTION_STUDY, ACTION_VIDEO, IRIS, KAKASHI, MAICON, OFFICE_AGENTS, STUDY_OWNERS, absorbHints, firstSiteLink, isTriage, officeAction, officeAgent, publishedAgents, videoShortcode, type PublishedEngine } from '../shared/officeAgents';
 import { firstStudyLink, studyCode, studySource } from './officeStudy';
 import { inviteRequestFromApk } from './raiox/inviteRequests';
 import { raioxRoot } from './raiox/raioxStore';
@@ -199,7 +199,7 @@ function kindOf(agent: string): string {
   if (agent === 'social' || agent === 'video') return 'instagram';
   if (agent === 'redator') return 'editorial';
   if (agent === 'raiox') return 'raiox';
-  if (agent === 'triagem' || agent === 'estudo' || /^agente:/.test(agent || '')) return 'agent';
+  if (agent === 'triagem' || agent === 'estudo' || agent === 'absorcao' || /^agente:/.test(agent || '')) return 'agent';
   return 'tarefa';
 }
 
@@ -248,6 +248,26 @@ O Escritório baixa, transcreve e separa quadros e links; ${owner} estuda e cruz
   };
 }
 
+/** Absorção de site pelo Kakashi: o Escritório mede no navegador e o agente redige o dossiê de reprodução. */
+function absorbTask(instrucao: string): JobSpec | { error: string } {
+  const link = firstSiteLink(instrucao);
+  if (!link) return { error: 'Cole o endereço do site que o Kakashi deve absorver.' };
+  const hints = absorbHints(instrucao.replace(link, ''));
+  const pedido = instrucao.replace(link, '').trim();
+  let host = link;
+  try {
+    host = new URL(link).hostname.replace(/^www\./, '');
+  } catch {}
+  return {
+    title: `Absorção de site · ${host}`,
+    desc: `Pedido pelo APK ao ${KAKASHI}. Site: ${link}${pedido ? `\nO que o Carlos disse: ${pedido}` : ''}\nO Escritório abre o site, mede e grava prints e vídeo; o ${KAKASHI} redige o dossiê. A referência entra na biblioteca como rascunho.`,
+    sector: JOB_SECTOR.agent,
+    agent: 'absorcao',
+    owner: KAKASHI,
+    fields: { link, familia: hints.family, ...(hints.niche ? { nicho: hints.niche } : {}), ...(hints.mode ? { modo: hints.mode } : {}), ...(pedido ? { pergunta: pedido } : {}) },
+  };
+}
+
 export function jobTask(kind: string, fields: Record<string, string>): JobSpec | { error: string } {
   const f = (k: string) => String(fields[k] ?? '').trim();
   if (kind === 'instagram') {
@@ -280,6 +300,7 @@ export function jobTask(kind: string, fields: Record<string, string>): JobSpec |
     const ag = officeAgent(who);
     const action = officeAction(ag, f('action') || f('acao'));
     if (ag && STUDY_OWNERS.includes(ag.name) && action && action.id === ACTION_STUDY) return studyTask(firstStudyLink(instrucao) || (/https?:\/\/\S+/.exec(instrucao) || [instrucao])[0], instrucao, ag.name);
+    if (ag && ag.name === KAKASHI && (!action || action.id === ACTION_ABSORB)) return absorbTask(instrucao);
     if (ag && ag.name === IRIS && action && action.id === ACTION_VIDEO) return videoTask((/https?:\/\/\S+/.exec(instrucao) || [instrucao])[0]);
     const nome = ag ? ag.name : 'Analista';
     return {

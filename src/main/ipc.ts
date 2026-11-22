@@ -1351,6 +1351,33 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
     }
   });
 
+  // Sessão de referências: o Carlos entra no site numa janela própria; o Kakashi lê por ela.
+  handle('design:refLogin', (_e, url?: string) => require('./design/sessao').openRefLogin(typeof url === 'string' ? url : ''));
+  handle('design:refSites', async () => ({ ok: true, sites: await require('./design/sessao').sessionSites() }));
+  handle('design:refClear', () => require('./design/sessao').clearSession());
+  // Abre no navegador do Carlos uma das três pranchas de marca do projeto (a, b ou c).
+  handle('projects:openBrandBoard', async (_e, idOrPath: string, letter: string) => {
+    try {
+      const k = String(letter || '').toLowerCase();
+      if (!/^[abc]$/.test(k)) return { ok: false, error: 'Prancha inválida.' };
+      const { inspectProjectFolder } = require('./project-fs');
+      const file = require('node:path').join(inspectProjectFolder(idOrPath).rootPath, 'design', 'pranchas', k, 'prancha.html');
+      if (!require('node:fs').existsSync(file)) return { ok: false, error: `A prancha ${k.toUpperCase()} ainda não foi gravada.` };
+      const error = await shell.openPath(file);
+      return error ? { ok: false, error } : { ok: true };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
+  handle('projects:setEsteiraDesignMode', (_e, idOrPath: string, mode: string) => {
+    try {
+      const { setEsteiraDesignMode } = require('./project-fs');
+      return setEsteiraDesignMode(idOrPath, String(mode || ''));
+    } catch (err: any) {
+      return { ok: false, error: String(err?.message || err) };
+    }
+  });
+
   handle('projects:setEsteiraAuto', (_e, idOrPath: string, auto: boolean) => {
     try {
       const { setEsteiraAuto } = require('./project-fs');

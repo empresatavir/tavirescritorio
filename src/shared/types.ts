@@ -503,6 +503,11 @@ export interface TavirApi {
     getEsteira: (idOrPath: string, count?: number) => Promise<any>;
     saveEsteiraInstruction: (idOrPath: string, index: number, text: string) => Promise<any>;
     setEsteiraAuto: (idOrPath: string, auto: boolean) => Promise<any>;
+    setEsteiraDesignMode: (idOrPath: string, mode: string) => Promise<any>;
+    openBrandBoard: (idOrPath: string, letter: string) => Promise<{ ok: boolean; error?: string }>;
+    refLogin: (url?: string) => Promise<{ ok: boolean; error?: string }>;
+    refSites: () => Promise<{ ok: boolean; sites: string[] }>;
+    refClear: () => Promise<{ ok: boolean; error?: string }>;
     controlEsteira: (idOrPath: string, index: number, action: string) => Promise<any>;
     runEsteira: (idOrPath: string, index: number, stageName?: string, stageOwner?: string) => Promise<any>;
     decideEsteira: (idOrPath: string, index: number, decision: 'aprovado' | 'reprovado', note?: string) => Promise<any>;

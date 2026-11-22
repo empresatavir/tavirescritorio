@@ -28,6 +28,8 @@
     "test:motores:motion": "npm run build:main && node scripts/conformidade_motion.js",
     "test:studio:render": "npm run build:main && node scripts/test_studio_render.mjs",
     "test:studio:reel": "npm run build:main && node scripts/test_studio_reel.mjs",
+    "design:ref": "npm run build:main && node scripts/design_ref.js",
+    "acervo:catalogar": "npm run build:main && node -e \"console.table(require('./dist/main/design/acervo.js').catalogAcervo())\"",
     "raiox:scan": "node scripts/raiox_scan.js raiox tools analise-instagram analise-web marketing agentes/escopo/agentes"
   },
   "dependencies": {

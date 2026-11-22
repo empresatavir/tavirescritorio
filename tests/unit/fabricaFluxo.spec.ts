@@ -20,20 +20,20 @@ describe('moldes das esteiras', () => {
   });
 
   it('conta as etapas de cada molde (o banco usava 12 para quase tudo)', () => {
-    expect(esteiraTemplate('lp-c').stages).toHaveLength(9);
-    expect(esteiraTemplate('lp-m').stages).toHaveLength(11);
-    expect(esteiraTemplate('of-c').stages).toHaveLength(8);
-    expect(esteiraTemplate('of-m').stages).toHaveLength(6);
-    expect(esteiraTemplate('sy-c').stages).toHaveLength(15);
-    expect(esteiraTemplate('sy-m').stages).toHaveLength(9);
+    expect(esteiraTemplate('lp-c').stages).toHaveLength(14);
+    expect(esteiraTemplate('lp-m').stages).toHaveLength(12);
+    expect(esteiraTemplate('of-c').stages).toHaveLength(13);
+    expect(esteiraTemplate('of-m').stages).toHaveLength(8);
+    expect(esteiraTemplate('sy-c').stages).toHaveLength(20);
+    expect(esteiraTemplate('sy-m').stages).toHaveLength(11);
   });
 
   it('marca como gate só as etapas de decisão humana', () => {
     const gates = (code: keyof typeof ESTEIRA_TEMPLATES) => ESTEIRA_TEMPLATES[code].stages.filter((s) => s.gate).map((s) => s.name);
-    expect(gates('SY-C1')).toEqual(['Gate 0 · Demanda e briefing', 'Gate Final CEO · Completion Guard']);
-    expect(gates('LP-M1')).toEqual(['Gate 0 · Diagnóstico da LP atual', 'Aprovação dos requisitos', 'Gate Final CEO · Completion Guard']);
-    expect(gates('SY-M1')).toEqual([]);
-    expect(gates('LP-C1')).toEqual([]);
+    expect(gates('SY-C1')).toEqual(['Gate 0 · Demanda e briefing', 'Escolha da marca', 'Aprovação do design', 'Gate · Revisão de design', 'Gate Final CEO · Completion Guard']);
+    expect(gates('LP-M1')).toEqual(['Gate 0 · Diagnóstico da LP atual', 'Aprovação dos requisitos', 'Gate · Revisão de design', 'Gate Final CEO · Completion Guard']);
+    expect(gates('SY-M1')).toEqual(['Gate · Revisão de design']);
+    expect(gates('LP-C1')).toEqual(['Escolha da marca', 'Aprovação do design', 'Gate · Revisão de design']);
   });
 
   it('entrega ao painel o formato [nome, dono, skill, peso]', () => {

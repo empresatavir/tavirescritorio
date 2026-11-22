@@ -174,6 +174,11 @@ const api: TavirApi = {
     saveEsteiraInstruction: (idOrPath: string, index: number, text: string) =>
       ipcRenderer.invoke('projects:saveEsteiraInstruction', idOrPath, index, text),
     setEsteiraAuto: (idOrPath: string, auto: boolean) => ipcRenderer.invoke('projects:setEsteiraAuto', idOrPath, auto),
+    setEsteiraDesignMode: (idOrPath: string, mode: string) => ipcRenderer.invoke('projects:setEsteiraDesignMode', idOrPath, mode),
+    openBrandBoard: (idOrPath: string, letter: string) => ipcRenderer.invoke('projects:openBrandBoard', idOrPath, letter),
+    refLogin: (url?: string) => ipcRenderer.invoke('design:refLogin', url),
+    refSites: () => ipcRenderer.invoke('design:refSites'),
+    refClear: () => ipcRenderer.invoke('design:refClear'),
     controlEsteira: (idOrPath: string, index: number, action: string) =>
       ipcRenderer.invoke('projects:controlEsteira', idOrPath, index, action),
     runEsteira: (idOrPath: string, index: number, stageName?: string, stageOwner?: string) =>
