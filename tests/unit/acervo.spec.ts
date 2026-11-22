@@ -164,7 +164,7 @@ describe('três pranchas de marca e escolha', () => {
       expect(ESTEIRA_TEMPLATES[code].stages[at].gate).toBe(false);
       expect(ESTEIRA_TEMPLATES[code].stages[at + 1].gate).toBe(true);
       // Projeto gravado antes da etapa nova é remapeado pelo nome: a lista antiga está registrada.
-      const antiga = names.filter((n) => n !== STAGE_MARCA && n !== STAGE_ESCOLHA_MARCA);
+      const antiga = names.filter((n) => n !== STAGE_MARCA && n !== STAGE_ESCOLHA_MARCA && !/prot[oó]tipo/i.test(n));
       expect((LEGACY_STAGE_NAMES[code] || []).some((l) => l.join('|') === antiga.join('|')), code).toBe(true);
     }
     for (const code of ['LP-M1', 'OF-M0', 'SY-M1'] as const) expect(ESTEIRA_TEMPLATES[code].stages.map((s) => s.name)).not.toContain(STAGE_MARCA);

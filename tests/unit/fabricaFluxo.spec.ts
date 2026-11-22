@@ -24,15 +24,15 @@ describe('moldes das esteiras', () => {
     expect(esteiraTemplate('lp-m').stages).toHaveLength(12);
     expect(esteiraTemplate('of-c').stages).toHaveLength(13);
     expect(esteiraTemplate('of-m').stages).toHaveLength(8);
-    expect(esteiraTemplate('sy-c').stages).toHaveLength(20);
-    expect(esteiraTemplate('sy-m').stages).toHaveLength(11);
+    expect(esteiraTemplate('sy-c').stages).toHaveLength(22);
+    expect(esteiraTemplate('sy-m').stages).toHaveLength(13);
   });
 
   it('marca como gate só as etapas de decisão humana', () => {
     const gates = (code: keyof typeof ESTEIRA_TEMPLATES) => ESTEIRA_TEMPLATES[code].stages.filter((s) => s.gate).map((s) => s.name);
-    expect(gates('SY-C1')).toEqual(['Gate 0 · Demanda e briefing', 'Escolha da marca', 'Aprovação do design', 'Gate · Revisão de design', 'Gate Final CEO · Completion Guard']);
+    expect(gates('SY-C1')).toEqual(['Gate 0 · Demanda e briefing', 'Escolha da marca', 'Aprovação do design', 'Validação do protótipo', 'Gate · Revisão de design', 'Gate Final CEO · Completion Guard']);
     expect(gates('LP-M1')).toEqual(['Gate 0 · Diagnóstico da LP atual', 'Aprovação dos requisitos', 'Gate · Revisão de design', 'Gate Final CEO · Completion Guard']);
-    expect(gates('SY-M1')).toEqual(['Gate · Revisão de design']);
+    expect(gates('SY-M1')).toEqual(['Validação do protótipo', 'Gate · Revisão de design']);
     expect(gates('LP-C1')).toEqual(['Escolha da marca', 'Aprovação do design', 'Gate · Revisão de design']);
   });
 

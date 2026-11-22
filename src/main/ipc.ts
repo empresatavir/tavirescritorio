@@ -1388,6 +1388,18 @@ export function registrarIpcHandlers(win: BrowserWindow): void {
       return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }
   });
+  // Abre no navegador do Carlos o protótipo de validação do projeto.
+  handle('projects:openPrototype', async (_e, idOrPath: string) => {
+    try {
+      const { inspectProjectFolder } = require('./project-fs');
+      const file = require('./prototipo').prototypePagePath(inspectProjectFolder(idOrPath).rootPath);
+      if (!require('node:fs').existsSync(file)) return { ok: false, error: 'O protótipo ainda não foi gravado.' };
+      const error = await shell.openPath(file);
+      return error ? { ok: false, error } : { ok: true };
+    } catch (err) {
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  });
   handle('projects:setEsteiraDesignMode', (_e, idOrPath: string, mode: string) => {
     try {
       const { setEsteiraDesignMode } = require('./project-fs');

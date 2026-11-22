@@ -508,6 +508,7 @@ export interface TavirApi {
     setEsteiraAuto: (idOrPath: string, auto: boolean) => Promise<any>;
     setEsteiraDesignMode: (idOrPath: string, mode: string) => Promise<any>;
     openBrandBoard: (idOrPath: string, letter: string) => Promise<{ ok: boolean; error?: string }>;
+    openPrototype: (idOrPath: string) => Promise<{ ok: boolean; error?: string }>;
     refLogin: (url?: string) => Promise<{ ok: boolean; error?: string }>;
     refSites: () => Promise<{ ok: boolean; sites: string[] }>;
     refClear: () => Promise<{ ok: boolean; error?: string }>;

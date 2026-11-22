@@ -1348,6 +1348,7 @@ button.fb-hm:hover{border-color:rgba(244,246,242,.3)}
       <div><div class="eyebrow" style="margin-bottom: 6px">O que foi levantado</div><pre class="mono" style="margin: 0; padding: 12px; max-height: 160px; overflow: auto; white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: var(--surface-0); border: 1px solid var(--line); border-radius: 10px; color: var(--text-secondary)">{{stageModal.note}}</pre></div>
       <sc-if value="{{stageModal.designStage}}" hint-placeholder-val="{{false}}"><div style="padding: 12px 14px; border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px"><div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><b style="font-size: 13.5px" class="grow">Modo de design</b><button type="button" class="{{stageModal.modePadraoCls}}" aria-pressed="{{stageModal.modePadraoOn}}" onClick="{{stageModal.setPadrao}}">Padrão</button><button type="button" class="{{stageModal.modeConceitoCls}}" aria-pressed="{{stageModal.modeConceitoOn}}" onClick="{{stageModal.setConceito}}">Conceito</button></div><p class="muted" style="margin: 0; font-size: 12.5px; line-height: 1.45">{{stageModal.modeTxt}}</p><div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 8px"><span class="muted grow" style="font-size: 12.5px; line-height: 1.45">Sessão de referências: entre com a sua conta em sites que pedem login (Refero, Mobbin). O Kakashi lê por essa sessão.</span><button type="button" class="btn sm secondary" onClick="{{stageModal.refLogin}}">Entrar num site</button></div></div></sc-if>
       <label class="field"><span>Instrução desta etapa</span><textarea class="input" rows="6" value="{{stageModal.draft}}" onChange="{{stageModal.onDraft}}" placeholder="O que o agente deve levantar ou alterar nesta etapa" style="resize: vertical; min-height: 120px; border-radius: 12px; line-height: 1.45"></textarea></label>
+      <sc-if value="{{stageModal.protoGate}}" hint-placeholder-val="{{false}}"><div style="padding: 12px 14px; border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px"><b style="font-size: 13.5px">Valide o protótipo clicando</b><p class="muted" style="margin: 0; font-size: 12.5px; line-height: 1.45">{{stageModal.protoTxt}}</p><div style="display: flex; gap: 8px; flex-wrap: wrap"><button type="button" class="btn sm secondary" onClick="{{stageModal.openProto}}">Abrir protótipo</button></div><sc-if value="{{stageModal.protoAlt}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end"><sc-if value="{{stageModal.protoAltA}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm primary" onClick="{{stageModal.protoChooseA}}">Validar com a A</button></sc-if><sc-if value="{{stageModal.protoAltB}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm primary" onClick="{{stageModal.protoChooseB}}">Validar com a B</button></sc-if><sc-if value="{{stageModal.protoAltC}}" hint-placeholder-val="{{false}}"><button type="button" class="btn sm primary" onClick="{{stageModal.protoChooseC}}">Validar com a C</button></sc-if></div></sc-if><p class="muted" style="margin: 0; font-size: 12.5px">Algo errado no fluxo? Escreva abaixo o que mudar e reprove: o protótipo é refeito antes da construção.</p></div></sc-if>
       <sc-if value="{{stageModal.brandGate}}" hint-placeholder-val="{{false}}"><div style="padding: 12px 14px; border-radius: 10px; background: var(--surface-0); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px"><b style="font-size: 13.5px">Escolha a marca pela prancha</b><p class="muted" style="margin: 0; font-size: 12.5px; line-height: 1.45">Abra as três pranchas no navegador, compare e escolha uma. O tema e a prancha escolhidos viram a marca do projeto, e as páginas são desenhadas com ela.</p><div style="display: flex; gap: 8px; flex-wrap: wrap"><button type="button" class="btn sm secondary" onClick="{{stageModal.openBoardA}}">Abrir prancha A</button><button type="button" class="btn sm secondary" onClick="{{stageModal.openBoardB}}">Abrir prancha B</button><button type="button" class="btn sm secondary" onClick="{{stageModal.openBoardC}}">Abrir prancha C</button></div><div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end"><button type="button" class="btn sm primary" onClick="{{stageModal.chooseA}}">Escolher A</button><button type="button" class="btn sm primary" onClick="{{stageModal.chooseB}}">Escolher B</button><button type="button" class="btn sm primary" onClick="{{stageModal.chooseC}}">Escolher C</button></div><p class="muted" style="margin: 0; font-size: 12.5px">Nenhuma serve? Escreva abaixo o que mudar e reprove: a Marina refaz as três.</p></div></sc-if>
       <sc-if value="{{stageModal.awaiting}}" hint-placeholder-val="{{false}}"><div style="padding: 12px 14px; border-radius: 10px; background: var(--warning-subtle); border: 1px solid var(--warning); display: flex; flex-direction: column; gap: 8px"><b style="font-size: 13.5px">Este gate espera a sua decisão.</b><textarea class="input" rows="3" value="{{stageModal.gateNote}}" onChange="{{stageModal.onGateNote}}" placeholder="Orientação para a equipe (obrigatória para reprovar)" style="resize: vertical; border-radius: 10px; line-height: 1.45"></textarea><div style="display: flex; gap: 8px; justify-content: flex-end"><button type="button" class="btn sm secondary" onClick="{{stageModal.reject}}">Reprovar</button><button type="button" class="btn sm primary" onClick="{{stageModal.approve}}">Aprovar e seguir</button></div></div></sc-if>
       <sc-if value="{{stageModal.hasDecision}}" hint-placeholder-val="{{false}}"><p class="muted" style="margin: 0; font-size: 12.5px">{{stageModal.decisionTxt}}</p></sc-if>
@@ -4111,7 +4112,7 @@ class Component extends DCLogic {
           const app = self.props.app || NOOP;
           if (!tavir || !tavir.projects || !tavir.projects.decideEsteira) return;
           const typed = String(self.state.gateNote || '').trim();
-          const note = choice ? ('Prancha ' + choice + (typed ? '. ' + typed : '')) : typed;
+          const note = choice ? ((String(st[0] || '') === 'Validação do protótipo' ? 'Alternativa ' : 'Prancha ') + choice + (typed ? '. ' + typed : '')) : typed;
           if (verdict === 'reprovado' && !note) { app.toast('Gate', 'Escreva o que precisa mudar antes de reprovar.'); return; }
           tavir.projects.decideEsteira(target, index, verdict, note).then(function (res) {
             refresh(res);
@@ -4128,6 +4129,15 @@ class Component extends DCLogic {
           tavir.projects.openBrandBoard(target, letter).then(function (res) {
             if (res && res.ok === false) (self.props.app || NOOP).toast('Prancha de marca', res.error || 'Não abriu a prancha.');
           }).catch(function (err) { (self.props.app || NOOP).toast('Prancha de marca', String(err && err.message || err)); });
+        };
+        const proto = desk.prototype || null;
+        const protoAlts = (proto && proto.alternatives) || [];
+        const openProto = () => {
+          const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
+          if (!tavir || !tavir.projects || !tavir.projects.openPrototype) return;
+          tavir.projects.openPrototype(target).then(function (res) {
+            if (res && res.ok === false) (self.props.app || NOOP).toast('Protótipo', res.error || 'Não abriu o protótipo.');
+          }).catch(function (err) { (self.props.app || NOOP).toast('Protótipo', String(err && err.message || err)); });
         };
         const control = (action) => {
           const tavir = (typeof window !== 'undefined' && (window.tavir || (window.parent && window.parent.tavir))) || null;
@@ -4157,6 +4167,18 @@ class Component extends DCLogic {
           onGateNote: (e) => self.setState({ gateNote: e.target.value }),
           approve: () => decide('aprovado'),
           brandGate: awaiting && String(st[0] || '') === 'Escolha da marca',
+          protoGate: awaiting && !!proto && String(st[0] || '') === 'Validação do protótipo',
+          protoTxt: protoAlts.length
+            ? 'Abra o protótipo no navegador, percorra o fluxo e compare as alternativas pela faixa de controle. Valide dizendo com qual fica: é ela que segue para a construção, junto com os critérios de aceite.'
+            : 'Abra o protótipo no navegador e percorra o fluxo pela faixa de controle. Este protótipo não tem alternativas: aprove no botão abaixo, e os critérios de aceite seguem para a construção.',
+          protoAlt: protoAlts.length > 0,
+          protoAltA: protoAlts.indexOf('a') >= 0,
+          protoAltB: protoAlts.indexOf('b') >= 0,
+          protoAltC: protoAlts.indexOf('c') >= 0,
+          protoChooseA: () => decide('aprovado', 'A'),
+          protoChooseB: () => decide('aprovado', 'B'),
+          protoChooseC: () => decide('aprovado', 'C'),
+          openProto: openProto,
           chooseA: () => decide('aprovado', 'A'),
           chooseB: () => decide('aprovado', 'B'),
           chooseC: () => decide('aprovado', 'C'),

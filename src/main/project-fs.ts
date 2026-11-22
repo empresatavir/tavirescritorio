@@ -8,6 +8,8 @@ import { fitCall } from '../shared/engineCatalog';
 import { esteiraTemplate, LEGACY_STAGE_NAMES, stageContract, type EsteiraCode, type EsteiraStage } from '../shared/esteiras';
 import { brandChoiceOf, designFamily, designMode, isMaintenance, stageDesignRole, textDesignMode, trackDesignRole, BRAND_BOARDS_DIR, DESIGN_FILES, DIRECTIONS_MIN, STAGE_ESCOLHA_MARCA, STAGE_MARCA, type DesignMode } from '../shared/design';
 import { adoptBrandBoard, latestQaPrints, prepareBrandKit, prepareDesignKit, projectBrandBoardsGaps, projectBrandGaps, projectContractGaps, projectDirections, readContract } from './design/kit';
+import { prototypeChoiceOf, prototypeChoices, prototypeHandoff, prototypePrompt, PROTO_FILES, STAGE_PROTOTIPO, STAGE_VALIDACAO_PROTOTIPO } from '../shared/prototipo';
+import { checkProjectPrototype, hasPrototype, projectPrototypeCriteria } from './prototipo';
 import { commitStep, type StepCommitResult } from './stepCommit';
 import { annotateRun, type RunChanges } from './runLedger';
 import { listQaRuns, qaSummary, runQa, type QaRun } from './qa/qaRunner';
@@ -3161,7 +3163,9 @@ type EsteiraStageRecord = {
   /** Varreduras do portão de segurança (qa/seguranca/<id>). */
   seg?: string[];
 };
-type EsteiraDesk = { auto: boolean; template: string; stages: EsteiraStageRecord[]; names?: string[]; /** Modo de design escolhido pelo Carlos. */ designMode?: DesignMode; /** Letra da prancha de marca escolhida no gate «Escolha da marca» (a, b ou c). */ brandChoice?: string };
+type EsteiraDesk = { auto: boolean; template: string; stages: EsteiraStageRecord[]; names?: string[]; /** Modo de design escolhido pelo Carlos. */ designMode?: DesignMode; /** Letra da prancha de marca escolhida no gate «Escolha da marca» (a, b ou c). */ brandChoice?: string; /** Protótipo de validação: o que a conferência mediu e o que o Carlos decidiu no gate «Validação do protótipo». */ prototype?: PrototypeDesk };
+/** `alternatives`: letras que o Carlos pode escolher (vazio = protótipo sem alternativas). */
+type PrototypeDesk = { alternatives: string[]; points: number; checkedAt: string; choice?: string; validated?: boolean };
 
 const ESTEIRA_STATUS: EsteiraStatus[] = ['idle', 'running', 'paused', 'done', 'stopped', 'awaiting'];
 
@@ -3257,9 +3261,16 @@ function readEsteira(rootPath: string): EsteiraDesk {
       seg: Array.isArray(row.seg) ? row.seg.map((x: unknown) => String(x)).slice(-30) : [],
     };
   });
-  const desk: EsteiraDesk = { auto: Boolean(raw.auto), template: code, stages, names: want, designMode: designMode(raw.designMode), brandChoice: /^[abc]$/.test(String(raw.brandChoice || '')) ? String(raw.brandChoice) : '' };
+  const desk: EsteiraDesk = { auto: Boolean(raw.auto), template: code, stages, names: want, designMode: designMode(raw.designMode), brandChoice: /^[abc]$/.test(String(raw.brandChoice || '')) ? String(raw.brandChoice) : '', prototype: readPrototypeDesk(raw.prototype) };
   if (remapped) writeEsteira(rootPath, desk);
   return desk;
+}
+
+function readPrototypeDesk(raw: any): PrototypeDesk | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const alternatives = (Array.isArray(raw.alternatives) ? raw.alternatives : []).map((x: unknown) => String(x).toLowerCase()).filter((x: string) => /^[abc]$/.test(x));
+  const choice = /^[abc]$/.test(String(raw.choice || '')) ? String(raw.choice) : undefined;
+  return { alternatives, points: Number(raw.points) || 0, checkedAt: String(raw.checkedAt || ''), choice, validated: Boolean(raw.validated) };
 }
 
 function writeEsteira(rootPath: string, desk: EsteiraDesk): void {
@@ -3391,6 +3402,17 @@ export function decideEsteiraGate(idOrPath: string, index: number, decision: 'ap
     if (!adopted.ok) return { ...esteiraPayload(info.rootPath, desk), ok: false, error: adopted.error };
     desk.brandChoice = choice;
   }
+  if (def.name === STAGE_VALIDACAO_PROTOTIPO && verdict === 'aprovado' && desk.prototype) {
+    // Havendo alternativas, aprovar é escolher uma. Sem protótipo (manutenção sem mudança de tela) não há o que escolher.
+    const options = desk.prototype.alternatives;
+    const choice = prototypeChoiceOf(note);
+    if (options.length && !options.includes(choice)) {
+      return { ...esteiraPayload(info.rootPath, desk), ok: false, error: `Diga qual alternativa do protótipo você escolheu: ${options.map((o) => o.toUpperCase()).join(', ').replace(/, ([^,]*)$/, ' ou $1')}.` };
+    }
+    if (!hasPrototype(info.rootPath)) return { ...esteiraPayload(info.rootPath, desk), ok: false, error: `${PROTO_FILES.page} não está mais na pasta. Execute «${STAGE_PROTOTIPO}» de novo.` };
+    desk.prototype = { ...desk.prototype, choice: options.length ? choice : undefined, validated: true };
+  }
+  if (def.name === STAGE_VALIDACAO_PROTOTIPO && verdict === 'reprovado' && desk.prototype) desk.prototype = { ...desk.prototype, choice: undefined, validated: false };
   const entry = logDecision(info.rootPath, {
     kind: 'esteira',
     stage: def.name,
@@ -3487,6 +3509,13 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     : designRole
       ? prepareDesignKit(info.rootPath, { role: designRole, family: designFamily(tplCode), maint: isMaintenance(tplCode), mode: desk.designMode, brandChosen: desk.brandChoice, prints: designRole === 'revisao' ? latestQaPrints(info.rootPath) : undefined }).block
       : '';
+  const protoStage = def.name === STAGE_PROTOTIPO;
+  // Depois da validação, as etapas seguintes recebem a alternativa escolhida e os critérios de aceite.
+  const protoBlock = protoStage
+    ? prototypePrompt({ maint: isMaintenance(tplCode), hasDesign: !!readContract(info.rootPath) })
+    : def.gate
+      ? ''
+      : prototypeHandoff({ validated: !!desk.prototype?.validated, choice: desk.prototype?.choice, criteria: desk.prototype?.validated ? projectPrototypeCriteria(info.rootPath) : [] });
   // A Talita só conduz as etapas de QA; Loop Linter e Completion Guard têm portão de QA, mas são do compilador.
   const qaTalita = def.qa && /^QA\b/i.test(def.name);
   const question =
@@ -3498,6 +3527,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
     'Comece pelo que a entrega pede. Leia só os arquivos de que precisa para isso; não releia o projeto inteiro nem refaça o que as etapas anteriores entregaram.\n\n' +
     (digest ? `O QUE AS ETAPAS ANTERIORES ENTREGARAM (use como base, não refaça):\n${digest}\n\n` : '') +
     (design ? `${design}\n\n` : '') +
+    (protoBlock ? `${protoBlock}\n\n` : '') +
     (prior ? `CHECKPOINT — a etapa já tem este levantamento. Não recomece do zero. Continue ou revise a partir dele:\n${prior.slice(-5000)}\n\n` : '') +
     (qaTalita
       ? 'Esta etapa é o QA desta aplicação, com a Talita. Leia o que o app faz e monte o plano de testes em qa/plano.md: o que precisa passar antes de entregar, quais comandos a pasta já tem e o que ainda falta. Se não houver node_modules, instale as dependências do gerenciador do projeto. Deixe os testes no lugar que esse gerenciador espera. Não declare a etapa concluída: o portão automático roda em seguida, instala o que ainda faltar e grava vídeo, prints e o relatório em qa/evidencias/.\n\n'
@@ -3528,7 +3558,7 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
       recent: [],
       timeoutMs: 1800000,
       // Direção e construção de interface gravam arquivos grandes: há motor que escreve tudo calado por mais de 5 min.
-      ...(brandStage || designRole === 'direcao' || designRole === 'construcao' ? { idleMs: 15 * 60 * 1000 } : {}),
+      ...(brandStage || protoStage || designRole === 'direcao' || designRole === 'construcao' ? { idleMs: 15 * 60 * 1000 } : {}),
       runKind: 'esteira',
       runLabel: def.name,
       onProgress: (line) => {
@@ -3579,6 +3609,27 @@ export async function runEsteiraStage(idOrPath: string, index: number, _stageNam
         (designError || `Três pranchas completas em ${BRAND_BOARDS_DIR}/a, b e c, de famílias de cor diferentes e dentro das regras de cor.`) +
         '\n';
       if (designError) current.status = 'idle';
+    }
+    if (protoStage) {
+      // Quem fecha o protótipo é a conferência do Escritório: abre o arquivo sem rede, clica e mede.
+      const maint = isMaintenance(tplCode);
+      const touched = !c?.available || c.added.concat(c.modified).some((f) => f.replace(/\\/g, '/').startsWith('prototipo/'));
+      if (maint && (!hasPrototype(info.rootPath) || !touched)) {
+        fresh.prototype = undefined;
+        current.note += `\n### ${stamp} · Conferência do protótipo\nSem protótipo nesta rodada (manutenção sem mudança de tela).\n`;
+      } else {
+        const check = await checkProjectPrototype(info.rootPath, { maint });
+        if (check.gaps.length) designError = `O protótipo não fechou. Falta: ${check.gaps.join('; ')}.`;
+        const options = prototypeChoices(check.facts);
+        fresh.prototype = check.gaps.length ? undefined : { alternatives: options, points: check.facts.points.length, checkedAt: new Date().toISOString() };
+        current.note +=
+          `\n### ${stamp} · Conferência do protótipo\n` +
+          (designError ||
+            `${PROTO_FILES.page} abre sozinho, com ${check.facts.points.length} pontos de validação localizados na tela` +
+              (options.length ? ` e ${options.length} alternativas para escolher (${options.map((o) => o.toUpperCase()).join(', ')}).` : ', sem alternativas para escolher.')) +
+          '\n';
+        if (designError) current.status = 'idle';
+      }
     }
     if (designRole === 'direcao') {
       // Quem fecha a direção é a conferência do contrato, não a resposta do motor.

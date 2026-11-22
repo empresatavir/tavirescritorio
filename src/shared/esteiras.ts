@@ -101,6 +101,8 @@ export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {
     ['Escolha da marca', 'Carlos Henrique', 'aprovação humana', 1],
     ['Direção de design', 'Marina + Yuri', 'ui-ux-pro-max · ui-styling', 1],
     ['Aprovação do design', 'Carlos Henrique', 'aprovação humana', 1],
+    ['Protótipo navegável', 'Yuri UX', 'protótipo de validação', 2],
+    ['Validação do protótipo', 'Carlos Henrique', 'aprovação humana', 1],
     ['Arquitetura & modelagem', 'Ari Arquiteto', 'archify · sql-queries', 2],
     ['Planejamento ágil', 'Paula PM', 'agile-planning', 1],
     ['Scaffold físico oficial', 'Diego Dev Front & Back', 'flutter create · pnpm create vite', 1],
@@ -122,6 +124,8 @@ export const ESTEIRA_TEMPLATES: Record<EsteiraCode, EsteiraTemplate> = {
     ['Dossiê', 'Dora Descoberta', 'brand-context', 1],
     ['Diagnóstico técnico', 'Théo Tech Lead', 'code-review', 1],
     ['Direção de design', 'Marina + Yuri', 'ui-ux-pro-max · ui-styling', 1],
+    ['Protótipo navegável', 'Yuri UX', 'protótipo de validação', 1],
+    ['Validação do protótipo', 'Carlos Henrique', 'aprovação humana', 1],
     ['Correção e migração', 'Diego Dev Front & Back', 'test-driven-development', 3],
     ['Loop Linter & Compiler', 'Compiler TAVIR', 'tsc --noEmit · dart analyze', 1],
     ['QA E2E Playwright', 'Talita QA', 'playwright', 1],
@@ -270,6 +274,16 @@ export const STAGE_CONTRACTS: Record<string, StageContract> = {
     'O Carlos abre as três pranchas e aprova dizendo qual escolheu (A, B ou C). O Escritório copia o tema e a prancha escolhidos para design/.',
   ),
   'Direção de design': DIRECAO_DESIGN,
+  'Protótipo navegável': C(
+    'Dar ao Carlos o fluxo principal para validar clicando, antes de alguém construir.',
+    'prototipo/index.html (um arquivo só, que abre sem servidor e sem internet, com a faixa de controle da demonstração) e prototipo/premissas.md (premissas, decisões em aberto, o que é simulado e critérios de aceite). Em manutenção sem mudança de tela, diga isso em uma linha e não crie o protótipo.',
+    'O Escritório abre o arquivo num navegador sem rede, clica nos estados, nas alternativas e em cada ponto de validação e confere as seções; faltando algo, a etapa não fecha.',
+  ),
+  'Validação do protótipo': C(
+    'Levar o protótipo à validação do Carlos.',
+    'Resumo de prototipo/premissas.md: o caminho de prototipo/index.html, os pontos de validação numerados, as alternativas (o que muda entre elas e qual é a recomendada) e as decisões em aberto. Não edite arquivos.',
+    'O Carlos abre o protótipo, clica no fluxo e aprova; havendo alternativas, aprova dizendo qual escolheu (A, B ou C). Os critérios de aceite seguem para a construção e para o QA.',
+  ),
   'Aprovação do design': C(
     'Levar a direção de design à decisão do Carlos.',
     'Resumo de design/marca.md e design/DESIGN.md (conceito, tokens, telas, referências) e as direções em design/direcoes/, com o caminho de cada index.html, o que muda entre elas e qual é a recomendada.',
@@ -313,10 +327,11 @@ export const LEGACY_STAGE_NAMES: Partial<Record<EsteiraCode, string[][]>> = {
     ['Gate 0 · Problema e público', 'Evidência de público', 'Validação de viabilidade', 'Precificação', 'Claims e compliance', 'Direção de design', 'Aprovação do design', 'Página da oferta', 'QA de copy e oferta', 'Gate · Revisão de design', 'Gate Final CEO'],
   ],
   'OF-M0': [['Revisão da oferta', 'Evidência atualizada', 'Claims e compliance', 'Ajuste de preço', 'Página revisada', 'Gate Final CEO']],
-  'SY-C1': [['Gate 0 · Demanda e briefing', 'Requisitos verificáveis', 'Arquitetura & modelagem', 'Planejamento ágil', 'Scaffold físico oficial', 'Construção Front', 'Construção Back', 'Loop Linter & Compiler', 'QA E2E Playwright', 'QA Mobile · emulador tavir_qa', 'Segurança & LGPD', 'Completion Guard · 8 regras físicas', 'Documentação & runbook', 'Gate Final CEO · Completion Guard', 'Handoff'], ['Gate 0 · Demanda e briefing', 'Requisitos verificáveis', 'Direção de design', 'Aprovação do design', 'Arquitetura & modelagem', 'Planejamento ágil', 'Scaffold físico oficial', 'Construção Front', 'Construção Back', 'Loop Linter & Compiler', 'QA E2E Playwright', 'QA Mobile · emulador tavir_qa', 'Gate · Revisão de design', 'Segurança & LGPD', 'Completion Guard · 8 regras físicas', 'Documentação & runbook', 'Gate Final CEO · Completion Guard', 'Handoff']],
+  'SY-C1': [['Gate 0 · Demanda e briefing', 'Requisitos verificáveis', 'Arquitetura & modelagem', 'Planejamento ágil', 'Scaffold físico oficial', 'Construção Front', 'Construção Back', 'Loop Linter & Compiler', 'QA E2E Playwright', 'QA Mobile · emulador tavir_qa', 'Segurança & LGPD', 'Completion Guard · 8 regras físicas', 'Documentação & runbook', 'Gate Final CEO · Completion Guard', 'Handoff'], ['Gate 0 · Demanda e briefing', 'Requisitos verificáveis', 'Direção de design', 'Aprovação do design', 'Arquitetura & modelagem', 'Planejamento ágil', 'Scaffold físico oficial', 'Construção Front', 'Construção Back', 'Loop Linter & Compiler', 'QA E2E Playwright', 'QA Mobile · emulador tavir_qa', 'Gate · Revisão de design', 'Segurança & LGPD', 'Completion Guard · 8 regras físicas', 'Documentação & runbook', 'Gate Final CEO · Completion Guard', 'Handoff'], ['Gate 0 · Demanda e briefing', 'Requisitos verificáveis', 'Marca · três pranchas', 'Escolha da marca', 'Direção de design', 'Aprovação do design', 'Arquitetura & modelagem', 'Planejamento ágil', 'Scaffold físico oficial', 'Construção Front', 'Construção Back', 'Loop Linter & Compiler', 'QA E2E Playwright', 'QA Mobile · emulador tavir_qa', 'Gate · Revisão de design', 'Segurança & LGPD', 'Completion Guard · 8 regras físicas', 'Documentação & runbook', 'Gate Final CEO · Completion Guard', 'Handoff']],
   'SY-M1': [
     ['Entender', 'Refinar', 'Dossiê', 'Diagnóstico técnico', 'Correção e migração', 'Loop Linter & Compiler', 'QA E2E Playwright', 'Handoff'],
     ['Entender', 'Refinar', 'Dossiê', 'Diagnóstico técnico', 'Correção e migração', 'Loop Linter & Compiler', 'QA E2E Playwright', 'Segurança & LGPD', 'Handoff'],
+    ['Entender', 'Refinar', 'Dossiê', 'Diagnóstico técnico', 'Direção de design', 'Correção e migração', 'Loop Linter & Compiler', 'QA E2E Playwright', 'Gate · Revisão de design', 'Segurança & LGPD', 'Handoff'],
   ],
 };
 

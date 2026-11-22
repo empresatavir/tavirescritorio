@@ -165,6 +165,19 @@ Vale para LP, oferta e sistema, em criação e em manutenção. Regra: útil e b
 - **Três pranchas e escolha da marca:** os moldes de criação (LP-C1, OF-C1, SY-C1) têm, antes da direção, a etapa «Marca · três pranchas» (Marina) e o gate «Escolha da marca» (Carlos). A Marina grava `design/pranchas/a|b|c/` com `tema.css` e `prancha.html`; `brandBoardsGaps` (`src/shared/design.ts`) só fecha a etapa com as três pastas completas, cor principal viva, fundo que não é neutro quente (bege, creme, areia) e famílias de cor a 40° ou mais de matiz uma da outra, lidas pelos papéis de nome fixo `--cor-marca`, `--cor-acao` e `--cor-fundo`. No gate, aprovar é escolher: a decisão precisa dizer a letra (os botões «Escolher A/B/C» do modal mandam «Prancha X»), e quem copia o tema e a prancha escolhidos para `design/` é o Escritório (`adoptBrandBoard`); a letra fica em `brandChoice` na esteira. A direção recebe a marca como dada e veste as três direções com ela. As regras de cor (`COLOR_RULES`) entram também no pedido da direção e da construção. Moldes de manutenção não têm essas etapas; os nomes antigos estão em `LEGACY_STAGE_NAMES`.
 - **Molde com projeto em andamento:** as listas antigas estão em `LEGACY_STAGE_NAMES` (uma ou mais por molde, de tamanhos diferentes). Etapa nova que cai antes de uma já concluída entra como concluída com a nota «não foi executada», para não reabrir projeto entregue.
 
+## Protótipo de validação (esteiras de sistema)
+
+Antes de construir, o Carlos valida o fluxo clicando. Vale para Sistemas · Criação (depois de «Aprovação do design») e Sistemas · Manutenção (depois de «Direção de design»). LP e oferta não têm: lá as pranchas e a direção já cumprem esse papel.
+
+- **Fonte única:** `src/shared/prototipo.ts` (nomes das etapas, pedido ao agente, conferência pura, leitura da escolha e bloco para as etapas seguintes). Quem abre o arquivo e mede é `src/main/prototipo.ts`. Em `project-fs.ts`, `ipc.ts`, `preload` e `types.ts` só ganchos.
+- **Etapa «Protótipo navegável» (Yuri UX):** entrega `prototipo/index.html`, um arquivo só, que abre sem servidor e sem internet, e `prototipo/premissas.md` com «Premissas», «Decisões em aberto», «Simulado» e «Critérios de aceite». Dados fictícios e integração simulada.
+- **Faixa de controle:** fica no topo, separada da tela, marcada com `data-proto="controle"` e com o aviso de que não faz parte do produto. Traz os estados (`data-proto-estado="branco"` e `"exemplo"`, mais os que importarem), as alternativas quando há dúvida real (`data-proto-alternativa="a|b|c"`), as versões em manutenção (`data-proto-versao="antes|depois"`), os pontos de validação numerados (`data-proto-ponto="N"`, que levam à tela e mostram ali o marcador `data-proto-marca="N"`) e o controle que esconde os textos de apoio (`data-proto="apoio"`).
+- **Conferência:** `measurePrototype` abre o arquivo num navegador sem rede (todo pedido fora do próprio arquivo é barrado e anotado), clica em cada estado, alternativa e ponto e compara o que fica à vista fora da faixa. `prototypeGaps` só devolve lista vazia se o arquivo abre sozinho e sem erro de script, a faixa tem os dois avisos, os estados e as alternativas mudam a tela, há três pontos ou mais e cada um tem marcador e critério de aceite. Faltando algo, a etapa volta para «a fazer». Resposta de motor não fecha.
+- **Gate «Validação do protótipo» (Carlos):** o modal tem «Abrir protótipo». Com alternativas, aprovar é escolher: os botões «Validar com a A/B/C» mandam «Alternativa X» e a decisão sem letra é recusada. Sem alternativas, vale a aprovação comum. O que a conferência mediu e a escolha ficam em `prototype` de `.tavir/esteira.json` (`alternatives`, `points`, `choice`, `validated`).
+- **Depois da validação:** toda etapa seguinte que não é gate recebe `prototypeHandoff`: a alternativa escolhida, os critérios de aceite e a regra de que o protótipo é descartável (não copiar código nem dados fictícios).
+- **Manutenção sem mudança de tela:** se a rodada não gravou nada em `prototipo/`, a etapa fecha com a nota «Sem protótipo nesta rodada» e o gate é aprovação comum.
+- **Projeto que já existia:** os moldes de antes estão em `LEGACY_STAGE_NAMES`; as duas etapas entram como concluídas sem execução quando o projeto já passou do ponto.
+
 ## Ferramentas na máquina
 
 | Ferramenta | Uso | Como instalar |
@@ -182,6 +195,7 @@ Sem as ferramentas externas a varredura roda do mesmo jeito; o relatório marca 
 - `qa.run / list / stop / open`
 - `seg.run / list / stop / accept / acceptItem / open`
 - `projects.runEsteira / decideEsteira / decisions / setEngine / runAltTrack / approveAltTrack`
+- `projects.openBrandBoard / openPrototype / setEsteiraDesignMode`
 - `projects.altTrackPublishInfo / publishAltTrack / resolveAltTrackBranch / setGitAccount / openAltTrackPr`
 - `accounts.list / add / remove / setDefault / test / openTokenPage`
 - `creds.list / save / remove / test / openTokenPage`
@@ -194,5 +208,5 @@ O progresso ao vivo chega por `run:event`, com `meta.qa` ou `meta.seg`.
 
 ## Testes
 
-- `npm test`: unitários (`tests/unit`), incluindo moldes, commit por passo, plano e relatório de QA, regras e varredura de segurança, branch por ciclo e contas no cofre (`cicloBranch.spec.ts`), absorção (`absorcao*.spec.ts`, `retratoAtualizar.spec.ts`), acessos, build pela Íris (`buildProjeto.spec.ts`), chamados (`chamados*.spec.ts`), isolamento entre projetos (`isolamentoProjeto.spec.ts`) e pilar de design (`design.spec.ts`).
+- `npm test`: unitários (`tests/unit`), incluindo moldes, commit por passo, plano e relatório de QA, regras e varredura de segurança, branch por ciclo e contas no cofre (`cicloBranch.spec.ts`), absorção (`absorcao*.spec.ts`, `retratoAtualizar.spec.ts`), acessos, build pela Íris (`buildProjeto.spec.ts`), chamados (`chamados*.spec.ts`), isolamento entre projetos (`isolamentoProjeto.spec.ts`), pilar de design (`design.spec.ts`) e protótipo de validação (`prototipo.spec.ts`).
 - `npm run test:motores`: conformidade dos quatro motores.

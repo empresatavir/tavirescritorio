@@ -87,3 +87,10 @@ Este arquivo é lido automaticamente pelo Claude (Claude Code, Claude Desktop, e
 - Material de design chega ao agente por texto no pedido e por arquivo em `.tavir/design/kit/`. Não use recurso de skill de um motor: tem de funcionar nos quatro.
 - Referência só entra no kit com `status: validado`, e quem escreve isso é o Carlos. Telas capturadas ficam fora do git.
 - Absorção de site é do Kakashi: quem mede é o Escritório (`src/main/design/absorcao.ts`), o agente só lê a pasta e redige o dossiê, e a tarefa fecha pela conferência (`dossierGaps`). Medida sem fonte não entra; o que não foi medido vai para «Lacunas». Nunca baixe imagem, texto, fonte ou código do site absorvido.
+
+### 13. Protótipo: o Carlos valida clicando, a construção não copia
+- Mapa em `docs/modules/fabrica.md` (seção Protótipo de validação). Nomes, pedido e conferência só em `src/shared/prototipo.ts`; medição em `src/main/prototipo.ts`.
+- Só nas esteiras de sistema. «Protótipo navegável» fecha pela conferência do Escritório (`prototypeGaps`), que abre o arquivo sem rede e clica nos controles; «Validação do protótipo» é gate do Carlos. Resposta de motor não fecha nenhuma das duas.
+- Havendo alternativas, aprovar é escolher a letra. Não invente alternativa para ter o que escolher: sem dúvida real, o protótipo vai sem elas.
+- O protótipo é um arquivo só, sem rede, com dados fictícios, e é descartável. Para a construção e o QA seguem a alternativa escolhida e os critérios de aceite, nunca o código dele.
+- Protótipo de produto de terceiro (ou da TOTVS) serve de exemplo de método; não entra no kit nem no repositório.
